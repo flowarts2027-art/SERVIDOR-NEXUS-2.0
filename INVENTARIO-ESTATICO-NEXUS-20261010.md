@@ -19,5 +19,14 @@ Origem: bundle recuperado `index.js` (14.121 linhas), validado com `node --check
 4. Preservar nomes e valores existentes dos segredos no ambiente Cloudflare; nunca comitar segredos no repositório público.
 5. Só então configurar CI/CD com aprovação para deploy e testar painéis, Instagram e vídeo.
 
-## Estado
-Nenhuma mudança no Worker de produção foi realizada por este inventário. Backups de D1 e R2 ainda NÃO estão confirmados.
+## Atualização de recuperação — 10/10/2026
+
+- Este documento começou como um inventário anterior aos backups. A informação de que D1/R2 ainda não estavam confirmados está superada.
+- `index.js` recuperado e presente nesta branch; sintaxe validada, mas não representa necessariamente os arquivos-fonte originais.
+- Dumps D1 restaurados localmente com `PRAGMA integrity_check = ok`: **23 tabelas** no `servidor-nexus` e **9 tabelas** no `globalplay-site-db`.
+- Backup R2 privado de **123 objetos** reportado como verificado pelo proprietário.
+- Leitura do bundle confirma presença de rotas `/api/portal/videos/search`, `/api/portal/videos/youtube`, `/api/local-video-ingest/status` e `/api/internal/video-render/progress`. **Presença da rota no código não demonstra que renderização ou upload estejam funcionando.**
+- A verificação pública das rotas do Worker e o teste funcional de vídeo ainda não foram concluídos.
+- Os assets de painel e configurações de execução ainda precisam ser recuperados ou comparados com a versão ativa.
+- Nenhum deploy nem alteração de produção foi realizado neste inventário. Segredos e backups seguem fora do GitHub público.
+
