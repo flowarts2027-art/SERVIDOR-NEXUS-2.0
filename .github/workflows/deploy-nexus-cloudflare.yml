@@ -1,0 +1,127 @@
+name: Deploy NEXUS Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "cloudflare/**"
+      - "public/**"
+      - "scripts/local-youtube/**"
+      - "scripts/build-local-helper-zip.py"
+      - ".github/workflows/deploy-nexus-cloudflare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-nexus-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate front-end and render source
+        run: |
+          node --check public/client-lite.js
+          python3 -m py_compile scripts/build_promo_card.py
+
+      - name: Verify Cloudflare credentials are configured
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Missing GitHub secret CLOUDFLARE_API_TOKEN: cannot publish NEXUS Worker."
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Missing GitHub secret CLOUDFLARE_ACCOUNT_ID: cannot publish NEXUS Worker."
+            exit 1
+          fi
+
+      - name: Install Cloudflare dependencies
+        working-directory: cloudflare
+        run: npm install --no-audit --no-fund
+
+      - name: Verify Worker bundle
+        working-directory: cloudflare
+        run: npm run check
+
+      - name: Rebuild Windows helper ZIP from latest source
+        run: |
+          python3 scripts/build-local-helper-zip.py
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          with ZipFile('public/nexus-baixar-no-pc.zip') as archive:
+              assert archive.read('helper.py') == Path('scripts/local-youtube/helper.py').read_bytes()
+          print('WINDOWS_HELPER_DOWNLOAD_MATCHES_MAIN')
+          PY
+
+      - name: Deploy Worker and public assets
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: npm run deploy
+
+      - name: Verify new Windows helper ZIP is served by Cloudflare
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://servidor-nexus.diamantehinode2015.workers.dev"
+          for attempt in $(seq 1 12); do
+            if curl --fail --location --silent --show-error --max-time 25 \
+              -H 'Cache-Control: no-cache' \
+              "$base/nexus-baixar-no-pc.zip?deploy=$GITHUB_SHA-$attempt" \
+              -o /tmp/nexus-helper-live.zip \
+              && python3 -c 'from pathlib import Path; from zipfile import ZipFile; z=ZipFile("/tmp/nexus-helper-live.zip"); assert z.read("helper.py") == Path("scripts/local-youtube/helper.py").read_bytes(), "Cloudflare ZIP still stale"' ; then
+              echo "LIVE_WINDOWS_HELPER_MATCHES_SOURCE on attempt $attempt"
+              exit 0
+            fi
+            echo "::warning::Cloudflare helper ZIP not propagated ($attempt/12)"
+            sleep 5
+          done
+          echo "::error::Cloudflare never served the current Windows helper ZIP"
+          exit 1
+
+      - name: Confirm live portal responds
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://servidor-nexus.diamantehinode2015.workers.dev"
+          expected_js="$(grep -o 'client-lite.js?v=[0-9]*' public/portal.html | head -n 1)"
+          if [ -z "$expected_js" ]; then
+            echo "::error::Could not determine client asset version from repository."
+            exit 1
+          fi
+
+          # Cloudflare assets may be briefly stale immediately after a successful upload.
+          # Cache-busted polling checks the deployed release rather than silently
+          # succeeding with an older HTML or JS version.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --location --max-time 25 \
+              -H 'Cache-Control: no-cache' \
+              "$base/portal?deploy_verify=$GITHUB_SHA-$attempt" -o /tmp/nexus-portal.html \
+              && grep -Fq "$expected_js" /tmp/nexus-portal.html \
+              && curl --fail --silent --show-error --max-time 25 \
+                -H 'Cache-Control: no-cache' \
+                "$base/$expected_js&deploy_verify=$GITHUB_SHA-$attempt" -o /tmp/nexus-live-client.js \
+              && grep -Fq "nexusWindowsCredentials" /tmp/nexus-live-client.js; then
+              echo "Verified live Cloudflare HTML and JS match $expected_js on attempt $attempt."
+              exit 0
+            fi
+            echo "::warning::Client portal is not fully propagated ($expected_js), attempt $attempt/8."
+            sleep 5
+          done
+          echo "::error::Cloudflare still does not serve the expected client release: $expected_js"
+          exit 1

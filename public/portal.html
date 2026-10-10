@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d15"><title>NEXUS Vídeos</title>
+  <link rel="stylesheet" href="/client-lite.css?v=44"><link rel="stylesheet" href="/video-overlay-ui.css?v=4"><script src="/video-overlay-core.js?v=2" defer></script><script src="/client-lite.js?v=80" defer></script><script src="/video-overlay-ui.js?v=4" defer></script>
+</head>
+<body><main class="shell">
+  <section id="login" class="login card">
+    <div class="brand"><strong>NEXUS AI</strong></div>
+    <p class="eyebrow">ACESSO AO PAINEL</p><h1>Entre na sua conta</h1>
+    <p class="muted">Busque trailers oficiais dublados e gere o vídeo final 9:16.</p>
+    <form id="login-form">
+      <label>Usuário<input name="username" autocomplete="username" required></label>
+      <label>Senha<input name="password" type="password" autocomplete="current-password" required></label>
+      <label class="login-remember"><input id="login-save-password" type="checkbox" autocomplete="off"> Salvar senha neste navegador</label>
+      <small id="nexus-windows-version-notice" class="muted" role="status" hidden></small>
+      <button type="submit" class="primary">Entrar</button><p id="login-error" class="error" role="alert"></p>
+    </form>
+  </section>
+  <section id="dashboard" hidden>
+    <header class="topbar">
+      <div class="brand client-brand"><img id="client-logo" class="client-logo" alt="" hidden><div><strong id="header-client-name">NEXUS AI</strong><small>FILMES E TRAILERS</small></div></div>
+      <div class="header-actions"><span id="client-label"></span><button id="refresh" type="button" title="Atualiza os dados desta tela">Atualizar dados</button><button id="logout" type="button">Sair</button></div>
+    </header>
+    <nav class="tabs nexus-app-nav" aria-label="Áreas do aplicativo">
+      <button data-tab="videos" class="active" type="button"><span class="nexus-nav-icon" aria-hidden="true">▶</span><span>Criar vídeo</span></button>
+      <button data-tab="upload" type="button"><span class="nexus-nav-icon" aria-hidden="true">↑</span><span>Enviar do PC</span></button>
+      <button data-tab="instagram" type="button"><span class="nexus-nav-icon" aria-hidden="true">◎</span><span>Instagram</span></button>
+      <button data-tab="logo" type="button"><span class="nexus-nav-icon" aria-hidden="true">✦</span><span>Minha logo</span></button>
+    </nav>
+    <div id="notice" class="notice" role="status" hidden></div>
+
+    <section id="tab-videos" class="tab">
+      <div class="section-title compact-title">
+        <div>
+          <p class="eyebrow">ESTÚDIO NEXUS</p>
+          <h1>Criar vídeo 9:16</h1>
+          <p class="muted">Busque o filme ou série, escolha o modo e clique em Gerar vídeo. O auxiliar local pede uma autorização e o restante segue pelo NEXUS.</p>
+        </div>
+        <button data-refresh="videos" type="button">Atualizar</button>
+      </div>
+
+      <section class="studio-command-bar" aria-label="Comando de criação">
+        <div class="studio-mode-copy">
+          <span class="studio-kicker">COMO VOCÊ QUER CRIAR?</span>
+          <strong>Escolha o fluxo antes de buscar o vídeo.</strong>
+        </div>
+        <div id="video-mode-switch" class="video-mode-switch" role="group" aria-label="Modo de criação">
+          <button id="video-mode-auto" class="active" type="button" data-video-mode="auto">
+            <span class="mode-title">Automático</span>
+            <small>Corte inteligente · até 60 segundos</small>
+          </button>
+          <button id="video-mode-edit" type="button" data-video-mode="edit" disabled aria-disabled="true" title="Vídeo editável: em construção">
+            <span class="mode-title">Vídeo editável</span>
+            <small>Em construção</small>
+          </button>
+        </div>
+      </section>
+
+      <section id="video-editor-panel" class="video-editor-panel" hidden>
+        <div class="video-editor-toolbar">
+          <button id="video-editor-back" type="button">← Voltar</button>
+          <div><p class="eyebrow">MODO EDITÁVEL</p><strong>Escolha os pontos de corte pelas cenas</strong></div>
+        </div>
+        <div class="video-editor-preview">
+          <div class="video-player-shell">
+            <video id="video-editor-player" class="video-editor-player" playsinline preload="metadata" hidden></video>
+            <img id="video-logo-preview" class="video-logo-preview" alt="Prévia da logo no vídeo" hidden>
+            <div id="video-text-preview" class="video-text-preview" aria-live="off" hidden></div>
+            <div id="video-editor-placeholder" class="video-editor-placeholder">Escolha um vídeo. Quando o MP4 chegar, as cenas aparecerão aqui.</div>
+          </div>
+          <div class="video-editor-transport" aria-label="Controles do vídeo">
+            <button id="video-play-toggle" class="transport-toggle" type="button" aria-label="Reproduzir vídeo" aria-pressed="false" disabled><span class="transport-icon" aria-hidden="true">▶</span><span class="transport-label">Reproduzir</span></button>
+            <span id="video-current-time" class="transport-time">00:00.000</span>
+            <input id="video-timeline" type="range" min="0" max="0" step="0.033" value="0" disabled aria-label="Posição do vídeo">
+            <span id="video-duration" class="transport-time">00:00.000</span>
+          </div>
+          <div class="video-filmstrip-wrap">
+            <div id="video-filmstrip" class="video-filmstrip" aria-label="Faixa contínua de cenas: arraste as alças azuis para escolher o início e o fim do corte"></div>
+            <small class="video-trim-help">✂ Arraste as duas alças azuis para selecionar o trecho. O vídeo gerado terá somente essa parte.</small>
+          </div>
+          <div class="video-editor-markers">
+            <button id="mark-trim-start" type="button" disabled>Início nesta cena</button>
+            <button id="mark-trim-end" type="button" disabled>Fim nesta cena</button>
+            <span id="video-selection-duration">Trecho: vídeo inteiro</span>
+          </div>
+          <input id="video-trim-start" type="hidden" value="0">
+          <input id="video-trim-end" type="hidden" value="">
+        </div>
+        <div class="video-editor-controls">
+          <div class="video-editor-heading">
+            <div><h2>Editar antes de gerar</h2></div>
+            <small>Selecione uma cena e marque o início ou fim; sem precisar digitar segundos.</small>
+          </div>
+          <label>Texto personalizado
+            <textarea id="video-custom-text" maxlength="280" placeholder="Texto opcional para este vídeo"></textarea>
+          </label>
+          <details class="nexus-advanced-tools"><summary>✎ Personalizar texto e fontes <span class="nexus-summary-cue">Abrir opções</span></summary>
+          <div class="video-text-style-controls" role="group" aria-label="Aparência do texto">
+            <label>Cor do texto <input id="video-text-color" type="color" value="#ffffff" aria-label="Cor do texto"></label>
+            <label>Fonte <select id="video-text-font"><option value="sans" selected>Arial / Moderna</option><option value="serif">Clássica</option><option value="cinema">Cinema</option><option value="mono">Digital</option><option value="hand">Manuscrita</option><option value="rounded">Arredondada</option></select></label>
+            <label><span><input type="checkbox" id="video-text-italic"> Itálico</span></label><label><span><input type="checkbox" id="video-text-underline"> Sublinhado</span></label>
+            <label>Espessura <select id="video-text-weight"><option value="normal">Normal</option><option value="bold" selected>Negrito</option><option value="heavy">Extra negrito</option></select></label>
+            <label>Posição <select id="video-text-position"><option value="top">Em cima</option><option value="center">No centro</option><option value="bottom" selected>Embaixo</option></select></label>
+            <label>Ajuste vertical <input id="video-text-offset" type="range" min="-35" max="35" step="1" value="0" aria-label="Mover texto para cima ou para baixo"></label>
+          </div>
+          </details>
+          <label>Moldura
+            <select id="video-frame-preset">
+              <option value="nexus" selected>Nexus</option>
+              <option value="minimal">Minimalista</option>
+              <option value="cinema">Cinema</option>
+            </select>
+          </label>
+          <fieldset class="logo-editor-card">
+            <legend>Logo no vídeo</legend>
+            <small>Escolha onde a marca fica, o tamanho e o movimento.</small>
+            <div id="video-logo-position" class="logo-position-grid" role="group" aria-label="Posição da logo">
+              <button type="button" data-logo-position="top-left" class="active" aria-label="Superior esquerda">↖</button>
+              <button type="button" data-logo-position="top-center" aria-label="Superior centro">↑</button>
+              <button type="button" data-logo-position="top-right" aria-label="Superior direita">↗</button>
+              <button type="button" data-logo-position="center-left" aria-label="Centro esquerda">←</button>
+              <button type="button" data-logo-position="center" aria-label="Centro">●</button>
+              <button type="button" data-logo-position="center-right" aria-label="Centro direita">→</button>
+              <button type="button" data-logo-position="bottom-left" aria-label="Inferior esquerda">↙</button>
+              <button type="button" data-logo-position="bottom-center" aria-label="Inferior centro">↓</button>
+              <button type="button" data-logo-position="bottom-right" aria-label="Inferior direita">↘</button>
+            </div>
+            <div class="logo-fine-controls" role="group" aria-label="Ajuste fino da logo">
+              <span>Ajuste fino (1% por toque)</span>
+              <button type="button" data-logo-nudge="left" aria-label="Mover à esquerda">←</button>
+              <button type="button" data-logo-nudge="up" aria-label="Mover para cima">↑</button>
+              <button type="button" data-logo-nudge="down" aria-label="Mover para baixo">↓</button>
+              <button type="button" data-logo-nudge="right" aria-label="Mover à direita">→</button>
+              <button type="button" data-logo-nudge="reset">Zerar ajuste</button>
+            </div>
+            <label class="logo-size-control">Tamanho <output id="video-logo-scale-value" for="video-logo-scale">100%</output>
+              <input id="video-logo-scale" type="range" min="60" max="180" step="5" value="100">
+            </label>
+            <label>Efeito
+              <select id="video-logo-effect">
+                <option value="none" selected>Fixa</option>
+                <option value="blink">Piscar suave</option>
+                <option value="slide">Passear de um lado ao outro</option>
+                <option value="spin">Girar devagar</option>
+                <option value="fade">Aparecer suavemente</option>
+                <option value="float">Flutuar</option>
+                <option value="pulse">Pulsar</option>
+                <option value="bounce">Saltitar</option>
+                <option value="zoom">Zoom suave</option>
+                <option value="glow">Brilho</option>
+              </select>
+            </label>
+          </fieldset>
+          <label class="check-row"><input id="video-show-poster" type="checkbox" checked disabled><span>Capa: pôster oficial ou imagem do próprio trailer</span></label>
+          <label class="check-row"><input id="video-show-overview" type="checkbox" checked><span>Sinopse</span></label>
+          <label class="check-row"><input id="video-show-cast" type="checkbox" checked><span>Elenco</span></label>
+          <div class="video-editor-primary-actions">
+            <label for="video-editable-file" class="video-editor-upload-label">Enviar vídeo do PC para editar</label>
+            <input id="video-editable-file" type="file" accept="video/mp4,video/webm,video/quicktime" aria-label="Selecionar vídeo do computador para editar">
+            <button id="video-generate-editable" class="primary" type="button">Gerar vídeo editável</button>
+            <small id="video-editable-action-status" role="status">Escolha um MP4 do PC ou importe um trailer do YouTube para editar.</small>
+          </div>
+        </div>
+      </section>
+
+      <div class="studio-app-grid">
+        <section class="studio-main-column">
+          <div class="video-status-dock">
+            <div class="studio-status-label"><span class="status-dot"></span><strong>Status da criação</strong><small>comando recebido → processando → pronto</small></div>
+            <div id="video-job-list" aria-live="polite"></div>
+          </div>
+          <form id="trailer-search-form" class="studio-card video-top-search" data-panel="youtube">
+          <h2>Buscar vídeo no YouTube</h2>
+          <div class="trailer-search-row">
+            <label>Nome do filme ou série
+              <input id="trailer-query" name="query" required placeholder="Ex.: Duna 2, The Boys, Homem-Aranha" autocomplete="off">
+            </label>
+            <label>Tipo
+              <select id="trailer-type">
+                <option value="movie">Filme</option>
+                <option value="series">Série</option>
+              </select>
+            </label>
+            <button class="primary" type="submit" id="trailer-search-btn">Buscar trailer dublado</button>
+          </div>
+          <p id="trailer-search-message" class="muted" role="status">Digite o nome e clique em buscar.</p>
+          </form>
+        </section>
+        <aside class="studio-side-column">
+      <div class="video-quick-settings compact-settings">
+        <form id="video-whatsapp-form" class="card compact-card">
+          <label>WhatsApp
+            <input id="video-whatsapp-number" type="tel" maxlength="40" inputmode="tel" placeholder="(21) 96481-6185">
+          </label>
+          <button type="submit">Salvar</button>
+          <p id="video-whatsapp-message" class="muted" role="status"></p>
+        </form>
+        <div class="card compact-card render-controls">
+          <label>Modo
+            <select id="video-render-profile">
+              <option value="fast" selected>Rápido · 720p</option>
+              <option value="quality">Qualidade · 1080p</option>
+            </select>
+          </label>
+        </div>
+        <div class="card compact-card identity-card">
+          <label class="check-row">
+            <input id="video-use-logo" type="checkbox" checked>
+            <span>Usar logo do cliente</span>
+          </label>
+        </div>
+      </div>
+        </aside>
+      </div>
+
+      <div id="catalog-box" class="card" hidden>
+        <h2>1. Confirme o filme ou série</h2>
+        <p class="muted">Selecione o título certo. A sinopse e a arte entram automaticamente no modelo.</p>
+        <div id="catalog-list" class="catalog-grid"></div>
+      </div>
+
+      <div id="trailer-results" class="card" hidden>
+        <h2>2. Escolha o trailer oficial</h2>
+        <p class="muted">Só trailers oficiais dublados em português. Clique em Gerar vídeo; o auxiliar local pedirá sua autorização, baixará o MP4 e enviará ao NEXUS automaticamente.</p>
+        <p class="muted">Primeiro uso: <a href="/nexus-baixar-no-pc.zip?v=20261008-progresso" download>Baixar auxiliar do PC (versão atualizada)</a>. Extraia o ZIP e abra INICIAR.cmd antes de usar Gerar vídeo. O botão Baixar no PC fica apenas como alternativa manual.</p>
+        <div id="youtube-results" class="youtube-grid"></div>
+      </div>
+
+    </section>
+
+    <section id="tab-upload" class="tab" hidden>
+      <div class="section-title">
+        <div>
+          <p class="eyebrow">ARQUIVO LOCAL</p>
+          <h1>Enviar do PC</h1>
+          <p class="muted">Escolha o vídeo e o NEXUS inicia a geração 9:16 automaticamente.</p>
+        </div>
+      </div>
+      <form id="media-upload-form" class="card media-upload">
+        <label>Vídeo
+          <input id="media-file" name="file" type="file" accept="video/mp4,video/webm,video/quicktime" required>
+        </label>
+        <p id="upload-content-summary" class="muted">Envie o vídeo. O NEXUS identifica o título e busca a sinopse automaticamente.</p>
+        <input id="media-purpose" name="purpose" type="hidden" value="publish">
+        <button class="primary upload-main-action" type="submit">Enviar e gerar 9:16</button>
+        <p id="media-upload-message" class="muted" role="status"></p>
+      </form>
+    </section>
+
+    <section id="tab-logo" class="tab" hidden>
+      <p class="eyebrow">IDENTIDADE VISUAL</p>
+      <h1>Logo do cliente</h1>
+      <div class="card account-logo">
+        <form id="logo-form" class="logo-form">
+          <label>Arquivo
+            <input id="logo-file" name="logo" type="file" accept="image/png,image/jpeg,image/webp" required>
+          </label>
+          <label class="check-row">
+            <input id="logo-remove-bg" type="checkbox" checked>
+            <span>Remover fundo automaticamente</span>
+          </label>
+          <div id="logo-preview-wrap" class="logo-preview-wrap" hidden>
+            <img id="logo-preview" class="logo-preview" alt="Prévia da logo">
+          </div>
+          <button class="primary" type="submit">Salvar logo</button>
+          <p id="logo-message" class="muted" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="tab-instagram" class="tab" hidden>
+      <p class="eyebrow">AUTORIZAÇÃO OFICIAL</p><h1>Instagram</h1>
+      <div class="card connection">
+        <div><span>Conta</span><strong id="instagram-handle">Nenhuma conta conectada</strong></div>
+        <div><span>Status</span><strong id="instagram-state">Verificando...</strong></div>
+        <div><span>Autorização válida até</span><strong id="instagram-expires">—</strong></div>
+        <div><span>Permissões</span><strong id="instagram-scopes">—</strong></div>
+        <button id="connect-instagram" class="primary" type="button">Conectar Instagram</button>
+        <p id="instagram-message" role="status" class="muted"></p>
+      </div>
+    </section>
+  </section>
+</main></body></html>

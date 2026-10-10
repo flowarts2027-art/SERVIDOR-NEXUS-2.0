@@ -1,0 +1,1005 @@
+const state = { clients: [], auth: sessionStorage.getItem("nexus-auth"), portalClientId: null, supportTickets: [], supportFilter: "all", postLedger: { posts: [], byClient: [], totalCostUsd: 0, totalPosts: 0, published: 0, failed: 0 }, postClientFilter: "", leadData: { summary:{total:0,hot:0,warm:0,cold:0,needsHuman:0}, leads:[], byClient:[] }, leadClientFilter:"", agentCore: { modules:[], clients:[], totalExecutionsToday:0, totalCostTodayUsd:0, totalCostMonthUsd:0 }, agentCoreClientId:"", campaignClientId:"", workspace:{campaigns:[],directives:[]} };
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
+
+async function assumeClient(clientId) {
+  const clientTab = window.open("", "_blank");
+  if (!clientTab) {
+    alert("O navegador bloqueou a nova guia. Permita pop-ups para abrir o painel do cliente sem fechar o Master.");
+    return;
+  }
+  clientTab.opener = null;
+  clientTab.document.write("<title>Abrindo painel do cliente…</title><body style=\"font-family:system-ui;background:#071018;color:#fff;display:grid;place-items:center;min-height:100vh\">Abrindo painel do cliente…</body>");
+  clientTab.document.close();
+  try {
+    const result = await api("/api/clients/" + encodeURIComponent(clientId) + "/assume", { method: "POST" });
+    const clientUrl = new URL(result.entryPath || "/portal?auth=1", window.location.origin).href;
+    clientTab.location.replace(clientUrl);
+  } catch (error) {
+    clientTab.close();
+    alert("Não foi possível abrir o painel do cliente: " + error.message);
+  }
+}
+
+function api(path, options = {}) {
+  const headers = { "content-type": "application/json", ...(options.headers || {}) };
+  return fetch(path, { ...options, headers, credentials: "same-origin" }).then(async response => {
+    if (response.status === 401) {
+      location.href = "/api/master/access";
+      throw new Error("Sessão administrativa expirada");
+    }
+    if (!response.ok) throw new Error(`Erro ${response.status}`);
+    return response.json();
+  });
+}
+
+function badge(value, online = true) { return `<span class="badge ${online ? "" : "off"}">${value}</span>`; }
+function initials(name) { return name.split(/\s+/).map(word => word[0]).join("").slice(0, 2).toUpperCase(); }
+function aiModeLabel(mode) {
+  return mode === "own-key" ? "CHAVE PRÓPRIA" : "SEM IMAGEM PAGA";
+}
+
+function render() {
+  const clients = state.clients.filter(client => !client.ownerAccount);
+  const online = clients.filter(client => client.status === "online").length;
+  const totals = state.leadData?.summary || { total:0, hot:0, warm:0, cold:0, needsHuman:0 };
+  const alerts = clients.filter(client => Number(client.usage?.openaiPercent || 0) >= 80).length;
+  $("#metric-clients").textContent = clients.length;
+  $("#metric-online").textContent = online;
+  $("#metric-leads").textContent = totals.total;
+  $("#metric-hot").textContent = `${totals.hot} quentes`;
+  $("#metric-alerts").textContent = alerts;
+  $("#funnel-total").textContent = totals.total;
+  $("#funnel-warm").textContent = totals.warm;
+  $("#funnel-hot").textContent = totals.hot;
+
+  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#22c55e"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
+
+  const managedUsageClients = clients.filter(client => client.id !== "ragnar-one");
+  $("#usage-list").innerHTML = managedUsageClients.length ? managedUsageClients.map(client => {
+    const limit = Math.max(1000, Number(client.openaiDailyTokenLimit || 30000));
+    return `<div class="usage-row" data-openai-limit-client="${escapeHtml(client.id)}">
+      <div><span>${escapeHtml(client.name)}</span><strong>Limite diário de OpenAI</strong><small>Chave central NEXUS · consumo isolado por cliente</small></div>
+      <div class="client-action-stack">
+        <input data-openai-limit type="number" min="1000" max="10000000" step="1000" value="${limit}" aria-label="Limite diário de tokens">
+        <button type="button" class="small-primary" data-save-openai-limit>Salvar limite</button>
+        <small data-openai-limit-message></small>
+      </div>
+    </div>`;
+  }).join("") : `<p class="muted">Novos clientes aparecerão aqui. Ragnar continua isolado na própria conta.</p>`;
+
+  $("#clients-table").innerHTML = clients.map(client => {
+    const ragnar = client.id === "ragnar-one";
+    const mode = ragnar ? "Conta própria" : "NEXUS GERENCIADA";
+    const extra = !ragnar ? `<br><small>imagem IA paga desativada</small>` : "";
+    const protect = ragnar
+      ? `<span class="protected-client">PILOTO PROTEGIDO</span>`
+      : client.ownerAccount
+        ? `<span class="protected-client">CONTA PRINCIPAL</span>`
+        : "";
+    const remove = (!ragnar && !client.ownerAccount)
+      ? `<button type="button" class="small-danger" data-delete-client="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Excluir</button>`
+      : "";
+    const action = `<div class="client-action-stack"><a class="small-primary" href="https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/${encodeURIComponent(client.id)}/assume-open" target="_blank" rel="noopener">Assumir painel</a><button type="button" class="small-primary" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Definir acesso</button>${remove}${protect}</div>`;
+    return `<tr><td><strong>${escapeHtml(client.name)}</strong><br><small>${escapeHtml(client.niche || "Outro")}</small></td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td><strong>Automático</strong><br><small>horário definido pelos agentes</small></td><td><strong>${mode}</strong>${extra}</td><td>${action}</td></tr>`;
+  }).join("");
+  renderAgentProfiles();
+  renderPortalSelector();
+}
+
+function renderAgentProfiles() {
+  const root = $("#master-agent-profiles");
+  if (!root) return;
+  const clients = state.clients.filter(client => client.id !== "ragnar-one" && !client.ownerAccount);
+  if (!clients.length) {
+    root.innerHTML = '<div class="master-profile-empty">Os perfis enviados pelos clientes aparecerão aqui.</div>';
+    return;
+  }
+  root.innerHTML = clients.map(client => {
+    const p = client.agentProfile || {};
+    if (!p.submittedAt) {
+      return `<article class="master-profile-card waiting"><div class="master-profile-head"><div class="master-profile-logo fallback">${initials(client.name)}</div><div><span class="profile-kicker">AGUARDANDO CLIENTE</span><h3>${escapeHtml(client.name)}</h3><small>O perfil do agente ainda não foi enviado.</small></div></div></article>`;
+    }
+    const logo = `<div class="master-profile-logo fallback" style="--profile-color:${escapeHtml(p.primaryColor||client.primaryColor||"#22c55e")}">${initials(p.brandName||client.name)}</div>`;
+    const status = p.status === "configured" ? "CONFIGURADO" : "NOVO PERFIL";
+    const post = client.postingProfile || {};
+    return `<article class="master-profile-card" data-master-profile="${escapeHtml(client.id)}">
+      <div class="master-profile-head">
+        ${logo}
+        <div class="master-profile-title"><span class="profile-kicker">${escapeHtml(p.agentName||"AGENTE NEXUS")}</span><h3>${escapeHtml(p.brandName||client.name)}</h3><small>${escapeHtml(p.niche||client.niche||"Outro")} · enviado ${formatSupportDate(p.submittedAt)}</small></div>
+        ${badge(status,p.status==="configured")}
+      </div>
+      <div class="master-profile-colorline"><i style="background:${escapeHtml(p.primaryColor||client.primaryColor||"#22c55e")}"></i><i style="background:${escapeHtml(p.secondaryColor||client.secondaryColor||"#050807")}"></i><span>Identidade enviada pelo cliente</span></div>
+      <div class="master-profile-facts">
+        <div><span>Público</span><strong>${escapeHtml(p.audience||"—")}</strong></div>
+        <div><span>Objetivo</span><strong>${escapeHtml(p.goal||"—")}</strong></div>
+        <div><span>Região</span><strong>${escapeHtml(p.region||"—")}</strong></div>
+        <div><span>WhatsApp</span><strong>${escapeHtml(p.whatsapp||"—")}</strong></div>
+      </div>
+      <div class="master-profile-text"><span>O que oferece</span><p>${escapeHtml(p.offer||"Não informado")}</p></div>
+      <div class="master-profile-text"><span>Produtos / serviços</span><p>${escapeHtml(p.services||"Não informado")}</p></div>
+      <div class="master-profile-text"><span>Diferenciais</span><p>${escapeHtml(p.differentials||"Não informado")}</p></div>
+      <details class="master-agent-config" ${p.status!=="configured"?"open":""}>
+        <summary>Configurar operação do agente</summary>
+        <div class="master-config-grid">
+          <div class="wide"><span>Agendamento</span><strong>Automático pelo NEXUS</strong><small>RADAR e ESTRATEGISTA escolhem os melhores horários conforme o desempenho da conta.</small></div>
+          <label>Estratégia<input data-master-field="contentStrategy" value="${escapeHtml(post.contentStrategy||"Vendas + engajamento")}"></label>
+          <label>Estilo visual<input data-master-field="visualStyle" value="${escapeHtml(post.visualStyle||"Tecnológico premium")}"></label>
+          <label>Tom<input data-master-field="tone" value="${escapeHtml(post.tone||p.tone||"Firme, direto e profissional")}"></label>
+          <label class="wide">Foco principal<textarea data-master-field="contentFocus" rows="3">${escapeHtml(post.contentFocus||p.offer||"")}</textarea></label>
+          <label class="wide">Tema da manhã<input data-master-field="morningTheme" value="${escapeHtml(post.morningTheme||"")}"></label>
+          <label class="wide">Tema da tarde<input data-master-field="afternoonTheme" value="${escapeHtml(post.afternoonTheme||"")}"></label>
+          <label class="wide">Tema da noite<input data-master-field="eveningTheme" value="${escapeHtml(post.eveningTheme||"")}"></label>
+          <label class="wide">CTA<input data-master-field="cta" value="${escapeHtml(post.cta||p.cta||"")}"></label>
+          <label class="wide">Hashtags<textarea data-master-field="hashtags" rows="2">${escapeHtml(post.hashtags||"")}</textarea></label>
+          <label class="wide">Não publicar<textarea data-master-field="avoidTopics" rows="2">${escapeHtml(post.avoidTopics||p.avoidTopics||"")}</textarea></label>
+        </div>
+        <div class="master-config-actions"><button type="button" class="primary" data-master-profile-save>Salvar configuração do agente</button><span data-master-profile-message></span></div>
+      </details>
+    </article>`;
+  }).join("");
+}
+
+function renderPortalSelector() {
+  const select = $("#portal-client");
+  const clients = state.clients.filter(client => !client.ownerAccount);
+  if (!clients.length) {
+    select.innerHTML = "<option>Nenhum cliente</option>";
+    $("#portal-empty").hidden = false;
+    $("#client-portal").hidden = true;
+    return;
+  }
+  if (!state.portalClientId || !clients.some(client => client.id === state.portalClientId)) state.portalClientId = clients[0].id;
+  select.innerHTML = clients.map(client => `<option value="${escapeHtml(client.id)}" ${client.id === state.portalClientId ? "selected" : ""}>${escapeHtml(client.name)}</option>`).join("");
+  const assumeLink = $("#assume-selected-client");
+  if (assumeLink) assumeLink.href = "https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/" + encodeURIComponent(state.portalClientId) + "/assume-open";
+  renderClientPortal(clients.find(client => client.id === state.portalClientId));
+}
+
+function renderClientPortal(client) {
+  if (!client) return;
+  $("#portal-empty").hidden = true;
+  $("#client-portal").hidden = false;
+  const online = client.status === "online";
+  const accent = client.primaryColor || "#24e27a";
+  $("#client-portal").style.setProperty("--client-accent", accent);
+  $("#portal-avatar").textContent = initials(client.name);
+  $("#portal-name").textContent = client.name;
+  $("#portal-meta").textContent = `${client.niche || "Outro"} · Portal exclusivo`;
+  $("#portal-status").textContent = online ? "Agente online" : "Em configuração";
+  $("#portal-leads").textContent = client.leads?.total || 0;
+  $("#portal-hot").textContent = client.leads?.hot || 0;
+  $("#portal-next-post").textContent = "Automática";
+  $("#portal-odin").textContent = client.odin ? "Ativa" : "Pausada";
+  $("#portal-instagram").textContent = client.instagram || "Pendente";
+  $("#portal-niche").textContent = client.niche || "Outro";
+  $("#portal-times").textContent = "Horários adaptativos";
+  const agentBadge = $("#portal-agent-badge");
+  agentBadge.textContent = online ? "ONLINE" : "SETUP";
+  agentBadge.classList.toggle("off", !online);
+  const ragnar = client.id === "ragnar-one";
+  const mode = ragnar ? "Conta OpenAI própria" : "NEXUS sem imagem paga";
+  const aiDetail = ragnar ? "isolada do NEXUS central" : "geração paga de imagens desativada";
+  $("#portal-usage").innerHTML = `<div class="usage-row"><div><span>Modo de IA</span><strong>${mode}</strong></div><small>${aiDetail}</small></div><div class="usage-row"><div><span>Infraestrutura</span><strong>Gerenciada pelo NEXUS</strong></div><small>GitHub e Cloudflare são gerenciados centralmente pelo NEXUS.</small></div>`;
+}
+
+function escapeHtml(value) { const el = document.createElement("span"); el.textContent = String(value); return el.innerHTML; }
+
+function moneyPost(value) {
+  const amount = Number(value || 0);
+  return "US$ " + (Number.isFinite(amount) ? amount.toFixed(4) : "0.0000");
+}
+
+function postStatusMeta(status) {
+  const map = {
+    published: ["PUBLICADA", "published"],
+    failed: ["FALHOU", "failed"],
+    skipped: ["NÃO FEITA", "failed"],
+    publishing: ["PUBLICANDO", "running"],
+    generating: ["GERANDO", "running"],
+    ready: ["PRONTA", "running"],
+    scheduled: ["AGENDADA", "running"]
+  };
+  return map[status] || [String(status || "AGENDADA").toUpperCase(), "running"];
+}
+
+function formatPostDate(value) {
+  if (!value) return "—";
+  try {
+    return new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" }).format(new Date(value));
+  } catch { return "—"; }
+}
+
+function renderPostLedger() {
+  const data = state.postLedger || {};
+  if ($("#posts-total-cost")) $("#posts-total-cost").textContent = moneyPost(data.totalCostUsd);
+  if ($("#posts-total-count")) $("#posts-total-count").textContent = Number(data.totalPosts || 0);
+  if ($("#posts-published-count")) $("#posts-published-count").textContent = Number(data.published || 0);
+  if ($("#posts-failed-count")) $("#posts-failed-count").textContent = Number(data.failed || 0);
+
+  const ranking = $("#post-cost-ranking");
+  if (ranking) {
+    const rows = data.byClient || [];
+    const max = Math.max(0.000001, ...rows.map(item => Number(item.costUsd || 0)));
+    ranking.innerHTML = rows.length ? rows.map((item, index) => {
+      const pct = Math.max(3, Math.round(Number(item.costUsd || 0) / max * 100));
+      return `<div class="post-rank-row">
+        <div class="post-rank-head"><span><b>#${index + 1}</b> ${escapeHtml(item.clientName || item.clientId)}</span><strong>${moneyPost(item.costUsd)}</strong></div>
+        <small>${escapeHtml(item.instagram || "")} · ${Number(item.published || 0)} publicadas · ${Number(item.failed || 0)} falhas</small>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+      </div>`;
+    }).join("") : '<p class="muted">Os custos aparecerão assim que os agentes registrarem novas postagens.</p>';
+  }
+
+  const filter = $("#post-client-filter");
+  if (filter) {
+    const previous = state.postClientFilter || filter.value || "";
+    const clients = state.clients || [];
+    filter.innerHTML = '<option value="">Todos</option>' + clients.map(client => `<option value="${escapeHtml(client.id)}">${escapeHtml(client.name)} · ${escapeHtml(client.instagram || "sem Instagram")}</option>`).join("");
+    filter.value = clients.some(client => client.id === previous) ? previous : "";
+    state.postClientFilter = filter.value;
+  }
+
+  const body = $("#post-ledger-body");
+  if (!body) return;
+  let posts = Array.isArray(data.posts) ? data.posts : [];
+  if (state.postClientFilter) posts = posts.filter(post => post.clientId === state.postClientFilter);
+  body.innerHTML = posts.length ? posts.map(post => {
+    const [label, cls] = postStatusMeta(post.status);
+    const detail = post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
+    return `<tr>
+      <td><strong>${escapeHtml(post.clientName || post.clientId)}</strong></td>
+      <td>${escapeHtml(post.instagram || "—")}</td>
+      <td><strong>${escapeHtml(post.scheduledHour || "—")}</strong><br><small>${formatPostDate(post.scheduledFor)}</small></td>
+      <td>${formatPostDate(post.publishedAt || post.attemptedAt)}</td>
+      <td><span class="post-status ${cls}">${label}</span></td>
+      <td><strong>${moneyPost(post.costUsd)}</strong><br><small>${escapeHtml(post.costSource || "sem custo registrado")}</small></td>
+      <td>${escapeHtml(post.model || "—")}</td>
+      <td class="post-detail">${detail}</td>
+    </tr>`;
+  }).join("") : '<tr><td colspan="8">Nenhuma postagem registrada para este filtro.</td></tr>';
+}
+
+async function loadPostLedger() {
+  try {
+    state.postLedger = await api("/api/master/posts");
+    renderPostLedger();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function leadTempMeta(value){
+  const map={hot:["QUENTE","hot"],warm:["MORNO","warm"],cold:["FRIO","cold"]};
+  return map[value]||["FRIO","cold"];
+}
+function leadDate(value){
+  if(!value)return"—";
+  const date=typeof value==="number"?new Date(value*1000):new Date(value);
+  try{return new Intl.DateTimeFormat("pt-BR",{timeZone:"America/Sao_Paulo",dateStyle:"short",timeStyle:"short"}).format(date);}catch{return"—";}
+}
+function renderMasterLeads(){
+  const data=state.leadData||{},summary=data.summary||{};
+  if($("#funnel-total"))$("#funnel-total").textContent=Number(summary.total||0);
+  if($("#funnel-hot"))$("#funnel-hot").textContent=Number(summary.hot||0);
+  if($("#funnel-warm"))$("#funnel-warm").textContent=Number(summary.warm||0);
+  if($("#funnel-cold"))$("#funnel-cold").textContent=Number(summary.cold||0);
+  if($("#funnel-human"))$("#funnel-human").textContent=Number(summary.needsHuman||0);
+  const filter=$("#master-lead-client-filter");
+  if(filter){
+    const previous=state.leadClientFilter||filter.value||"";
+    filter.innerHTML='<option value="">Todos</option>'+state.clients.map(client=>`<option value="${escapeHtml(client.id)}">${escapeHtml(client.name)} · ${escapeHtml(client.instagram||"sem Instagram")}</option>`).join("");
+    filter.value=state.clients.some(c=>c.id===previous)?previous:"";state.leadClientFilter=filter.value;
+  }
+  const diagnostics=$("#odin-diagnostics");
+  if(diagnostics){
+    const rows=Array.isArray(data.byClient)?data.byClient:[];
+    diagnostics.innerHTML=rows.map(item=>{
+      const errors=Array.isArray(item.lastErrors)?item.lastErrors:[];
+      const status=item.lastRunStatus||"never";
+      const statusLabel=status==="success"?"OK":status==="warning"?"ATENÇÃO":status==="never"?"SEM EXECUÇÃO":String(status).toUpperCase();
+      const detail=errors.length
+        ? escapeHtml(errors[0])
+        : "Analisados: "+Number(item.lastAnalyzed||0)+" · novos: "+Number(item.lastNew||0)+" · atualizados: "+Number(item.lastUpdated||0);
+      return '<div class="card"><strong>'+escapeHtml(item.clientName||item.clientId)+'</strong><small>'+statusLabel+' · última coleta: '+leadDate(item.lastRunAt)+'</small><p class="muted">'+detail+'</p></div>';
+    }).join("") || '<div class="card muted">O Odin ainda não possui execução registrada.</div>';
+  }
+  const body=$("#master-leads-body");if(!body)return;
+  let leads=Array.isArray(data.leads)?data.leads:[];
+  if(state.leadClientFilter)leads=leads.filter(lead=>lead.clientId===state.leadClientFilter);
+  body.innerHTML=leads.length?leads.map(lead=>{
+    const [label,cls]=leadTempMeta(lead.temperature);
+    const handle=lead.instagramUsername?"@"+escapeHtml(String(lead.instagramUsername).replace(/^@/,"")):(lead.instagramUserId?"ID …"+escapeHtml(String(lead.instagramUserId).slice(-6)):"Sem @");
+    return `<tr><td><strong>${escapeHtml(lead.clientName||lead.clientId)}</strong></td><td>${handle}</td><td><span class="master-lead-temp ${cls}">${label}</span></td><td><strong>${Number(lead.score||0)}</strong></td><td>${escapeHtml(lead.intent||lead.triggerKeyword||"—")}</td><td>${escapeHtml(lead.stage||"—")}</td><td>${lead.needsHuman?'<span class="human-flag">SIM</span>':"não"}</td><td>${leadDate(lead.updatedAt||lead.lastContactAt)}</td></tr>`;
+  }).join(""):'<tr><td colspan="8">Nenhum lead captado para este filtro.</td></tr>';
+}
+async function loadMasterLeads(){
+  try{state.leadData=await api("/api/master/leads");renderMasterLeads();render();}
+  catch(error){console.error(error);}
+}
+
+
+function agentCoreStatusMeta(status){
+  if(status==="success")return["OK","published"];
+  if(status==="failed")return["FALHOU","failed"];
+  if(status==="blocked")return["BLOQUEADO","failed"];
+  return["ATENÇÃO","running"];
+}
+function selectedAgentCoreClient(){
+  const clients=Array.isArray(state.agentCore?.clients)?state.agentCore.clients:[];
+  if(!clients.length)return null;
+  if(!state.agentCoreClientId||!clients.some(item=>item.clientId===state.agentCoreClientId))state.agentCoreClientId=clients[0].clientId;
+  return clients.find(item=>item.clientId===state.agentCoreClientId)||clients[0];
+}
+function syncAgentCoreApprovalUi(){
+  const auto=$("#agent-core-auto-publish"),approval=$("#agent-core-require-approval");
+  if(!auto||!approval)return;
+  if(!auto.checked){approval.checked=true;approval.disabled=true;}
+  else approval.disabled=false;
+  const required=approval.checked;
+  if($("#agent-core-approval-label"))$("#agent-core-approval-label").textContent=required?"APROVAÇÃO OBRIGATÓRIA":"MODO AUTOMÁTICO LIBERADO";
+  if($("#agent-core-approval-note"))$("#agent-core-approval-note").textContent=required
+    ?"Nenhuma pauta do Creator será publicada sem aprovação."
+    :"O Publisher poderá publicar conteúdo pronto sem aprovação manual.";
+}
+function renderAgentCore(){
+  const data=state.agentCore||{};
+  if($("#agent-core-executions"))$("#agent-core-executions").textContent=Number(data.totalExecutionsToday||0);
+  if($("#agent-core-cost-today"))$("#agent-core-cost-today").textContent=moneyPost(data.totalCostTodayUsd);
+  if($("#agent-core-cost-month"))$("#agent-core-cost-month").textContent=moneyPost(data.totalCostMonthUsd);
+  const clients=Array.isArray(data.clients)?data.clients:[];
+  if($("#agent-core-active-clients"))$("#agent-core-active-clients").textContent=clients.filter(item=>item.config?.enabled!==false).length;
+
+  const select=$("#agent-core-client");
+  if(select){
+    const previous=state.agentCoreClientId||select.value||"";
+    select.innerHTML=clients.map(item=>`<option value="${escapeHtml(item.clientId)}">${escapeHtml(item.clientName||item.clientId)}</option>`).join("");
+    state.agentCoreClientId=clients.some(item=>item.clientId===previous)?previous:(clients[0]?.clientId||"");
+    select.value=state.agentCoreClientId;
+  }
+  const selected=selectedAgentCoreClient();
+  if(!selected){
+    if($("#agent-core-log-body"))$("#agent-core-log-body").innerHTML='<tr><td colspan="9">Nenhum cliente disponível.</td></tr>';
+    return;
+  }
+  const config=selected.config||{};
+  if($("#agent-core-enabled"))$("#agent-core-enabled").checked=config.enabled!==false;
+  if($("#agent-core-auto-publish"))$("#agent-core-auto-publish").checked=config.autoPublish===true;
+  if($("#agent-core-require-approval"))$("#agent-core-require-approval").checked=config.approvalRequired!==false;
+  if($("#agent-core-cycle-minutes"))$("#agent-core-cycle-minutes").value=Number(config.cycleMinutes||60);
+  const clientState=$("#agent-core-client-state");
+  if(clientState){clientState.textContent=config.enabled!==false?"ATIVO":"PAUSADO";clientState.classList.toggle("off",config.enabled===false);}
+  syncAgentCoreApprovalUi();
+
+  const moduleRoot=$("#agent-core-module-toggles");
+  const moduleDefs=Array.isArray(data.modules)?data.modules:[];
+  if(moduleRoot)moduleRoot.innerHTML=moduleDefs.map(module=>`
+    <label><input type="checkbox" data-agent-core-module="${escapeHtml(module.id)}" ${config.modules?.[module.id]!==false?"checked":""}> <strong>${escapeHtml(module.name)}</strong></label>
+  `).join("");
+
+  const live=$("#agent-core-live-state");
+  const moduleState=selected.state?.modules||{};
+  if(live)live.innerHTML=moduleDefs.map(module=>{
+    const item=moduleState[module.id]||{};
+    const ranAt=Date.parse(String(item.lastExecutionAt||""));
+    const ageMinutes=Number.isFinite(ranAt)?Math.max(0,Math.round((Date.now()-ranAt)/60000)):null;
+    const stale=ageMinutes!==null&&ageMinutes>120;
+    const [baseLabel,baseCls]=item.lastExecutionAt?agentCoreStatusMeta(item.status):["AGUARDANDO","running"];
+    const label=stale?"PARADO":baseLabel;
+    const cls=stale?"failed":baseCls;
+    const detail=stale
+      ? "Sem execução há "+ageMinutes+" min. Verifique scheduler/fila."
+      : (item.message||"Ainda sem execução registrada.");
+    return `<div class="agent-core-live-row"><div><strong>${escapeHtml(module.name)}</strong><small>${escapeHtml(detail)}</small></div><div><span class="post-status ${cls}">${label}</span><small>${item.lastExecutionAt?formatPostDate(item.lastExecutionAt):"—"}</small></div></div>`;
+  }).join("");
+
+  const rows=Array.isArray(selected.lastExecutions)?[...selected.lastExecutions]:[];
+  const body=$("#agent-core-log-body");
+  if(body)body.innerHTML=rows.length?rows.map(row=>{
+    const [label,cls]=agentCoreStatusMeta(row.status);
+    return `<tr>
+      <td>${formatPostDate(row.finishedAt||row.startedAt)}</td>
+      <td><strong>${escapeHtml(row.clientName||selected.clientName||selected.clientId)}</strong></td>
+      <td><strong>${escapeHtml(row.agent||"—")}</strong></td>
+      <td>${escapeHtml(row.function||"—")}</td>
+      <td><span class="post-status ${cls}">${label}</span></td>
+      <td>${escapeHtml(row.model||"—")}</td>
+      <td>${Number(row.quantity||0)}</td>
+      <td><strong>${moneyPost(row.costUsd)}</strong></td>
+      <td class="post-detail">${escapeHtml(row.message||"—")}</td>
+    </tr>`;
+  }).join(""):'<tr><td colspan="9">Nenhuma execução registrada para este cliente.</td></tr>';
+}
+async function loadAgentCore(){
+  try{
+    state.agentCore=await api("/api/master/agent-core");
+    renderAgentCore();
+  }catch(error){console.error(error);}
+}
+async function saveAgentCoreConfig(){
+  const selected=selectedAgentCoreClient();if(!selected)return;
+  const message=$("#agent-core-message");
+  if(message)message.textContent="Salvando…";
+  const modules={};
+  $("[data-agent-core-module]").forEach(input=>{modules[input.dataset.agentCoreModule]=input.checked;});
+  const autoPublish=Boolean($("#agent-core-auto-publish")?.checked);
+  const approvalRequired=autoPublish?Boolean($("#agent-core-require-approval")?.checked):true;
+  const cycleMinutes=Math.max(15,Math.min(1440,Number($("#agent-core-cycle-minutes")?.value||60)));
+  try{
+    await api("/api/master/agent-core/"+encodeURIComponent(selected.clientId),{
+      method:"PATCH",
+      body:JSON.stringify({
+        enabled:Boolean($("#agent-core-enabled")?.checked),
+        autoPublish,
+        approvalRequired,
+        cycleMinutes,
+        modules
+      })
+    });
+    if(message)message.textContent="Configuração salva.";
+    await loadAgentCore();
+  }catch(error){if(message)message.textContent="Não foi possível salvar.";}
+}
+async function runAgentCore(agent="all",button=null){
+  const selected=selectedAgentCoreClient();if(!selected)return;
+  const message=$("#agent-core-message");
+  const original=button?.textContent||"";
+  if(button){button.disabled=true;button.textContent="Executando…";}
+  if(message)message.textContent=agent==="all"?"Executando ciclo completo…":"Executando "+agent.toUpperCase()+"…";
+  try{
+    const queued=await api("/api/master/agent-core/"+encodeURIComponent(selected.clientId)+"/run",{
+      method:"POST",body:JSON.stringify({agent})
+    });
+    if(message)message.textContent=queued?.queued
+      ? "Execução enfileirada. O status muda somente depois da execução real."
+      : "Solicitação recebida; aguardando confirmação real.";
+    await loadAgentCore();
+    await loadPostLedger();
+  }catch(error){if(message)message.textContent="Falha na execução: "+error.message;}
+  finally{if(button){button.disabled=false;button.textContent=original;}}
+}
+
+
+function workspaceClient(){
+  const clients=(state.clients||[]).filter(client=>!client.ownerAccount);
+  if(!clients.length)return null;
+  if(!state.campaignClientId||!clients.some(c=>c.id===state.campaignClientId))state.campaignClientId=clients[0].id;
+  return clients.find(c=>c.id===state.campaignClientId)||clients[0];
+}
+function renderWorkspaceSelector(){
+  const select=$("#campaign-client");if(!select)return;
+  const clients=(state.clients||[]).filter(client=>!client.ownerAccount);
+  select.innerHTML=clients.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join("");
+  if(clients.length){workspaceClient();select.value=state.campaignClientId;}
+}
+function campaignStatusLabel(status){
+  const map={received:"RECEBIDO",in_production:"EM PRODUÇÃO",approved:"APROVADO",adjust:"AJUSTAR",scheduled:"AGENDADO",published:"PUBLICADO"};
+  return map[status]||String(status||"RECEBIDO").toUpperCase();
+}
+function campaignStep(status){
+  return {received:0,in_production:1,approved:2,adjust:1,scheduled:3,published:4}[status]??0;
+}
+function renderWorkspace(){
+  renderWorkspaceSelector();
+  const campaigns=state.workspace?.campaigns||[];
+  const directives=state.workspace?.directives||[];
+  const campaignList=$("#campaign-list");
+  if(campaignList)campaignList.innerHTML=campaigns.length?campaigns.map(item=>{
+    const step=campaignStep(item.creativeStatus);
+    const paused=item.status==="paused";
+    return `
+    <article class="campaign-card" data-campaign-card="${escapeHtml(item.id)}">
+      <div class="campaign-card-head"><div><strong>${escapeHtml(item.title||"Campanha")}</strong><small>${escapeHtml(item.startDate||"")} · 7 dias · ${paused?"PAUSADA":"ATIVA"}</small></div><span class="badge ${paused?"off":""}">${campaignStatusLabel(item.creativeStatus)}</span></div>
+      ${item.assetUrl?`<img src="${escapeHtml(item.assetUrl)}" alt="Criativo da campanha">`:""}
+      <p>${escapeHtml(item.brief||"")}</p>
+      <div class="campaign-flow">
+        ${["Recebido","Produção","Aprovação","Agendado","Publicado"].map((label,index)=>`<span class="${index<=step?"done":""}">${label}</span>`).join("")}
+      </div>
+      <div class="campaign-actions">
+        <button type="button" class="ghost" data-campaign-status="in_production" data-campaign-id="${escapeHtml(item.id)}">Em produção</button>
+        <button type="button" class="primary" data-campaign-status="approved" data-campaign-id="${escapeHtml(item.id)}">Aprovar</button>
+        <button type="button" class="ghost" data-campaign-status="adjust" data-campaign-id="${escapeHtml(item.id)}">Pedir ajuste</button>
+        <button type="button" class="ghost" data-campaign-status="scheduled" data-campaign-id="${escapeHtml(item.id)}">Agendar</button>
+        <button type="button" class="ghost" data-campaign-status="published" data-campaign-id="${escapeHtml(item.id)}">Publicado</button>
+        <button type="button" class="ghost" data-campaign-lifecycle="${paused?"active":"paused"}" data-campaign-id="${escapeHtml(item.id)}">${paused?"Retomar":"Pausar"}</button>
+      </div>
+    </article>`;
+  }).join(""):'<p class="muted">Nenhuma campanha criada para este cliente.</p>';
+  const directiveList=$("#directive-list");
+  if(directiveList)directiveList.innerHTML=directives.length?directives.map(item=>`
+    <article class="directive-card"><div><strong>${escapeHtml((item.appliesTo||["all"]).join(", ").toUpperCase())}</strong><small>${formatSupportDate(item.createdAt)}</small></div><p>${escapeHtml(item.text||"")}</p></article>`).join(""):'<p class="muted">Nenhuma orientação registrada.</p>';
+}
+async function loadWorkspace(){
+  const client=workspaceClient();if(!client){renderWorkspace();return;}
+  try{
+    state.workspace=await api("/api/master/workspace?clientId="+encodeURIComponent(client.id));
+    renderWorkspace();
+  }catch(error){console.error(error);}
+}
+
+function showView(id) {
+  $$(".view").forEach(view => view.classList.toggle("active", view.id === id));
+  $$(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === id));
+  const titles = { dashboard: "Visão geral", clients: "Clientes", agents: "Agent Core", posts: "Postagens & custos", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Odin & Leads", onboarding: "Novo cliente", settings: "Integrações" };
+  $("#page-title").textContent = titles[id] || "NEXUS AI";
+}
+
+async function load() {
+  try {
+    const [clients, support, posts, leads, agentCore] = await Promise.all([api("/api/clients"), api("/api/master/support"), api("/api/master/posts"), api("/api/master/leads"), api("/api/master/agent-core")]);
+    state.clients = clients;
+    state.supportTickets = support.tickets || [];
+    state.postLedger = posts || state.postLedger;
+    state.leadData = leads || state.leadData;
+    state.agentCore = agentCore || state.agentCore;
+    render();
+    renderSupportNotifications(support);
+    renderPostLedger();
+    renderMasterLeads();
+    renderAgentCore();
+    const params = new URLSearchParams(location.search);
+    const requestedView = params.get("view");
+    if (requestedView && document.getElementById(requestedView)) {
+      showView(requestedView);
+      if (requestedView === "settings") await loadIntegrations();
+    }
+    const oauthResult = params.get("oauth");
+    const oauthMessage = $("#instagram-oauth-message");
+    if (oauthMessage && oauthResult) {
+      oauthMessage.textContent = oauthResult === "success"
+        ? "Instagram conectado com sucesso."
+        : oauthResult === "account_mismatch"
+          ? "Você autorizou uma conta diferente da esperada."
+          : "A autorização não foi concluída.";
+    }
+  } catch (error) { console.error(error); }
+}
+
+function formatSupportDate(value) {
+  try { return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(value)); }
+  catch { return "—"; }
+}
+
+function renderSupportNotifications(summary = null) {
+  const tickets = state.supportTickets || [];
+  const unread = summary?.unreadCount ?? tickets.filter(item => item.status === "new").length;
+  const open = summary?.openCount ?? tickets.filter(item => item.status !== "resolved").length;
+  const counter = $("#notification-count");
+  if (counter) { counter.textContent = unread; counter.hidden = unread <= 0; }
+  if ($("#support-new-count")) $("#support-new-count").textContent = unread;
+  if ($("#support-open-count")) $("#support-open-count").textContent = open;
+
+  const list = $("#support-notifications");
+  if (!list) return;
+  const filtered = state.supportFilter === "all" ? tickets : tickets.filter(item => item.status === state.supportFilter);
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-support"><strong>Nenhum chamado aqui</strong><span>Quando um cliente abrir suporte pelo NEXUS, a notificação aparecerá nesta tela.</span></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(ticket => {
+    const statusLabel = ticket.status === "new" ? "NOVO" : ticket.status === "read" ? "LIDO" : "RESOLVIDO";
+    return `<article class="support-ticket ${ticket.status}">
+      <div class="support-ticket-head">
+        <div><span class="support-category">${escapeHtml(ticket.category || "Suporte")}</span><h3>${escapeHtml(ticket.subject)}</h3><small>${escapeHtml(ticket.clientName)} · ${formatSupportDate(ticket.createdAt)}</small></div>
+        ${badge(statusLabel, ticket.status !== "resolved")}
+      </div>
+      <p>${escapeHtml(ticket.message)}</p>
+      <div class="support-ticket-actions">
+        ${ticket.status === "new" ? `<button type="button" class="ghost" data-ticket-status="read" data-ticket-id="${ticket.id}">Marcar como lido</button>` : ""}
+        ${ticket.status !== "resolved" ? `<button type="button" class="primary" data-ticket-status="resolved" data-ticket-id="${ticket.id}">Resolver chamado</button>` : ""}
+      </div>
+    </article>`;
+  }).join("");
+}
+
+async function updateSupportTicket(ticketId, status) {
+  await api("/api/master/support/" + encodeURIComponent(ticketId), { method: "PATCH", body: JSON.stringify({ status }) });
+  const support = await api("/api/master/support");
+  state.supportTickets = support.tickets || [];
+  renderSupportNotifications(support);
+}
+
+async function loadIntegrations() {
+  try {
+    const [status, openai, instagram, instagramAccounts] = await Promise.all([
+      api("/api/system/status"),
+      api("/api/master/openai"),
+      api("/api/master/instagram"),
+      api("/api/master/instagram/accounts-status")
+    ]);
+
+    const items = [
+      {
+        name: "GitHub Core",
+        detail: status.sourceControl === "github" ? "Código-fonte e CI centralizados no GitHub" : "Origem de código não confirmada",
+        label: status.sourceControl === "github" ? "CONECTADO" : "PENDENTE",
+        ready: status.sourceControl === "github"
+      },
+      {
+        name: "Cloudflare Core",
+        detail: status.runtime === "cloudflare-workers" && status.database === "d1"
+          ? "Worker, D1 e R2 operando no núcleo NEXUS"
+          : "Infraestrutura Cloudflare indisponível",
+        label: status.runtime === "cloudflare-workers" && status.database === "d1" ? "CONECTADO" : "PENDENTE",
+        ready: status.runtime === "cloudflare-workers" && status.database === "d1"
+      },
+      {
+        name: "Meta / Instagram",
+        detail: instagram.configured ? "OAuth central pronto para os clientes" : "Falta configurar o App do Instagram uma única vez",
+        label: instagram.configured ? "CONECTADO" : "PENDENTE",
+        ready: Boolean(instagram.configured)
+      }
+    ];
+    $("#integration-list").innerHTML = items.map(item => `<div class="integration"><div><strong>${item.name}</strong><small>${item.detail}</small></div>${badge(item.label, item.ready)}</div>`).join("");
+
+    const openaiState = $("#openai-master-state");
+    if (openaiState) {
+      openaiState.textContent = openai.apiConnected && openai.billingConnected
+        ? "CENTRAL ATIVA"
+        : openai.apiConnected
+          ? "API ATIVA · CUSTOS PENDENTES"
+          : openai.billingConnected
+            ? "CUSTOS ATIVOS · API PENDENTE"
+            : "NÃO CONECTADA";
+      openaiState.classList.toggle("off", !openai.connected);
+    }
+    const money = value => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value)) ? "US$ " + Number(value).toFixed(2) : "—";
+    $("#openai-balance").textContent = money(openai.balanceEstimatedUsd);
+    $("#openai-month-cost").textContent = money(openai.monthCostUsd);
+    $("#openai-month-budget").textContent = money(openai.monthlyBudgetUsd);
+    $("#openai-budget-remaining").textContent = money(openai.budgetRemainingUsd);
+    $("#openai-balance-note").textContent = openai.balanceEstimatedUsd != null
+      ? "estimativa automática desde o último saldo informado"
+      : "informe seu saldo atual uma vez";
+    const budgetNote = $("#openai-budget-note");
+    if (budgetNote) {
+      budgetNote.textContent = openai.budgetPercent != null
+        ? openai.budgetPercent + "% do orçamento consumido"
+        : "defina o orçamento mensal";
+    }
+    const igState=$("#instagram-master-state");
+    if(igState){
+      igState.textContent=instagram.configured?"CONFIGURADO":"NÃO CONFIGURADO";
+      igState.classList.toggle("off",!instagram.configured);
+    }
+    if($("#instagram-current-app-id"))$("#instagram-current-app-id").value=instagram.appId||"";
+    if($("#instagram-callback-url"))$("#instagram-callback-url").value=instagram.callbackUrl||"";
+
+    const accountStates=instagramAccounts?.accounts||{};
+    ["globalplay-streaming","ragnar-one"].forEach(clientId=>{
+      const account=accountStates[clientId]||{};
+      const valid=Boolean(account.tokenValid&&account.accountMatches);
+      const badgeEl=$('[data-instagram-account-badge="'+clientId+'"]');
+      const detailEl=$('[data-instagram-account-detail="'+clientId+'"]');
+      const linkEl=$('[data-instagram-account-link="'+clientId+'"]');
+      if(badgeEl){
+        badgeEl.textContent=valid?"CONECTADO":"NÃO CONECTADO";
+        badgeEl.classList.toggle("off",!valid);
+      }
+      if(detailEl){
+        detailEl.textContent=valid
+          ? "Token válido e conta confirmada pelo Instagram."
+          : account.expired
+            ? "Autorização expirada. Autorize novamente."
+            : "Aguardando autorização válida do Instagram.";
+      }
+      if(linkEl){
+        linkEl.hidden=valid;
+        linkEl.style.display=valid?"none":"inline-flex";
+        linkEl.setAttribute("aria-hidden",valid?"true":"false");
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+$$('[data-view]').forEach(button => button.addEventListener("click", async () => {
+  showView(button.dataset.view);
+  if (button.dataset.view === "settings") loadIntegrations();
+  if (button.dataset.view === "agents") loadAgentCore();
+  if (button.dataset.view === "posts") loadPostLedger();
+  if (button.dataset.view === "odin") loadMasterLeads();
+  if (button.dataset.view === "campaigns") loadWorkspace();
+  if (button.dataset.view === "notifications") {
+    try {
+      const support = await api("/api/master/support");
+      state.supportTickets = support.tickets || [];
+      renderSupportNotifications(support);
+    } catch {}
+  }
+}));
+$$('[data-go]').forEach(button => button.addEventListener("click", () => showView(button.dataset.go)));
+$("#refresh").addEventListener("click", load);
+$("#portal-client").addEventListener("change", event => { state.portalClientId = event.target.value; renderPortalSelector(); });
+const masterLeadFilter=$("#master-lead-client-filter");if(masterLeadFilter)masterLeadFilter.addEventListener("change",event=>{state.leadClientFilter=event.target.value||"";renderMasterLeads();});
+const assumeSelected=$("#assume-selected-client");if(assumeSelected&&state.portalClientId)assumeSelected.href="https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/"+encodeURIComponent(state.portalClientId)+"/assume-open";
+const portalAccessDialog=$("#portal-access-dialog");
+const portalAccessForm=$("#portal-access-form");
+const closePortalAccess=()=>{if(portalAccessDialog?.open)portalAccessDialog.close();};
+$("#portal-access-close")?.addEventListener("click",closePortalAccess);
+$("#portal-access-cancel")?.addEventListener("click",closePortalAccess);
+portalAccessForm?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const clientId=$("#portal-access-client-id")?.value||"";
+  const username=$("#portal-access-username")?.value?.trim()||"";
+  const password=$("#portal-access-password")?.value||"";
+  const status=$("#portal-access-status");
+  if(status)status.textContent="Salvando…";
+  try{
+    await api("/api/migration/portal-user",{method:"POST",body:JSON.stringify({clientId,username,password})});
+    if(status)status.textContent="Acesso salvo.";
+    setTimeout(()=>closePortalAccess(),500);
+  }catch(error){
+    if(status)status.textContent=error.message||"Não foi possível salvar o acesso.";
+  }
+});
+const postClientFilter = $("#post-client-filter");
+if (postClientFilter) postClientFilter.addEventListener("change", event => {
+  state.postClientFilter = event.target.value || "";
+  renderPostLedger();
+});
+const agentCoreClient=$("#agent-core-client");
+if(agentCoreClient)agentCoreClient.addEventListener("change",event=>{state.agentCoreClientId=event.target.value||"";renderAgentCore();});
+const agentCoreAuto=$("#agent-core-auto-publish");
+if(agentCoreAuto)agentCoreAuto.addEventListener("change",syncAgentCoreApprovalUi);
+const agentCoreSave=$("#agent-core-save");
+if(agentCoreSave)agentCoreSave.addEventListener("click",saveAgentCoreConfig);
+const agentCoreRunAll=$("#agent-core-run-all");
+if(agentCoreRunAll)agentCoreRunAll.addEventListener("click",()=>runAgentCore("all",agentCoreRunAll));
+const agentCoreRefresh=$("#agent-core-refresh");
+if(agentCoreRefresh)agentCoreRefresh.addEventListener("click",loadAgentCore);
+
+$("#client-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = Object.fromEntries(new FormData(form));
+  $("#form-status").textContent = "Salvando…";
+  try {
+    const result = await api("/api/clients", { method: "POST", body: JSON.stringify(data) });
+    form.reset();
+    $("#form-status").textContent = "Cliente criado. Envie somente o acesso abaixo.";
+    const access = result.portalCredentials || {};
+    $("#new-client-user").textContent = "Usuário: " + (access.username || "—");
+    $("#new-client-password").textContent = "Senha: " + (access.initialPassword || "—");
+    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + location.origin + "/\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "");
+    $("#new-client-access").hidden = false;
+    state.portalClientId = result.client?.id || state.portalClientId;
+    await load();
+  }
+  catch (error) { $("#form-status").textContent = error.message; }
+});
+$("select[name=theme]").addEventListener("change", event => {
+  const colors = { "green-black": ["#31e676", "#031d0c"], "red-black": ["#ff4b55", "#200306"], "blue-white": ["#3d9bff", "#10253c"], "gold-black": ["#e9bd52", "#211804"] };
+  const [accent, base] = colors[event.target.value];
+  $("#theme-preview").style.background = `radial-gradient(circle at 80% 20%, ${accent}55, transparent 28%), linear-gradient(135deg, #101512, ${base})`;
+  $("#theme-preview").style.borderColor = accent;
+});
+
+document.addEventListener("click", async event => {
+  const campaignStatusButton=event.target.closest("[data-campaign-status]");
+  if(campaignStatusButton){
+    const client=workspaceClient();
+    if(!client)return;
+    const id=campaignStatusButton.dataset.campaignId||"";
+    const creativeStatus=campaignStatusButton.dataset.campaignStatus||"received";
+    campaignStatusButton.disabled=true;
+    try{
+      await api("/api/master/campaigns/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({clientId:client.id,creativeStatus})});
+      await loadWorkspace();
+    }catch(error){alert("Não foi possível atualizar a campanha.");}
+    finally{campaignStatusButton.disabled=false;}
+    return;
+  }
+  const campaignLifecycleButton=event.target.closest("[data-campaign-lifecycle]");
+  if(campaignLifecycleButton){
+    const client=workspaceClient();
+    if(!client)return;
+    const id=campaignLifecycleButton.dataset.campaignId||"";
+    const status=campaignLifecycleButton.dataset.campaignLifecycle||"active";
+    campaignLifecycleButton.disabled=true;
+    try{
+      await api("/api/master/campaigns/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({clientId:client.id,status})});
+      await loadWorkspace();
+    }catch(error){alert("Não foi possível alterar a campanha.");}
+    finally{campaignLifecycleButton.disabled=false;}
+    return;
+  }
+  const openaiLimitButton=event.target.closest("[data-save-openai-limit]");
+  if(openaiLimitButton){
+    const row=openaiLimitButton.closest("[data-openai-limit-client]");
+    const clientId=row?.dataset.openaiLimitClient||"";
+    const input=row?.querySelector("[data-openai-limit]");
+    const message=row?.querySelector("[data-openai-limit-message]");
+    const limit=Math.floor(Number(input?.value||0));
+    if(!Number.isFinite(limit)||limit<1000||limit>10000000){
+      if(message)message.textContent="Use um valor entre 1.000 e 10.000.000.";
+      return;
+    }
+    openaiLimitButton.disabled=true;
+    if(message)message.textContent="Salvando…";
+    try{
+      await api("/api/clients/"+encodeURIComponent(clientId),{
+        method:"PATCH",
+        body:JSON.stringify({openaiDailyTokenLimit:limit})
+      });
+      state.clients=await api("/api/clients");
+      render();
+      const updated=$("#usage-list")?.querySelector('[data-openai-limit-client="'+CSS.escape(clientId)+'"] [data-openai-limit-message]');
+      if(updated)updated.textContent="Limite salvo.";
+    }catch(error){
+      if(message)message.textContent="Não foi possível salvar.";
+      openaiLimitButton.disabled=false;
+    }
+    return;
+  }
+  const runAgentButton=event.target.closest("[data-run-agent]");
+  if(runAgentButton){await runAgentCore(runAgentButton.dataset.runAgent||"all",runAgentButton);return;}
+  const assumeButton=event.target.closest("[data-assume-client]");if(assumeButton){assumeClient(assumeButton.dataset.assumeClient);return;}
+  const accessButton=event.target.closest("[data-portal-access]");
+  if(accessButton){
+    const clientId=accessButton.dataset.portalAccess||"";
+    const clientName=accessButton.dataset.clientName||clientId;
+    $("#portal-access-client-id").value=clientId;
+    $("#portal-access-title").textContent="Acesso de "+clientName;
+    $("#portal-access-username").value=clientId==="ragnar-one"?"ragnar.one":clientId.replace(/-/g,".");
+    $("#portal-access-password").value="";
+    $("#portal-access-status").textContent="";
+    portalAccessDialog?.showModal();
+    return;
+  }
+  const deleteButton = event.target.closest("[data-delete-client]");
+  if (deleteButton) {
+    const clientId = deleteButton.dataset.deleteClient;
+    const clientName = deleteButton.dataset.clientName || clientId;
+    if (!window.confirm('Excluir "' + clientName + '"?\n\nIsso remove acesso, configurações e chamados. Esta ação não pode ser desfeita.')) return;
+    deleteButton.disabled = true;
+    deleteButton.textContent = "Excluindo…";
+    try {
+      await api("/api/clients/" + encodeURIComponent(clientId), { method: "DELETE" });
+      if (state.portalClientId === clientId) state.portalClientId = null;
+      await load();
+    } catch (error) {
+      alert(error.message === "Erro 409" ? "O cliente piloto Ragnar está protegido contra exclusão acidental." : "Não foi possível excluir o cliente.");
+      deleteButton.disabled = false;
+      deleteButton.textContent = "Excluir";
+    }
+    return;
+  }
+
+  const ticketButton = event.target.closest("[data-ticket-status]");
+  if (ticketButton) {
+    ticketButton.disabled = true;
+    try { await updateSupportTicket(ticketButton.dataset.ticketId, ticketButton.dataset.ticketStatus); }
+    catch { alert("Não foi possível atualizar o chamado."); }
+    return;
+  }
+
+  const masterProfileSave = event.target.closest("[data-master-profile-save]");
+  if (masterProfileSave) {
+    const card = masterProfileSave.closest("[data-master-profile]");
+    const clientId = card?.dataset.masterProfile;
+    const message = card?.querySelector("[data-master-profile-message]");
+    const fields = {};
+    card?.querySelectorAll("[data-master-field]").forEach(input => { fields[input.dataset.masterField] = input.value; });
+    masterProfileSave.disabled = true;
+    if (message) message.textContent = "Salvando configuração…";
+    try {
+      await api("/api/master/agent-config/" + encodeURIComponent(clientId), {
+        method: "PATCH",
+        body: JSON.stringify({ postingProfile: fields })
+      });
+      state.clients = await api("/api/clients");
+      render();
+      const updated = $("#master-agent-profiles")?.querySelector('[data-master-profile="' + CSS.escape(clientId) + '"] [data-master-profile-message]');
+      if (updated) updated.textContent = "Agente configurado com sucesso.";
+    } catch {
+      if (message) message.textContent = "Não foi possível salvar.";
+      masterProfileSave.disabled = false;
+    }
+    return;
+  }
+
+  const filterButton = event.target.closest("[data-support-filter]");
+  if (filterButton) {
+    state.supportFilter = filterButton.dataset.supportFilter || "all";
+    $("[data-support-filter]").forEach(btn => btn.classList.toggle("active", btn === filterButton));
+    renderSupportNotifications();
+  }
+});
+
+const instagramSecretForm=$("#instagram-secret-form");
+if(instagramSecretForm)instagramSecretForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const form=event.currentTarget;
+  const input=form.querySelector('input[name="appSecret"]');
+  const message=$("#instagram-secret-message");
+  const button=form.querySelector('button[type="submit"]');
+  const appSecret=String(input?.value||"").trim();
+  if(!appSecret){if(message)message.textContent="Cole o App Secret do NEXUS.";return;}
+  if(button)button.disabled=true;
+  if(message)message.textContent="Salvando com criptografia…";
+  try{
+    const result=await api("/api/master/instagram",{
+      method:"POST",
+      body:JSON.stringify({appSecret})
+    });
+    if(input)input.value="";
+    if($("#instagram-current-app-id"))$("#instagram-current-app-id").value=result.appId||"";
+    if(message)message.textContent="App Secret do NEXUS salvo com segurança.";
+    await loadIntegrations();
+  }catch(error){
+    if(message)message.textContent="Não foi possível salvar o App Secret.";
+  }finally{
+    if(button)button.disabled=false;
+  }
+});
+
+const openaiMasterForm=$("#openai-master-form");
+if(openaiMasterForm)openaiMasterForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const form=event.currentTarget;
+  const message=$("#openai-master-message");
+  if(message)message.textContent="Validando e salvando…";
+  const data=Object.fromEntries(new FormData(form));
+  try{
+    await api("/api/master/openai",{method:"POST",body:JSON.stringify(data)});
+    form.querySelector('input[name="apiKey"]').value="";
+    form.querySelector('input[name="adminKey"]').value="";
+    if(message)message.textContent="Controle OpenAI NEXUS atualizado.";
+    await loadIntegrations();
+  }catch(error){
+    if(message)message.textContent="Não foi possível conectar: "+error.message;
+  }
+});
+
+load();
+setInterval(async()=>{
+  try{
+    const support=await api("/api/master/support");
+    state.supportTickets=support.tickets||[];
+    renderSupportNotifications(support);
+  }catch{}
+},60000);
+
+const copyAccessButton=$("#copy-client-access");
+if(copyAccessButton)copyAccessButton.addEventListener("click",async()=>{
+  const card=$("#new-client-access");
+  const text=card?.dataset.access||"";
+  if(!text)return;
+  try{await navigator.clipboard.writeText(text);copyAccessButton.textContent="Acesso copiado";setTimeout(()=>copyAccessButton.textContent="Copiar acesso",1500);}
+  catch{alert(text);}
+});
+
+const campaignClient=$("#campaign-client");
+campaignClient?.addEventListener("change",async event=>{state.campaignClientId=event.target.value||"";await loadWorkspace();});
+$("#campaign-refresh")?.addEventListener("click",loadWorkspace);
+$("#campaign-form")?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const client=workspaceClient(),message=$("#campaign-message");
+  if(!client)return;
+  if(message)message.textContent="Criando e distribuindo…";
+  try{
+    const data=new FormData(event.currentTarget);
+    data.set("clientId",client.id);
+    const response=await fetch("/api/master/campaigns",{method:"POST",body:data,credentials:"same-origin"});
+    if(!response.ok)throw new Error("Erro "+response.status);
+    event.currentTarget.reset();
+    if(message)message.textContent="Campanha distribuída aos agentes.";
+    await loadWorkspace();
+  }catch(error){if(message)message.textContent="Não foi possível criar a campanha.";}
+});
+$("#directive-form")?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const client=workspaceClient(),message=$("#directive-message");
+  if(!client)return;
+  const data=Object.fromEntries(new FormData(event.currentTarget));
+  if(message)message.textContent="Enviando orientação…";
+  try{
+    await api("/api/master/directives",{method:"POST",body:JSON.stringify({clientId:client.id,text:data.text,appliesTo:[data.appliesTo||"all"]})});
+    event.currentTarget.reset();
+    if(message)message.textContent="Comando ativo nos próximos ciclos.";
+    await loadWorkspace();
+  }catch(error){if(message)message.textContent="Não foi possível enviar o comando.";}
+});
+setInterval(()=>{if(document.getElementById("campaigns")?.classList.contains("active"))loadWorkspace();},15000);

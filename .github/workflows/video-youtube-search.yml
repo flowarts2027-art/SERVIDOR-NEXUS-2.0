@@ -1,0 +1,94 @@
+name: NEXUS YouTube Search
+on:
+  repository_dispatch:
+    types: [video-youtube-search]
+jobs:
+  search:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    env:
+      QUERY: ${{ github.event.client_payload.query }}
+      ALIASES: ${{ github.event.client_payload.aliases }}
+      JOB_ID: ${{ github.event.client_payload.job_id }}
+      CLIENT_ID: ${{ github.event.client_payload.client_id }}
+      CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+      NEXUS_BASE_URL: https://servidor-nexus.diamantehinode2015.workers.dev
+    steps:
+      - name: Search dubbed pt-BR trailers with broad fallbacks
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade yt-dlp
+
+          run_search () {
+            local out="$1"
+            local q="$2"
+            yt-dlp --flat-playlist --dump-single-json --skip-download --socket-timeout 20 \
+              "ytsearch25:$q" > "$out" || echo '{"entries":[]}' > "$out"
+          }
+
+          # Keep the user's raw title and broaden discovery with several independent
+          # searches. The Worker applies the final strict pt-BR dubbed filter.
+          INDEX=0
+          IFS='|||' read -ra SEARCH_TERMS <<< "${ALIASES:-$QUERY}"
+          for TERM in "${SEARCH_TERMS[@]}"; do
+            TERM="$(echo "$TERM" | xargs)"
+            [ -z "$TERM" ] && continue
+            run_search "/tmp/search-${INDEX}-dubbed.json" "$TERM trailer oficial dublado"
+            run_search "/tmp/search-${INDEX}-ptbr.json" "$TERM trailer dublado português brasil"
+            run_search "/tmp/search-${INDEX}-title.json" "$TERM dublado"
+            run_search "/tmp/search-${INDEX}-standard.json" "$TERM trailer oficial"
+            run_search "/tmp/search-${INDEX}-vertical.json" "$TERM dublado shorts vertical"
+            INDEX=$((INDEX+1))
+          done
+
+          python - <<'PY'
+          import json
+
+          def rows(path, vertical=False):
+              try:
+                  data=json.load(open(path))
+              except Exception:
+                  return []
+              out=[]
+              for v in data.get('entries',[]) or []:
+                  if not v:
+                      continue
+                  out.append({
+                      'id':v.get('id'),
+                      'title':v.get('title'),
+                      'channel':v.get('channel') or v.get('uploader'),
+                      'channelId':v.get('channel_id'),
+                      'channelVerified':v.get('channel_is_verified',False),
+                      'duration':v.get('duration'),
+                      'verticalCandidate':bool(vertical)
+                  })
+              return out
+
+          import glob
+
+          sources=[]
+          for path in sorted(glob.glob('/tmp/search-*.json')):
+              sources.append((path, path.endswith('-vertical.json')))
+
+          seen=set()
+          merged=[]
+          for path,vertical in sources:
+              for item in rows(path,vertical):
+                  vid=item.get('id')
+                  if not vid or vid in seen:
+                      continue
+                  seen.add(vid)
+                  merged.append(item)
+
+          json.dump({'results':merged[:100]},open('/tmp/results.json','w'))
+          PY
+
+          curl --fail-with-body -X POST "$NEXUS_BASE_URL/api/internal/video-render/search-results" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H 'content-type: application/json' --data-binary @/tmp/results.json
+      - name: Report search failure
+        if: failure()
+        run: |
+          curl --fail-with-body -X POST "$NEXUS_BASE_URL/api/internal/video-render/fail" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H 'content-type: application/json' --data '{"error":"youtube_search_failed"}'

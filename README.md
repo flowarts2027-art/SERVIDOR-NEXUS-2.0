@@ -1,30 +1,17 @@
-# Nexus 2.0 — Recuperação segura
+# NEXUS AI 2.0
 
-## Estado em 10/10/2026
+Painel do cliente para acompanhar postagens, desempenho e autorização do Instagram. O administrador gerencia clientes e automações pelo painel Master.
 
-- **Código do Worker recuperado LOCALMENTE; ainda NÃO enviado a este repositório.**
-- Repositório novo: `flowarts2027-art/SERVIDOR-NEXUS-2.0`.
-- GitHub anterior: `globalplay27/SERVIDOR-GLOBAL-PLAY` (conta bloqueada).
-- Worker em produção: `servidor-nexus`, hospedado na Cloudflare. Não alterar o deploy, D1, R2 nem secrets durante a recuperação.
-- Login Wrangler na Cloudflare concluído com sucesso no computador do proprietário.
-- O comando `wrangler init --from-dash` falhou por incompatibilidade com **Assets**; a recuperação foi feita por outro procedimento.
-- Backup local encontrado no histórico: `C:\\NEXUS-RECUPERACAO\\nexus-worker-backup.bin` (~757.598 bytes).
-- JavaScript extraído no histórico: `C:\\NEXUS-RECUPERACAO\\nexus-extraido\\index.js` (~757.415 bytes).
-- `node --check` no JavaScript extraído terminou sem erro de sintaxe reportado.
-- **Não repetir comandos de download/extração:** essa etapa já foi concluída no computador.
-- O GitHub novo ainda **não contém** o código resgatado; o arquivo local não está disponível automaticamente para esta integração.
+## Operação
 
-## Próximo passo (sem repetir PowerShell)
+- Runtime: Cloudflare Workers (`cloudflare/src/`), D1 e R2.
+- Painel do cliente: `public/portal.html`, `public/client-lite.js` e `public/client-lite.css`.
+- Instagram: OAuth oficial no painel, com configuração central no Master.
+- Postagens: agenda, aprovação, publicação e histórico no D1.
+- Desempenho: dados da última coleta válida da conta profissional no Instagram.
 
-1. Transferir o arquivo `nexus-extraido/index.js` já recuperado para um ambiente autorizado de análise. Pode ser por envio de arquivo nesta conversa ou por um fluxo no **modo Work** que tenha acesso à cópia do arquivo / conta Cloudflare.
-2. **Revisar segredos e dados sensíveis antes de qualquer publicação.** Este repositório está **PÚBLICO**. Não colocar nele tokens, chaves, credenciais, arquivos `.env` ou dados de clientes.
-3. Só depois de uma revisão, reconstruir o projeto (configuração Wrangler, recursos D1/R2, arquivos estáticos e fluxos GitHub Actions) em branch/ambiente de teste.
-4. Validar saúde, painel, agentes, Instagram e geração de vídeo antes de modificar o ambiente de produção.
+## Validação e publicação
 
-## Limites do backup
+`npm run check` valida o pacote do Worker. A workflow `.github/workflows/ci.yml` publica na Cloudflare após alterações na branch principal.
 
-O `index.js` extraído pode ser um **bundle de produção**, não uma cópia exata do antigo repositório com histórico Git, assets e arquivos de configuração. D1, R2 e segredos da Cloudflare requerem inventário separado. A existência de um backup local **não confirma** recuperação integral do Nexus.
-
-## Regra de segurança
-
-**Não fazer deploy, delete ou reset de produção durante a recuperação.**
+A antiga pipeline de cortes, trailers e instalação de aplicativo foi removida. Dados já salvos no D1/R2 permanecem guardados; nenhuma migração apaga contas ou arquivos. O serviço legado fora da Cloudflare deve ser desativado somente depois de confirmar a implantação da versão atual.

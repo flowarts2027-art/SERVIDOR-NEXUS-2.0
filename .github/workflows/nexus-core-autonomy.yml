@@ -1,0 +1,64 @@
+name: NEXUS Core Autonomy
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/nexus-core-autonomy.yml
+      - .github/scripts/nexus-core-autonomy.mjs
+      - cloudflare/src/agent-core.js
+      - cloudflare/src/agent-runtime.js
+      - cloudflare/src/executor.js
+
+concurrency:
+  group: nexus-core-autonomy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      NEXUS_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/autonomy-health
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Self-test Nexus Core routing
+        run: node .github/scripts/nexus-core-autonomy.mjs --self-test
+
+      - name: Run autonomous Core cycle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/nexus-core-autonomy.mjs
+
+      - name: Controlled Ragnar publish test
+        if: >-
+          ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'test: trigger isolated Ragnar publication') }}
+        env:
+          EMERGENCY_TRIGGER_TOKEN: ${{ secrets.EMERGENCY_TRIGGER_TOKEN }}
+        run: |
+          test -n "$EMERGENCY_TRIGGER_TOKEN"
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "x-nexus-emergency-token: $EMERGENCY_TRIGGER_TOKEN" \
+            "https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publish-now?clientId=ragnar-one&format=post&forceTest=1"
+
+      - name: Upload Core evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-core-autonomy-${{ github.run_id }}
+          path: /tmp/nexus-core-autonomy-report.json
+          if-no-files-found: ignore
+          retention-days: 14

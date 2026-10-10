@@ -5,8 +5,10 @@ node_modules/
 .dev.vars
 .dev.vars.*
 .wrangler/
+.wrangler-dry-run/
 NEXUS-RECUPERACAO-*/
 **/*.sqlite
 **/*.db
 *.zip
+!public/nexus-baixar-no-pc.zip
 *.log

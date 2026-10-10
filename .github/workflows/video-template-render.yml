@@ -1,0 +1,320 @@
+name: NEXUS Video Template Render
+
+on:
+  repository_dispatch:
+    types: [video-template-render]
+
+concurrency:
+  # An older rerun of a FAILED render must never hold the same video job hostage.
+  # The Worker callback token already rejects updates from stale render attempts.
+  group: nexus-video-render-attempt-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      JOB_ID: ${{ github.event.client_payload.job_id }}
+      CLIENT_ID: ${{ github.event.client_payload.client_id }}
+      CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+      TITLE: ${{ github.event.client_payload.render.title }}
+      SOURCE_TITLE: ${{ github.event.client_payload.render.source_title }}
+      OVERVIEW: ${{ github.event.client_payload.render.overview }}
+      RELEASE_YEAR: ${{ github.event.client_payload.render.year }}
+      MEDIA_TYPE: ${{ github.event.client_payload.render.media_type }}
+      MOVIE_METADATA: ${{ toJSON(github.event.client_payload.render.metadata) }}
+      POSTER_URL: ${{ github.event.client_payload.render.poster_url }}
+      LOGO_ENABLED: ${{ github.event.client_payload.render.logo_enabled }}
+      RENDER_PROFILE: ${{ github.event.client_payload.render.profile }}
+      EDIT_STYLE: ${{ github.event.client_payload.render.edit_style }}
+      END_TEXT: ${{ github.event.client_payload.render.end_text }}
+      END_CONTACT: ${{ github.event.client_payload.render.end_contact }}
+      CREATION_MODE: ${{ github.event.client_payload.render.creation_mode }}
+      COMPOSITION_JSON: ${{ toJSON(github.event.client_payload.render.composition) }}
+      NEXUS_BASE_URL: https://servidor-nexus.diamantehinode2015.workers.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check render dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          python3 -c "from PIL import Image, ImageDraw, ImageFont" >/dev/null 2>&1 || python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          candidates = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+          ]
+          if not any(Path(p).exists() for p in candidates):
+              raise SystemExit("promo_font_missing")
+          PY
+
+      - name: Download source from R2 through NEXUS
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo source_download_failed > /tmp/nexus-render-error.txt
+          curl --fail-with-body --retry 2 --retry-all-errors \
+            "$NEXUS_BASE_URL/api/internal/video-render/source" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -o /tmp/source.mp4
+          test -s /tmp/source.mp4
+          curl --silent --show-error --max-time 8 -X POST "$NEXUS_BASE_URL/api/internal/video-render/progress" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H "content-type: application/json" \
+            --data '{"progress":39,"stage":"preparing","message":"MP4 recebido pelo renderizador. Validando pôster e cenas."}' >/dev/null || true
+
+      - name: Prepare NEXUS promotional scenes
+        shell: bash
+        env:
+          NEXUS_RENDER_ERROR_PATH: /tmp/nexus-render-error.txt
+        run: |
+          set -euo pipefail
+          echo promo_scene_generation_failed > /tmp/nexus-render-error.txt
+          if [ -z "$TITLE" ]; then
+            echo video_metadata_required > /tmp/nexus-render-error.txt
+            exit 1
+          fi
+
+          rm -f /tmp/poster.jpg /tmp/client-logo
+          if [ -n "$POSTER_URL" ]; then
+            if [[ "$POSTER_URL" == "$NEXUS_BASE_URL/media/"* ]]; then
+              curl --fail --max-time 20 "$NEXUS_BASE_URL/api/internal/video-render/poster" \
+                -H "x-nexus-job-id: $JOB_ID" \
+                -H "x-nexus-client-id: $CLIENT_ID" \
+                -H "x-nexus-callback-token: $CALLBACK_TOKEN" \
+                -o /tmp/poster.jpg || rm -f /tmp/poster.jpg
+            else
+              curl -L --fail --max-time 20 "$POSTER_URL" -o /tmp/poster.jpg || rm -f /tmp/poster.jpg
+            fi
+          fi
+          if [ -s /tmp/poster.jpg ]; then
+            python3 -c "from PIL import Image; img=Image.open('/tmp/poster.jpg'); img.verify()" || rm -f /tmp/poster.jpg
+          fi
+          if [ ! -s /tmp/poster.jpg ]; then
+            # Films and series require their catalogued artwork, never a trailer
+            # screenshot disguised as the official poster inside the smartphone.
+            if [[ "${MEDIA_TYPE,,}" =~ filme|movie|série|serie|series|tv ]]; then
+              echo video_official_poster_required > /tmp/nexus-render-error.txt
+              echo "::error::Official artwork for this movie/series is unavailable."
+              exit 1
+            fi
+            # Uncatalogued private videos may still use a clearly labelled
+            # cover made only from this job's own authenticated source.
+            echo "Verified catalog poster unavailable; creating a cover from the selected trailer."
+            echo video_official_poster_required > /tmp/nexus-render-error.txt
+            python3 scripts/trailer_frame_poster.py --source /tmp/source.mp4 --output /tmp/poster.jpg
+            python3 -c "from PIL import Image; img=Image.open('/tmp/poster.jpg'); img.verify()"
+            test -s /tmp/poster.jpg
+            echo promo_scene_generation_failed > /tmp/nexus-render-error.txt
+          fi
+
+          if [ "$LOGO_ENABLED" = "true" ] || [ "$LOGO_ENABLED" = "1" ]; then
+            curl --fail --max-time 20 "$NEXUS_BASE_URL/api/internal/video-render/logo" \
+              -H "x-nexus-job-id: $JOB_ID" \
+              -H "x-nexus-client-id: $CLIENT_ID" \
+              -H "x-nexus-callback-token: $CALLBACK_TOKEN" \
+              -o /tmp/client-logo || rm -f /tmp/client-logo
+          fi
+
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          from PIL import Image
+          comp=json.loads(os.environ.get("COMPOSITION_JSON") or "{}")
+          scale=max(60,min(180,int(float(comp.get("logoScale") or 100))))
+          src=Path("/tmp/client-logo")
+          if src.exists() and src.stat().st_size:
+              img=Image.open(src).convert("RGBA")
+              img.thumbnail((max(1,int(265*scale/100)),max(1,int(132*scale/100))),Image.Resampling.LANCZOS)
+          else:
+              img=Image.new("RGBA",(1,1),(0,0,0,0))
+          img.save("/tmp/logo-overlay.png")
+          PY
+
+          rm -rf /tmp/nexus-scenes
+          if [ -s /tmp/client-logo ]; then
+            python3 scripts/build_promo_card.py --output-dir /tmp/nexus-scenes --poster /tmp/poster.jpg --logo /tmp/client-logo
+          else
+            python3 scripts/build_promo_card.py --output-dir /tmp/nexus-scenes --poster /tmp/poster.jpg
+          fi
+          for f in scene-phone-under.png scene-phone-front.png scene-launch.png scene-cast.png scene-reviews.png scene-related.png scene-watermark.png scene-cta.png; do
+            test -s "/tmp/nexus-scenes/$f"
+          done
+          curl --silent --show-error --max-time 8 -X POST "$NEXUS_BASE_URL/api/internal/video-render/progress" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H "content-type: application/json" \
+            --data '{"progress":41,"stage":"scenes_prepared","message":"Cenas do pôster, elenco e relacionados preparadas."}' >/dev/null || true
+      - name: Select best trailer scenes (automatic mode, 60s)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CREATION_MODE" = "edit" ]; then
+            echo "Manual edit path: leave the original source untouched."
+            exit 0
+          fi
+          echo cinematic_cut_failed > /tmp/nexus-render-error.txt
+          python3 -m pip install --quiet "scenedetect-headless==0.7.1"
+          # Compilations such as "Todos os Trailers" can end with third-party
+          # channel branding. Avoid the last 20 source seconds in automatic mode.
+          EXCLUDE_OUTRO=()
+          if [[ "${SOURCE_TITLE,,}" =~ todos[[:space:]]+os[[:space:]]+trailers|trailer[[:space:]]+compilation|compilação ]]; then
+            EXCLUDE_OUTRO=(--skip-last-seconds 20)
+          fi
+          python3 scripts/auto_cinematic_cut.py \
+            --source /tmp/source.mp4 \
+            --output /tmp/cinematic-source.mp4 \
+            --manifest /tmp/nexus-cinematic-plan.json \
+            --target 60 \
+            "${EXCLUDE_OUTRO[@]}"
+          test -s /tmp/cinematic-source.mp4
+          curl --silent --show-error --max-time 8 -X POST "$NEXUS_BASE_URL/api/internal/video-render/progress" \
+            -H "x-nexus-job-id: $JOB_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H "content-type: application/json" \
+            --data '{"progress":43,"stage":"scenes_selected","message":"Cenas selecionadas. Iniciando renderização 9:16."}' >/dev/null || true
+          echo video_9x16_render_failed > /tmp/nexus-render-error.txt
+
+      - name: Render full 9x16 video
+        id: render
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo video_9x16_render_failed > /tmp/nexus-render-error.txt
+
+          SOURCE_FILE=/tmp/source.mp4
+          if [ "$CREATION_MODE" != "edit" ]; then
+            # The source has already been scene-selected and contains the aligned audio.
+            SOURCE_FILE=/tmp/cinematic-source.mp4
+          fi
+          SRC_DUR="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$SOURCE_FILE" | head -n1)"
+          read TRIM_START TRIM_END <<<"$(python3 -c 'import json,os; c=json.loads(os.environ.get("COMPOSITION_JSON") or "{}"); start=max(0.0,float(c.get("trimStart") or 0)); end=max(0.0,float(c.get("trimEnd") or 0)); print(f"{start:.3f}",f"{end:.3f}")')"
+          if [ "$CREATION_MODE" != "edit" ]; then
+            TRIM_START=0
+            TRIM_END=0
+          fi
+          PROMO_DUR="$(awk -v src="$SRC_DUR" -v start="$TRIM_START" -v end="$TRIM_END" 'BEGIN { d=src-start; if(end>start && end-start<d)d=end-start; if(d<0.1)d=0.1; printf "%.3f", d }')"
+          INPUT_SEEK=()
+          if awk -v s="$TRIM_START" 'BEGIN{exit !(s>0)}'; then INPUT_SEEK=(-ss "$TRIM_START"); fi
+          PROFILE="${RENDER_PROFILE:-fast}"
+          if [ "$PROFILE" = "quality" ]; then
+            OUT_W=1080; OUT_H=1920; HERO_H=620
+            PRESET=superfast; CRF=21; ABR=128k; BLUR="18:2"
+          else
+            OUT_W=720; OUT_H=1280; HERO_H=413
+            PRESET=ultrafast; CRF=24; ABR=96k; BLUR="10:1"
+          fi
+
+          PHONE_END="$(awk -v d="$PROMO_DUR" 'BEGIN{printf "%.3f",d/3}')"
+          echo "Selected trailer: $PROMO_DUR · phone/poster until one third ($PHONE_END s) · then cinematic scenes and full-frame trailer · profile: $PROFILE"
+
+          read LOGO_POSITION LOGO_EFFECT LOGO_X_OFFSET LOGO_Y_OFFSET <<<"$(python3 -c 'import json,os; c=json.loads(os.environ.get("COMPOSITION_JSON") or "{}"); clamp=lambda v:max(-40,min(40,float(v or 0))); print(c.get("logoPosition","top-left"),c.get("logoEffect","none"),clamp(c.get("logoOffsetX")),clamp(c.get("logoOffsetY")) )')"
+          case "$LOGO_POSITION" in
+            top-center) LOGO_X="(W-w)/2"; LOGO_Y="0.08*H";;
+            top-right) LOGO_X="W-w-0.035*W"; LOGO_Y="0.08*H";;
+            center-left) LOGO_X="0.035*W"; LOGO_Y="(H-h)/2";;
+            center) LOGO_X="(W-w)/2"; LOGO_Y="(H-h)/2";;
+            center-right) LOGO_X="W-w-0.035*W"; LOGO_Y="(H-h)/2";;
+            bottom-left) LOGO_X="0.035*W"; LOGO_Y="H-h-0.08*H";;
+            bottom-center) LOGO_X="(W-w)/2"; LOGO_Y="H-h-0.08*H";;
+            bottom-right) LOGO_X="W-w-0.035*W"; LOGO_Y="H-h-0.08*H";;
+            *) LOGO_X="0.035*W"; LOGO_Y="0.08*H";;
+          esac
+          LOGO_PRE="[4:v]format=rgba[logo]"
+          LOGO_ENABLE=""
+          if [ "$LOGO_EFFECT" = "spin" ]; then
+            LOGO_PRE="[4:v]format=rgba,rotate='2*PI*t/4':ow=rotw(iw):oh=roth(ih):c=none[logo]"
+          elif [ "$LOGO_EFFECT" = "slide" ]; then
+            LOGO_X="'(W-w)/2+sin(t*1.15)*(W-w-0.08*W)/2'"
+          elif [ "$LOGO_EFFECT" = "blink" ]; then
+            LOGO_ENABLE=":enable='gt(sin(t*3),-0.5)'"
+          elif [ "$LOGO_EFFECT" = "fade" ]; then
+            LOGO_PRE="[4:v]format=rgba,fade=t=in:st=0:d=1.2:alpha=1[logo]"
+          elif [ "$LOGO_EFFECT" = "float" ]; then
+            LOGO_Y="(${LOGO_Y})+sin(t*1.8)*H*0.012"
+          elif [ "$LOGO_EFFECT" = "bounce" ]; then
+            LOGO_Y="(${LOGO_Y})-abs(sin(t*2.5))*H*0.018"
+          elif [ "$LOGO_EFFECT" = "pulse" ]; then
+            LOGO_PRE="[4:v]format=rgba,scale=w='iw*(1+0.05*sin(n/14))':h='ih*(1+0.05*sin(n/14))':eval=frame[logo]"
+          elif [ "$LOGO_EFFECT" = "zoom" ]; then
+            LOGO_PRE="[4:v]format=rgba,scale=w='iw*(1+0.09*sin(n/42))':h='ih*(1+0.09*sin(n/42))':eval=frame[logo]"
+          elif [ "$LOGO_EFFECT" = "glow" ]; then
+            LOGO_PRE="[4:v]format=rgba,eq=brightness=0.12:saturation=1.25[logo]"
+          fi
+          LOGO_X="(${LOGO_X})+(${LOGO_X_OFFSET})*W/100"
+          LOGO_Y="(${LOGO_Y})+(${LOGO_Y_OFFSET})*H/100"
+
+          # Approved phone + poster and four promo cards remain. Reserve up to
+          # 18s in the final third for the trailer without any promo cards.
+          SCENE_LAST="$(awk -v d="$PROMO_DUR" 'BEGIN{printf "%.3f", (d>4?d-4:0)}')"
+          PHONE_END="$(awk -v d="$PROMO_DUR" -v last="$SCENE_LAST" 'BEGIN{x=d/3; if(x>20)x=20; if(x>last)x=last; printf "%.3f",x}')"
+          CLEAN_START="$(awk -v d="$PROMO_DUR" -v last="$SCENE_LAST" -v phone="$PHONE_END" 'BEGIN{x=last-d*0.3; if(x<last-18)x=last-18; if(x<phone)x=phone; printf "%.3f",x}')"
+          REMAINING="$(awk -v clean="$CLEAN_START" -v phone="$PHONE_END" 'BEGIN{x=clean-phone; if(x<0)x=0; printf "%.3f",x}')"
+          echo "Timeline: phone 0-$PHONE_END · promo cards $PHONE_END-$CLEAN_START · full trailer $CLEAN_START-$SCENE_LAST · CTA after $SCENE_LAST."
+          SCENE_STEP="$(awk -v d="$REMAINING" 'BEGIN{printf "%.3f", d/4}')"
+          A_END="$(awk -v p="$PHONE_END" -v s="$SCENE_STEP" 'BEGIN{printf "%.3f",p+s}')"
+          B_END="$(awk -v p="$PHONE_END" -v s="$SCENE_STEP" 'BEGIN{printf "%.3f",p+2*s}')"
+          C_END="$(awk -v p="$PHONE_END" -v s="$SCENE_STEP" 'BEGIN{printf "%.3f",p+3*s}')"
+          # Keep ONE blurred canvas continuous above and below the centered
+          # sharp trailer. The smaller hero strip must be disabled during the
+          # clean-trailer interval; otherwise it duplicates the middle scene
+          # in the top third (Spider-Man regression, 2026-10-08).
+          FILTER="[0:v]split=3[srcbg][srcmain][srcfull];[srcbg]scale=${OUT_W}:${OUT_H}:force_original_aspect_ratio=increase,crop=${OUT_W}:${OUT_H},boxblur=${BLUR},eq=brightness=-0.14:saturation=0.78[bg];[srcmain]scale=${OUT_W}:${HERO_H}:force_original_aspect_ratio=decrease[hero];[srcfull]scale=${OUT_W}:${OUT_H}:force_original_aspect_ratio=decrease[fullhero];[bg][hero]overlay=(W-w)/2:47:enable='not(between(t,${CLEAN_START},${SCENE_LAST}))'[base];[base][fullhero]overlay=(W-w)/2:(H-h)/2:enable='between(t,${CLEAN_START},${SCENE_LAST})'[scene-base];[1:v]scale=${OUT_W}:${OUT_H}[phoneunder];[2:v]scale=${OUT_W}:${OUT_H}[phonefront];[3:v]scale=${OUT_W}:${OUT_H}[watermark];[5:v]scale=${OUT_W}:${OUT_H}[closing];[6:v]scale=${OUT_W}:${OUT_H}[launch];[7:v]scale=${OUT_W}:${OUT_H}[cast];[8:v]scale=${OUT_W}:${OUT_H}[reviews];[9:v]scale=${OUT_W}:${OUT_H}[related];[scene-base][phoneunder]overlay=0:0:enable='lt(t,${PHONE_END})'[a];[a][phonefront]overlay=0:0:enable='lt(t,${PHONE_END})'[b];[b][launch]overlay=0:0:enable='between(t,${PHONE_END},${A_END})'[c];[c][cast]overlay=0:0:enable='between(t,${A_END},${B_END})'[d];[d][reviews]overlay=0:0:enable='between(t,${B_END},${C_END})'[e];[e][related]overlay=0:0:enable='between(t,${C_END},${CLEAN_START})'[f];[f][watermark]overlay=0:0:enable='between(t,${PHONE_END},${SCENE_LAST})'[body];${LOGO_PRE};[body][logo]overlay=x=${LOGO_X}:y=${LOGO_Y}${LOGO_ENABLE}[branded];[branded][closing]overlay=0:0:enable='gte(t,${SCENE_LAST})'[renderbase]"
+
+          # Produce overlay assets from validated per-job composition. No remote media fetches.
+          mkdir -p /tmp/nexus-overlay-assets
+          python3 scripts/render_overlay_layers.py --output-dir /tmp/nexus-overlay-assets --duration "$PROMO_DUR" --trim-start "$TRIM_START" > /tmp/nexus-overlay-manifest.json
+          mapfile -t OVERLAY_INPUTS < <(python3 -c 'import json; m=json.load(open("/tmp/nexus-overlay-manifest.json")); [print(v) for p in m["inputs"] for v in ("-loop","1","-framerate","30","-i",p)]')
+          OVERLAY_FILTER="$(python3 -c 'import json; print(json.load(open("/tmp/nexus-overlay-manifest.json"))["filter"])')"
+          FILTER="${FILTER};${OVERLAY_FILTER}"
+          echo "Dynamic text/emoji overlays: $(python3 -c 'import json; print(json.load(open("/tmp/nexus-overlay-manifest.json"))["count"])')"
+
+          python3 .github/scripts/video-render-progress.py             --duration "$PROMO_DUR"             --base-url "$NEXUS_BASE_URL"             --job-id "$JOB_ID"             --client-id "$CLIENT_ID"             --token "$CALLBACK_TOKEN"             -- ffmpeg -hide_banner -loglevel error -y             "${INPUT_SEEK[@]}" -i "$SOURCE_FILE"             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-phone-under.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-phone-front.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-watermark.png             -loop 1 -framerate 30 -i /tmp/logo-overlay.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-cta.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-launch.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-cast.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-reviews.png             -loop 1 -framerate 30 -i /tmp/nexus-scenes/scene-related.png             "${OVERLAY_INPUTS[@]}"             -filter_complex "$FILTER"             -map "[out]" -map 0:a?             -t "$PROMO_DUR" -r 30             -c:v libx264 -preset "$PRESET" -crf "$CRF" -threads 0             -c:a aac -b:a "$ABR" -ar 48000 -ac 2             -movflags +faststart             -progress pipe:1 -nostats             /tmp/body.mp4
+
+          mv /tmp/body.mp4 /tmp/rendered.mp4
+          test -s /tmp/rendered.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 /tmp/rendered.mp4)" = "$OUT_W"
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 /tmp/rendered.mp4)" = "$OUT_H"
+          FINAL_DUR="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/rendered.mp4 | head -n1)"
+          awk -v got="$FINAL_DUR" -v src="$PROMO_DUR" 'BEGIN { if (got < src-0.35 || got > src+0.35) exit 1 }'
+      - name: Upload rendered video to NEXUS
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo result_upload_failed > /tmp/nexus-render-error.txt
+          curl --silent --show-error --max-time 10 -X POST "$NEXUS_BASE_URL/api/internal/video-render/progress"             -H "x-nexus-job-id: $JOB_ID"             -H "x-nexus-client-id: $CLIENT_ID"             -H "x-nexus-callback-token: $CALLBACK_TOKEN"             -H "content-type: application/json"             --data '{"progress":95,"message":"Enviando o vídeo final…","stage":"uploading"}' >/dev/null || true
+          SIZE="$(stat -c%s /tmp/rendered.mp4)"
+          DURATION="$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/rendered.mp4 | head -n1)"
+          if [ "$SIZE" -le $((90*1024*1024)) ]; then
+            curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors \
+              -A "NEXUS-GitHub-Renderer/1.0" \
+              -X PUT "$NEXUS_BASE_URL/api/internal/video-render/upload" \
+              -H "x-nexus-job-id: $JOB_ID" \
+              -H "x-nexus-client-id: $CLIENT_ID" \
+              -H "x-nexus-callback-token: $CALLBACK_TOKEN" \
+              -H "x-nexus-duration: $DURATION" \
+              -H "content-type: video/mp4" \
+              -H "content-length: $SIZE" \
+              --data-binary @/tmp/rendered.mp4
+          else
+            python scripts/upload_render.py
+          fi
+
+      - name: Report render failure
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          python -c "import json; from pathlib import Path; path=Path('/tmp/nexus-render-error.txt'); error=path.read_text().strip() if path.exists() else 'github_template_render_failed'; json.dump({'error':error},open('/tmp/failure.json','w'))"
+          curl --silent --show-error \
+            -X POST "$NEXUS_BASE_URL/api/internal/video-render/fail" \
+            -H "x-nexus-job-id: $JOB_ID" \
+            -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" \
+            -H "content-type: application/json" \
+            --data-binary @/tmp/failure.json

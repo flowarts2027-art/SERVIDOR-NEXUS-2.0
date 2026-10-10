@@ -1,0 +1,59 @@
+name: NEXUS AutoFix
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/nexus-autofix.yml
+      - .github/scripts/nexus-autofix.mjs
+      - .github/scripts/nexus-autofix-policy.mjs
+      - .github/scripts/nexus-autofix.test.mjs
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_run:
+    workflows:
+      - "NEXUS CI"
+      - "NEXUS Overnight Regression"
+      - "Deploy NEXUS Cloudflare"
+    types: [completed]
+
+concurrency:
+  group: nexus-autofix
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'success'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate Nexus AutoFix recovery policy
+        run: |
+          node --check .github/scripts/nexus-autofix-policy.mjs
+          node --check .github/scripts/nexus-autofix.mjs
+          node --test .github/scripts/nexus-autofix.test.mjs
+          node .github/scripts/nexus-autofix.mjs --self-test
+      - name: Sentinel diagnostics, safe recovery, persistent incidents
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/nexus-autofix.mjs
+      - name: Save AutoFix evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-autofix-${{ github.run_id }}
+          path: /tmp/nexus-autofix-report.json
+          if-no-files-found: ignore
+          retention-days: 14
