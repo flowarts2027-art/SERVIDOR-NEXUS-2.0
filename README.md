@@ -1,33 +1,30 @@
 # Nexus 2.0 — Recuperação segura
 
-Repositório novo depois do bloqueio da conta GitHub anterior. **Este repositório ainda NÃO contém o código recuperado do Nexus.**
+## Estado em 10/10/2026
 
-## Inventário confirmado (10/10/2026)
+- **Código do Worker recuperado LOCALMENTE; ainda NÃO enviado a este repositório.**
+- Repositório novo: `flowarts2027-art/SERVIDOR-NEXUS-2.0`.
+- GitHub anterior: `globalplay27/SERVIDOR-GLOBAL-PLAY` (conta bloqueada).
+- Worker em produção: `servidor-nexus`, hospedado na Cloudflare. Não alterar o deploy, D1, R2 nem secrets durante a recuperação.
+- Login Wrangler na Cloudflare concluído com sucesso no computador do proprietário.
+- O comando `wrangler init --from-dash` falhou por incompatibilidade com **Assets**; a recuperação foi feita por outro procedimento.
+- Backup local encontrado no histórico: `C:\\NEXUS-RECUPERACAO\\nexus-worker-backup.bin` (~757.598 bytes).
+- JavaScript extraído no histórico: `C:\\NEXUS-RECUPERACAO\\nexus-extraido\\index.js` (~757.415 bytes).
+- `node --check` no JavaScript extraído terminou sem erro de sintaxe reportado.
+- **Não repetir comandos de download/extração:** essa etapa já foi concluída no computador.
+- O GitHub novo ainda **não contém** o código resgatado; o arquivo local não está disponível automaticamente para esta integração.
 
-- GitHub novo: `flowarts2027-art/SERVIDOR-NEXUS-2.0`.
-- GitHub antigo: `globalplay27/SERVIDOR-GLOBAL-PLAY`, indisponível pela conta vinculada.
-- Registros anteriores indicam deploy do Worker `servidor-nexus` em 09/10/2026 na Cloudflare, associado a D1 e R2.
-- O proprietário informa que a conta Cloudflare continua operando. **Não executar deploy, delete nem reset dos dados** durante a recuperação.
+## Próximo passo (sem repetir PowerShell)
 
-## Primeiro passo no Windows
+1. Transferir o arquivo `nexus-extraido/index.js` já recuperado para um ambiente autorizado de análise. Pode ser por envio de arquivo nesta conversa ou por um fluxo no **modo Work** que tenha acesso à cópia do arquivo / conta Cloudflare.
+2. **Revisar segredos e dados sensíveis antes de qualquer publicação.** Este repositório está **PÚBLICO**. Não colocar nele tokens, chaves, credenciais, arquivos `.env` ou dados de clientes.
+3. Só depois de uma revisão, reconstruir o projeto (configuração Wrangler, recursos D1/R2, arquivos estáticos e fluxos GitHub Actions) em branch/ambiente de teste.
+4. Validar saúde, painel, agentes, Instagram e geração de vídeo antes de modificar o ambiente de produção.
 
-Instale Node.js, abra o PowerShell numa pasta vazia e execute:
+## Limites do backup
 
-```powershell
-npx wrangler@4 login
-npx wrangler@4 init --from-dash servidor-nexus --no-delegate-c3
-```
+O `index.js` extraído pode ser um **bundle de produção**, não uma cópia exata do antigo repositório com histórico Git, assets e arquivos de configuração. D1, R2 e segredos da Cloudflare requerem inventário separado. A existência de um backup local **não confirma** recuperação integral do Nexus.
 
-O login deve acontecer pela tela oficial da Cloudflare. O segundo comando tenta obter uma cópia **local** do Worker. Se a CLI pedir permissão para publicar/deploy, **não autorize**. Documentação oficial: https://developers.cloudflare.com/workers/wrangler/commands/workers/#init
+## Regra de segurança
 
-## Próximas etapas
-
-1. Verificar os arquivos recuperados e criar ZIP local.
-2. Identificar arquivos estáticos, configurações, agendamentos e recursos D1/R2 (recuperação separada).
-3. Remover segredos e dados pessoais antes de qualquer commit.
-4. Reconstruir código, testes e fluxos GitHub Actions somente em ambiente de teste.
-5. Validar painéis, agentes, Instagram e editor de vídeo antes de qualquer alteração em produção.
-
-**Atenção: este repositório está PÚBLICO.** Não enviar tokens, senhas, `.env`, `.dev.vars`, credenciais Meta/Instagram, chaves OpenAI, dados de clientes, nem backups D1/R2. Mude a visibilidade para privada antes de importar qualquer material confidencial.
-
-A exportação do Worker pode não recuperar todo o código-fonte original, assets nem histórico Git. Recuperar a versão publicada não é o mesmo que restaurar o projeto integralmente.
+**Não fazer deploy, delete ou reset de produção durante a recuperação.**
