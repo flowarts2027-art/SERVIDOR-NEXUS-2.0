@@ -3984,7 +3984,7 @@ async function dispatchVideoSearch(env, clientId, query, type, aliases = []) {
   const callbackToken = crypto.randomUUID() + crypto.randomUUID();
   const cleanAliases = [...new Set([query, ...Array.isArray(aliases) ? aliases : []].map((value) => String(value || "").trim()).filter(Boolean))].slice(0, 4);
   await env.DB.prepare("INSERT INTO video_jobs(id,client_id,source_object_key,status,settings_json,result_json,created_at,updated_at) VALUES(?1,?2,'','searching',?3,'{}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)").bind(id, clientId, JSON.stringify({ contentTitle: query, searchType: type === "series" ? "series" : "movie", searchAliases: cleanAliases, githubRenderToken: callbackToken, searchOnly: true })).run();
-  const r = await fetch("https://api.github.com/repos/" + (env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY") + "/dispatches", {
+  const r = await fetch("https://api.github.com/repos/" + (env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0") + "/dispatches", {
     method: "POST",
     headers: { authorization: "Bearer " + token, accept: "application/vnd.github+json", "content-type": "application/json", "user-agent": "NEXUS" },
     body: JSON.stringify({ event_type: "video-youtube-search", client_payload: {
@@ -4897,7 +4897,7 @@ async function startYouTubeVideoIngest(env, clientId, jobId) {
       });
     }
   }
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
   const [owner, name] = repo.split("/");
   let response;
   try {
@@ -5145,7 +5145,7 @@ async function startGitHubVideoRender(env, clientId, jobId, patch = {}) {
     })
   ).run();
   if (!claim?.meta?.changes) throw new Error("video_render_in_progress");
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
   const [owner, name] = repo.split("/");
   let response;
   try {
@@ -6778,7 +6778,7 @@ async function dispatchReel(env, client, row, payload) {
     await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id, JSON.stringify(payload)).run();
   } else if (current.sourceImage) sourceImage = current.sourceImage;
   if (!/^https:\/\//i.test(sourceImage)) throw new Error("reel_source_image_required");
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
   const [owner, name] = repo.split("/");
   const callbackToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
   const base = publicBase(env);
