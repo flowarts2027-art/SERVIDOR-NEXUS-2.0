@@ -15,9 +15,13 @@
 
 1. Verificar e preservar os **assets estáticos dos painéis** vinculados a `ASSETS`, que podem não estar incluídos no bundle ou no backup R2. Há um script de coleta pública em `scripts/recuperar-assets-publicos.ps1`, mas sua execução e completude ainda não foram confirmadas.
 2. Reconstruir ou conferir `wrangler.toml`, routes, triggers/cron, Durable Objects e todos os bindings, sem publicar segredos.
-3. Criar testes e automações de CI/CD com **deploy bloqueado por padrão**. A pasta `.github/workflows` não consta na branch na verificação de 10/10/2026.
+3. **Criado** workflow `.github/workflows/recuperacao-validacao.yml` para `node --check`, compilação e diagnóstico Python, **sem deploy nem credenciais**. O arquivo está na branch; o resultado de execução do GitHub Actions ainda precisa ser confirmado.
 4. Validar funcionalmente o painel master/cliente, as APIs, Instagram e o módulo de **geração de vídeo** (inclusive auxiliar Windows), primeiro sem operações destrutivas e só depois com teste autorizado.
 5. Planejar eventual deploy com validação e rollback; **nenhuma restauração em produção é autorizada por este documento**.
+
+## Diagnóstico Python (somente leitura)
+
+O script `scripts/diagnostico_nexus.py` foi incluído nesta branch. Usa apenas a biblioteca padrão do Python. A partir da pasta do repositório, executar `python scripts/diagnostico_nexus.py` para inventariar o bundle recuperado, conferir SHA-256 dos dumps locais disponíveis, testar rapidamente cópias SQLite já restauradas e detectar arquivos ausentes. O script **não restaura nem altera dados**, não usa chaves, não publica nada e não substitui testes do painel ou vídeo. Para CI, a variante `python scripts/diagnostico_nexus.py --repo-only` verifica somente o repositório. A execução local no PC do proprietário ainda não foi confirmada.
 
 ## Segurança e arquivos locais
 
