@@ -55,3 +55,12 @@ Nao alterar a producao, nao trocar `NEXUS_SECRET_KEY`, nao publicar secrets e na
 - Nenhum arquivo SQL, segredo, URL assinada de exportacao nem dado de cliente publicado no repositorio GitHub.
 - Esta confirmacao e baseada na saida do PowerShell; o assistente ainda nao inspecionou os dumps localmente.
 - Proxima validacao: tamanho e hash, estrutura dos SQL e eventual restauracao em ambiente **isolado**, nunca no D1 de producao.
+
+## Conferencia local de hash e estrutura - 10/10/2026
+- Proprietario executou verificacao local com `Get-FileHash` e encontrou hashes SHA-256 iguais aos registrados originalmente para ambos os exports.
+- `globalplay-site-db.sql`: 5.675 bytes; busca por `CREATE TABLE` retornou `True`.
+- `servidor-nexus.sql`: 39.559.101 bytes; busca por `CREATE TABLE` retornou `True`.
+- Mensagem apresentada: `VERIFICACAO LOCAL CONCLUIDA`.
+- Resultado: integridade de transporte/copia verificada. Nao equivale a validacao semantica do dump nem teste de importacao.
+- Etapa seguinte: restaurar ambos os dumps em SQLite **local isolado**, executar `PRAGMA integrity_check`, consultar somente contagem de tabelas e linhas, sem imprimir registros sensiveis.
+- **Nenhum dump, credencial, URL de exportacao ou informacao privada foi publicada no GitHub.**
