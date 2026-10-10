@@ -10,3 +10,19 @@ NEXUS-RECUPERACAO-*/
 **/*.db
 *.zip
 *.log
+
+# Backups e dados reais devem permanecer privados
+backups-cloudflare/
+**/*.sql
+**/*.sqlite3
+**/*.sha256.txt
+**/manifesto-r2.csv
+nexus-worker-backup.bin
+nexus-extraido/
+*.bin
+
+# Python local
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
