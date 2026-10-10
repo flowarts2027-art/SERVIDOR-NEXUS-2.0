@@ -1,0 +1,42 @@
+{
+  // deploy-refresh: 2026-09-30-d1-read-budget
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "servidor-nexus",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "keep_vars": true,
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "vars": {
+    "APP_NAME": "Servidor Nexus",
+    "RAGNAR_CLIENT_ID": "ragnar-one",
+    "CLOUDFLARE_AUTOMATION_ACTIVE": "true",
+    "PUBLIC_BASE_URL": "https://servidor-nexus.diamantehinode2015.workers.dev",
+    "NEXUS_AI_PROVIDER": "local-first",
+    "NEXUS_OPENAI_DAILY_TOKEN_LIMIT": "30000",
+    "NEXUS_OPENAI_MAX_OUTPUT_TOKENS": "1200",
+    "NEXUS_DOWNLOADER_URL": "https://nexus-video-engine.onrender.com",
+    "INSTAGRAM_APP_ID": "1053178344199625",
+    "WHATSAPP_CLIENT_ID": "globalplay-streaming",
+    "WHATSAPP_GRAPH_VERSION": "v26.0",
+    "WHATSAPP_SEND_LIMIT_PER_HOUR": "30"
+  },
+  "assets": {
+    "directory": "../public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/login", "/portal*", "/client-lite.js", "/client-lite.css", "/master*", "/api/*", "/index.html"]
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "servidor-nexus",
+    "database_id": "3d440c4a-8925-4526-8d29-03f9eb227d60",
+    "migrations_dir": "migrations"
+  }],
+  "images": {"binding": "IMAGES"},
+  "r2_buckets": [{"binding": "MEDIA", "bucket_name": "servidor-nexus-media"}]
+}

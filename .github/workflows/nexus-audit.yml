@@ -1,0 +1,51 @@
+name: Nexus read-only production audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/nexus-audit.yml
+      - .github/scripts/nexus-audit.mjs
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Read sanitized Nexus production health
+        env:
+          NEXUS_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/autonomy-health
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 20 "$NEXUS_HEALTH_URL" > /tmp/nexus-health.json
+          jq '{
+            ok,
+            automationActive,
+            expectedAgents,
+            scheduler,
+            clients: [.clients[]? | {
+              clientId,
+              status,
+              instagramConnection,
+              publisher: ([.agents[]? | select(.agent == "PUBLISHER")][0] // null),
+              publishingDiagnostic: {
+                posts: (.publishingDiagnostic.posts[:12] // []),
+                jobs: (.publishingDiagnostic.jobs[:12] // []),
+                openai: .publishingDiagnostic.openai
+              },
+              leadCapture
+            }]
+          }' /tmp/nexus-health.json
+          jq -e '
+            .ok == true and
+            .automationActive == true and
+            .scheduler.healthy == true and
+            ([.clients[]? |
+              .allAgentsSeen == true and
+              .instagramConnection.connected == true and
+              .instagramConnection.tokenValid == true and
+              .instagramConnection.accountMatches == true
+            ] | all)
+          ' /tmp/nexus-health.json >/dev/null

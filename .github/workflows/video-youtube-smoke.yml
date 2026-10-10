@@ -1,0 +1,77 @@
+name: NEXUS YouTube Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/video-youtube-smoke.yml"
+      - ".github/workflows/video-youtube-search.yml"
+      - ".github/workflows/video-youtube-ingest.yml"
+      - "cloudflare/src/video-catalog.js"
+      - "cloudflare/src/github-video-render.js"
+      - "cloudflare/src/portal.js"
+      - "public/client-lite.js"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install media tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          python3 -m pip install --disable-pip-version-check --quiet --upgrade "yt-dlp[default]"
+
+      - name: Verify YouTube search discovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          yt-dlp --flat-playlist --dump-single-json --skip-download --socket-timeout 20             "ytsearch5:Reacher trailer oficial dublado português Brasil" > /tmp/youtube-search.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('/tmp/youtube-search.json'))
+          rows=[x for x in data.get('entries',[]) or [] if x and x.get('id') and x.get('title')]
+          assert rows, 'youtube_search_empty'
+          assert any(len(str(x.get('id'))) == 11 for x in rows), 'youtube_video_id_missing'
+          print('YOUTUBE_SEARCH_OK', rows[0].get('title'))
+          PY
+
+      - name: Verify safe source fallback contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import assert from 'node:assert/strict';
+          import { catalogPreviewUrl } from './cloudflare/src/video-catalog.js';
+          assert.equal(
+            catalogPreviewUrl('https://video-ssl.itunes.apple.com/path/trailer.m4v'),
+            'https://video-ssl.itunes.apple.com/path/trailer.m4v'
+          );
+          assert.equal(catalogPreviewUrl('https://youtube.com/watch?v=0123456789_'), '');
+          assert.equal(catalogPreviewUrl('https://evil.test/trailer.mp4'), '');
+          console.log('CATALOG_PREVIEW_GUARD_OK');
+          NODE
+          grep -Fq 'generate.textContent = "Gerar vídeo"' public/client-lite.js
+          grep -Fq 'action: useLocalHelper ? "local_generate" : "server_generate"' public/client-lite.js
+          grep -Fq 'useLocalHelper = helperAvailable && !helperBusy && !helperOutdated' public/client-lite.js
+          grep -Fq 'body.action === "server_generate"' cloudflare/src/portal.js
+          ! grep -Fq 'window.open(' public/client-lite.js
+          grep -Fq 'fetch("http://127.0.0.1:8765/handoff"' public/client-lite.js
+          grep -Fq 'Assistir trailer no YouTube' public/client-lite.js
+          grep -Fq 'downloadOnly: action === "download"' cloudflare/src/portal.js
+          grep -Fq 'const directSourceUrl = catalogPreviewUrl(metadata.previewUrl)' cloudflare/src/portal.js
+          grep -Fq 'const sourceProvider = directSourceUrl ? "catalog-preview" : "youtube"' cloudflare/src/portal.js
+          grep -Fq 'const sourceUrl = directSourceUrl || youtubeSourceUrl' cloudflare/src/portal.js
+          grep -Fq 'settings.ingestTransport = "local-helper"' cloudflare/src/portal.js
+          grep -Fq 'url.pathname === "/api/local-video-ingest/status"' cloudflare/src/github-video-render.js
+          grep -Fq 'videoSourceDownloadMatch' cloudflare/src/portal.js
+          grep -Fq 'AbortSignal.timeout(30000)' public/client-lite.js
+          echo "YOUTUBE_ACTIONS_OK"

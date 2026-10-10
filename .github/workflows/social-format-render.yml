@@ -1,0 +1,52 @@
+name: Social Format Render
+
+on:
+  repository_dispatch:
+    types: [social-format-render]
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    if: github.event.client_payload.client_id != ''
+    steps:
+      - name: Validate payload
+        shell: bash
+        env:
+          POST_ID: ${{ github.event.client_payload.post_id }}
+          CLIENT_ID: ${{ github.event.client_payload.client_id }}
+          CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+          CALLBACK_URL: ${{ github.event.client_payload.callback_url }}
+          SOURCE_IMAGE: ${{ github.event.client_payload.source_image }}
+        run: |
+          set -euo pipefail
+          test -n "$POST_ID"
+          test -n "$CLIENT_ID"
+          test -n "$CALLBACK_TOKEN"
+          case "$CALLBACK_URL" in https://servidor-nexus.diamantehinode2015.workers.dev/api/internal/social-format-render/upload) ;; *) exit 1 ;; esac
+          case "$SOURCE_IMAGE" in https://servidor-nexus.diamantehinode2015.workers.dev/media/posts/*) ;; *) exit 1 ;; esac
+
+      - name: Render vertical Reel
+        shell: bash
+        env:
+          SOURCE_IMAGE: ${{ github.event.client_payload.source_image }}
+          DURATION: ${{ github.event.client_payload.duration }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+          curl --fail --silent --show-error --location --max-time 60 "$SOURCE_IMAGE" -o /tmp/source.jpg
+          duration="${DURATION:-10}"
+          ffmpeg -hide_banner -loglevel error -loop 1 -i /tmp/source.jpg -t "$duration" -r 30             -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='min(1.0+on*0.0002,1.06)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1080x1920:fps=30,format=yuv420p"             -c:v libx264 -preset medium -crf 20 -movflags +faststart -an /tmp/reel.mp4
+          test -s /tmp/reel.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 /tmp/reel.mp4)" = "1080x1920"
+
+      - name: Upload Reel to NEXUS
+        shell: bash
+        env:
+          POST_ID: ${{ github.event.client_payload.post_id }}
+          CLIENT_ID: ${{ github.event.client_payload.client_id }}
+          CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+          CALLBACK_URL: ${{ github.event.client_payload.callback_url }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 180             -X PUT             -H "content-type: video/mp4"             -H "x-nexus-post-id: $POST_ID"             -H "x-nexus-client-id: $CLIENT_ID"             -H "x-nexus-callback-token: $CALLBACK_TOKEN"             --data-binary @/tmp/reel.mp4             "$CALLBACK_URL" | jq .

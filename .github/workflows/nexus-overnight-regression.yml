@@ -1,0 +1,106 @@
+name: NEXUS Overnight Regression
+
+on:
+  workflow_run:
+    workflows: ["NEXUS CI"]
+    types: [completed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexus-overnight-regression
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install media tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core python3-pil
+      - name: Panel JavaScript and Worker syntax
+        run: |
+          node --check public/app.js
+          node --check public/client-lite.js
+          for file in cloudflare/src/*.js; do node --check "$file"; done
+      - name: Visual and backend regression tests
+        run: |
+          node --test cloudflare/test/*.test.mjs
+          python scripts/test_portuguese_trailer.py
+          python -m unittest discover -s scripts/local-youtube -p 'test_*.py'
+      - name: Generate real template fixture
+        run: |
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=navy:s=640x360:r=30:d=3' -c:v libx264 /tmp/template-source.mp4
+          TITLE=Reacher OVERVIEW='Regressão automatizada do modelo Nexus.' RELEASE_YEAR=2026 MEDIA_TYPE=SÉRIE             /usr/bin/python3 scripts/render_video_template.py --source /tmp/template-source.mp4 --output /tmp/template-output.mp4 --work /tmp/template-regression
+          ffmpeg -hide_banner -loglevel error -i /tmp/template-output.mp4 -f null -
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 /tmp/template-output.mp4)" = '1080x1920'
+      - name: Client workspace end-to-end regression
+        env:
+          NEXUS_E2E_SOURCE: /tmp/template-source.mp4
+          NEXUS_E2E_RESULT: /tmp/template-output.mp4
+        run: node scripts/test-client-workspace.mjs
+      - name: Production read-only portal checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://servidor-nexus.diamantehinode2015.workers.dev"
+          curl --fail --silent --show-error --max-time 20 "$base/portal?regression=$GITHUB_RUN_ID" > /tmp/portal.html
+          curl --fail --silent --show-error --max-time 20 "$base/client-lite.js?regression=$GITHUB_RUN_ID" > /tmp/client-lite.js
+          grep -Fq 'data-tab="videos"' /tmp/portal.html
+          grep -Fq 'id="video-job-list"' /tmp/portal.html
+          grep -Fq 'async function loadVideoJobs()' /tmp/client-lite.js
+          curl --fail --silent --show-error --max-time 20 "$base/api/autonomy-health" > /tmp/health.json
+
+          # The public health payload includes test clients. A delayed sandbox client
+          # must not hide production regressions or make production checks fail.
+          jq -e '.scheduler.healthy == true' /tmp/health.json >/dev/null
+          for client in globalplay-streaming ragnar-one; do
+            jq -e --arg client "$client" '
+              .clients[]
+              | select(.clientId == $client)
+              | .status == "online"
+                and .allAgentsSeen == true
+                and .allAgentsFresh == true
+                and .cycleHealth.status == "success"
+                and .cycleHealth.cycleOverdue == false
+            ' /tmp/health.json >/dev/null
+          done
+      - name: Verify managed Instagram account readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://servidor-nexus.diamantehinode2015.workers.dev"
+          curl --fail --silent --show-error --max-time 25 "$base/api/instagram-publishing-health" > /tmp/instagram-health.json
+          # Presence + explicit account binding prevents empty lists and wrong accounts
+          # from passing the overnight readiness check.
+          jq -e '
+            .ok == true
+            and ([.clients[]? | .clientId] | sort == ["globalplay-streaming", "ragnar-one"])
+            and ([.clients[]? | .connected == true and .tokenValid == true and .accountMatches == true] | all)
+          ' /tmp/instagram-health.json > /dev/null
+          jq '{ok, clients: [.clients[] | {clientId, connected, tokenValid, accountMatches, validation}]}' /tmp/instagram-health.json
+
+      - name: Save regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-regression-${{ github.run_id }}
+          path: |
+            /tmp/health.json
+            /tmp/instagram-health.json
+            /tmp/template-output.mp4
+          if-no-files-found: ignore
+          retention-days: 14
