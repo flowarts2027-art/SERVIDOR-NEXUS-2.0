@@ -19,13 +19,13 @@
 ## Backups — estado real
 - Bookmarks D1 foram registrados para ambos os bancos, mas **nao constituem backups independentes**.
 - **NENHUM dump SQL D1 concluido**: a exportacao nao foi autorizada no prompt interativo.
-- **NENHUMA copia dos objetos R2 concluida**: apenas o inventario do bucket.
+- **Backup R2 reportado como concluido e verificado** em 10/10/2026 (detalhes abaixo).
 - A exportacao SQL remota de D1 pode tornar o banco temporariamente indisponivel durante a operacao. Agendar janela segura antes da exportacao.
 - Backups de dados, secrets, tokens, configuracoes privadas e arquivos de clientes nao devem ser publicados neste GitHub.
 
 ## Pendencias em ordem segura
 1. Conferir IDs reais associados aos bindings `DB` e `MEDIA` a partir do arquivo local da versao ativa; nao divulgar valores de secrets.
-2. Fazer copia integral e verificar os 123 objetos R2 usando apenas operacoes de leitura.
+2. Confirmar a preservacao privada do manifesto e dos 123 objetos R2 (copias ja baixadas localmente).
 3. Escolher janela de baixa atividade para exportar os dois bancos D1 e conferir arquivos e hashes.
 4. Documentar triggers, routes, demais bindings e configuracoes sem segredos.
 5. Reconstruir estrutura e pipeline de testes em ambiente isolado, sem deploy automatico.
@@ -38,3 +38,11 @@ Nao alterar a producao, nao trocar `NEXUS_SECRET_KEY`, nao publicar secrets e na
 - O binding `DB` aponta para o banco D1 UUID `3d440c4a-8925-4526-8d29-03f9eb227d60`, correspondente ao nome `servidor-nexus`.
 - O binding `MEDIA` aponta para o bucket `servidor-nexus-media`.
 - Confirmacao obtida pela leitura local do JSON da versao ativa pelo proprietario; sem alteracao em producao.
+
+## Backup R2 confirmado em 10/10/2026
+- O proprietario executou o script local e informou a mensagem `BACKUP R2 CONCLUIDO E VERIFICADO`.
+- Resultado reportado: 123 de 123 objetos, 24.988.330 bytes, nenhuma modificacao no bucket remoto.
+- Diretorio privado: `C:\NEXUS-RECUPERACAO\backups-cloudflare\r2-20261010-100815`.
+- Inventario e hashes no manifesto local `manifesto-r2.csv` (nao incluido no repositorio publico).
+- Confirmacao baseada no resultado do PowerShell do proprietario; arquivos nao foram acessados ou auditados diretamente pelo assistente.
+- **Ainda pendente**: dumps completos SQL de `servidor-nexus` e `globalplay-site-db`. A exportacao D1 pode indisponibilizar consultas durante a operacao. Nao iniciar sem uma janela segura.
