@@ -54,7 +54,7 @@ Nao alterar a producao, nao trocar `NEXUS_SECRET_KEY`, nao publicar secrets e na
 - `Get-FileHash -Algorithm SHA256` executado para ambos os dumps, salvando arquivos `.sha256.txt`.
 - Nenhum arquivo SQL, segredo, URL assinada de exportacao nem dado de cliente publicado no repositorio GitHub.
 - Esta confirmacao e baseada na saida do PowerShell; o assistente ainda nao inspecionou os dumps localmente.
-- Proxima validacao: tamanho e hash, estrutura dos SQL e eventual restauracao em ambiente **isolado**, nunca no D1 de producao.
+- Validacao de importacao SQLite local concluida (ver abaixo); ainda faltam testes funcionais de aplicacao.
 
 ## Conferencia local de hash e estrutura - 10/10/2026
 - Proprietario executou verificacao local com `Get-FileHash` e encontrou hashes SHA-256 iguais aos registrados originalmente para ambos os exports.
@@ -64,3 +64,13 @@ Nao alterar a producao, nao trocar `NEXUS_SECRET_KEY`, nao publicar secrets e na
 - Resultado: integridade de transporte/copia verificada. Nao equivale a validacao semantica do dump nem teste de importacao.
 - Etapa seguinte: restaurar ambos os dumps em SQLite **local isolado**, executar `PRAGMA integrity_check`, consultar somente contagem de tabelas e linhas, sem imprimir registros sensiveis.
 - **Nenhum dump, credencial, URL de exportacao ou informacao privada foi publicada no GitHub.**
+
+## Teste de restauracao local concluido - 10/10/2026
+- O proprietario executou importacao dos dois dumps SQL usando Python 3.15 e sqlite3, em bancos **locais**, sem tocar na Cloudflare.
+- `globalplay-site-db.sql`: restauracao OK, **9 tabelas**, `PRAGMA integrity_check` retornou **ok**.
+- `servidor-nexus.sql`: restauracao OK, **23 tabelas**, `PRAGMA integrity_check` retornou **ok**.
+- Diretorio da restauracao local: `C:\NEXUS-RECUPERACAO\backups-cloudflare\d1-20261010-102025\teste-python-20261010-103706`.
+- Mensagem observada: `TESTE LOCAL CONCLUIDO COM SUCESSO`.
+- Esta validacao comprova que os dumps podem ser importados e passaram na verificacao interna do SQLite local; nao comprova ainda funcionamento de APIs, cron, Durable Objects, assets, midias, Instagram ou segredos no ambiente restaurado.
+- Manter os arquivos SQL/R2/SQLite e valores de secrets em local privado; **nao** fazer upload ao GitHub publico.
+- Proximos passos: inventario completo de rotas, cron, Durable Objects, assets e declaracoes de bindings, preparando `wrangler.toml` sem credenciais e uma implantacao apenas de teste (sem publicar nada em producao).
