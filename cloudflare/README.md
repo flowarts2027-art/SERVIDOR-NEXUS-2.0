@@ -68,3 +68,7 @@ Para detalhes, consulte `ARCHITECTURE.md`.
 <!-- deploy-sync: live-post-20260925-1 -->
 
 <!-- production-sync: growth-30d-v1 -->
+
+## Deploy automático
+
+Cada push na `main` que muda `cloudflare/` ou `public/` publica o Worker pelo GitHub Actions (`.github/workflows/deploy-nexus-cloudflare.yml`). O token fica no secret `CLOUDFLARE_API_TOKEN` do repositório.
