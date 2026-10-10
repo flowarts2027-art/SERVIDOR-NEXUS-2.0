@@ -33,3 +33,8 @@
 
 ## Regra de seguranca
 Nao alterar a producao, nao trocar `NEXUS_SECRET_KEY`, nao publicar secrets e nao aplicar restauracoes em D1/R2 durante este inventario.
+
+## Vinculos verificados na configuracao ativa
+- O binding `DB` aponta para o banco D1 UUID `3d440c4a-8925-4526-8d29-03f9eb227d60`, correspondente ao nome `servidor-nexus`.
+- O binding `MEDIA` aponta para o bucket `servidor-nexus-media`.
+- Confirmacao obtida pela leitura local do JSON da versao ativa pelo proprietario; sem alteracao em producao.
