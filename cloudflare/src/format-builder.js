@@ -302,6 +302,19 @@ export async function runFormatBuilder(env, client, options = {}) {
       if(build.status==="approved")built++;else pending++;
       items.push({id:row.id,format,status:build.status});
     } catch (error) {
+      const message=String(error?.message||error);
+      // Sem acesso ao GitHub (token ausente, inválido ou de conta suspensa), o Reel
+      // sai como post de imagem para não travar a publicação aprovada.
+      if(format==="reel"&&/github_actions_token_missing|social_reel_dispatch_failed_40[13]/.test(message)
+        &&/^https:\/\//i.test(String(payload.imageUrl||payload.publicImageUrl||""))){
+        payload.formatBuild={status:"approved",kind:"post",fallbackFrom:"reel",fallbackReason:message.slice(0,120),imageUrl:String(payload.imageUrl||payload.publicImageUrl||""),builtAt:new Date().toISOString()};
+        payload.creativeFeatures={...(payload.creativeFeatures||{}),requestedFormat:"post",plannedFormat:"reel"};
+        payload.qualityGates.formatBuilder="approved";
+        await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
+        built++;
+        items.push({id:row.id,format:"post",status:"approved",fallbackFrom:"reel"});
+        continue;
+      }
       failed++;
       payload.formatBuild={...(payload.formatBuild||{}),status:"failed",kind:format,attempts:Math.max(0,Number(payload?.formatBuild?.attempts||0))+1,error:String(error?.message||error).slice(0,180),failedAt:new Date().toISOString()};
       payload.qualityGates.formatBuilder="rejected";

@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- fix: COPY CHIEF aceita CTA com "Salve", "EXEMPLO", "comentários" e "Responda" (antes recusava "Salve para usar depois").
+- fix: Reel aprovado vira post de imagem quando o GitHub recusa o render (token ausente/inválido ou conta suspensa). Em produção o token do Worker é da conta globalplay27 suspensa (403 "account was suspended").
 - fix: imagens da Flow Arts saem limpas (sem texto sobreposto); o overlay de texto falhava (`IMAGES_TRANSFORM_ERROR 9432 missing field font`) e o DESIGNER descartava a imagem e pedia outra.
 - fix: revisor visual julga a Flow Arts pelo perfil de marketing (sem exigência de TV/entretenimento).
 - feat: `POST /api/master/clients/:id/reset-agent-memory` (zera estado aprendido dos agentes e rascunhos vencidos de perfis antigos).

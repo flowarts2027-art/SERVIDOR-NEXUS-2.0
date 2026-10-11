@@ -217,7 +217,7 @@ async function runCopyChief(env,client,options){
   const reviews=[];
   for(const row of rows){
     const c=String(row.caption||"");
-    const hasCta=/quero|comente|siga|salva|envie|compartilh/i.test(c);
+    const hasCta=/quero|exemplo|coment|siga|salv|envie|compartilh|responda/i.test(c);
     const first=c.split(/\n/)[0].trim();
     const hookStrong=first.length>=18&&first.length<=140;
     const genericFiller=/descoberta,? entretenimento,? utilidade|motivo claro para seguir o perfil|ângulo \d+:|voce escolheria qual opcao|você escolheria qual opção/i.test(c);

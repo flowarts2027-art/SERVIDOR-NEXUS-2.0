@@ -3,7 +3,7 @@
 ## Próximo passo exato (2026-10-11 manhã, após execução)
 - Feito e verificado em produção: painel do cliente novo (celular), Master com 6 menus, Integrações com todos os clientes, campanha Flow Arts gerando posts novos (12:00 Reels, 19:00 carrossel), STORY/VIRAL com perfil da marca.
 - Bloqueio atual das imagens: `openai_daily_budget_reached` (limite diário de 30.000 tokens do cliente consumido pelos agentes de texto). Decisão do proprietário: aumentar o limite diário da Flow Arts no Master (Visão geral › Uso por cliente) ou manter.
-- Reels: o Worker tem token do GitHub (Reels não caem para imagem), mas não foi confirmado se ele tem acesso ao repositório novo; conferir o primeiro render.
+- Reels: CONFIRMADO que o token GitHub do Worker é da conta suspensa (403). Para Reels animados, o proprietário precisa criar um token na conta flowarts2027-art e salvar como secret `GITHUB_ACTIONS_TOKEN` no Worker. Até lá, Reels saem como imagem.
 - Funil EU QUERO: o Nexus não responde comentários nem DM; construir resposta automática (private reply) com link wa.me/5521964816185 e descobrir de onde vem o texto que leva ao site da Global Play.
 - `globalplay-streaming` segue online (travado para publicar); sugerir pausar.
 
