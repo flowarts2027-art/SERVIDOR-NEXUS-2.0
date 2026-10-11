@@ -11,7 +11,8 @@
 3. FEITO 15h30: lista de 10 cafés (Tijuca, Botafogo, Méier; dados do Google Maps) e mensagem base com frase pessoal por café, no Claude Docs "Prospecção Flow Arts — 10 cafés do Rio" (553fbc57-d271-43e3-90f3-2bf7efc6ad11), com status por café. Rodrigo envia; máximo 3 por dia; nenhuma mensagem foi enviada por Claude.
 4. Medir o custo de OpenAI por cliente durante 1 semana (oferta R$ 297 + R$ 697).
 5. Conferir em /api/portal/insights se `follows`/`profileVisits` chegam (permissão instagram_business_manage_insights não está no caso de uso do app Meta).
-6. Pendente da lista Castilho: opção B — CEO + Marketing + Vendas no Claude Code do PC.
+6. FEITO: departamentos CEO/Marketing/Vendas (e819ebf); standup do CEO rodou no PC (bd01d83).
+7. Publicar o app Meta: falta (a) Verificação da empresa "Rodrigo Carvalho" (2082464929068014, não verificada; Rodrigo envia documentos), (b) Verificação do acesso (provedor de tecnologia, depois da a), (c) Análise do app para instagram_business_manage_comments / manage_messages / manage_insights com vídeos de demonstração.
 
 ## Próximo passo exato (2026-10-11 14h BRT)
 1. Rodrigo reconecta o Instagram da Flow Arts pelo painel (logado como flowarts2026, aceitando todas as permissões).

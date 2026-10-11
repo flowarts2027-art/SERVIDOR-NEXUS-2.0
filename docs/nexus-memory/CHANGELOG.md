@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- feat (8ceda17, deploy ~15h56 BRT): páginas públicas /privacidade (com #exclusao-de-dados) e /termos, conferidas no ar.
+- Meta app NEXUS IA CENTRAL > Configurações básicas (com OK do Rodrigo, 15h58): e-mail de contato flowarts2027@gmail.com (era o da Global Play), Política de Privacidade, Termos e Instruções de exclusão apontando para as páginas acima (antes: Google Ads e facebook.com), categoria Negócio e Páginas (era Entretenimento). Conferido após recarregar.
 - feat (ff7e4fb, deploy ~15h53 BRT): "Lembrar a senha" no login do Master (novo) e autopreenchimento no login do cliente, via gerenciador de senhas do navegador (Credential Management API). Pedido do Rodrigo.
 - Card de custo conferido no ar às 15h49: US$ 2,75 em 7 dias, 2 posts com imagem → US$ 1,37/post, US$ 16,49 para 12 posts/mês (superestimado: inclui gasto da Global Play e imagens refeitas). Café Brisa aparece online no Master (2.045 tokens, 0 posts).
 - feat (4e35a10, deploy ~15h50 BRT): card "Custo da IA por cliente" no Master (GET /api/master/openai/cost-report?days=7): custo real OpenAI (chave admin) ÷ posts com imagem; custo por post e de 1 cliente com 12 posts/mês. Valores reais ainda não conferidos (precisa de login no Master).
