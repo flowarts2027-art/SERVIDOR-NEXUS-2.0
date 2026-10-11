@@ -351,7 +351,9 @@ function renderHome() {
 
   $("#home-leads").innerHTML = state.leads.length
     ? state.leads.slice(0, 3).map(leadHtml).join("")
-    : `<p class="muted">Ainda não chegou nenhum contato. Quando alguém comentar nos seus posts pedindo informação, aparece aqui.</p>`;
+    : DEMO
+      ? `<p class="muted">No painel de verdade, quem comenta pedindo informação aparece aqui, pronto para você chamar no WhatsApp.</p>`
+      : `<p class="muted">Ainda não chegou nenhum contato. Quando alguém comentar nos seus posts pedindo informação, aparece aqui.</p>`;
 }
 
 /* ---------- Números ---------- */
