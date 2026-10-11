@@ -21,6 +21,9 @@ Pedido do Rodrigo: ver o que dá para trazer do blog castilhoia.com para o Nexus
 - Regra "a IA não inventa" também nas respostas de DM e WhatsApp.
 - Comentário com palavra-chave → material na DM (já existe; depende do acesso da Meta).
 - Inspiração apenas; não copiar textos do site.
+- 14h10: Rodrigo escolheu começar pelo calendário com capas (feito, commit 0bfdf7b). Depois: prompt de entrevista do cliente novo; prompt reunião → proposta.
+- Skills de marketing avaliadas (artigo 4-claude-skills-marketing; repositórios conferidos no GitHub, todos com LICENSE): recomendada primeiro coreyhaines31/marketingskills no Claude Code do PC; claude-ads quando começar tráfego pago; as outras duas depois. Ler o SKILL.md antes de instalar.
+- Conexão da Flow Arts já tem o escopo instagram_business_manage_comments (conectada 11/10 09:38, conta MEDIA_CREATOR); reconectar não resolve o auto-responder. Caminho: App Review / acesso avançado.
 
 ## Próximo passo exato (2026-10-10 noite)
 0. Campanha de 30 dias da Flow Arts ativa no código (profileVersion 2026-10-11e). Conferir no painel os posts do dia com formato da campanha; pedir ao proprietário o token do GitHub para os Reels.

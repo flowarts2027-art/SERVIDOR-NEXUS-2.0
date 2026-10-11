@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- feat (0bfdf7b, aguardando OK para push): calendário do mês com capas na aba Posts do painel do cliente; rota GET /api/portal/calendar?month=AAAA-MM com o plano da campanha Flow Arts (só dias de hoje em diante). Corrigido travamento do painel quando insights vinham sem `totals` (ficava em "Conecte o Instagram"); blocos renderizam isolados e há estado "Carregando…". Testes 257/257; visual conferido em 390px e 1280px com dados simulados.
 - chore (9721a60, deploy ok 16:52 UTC): auto-responder grava `igCount` (comments_count do Instagram) por post. Resultado: Instagram diz 2 comentários, API devolve 0.
 - feat: auto-responder de comentários (`comment-autoreply.js`), roda a cada cron: comentário com QUERO/EXEMPLO/preço/info nos 4 posts mais recentes → DM privada (private reply) com link wa.me/5521964816185 + resposta pública "Te chamei no direct! 📩"; uma vez por comentário, até 3 por execução, janela de 7 dias. Status em `GET /api/master/clients/:id/autoreply-status`.
 - feat: posts presos em `publishing` há 15+ min são conferidos no Instagram pela legenda: achou → `published` com mediaId; não achou → `failed` (`publish_interrupted`). Evita post duplicado e status errado.
