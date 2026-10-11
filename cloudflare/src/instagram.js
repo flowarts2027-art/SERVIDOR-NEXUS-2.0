@@ -85,7 +85,7 @@ export async function saveMasterInstagramConfig(env, request, body = {}) {
   return getMasterInstagramSummary(env, request);
 }
 
-async function masterInstagramCredentials(env) {
+export async function masterInstagramCredentials(env) {
   const record = await masterInstagramRecord(env);
   const appId = String(record.appId || env.INSTAGRAM_APP_ID || "").trim();
   const envSecret = String(env.INSTAGRAM_APP_SECRET || "").trim();

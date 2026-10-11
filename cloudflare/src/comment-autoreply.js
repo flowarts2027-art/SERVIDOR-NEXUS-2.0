@@ -8,6 +8,7 @@
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
+import { masterInstagramCredentials } from "./instagram.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -73,6 +74,54 @@ async function graph(request, token, path, options = {}) {
   return payload;
 }
 
+// Responde UM comentário (DM privada + resposta pública), uma vez por comentário.
+// Usado pela leitura a cada 15 min e pelo webhook da Meta (aviso na hora).
+export async function replyToComment({ request = fetch, token, igUserId, ownUsername = "", state, message, now = new Date() }, comment = {}) {
+  const res = { checked: false, replied: false, errors: [], skipped: "" };
+  const id = String(comment.id || "");
+  const username = String(comment.username || comment.from?.username || "").replace(/^@/, "").toLowerCase();
+  const createdMs = Date.parse(String(comment.timestamp || ""));
+  if (!id || !username) { res.skipped = "incomplete"; return res; }
+  if (username === String(ownUsername || "").toLowerCase()) { res.skipped = "own_comment"; return res; }
+  if (!wantsReply(comment.text)) { res.skipped = "no_interest_word"; return res; }
+  if (Number.isFinite(createdMs) && now.getTime() - createdMs > WINDOW_MS) { res.skipped = "too_old"; return res; }
+  const previous = state.handled[id] || {};
+  if (previous.status === "sent" || Number(previous.attempts || 0) >= MAX_ATTEMPTS) { res.skipped = "already_handled"; return res; }
+  res.checked = true;
+  try {
+    await graph(request, token, encodeURIComponent(igUserId) + "/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ recipient: { comment_id: id }, message: { text: message } })
+    });
+    await graph(request, token, encodeURIComponent(id) + "/replies", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ message: "Te chamei no direct! 📩" })
+    }).catch(error => res.errors.push("public_reply:" + error.message));
+    state.handled[id] = { status: "sent", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1 };
+    res.replied = true;
+  } catch (error) {
+    state.handled[id] = { status: "error", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1, error: error.message };
+    res.errors.push("dm:" + error.message);
+  }
+  return res;
+}
+
+// Pede à Meta para avisar o NEXUS (webhook) sobre comentários e mensagens desta conta.
+// Refeito no máximo uma vez por dia; o resultado fica em state.webhook.
+async function ensureWebhookSubscription(request, token, state, now) {
+  const last = Date.parse(String(state.webhook?.at || ""));
+  if (Number.isFinite(last) && now.getTime() - last < 24 * 3600000 && state.webhook?.ok) return state.webhook;
+  try {
+    const data = await graph(request, token, "me/subscribed_apps?subscribed_fields=comments,messages", { method: "POST" });
+    state.webhook = { ok: data?.success !== false, at: now.toISOString(), error: "" };
+  } catch (error) {
+    state.webhook = { ok: false, at: now.toISOString(), error: String(error.message || error).slice(0, 160) };
+  }
+  return state.webhook;
+}
+
 export async function runCommentAutoReplyForClient(env, client, { request = fetch, now = new Date() } = {}) {
   const out = { checked: 0, replied: 0, errors: [], seen: [] };
   const conn = await resolveInstagramCredentials(env, client.id);
@@ -82,6 +131,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   const ownUsername = String(conn?.username || client.instagram || "").replace(/^@/, "").toLowerCase();
 
   const state = await readState(env, client.id);
+  await ensureWebhookSubscription(request, token, state, now);
   let media = { data: [] };
   try {
     media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp,comments_count&limit=" + MAX_MEDIA);
@@ -103,32 +153,10 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     }
     for (const comment of comments) {
       if (out.replied >= MAX_REPLIES_PER_RUN) break;
-      const id = String(comment.id || "");
-      const username = String(comment.username || "").replace(/^@/, "").toLowerCase();
-      const createdMs = Date.parse(String(comment.timestamp || ""));
-      if (!id || !username || username === ownUsername) continue;
-      if (!wantsReply(comment.text)) continue;
-      if (Number.isFinite(createdMs) && now.getTime() - createdMs > WINDOW_MS) continue;
-      const previous = state.handled[id] || {};
-      if (previous.status === "sent" || Number(previous.attempts || 0) >= MAX_ATTEMPTS) continue;
-      out.checked += 1;
-      try {
-        await graph(request, token, encodeURIComponent(igUserId) + "/messages", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ recipient: { comment_id: id }, message: { text: message } })
-        });
-        await graph(request, token, encodeURIComponent(id) + "/replies", {
-          method: "POST",
-          headers: { "content-type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ message: "Te chamei no direct! 📩" })
-        }).catch(error => out.errors.push("public_reply:" + error.message));
-        state.handled[id] = { status: "sent", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1 };
-        out.replied += 1;
-      } catch (error) {
-        state.handled[id] = { status: "error", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1, error: error.message };
-        out.errors.push("dm:" + error.message);
-      }
+      const result = await replyToComment({ request, token, igUserId, ownUsername, state, message, now }, comment);
+      if (result.checked) out.checked += 1;
+      if (result.replied) out.replied += 1;
+      out.errors.push(...result.errors);
     }
   }
   state.lastRun = { at: now.toISOString(), checked: out.checked, replied: out.replied, errors: out.errors.slice(0, 5), seen: out.seen.slice(0, MAX_MEDIA), mediaCount: Array.isArray(media?.data) ? media.data.length : 0 };
@@ -152,5 +180,101 @@ export async function runCommentAutoReplies(env, now = new Date(), options = {})
 export async function commentAutoReplyStatus(env, clientId) {
   const state = await readState(env, clientId);
   const handled = Object.entries(state.handled || {}).slice(0, 20).map(([id, value]) => ({ id, ...value }));
-  return { lastRun: state.lastRun || null, recent: handled };
+  return { lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled };
+}
+
+
+// ---------- Webhook da Meta (aviso na hora de cada comentário) ----------
+
+export const WEBHOOK_PATH = "/api/meta/instagram/webhook";
+
+function hexOf(buffer) {
+  return [...new Uint8Array(buffer)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+export async function validMetaSignature(rawBody, header, secret) {
+  const sig = String(header || "").replace(/^sha256=/, "").trim().toLowerCase();
+  if (!sig || !secret) return false;
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const expected = hexOf(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody)));
+  if (expected.length !== sig.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i += 1) diff |= expected.charCodeAt(i) ^ sig.charCodeAt(i);
+  return diff === 0;
+}
+
+export function webhookVerifyToken(env) {
+  return String(env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN || "nexus-flowarts-instagram").trim();
+}
+
+// Extrai comentários do corpo do webhook: [{ igUserId, comment }]
+export function commentsFromWebhook(body = {}) {
+  const out = [];
+  for (const entry of Array.isArray(body.entry) ? body.entry : []) {
+    for (const change of Array.isArray(entry.changes) ? entry.changes : []) {
+      if (String(change.field) !== "comments" || !change.value) continue;
+      const v = change.value;
+      out.push({
+        igUserId: String(entry.id || ""),
+        comment: {
+          id: String(v.id || ""),
+          text: String(v.text || ""),
+          username: String(v.from?.username || ""),
+          fromId: String(v.from?.id || ""),
+          mediaId: String(v.media?.id || ""),
+          timestamp: entry.time ? new Date(Number(entry.time) * (Number(entry.time) > 1e12 ? 1 : 1000)).toISOString() : ""
+        }
+      });
+    }
+  }
+  return out;
+}
+
+async function clientForInstagramUser(env, igUserId) {
+  const rows = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE status = 'online'").all().catch(() => ({ results: [] }));
+  for (const row of rows?.results || []) {
+    if (BLOCKED_PUBLISH_CLIENTS.has(String(row.id))) continue;
+    const conn = await resolveInstagramCredentials(env, row.id).catch(() => null);
+    if (conn?.igUserId && String(conn.igUserId) === String(igUserId)) return { client: { ...row, config: parseJson(row.config_json, {}) }, conn };
+  }
+  return null;
+}
+
+export async function processWebhookComments(env, items, { request = fetch, now = new Date() } = {}) {
+  const results = [];
+  for (const { igUserId, comment } of items) {
+    const found = await clientForInstagramUser(env, igUserId);
+    if (!found) { results.push({ comment: comment.id, skipped: "unknown_account" }); continue; }
+    const { client, conn } = found;
+    if (!brandProfileVersion(client.id) || !clientBrand(client).whatsapp) { results.push({ comment: comment.id, skipped: "no_brand" }); continue; }
+    const state = await readState(env, client.id);
+    const res = await replyToComment({
+      request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""),
+      ownUsername: String(conn.username || client.instagram || "").replace(/^@/, ""),
+      state, message: dmText(client), now
+    }, comment);
+    state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
+    await writeState(env, client.id, state).catch(() => null);
+    results.push({ comment: comment.id, replied: res.replied, skipped: res.skipped });
+  }
+  return results;
+}
+
+export async function handleInstagramWebhook(request, env, url, ctx) {
+  if (url.pathname !== WEBHOOK_PATH) return null;
+  const plain = (text, status = 200) => new Response(text, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
+  if (request.method === "GET") {
+    const ok = url.searchParams.get("hub.mode") === "subscribe" && url.searchParams.get("hub.verify_token") === webhookVerifyToken(env);
+    return ok ? plain(String(url.searchParams.get("hub.challenge") || "")) : plain("forbidden", 403);
+  }
+  if (request.method !== "POST") return plain("method_not_allowed", 405);
+  const raw = await request.text();
+  const { appSecret } = await masterInstagramCredentials(env).catch(() => ({ appSecret: "" }));
+  if (!(await validMetaSignature(raw, request.headers.get("x-hub-signature-256"), appSecret))) return plain("invalid_signature", 401);
+  const items = commentsFromWebhook(parseJson(raw, {}));
+  if (items.length) {
+    const work = processWebhookComments(env, items).catch(error => console.warn("ig_webhook_failed", String(error?.message || error).slice(0, 140)));
+    if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
+  }
+  return plain("ok");
 }
