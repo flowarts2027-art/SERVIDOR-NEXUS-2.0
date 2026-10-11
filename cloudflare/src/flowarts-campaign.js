@@ -93,6 +93,19 @@ const VISUAL_BY_FORMAT = {
   post: "Portrait 4:5 single image with one clear idea, premium and minimal."
 };
 
+// Cenas que se revezam, para os posts não repetirem a mesma imagem.
+// A Marina (persona) aparece só em parte delas.
+const SCENES = [
+  "close-up of a small business product beautifully photographed on a clean counter (coffee, pastry, cosmetics or clothing), no people",
+  "a phone held in a hand showing an abstract, unreadable Instagram-style grid of bright product photos, shallow depth of field",
+  "a modern small storefront in Rio de Janeiro at golden hour, inviting entrance, no readable signs",
+  "flat-lay top view of a desk with a laptop showing abstract charts, a notebook, coffee and color swatches in navy, electric blue and silver, no people",
+  "the owner of a small café or salon smiling while checking a phone behind the counter, candid, natural light",
+  "Marina, a friendly professional woman with curly dark hair in a navy blazer, explaining something on a tablet to a small business owner",
+  "a before-and-after style split of the same product: plain amateur photo on the left, bright professional photo on the right, no text",
+  "abstract visual of automation: soft glowing navy and electric blue light trails connecting small icons of a shop, a phone and a chat bubble, no text"
+];
+
 function campaignDayIndex(date = new Date()) {
   const local = new Date(date.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
   return ((local.getDate() - 1) % 30 + 30) % 30;
@@ -122,7 +135,7 @@ export function flowArtsCampaignForDay(date = new Date(), options = {}) {
         : "Gerar confiança e interação primeiro; oferta só nas peças de conversão.",
       language: "pt-BR simples e direto; frases curtas; transparente sobre o uso de IA",
       cta: CTA[row[3]] || CTA["comentário"],
-      visualBrief: VISUAL_BY_FORMAT[format] + " Theme: " + row[1] + ". Angle: " + row[2] + ". Use Flow Arts colors (deep navy, electric blue, silver). No text, no logos of other companies, no copyrighted references.",
+      visualBrief: VISUAL_BY_FORMAT[format] + " Scene: " + SCENES[(dayIndex * 2 + index) % SCENES.length] + ". Theme: " + row[1] + ". Angle: " + row[2] + ". Use Flow Arts colors (deep navy, electric blue, silver). No text, no logos of other companies, no copyrighted references.",
       variationKey: "flowarts-" + (dayIndex + 1) + "-" + index
     };
   });

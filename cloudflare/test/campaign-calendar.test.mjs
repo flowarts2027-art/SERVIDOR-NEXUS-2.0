@@ -31,3 +31,21 @@ test("cliente sem campanha recebe calendário vazio", () => {
   assert.equal(cal.campaign, false);
   assert.deepEqual(cal.days, []);
 });
+
+test("cenas das imagens variam e a Marina não aparece em todas", async () => {
+  const { flowArtsCampaignForDay } = await import("../src/flowarts-campaign.js");
+  const briefs = [];
+  for (let day = 1; day <= 4; day += 1) {
+    for (const item of flowArtsCampaignForDay(new Date(Date.UTC(2026, 9, day, 15)))) briefs.push(item.visualBrief);
+  }
+  const scenes = new Set(briefs.map(b => b.split("Scene: ")[1].split(". Theme:")[0]));
+  assert.equal(scenes.size, 8);
+  assert.ok(briefs.filter(b => /Marina/.test(b)).length <= 2);
+});
+
+test("dia 12 tem tema diferente do dia 11", async () => {
+  const { flowArtsCampaignForDay } = await import("../src/flowarts-campaign.js");
+  const d11 = flowArtsCampaignForDay(new Date("2026-10-11T15:00:00Z")).map(i => i.theme);
+  const d12 = flowArtsCampaignForDay(new Date("2026-10-12T15:00:00Z")).map(i => i.theme);
+  assert.ok(!d12.some(theme => d11.includes(theme)));
+});

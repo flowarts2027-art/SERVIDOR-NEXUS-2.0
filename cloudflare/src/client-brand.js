@@ -48,7 +48,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11e",
+    profileVersion: "2026-10-11f",
     // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
     niche: "Agência de marketing e automação com IA",
@@ -102,7 +102,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Vou perder o controle do meu Instagram? Nada é publicado sem a aprovação do cliente no painel.",
       "Deve ser caro. A IA reduz o custo de estúdio e produção; peça o exemplo grátis primeiro."
     ]),
-    visualDirection: "Photorealistic premium scenes for small local businesses in Rio de Janeiro (cafés, salons, shops, restaurants, service providers): bright professional product photos, modern storefronts, a laptop or phone showing an abstract unreadable website layout, a friendly professional woman with curly dark hair in a navy blazer presenting results. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
+    visualDirection: "Photorealistic premium scenes for small local businesses in Rio de Janeiro (cafés, salons, shops, restaurants, service providers). Follow the scene given in the brief; vary subjects between posts (products, storefronts, phones, desks, business owners). The persona Marina (curly dark hair, navy blazer) appears only when the brief asks for her. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
   })
 });
 

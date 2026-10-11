@@ -1008,7 +1008,11 @@ async function runCreator(env,client,strategy,options) {
     }
 
     if((plannedByDay.get(day)||0)>=dailyPublishTarget)continue;
-    const campaignItem=Array.isArray(strategy?.campaignSchedule)?strategy.campaignSchedule[index]||null:null;
+    // A campanha da Flow Arts é por dia do mês: usa o dia do POST (não o dia de hoje),
+    // senão o post de amanhã repete o tema de hoje.
+    const campaignItem=client.id==="primeiro-teste"
+      ? flowArtsCampaignForDay(new Date(scheduledFor),{reelsEnabled:Boolean(String(env.GITHUB_ACTIONS_TOKEN||env.GITHUB_TOKEN||"").trim())})[index]||null
+      : Array.isArray(strategy?.campaignSchedule)?strategy.campaignSchedule[index]||null:null;
     const aiCreative=aiBatch[index]||null;
     const theme=String(campaignItem?.theme||aiCreative?.theme||themes[(index+[...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),0))%themes.length]||"Conteúdo");
     const brandHooks=clientBrand(client).hooks;
