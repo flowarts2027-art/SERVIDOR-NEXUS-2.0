@@ -27,6 +27,9 @@ import { processDueJobs } from "./executor.js";
 import { indexCatalogResults, verifyPosterLocation } from "./video-demand-catalog.js";
 import { officialMovieFromTrailer, verifyOfficialMoviePoster } from "./official-movie-poster.js";
 import { enrichVerifiedFilmPresentation } from "./video-metadata-enrichment.js";
+import { clientInsights } from "./insights.js";
+import { instagramSnapshot } from "./agent-runtime.js";
+import { whatsappLink } from "./client-brand.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -1663,6 +1666,17 @@ export async function handlePortalApi(request, env, url, ctx) {
     }
     await env.MEDIA?.delete(key);
     return json({ ok: true, deleted: true });
+  }
+
+  // Números do Instagram do cliente (conta e por post), com cache de 30 min.
+  if (url.pathname === "/api/portal/insights" && request.method === "GET") {
+    return json(await clientInsights(env, client, { fetchSnapshot: instagramSnapshot }));
+  }
+
+  // Contato do suporte (WhatsApp do dono da agência) para o botão "Falar com a gente".
+  if (url.pathname === "/api/portal/contact" && request.method === "GET") {
+    const owner = { id: "primeiro-teste", name: "Flow Arts", config: {} };
+    return json({ ok: true, whatsapp: whatsappLink(owner, "Olá! Sou cliente (" + String(client.name || client.id) + ") e preciso de ajuda.") });
   }
 
   if (url.pathname === "/api/portal/posts" && request.method === "GET") {

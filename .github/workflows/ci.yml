@@ -158,7 +158,6 @@ jobs:
           ! grep -Fq 'or poster' scripts/build_promo_card.py
           grep -Fq 'Sugestões verificadas indisponíveis' scripts/build_promo_card.py
           grep -Fq 'video_official_poster_required' .github/workflows/video-template-render.yml
-          grep -Fq 'function formatBrazilWhatsapp(value)' public/client-lite.js
           grep -Fq 'function normalizeBrazilWhatsapp(value)' cloudflare/src/portal.js
 
       - name: Verify clean trailer background matches approved Lanternas format
@@ -276,7 +275,7 @@ jobs:
           fi
           npm run deploy
 
-      - name: Verify client video workspace
+      - name: Verify client panel
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
         shell: bash
         run: |
@@ -286,26 +285,18 @@ jobs:
             portal="$(curl --fail --silent --show-error --max-time 20 "$base/portal?verify=$GITHUB_SHA-$attempt" || true)"
             js="$(curl --fail --silent --show-error --max-time 20 "$base/client-lite.js?verify=$GITHUB_SHA-$attempt" || true)"
             headers="$(curl --fail --silent --show-error --max-time 20 -I "$base/portal?verify=$GITHUB_SHA-$attempt" || true)"
-            overlay_js="$(curl --fail --silent --show-error --max-time 20 "$base/video-overlay-ui.js?verify=$GITHUB_SHA-$attempt" || true)"
-            overlay_css="$(curl --fail --silent --show-error --max-time 20 "$base/video-overlay-ui.css?verify=$GITHUB_SHA-$attempt" || true)"
-            if grep -Fq 'data-tab="videos"' <<<"$portal" \
-              && grep -Fq 'id="video-job-list"' <<<"$portal" \
-              && grep -Fq 'async function loadVideoJobs()' <<<"$js" \
-              && grep -Fq 'MAX_VIDEO_UPLOAD_BYTES = 90 * 1024 * 1024' <<<"$js" \
-              && grep -Fq 'id="connect-instagram"' <<<"$portal" \
-              && grep -Fq 'data.connections?.instagram' <<<"$js" \
-              && grep -Fq 'video-overlay-ui.js?v=4' <<<"$portal" \
-              && grep -Fq 'video-overlay-ui.css?v=4' <<<"$portal" \
-              && grep -Fq 'function buildPremiumLayout' <<<"$overlay_js" \
-              && grep -Fq '.nexus-premium-workspace' <<<"$overlay_css" \
+            if grep -Fq 'data-tab="inicio"' <<<"$portal" \
+              && grep -Fq 'data-tab="numeros"' <<<"$portal" \
+              && grep -Fq '/api/portal/insights' <<<"$js" \
+              && grep -Fq 'nexusWindowsCredentials' <<<"$js" \
               && grep -qi 'cache-control:.*no-store' <<<"$headers"; then
-              echo "Client video workspace verified on attempt $attempt."
+              echo "Client panel verified on attempt $attempt."
               exit 0
             fi
-            echo "::warning::Client portal assets not fully propagated on attempt $attempt."
+            echo "::warning::Client panel assets not fully propagated on attempt $attempt."
             sleep 5
           done
-          echo "::error::Client video workspace did not converge after deploy."
+          echo "::error::Client panel did not converge after deploy."
           exit 1
 
       - name: Verify Master access page

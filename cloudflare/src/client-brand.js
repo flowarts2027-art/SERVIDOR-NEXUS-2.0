@@ -12,6 +12,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     brandName: "Flow Arts",
     niche: "Agência de marketing e automação com IA",
     audience: "Pequenos negócios e empreendedores do Rio de Janeiro e região",
+    whatsapp: "5521964816185",
     offer: "Marketing e automação de Instagram 24h com IA, além de sites, fotos e vídeos para pequenos negócios",
     cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
     hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #RioDeJaneiro",
@@ -68,6 +69,7 @@ export function clientBrand(client = {}) {
     niche: pick(savedNiche, defaults.niche),
     audience: pick(profile.audience, defaults.audience),
     offer: pick(profile.offer, defaults.offer),
+    whatsapp: pick(String(profile.whatsapp || "").replace(/\D/g, ""), defaults.whatsapp),
     cta: pick(profile.cta, defaults.cta),
     hashtags: pick(defaults.hashtags),
     followerCta: pick(defaults.followerCta),
@@ -110,4 +112,13 @@ export function isOutdatedBrandDraft(clientId, row = {}, payload = {}) {
   if (String(row.status || "") !== "ready") return false;
   if (String(row.approval_status || "") === "approved") return false;
   return text(payload?.brandProfileVersion) !== version;
+}
+
+// Link do WhatsApp com mensagem pronta (funil "EU QUERO" / "EXEMPLO").
+export function whatsappLink(client = {}, message = "") {
+  const number = String(clientBrand(client).whatsapp || "").replace(/\D/g, "");
+  if (!number) return "";
+  const full = number.startsWith("55") ? number : "55" + number;
+  const text = message || ("Olá! Vim pelo Instagram da " + clientBrand(client).brandName + " e quero saber mais.");
+  return "https://wa.me/" + full + "?text=" + encodeURIComponent(text);
 }

@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-11
+- feat: painel do cliente refeito do zero (celular primeiro): Início, Posts (aprovar/pedir ajuste), Números, Contatos, Conta. Ferramenta de vídeo/trailer, envio do PC e logo removidos da tela (rotas de vídeo continuam no servidor).
+- feat: `GET /api/portal/insights` (seguidores, alcance e métricas por post, cache de 30 min em nexus_state) e `GET /api/portal/contact` (WhatsApp da Flow Arts).
+- feat: WhatsApp da Flow Arts (5521964816185) no perfil de marca + `whatsappLink`.
+- ci: checagens do painel antigo de vídeo trocadas pelas do painel novo.
+
 ## 2026-10-10
 - feat: trava de publicação para ragnar-one, globalplay-streaming e global-play-streaming (`publisher.js`).
 - fix: `/api/master/instagram/accounts-status` lista todos os clientes cadastrados.

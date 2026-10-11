@@ -10,7 +10,6 @@ on:
       - "cloudflare/src/video-catalog.js"
       - "cloudflare/src/github-video-render.js"
       - "cloudflare/src/portal.js"
-      - "public/client-lite.js"
 
 jobs:
   smoke:
@@ -59,13 +58,7 @@ jobs:
           assert.equal(catalogPreviewUrl('https://evil.test/trailer.mp4'), '');
           console.log('CATALOG_PREVIEW_GUARD_OK');
           NODE
-          grep -Fq 'generate.textContent = "Gerar vídeo"' public/client-lite.js
-          grep -Fq 'action: useLocalHelper ? "local_generate" : "server_generate"' public/client-lite.js
-          grep -Fq 'useLocalHelper = helperAvailable && !helperBusy && !helperOutdated' public/client-lite.js
           grep -Fq 'body.action === "server_generate"' cloudflare/src/portal.js
-          ! grep -Fq 'window.open(' public/client-lite.js
-          grep -Fq 'fetch("http://127.0.0.1:8765/handoff"' public/client-lite.js
-          grep -Fq 'Assistir trailer no YouTube' public/client-lite.js
           grep -Fq 'downloadOnly: action === "download"' cloudflare/src/portal.js
           grep -Fq 'const directSourceUrl = catalogPreviewUrl(metadata.previewUrl)' cloudflare/src/portal.js
           grep -Fq 'const sourceProvider = directSourceUrl ? "catalog-preview" : "youtube"' cloudflare/src/portal.js
@@ -73,5 +66,5 @@ jobs:
           grep -Fq 'settings.ingestTransport = "local-helper"' cloudflare/src/portal.js
           grep -Fq 'url.pathname === "/api/local-video-ingest/status"' cloudflare/src/github-video-render.js
           grep -Fq 'videoSourceDownloadMatch' cloudflare/src/portal.js
-          grep -Fq 'AbortSignal.timeout(30000)' public/client-lite.js
           echo "YOUTUBE_ACTIONS_OK"
+

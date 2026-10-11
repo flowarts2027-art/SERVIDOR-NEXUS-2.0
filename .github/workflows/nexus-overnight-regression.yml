@@ -59,9 +59,8 @@ jobs:
           base="https://servidor-nexus.diamantehinode2015.workers.dev"
           curl --fail --silent --show-error --max-time 20 "$base/portal?regression=$GITHUB_RUN_ID" > /tmp/portal.html
           curl --fail --silent --show-error --max-time 20 "$base/client-lite.js?regression=$GITHUB_RUN_ID" > /tmp/client-lite.js
-          grep -Fq 'data-tab="videos"' /tmp/portal.html
-          grep -Fq 'id="video-job-list"' /tmp/portal.html
-          grep -Fq 'async function loadVideoJobs()' /tmp/client-lite.js
+          grep -Fq 'data-tab="inicio"' /tmp/portal.html
+          grep -Fq '/api/portal/insights' /tmp/client-lite.js
           curl --fail --silent --show-error --max-time 20 "$base/api/autonomy-health" > /tmp/health.json
 
           # The public health payload includes test clients. A delayed sandbox client

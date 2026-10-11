@@ -221,7 +221,7 @@ async function instagramMediaInsights(mediaId, headers, mediaType="") {
   return out;
 }
 
-async function instagramSnapshot(env, client) {
+export async function instagramSnapshot(env, client) {
   const conn = await resolveInstagramCredentials(env, client.id);
   const token = String(conn?.accessToken || "");
   const igUserId = String(conn?.igUserId || "").trim();

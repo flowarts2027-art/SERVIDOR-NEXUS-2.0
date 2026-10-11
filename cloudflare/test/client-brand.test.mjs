@@ -67,3 +67,11 @@ test("Flow Arts tem lista própria de temas e ganchos de marketing", () => {
   assert.ok(brand.hooks.length >= 6);
   assert.ok([...brand.themes, ...brand.hooks].every(item => !/streaming|assistir|filme/i.test(item)));
 });
+
+import { whatsappLink } from "../src/client-brand.js";
+
+test("Flow Arts tem link de WhatsApp com mensagem pronta", () => {
+  const link = whatsappLink(flowArts);
+  assert.match(link, /^https:\/\/wa\.me\/5521964816185\?text=/);
+  assert.match(decodeURIComponent(link), /Flow Arts/);
+});

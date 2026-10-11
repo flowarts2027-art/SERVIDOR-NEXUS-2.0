@@ -1,5 +1,10 @@
 # Estado do Nexus 2.0
 
+## 2026-10-11 manhã — painel do cliente novo
+- Proprietário aprovou a lista da auditoria e passou o WhatsApp 21964816185.
+- Constatado no código: o Nexus não responde comentários nem envia DM. O texto que leva para o site da Global Play não vem do Nexus (origem a confirmar com o proprietário).
+- Painel do cliente refeito; testes locais 242/242.
+
 ## 2026-10-10 ~21h30 BRT — repositório novo, trava das contas de streaming, Flow Arts
 - Código completo enviado para `flowarts2027-art/SERVIDOR-NEXUS-2.0` (merge com o histórico de recuperação, sem force-push). README antigo de recuperação movido para `docs/RECUPERACAO-ESTADO.md`.
 - Secret `CLOUDFLARE_API_TOKEN` criado pelo proprietário (template Edit Cloudflare Workers, conta diamantehinode2015). Deploy GitHub Actions run #2 (commit 3b319e7) e #3 (9bb48d6) concluídos com sucesso, incluindo a verificação do portal ao vivo.

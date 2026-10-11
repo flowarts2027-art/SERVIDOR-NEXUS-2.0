@@ -18,7 +18,7 @@ for (const method of ["GET", "HEAD"]) {
         // Reproduce Cloudflare's default HTML canonicalization.
         if (url.pathname === "/portal.html") return Response.redirect("https://nexus.test/portal", 307);
         assert.equal(url.pathname, "/portal");
-        return new Response(method === "HEAD" ? null : '<button data-tab="videos">Vídeos</button>', {
+        return new Response(method === "HEAD" ? null : '<button data-tab="inicio">Início</button>', {
           headers: { "content-type": "text/html" }
         });
       } } };
@@ -26,7 +26,7 @@ for (const method of ["GET", "HEAD"]) {
       assert.equal(response.status, 200);
       assert.equal(response.headers.get("location"), null);
       assert.match(response.headers.get("cache-control"), /no-store/);
-      if (method === "GET") assert.match(await response.text(), /data-tab="videos"/);
+      if (method === "GET") assert.match(await response.text(), /data-tab="inicio"/);
       else assert.equal(await response.text(), "");
     });
   }
