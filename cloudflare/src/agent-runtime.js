@@ -1361,7 +1361,7 @@ async function runPublisher(env,client,options) {
 
     try{
       const claim=await env.DB.prepare(
-        "UPDATE post_ledger SET status='publishing',error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND status IN ('ready','scheduled','failed')"
+        "UPDATE post_ledger SET payload_json=json_set(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishingStartedAt',strftime('%Y-%m-%dT%H:%M:%SZ','now')), status='publishing',error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND status IN ('ready','scheduled','failed')"
       ).bind(row.id).run();
       if(!claim?.meta?.changes)continue;
       payload.publishingStartedAt=new Date().toISOString();

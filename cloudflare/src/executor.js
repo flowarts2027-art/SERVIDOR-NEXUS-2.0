@@ -121,13 +121,16 @@ async function savePostResult(env, row, patch) {
 export async function recoverStuckPublishing(env, clientId, now = new Date(), find = findRecentMediaByCaption) {
   const result = await env.DB.prepare(
     `SELECT id, client_id, status, caption, payload_json, updated_at FROM post_ledger
-     WHERE client_id = ?1 AND status = 'publishing' AND updated_at <= datetime(?2, '-15 minutes')
+     WHERE client_id = ?1 AND status = 'publishing'
      LIMIT 3`
-  ).bind(clientId, now.toISOString()).all();
+  ).bind(clientId).all();
   const out = { recovered: 0, failed: 0 };
   for (const row of result?.results || []) {
     const payload = parseJson(row.payload_json, {});
+    const startedMs = Date.parse(String(payload.publishingStartedAt || ""));
+    const oldEnough = Number.isFinite(startedMs) && now.getTime() - startedMs >= 15 * 60 * 1000;
     const found = await find(env, clientId, row.caption).catch(() => null);
+    if (!found?.mediaId && !oldEnough) continue;
     if (found?.mediaId) {
       await savePostResult(env, row, {
         status: "published",
@@ -186,7 +189,7 @@ async function runPublisherSweep(env, clientId, now) {
 
     try {
       const claim = await env.DB.prepare(
-        "UPDATE post_ledger SET status = 'publishing', error = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?1 AND status IN ('ready','scheduled','failed')"
+        "UPDATE post_ledger SET payload_json=json_set(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishingStartedAt',strftime('%Y-%m-%dT%H:%M:%SZ','now')), status = 'publishing', error = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?1 AND status IN ('ready','scheduled','failed')"
       ).bind(row.id).run();
       if (!claim?.meta?.changes) {
         summary.skipped += 1;

@@ -417,7 +417,7 @@ export async function publishPostNow(env, client, postId) {
   }
 
   const claim = await env.DB.prepare(
-    "UPDATE post_ledger SET status='publishing',error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2 AND status IN ('ready','scheduled','failed')"
+    "UPDATE post_ledger SET payload_json=json_set(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishingStartedAt',strftime('%Y-%m-%dT%H:%M:%SZ','now')), status='publishing',error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2 AND status IN ('ready','scheduled','failed')"
   ).bind(row.id, client.id).run();
   if (!claim?.meta?.changes) {
     const error = new Error("post_publish_claim_conflict");
