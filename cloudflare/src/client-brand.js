@@ -7,14 +7,14 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11c",
+    profileVersion: "2026-10-11d",
     // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
-    niche: "Agência de marketing com IA",
+    niche: "Agência de marketing e automação com IA",
     audience: "Pequenos negócios e empreendedores do Rio de Janeiro e região",
-    offer: "Sites, fotos e vídeos feitos com IA para pequenos negócios",
+    offer: "Marketing e automação de Instagram 24h com IA, além de sites, fotos e vídeos para pequenos negócios",
     cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
-    hashtags: "#FlowArts #MarketingDigital #InteligenciaArtificial #PequenosNegocios #RioDeJaneiro",
+    hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #RioDeJaneiro",
     followerCta: "Siga a Flow Arts para ver mais exemplos feitos com IA.",
     contentFocus: "Mostrar como o marketing com IA (sites, fotos e vídeos) ajuda pequenos negócios a vender mais nas redes, com exemplos práticos e antes/depois descritos em texto",
     morningTheme: "Erros de imagem e presença digital que afastam clientes de pequenos negócios",
@@ -32,6 +32,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Identidade visual que passa confiança",
       "Como transformar seguidores em clientes",
       "Marketing para negócios do Rio de Janeiro",
+      "Automação de Instagram: agentes trabalhando 24h por você",
       "O que uma agência com IA faz por você",
       "Peça um exemplo grátis antes de contratar"
     ]),
@@ -41,6 +42,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Seu negócio merece fotos melhores, sem gastar com estúdio.",
       "Você posta todo dia e mesmo assim não vende?",
       "Esse detalhe muda a cara do seu perfil.",
+      "E se o seu Instagram trabalhasse sozinho 24h?",
       "Marketing simples para quem não tem tempo.",
       "Faça esse teste no seu perfil hoje.",
       "O erro que mais vejo em perfis de negócio."

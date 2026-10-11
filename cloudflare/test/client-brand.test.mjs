@@ -8,14 +8,14 @@ const flowArts = { id: "primeiro-teste", name: "PRIMEIRO TESTE", niche: "Outro",
 test("Flow Arts recebe perfil de marketing mesmo com nome de teste no painel", () => {
   const brand = clientBrand(flowArts);
   assert.equal(brand.brandName, "Flow Arts");
-  assert.equal(brand.niche, "Agência de marketing com IA");
+  assert.equal(brand.niche, "Agência de marketing e automação com IA");
   assert.match(brand.hashtags, /#MarketingDigital/);
   assert.doesNotMatch(brand.hashtags, /Streaming/);
 });
 
 test("prompt de imagem da Flow Arts fala de marketing, não de streaming", () => {
   const prompt = buildVisualPrompt(flowArts, "", "seed");
-  assert.match(prompt, /Brand context: Flow Arts, Agência de marketing com IA\./);
+  assert.match(prompt, /Brand context: Flow Arts, Agência de marketing e automação com IA\./);
   assert.match(prompt, /small local businesses/);
   assert.doesNotMatch(prompt, /streaming|home-entertainment/i);
 });

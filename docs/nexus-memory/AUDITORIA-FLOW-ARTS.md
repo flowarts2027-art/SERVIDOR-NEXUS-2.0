@@ -16,7 +16,7 @@ Feita olhando o perfil no navegador (somente leitura). Sem métricas internas: a
 5. Prioridade de crescimento: Reels de descoberta, hashtags locais, frequência constante, destaques com exemplos.
 
 ## O que foi repassado aos agentes (cloudflare/src/client-brand.js, profileVersion 2026-10-11c)
-- Nicho "Agência de marketing com IA"; público pequenos negócios do Rio de Janeiro; oferta sites/fotos/vídeos com IA.
+- Nicho "Agência de marketing e automação com IA" (profileVersion 2026-10-11d, após nova bio do proprietário); público pequenos negócios do Rio de Janeiro; oferta marketing + automação de Instagram 24h + sites/fotos/vídeos com IA.
 - CTA: Comente "EXEMPLO" e receba um exemplo grátis.
 - Hashtags com #RioDeJaneiro e #InteligenciaArtificial.
 - 12 temas e 8 ganchos próprios; direção visual com a paleta azul-marinho/azul elétrico/prata e a persona do perfil.
