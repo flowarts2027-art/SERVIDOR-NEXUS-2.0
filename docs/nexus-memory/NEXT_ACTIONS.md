@@ -3,7 +3,7 @@
 ## Próximo passo exato (2026-10-11 15h20 BRT)
 1. Conferir se o cron criou o cliente demo-cafe e se os agentes geraram posts com imagem (ver /api/demo/panel).
 2. Ajustar o texto "Contatos recentes" da tela Início no modo demonstração.
-3. Depois da demo: listar 10 negócios reais e rascunhar 10 mensagens (Rodrigo aprova cada uma).
+3. FEITO 15h30: lista de 10 cafés (Tijuca, Botafogo, Méier; dados do Google Maps) e mensagem base com frase pessoal por café, no Claude Docs "Prospecção Flow Arts — 10 cafés do Rio" (553fbc57-d271-43e3-90f3-2bf7efc6ad11), com status por café. Rodrigo envia; máximo 3 por dia; nenhuma mensagem foi enviada por Claude.
 4. Medir o custo de OpenAI por cliente durante 1 semana (oferta R$ 297 + R$ 697).
 
 ## Próximo passo exato (2026-10-11 14h BRT)
