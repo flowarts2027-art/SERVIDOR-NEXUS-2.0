@@ -7,42 +7,45 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11b",
+    profileVersion: "2026-10-11c",
+    // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
-    niche: "Marketing digital",
-    audience: "Pequenos empresários e empreendedores brasileiros",
-    hashtags: "#FlowArts #MarketingDigital #Empreendedorismo #RedesSociais #Dicas",
-    followerCta: "Siga a Flow Arts para mais dicas de marketing.",
-    contentFocus: "Dicas práticas de marketing digital e Instagram para pequenos negócios: conteúdo, anúncios, posicionamento de marca e vendas pelas redes sociais",
-    morningTheme: "Erros comuns de marketing que travam pequenos negócios e como corrigir",
-    afternoonTheme: "Passo a passo prático de marketing para salvar e aplicar hoje",
-    eveningTheme: "Bastidores e histórias de empreendedores que cresceram com marketing",
-    tone: "Direto, prático, motivador e profissional",
+    niche: "Agência de marketing com IA",
+    audience: "Pequenos negócios e empreendedores do Rio de Janeiro e região",
+    offer: "Sites, fotos e vídeos feitos com IA para pequenos negócios",
+    cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
+    hashtags: "#FlowArts #MarketingDigital #InteligenciaArtificial #PequenosNegocios #RioDeJaneiro",
+    followerCta: "Siga a Flow Arts para ver mais exemplos feitos com IA.",
+    contentFocus: "Mostrar como o marketing com IA (sites, fotos e vídeos) ajuda pequenos negócios a vender mais nas redes, com exemplos práticos e antes/depois descritos em texto",
+    morningTheme: "Erros de imagem e presença digital que afastam clientes de pequenos negócios",
+    afternoonTheme: "Dica prática de marketing com IA para aplicar hoje",
+    eveningTheme: "Exemplo de transformação de um negócio local com fotos, vídeo ou site feitos com IA",
+    tone: "Próximo, direto, prático e confiante; transparente sobre o uso de IA",
     themes: Object.freeze([
-      "Como atrair clientes pelo Instagram",
-      "Erros que fazem um perfil comercial não vender",
-      "Bio do Instagram que converte",
-      "Ideias de conteúdo para pequenos negócios",
-      "Reels simples que geram alcance",
-      "Como usar os Stories para vender",
-      "Tráfego pago para iniciantes",
+      "Fotos profissionais com IA para o seu produto",
+      "Por que o seu negócio precisa de um site simples",
+      "Vídeo curto com IA para divulgar o seu negócio",
+      "Erros de foto que fazem o cliente desistir",
+      "Como a IA deixa o marketing mais barato para pequenos negócios",
+      "Ideias de Reels para comércio local",
+      "Bio do Instagram que traz clientes",
       "Identidade visual que passa confiança",
-      "Legendas que geram comentários",
-      "Calendário de postagens sem complicação",
       "Como transformar seguidores em clientes",
-      "Métricas do Instagram que realmente importam"
+      "Marketing para negócios do Rio de Janeiro",
+      "O que uma agência com IA faz por você",
+      "Peça um exemplo grátis antes de contratar"
     ]),
     hooks: Object.freeze([
       "Seu Instagram pode estar afastando clientes sem você perceber.",
-      "Pouca gente faz isso, e é o que mais traz resultado.",
-      "Salva isso antes de criar o seu próximo post.",
+      "Essa foto foi feita com IA. Dá para perceber?",
+      "Seu negócio merece fotos melhores, sem gastar com estúdio.",
       "Você posta todo dia e mesmo assim não vende?",
       "Esse detalhe muda a cara do seu perfil.",
       "Marketing simples para quem não tem tempo.",
       "Faça esse teste no seu perfil hoje.",
       "O erro que mais vejo em perfis de negócio."
     ]),
-    visualDirection: "Photorealistic premium scenes of modern Brazilian entrepreneurs and small business owners: bright creative workspaces, planning social media content, laptops and smartphones with abstract unreadable charts, sticky notes and brainstorming walls, confident natural people. Clean, contemporary, optimistic lighting."
+    visualDirection: "Photorealistic premium scenes for small local businesses in Rio de Janeiro (cafés, salons, shops, restaurants, service providers): bright professional product photos, modern storefronts, a laptop or phone showing an abstract unreadable website layout, a friendly professional woman with curly dark hair in a navy blazer presenting results. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
   })
 });
 
@@ -62,6 +65,8 @@ export function clientBrand(client = {}) {
     brandName: pick(savedName, defaults.brandName, "NEXUS"),
     niche: pick(savedNiche, defaults.niche),
     audience: pick(profile.audience, defaults.audience),
+    offer: pick(profile.offer, defaults.offer),
+    cta: pick(profile.cta, defaults.cta),
     hashtags: pick(defaults.hashtags),
     followerCta: pick(defaults.followerCta),
     contentFocus: pick(defaults.contentFocus),

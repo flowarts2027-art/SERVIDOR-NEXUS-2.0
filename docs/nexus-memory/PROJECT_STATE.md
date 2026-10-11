@@ -8,7 +8,10 @@
 - Flow Arts (`primeiro-teste`, @flowarts2026): OAuth Instagram retornou `oauth=success` em 2026-10-10 ~21h20. Após o deploy 51f3e03 (sucesso), `/api/master/instagram/accounts-status` confirmou `primeiro-teste`: connected, tokenValid, accountMatches, validation ok, expira em 2026-12-10.
 - Perfil de marca de marketing para Flow Arts em `cloudflare/src/client-brand.js` (imagem, hashtags, CTA, foco e temas manhã/tarde/noite; nome/nicho salvos no painel têm prioridade).
 - Constatado em produção: 27 rascunhos antigos da Flow Arts (status ready/expired, aprovação pending) criados antes do perfil, com legenda genérica e hashtags #Streaming. Nenhum publicado.
-- Testes locais: 229/229 aprovados. Nenhuma publicação real foi feita.
+- Auditoria do Instagram @flowarts2026 registrada em `AUDITORIA-FLOW-ARTS.md` e repassada ao perfil de marca (profileVersion 2026-10-11c): agência de marketing com IA, Rio de Janeiro, CTA "EXEMPLO".
+- Painel Master: prévia de posts e botões Aprovar/Recusar. Proprietário recusou o rascunho antigo de 2026-10-11 18:00.
+- Constatado às 00:51 UTC: Creator refez os 3 rascunhos (versão do perfil gravada), mas temas ainda vinham de termos de pesquisa (streaming/entretenimento); corrigido com temas e ganchos próprios da marca.
+- Testes locais: 238/238 aprovados. Nenhuma publicação real foi feita.
 
 
 ## 2026-10-10 — limpeza de legado preparada localmente
