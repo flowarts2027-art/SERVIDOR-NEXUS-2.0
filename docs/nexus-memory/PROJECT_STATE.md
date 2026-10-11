@@ -1,5 +1,9 @@
 # Estado do Nexus 2.0
 
+## 2026-10-11 — projeto preparado no PC do proprietário e perfil de marketing
+- Pedido: baixar o projeto em `C:\Users\playprime\nexus` e deixar pronto para rodar. Feito: clone, dependências instaladas, 247/247 testes e bundle dry-run aprovados. Sem deploy, sem `wrangler dev`, sem publicação.
+- Criado `.agents/product-marketing.md` (contexto de marketing da Flow Arts para as skills de marketing do Claude Code; não é lido pelo Worker). Decisões em DECISIONS.md.
+
 ## 2026-10-11 ~09h50 BRT — primeira publicação da Flow Arts
 - Proprietário aprovou os 2 posts. Post das 12:00 (Reel) caiu para imagem porque o token GitHub do Worker era da conta suspensa (403); foi publicado no Instagram (perfil passou de 2 para 3 posts, conferido no navegador), mas o ledger ficou em `publishing` (invocação interrompida após o media_publish). Corrigido com recuperação automática: às 13:25 UTC o ledger foi marcado `published` (mediaId 17890778682616932, https://www.instagram.com/p/DeWq1MNCX80/, `recoveredFromStuckPublishing`).
 - Carrossel das 19:00: Copy Chief aprovado após correção do CTA; 4 cartões montados; aguardando horário.

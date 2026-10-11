@@ -1,5 +1,10 @@
 # Testes e evidências
 
+## 2026-10-11 — preparação local no PC Windows (C:\Users\playprime\nexus)
+- Repositório clonado do GitHub. `npm install` em `cloudflare/` (34 pacotes; scripts de instalação de esbuild/workerd não aprovados pelo npm, sem efeito no bundle).
+- `node --test test/*.test.mjs`: 247/247 aprovados (Node 24.21).
+- `wrangler deploy --dry-run`: bundle gerado (769 KiB). Nada foi publicado; produção não consultada.
+
 ## 2026-10-10
 - `node --test cloudflare/test/*.test.mjs`: 229/229 aprovados (ambiente cloud; `wrangler` não instalado localmente, bundle validado pelo GitHub Actions no deploy).
 

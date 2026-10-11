@@ -1,5 +1,11 @@
 # Decisões e limites
 
+## 2026-10-11 — perfil de marketing da Flow Arts
+- Criado `.agents/product-marketing.md` (contexto de marketing da Flow Arts), a partir de `client-brand.js` e respostas do proprietário.
+- Sem pacotes/preços definidos: posts não citam valores. Concorrentes não nomeados.
+- Global Play foi trabalho real (vídeos, criativos, automação), mas o proprietário decidiu **não citá-la** em posts nem como case.
+- O arquivo não é lido pelos agentes do Worker; mudar o comportamento dos posts exige alterar `client-brand.js`.
+
 ## 2026-10-10 — contas de streaming paradas
 - Global Play e Ragnar One não publicam mais. Retomar só com comprovação de licença do serviço e sem cartazes/trailers de terceiros. O Nexus segue com a conta Flow Arts (marketing).
 
