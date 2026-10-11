@@ -60,3 +60,10 @@ test("post aprovado, publicado ou já na versão atual é mantido", () => {
 test("clientes sem perfil de marca não são afetados", () => {
   assert.equal(isOutdatedBrandDraft("outro-cliente", { status: "ready", approval_status: "pending" }, {}), false);
 });
+
+test("Flow Arts tem lista própria de temas e ganchos de marketing", () => {
+  const brand = clientBrand(flowArts);
+  assert.ok(brand.themes.length >= 10);
+  assert.ok(brand.hooks.length >= 6);
+  assert.ok([...brand.themes, ...brand.hooks].every(item => !/streaming|assistir|filme/i.test(item)));
+});

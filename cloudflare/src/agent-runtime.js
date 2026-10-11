@@ -529,9 +529,12 @@ async function runStrategist(env,client,context,options) {
     : Array.isArray(researcher.opportunities)
       ? researcher.opportunities.map(item=>String(item?.term||"")).filter(Boolean).slice(0,8)
       : [];
+  const brandThemes=clientBrand(client).themes;
   const themes=aiBatch.length===3
     ? aiBatch.map(item=>String(item?.theme||"")).filter(Boolean).slice(0,3)
-    : usefulThemeTerms(researchTerms).length>=3
+    : brandThemes.length
+      ? brandThemes
+      : usefulThemeTerms(researchTerms).length>=3
       ? usefulThemeTerms(researchTerms).slice(0,3)
       : [profile.morningTheme,profile.afternoonTheme,profile.eveningTheme];
   const plan={
@@ -966,8 +969,11 @@ async function runCreator(env,client,strategy,options) {
     if((plannedByDay.get(day)||0)>=dailyPublishTarget)continue;
     const campaignItem=Array.isArray(strategy?.campaignSchedule)?strategy.campaignSchedule[index]||null:null;
     const aiCreative=aiBatch[index]||null;
-    const theme=String(campaignItem?.theme||aiCreative?.theme||themes[index%themes.length]||"Conteúdo");
-    let hook=String(campaignItem?.hook||aiCreative?.hook||pickUniqueHook(index,day,strategy?.radarTerms||[],recentCaptions)).trim();
+    const theme=String(campaignItem?.theme||aiCreative?.theme||themes[(index+[...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),0))%themes.length]||"Conteúdo");
+    const brandHooks=clientBrand(client).hooks;
+    let hook=String(campaignItem?.hook||aiCreative?.hook||(brandHooks.length
+      ? brandHooks[([...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17))%brandHooks.length]
+      : pickUniqueHook(index,day,strategy?.radarTerms||[],recentCaptions))).trim();
     const cta=String(campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,6).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();

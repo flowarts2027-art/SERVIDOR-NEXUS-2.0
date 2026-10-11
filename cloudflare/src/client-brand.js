@@ -7,7 +7,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11",
+    profileVersion: "2026-10-11b",
     brandName: "Flow Arts",
     niche: "Marketing digital",
     audience: "Pequenos empresários e empreendedores brasileiros",
@@ -18,6 +18,30 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     afternoonTheme: "Passo a passo prático de marketing para salvar e aplicar hoje",
     eveningTheme: "Bastidores e histórias de empreendedores que cresceram com marketing",
     tone: "Direto, prático, motivador e profissional",
+    themes: Object.freeze([
+      "Como atrair clientes pelo Instagram",
+      "Erros que fazem um perfil comercial não vender",
+      "Bio do Instagram que converte",
+      "Ideias de conteúdo para pequenos negócios",
+      "Reels simples que geram alcance",
+      "Como usar os Stories para vender",
+      "Tráfego pago para iniciantes",
+      "Identidade visual que passa confiança",
+      "Legendas que geram comentários",
+      "Calendário de postagens sem complicação",
+      "Como transformar seguidores em clientes",
+      "Métricas do Instagram que realmente importam"
+    ]),
+    hooks: Object.freeze([
+      "Seu Instagram pode estar afastando clientes sem você perceber.",
+      "Pouca gente faz isso, e é o que mais traz resultado.",
+      "Salva isso antes de criar o seu próximo post.",
+      "Você posta todo dia e mesmo assim não vende?",
+      "Esse detalhe muda a cara do seu perfil.",
+      "Marketing simples para quem não tem tempo.",
+      "Faça esse teste no seu perfil hoje.",
+      "O erro que mais vejo em perfis de negócio."
+    ]),
     visualDirection: "Photorealistic premium scenes of modern Brazilian entrepreneurs and small business owners: bright creative workspaces, planning social media content, laptops and smartphones with abstract unreadable charts, sticky notes and brainstorming walls, confident natural people. Clean, contemporary, optimistic lighting."
   })
 });
@@ -45,6 +69,8 @@ export function clientBrand(client = {}) {
     afternoonTheme: pick(defaults.afternoonTheme),
     eveningTheme: pick(defaults.eveningTheme),
     tone: pick(defaults.tone),
+    themes: Array.isArray(defaults.themes) ? [...defaults.themes] : [],
+    hooks: Array.isArray(defaults.hooks) ? [...defaults.hooks] : [],
     visualDirection: pick(defaults.visualDirection)
   };
 }
