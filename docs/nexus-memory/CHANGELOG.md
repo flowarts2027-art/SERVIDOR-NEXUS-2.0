@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- 17h41: demo do Café Brisa com 3 posts e imagens boas (conferido por print do Rodrigo). Bug: legenda sem campanha incluía o contentFocus (instrução interna). fix c2058ca (deploy ~17h46 BRT): legenda usa a oferta da marca; demo profileVersion demo2 refaz os rascunhos do café.
 - 17h15: link /exemplo colocado na bio do @flowarts2026 (Rodrigo). Testes de lead removidos pelo próprio Rodrigo (conferido: 0 leads). Rascunho de 12/10 12:00 refeito com o tema certo ("Hashtags locais: como ser encontrado no Rio", profileVersion f), imagem em geração. Carrossel "Tráfego pago" de 11/10 19:00 aprovado e pronto.
 - 16h59: Rodrigo apagou sem querer o cliente demo-cafe no Master; o cron (ensureDemoClient) recriou às 17h00 BRT (conferido: demo-cafe online). Posts do café começam do zero.
 - Teste real de /exemplo (16h31–16h34): 2 envios do Rodrigo, com dados de outra pessoa, chegaram como leads "hot" de primeiro-teste (source landing, nextAction) — conferido via /api/master/leads. Rodrigo deve removê-los pelo novo botão.
