@@ -1,7 +1,7 @@
 # Estado do Nexus 2.0
 
 ## 2026-10-11 ~09h50 BRT — primeira publicação da Flow Arts
-- Proprietário aprovou os 2 posts. Post das 12:00 (Reel) caiu para imagem porque o token GitHub do Worker era da conta suspensa (403); foi publicado no Instagram (perfil passou de 2 para 3 posts, conferido no navegador), mas o ledger ficou em `publishing` (invocação interrompida após o media_publish). Corrigido com recuperação automática.
+- Proprietário aprovou os 2 posts. Post das 12:00 (Reel) caiu para imagem porque o token GitHub do Worker era da conta suspensa (403); foi publicado no Instagram (perfil passou de 2 para 3 posts, conferido no navegador), mas o ledger ficou em `publishing` (invocação interrompida após o media_publish). Corrigido com recuperação automática: às 13:25 UTC o ledger foi marcado `published` (mediaId 17890778682616932, https://www.instagram.com/p/DeWq1MNCX80/, `recoveredFromStuckPublishing`).
 - Carrossel das 19:00: Copy Chief aprovado após correção do CTA; 4 cartões montados; aguardando horário.
 - Proprietário criou token fine-grained na conta flowarts2027-art (Contents e Actions read/write, só SERVIDOR-NEXUS-2.0), trocou `GITHUB_ACTIONS_TOKEN` e `GITHUB_INGEST_REPOSITORY` (agora flowarts2027-art/SERVIDOR-NEXUS-2.0) no Worker. Primeiro Reel animado ainda não testado.
 
