@@ -368,6 +368,25 @@ function sparkline(points) {
   return `<svg viewBox="0 0 300 64" preserveAspectRatio="none" role="img" aria-label="Seguidores nos últimos dias"><path d="${path}" fill="none" stroke="#7EA2FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`;
 }
 
+// Relatório FORJA: quais posts trouxeram seguidores.
+function followerReportHtml(data) {
+  const byId = new Map((data.posts || []).map(post => [post.id, post]));
+  const top = (data.followerPosts || []).map(id => byId.get(id)).filter(Boolean);
+  const total = Number(data.totals?.follows || 0);
+  const body = top.length
+    ? `<ol class="follow-rank">${top.map(post => `<li>
+        <a href="${escapeHtml(safeUrl(post.permalink) || "#")}" target="_blank" rel="noopener">${escapeHtml((post.caption || "Post sem legenda").split("\n")[0].slice(0, 70))}</a>
+        <span><b>${formatNumber(post.follows)}</b> ${post.follows === 1 ? "seguidor" : "seguidores"} · <b>${formatNumber(post.profileVisits)}</b> visitas ao perfil</span>
+      </li>`).join("")}</ol>
+      <p class="note">Os agentes usam esta lista para fazer mais posts parecidos com os que trazem seguidores.</p>`
+    : `<p class="muted">Ainda nenhum post trouxe seguidor que a Meta tenha contado. A lista aparece assim que isso acontecer.</p>`;
+  return `<section class="block follow-report">
+      <h2>Posts que trouxeram seguidores</h2>
+      <p class="muted" style="margin:2px 0 10px">${formatNumber(total)} ${total === 1 ? "seguidor ganho" : "seguidores ganhos"} nos últimos posts medidos.</p>
+      ${body}
+    </section>`;
+}
+
 function renderInsights() {
   const box = $("#insights");
   const data = state.insights;
@@ -398,6 +417,7 @@ function renderInsights() {
       ${[["reach", "pessoas alcançadas"], ["views", "visualizações"], ["likes", "curtidas"], ["comments", "comentários"], ["saved", "salvamentos"], ["shares", "compartilhamentos"]]
         .map(([key, label]) => `<div class="metric"><strong>${formatNumber(t[key] || 0)}</strong><span>${label}</span></div>`).join("")}
     </div>
+    ${followerReportHtml(data)}
     <section class="block">
       <h2>Cada post</h2>
       <div class="post-metrics">
@@ -411,6 +431,7 @@ function renderInsights() {
                 <span><b>${formatNumber(post.likes)}</b> curtidas</span>
                 <span><b>${formatNumber(post.comments)}</b> comentários</span>
                 <span><b>${formatNumber(post.saved)}</b> salvos</span>
+                <span><b>${formatNumber(post.follows || 0)}</b> ${Number(post.follows) === 1 ? "seguidor" : "seguidores"}</span>
               </div>
             </div>
           </a>`).join("") : `<p class="muted">Ainda não há posts publicados para medir.</p>`}

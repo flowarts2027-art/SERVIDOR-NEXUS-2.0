@@ -32,7 +32,9 @@ export function summarizeSnapshot(snapshot = {}, previous = {}, now = new Date()
       reach: num(insights.reach),
       views: num(insights.views),
       saved: num(insights.saved),
-      shares: num(insights.shares)
+      shares: num(insights.shares),
+      follows: num(insights.follows),
+      profileVisits: num(insights.profile_visits)
     };
   });
   const sum = key => posts.reduce((total, post) => total + post[key], 0);
@@ -51,8 +53,16 @@ export function summarizeSnapshot(snapshot = {}, previous = {}, now = new Date()
       likes: sum("likes"),
       comments: sum("comments"),
       saved: sum("saved"),
-      shares: sum("shares")
+      shares: sum("shares"),
+      follows: sum("follows"),
+      profileVisits: sum("profileVisits")
     },
+    // Relatório FORJA: os posts que mais trouxeram seguidores (depois visitas ao perfil).
+    followerPosts: posts
+      .filter(post => post.follows > 0 || post.profileVisits > 0)
+      .sort((a, b) => b.follows - a.follows || b.profileVisits - a.profileVisits)
+      .slice(0, 3)
+      .map(post => post.id),
     posts,
     followersHistory: history.slice(-30),
     updatedAt: now.toISOString()

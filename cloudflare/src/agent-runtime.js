@@ -199,7 +199,7 @@ function postingProfile(client) {
   };
 }
 
-async function instagramMediaInsights(mediaId, headers, mediaType="") {
+async function instagramMediaInsights(mediaId, headers, mediaType="", withFollows=false) {
   const out = {};
   async function fetchMetrics(metrics){
     try{
@@ -217,6 +217,10 @@ async function instagramMediaInsights(mediaId, headers, mediaType="") {
   await fetchMetrics(["reach","views","saved","shares","total_interactions"]);
   if(String(mediaType||"").toUpperCase()==="VIDEO"){
     await fetchMetrics(["ig_reels_video_view_total_time"]);
+  }else if(withFollows){
+    // Seguidores ganhos e visitas ao perfil por post (FORJA: o número que decide a estratégia).
+    // Chamada separada: se a Meta recusar, as métricas acima continuam valendo.
+    await fetchMetrics(["follows","profile_visits"]);
   }
   return out;
 }
@@ -254,7 +258,7 @@ export async function instagramSnapshot(env, client) {
     // three recent media in detail while retaining basic data for all 25.
     const items = await Promise.all(baseItems.map(async (item,index)=>({
       ...item,
-      insights: item.id && index < 6 ? await instagramMediaInsights(item.id, headers, item.mediaType) : {}
+      insights: item.id && index < 6 ? await instagramMediaInsights(item.id, headers, item.mediaType, index < 3) : {}
     })));
 
     let followersCount=null, mediaCount=items.length, username=String(conn?.username||"");
@@ -349,7 +353,9 @@ async function runRadar(env, client, options) {
       Number(item.commentsCount||0)*2+
       Number(insights.saved||0)*3+
       Number(insights.shares||0)*4+
-      Number(insights.total_interactions||0);
+      Number(insights.total_interactions||0)+
+      Number(insights.follows||0)*10+
+      Number(insights.profile_visits||0)*2;
     return {...item,engagement};
   }).sort((a,b)=>b.engagement-a.engagement);
   const engagement=scored.map(item=>item.engagement);
