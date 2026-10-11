@@ -28,6 +28,7 @@ import { indexCatalogResults, verifyPosterLocation } from "./video-demand-catalo
 import { officialMovieFromTrailer, verifyOfficialMoviePoster } from "./official-movie-poster.js";
 import { enrichVerifiedFilmPresentation } from "./video-metadata-enrichment.js";
 import { clientInsights } from "./insights.js";
+import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { instagramSnapshot } from "./agent-runtime.js";
 import { whatsappLink, clientBrand, brandProfileVersion } from "./client-brand.js";
 
@@ -1666,6 +1667,11 @@ export async function handlePortalApi(request, env, url, ctx) {
     }
     await env.MEDIA?.delete(key);
     return json({ ok: true, deleted: true });
+  }
+
+  // Situação do auto-responder de comentários do próprio cliente.
+  if (url.pathname === "/api/portal/autoreply-status" && request.method === "GET") {
+    return json({ ok: true, ...(await commentAutoReplyStatus(env, client.id)) });
   }
 
   // Números do Instagram do cliente (conta e por post), com cache de 30 min.
