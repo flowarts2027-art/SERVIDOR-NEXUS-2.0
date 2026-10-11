@@ -124,3 +124,12 @@
 
 /* Links dentro de textos (ex.: atalhos para Campanhas e Suporte) */
 .link-inline{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;display:inline-flex;align-items:center;gap:6px}
+
+/* Custo da IA por cliente */
+.cost-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.cost-summary div { border: 1px solid rgba(127,127,127,.25); border-radius: 10px; padding: 10px 12px; }
+.cost-summary span { display: block; font-size: .8rem; opacity: .75; }
+.cost-summary strong { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.cost-table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.cost-table th, .cost-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(127,127,127,.2); }
+.usage-title { font-size: .95rem; margin: 16px 0 6px; }

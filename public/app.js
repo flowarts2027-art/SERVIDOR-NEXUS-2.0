@@ -559,6 +559,30 @@ function showView(id) {
   $("#page-title").textContent = titles[id] || "NEXUS AI";
 }
 
+// Custo da IA por cliente (7 dias): custo real da OpenAI dividido pelos posts com imagem.
+async function loadCostReport() {
+  const box = $("#cost-report");
+  if (!box) return;
+  try {
+    const data = await api("/api/master/openai/cost-report?days=7");
+    const usd = value => value == null ? "—" : "US$ " + Number(value).toFixed(2);
+    const names = new Map((state.clients || []).map(client => [client.id, client.name]));
+    const rows = (data.clients || []).map(row => `<tr><td>${escapeHtml(names.get(row.clientId) || row.clientId)}</td><td>${Number(row.posts || 0)}</td><td>${Number(row.tokens || 0).toLocaleString("pt-BR")}</td><td>${usd(row.estimatedUsd)}</td></tr>`).join("");
+    box.innerHTML = `
+      <div class="cost-summary">
+        <div><span>Custo real (7 dias)</span><strong>${usd(data.totalCostUsd)}</strong></div>
+        <div><span>Custo por post</span><strong>${usd(data.costPerPostUsd)}</strong></div>
+        <div><span>1 cliente, 12 posts/mês</span><strong>${usd(data.monthlyPerClientUsd)}</strong></div>
+      </div>
+      ${rows ? `<table class="cost-table"><thead><tr><th>Cliente</th><th>Posts com imagem</th><th>Tokens</th><th>Custo estimado</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="muted">Ainda sem posts nos últimos 7 dias.</p>`}
+      <p class="disclaimer">${data.totalCostUsd == null
+        ? "Para ver o custo em dólar, cadastre a chave admin da OpenAI em Integrações."
+        : "Custo real lido da OpenAI e dividido pelos posts com imagem de cada cliente."}</p>`;
+  } catch {
+    box.innerHTML = `<p class="muted">Não foi possível calcular o custo agora.</p>`;
+  }
+}
+
 async function load() {
   try {
     const [clients, support, posts, leads, agentCore] = await Promise.all([api("/api/clients"), api("/api/master/support"), api("/api/master/posts"), api("/api/master/leads"), api("/api/master/agent-core")]);
@@ -568,6 +592,7 @@ async function load() {
     state.leadData = leads || state.leadData;
     state.agentCore = agentCore || state.agentCore;
     render();
+    loadCostReport();
     renderSupportNotifications(support);
     renderPostLedger();
     renderMasterLeads();

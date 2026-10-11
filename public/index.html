@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=19">
+  <link rel="stylesheet" href="/styles.css?v=20">
 </head>
 <body>
   <div class="shell">
@@ -37,7 +37,7 @@
         </div>
         <div class="grid-main">
           <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
-          <section class="panel consumption"><div class="panel-head"><div><p class="eyebrow">CONSUMO</p><h2>Uso por cliente</h2></div></div><div id="usage-list"></div><p class="disclaimer">Valores percentuais configurados. Dados reais serão conectados somente quando a API do provedor os disponibilizar.</p></section>
+          <section class="panel consumption"><div class="panel-head"><div><p class="eyebrow">CONSUMO</p><h2>Custo da IA por cliente</h2></div></div><div id="cost-report"><p class="muted">Calculando…</p></div><h3 class="usage-title">Limite diário de cada cliente</h3><div id="usage-list"></div></section>
         </div>
       </section>
 
@@ -354,6 +354,6 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=38" defer></script>
+  <script src="/app.js?v=39" defer></script>
 </body>
 </html>

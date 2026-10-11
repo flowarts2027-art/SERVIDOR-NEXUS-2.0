@@ -188,7 +188,66 @@ async function summary(env) {
   };
 }
 
+// Custo da IA por cliente: custo real da OpenAI no período (precisa da chave admin)
+// dividido pelos posts com imagem que cada cliente gerou. Não inventa preço: sem a
+// chave admin, mostra só as contagens.
+export function splitCostByPosts(totalCostUsd, rows = [], postsPerMonth = 12) {
+  const totalPosts = rows.reduce((sum, row) => sum + Math.max(0, Number(row.posts || 0)), 0);
+  const known = Number.isFinite(totalCostUsd) && totalCostUsd != null;
+  const costPerPostUsd = known && totalPosts > 0 ? Number((totalCostUsd / totalPosts).toFixed(4)) : null;
+  return {
+    totalCostUsd: known ? Number(Number(totalCostUsd).toFixed(4)) : null,
+    totalPosts,
+    costPerPostUsd,
+    monthlyPerClientUsd: costPerPostUsd != null ? Number((costPerPostUsd * postsPerMonth).toFixed(2)) : null,
+    clients: rows.map(row => ({
+      ...row,
+      estimatedUsd: costPerPostUsd != null ? Number((costPerPostUsd * Number(row.posts || 0)).toFixed(4)) : null
+    }))
+  };
+}
+
+export async function costReport(env, { days = 7, now = Date.now() } = {}) {
+  const span = Math.max(1, Math.min(31, Number(days) || 7));
+  const startSec = Math.floor(now / 1000) - span * 86400;
+  const sinceSql = new Date(startSec * 1000).toISOString().replace("T", " ").slice(0, 19);
+  const sinceDay = new Date(startSec * 1000 - 3 * 3600000).toISOString().slice(0, 10);
+  const [posts, tokens] = await Promise.all([
+    env.DB.prepare(
+      `SELECT client_id, COUNT(*) AS posts FROM post_ledger
+       WHERE created_at >= ?1
+         AND (json_extract(payload_json,'$.mediaGeneration.status') = 'generated'
+              OR COALESCE(json_extract(payload_json,'$.imageUrl'),'') <> '')
+       GROUP BY client_id`
+    ).bind(sinceSql).all().catch(() => ({ results: [] })),
+    env.DB.prepare(
+      "SELECT client_id, SUM(used_tokens) AS tokens, SUM(calls) AS calls FROM token_usage WHERE day_key >= ?1 GROUP BY client_id"
+    ).bind(sinceDay).all().catch(() => ({ results: [] }))
+  ]);
+  const byClient = new Map();
+  for (const row of posts?.results || []) byClient.set(row.client_id, { clientId: row.client_id, posts: Number(row.posts || 0), tokens: 0, calls: 0 });
+  for (const row of tokens?.results || []) {
+    const item = byClient.get(row.client_id) || { clientId: row.client_id, posts: 0, tokens: 0, calls: 0 };
+    item.tokens = Number(row.tokens || 0);
+    item.calls = Number(row.calls || 0);
+    byClient.set(row.client_id, item);
+  }
+  let totalCostUsd = null;
+  let error = "";
+  try {
+    const key = await adminKey(env, await record(env));
+    if (key) totalCostUsd = await fetchCosts(key, startSec, Math.floor(now / 1000));
+    else error = "admin_key_missing";
+  } catch (caught) {
+    error = String(caught?.message || caught).slice(0, 120);
+  }
+  return { days: span, ...splitCostByPosts(totalCostUsd, [...byClient.values()].sort((a, b) => b.posts - a.posts)), error };
+}
+
 export async function handleMasterOpenAI(request, env, url) {
+  if (url.pathname === "/api/master/openai/cost-report" && request.method === "GET") {
+    return json({ ok: true, ...(await costReport(env, { days: url.searchParams.get("days") || 7 })) });
+  }
   if (url.pathname !== "/api/master/openai") return null;
 
   if (request.method === "GET") {
