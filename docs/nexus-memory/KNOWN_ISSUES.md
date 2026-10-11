@@ -8,6 +8,8 @@
 - Verificado no app Meta NEXUS IA CENTRAL (2077454426196873, empresa "Rodrigo Carvalho", modo desenvolvimento): testadores do Instagram flowarts2026, globalplay_streaming e ragnarplay1; o convite da globalplay_streaming está aceito desde 29/09 (conferido pelo Rodrigo em instagram.com/accounts/manage_access). O comentário de teste foi feito pela globalplay_streaming.
 - Permissões do caso de uso Instagram: business_basic, content_publish, manage_comments e manage_messages "Pronto para teste"; `instagram_business_manage_insights` NÃO está adicionada ao caso de uso.
 - Hipóteses: (1) token da Flow Arts emitido sem o escopo de comentários → reconectar o Instagram da Flow Arts; (2) filtro do modo desenvolvimento → App Review/Acesso avançado. Ainda sem confirmação.
+- 11/10 18h15: conta @flowarts2026 trocada de Criador para Comercial (Rodrigo) e novo comentário QUERO pela globalplay_streaming. Run 23:30 UTC: ainda count 0 em todos os posts, e igCount não subiu (2, 0, 2, 0) — o comentário novo nem entrou na contagem da Meta. Hipótese conta Criador descartada/inconclusiva. Caminho: verificação da empresa + App Review.
+- Carrossel "Tráfego pago" publicado (media 17952017187292803 aparece no run de 23:30 UTC).
 - Painel do cliente (portal) mostrou "Conecte o Instagram" e 0 posts publicados, embora o Worker leia a conta normalmente. Investigar.
 
 ## Abertos em 2026-10-10
