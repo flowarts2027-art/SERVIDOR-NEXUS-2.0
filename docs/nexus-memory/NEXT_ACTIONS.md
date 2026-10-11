@@ -1,7 +1,11 @@
 # Próximas ações, em ordem
 
-## Próximo passo exato (2026-10-11 manhã)
-- Auditoria dos painéis concluída em `AUDITORIA-PAINEIS.md`. Aguardando aprovação do proprietário para começar pelo painel do cliente novo (celular primeiro).
+## Próximo passo exato (2026-10-11 manhã, após execução)
+- Feito e verificado em produção: painel do cliente novo (celular), Master com 6 menus, Integrações com todos os clientes, campanha Flow Arts gerando posts novos (12:00 Reels, 19:00 carrossel), STORY/VIRAL com perfil da marca.
+- Bloqueio atual das imagens: `openai_daily_budget_reached` (limite diário de 30.000 tokens do cliente consumido pelos agentes de texto). Decisão do proprietário: aumentar o limite diário da Flow Arts no Master (Visão geral › Uso por cliente) ou manter.
+- Reels: o Worker tem token do GitHub (Reels não caem para imagem), mas não foi confirmado se ele tem acesso ao repositório novo; conferir o primeiro render.
+- Funil EU QUERO: o Nexus não responde comentários nem DM; construir resposta automática (private reply) com link wa.me/5521964816185 e descobrir de onde vem o texto que leva ao site da Global Play.
+- `globalplay-streaming` segue online (travado para publicar); sugerir pausar.
 
 ## Próximo passo exato (2026-10-10 noite)
 0. Campanha de 30 dias da Flow Arts ativa no código (profileVersion 2026-10-11e). Conferir no painel os posts do dia com formato da campanha; pedir ao proprietário o token do GitHub para os Reels.
