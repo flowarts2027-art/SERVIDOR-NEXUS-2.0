@@ -84,7 +84,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   const state = await readState(env, client.id);
   let media = { data: [] };
   try {
-    media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp&limit=" + MAX_MEDIA);
+    media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp,comments_count&limit=" + MAX_MEDIA);
   } catch (error) {
     out.errors.push("media:" + error.message);
   }
@@ -96,7 +96,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     try {
       const data = await graph(request, token, encodeURIComponent(String(item.id)) + "/comments?fields=id,text,username,timestamp&limit=50");
       comments = Array.isArray(data?.data) ? data.data : [];
-      out.seen.push({ media: String(item.id), count: comments.length, sample: comments.slice(0, 3).map(c => [String(c.username || "?").slice(0, 30), String(c.text || "").slice(0, 30)]) });
+      out.seen.push({ media: String(item.id), count: comments.length, igCount: Number(item.comments_count ?? -1), sample: comments.slice(0, 3).map(c => [String(c.username || "?").slice(0, 30), String(c.text || "").slice(0, 30)]) });
     } catch (error) {
       out.errors.push("comments:" + error.message);
       continue;
