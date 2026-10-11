@@ -8,7 +8,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   // Negócio FICTÍCIO usado como demonstração da Flow Arts (painel público /demo).
   // Nunca publica no Instagram (BLOCKED_PUBLISH_CLIENTS em publisher.js).
   "demo-cafe": Object.freeze({
-    profileVersion: "2026-10-11-demo1",
+    profileVersion: "2026-10-11-demo2",
     brandName: "Café Brisa",
     niche: "Cafeteria de bairro",
     audience: "Moradores e quem trabalha perto, no Rio de Janeiro, que gostam de um café caprichado e um lanche rápido",

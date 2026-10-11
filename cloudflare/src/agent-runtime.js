@@ -1028,7 +1028,8 @@ async function runCreator(env,client,strategy,options) {
         ? (String(campaignItem.angle||theme).charAt(0).toUpperCase()+String(campaignItem.angle||theme).slice(1))+". "+brandOffer+"."
         : campaignItem?.storytelling
         ? String(campaignItem.angle||theme)+". Uma situação simples, uma emoção clara e uma virada para uma experiência mais fácil."
-        : theme+". "+String(strategy?.contentFocus||"Conteúdo relevante para o público.")+".";
+        // contentFocus é instrução interna para os agentes: nunca vai para a legenda.
+        : theme+". "+(brandOffer?brandOffer+".":"");
       caption=[
         hook,
         "",
