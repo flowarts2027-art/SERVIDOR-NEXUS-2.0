@@ -1,6 +1,7 @@
 # Próximas ações, em ordem
 
 ## Próximo passo exato (2026-10-10 noite)
+0. Campanha de 30 dias da Flow Arts ativa no código (profileVersion 2026-10-11e). Conferir no painel os posts do dia com formato da campanha; pedir ao proprietário o token do GitHub para os Reels.
 1. (Feito 2026-10-10) Token Instagram da Flow Arts confirmado válido.
 2. Se o proprietário quiser, pausar também `globalplay-streaming` (ainda gasta OpenAI a cada ciclo, mas não publica).
 3. Conferir em Postagens & custos o primeiro post novo da Flow Arts (imagem gerada + legenda de marketing). Depois, mudar status de `primeiro-teste` para ativo de produção e acompanhar o primeiro ciclo de criação da Flow Arts sem publicação real; depois, uma única publicação controlada.

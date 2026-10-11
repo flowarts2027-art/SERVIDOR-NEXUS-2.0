@@ -25,3 +25,18 @@ Feita olhando o perfil no navegador (somente leitura). Sem métricas internas: a
 - Criar destaques: "Exemplos", "Como funciona", "Preços".
 - Colocar link (WhatsApp ou site) na bio.
 - Publicar Reels próprios com exemplos reais de trabalho.
+
+## Campanha de 30 dias (2026-10-10, `cloudflare/src/flowarts-campaign.js`)
+- 60 peças, 2 por dia (12:00 e 19:00): 26 Reels, 20 carrosséis, 14 posts.
+- Semana 1 apresentação · semana 2 educação · semana 3 prova (exemplos marcados como ilustrativos) · semana 4 conversão (CTA EXEMPLO) · dias 29–30 resumo.
+- Estrategista usa `flowArtsCampaignForDay` para `primeiro-teste`; Creator recebe formato, tema, gancho, ângulo, objetivo e CTA.
+- Carrossel com plano próprio (PASSO 1, PASSO 2, SALVE/COMENTE EXEMPLO), sem textos de streaming.
+- Reels: render via GitHub Actions do repositório novo (`flowarts2027-art/SERVIDOR-NEXUS-2.0`). Sem `GITHUB_ACTIONS_TOKEN` no Worker, o Reel vira post de imagem automaticamente.
+
+## O que falta para alimentar os agentes (depende do proprietário)
+1. Token do GitHub (`GITHUB_ACTIONS_TOKEN`) como secret do Worker na Cloudflare, para liberar os Reels animados.
+2. Link do WhatsApp na bio.
+3. Exemplos reais de trabalho (fotos, vídeos, prints) para substituir os exemplos ilustrativos.
+4. Definir pacotes e preços (a campanha não inventa valores).
+5. Orçamento de OpenAI: cerca de 140 imagens/mês (60 peças + 3 cartões extras por carrossel). Limite diário atual de tokens pode atrasar peças.
+6. Vídeos próprios (como o de automação enviado em 2026-10-10) postados manualmente pelo proprietário, 1–2 por semana.

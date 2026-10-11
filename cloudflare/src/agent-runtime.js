@@ -21,6 +21,7 @@ import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } f
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
+import { flowArtsCampaignForDay, flowArtsCampaignStrategy } from "./flowarts-campaign.js";
 import { clientBrand, IMAGE_GENERATION_CLIENTS, usefulThemeTerms, brandProfileVersion, isOutdatedBrandDraft } from "./client-brand.js";
 
 function parseJson(raw, fallback = {}) {
@@ -506,12 +507,16 @@ async function runStrategist(env,client,context,options) {
   const startedAt=new Date().toISOString();
   const profile=postingProfile(client);
   const lockedCampaignClient=["globalplay-streaming","ragnar-one"].includes(client.id);
-  const globalCampaign=lockedCampaignClient?globalPlayCampaignStrategy():null;
+  const flowArtsClient=client.id==="primeiro-teste";
+  const reelsEnabled=Boolean(String(env.GITHUB_ACTIONS_TOKEN||env.GITHUB_TOKEN||"").trim());
+  const globalCampaign=lockedCampaignClient?globalPlayCampaignStrategy():flowArtsClient?flowArtsCampaignStrategy():null;
   const campaignSchedule=client.id==="globalplay-streaming"
     ? globalPlayCampaignForDay(new Date())
     : client.id==="ragnar-one"
       ? ragnarCampaignForDay(new Date())
-      : [];
+      : flowArtsClient
+        ? flowArtsCampaignForDay(new Date(),{reelsEnabled})
+        : [];
   const [ledger,leads,state]=await Promise.all([
     ledgerRows(env,client.id,220),
     leadHunterSummary(env,client.id).catch(()=>({total:0,hot:0,warm:0,cold:0})),
@@ -978,7 +983,10 @@ async function runCreator(env,client,strategy,options) {
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,6).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();
     if(!caption){
-      const storyLine=campaignItem?.storytelling
+      const brandOffer=brandProfileVersion(client.id)?clientBrand(client).offer:"";
+      const storyLine=campaignItem&&brandOffer
+        ? (String(campaignItem.angle||theme).charAt(0).toUpperCase()+String(campaignItem.angle||theme).slice(1))+". "+brandOffer+"."
+        : campaignItem?.storytelling
         ? String(campaignItem.angle||theme)+". Uma situação simples, uma emoção clara e uma virada para uma experiência mais fácil."
         : theme+". "+String(strategy?.contentFocus||"Conteúdo relevante para o público.")+".";
       caption=[

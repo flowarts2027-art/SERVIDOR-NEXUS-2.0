@@ -1,6 +1,7 @@
 import { reviewImage } from "./visual-review.js";
 import { globalPlayCarouselPlan, GLOBAL_PLAY_REFERENCE_VERSION } from "./media-references.js";
 import { generateOriginalMedia } from "./media-generation.js";
+import { clientBrand, brandProfileVersion } from "./client-brand.js";
 import { recordAgentExecution, patchAgentCoreState } from "./agent-core.js";
 
 function parseJson(raw, fallback = {}) {
@@ -34,8 +35,29 @@ function brandName(client = {}) {
   return raw || "marca";
 }
 
+// Carrossel educativo para marcas com perfil próprio (ex.: Flow Arts).
+function brandCarouselPlan(client = {}, payload = {}) {
+  const brand = clientBrand(client);
+  const features = payload?.creativeFeatures || {};
+  const theme = compact(features.theme || payload?.title || brand.contentFocus || "marketing", 140);
+  const hook = compact(features.hook || theme, 140);
+  const cta = compact(features.cta || brand.cta || "Salve para usar depois.", 120);
+  const conversion = String(features.campaignGoal || "") === "conversão";
+  return [
+    { role:"hook", message:hook, overlay:compact(hook, 40).toUpperCase(),
+      scene:"Open with a relatable moment of a small business owner in Rio de Janeiro facing this topic: " + theme + ". Stop the scroll with curiosity, not with a solution yet." },
+    { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay:"PASSO 1",
+      scene:"Show the first practical step of the topic in a clean business setting (desk, laptop, phone, product, storefront). Vary framing from card 1." },
+    { role:"turn", message:"Mostre o segundo ponto e a virada.", overlay:"PASSO 2",
+      scene:"Show the improvement or result of applying the tip, still in the same visual campaign, with a different angle and gesture." },
+    { role:"result", message:"Feche com o resultado e o CTA.", overlay: conversion ? "COMENTE EXEMPLO" : "SALVE ESTE POST",
+      scene:"Close with a confident, satisfied business owner or a polished brand result. Leave clean space for the CTA: " + cta }
+  ];
+}
+
 function carouselPlan(client = {}, payload = {}) {
   if (client.id === "globalplay-streaming") return globalPlayCarouselPlan();
+  if (brandProfileVersion(client.id)) return brandCarouselPlan(client, payload);
   const brand = brandName(client);
   const features = payload?.creativeFeatures || {};
   const theme = compact(features.theme || payload?.title || "entretenimento em casa", 140);
@@ -97,7 +119,16 @@ async function buildCarousel(env, client, row, payload) {
   const plan = carouselPlan(client, payload);
   for (let index = cards.length; index < plan.length; index++) {
     const card = plan[index];
-    const brief = client.id === "globalplay-streaming" ? ["Generate exactly one standalone card "+(index+1)+" of 4.",card.scene,"Keep the same family and home with amber lighting across the cards. One brand placement upper-right added by the system, full scene with no lower caption panel. No montage or image counter."].join(" ") : [
+    const brandBrief = brandProfileVersion(client.id) ? [
+      "Instagram carousel card " + (index + 1) + " of " + plan.length + " for " + clientBrand(client).brandName + ".",
+      "Card role: " + card.role + ". Message intent: " + card.message + ".",
+      "Required scene: " + card.scene,
+      clientBrand(client).visualDirection,
+      "System overlay title to support: " + card.overlay + ". Leave clean negative space for this title and do not generate text inside the image.",
+      "Keep one coherent visual campaign across all cards. No collage, no split screen, no logos of other companies.",
+      "Generate exactly one standalone vertical card image."
+    ].join(" ") : "";
+    const brief = brandBrief || (client.id === "globalplay-streaming" ? ["Generate exactly one standalone card "+(index+1)+" of 4.",card.scene,"Keep the same family and home with amber lighting across the cards. One brand placement upper-right added by the system, full scene with no lower caption panel. No montage or image counter."].join(" ") : [
       "Instagram carousel card " + (index + 1) + " of " + plan.length + ".",
       "Keep one coherent " + String(client?.name || client?.id || "brand") + " visual campaign across all cards.",
       "Card role: " + card.role + ".",
@@ -111,7 +142,7 @@ async function buildCarousel(env, client, row, payload) {
       "For sports, use a fictional generic football match with no real club crests, league logos, broadcaster marks or recognizable players.",
       "Leave generous negative space for a short overlay added by the brand system.",
       "Do not create a collage or split screen. Generate exactly one standalone vertical card image."
-    ].join(" ");
+    ].join(" "));
     const media = await generateOriginalMedia(env, client, row.id + "-carousel-" + (index + 1), brief, {
       title: card.overlay,
       contentFormat:"carousel",
@@ -172,7 +203,7 @@ async function dispatchReel(env, client, row, payload) {
     await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
   } else if (current.sourceImage) sourceImage=current.sourceImage;
   if (!/^https:\/\//i.test(sourceImage)) throw new Error("reel_source_image_required");
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
   const [owner, name] = repo.split("/");
   const callbackToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
   const base = publicBase(env);
@@ -195,7 +226,7 @@ async function dispatchReel(env, client, row, payload) {
         callback_url:base + "/api/internal/social-format-render/upload",
         source_image:sourceImage,
         hook:compact(payload?.creativeFeatures?.hook || "", 100),
-        cta:compact(payload?.creativeFeatures?.cta || 'Digite "QUERO".', 100),
+        cta:compact(payload?.creativeFeatures?.cta || clientBrand(client).cta || 'Digite "QUERO".', 100),
         duration:10
       }
     }),
