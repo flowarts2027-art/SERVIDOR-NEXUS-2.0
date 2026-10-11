@@ -1,5 +1,11 @@
 # Próximas ações, em ordem
 
+## Próximo passo exato (2026-10-11 16h30 BRT)
+1. Rodrigo testa /exemplo com os próprios dados e confere o contato na aba Contatos do painel.
+2. Rodrigo coloca https://servidor-nexus.diamantehinode2015.workers.dev/exemplo na bio do Instagram @flowarts2026.
+3. Checagem 17:50: posts novos da Flow Arts (tema/imagem corrigidos), Café Brisa na demo, follows no relatório.
+4. Em 2–3 dias: Cartão CNPJ com telefone novo → verificação da empresa na Meta.
+
 ## Standup CEO (2026-10-11)
 - Primeiro standup gravado em `empresa/standup/2026-10-11.md`. Só recomendação, nada enviado nem publicado.
 - Prioridade recomendada: Rodrigo envia as 3 primeiras mensagens aos cafés da lista, depois de conferir se a /demo tem posts do Café Brisa.
