@@ -619,6 +619,25 @@ export async function handleMaster(request, env, url) {
     return json({ client: masterClientView(client), portalCredentials }, 201);
   }
 
+  // Remove de vez as postagens que não foram publicadas (fila, falhas e vencidas)
+  // e os trabalhos pendentes do cliente. Publicadas ficam como histórico.
+  const clearPendingMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/clear-pending-posts$/);
+  if (clearPendingMatch && request.method === "POST") {
+    const clientId = decodeURIComponent(clearPendingMatch[1]);
+    if (!await getClient(env, clientId)) return json({ error: "client_not_found" }, 404);
+    const posts = await env.DB.prepare(
+      "DELETE FROM post_ledger WHERE client_id = ?1 AND COALESCE(status,'') <> 'published'"
+    ).bind(clientId).run();
+    const jobs = await env.DB.prepare(
+      "DELETE FROM scheduled_jobs WHERE client_id = ?1 AND status IN ('scheduled','pending','queued')"
+    ).bind(clientId).run().catch(() => null);
+    return json({
+      ok: true,
+      deletedPosts: Number(posts?.meta?.changes || 0),
+      deletedJobs: Number(jobs?.meta?.changes || 0)
+    });
+  }
+
   const clientMatch = url.pathname.match(/^\/api\/clients\/([^/]+)$/);
   if (clientMatch && request.method === "PATCH") {
     const clientId = decodeURIComponent(clientMatch[1]);
