@@ -72,3 +72,5 @@ Para detalhes, consulte `ARCHITECTURE.md`.
 ## Deploy automático
 
 Cada push na `main` que muda `cloudflare/` ou `public/` publica o Worker pelo GitHub Actions (`.github/workflows/deploy-nexus-cloudflare.yml`). O token fica no secret `CLOUDFLARE_API_TOKEN` do repositório.
+
+Se um push não disparar o deploy, um novo commit em `cloudflare/` dispara de novo.
