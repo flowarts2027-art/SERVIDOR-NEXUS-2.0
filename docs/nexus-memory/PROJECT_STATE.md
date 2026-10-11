@@ -5,7 +5,7 @@
 - Secret `CLOUDFLARE_API_TOKEN` criado pelo proprietário (template Edit Cloudflare Workers, conta diamantehinode2015). Deploy GitHub Actions run #2 (commit 3b319e7) e #3 (9bb48d6) concluídos com sucesso, incluindo a verificação do portal ao vivo.
 - Decisão do proprietário: parar Global Play e Ragnar One. Motivo: não há confirmação de licença do serviço vendido, e o pipeline usa cartazes oficiais/trailers de estúdios. Trava `BLOCKED_PUBLISH_CLIENTS` em `cloudflare/src/publisher.js` recusa imagem, vídeo e carrossel para `ragnar-one`, `globalplay-streaming` e `global-play-streaming`.
 - Produção (lido pelo painel Master): `ragnar-one` com status `paused`; cliente duplicado `global-play-streaming` apagado pelo proprietário; `globalplay-streaming` segue `online` (protegido contra exclusão), sem conseguir publicar.
-- Flow Arts (`primeiro-teste`, @flowarts2026): OAuth Instagram retornou `oauth=success` em 2026-10-10 ~21h20. Status do token ainda não confirmado porque `/api/master/instagram/accounts-status` só listava as contas antigas (corrigido nesta sessão, aguardando deploy).
+- Flow Arts (`primeiro-teste`, @flowarts2026): OAuth Instagram retornou `oauth=success` em 2026-10-10 ~21h20. Após o deploy 51f3e03 (sucesso), `/api/master/instagram/accounts-status` confirmou `primeiro-teste`: connected, tokenValid, accountMatches, validation ok, expira em 2026-12-10.
 - Perfil de marca de marketing para Flow Arts em `cloudflare/src/client-brand.js` (nome/nicho salvos no painel têm prioridade).
 - Testes locais: 229/229 aprovados. Nenhuma publicação real foi feita.
 
