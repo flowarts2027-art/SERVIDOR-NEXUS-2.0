@@ -1,5 +1,11 @@
 # Estado do Nexus 2.0
 
+## 2026-10-11 ~08h20 BRT — primeiras imagens da Flow Arts
+- Memória dos agentes da Flow Arts zerada (`reset-agent-memory`: estado apagado, 24 rascunhos antigos e 27 registros de aprendizado). Após o ciclo de 11:16 UTC: 0 menções a streaming no estado.
+- Ciclo de 11:16 UTC gerou as 2 imagens do dia (12:00 Reels, 19:00 carrossel) com `clean_brand_image`; inspecionadas visualmente: cenas de marketing no Rio, paleta azul-marinho, persona da marca, sem texto. Aguardando aprovação do proprietário no painel.
+- Uso de tokens do dia ~60k de 150k.
+- Carrossel monta 4 cartões só depois da aprovação; Reels dependem do token do GitHub no Worker ter acesso ao repositório novo (não verificado).
+
 ## 2026-10-11 ~07h BRT — Global Play encerrada
 - A pedido do proprietário: `globalplay-streaming` com status `paused` e 48 postagens não publicadas apagadas (fila, falhas e vencidas) + 1 trabalho agendado, pela rota nova `POST /api/master/clients/:id/clear-pending-posts`. Restam só 12 registros publicados (histórico; os posts continuam no Instagram).
 - Ragnar One: 54 postagens não publicadas apagadas. Ragnar e Global Play com status `archived` (somem das listas do Master; `/api/clients?all=1` mostra). Único cliente ativo: Flow Arts (`primeiro-teste`).
