@@ -145,11 +145,11 @@ function postingProfile(client) {
       ? "Entretenimento em casa com criativos realistas e premium, uma ideia por peça, storytelling curto e visual pensado para o objetivo do formato"
       : isRagnar
         ? "Entretenimento em casa com criativos realistas e premium, uma ideia por peça, storytelling curto e visual pensado para o objetivo do formato"
-        : (current.contentFocus || "Conteúdo útil e específico para o público"),
-    morningTheme: isGlobal ? "Descoberta com gancho visual forte e situação cotidiana de entretenimento" : isRagnar ? "Descoberta com gancho visual forte e situação cotidiana de entretenimento" : (current.morningTheme || "Descoberta e curiosidade"),
-    afternoonTheme: isGlobal ? "Utilidade, identificação e conteúdo para salvar ou compartilhar" : isRagnar ? "Utilidade, identificação e conteúdo para salvar ou compartilhar" : (current.afternoonTheme || "Conteúdo útil para salvar"),
-    eveningTheme: isGlobal ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : isRagnar ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : (current.eveningTheme || "Comunidade e opinião"),
-    tone: isGlobal ? "Realista, premium, acolhedor, simples e direto" : isRagnar ? "Realista, premium, acolhedor, simples e direto" : (current.tone || "Firme, direto e profissional"),
+        : (current.contentFocus || clientBrand(client).contentFocus || "Conteúdo útil e específico para o público"),
+    morningTheme: isGlobal ? "Descoberta com gancho visual forte e situação cotidiana de entretenimento" : isRagnar ? "Descoberta com gancho visual forte e situação cotidiana de entretenimento" : (current.morningTheme || clientBrand(client).morningTheme || "Descoberta e curiosidade"),
+    afternoonTheme: isGlobal ? "Utilidade, identificação e conteúdo para salvar ou compartilhar" : isRagnar ? "Utilidade, identificação e conteúdo para salvar ou compartilhar" : (current.afternoonTheme || clientBrand(client).afternoonTheme || "Conteúdo útil para salvar"),
+    eveningTheme: isGlobal ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : isRagnar ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : (current.eveningTheme || clientBrand(client).eveningTheme || "Comunidade e opinião"),
+    tone: isGlobal ? "Realista, premium, acolhedor, simples e direto" : isRagnar ? "Realista, premium, acolhedor, simples e direto" : (current.tone || clientBrand(client).tone || "Firme, direto e profissional"),
     cta: 'Comente "QUERO" para saber mais.',
     followerCta: isGlobal ? "Siga a Global Play para ver as próximas sugestões." : isRagnar ? "Siga a Ragnar One para acompanhar as próximas sugestões." : (current.followerCta || clientBrand(client).followerCta || "Siga o perfil para não perder as próximas indicações."),
     shareCta: isGlobal ? "Envie para alguém que vai curtir essa sessão em família." : isRagnar ? "Envie para quem também curte uma boa noite de entretenimento." : (current.shareCta || "Envie para alguém que também curte esse tipo de conteúdo."),

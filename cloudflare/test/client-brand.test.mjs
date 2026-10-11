@@ -25,3 +25,11 @@ test("nome e nicho salvos no painel têm prioridade", () => {
   assert.equal(brand.brandName, "Outra Marca");
   assert.equal(brand.niche, "Moda");
 });
+
+test("Flow Arts tem temas de marketing para os três horários", () => {
+  const brand = clientBrand(flowArts);
+  for (const key of ["contentFocus", "morningTheme", "afternoonTheme", "eveningTheme", "tone"]) {
+    assert.ok(brand[key], key);
+  }
+  assert.match(brand.contentFocus, /marketing/i);
+});

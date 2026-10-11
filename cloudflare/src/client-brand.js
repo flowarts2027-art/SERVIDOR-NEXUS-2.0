@@ -10,6 +10,11 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     audience: "Pequenos empresários e empreendedores brasileiros",
     hashtags: "#FlowArts #MarketingDigital #Empreendedorismo #RedesSociais #Dicas",
     followerCta: "Siga a Flow Arts para mais dicas de marketing.",
+    contentFocus: "Dicas práticas de marketing digital e Instagram para pequenos negócios: conteúdo, anúncios, posicionamento de marca e vendas pelas redes sociais",
+    morningTheme: "Erros comuns de marketing que travam pequenos negócios e como corrigir",
+    afternoonTheme: "Passo a passo prático de marketing para salvar e aplicar hoje",
+    eveningTheme: "Bastidores e histórias de empreendedores que cresceram com marketing",
+    tone: "Direto, prático, motivador e profissional",
     visualDirection: "Photorealistic premium scenes of modern Brazilian entrepreneurs and small business owners: bright creative workspaces, planning social media content, laptops and smartphones with abstract unreadable charts, sticky notes and brainstorming walls, confident natural people. Clean, contemporary, optimistic lighting."
   })
 });
@@ -32,6 +37,11 @@ export function clientBrand(client = {}) {
     audience: pick(profile.audience, defaults.audience),
     hashtags: pick(defaults.hashtags),
     followerCta: pick(defaults.followerCta),
+    contentFocus: pick(defaults.contentFocus),
+    morningTheme: pick(defaults.morningTheme),
+    afternoonTheme: pick(defaults.afternoonTheme),
+    eveningTheme: pick(defaults.eveningTheme),
+    tone: pick(defaults.tone),
     visualDirection: pick(defaults.visualDirection)
   };
 }
