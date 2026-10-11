@@ -48,6 +48,19 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Faça esse teste no seu perfil hoje.",
       "O erro que mais vejo em perfis de negócio."
     ]),
+    // Perfil de marketing (.agents/product-marketing.md, v1 2026-10-11, respostas do Rodrigo).
+    avoidRules: "Nunca citar preços ou valores (pacotes ainda não definidos). Nunca citar a Global Play, outros clientes ou concorrentes pelo nome. Nunca inventar clientes, números, resultados ou depoimentos; exemplos são sempre ilustrativos. Não prometer número de seguidores ou de vendas. Não falar de streaming ou entretenimento.",
+    painPoints: Object.freeze([
+      "Posta todo dia e mesmo assim não vende",
+      "Não tem tempo para criar posts",
+      "Fotos amadoras afastam clientes",
+      "Estúdio e agência tradicional são caros"
+    ]),
+    objections: Object.freeze([
+      "Imagem de IA parece falsa? Mostre o exemplo grátis antes de contratar e seja transparente sobre o uso de IA.",
+      "Vou perder o controle do meu Instagram? Nada é publicado sem a aprovação do cliente no painel.",
+      "Deve ser caro. A IA reduz o custo de estúdio e produção; peça o exemplo grátis primeiro."
+    ]),
     visualDirection: "Photorealistic premium scenes for small local businesses in Rio de Janeiro (cafés, salons, shops, restaurants, service providers): bright professional product photos, modern storefronts, a laptop or phone showing an abstract unreadable website layout, a friendly professional woman with curly dark hair in a navy blazer presenting results. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
   })
 });
@@ -80,7 +93,10 @@ export function clientBrand(client = {}) {
     tone: pick(defaults.tone),
     themes: Array.isArray(defaults.themes) ? [...defaults.themes] : [],
     hooks: Array.isArray(defaults.hooks) ? [...defaults.hooks] : [],
-    visualDirection: pick(defaults.visualDirection)
+    visualDirection: pick(defaults.visualDirection),
+    avoidRules: pick(defaults.avoidRules),
+    painPoints: Array.isArray(defaults.painPoints) ? [...defaults.painPoints] : [],
+    objections: Array.isArray(defaults.objections) ? [...defaults.objections] : []
   };
 }
 

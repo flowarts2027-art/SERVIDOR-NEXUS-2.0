@@ -155,7 +155,7 @@ function postingProfile(client) {
     followerCta: isGlobal ? "Siga a Global Play para ver as próximas sugestões." : isRagnar ? "Siga a Ragnar One para acompanhar as próximas sugestões." : (current.followerCta || clientBrand(client).followerCta || "Siga o perfil para não perder as próximas indicações."),
     shareCta: isGlobal ? "Envie para alguém que vai curtir essa sessão em família." : isRagnar ? "Envie para quem também curte uma boa noite de entretenimento." : (current.shareCta || "Envie para alguém que também curte esse tipo de conteúdo."),
     hashtags: isGlobal ? "#GlobalPlay #Streaming #Entretenimento #CinemaEmCasa #Dicas" : isRagnar ? "#RagnarOne #Streaming #Entretenimento #CinemaEmCasa #Dicas" : (current.hashtags || clientBrand(client).hashtags || "#Dicas"),
-    avoidTopics: "Texto genérico, repetição de criativos, poluição visual, tela vazia, collage/split-screen, promessas irreais, referências protegidas e ofertas de revenda. "+commercialPromptGuard(client),
+    avoidTopics: "Texto genérico, repetição de criativos, poluição visual, tela vazia, collage/split-screen, promessas irreais, referências protegidas e ofertas de revenda. "+commercialPromptGuard(client)+(clientBrand(client).avoidRules?" "+clientBrand(client).avoidRules:""),
     creativeRotation: String(client?.id || "") === "globalplay-streaming"
       ? {
           enabled:true,
@@ -566,6 +566,8 @@ async function runStrategist(env,client,context,options) {
     tone:profile.tone,
     themes:campaignSchedule.length?campaignSchedule.map(item=>item.theme):themes,
     contentFocus:profile.contentFocus,
+    audiencePains:clientBrand(client).painPoints,
+    objectionsToAnswer:clientBrand(client).objections,
     cta:profile.cta,
     ctaRotation:[
       profile.cta,
