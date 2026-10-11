@@ -1,5 +1,11 @@
 # Próximas ações, em ordem
 
+## Próximo passo exato (2026-10-11 15h20 BRT)
+1. Conferir se o cron criou o cliente demo-cafe e se os agentes geraram posts com imagem (ver /api/demo/panel).
+2. Ajustar o texto "Contatos recentes" da tela Início no modo demonstração.
+3. Depois da demo: listar 10 negócios reais e rascunhar 10 mensagens (Rodrigo aprova cada uma).
+4. Medir o custo de OpenAI por cliente durante 1 semana (oferta R$ 297 + R$ 697).
+
 ## Próximo passo exato (2026-10-11 14h BRT)
 1. Rodrigo reconecta o Instagram da Flow Arts pelo painel (logado como flowarts2026, aceitando todas as permissões).
 2. Depois do próximo cron, conferir `/api/portal/autoreply-status`: `count` deve igualar `igCount`.

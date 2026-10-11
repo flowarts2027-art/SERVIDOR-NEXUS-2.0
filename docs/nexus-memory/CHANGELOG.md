@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- feat (c617e82, deploy ok 18:16 UTC): demonstração pública. /demo → /portal.html?demo=1 (conferido no ar: abre sem senha, aviso de café fictício). Cliente demo-cafe "Café Brisa" criado pelo cron (src/demo-client.js), nunca publica (BLOCKED_PUBLISH_CLIENTS), pausa sozinho com 8 posts; GET /api/demo/panel público com campos seguros e cache de 5 min. Primeiros posts do café ainda não confirmados.
 - feat (aeadde7, deploy ok ~14h55 BRT): agentes recebem o perfil de marketing (.agents/product-marketing.md, criado no Claude Code do PC com respostas do Rodrigo): regras em avoidTopics (sem preços, sem citar Global Play/clientes/concorrentes, sem inventar resultados, sem prometer seguidores/vendas) e, no plano do Estrategista, `audiencePains` e `objectionsToAnswer`. profileVersion não mudou (rascunhos atuais mantidos). Testes 259/259.
 - PC do Rodrigo: plugin marketing-skills (coreyhaines31/marketingskills) adicionado ao Claude Code; conta GitHub playprimetrafego-tech virou colaboradora (Write) do repositório para o PC poder enviar commits.
 - feat (0bfdf7b, aguardando OK para push): calendário do mês com capas na aba Posts do painel do cliente; rota GET /api/portal/calendar?month=AAAA-MM com o plano da campanha Flow Arts (só dias de hoje em diante). Corrigido travamento do painel quando insights vinham sem `totals` (ficava em "Conecte o Instagram"); blocos renderizam isolados e há estado "Carregando…". Testes 257/257; visual conferido em 390px e 1280px com dados simulados.
