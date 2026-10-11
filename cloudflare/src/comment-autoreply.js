@@ -74,7 +74,7 @@ async function graph(request, token, path, options = {}) {
 }
 
 export async function runCommentAutoReplyForClient(env, client, { request = fetch, now = new Date() } = {}) {
-  const out = { checked: 0, replied: 0, errors: [] };
+  const out = { checked: 0, replied: 0, errors: [], seen: [] };
   const conn = await resolveInstagramCredentials(env, client.id);
   const token = String(conn?.accessToken || "");
   const igUserId = String(conn?.igUserId || "").trim();
@@ -91,6 +91,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     try {
       const data = await graph(request, token, encodeURIComponent(String(item.id)) + "/comments?fields=id,text,username,timestamp&limit=50");
       comments = Array.isArray(data?.data) ? data.data : [];
+      out.seen.push({ media: String(item.id), count: comments.length, sample: comments.slice(0, 3).map(c => [String(c.username || "?").slice(0, 30), String(c.text || "").slice(0, 30)]) });
     } catch (error) {
       out.errors.push("comments:" + error.message);
       continue;
@@ -125,7 +126,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
       }
     }
   }
-  state.lastRun = { at: now.toISOString(), checked: out.checked, replied: out.replied, errors: out.errors.slice(0, 5) };
+  state.lastRun = { at: now.toISOString(), checked: out.checked, replied: out.replied, errors: out.errors.slice(0, 5), seen: out.seen.slice(0, MAX_MEDIA), mediaCount: Array.isArray(media?.data) ? media.data.length : 0 };
   await writeState(env, client.id, state).catch(() => null);
   return out;
 }
