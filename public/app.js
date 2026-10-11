@@ -247,7 +247,12 @@ function renderPostLedger() {
   body.innerHTML = posts.length ? posts.map(post => {
     const [label, cls] = postStatusMeta(post.status);
     const detail = post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
+    const image = /^https:\/\//i.test(String(post.imageUrl || "")) ? String(post.imageUrl) : "";
+    const caption = String(post.caption || "").trim();
+    const approval = String(post.approvalStatus || "") === "approved" ? "Aprovado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
+    const preview = `<div class="post-preview">${image ? `<a href="${escapeHtml(image)}" target="_blank" rel="noopener"><img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy"></a>` : '<span class="post-preview-empty">Sem imagem</span>'}${caption ? `<details><summary>Ver legenda</summary><p>${escapeHtml(caption).replace(/\n/g, "<br>")}</p></details>` : ""}${approval ? `<small>${approval}</small>` : ""}</div>`;
     return `<tr>
+      <td>${preview}</td>
       <td><strong>${escapeHtml(post.clientName || post.clientId)}</strong></td>
       <td>${escapeHtml(post.instagram || "—")}</td>
       <td><strong>${escapeHtml(post.scheduledHour || "—")}</strong><br><small>${formatPostDate(post.scheduledFor)}</small></td>
@@ -257,7 +262,7 @@ function renderPostLedger() {
       <td>${escapeHtml(post.model || "—")}</td>
       <td class="post-detail">${detail}</td>
     </tr>`;
-  }).join("") : '<tr><td colspan="8">Nenhuma postagem registrada para este filtro.</td></tr>';
+  }).join("") : '<tr><td colspan="9">Nenhuma postagem registrada para este filtro.</td></tr>';
 }
 
 async function loadPostLedger() {

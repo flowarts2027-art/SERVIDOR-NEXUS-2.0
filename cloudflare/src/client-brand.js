@@ -45,3 +45,20 @@ export function clientBrand(client = {}) {
     visualDirection: pick(defaults.visualDirection)
   };
 }
+
+// Clientes que podem gerar imagens próprias com IA (custo na chave central).
+export const IMAGE_GENERATION_CLIENTS = Object.freeze(new Set([
+  "globalplay-streaming", "ragnar-one", ...Object.keys(CLIENT_BRAND_DEFAULTS)
+]));
+
+// Palavras de CTA/comentário que não servem como tema de post.
+const JUNK_THEME_WORDS = new Set([
+  "quero", "comente", "comentario", "comentarios", "conteudo", "conteúdo", "link", "bio",
+  "eu", "voce", "você", "aqui", "isso", "esse", "essa", "sim", "nao", "não", "obrigado", "top", "amei"
+]);
+
+export function usefulThemeTerms(terms = []) {
+  return (Array.isArray(terms) ? terms : [])
+    .map(term => String(term || "").trim())
+    .filter(term => term.length >= 4 && !JUNK_THEME_WORDS.has(term.toLowerCase()));
+}

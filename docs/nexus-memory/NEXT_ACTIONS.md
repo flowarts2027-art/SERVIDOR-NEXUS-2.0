@@ -3,7 +3,7 @@
 ## Próximo passo exato (2026-10-10 noite)
 1. (Feito 2026-10-10) Token Instagram da Flow Arts confirmado válido.
 2. Se o proprietário quiser, pausar também `globalplay-streaming` (ainda gasta OpenAI a cada ciclo, mas não publica).
-3. Mudar status de `primeiro-teste` para ativo de produção e acompanhar o primeiro ciclo de criação da Flow Arts sem publicação real; depois, uma única publicação controlada.
+3. Conferir em Postagens & custos o primeiro post novo da Flow Arts (imagem gerada + legenda de marketing). Depois, mudar status de `primeiro-teste` para ativo de produção e acompanhar o primeiro ciclo de criação da Flow Arts sem publicação real; depois, uma única publicação controlada.
 4. Investigar as falhas das tarefas "Nexus read-only production audit" e "NEXUS Overnight Regression".
 
 

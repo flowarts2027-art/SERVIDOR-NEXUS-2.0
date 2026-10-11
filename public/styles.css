@@ -109,3 +109,10 @@
 .campaign-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .campaign-actions .primary,.campaign-actions .ghost{min-width:110px}
 @media(max-width:600px){.campaign-actions{display:grid;grid-template-columns:1fr 1fr}.campaign-actions .primary,.campaign-actions .ghost{width:100%;min-width:0}}
+
+/* Prévia do post no painel Master (imagem + legenda) */
+.post-preview{display:flex;flex-direction:column;gap:6px;min-width:150px;max-width:220px}
+.post-preview img{width:120px;aspect-ratio:4/5;object-fit:cover;border-radius:8px;display:block}
+.post-preview details summary{cursor:pointer;font-size:12px}
+.post-preview details p{font-size:12px;line-height:1.4;white-space:normal;margin:6px 0 0}
+.post-preview-empty{font-size:12px;opacity:.7}

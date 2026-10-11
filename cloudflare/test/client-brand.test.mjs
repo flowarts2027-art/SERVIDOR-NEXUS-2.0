@@ -33,3 +33,13 @@ test("Flow Arts tem temas de marketing para os três horários", () => {
   }
   assert.match(brand.contentFocus, /marketing/i);
 });
+
+import { IMAGE_GENERATION_CLIENTS, usefulThemeTerms } from "../src/client-brand.js";
+
+test("Flow Arts pode gerar imagens próprias", () => {
+  assert.ok(IMAGE_GENERATION_CLIENTS.has("primeiro-teste"));
+});
+
+test("palavras de comentário não viram tema de post", () => {
+  assert.deepEqual(usefulThemeTerms(["quero", "comente", "conteudo", "anúncios", "Instagram", "eu"]), ["anúncios", "Instagram"]);
+});

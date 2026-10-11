@@ -21,7 +21,7 @@ import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } f
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
-import { clientBrand } from "./client-brand.js";
+import { clientBrand, IMAGE_GENERATION_CLIENTS, usefulThemeTerms } from "./client-brand.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -531,8 +531,8 @@ async function runStrategist(env,client,context,options) {
       : [];
   const themes=aiBatch.length===3
     ? aiBatch.map(item=>String(item?.theme||"")).filter(Boolean).slice(0,3)
-    : researchTerms.length
-      ? researchTerms.slice(0,3)
+    : usefulThemeTerms(researchTerms).length>=3
+      ? usefulThemeTerms(researchTerms).slice(0,3)
       : [profile.morningTheme,profile.afternoonTheme,profile.eveningTheme];
   const plan={
     primaryKpi:"followers",
@@ -719,7 +719,7 @@ async function runCreator(env,client,strategy,options) {
 
   async function nextMedia(postId,visualBrief="",contentFormat="image") {
     const guidedVisualBrief=String(visualBrief||"").trim().slice(0,1800);
-    if(["globalplay-streaming","ragnar-one"].includes(client.id)){
+    if(IMAGE_GENERATION_CLIENTS.has(client.id)){
       try{
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
           contentFormat,

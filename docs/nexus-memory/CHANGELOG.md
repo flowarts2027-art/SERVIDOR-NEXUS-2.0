@@ -6,6 +6,9 @@
 - feat: `client-brand.js` — perfil de marca por cliente; Flow Arts (`primeiro-teste`) com nicho Marketing digital para imagens, hashtags e CTA.
 - test: e2e do Instagram passou a usar cliente neutro de fixture; novos testes da trava e do perfil Flow Arts.
 - docs: deploy automático explicado em `cloudflare/README.md`.
+- feat: Flow Arts liberada para gerar imagens próprias com IA (`IMAGE_GENERATION_CLIENTS`).
+- fix: palavras de comentário/CTA ("quero", "comente", "conteudo") não viram tema; sem 3 temas úteis, usa os temas do perfil.
+- feat: painel Master › Postagens & custos mostra prévia (imagem + legenda + aprovação).
 
 
 ## 2026-10-10 — limpeza de legado da raiz (executada localmente, não implantada)
