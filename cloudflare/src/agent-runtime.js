@@ -666,6 +666,11 @@ async function stageOwnInstagramImage(env, clientId, postId, sourceUrl) {
   }
 }
 
+// Falta de orçamento diário não é falha da imagem: não gasta uma das 3 tentativas.
+function isBudgetError(error){
+  return /daily_budget|budget_reached|quota/i.test(String(error||""));
+}
+
 async function runCreator(env,client,strategy,options) {
   const startedAt=new Date().toISOString();
   const config=normalizeAgentCoreConfig(client);
@@ -797,7 +802,7 @@ async function runCreator(env,client,strategy,options) {
       ?{url:blocked,source:"blocked-media-recheck",sourceInstagramMediaId:""}
       :await nextMedia(pending.id,String(payload.visualBrief||""),payload.creativeFeatures?.requestedFormat);
     if(!mediaInfo.url){
-      payload.mediaGeneration={status:"requested",attempts:generationAttempts+1,lastError:String(mediaInfo.error||"media_generation_failed").slice(0,120),updatedAt:new Date().toISOString()};
+      payload.mediaGeneration={status:"requested",attempts:generationAttempts+(isBudgetError(mediaInfo.error)?0:1),lastError:String(mediaInfo.error||"media_generation_failed").slice(0,120),updatedAt:new Date().toISOString()};
       const exhausted=payload.mediaGeneration.attempts>=3;
       await env.DB.prepare(
         "UPDATE post_ledger SET status=?2,error=?3,payload_json=?4,updated_at=CURRENT_TIMESTAMP WHERE id=?1"
@@ -870,6 +875,18 @@ async function runCreator(env,client,strategy,options) {
     let exists=await env.DB.prepare(
       "SELECT id,status,approval_status,caption,error,payload_json FROM post_ledger WHERE id=?1 LIMIT 1"
     ).bind(id).first();
+    const revivable=exists&&brandProfileVersion(client.id)
+      &&String(exists.status||"")==="expired"
+      &&String(exists.error||"")==="media_generation_exhausted"
+      &&String(exists.approval_status||"")!=="approved"
+      &&Date.parse(String(scheduledFor||""))>=Date.now()-3600000;
+    if(revivable){
+      // Desistiu por falta de orçamento/imagem e o horário ainda não passou: refazer.
+      await env.DB.prepare(
+        "DELETE FROM post_ledger WHERE id=?1 AND status='expired' AND COALESCE(approval_status,'')<>'approved'"
+      ).bind(id).run();
+      exists=null;
+    }
     if(exists&&isOutdatedBrandDraft(client.id,exists,parseJson(exists.payload_json,{}))){
       // Rascunho não aprovado do perfil de marca antigo: libera o horário para um post novo.
       await env.DB.prepare(
@@ -971,7 +988,7 @@ async function runCreator(env,client,strategy,options) {
         repaired.push({id,scheduledFor,scheduledHour:time,imageUrl:replacement});
         usedPublishedMedia.add(mediaKey(replacement));
       }else if(!existingMedia&&existingGenerationAttempts<3&&replacementInfo.error){
-        existingPayload.mediaGeneration={status:"requested",attempts:existingGenerationAttempts+1,lastError:String(replacementInfo.error).slice(0,120),updatedAt:new Date().toISOString()};
+        existingPayload.mediaGeneration={status:"requested",attempts:existingGenerationAttempts+(isBudgetError(replacementInfo.error)?0:1),lastError:String(replacementInfo.error).slice(0,120),updatedAt:new Date().toISOString()};
         const exhausted=existingPayload.mediaGeneration.attempts>=3;
         existingPayload.qualityGates={...(existingPayload.qualityGates||{}),designer:"pending"};
         existingPayload.visualReview=null;
@@ -1087,7 +1104,7 @@ async function runCreator(env,client,strategy,options) {
       imageUrl,
       sourceInstagramMediaId:String(mediaInfo.sourceInstagramMediaId||""),
       mediaFingerprint:String(mediaInfo.fingerprint||""),
-      mediaGeneration:{status:imageUrl?"generated":"requested",attempts:1,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
+      mediaGeneration:{status:imageUrl?"generated":"requested",attempts:imageUrl||!isBudgetError(mediaInfo.error)?1:0,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
       title:theme.slice(0,160),
       visualBrief:structuredVisualBrief.slice(0,1600),
       creativeFeatures,

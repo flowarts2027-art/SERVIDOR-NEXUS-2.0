@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- fix: erro de orçamento diário da OpenAI não conta como tentativa de imagem; rascunhos da Flow Arts vencidos por `media_generation_exhausted` com horário ainda válido são refeitos pelo Creator.
+- feat: `POST /api/master/clients/:id/clear-pending-posts`; `/api/clients` esconde clientes `archived`.
 - feat: painel do cliente refeito do zero (celular primeiro): Início, Posts (aprovar/pedir ajuste), Números, Contatos, Conta. Ferramenta de vídeo/trailer, envio do PC e logo removidos da tela (rotas de vídeo continuam no servidor).
 - feat: `GET /api/portal/insights` (seguidores, alcance e métricas por post, cache de 30 min em nexus_state) e `GET /api/portal/contact` (WhatsApp da Flow Arts).
 - feat: WhatsApp da Flow Arts (5521964816185) no perfil de marca + `whatsappLink`.
