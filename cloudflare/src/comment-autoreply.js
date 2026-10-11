@@ -82,7 +82,12 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   const ownUsername = String(conn?.username || client.instagram || "").replace(/^@/, "").toLowerCase();
 
   const state = await readState(env, client.id);
-  const media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp&limit=" + MAX_MEDIA);
+  let media = { data: [] };
+  try {
+    media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp&limit=" + MAX_MEDIA);
+  } catch (error) {
+    out.errors.push("media:" + error.message);
+  }
   const message = dmText(client);
 
   for (const item of Array.isArray(media?.data) ? media.data : []) {
