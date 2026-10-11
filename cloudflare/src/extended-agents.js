@@ -4,6 +4,7 @@ import { agentCoreState, patchAgentCoreState, recordAgentExecution, normalizeAge
 import { commercialCopyAllowed } from "./content-policy.js";
 import { runMediaIngestAgent, runQaRecoveryAgent } from "./video-ops-agents.js";
 import { runFormatBuilder } from "./format-builder.js";
+import { clientBrand, brandProfileVersion } from "./client-brand.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -132,8 +133,21 @@ async function runStory(env,client,options){
     const hook=compactWords(payload.creativeFeatures?.hook||String(row.caption||"").split("\n").find(x=>x.trim())||"",10);
     const theme=String(payload.title||payload.creativeFeatures?.theme||"assistir sem complicação").replace(/[.!?]+$/,"");
     const angle=String(payload.creativeFeatures?.scene||payload.visualBrief||"").replace(/[.!?]+$/,"").slice(0,160);
-    const cta=String(payload.creativeFeatures?.cta||'Digite "QUERO".').trim();
-    const caption=[
+    const brand=brandProfileVersion(client.id)?clientBrand(client):null;
+    const cta=String(payload.creativeFeatures?.cta||brand?.cta||'Digite "QUERO".').trim();
+    const sameAsHook=theme.toLowerCase()===hook.replace(/[.!?]+$/,"").toLowerCase();
+    const cap=text=>text?text.charAt(0).toUpperCase()+text.slice(1):"";
+    const caption=brand?[
+      hook,
+      "",
+      sameAsHook?null:theme+".",
+      angle&&!/^(vertical|portrait|photorealistic)/i.test(angle)?cap(angle)+".":null,
+      brand.offer?"A "+brand.brandName+" ajuda com isso: "+brand.offer.charAt(0).toLowerCase()+brand.offer.slice(1)+".":null,
+      "",
+      cta,
+      "",
+      String(payload.creativeFeatures?.hashtags||brand.hashtags||"").trim()||null
+    ].filter(line=>line!==null).join("\n").replace(/\n{3,}/g,"\n\n").trim().slice(0,2200):[
       hook,
       "",
       theme+".",
@@ -175,7 +189,8 @@ async function runViral(env,client,options){
     const identity=/\b(você|família|time|tipo|casa|casal|amigo)\b/i.test([hook,payload.title,features.scene].join(" "));
     const score=Math.min(100,(shareable?38:12)+(saveable?32:8)+(identity?30:10));
     payload.viralAgent={score,shareable,saveable,identity,checkedAt:new Date().toISOString()};
-    if(score<55){
+    // Marcas com perfil próprio já recebem o CTA certo da campanha; não reescrever a legenda.
+    if(score<55&&!brandProfileVersion(client.id)){
       const cta=saveable?"Salve para ver depois.":shareable?"Envie para alguém que vai se identificar.":"Responda nos comentários.";
       payload.creativeFeatures={...features,cta};
       const lines=String(row.caption||"").split("\n").filter(Boolean);

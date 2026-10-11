@@ -182,7 +182,7 @@ function renderHome() {
         <p class="when">${formatName(next)} · ${escapeHtml(formatDate(next.scheduledFor) || "data a definir")}</p>
         <p class="caption short">${escapeHtml(next.caption || "")}</p>
         ${actionsHtml(next)}
-        ${waiting.length > 1 ? `<button type="button" class="link" data-go="posts">Ver os outros ${waiting.length - 1} posts para aprovar</button>` : ""}
+        ${waiting.length > 1 ? `<button type="button" class="link" data-go="posts">${waiting.length === 2 ? "Ver o outro post para aprovar" : "Ver os outros " + (waiting.length - 1) + " posts para aprovar"}</button>` : ""}
       </div>
     </article>`;
   } else {
