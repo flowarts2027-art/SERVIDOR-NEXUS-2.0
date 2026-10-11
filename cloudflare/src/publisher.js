@@ -1,5 +1,17 @@
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 
+// Contas antigas de streaming desligadas em 2026-10-10 a pedido do proprietário.
+// Nenhuma publicação no Instagram pode sair para elas, por nenhum caminho.
+export const BLOCKED_PUBLISH_CLIENTS = Object.freeze(new Set(["ragnar-one", "globalplay-streaming"]));
+
+export function assertClientMayPublish(clientId) {
+  if (BLOCKED_PUBLISH_CLIENTS.has(String(clientId || "").trim())) {
+    const error = new Error("instagram_client_disabled");
+    error.code = "client_disabled";
+    throw error;
+  }
+}
+
 async function graphRequest(accessToken, pathName, method = "GET", form = null) {
   const endpoint = "https://graph.instagram.com/" + String(pathName || "").replace(/^\/+/, "");
   const headers = {
@@ -50,6 +62,7 @@ export async function waitInstagramContainer(accessToken,containerId,kind="media
 }
 
 export async function publishInstagramImage(env, clientId, imageUrl, caption = "") {
+  assertClientMayPublish(clientId);
   const connection = await resolveInstagramCredentials(env, clientId);
   const accessToken = String(connection?.accessToken || "");
   const igUserId = String(connection?.igUserId || "").trim();
@@ -85,6 +98,7 @@ export async function publishInstagramImage(env, clientId, imageUrl, caption = "
 
 
 export async function publishInstagramVideo(env, clientId, videoUrl, caption = "") {
+  assertClientMayPublish(clientId);
   const connection = await resolveInstagramCredentials(env, clientId);
   const accessToken = String(connection?.accessToken || "");
   const igUserId = String(connection?.igUserId || "").trim();
@@ -118,6 +132,7 @@ export async function publishInstagramVideo(env, clientId, videoUrl, caption = "
 
 
 export async function publishInstagramCarousel(env, clientId, imageUrls = [], caption = "") {
+  assertClientMayPublish(clientId);
   const connection = await resolveInstagramCredentials(env, clientId);
   const accessToken = String(connection?.accessToken || "");
   const igUserId = String(connection?.igUserId || "").trim();
