@@ -91,7 +91,7 @@ function formatName(post) {
 
 function mediaHtml(post, cls) {
   const image = postImage(post);
-  return `<div class="${cls}">${image
+  return `<div class="${cls}${image ? "" : " is-waiting"}">${image
     ? `<img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy">`
     : `<div class="media-wait">A imagem deste post está sendo criada.<br>Volte daqui a pouco.</div>`}</div>`;
 }
@@ -161,8 +161,8 @@ function renderPosts() {
 /* ---------- Início ---------- */
 
 function renderHome() {
-  const name = String(state.client?.contact?.name || state.client?.name || "").trim();
-  $("#hello").textContent = name ? "Olá, " + name.split(" ")[0] : "Olá";
+  const name = String(state.client?.displayName || state.client?.contact?.name || state.client?.name || "").trim();
+  $("#hello").textContent = name ? "Olá, " + name : "Olá";
   const connected = Boolean(state.connection?.connected);
   const status = $("#agent-status");
   status.className = "status " + (connected ? "on" : "off");

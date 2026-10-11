@@ -718,6 +718,17 @@ async function runCreator(env,client,strategy,options) {
   const created=[];
   const repaired=[];
   const approval=config.autoPublish&&!config.approvalRequired?"approved":"pending";
+  // Rascunhos não aprovados feitos com um perfil de marca antigo saem de qualquer
+  // horário (não só dos horários atuais), para liberar o dia para posts novos.
+  if(brandProfileVersion(client.id)){
+    for(const row of recent){
+      if(!isOutdatedBrandDraft(client.id,row,row.payload))continue;
+      await env.DB.prepare(
+        "DELETE FROM post_ledger WHERE id=?1 AND status='ready' AND COALESCE(approval_status,'')<>'approved'"
+      ).bind(row.id).run();
+      row.status="cancelled";
+    }
+  }
   const plannedByDay=new Map();
   for(const row of recent){
     if(["published","expired","cancelled"].includes(String(row.status||"")))continue;

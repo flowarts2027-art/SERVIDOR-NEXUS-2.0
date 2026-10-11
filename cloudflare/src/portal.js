@@ -29,7 +29,7 @@ import { officialMovieFromTrailer, verifyOfficialMoviePoster } from "./official-
 import { enrichVerifiedFilmPresentation } from "./video-metadata-enrichment.js";
 import { clientInsights } from "./insights.js";
 import { instagramSnapshot } from "./agent-runtime.js";
-import { whatsappLink } from "./client-brand.js";
+import { whatsappLink, clientBrand, brandProfileVersion } from "./client-brand.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -554,7 +554,7 @@ export async function handlePortalApi(request, env, url, ctx) {
       source: "cloudflare"
     });
     return json(
-      { token: session.token, client: portalClientView(client) },
+      { token: session.token, client: { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "") } },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );
@@ -612,7 +612,7 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(
-      portalClientView(client),
+      { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "") },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );
