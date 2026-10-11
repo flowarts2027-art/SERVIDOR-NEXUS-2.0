@@ -1,5 +1,12 @@
 # Próximas ações, em ordem
 
+## Próximo passo exato (2026-10-10 noite)
+1. Após o deploy, conferir no painel Master (ou `/api/master/instagram/accounts-status`) se `primeiro-teste` aparece com `tokenValid:true` e `accountMatches:true`.
+2. Se o proprietário quiser, pausar também `globalplay-streaming` (ainda gasta OpenAI a cada ciclo, mas não publica).
+3. Mudar status de `primeiro-teste` para ativo de produção e acompanhar o primeiro ciclo de criação da Flow Arts sem publicação real; depois, uma única publicação controlada.
+4. Investigar as falhas das tarefas "Nexus read-only production audit" e "NEXUS Overnight Regression".
+
+
 ## Após a limpeza de 2026-10-10
 1. Revisar o diff, integrar via PR e confirmar CI/deploy verdes. Só então tratar a limpeza como concluída em produção.
 2. Decidir o destino do vídeo: (a) cortar de vez (Worker + testes + workflows + Render) ou (b) isolar em módulo próprio. Hoje é o fluxo que mais falha e o que menos contribui para publicar sozinho.

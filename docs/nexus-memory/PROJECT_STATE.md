@@ -1,5 +1,15 @@
 # Estado do Nexus 2.0
 
+## 2026-10-10 ~21h30 BRT — repositório novo, trava das contas de streaming, Flow Arts
+- Código completo enviado para `flowarts2027-art/SERVIDOR-NEXUS-2.0` (merge com o histórico de recuperação, sem force-push). README antigo de recuperação movido para `docs/RECUPERACAO-ESTADO.md`.
+- Secret `CLOUDFLARE_API_TOKEN` criado pelo proprietário (template Edit Cloudflare Workers, conta diamantehinode2015). Deploy GitHub Actions run #2 (commit 3b319e7) e #3 (9bb48d6) concluídos com sucesso, incluindo a verificação do portal ao vivo.
+- Decisão do proprietário: parar Global Play e Ragnar One. Motivo: não há confirmação de licença do serviço vendido, e o pipeline usa cartazes oficiais/trailers de estúdios. Trava `BLOCKED_PUBLISH_CLIENTS` em `cloudflare/src/publisher.js` recusa imagem, vídeo e carrossel para `ragnar-one`, `globalplay-streaming` e `global-play-streaming`.
+- Produção (lido pelo painel Master): `ragnar-one` com status `paused`; cliente duplicado `global-play-streaming` apagado pelo proprietário; `globalplay-streaming` segue `online` (protegido contra exclusão), sem conseguir publicar.
+- Flow Arts (`primeiro-teste`, @flowarts2026): OAuth Instagram retornou `oauth=success` em 2026-10-10 ~21h20. Status do token ainda não confirmado porque `/api/master/instagram/accounts-status` só listava as contas antigas (corrigido nesta sessão, aguardando deploy).
+- Perfil de marca de marketing para Flow Arts em `cloudflare/src/client-brand.js` (nome/nicho salvos no painel têm prioridade).
+- Testes locais: 229/229 aprovados. Nenhuma publicação real foi feita.
+
+
 ## 2026-10-10 — limpeza de legado preparada localmente
 - Código de legado Express/Railway/Windows removido da raiz do repositório (lista em CHANGELOG). `cloudflare/src` intacto. Bundle e 67 arquivos de teste aprovados localmente. Implantação e produção não verificadas nesta sessão.
 

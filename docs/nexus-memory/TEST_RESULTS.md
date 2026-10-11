@@ -1,5 +1,9 @@
 # Testes e evidências
 
+## 2026-10-10
+- `node --test cloudflare/test/*.test.mjs`: 229/229 aprovados (ambiente cloud; `wrangler` não instalado localmente, bundle validado pelo GitHub Actions no deploy).
+
+
 ## 2026-10-10 — verificação após limpeza de legado (local)
 - Antes e depois da remoção: `wrangler deploy --dry-run` saiu com 0 nos dois casos.
 - 67 arquivos de teste de `cloudflare/test/` executados um a um com `node --test`: 0 falhas antes e depois.

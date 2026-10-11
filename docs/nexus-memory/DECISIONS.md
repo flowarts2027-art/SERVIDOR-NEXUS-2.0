@@ -1,5 +1,9 @@
 # Decisões e limites
 
+## 2026-10-10 — contas de streaming paradas
+- Global Play e Ragnar One não publicam mais. Retomar só com comprovação de licença do serviço e sem cartazes/trailers de terceiros. O Nexus segue com a conta Flow Arts (marketing).
+
+
 ## 2026-10-10 — escopo da limpeza
 - Remover só o que nem o Worker, nem os testes, nem o CI referenciam. O fluxo de vídeo (Render `nexus-video-engine`, helper local, workflows de render) permanece até haver decisão explícita de cortá-lo, porque `github-video-render.js`, `wrangler.jsonc` (`NEXUS_DOWNLOADER_URL`) e `video-source-flow.test.mjs` dependem dele.
 - Os dois deploys (`ci.yml` e `deploy-nexus-cloudflare.yml`) ainda coexistem. Não foi alterado: exige decisão sobre qual é o canônico.

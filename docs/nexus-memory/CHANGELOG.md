@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-10
+- feat: trava de publicação para ragnar-one, globalplay-streaming e global-play-streaming (`publisher.js`).
+- fix: `/api/master/instagram/accounts-status` lista todos os clientes cadastrados.
+- feat: `client-brand.js` — perfil de marca por cliente; Flow Arts (`primeiro-teste`) com nicho Marketing digital para imagens, hashtags e CTA.
+- test: e2e do Instagram passou a usar cliente neutro de fixture; novos testes da trava e do perfil Flow Arts.
+- docs: deploy automático explicado em `cloudflare/README.md`.
+
+
 ## 2026-10-10 — limpeza de legado da raiz (executada localmente, não implantada)
 - Removidos: `server.js` (Express legado, ~365 KB), `instagram-intelligence.js`, `Dockerfile`, `.dockerignore`, `.env.example` (variáveis Railway/Express), `data/` (clients.json e .gitkeep), `windows-app/`, workflow `windows-installer.yml`, arquivos de gatilho `.github/force-*.txt` e `.nexus/force-*.txt`.
 - `deploy-nexus-cloudflare.yml`: removidas as duas linhas que faziam `node --check windows-app/*`.

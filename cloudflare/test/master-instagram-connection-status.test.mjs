@@ -8,8 +8,8 @@ const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url)
 
 test("Master exposes safe per-account Instagram connection status", () => {
   assert.match(master, /\/api\/master\/instagram\/accounts-status/);
-  assert.match(master, /instagramCredentialStatus\(env, "globalplay-streaming"\)/);
-  assert.match(master, /instagramCredentialStatus\(env, "ragnar-one"\)/);
+  assert.match(master, /"globalplay-streaming",\s*"ragnar-one",\s*\.\.\.\(await listClients\(env\)/);
+  assert.match(master, /instagramCredentialStatus\(env, id\)/);
 });
 
 test("Master hides authorize link when Instagram account is valid", () => {

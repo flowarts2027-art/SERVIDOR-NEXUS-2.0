@@ -1,6 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { publishInstagramImage, publishInstagramVideo, publishInstagramCarousel } from "../src/publisher.js";
+import { encryptSecret } from "../src/secrets.js";
+
+// Cliente neutro: as contas antigas de streaming estão bloqueadas para publicação.
+const FIXTURE_CLIENT="fixture-client";
+const FIXTURE_SECRET_ENV={NEXUS_SECRET_KEY:"fixture-secret-key"};
+const FIXTURE_TOKEN=await encryptSecret(FIXTURE_SECRET_ENV,"fixture-token");
 
 // Provider contract integration: real Instagram transport code with a controlled
 // Graph API responder. No external account or live publish is contacted.
@@ -8,9 +14,8 @@ function fixture() {
   const calls=[];
   let imageChildren=0;
   const env={
-    INSTAGRAM_ACCESS_TOKEN_GLOBALPLAY:"fixture-token",
-    INSTAGRAM_ACCOUNT_ID_GLOBALPLAY:"123456",
-    DB:{prepare(){return {bind(){return {first:async()=>null};}};}}
+    ...FIXTURE_SECRET_ENV,
+    DB:{prepare(){return {bind(id){return {first:async()=>id===FIXTURE_CLIENT?{provider:"instagram",payload_json:JSON.stringify({accessToken:FIXTURE_TOKEN,igUserId:"123456"})}:null};}};}}
   };
   async function fetchGraph(input,options={}) {
     const url=new URL(String(input));
@@ -41,7 +46,7 @@ test("image: create container → finish → publish → permalink",async()=>{
   const fixtureState=fixture(),previous=globalThis.fetch;
   globalThis.fetch=fixtureState.fetchGraph;
   try {
-    const output=await publishInstagramImage(fixtureState.env,"globalplay-streaming","https://media.example.test/original.jpg","Teste controlado");
+    const output=await publishInstagramImage(fixtureState.env,FIXTURE_CLIENT,"https://media.example.test/original.jpg","Teste controlado");
     assert.equal(output.mediaId,"published_container_image");
     assert.equal(output.containerId,"container_image");
     assert.equal(output.permalink,"https://www.instagram.com/p/mockpost/");
@@ -54,7 +59,7 @@ test("Reel: correct Graph media_type and final video source",async()=>{
   const f=fixture(),original=globalThis.fetch;
   globalThis.fetch=f.fetchGraph;
   try {
-    const result=await publishInstagramVideo(f.env,"globalplay-streaming","https://media.example.test/approved-reel.mp4","Legenda");
+    const result=await publishInstagramVideo(f.env,FIXTURE_CLIENT,"https://media.example.test/approved-reel.mp4","Legenda");
     assert.equal(result.mediaId,"published_container_reel");
     assert.equal(f.calls[0].body.media_type,"REELS");
     assert.equal(f.calls[0].body.video_url,"https://media.example.test/approved-reel.mp4");
@@ -66,7 +71,7 @@ test("carousel: both children → assembly → processing → single publish",as
   const f=fixture(),original=globalThis.fetch;
   globalThis.fetch=f.fetchGraph;
   try {
-    const result=await publishInstagramCarousel(f.env,"globalplay-streaming",[
+    const result=await publishInstagramCarousel(f.env,FIXTURE_CLIENT,[
       "https://media.example.test/frame1.jpg","https://media.example.test/frame2.jpg"
     ],"Legenda");
     assert.equal(result.mediaId,"published_container_carousel");
@@ -79,11 +84,11 @@ test("carousel: both children → assembly → processing → single publish",as
 
 test("no Meta connection never sends any provider request",async()=>{
   const f=fixture();
-  delete f.env.INSTAGRAM_ACCESS_TOKEN_GLOBALPLAY;
+  f.env.DB={prepare(){return {bind(){return {first:async()=>null};}};}};
   const original=globalThis.fetch;
   globalThis.fetch=()=>{throw new Error("unexpected_external_request");};
   try {await assert.rejects(
-    publishInstagramImage(f.env,"globalplay-streaming","https://media.example.test/image.jpg","Legenda"),
+    publishInstagramImage(f.env,FIXTURE_CLIENT,"https://media.example.test/image.jpg","Legenda"),
     /instagram_not_connected/
   );}finally{globalThis.fetch=original;}
 });

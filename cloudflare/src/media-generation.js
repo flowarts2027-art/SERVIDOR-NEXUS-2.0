@@ -2,6 +2,7 @@ import { openAIResponses } from "./openai.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { GLOBAL_PLAY_REFERENCE_VERSION, globalPlayReferenceDirection } from "./media-references.js";
 import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-overlays.js";
+import { clientBrand } from "./client-brand.js";
 
 function bytesFromBase64(value){
   const raw=atob(String(value||""));
@@ -70,6 +71,13 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
       "Use the audited visual system: premium, photorealistic, contemporary home-entertainment scenes with one clear idea per creative.",
       "Use generic original contemporary people only when useful; vary age, pose, framing and environment.",
       "Avoid legacy themed art direction, repeated compositions, third-party brands and copyrighted references."
+    );
+  }else{
+    const brand=clientBrand(client);
+    common.push(
+      "Brand context: "+brand.brandName+(brand.niche?", "+brand.niche:"")+".",
+      brand.visualDirection||"Premium, photorealistic, contemporary scenes that clearly match the brand niche, with one clear idea per creative.",
+      "No copyrighted characters, movie frames, sports-team marks, third-party brands or logos."
     );
   }
   const commercialGuard=commercialPromptGuard(client);

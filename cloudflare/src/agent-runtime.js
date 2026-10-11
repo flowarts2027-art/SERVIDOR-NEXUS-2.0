@@ -21,6 +21,7 @@ import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } f
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
+import { clientBrand } from "./client-brand.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -139,7 +140,7 @@ function postingProfile(client) {
       : isRagnar
         ? "Crescimento orgânico orientado pela auditoria: descoberta, interação, salvamento, compartilhamento e conversão"
         : (current.contentStrategy || "Crescimento acelerado de seguidores + engajamento qualificado"),
-    targetAudience: isGlobal ? "Famílias e fãs de entretenimento" : isRagnar ? "Adultos fãs de entretenimento, somente cliente final" : (current.targetAudience || "Misto"),
+    targetAudience: isGlobal ? "Famílias e fãs de entretenimento" : isRagnar ? "Adultos fãs de entretenimento, somente cliente final" : (current.targetAudience || clientBrand(client).audience || "Misto"),
     contentFocus: isGlobal
       ? "Entretenimento em casa com criativos realistas e premium, uma ideia por peça, storytelling curto e visual pensado para o objetivo do formato"
       : isRagnar
@@ -150,9 +151,9 @@ function postingProfile(client) {
     eveningTheme: isGlobal ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : isRagnar ? "Storytelling de cinema em casa, conforto, pipoca, controle remoto e conversão discreta" : (current.eveningTheme || "Comunidade e opinião"),
     tone: isGlobal ? "Realista, premium, acolhedor, simples e direto" : isRagnar ? "Realista, premium, acolhedor, simples e direto" : (current.tone || "Firme, direto e profissional"),
     cta: 'Comente "QUERO" para saber mais.',
-    followerCta: isGlobal ? "Siga a Global Play para ver as próximas sugestões." : isRagnar ? "Siga a Ragnar One para acompanhar as próximas sugestões." : (current.followerCta || "Siga o perfil para não perder as próximas indicações."),
+    followerCta: isGlobal ? "Siga a Global Play para ver as próximas sugestões." : isRagnar ? "Siga a Ragnar One para acompanhar as próximas sugestões." : (current.followerCta || clientBrand(client).followerCta || "Siga o perfil para não perder as próximas indicações."),
     shareCta: isGlobal ? "Envie para alguém que vai curtir essa sessão em família." : isRagnar ? "Envie para quem também curte uma boa noite de entretenimento." : (current.shareCta || "Envie para alguém que também curte esse tipo de conteúdo."),
-    hashtags: isGlobal ? "#GlobalPlay #Streaming #Entretenimento #CinemaEmCasa #Dicas" : isRagnar ? "#RagnarOne #Streaming #Entretenimento #CinemaEmCasa #Dicas" : (current.hashtags || "#Entretenimento #Streaming #Dicas"),
+    hashtags: isGlobal ? "#GlobalPlay #Streaming #Entretenimento #CinemaEmCasa #Dicas" : isRagnar ? "#RagnarOne #Streaming #Entretenimento #CinemaEmCasa #Dicas" : (current.hashtags || clientBrand(client).hashtags || "#Dicas"),
     avoidTopics: "Texto genérico, repetição de criativos, poluição visual, tela vazia, collage/split-screen, promessas irreais, referências protegidas e ofertas de revenda. "+commercialPromptGuard(client),
     creativeRotation: String(client?.id || "") === "globalplay-streaming"
       ? {

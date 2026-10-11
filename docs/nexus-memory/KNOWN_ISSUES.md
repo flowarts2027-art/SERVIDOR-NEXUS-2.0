@@ -1,5 +1,12 @@
 # Problemas conhecidos
 
+## Abertos em 2026-10-10
+- Painel Master: card de status do Instagram em `public/index.html`/`app.js` mostra só Global Play e Ragnar; Flow Arts não aparece na tela (a API já lista todos).
+- Painel: nome/nicho do cliente "PRIMEIRO TESTE" não pode ser editado pela interface.
+- Painel: "Uso por cliente" mostra percentuais configurados, não consumo real; contagem de clientes na visão geral diverge do total.
+- Workflows agendados (AutoFix a cada 30 min, Core Autonomy a cada 15 min) rodam no repositório novo; "Nexus read-only production audit" e "NEXUS Overnight Regression" falharam na primeira execução.
+
+
 ## 2026-09-28 — três mídias padrão Ragnar inválidas
 - `PIL.Image.verify()` falhou nos três PNGs `nordic-cinema-01..03.png` com checksum IDAT inválido. A revisão OpenAI retornou HTTP 400 `invalid_value`; o Publisher não vê candidatos. A substituição por mídia válida do proprietário está preparada, mas post real ainda pendente.
 - O novo pool possui só uma mídia inédita confirmada. Depois da primeira publicação, será necessária uma fonte contínua de outras imagens originais; não repetir o mesmo criativo nem liberar revisão.

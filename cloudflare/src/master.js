@@ -759,10 +759,13 @@ export async function handleMaster(request, env, url) {
   }
 
   if (url.pathname === "/api/master/instagram/accounts-status" && request.method === "GET") {
-    const [globalplay, ragnar] = await Promise.all([
-      instagramCredentialStatus(env, "globalplay-streaming"),
-      instagramCredentialStatus(env, "ragnar-one")
-    ]);
+    // Inclui todos os clientes cadastrados (ex.: Flow Arts), não só as contas antigas.
+    const clientIds = Array.from(new Set([
+      "globalplay-streaming",
+      "ragnar-one",
+      ...(await listClients(env).catch(() => [])).map(client => String(client?.id || "")).filter(Boolean)
+    ])).slice(0, 50);
+    const statuses = await Promise.all(clientIds.map(id => instagramCredentialStatus(env, id).catch(() => null)));
     const safe = value => ({
       connected: Boolean(value?.connected),
       source: String(value?.source || "none"),
@@ -774,10 +777,7 @@ export async function handleMaster(request, env, url) {
     });
     return json({
       ok: true,
-      accounts: {
-        "globalplay-streaming": safe(globalplay),
-        "ragnar-one": safe(ragnar)
-      }
+      accounts: Object.fromEntries(clientIds.map((id, index) => [id, safe(statuses[index])]))
     });
   }
 
