@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- feat: auto-responder de comentários (`comment-autoreply.js`), roda a cada cron: comentário com QUERO/EXEMPLO/preço/info nos 4 posts mais recentes → DM privada (private reply) com link wa.me/5521964816185 + resposta pública "Te chamei no direct! 📩"; uma vez por comentário, até 3 por execução, janela de 7 dias. Status em `GET /api/master/clients/:id/autoreply-status`.
 - feat: posts presos em `publishing` há 15+ min são conferidos no Instagram pela legenda: achou → `published` com mediaId; não achou → `failed` (`publish_interrupted`). Evita post duplicado e status errado.
 - fix: COPY CHIEF aceita CTA com "Salve", "EXEMPLO", "comentários" e "Responda" (antes recusava "Salve para usar depois").
 - fix: Reel aprovado vira post de imagem quando o GitHub recusa o render (token ausente/inválido ou conta suspensa). Em produção o token do Worker é da conta globalplay27 suspensa (403 "account was suspended").

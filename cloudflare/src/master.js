@@ -20,6 +20,7 @@ import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { addDirective, createCampaign, masterWorkspace, updateCampaign } from "./master-workspace.js";
 import { handleMasterOpenAI } from "./master-openai.js";
 import { decidePost } from "./posts.js";
+import { commentAutoReplyStatus } from "./comment-autoreply.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -620,6 +621,11 @@ export async function handleMaster(request, env, url) {
     }
 
     return json({ client: masterClientView(client), portalCredentials }, 201);
+  }
+
+  const autoReplyStatusMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/autoreply-status$/);
+  if (autoReplyStatusMatch && request.method === "GET") {
+    return json({ ok: true, ...(await commentAutoReplyStatus(env, decodeURIComponent(autoReplyStatusMatch[1]))) });
   }
 
   // Zera a memória aprendida dos agentes de um cliente (termos, estratégia, pesquisa,

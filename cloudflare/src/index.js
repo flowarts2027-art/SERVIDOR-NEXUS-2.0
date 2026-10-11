@@ -19,6 +19,7 @@ import { buildAutonomyHealthSummary } from "./autonomy-health-summary.js";
 import { emergencyPublisherStatus, isD1Emergency, runEmergencyPublisher } from "./emergency-publisher.js";
 import { emergencyPublisherDiagnostic } from "./emergency-publisher-diagnostic.js";
 import { handleSocialFormatRenderCallback } from "./format-builder.js";
+import { runCommentAutoReplies } from "./comment-autoreply.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -516,6 +517,10 @@ export default {
     // Poster discovery runs independently; failures must never block Instagram cron.
     ctx.waitUntil(warmYoutubePosterLibrary(env, at).catch(error =>
       console.warn("youtube_poster_library_refresh_failed", String(error?.message || error).slice(0, 140))
+    ));
+    // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
+    ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
+      console.warn("comment_autoreply_failed", String(error?.message || error).slice(0, 140))
     ));
     ctx.waitUntil(
       runCronIteration({
