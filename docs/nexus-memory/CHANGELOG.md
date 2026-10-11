@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- Teste real de /exemplo (16h31–16h34): 2 envios do Rodrigo, com dados de outra pessoa, chegaram como leads "hot" de primeiro-teste (source landing, nextAction) — conferido via /api/master/leads. Rodrigo deve removê-los pelo novo botão.
+- feat (9235031, deploy ~16h40 BRT): botão "Remover contato" (dois toques) na aba Contatos; bloqueado na demo.
 - feat (ca93dfd, deploy ~16h30 BRT): página de captura /exemplo (conferida no ar) → POST /api/public/lead → lead "quente" da Flow Arts (source landing, contact, nextAction 24h) → aba Contatos com botão WhatsApp. Envio real ainda não testado em produção (Rodrigo vai testar com os próprios dados).
 - 9ad6091: CNPJ no rodapé de /privacidade e /termos (conferido no ar).
 - feat (8ceda17, deploy ~15h56 BRT): páginas públicas /privacidade (com #exclusao-de-dados) e /termos, conferidas no ar.
