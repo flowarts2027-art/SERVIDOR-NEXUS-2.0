@@ -298,7 +298,7 @@
           <form id="openai-master-form" class="openai-master-form openai-master-form-five">
             <label>Chave API do projeto NEXUS<input name="apiKey" type="password" autocomplete="off" placeholder="sk-... · deixe vazio para manter a atual"></label>
             <label>Admin API Key<input name="adminKey" type="password" autocomplete="off" placeholder="Chave administrativa para consultar gastos"></label>
-            <label>Crédito / saldo atual (US$)<input name="currentBalanceUsd" type="number" min="0" step="0.01" placeholder="Ex.: 25.00"></label>
+            <label>Saldo atual na OpenAI (US$) · atualize depois de cada recarga<input name="currentBalanceUsd" type="number" min="0" step="0.01" placeholder="Ex.: 5.53"></label>
             <label>Orçamento mensal NEXUS (US$)<input name="monthlyBudgetUsd" type="number" min="0.01" step="0.01" placeholder="Ex.: 50.00"></label>
             <button class="primary" type="submit">Salvar controle OpenAI</button>
             <span id="openai-master-message" class="form-status"></span>
@@ -354,6 +354,6 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=36" defer></script>
+  <script src="/app.js?v=37" defer></script>
 </body>
 </html>
