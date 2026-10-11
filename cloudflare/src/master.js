@@ -539,7 +539,10 @@ export async function handleMaster(request, env, url) {
   }
 
   if (url.pathname === "/api/clients" && request.method === "GET") {
-    return json((await listClients(env)).map(masterClientView));
+    // Clientes arquivados (ex.: contas antigas de streaming) saem do painel.
+    const includeArchived = url.searchParams.get("all") === "1";
+    const clients = (await listClients(env)).filter(client => includeArchived || String(client.status || "") !== "archived");
+    return json(clients.map(masterClientView));
   }
 
   const assumeOpenMatch = url.pathname.match(/^\/api\/clients\/([^/]+)\/assume-open$/);

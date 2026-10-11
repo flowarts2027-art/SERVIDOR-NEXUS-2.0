@@ -23,3 +23,8 @@ test("menu do Master tem só os 6 itens combinados", () => {
   const views = [...nav.matchAll(/data-view="([^"]+)"/g)].map(m => m[1]);
   assert.deepEqual(views, ["dashboard", "clients", "posts", "agents", "odin", "settings"]);
 });
+
+test("clientes arquivados não aparecem na lista do painel", () => {
+  const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
+  assert.match(master, /String\(client\.status \|\| ""\) !== "archived"/);
+});
