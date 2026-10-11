@@ -1,5 +1,12 @@
 # Próximas ações, em ordem
 
+## Próximo passo exato (2026-10-11 14h BRT)
+1. Rodrigo reconecta o Instagram da Flow Arts pelo painel (logado como flowarts2026, aceitando todas as permissões).
+2. Depois do próximo cron, conferir `/api/portal/autoreply-status`: `count` deve igualar `igCount`.
+3. Se continuar 0: pedir Acesso avançado / App Review de instagram_business_manage_comments e manage_messages (exige verificação da empresa).
+4. Adicionar `instagram_business_manage_insights` ao caso de uso do app.
+5. Investigar por que o portal do cliente mostra "Conecte o Instagram".
+
 ## Próximo passo exato (2026-10-11 manhã, após execução)
 - Feito e verificado em produção: painel do cliente novo (celular), Master com 6 menus, Integrações com todos os clientes, campanha Flow Arts gerando posts novos (12:00 Reels, 19:00 carrossel), STORY/VIRAL com perfil da marca.
 - Bloqueio atual das imagens: `openai_daily_budget_reached` (limite diário de 30.000 tokens do cliente consumido pelos agentes de texto). Decisão do proprietário: aumentar o limite diário da Flow Arts no Master (Visão geral › Uso por cliente) ou manter.

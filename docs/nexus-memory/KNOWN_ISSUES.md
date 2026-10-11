@@ -1,5 +1,12 @@
 # Problemas conhecidos
 
+## 2026-10-11 — auto-responder não vê comentários (Flow Arts)
+- Prova em produção (cron 17:00 UTC, commit 9721a60): o Instagram informa `comments_count` = 2 nos posts 17890778682616932 e 18097278191413005, mas `GET /{media}/comments` devolve 0 itens, sem erro.
+- Verificado no app Meta NEXUS IA CENTRAL (2077454426196873, empresa "Rodrigo Carvalho", modo desenvolvimento): testadores do Instagram flowarts2026, globalplay_streaming e ragnarplay1; o convite da globalplay_streaming está aceito desde 29/09 (conferido pelo Rodrigo em instagram.com/accounts/manage_access). O comentário de teste foi feito pela globalplay_streaming.
+- Permissões do caso de uso Instagram: business_basic, content_publish, manage_comments e manage_messages "Pronto para teste"; `instagram_business_manage_insights` NÃO está adicionada ao caso de uso.
+- Hipóteses: (1) token da Flow Arts emitido sem o escopo de comentários → reconectar o Instagram da Flow Arts; (2) filtro do modo desenvolvimento → App Review/Acesso avançado. Ainda sem confirmação.
+- Painel do cliente (portal) mostrou "Conecte o Instagram" e 0 posts publicados, embora o Worker leia a conta normalmente. Investigar.
+
 ## Abertos em 2026-10-10
 - Painel Master: card de status do Instagram em `public/index.html`/`app.js` mostra só Global Play e Ragnar; Flow Arts não aparece na tela (a API já lista todos).
 - Painel: nome/nicho do cliente "PRIMEIRO TESTE" não pode ser editado pela interface.
