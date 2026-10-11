@@ -119,6 +119,7 @@ export function masterLoginPage(error = false, action = "/master-login") {
 h1{font-size:30px;margin:0 0 8px}.muted{color:#7893a4;margin:0 0 24px;font-size:14px}
 label{display:grid;gap:7px;margin:13px 0;color:#9bb5c5;font-size:12px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1px solid #163244;background:#03090e;color:#fff;outline:none}
 button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:linear-gradient(135deg,#c8f3ff,#59d0ff 55%,#168ee8);color:#02101a;font-weight:900;cursor:pointer}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:400;color:#c4d6e1}.check input{width:20px;height:20px;padding:0}
 .error{min-height:18px;margin-top:12px;color:#ff8690;font-size:12px}.secure{margin-top:20px;padding-top:15px;border-top:1px solid #5dd3ff12;color:#557182;font-size:11px;text-align:center}
 </style>
 </head>
@@ -128,10 +129,37 @@ button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;backg
 <form method="post" action="${action}">
 <label>Usuário<input name="username" autocomplete="username" required></label>
 <label>Senha<input name="password" type="password" autocomplete="current-password" required></label>
+<label class="check"><input id="remember" type="checkbox"> Lembrar a senha neste computador</label>
 <button type="submit">Entrar no Master</button>
 <div class="error">${error ? "Usuário ou senha inválidos." : ""}</div>
 </form><div class="secure">Sessão administrativa protegida · Cloudflare D1</div>
-</main></body></html>`;
+</main>
+<script>
+// Lembrar a senha: guarda no gerenciador de senhas do navegador (não no NEXUS) e preenche na próxima vez.
+(function () {
+  var form = document.querySelector("form"), remember = document.getElementById("remember");
+  try { remember.checked = localStorage.getItem("nexusMasterRemember") === "1"; } catch (e) {}
+  if (window.PasswordCredential && navigator.credentials && navigator.credentials.get) {
+    navigator.credentials.get({ password: true, mediation: "optional" }).then(function (cred) {
+      if (cred && cred.type === "password" && cred.password && !form.elements.password.value) {
+        form.elements.username.value = cred.id;
+        form.elements.password.value = cred.password;
+        remember.checked = true;
+      }
+    }).catch(function () {});
+  }
+  form.addEventListener("submit", function (event) {
+    try { localStorage.setItem("nexusMasterRemember", remember.checked ? "1" : "0"); } catch (e) {}
+    if (!remember.checked || !window.PasswordCredential || !navigator.credentials || !navigator.credentials.store) return;
+    event.preventDefault();
+    var sent = false;
+    var go = function () { if (!sent) { sent = true; form.submit(); } };
+    navigator.credentials.store(new PasswordCredential({ id: form.elements.username.value, password: form.elements.password.value, name: "NEXUS Master" })).then(go, go);
+    setTimeout(go, 1500);
+  });
+})();
+</script>
+</body></html>`;
 }
 
 async function asset(env, request, pathname) {

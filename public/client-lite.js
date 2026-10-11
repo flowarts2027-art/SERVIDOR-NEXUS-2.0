@@ -692,6 +692,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const savePassword = $("#login-save-password");
   // NEXUS Windows: senha guardada com proteção do Windows (nexusWindowsCredentials).
   const desktopStore = window.nexusWindowsCredentials;
+  try { if (savePassword && localStorage.getItem("nexusPortalRemember") === "1") savePassword.checked = true; } catch {}
+  // Navegador: preenche com a senha guardada no gerenciador de senhas (se o cliente pediu para lembrar).
+  if (!desktopStore && loginForm && window.PasswordCredential && navigator.credentials?.get) {
+    navigator.credentials.get({ password: true, mediation: "optional" }).then(cred => {
+      const user = loginForm.elements.namedItem("username");
+      const pass = loginForm.elements.namedItem("password");
+      if (cred?.type === "password" && cred.password && user && pass && !pass.value) {
+        user.value = cred.id; pass.value = cred.password; if (savePassword) savePassword.checked = true;
+      }
+    }).catch(() => {});
+  }
   if (desktopStore?.load && loginForm) {
     desktopStore.load().then(saved => {
       const user = loginForm.elements.namedItem("username");
@@ -705,6 +716,7 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     const body = Object.fromEntries(new FormData(loginForm).entries());
     const remember = savePassword?.checked === true;
+    try { localStorage.setItem("nexusPortalRemember", remember ? "1" : "0"); } catch {}
     const button = loginForm.querySelector("button[type=submit]");
     button.disabled = true;
     try {
