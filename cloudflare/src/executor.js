@@ -1,5 +1,5 @@
 import { visualApproval } from "./visual-review.js";
-import { publishInstagramPost } from "./publisher.js";
+import { publishInstagramPost, findRecentMediaByCaption } from "./publisher.js";
 import { runLeadHunter, leadHunterConfig } from "./lead-hunter.js";
 import { runAgentCoreCycle } from "./agent-runtime.js";
 import { getClient } from "./clients.js";
@@ -115,7 +115,40 @@ async function savePostResult(env, row, patch) {
   ).run();
 }
 
+// Posts presos em "publishing" (o servidor parou no meio): confere no Instagram.
+// Achou a mesma legenda → marca como publicado. Não achou depois de 15 min → falha
+// (volta para nova tentativa, com limite de tentativas).
+export async function recoverStuckPublishing(env, clientId, now = new Date(), find = findRecentMediaByCaption) {
+  const result = await env.DB.prepare(
+    `SELECT id, client_id, status, caption, payload_json, updated_at FROM post_ledger
+     WHERE client_id = ?1 AND status = 'publishing' AND updated_at <= datetime(?2, '-15 minutes')
+     LIMIT 3`
+  ).bind(clientId, now.toISOString()).all();
+  const out = { recovered: 0, failed: 0 };
+  for (const row of result?.results || []) {
+    const payload = parseJson(row.payload_json, {});
+    const found = await find(env, clientId, row.caption).catch(() => null);
+    if (found?.mediaId) {
+      await savePostResult(env, row, {
+        status: "published",
+        mediaId: found.mediaId,
+        payload: { ...payload, permalink: found.permalink, publishedAt: found.timestamp || now.toISOString(), recoveredFromStuckPublishing: true }
+      });
+      out.recovered += 1;
+    } else {
+      await savePostResult(env, row, {
+        status: "failed",
+        error: "publish_interrupted",
+        payload: { ...payload, retryCount: Math.max(0, Number(payload.retryCount || 0)) + 1, lastPublishAttemptAt: now.toISOString() }
+      });
+      out.failed += 1;
+    }
+  }
+  return out;
+}
+
 async function runPublisherSweep(env, clientId, now) {
+  await recoverStuckPublishing(env, clientId, now).catch(() => null);
   const rows = await duePosts(env, clientId, now.toISOString());
   const summary = { candidates: rows.length, published: 0, failed: 0, skipped: 0 };
 

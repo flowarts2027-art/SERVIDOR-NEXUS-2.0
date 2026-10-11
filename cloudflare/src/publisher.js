@@ -223,3 +223,23 @@ export async function publishInstagramPost(env, clientId, payload = {}, caption 
   }
   return publishInstagramImage(env, clientId, target.imageUrl, String(caption || ""));
 }
+
+
+// Procura entre as últimas mídias do Instagram uma com a mesma legenda.
+// Usado para corrigir posts que ficaram "publicando" quando o servidor parou
+// depois de publicar (sem anotar o resultado), sem publicar duas vezes.
+export async function findRecentMediaByCaption(env, clientId, caption = "", request = fetch) {
+  const connection = await resolveInstagramCredentials(env, clientId);
+  const accessToken = String(connection?.accessToken || "");
+  const igUserId = String(connection?.igUserId || "").trim();
+  if (!accessToken || !igUserId) return null;
+  const norm = value => String(value || "").replace(/\s+/g, " ").trim().toLowerCase().slice(0, 80);
+  const target = norm(caption);
+  if (!target) return null;
+  const url = "https://graph.instagram.com/" + encodeURIComponent(igUserId) + "/media?fields=id,caption,permalink,timestamp&limit=10";
+  const response = await request(url, { headers: { authorization: "Bearer " + accessToken }, signal: AbortSignal.timeout(8000) });
+  if (!response.ok) return null;
+  const data = await response.json().catch(() => ({}));
+  const match = (Array.isArray(data?.data) ? data.data : []).find(item => norm(item.caption) === target);
+  return match ? { mediaId: String(match.id || ""), permalink: String(match.permalink || ""), timestamp: match.timestamp || null } : null;
+}
