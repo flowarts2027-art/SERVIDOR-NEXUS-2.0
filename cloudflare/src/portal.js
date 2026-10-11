@@ -31,6 +31,7 @@ import { clientInsights } from "./insights.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { instagramSnapshot } from "./agent-runtime.js";
 import { whatsappLink, clientBrand, brandProfileVersion } from "./client-brand.js";
+import { campaignCalendar } from "./flowarts-campaign.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -1687,6 +1688,10 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   if (url.pathname === "/api/portal/posts" && request.method === "GET") {
     return json({ ok: true, posts: await listPosts(env, client.id) });
+  }
+
+  if (url.pathname === "/api/portal/calendar" && request.method === "GET") {
+    return json({ ok: true, ...campaignCalendar(client.id, url.searchParams.get("month")) });
   }
 
   const postDecisionMatch = url.pathname.match(/^\/api\/portal\/posts\/([^/]+)\/decision$/);

@@ -163,3 +163,38 @@ export function flowArtsCampaignStrategy() {
 }
 
 export const FLOW_ARTS_CAMPAIGN_DAYS = DAYS;
+
+export const CAMPAIGN_CLIENTS = new Set(["primeiro-teste"]);
+
+const GOAL_LABEL = {
+  "comentário": "gerar comentários",
+  "salvamento": "gerar salvamentos",
+  "compartilhamento": "gerar compartilhamentos",
+  "seguir": "ganhar seguidores",
+  "conversão": "pedir o exemplo grátis"
+};
+
+// Plano do mês para o calendário do painel. month = "AAAA-MM" (padrão: mês atual em São Paulo).
+// Mostra o que a campanha planeja para cada dia; os posts reais vêm de /api/portal/posts.
+export function campaignCalendar(clientId, month, now = new Date()) {
+  const current = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit" }).format(now).slice(0, 7);
+  const target = /^\d{4}-(0[1-9]|1[0-2])$/.test(String(month || "")) ? String(month) : current;
+  if (!CAMPAIGN_CLIENTS.has(String(clientId))) return { month: target, campaign: false, days: [] };
+  const [year, mon] = target.split("-").map(Number);
+  const total = new Date(Date.UTC(year, mon, 0)).getUTCDate();
+  const strategy = flowArtsCampaignStrategy();
+  const days = [];
+  for (let day = 1; day <= total; day += 1) {
+    const date = new Date(Date.UTC(year, mon - 1, day, 15));
+    const items = flowArtsCampaignForDay(date).map((item, index) => ({
+      time: strategy.recommendedPostTimes[index] || "",
+      format: item.plannedFormat,
+      theme: item.theme,
+      goal: GOAL_LABEL[item.goal] || item.goal,
+      week: item.campaignWeek,
+      campaignDay: item.campaignDay
+    }));
+    days.push({ date: target + "-" + String(day).padStart(2, "0"), items });
+  }
+  return { month: target, campaign: true, days };
+}

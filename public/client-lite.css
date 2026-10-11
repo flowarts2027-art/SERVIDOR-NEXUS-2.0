@@ -123,7 +123,7 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .stat span { color: var(--muted); font-size: .88rem; }
 
 /* Lista de posts */
-.segmented { display: grid; grid-template-columns: repeat(3, 1fr); background: #E3E8F2; border-radius: 999px; padding: 4px; gap: 4px; }
+.segmented { display: grid; grid-template-columns: repeat(4, 1fr); background: #E3E8F2; border-radius: 999px; padding: 4px; gap: 4px; }
 .segmented button { min-height: 42px; border: 0; border-radius: 999px; background: transparent; font-weight: 700; color: var(--muted); cursor: pointer; }
 .segmented button.active { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(15,30,61,.12); }
 .post-list { display: grid; gap: 14px; margin-top: 16px; }
@@ -136,6 +136,45 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .tag-ok { background: var(--ok-soft); color: var(--ok); }
 .tag-blue { background: var(--blue-soft); color: var(--navy); }
 .more { background: none; border: 0; color: var(--blue); font-weight: 700; padding: 0; margin: -6px 0 12px; cursor: pointer; }
+
+/* Calendário do mês */
+.segmented button { font-size: .86rem; padding: 0 2px; }
+.calendar { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 12px 16px; }
+.cal-head { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; text-align: center; }
+.cal-head h2 { font-size: 1.2rem; }
+.cal-nav { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--navy); }
+.cal-summary { text-align: center; color: var(--muted); font-size: .92rem; margin: 4px 0 12px; }
+.cal-week, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-week span { text-align: center; color: var(--muted); font-size: .8rem; font-weight: 700; padding-bottom: 4px; }
+.cal-day {
+  position: relative; aspect-ratio: 4 / 5; border-radius: 8px; overflow: hidden; cursor: pointer; padding: 0;
+  border: 1.5px solid var(--line); background: var(--paper);
+}
+.cal-day img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cal-day img + .cal-num { background: rgba(15,30,61,.78); color: #fff; }
+.cal-num { position: absolute; top: 3px; left: 3px; min-width: 20px; padding: 0 4px; border-radius: 6px; font-size: .78rem; font-weight: 700; line-height: 1.45; color: var(--ink); }
+.cal-count { position: absolute; right: 3px; bottom: 3px; border-radius: 999px; font-size: .7rem; font-weight: 700; line-height: 1.5; padding: 0 5px; }
+.cal-count { background: var(--card); color: var(--ink); }
+.cal-day.is-plan { border-style: dashed; border-color: #9DB4F5; background: #F7F9FF; }
+.cal-day.is-wait { border-color: var(--warm); box-shadow: inset 0 0 0 2px var(--warm); }
+.cal-day.is-sched { border-color: var(--blue); box-shadow: inset 0 0 0 2px var(--blue); }
+.cal-day.is-done { border-color: var(--ok); box-shadow: inset 0 0 0 2px var(--ok); }
+.cal-day.is-today .cal-num { background: var(--navy); color: #fff; }
+.cal-day.is-selected { outline: 3px solid var(--navy); outline-offset: 1px; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 12px; font-size: .85rem; color: var(--muted); }
+.cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lg { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; display: inline-block; }
+.lg-done { border-color: var(--ok); }
+.lg-sched { border-color: var(--blue); }
+.lg-wait { border-color: var(--warm); }
+.lg-plan { border-color: #9DB4F5; border-style: dashed; }
+.cal-detail { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; scroll-margin-top: 12px; }
+.cal-detail h2 { font-size: 1.1rem; margin-bottom: 4px; }
+.cal-detail .post-list { margin-top: 10px; }
+.plan-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 10px; }
+.plan-list li { display: grid; grid-template-columns: 54px 1fr; gap: 10px; align-items: start; border: 1.5px dashed #9DB4F5; border-radius: var(--radius-sm); padding: 10px 12px; background: #F7F9FF; }
+.plan-time { font-weight: 700; color: var(--blue); }
+.plan-list p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; }
 
 .empty { text-align: center; padding: 28px 16px; color: var(--muted); background: var(--card); border: 1.5px dashed var(--line); border-radius: var(--radius); }
 .empty strong { display: block; color: var(--ink); font-size: 1.1rem; margin-bottom: 4px; }

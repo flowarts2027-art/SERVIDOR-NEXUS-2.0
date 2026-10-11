@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=101">
-  <script src="/client-lite.js?v=102" defer></script>
+  <link rel="stylesheet" href="/client-lite.css?v=102">
+  <script src="/client-lite.js?v=103" defer></script>
 </head>
 <body>
   <main id="login" class="login" hidden>
@@ -60,11 +60,13 @@
       <section id="tab-posts" class="tab" hidden>
         <h1 class="page-title">Seus posts</h1>
         <div class="segmented" role="tablist" aria-label="Filtrar posts">
-          <button type="button" data-filter="aprovar" class="active">Para aprovar</button>
+          <button type="button" data-filter="aprovar" class="active">Aprovar</button>
           <button type="button" data-filter="agendados">Agendados</button>
           <button type="button" data-filter="publicados">Publicados</button>
+          <button type="button" data-filter="calendario">Calendário</button>
         </div>
         <div id="post-list" class="post-list"></div>
+        <div id="calendar" class="calendar" hidden></div>
       </section>
 
       <section id="tab-numeros" class="tab" hidden>

@@ -13,7 +13,10 @@ const state = {
   connection: null,
   contact: "",
   tab: "inicio",
-  filter: "aprovar"
+  filter: "aprovar",
+  calMonth: "",
+  calDay: "",
+  plans: {}
 };
 
 function escapeHtml(value) {
@@ -141,16 +144,150 @@ function sortPosts(list, group) {
   });
 }
 
+/* ---------- Calendário do mês ---------- */
+
+const SP_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" });
+const MONTH_NAMES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const FORMAT_LABEL = { reel: "Reels", carousel: "Carrossel", post: "Post" };
+
+function capitalize(text) {
+  const value = String(text || "");
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function toDate(value) {
+  if (!value) return null;
+  const raw = String(value);
+  const iso = raw.includes("T") ? raw : raw.replace(" ", "T") + "Z";
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function postDayKey(post) {
+  const date = toDate(post.status === "published" ? (post.publishedAt || post.updatedAt) : post.scheduledFor);
+  return date ? SP_DAY.format(date) : "";
+}
+
+function todayKey() {
+  return SP_DAY.format(new Date());
+}
+
+function shiftMonth(month, delta) {
+  const [y, m] = month.split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+  return d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0");
+}
+
+async function loadPlan(month) {
+  if (state.plans[month]) return;
+  try {
+    const data = await api("/api/portal/calendar?month=" + encodeURIComponent(month));
+    state.plans[month] = data.campaign ? Object.fromEntries((data.days || []).map(day => [day.date, day.items || []])) : {};
+  } catch {
+    state.plans[month] = {};
+  }
+  if (state.filter === "calendario" && state.calMonth === month) renderCalendar();
+}
+
+function calendarPostsByDay() {
+  const map = {};
+  for (const post of state.posts) {
+    if (!postGroup(post)) continue;
+    const key = postDayKey(post);
+    if (key) (map[key] = map[key] || []).push(post);
+  }
+  return map;
+}
+
+function dayCellHtml(key, posts, plan, today) {
+  const day = Number(key.slice(8));
+  const cover = posts.map(postImage).find(Boolean);
+  const groups = new Set(posts.map(postGroup));
+  const status = groups.has("aprovar") ? "wait" : groups.has("agendados") ? "sched" : groups.has("publicados") ? "done" : plan.length ? "plan" : "empty";
+  const label = day + " — " + (posts.length
+    ? posts.length + (posts.length === 1 ? " post" : " posts")
+    : plan.length ? "planejado: " + plan.map(item => FORMAT_LABEL[item.format] || "Post").join(" e ") : "sem post");
+  const classes = ["cal-day", "is-" + status, key === today ? "is-today" : "", key === state.calDay ? "is-selected" : ""].filter(Boolean).join(" ");
+  return `<button type="button" class="${classes}" data-cal-day="${key}" aria-label="${escapeHtml(label)}" ${key === state.calDay ? 'aria-pressed="true"' : 'aria-pressed="false"'}>
+      ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy">` : ""}
+      <span class="cal-num">${day}</span>
+      ${posts.length ? `<span class="cal-count">${posts.length}</span>` : ""}
+    </button>`;
+}
+
+function dayDetailHtml(key, posts, plan) {
+  const [y, m, d] = key.split("-").map(Number);
+  const title = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+  const real = posts.length ? `<div class="post-list">${sortPosts(posts, "agendados").map(postCardHtml).join("")}</div>` : "";
+  const planned = !posts.length && plan.length
+    ? `<ul class="plan-list">${plan.map(item => `<li>
+        <span class="plan-time">${escapeHtml(item.time)}</span>
+        <div><strong>${escapeHtml(item.theme)}</strong>
+        <p>${escapeHtml(FORMAT_LABEL[item.format] || "Post")} · objetivo: ${escapeHtml(item.goal)}</p></div>
+      </li>`).join("")}</ul>
+      <p class="note">Plano da campanha. Os agentes criam este post perto do dia, e ele aparece aqui para você aprovar.</p>`
+    : "";
+  const empty = !real && !planned ? `<div class="empty"><strong>Nada neste dia</strong>Nenhum post criado ou planejado.</div>` : "";
+  return `<section class="cal-detail" aria-live="polite"><h2>${escapeHtml(capitalize(title))}</h2>${real}${planned}${empty}</section>`;
+}
+
+function renderCalendar() {
+  const box = $("#calendar");
+  if (!state.calMonth) state.calMonth = todayKey().slice(0, 7);
+  const month = state.calMonth;
+  if (!state.calDay || state.calDay.slice(0, 7) !== month) {
+    state.calDay = todayKey().slice(0, 7) === month ? todayKey() : month + "-01";
+  }
+  const plans = state.plans[month];
+  if (!plans) loadPlan(month);
+  const byDay = calendarPostsByDay();
+  const [y, m] = month.split("-").map(Number);
+  const total = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const firstWeekday = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  const today = todayKey();
+  const cells = [];
+  for (let i = 0; i < firstWeekday; i += 1) cells.push(`<span class="cal-pad" aria-hidden="true"></span>`);
+  for (let day = 1; day <= total; day += 1) {
+    const key = month + "-" + String(day).padStart(2, "0");
+    cells.push(dayCellHtml(key, byDay[key] || [], key >= today ? (plans || {})[key] || [] : [], today));
+  }
+  const monthPosts = Object.entries(byDay).filter(([key]) => key.startsWith(month)).flatMap(([, list]) => list);
+  const count = group => monthPosts.filter(post => postGroup(post) === group).length;
+  box.innerHTML = `
+    <div class="cal-head">
+      <button type="button" class="cal-nav" data-cal-move="-1" aria-label="Mês anterior">‹</button>
+      <h2>${capitalize(MONTH_NAMES[m - 1])} de ${y}</h2>
+      <button type="button" class="cal-nav" data-cal-move="1" aria-label="Próximo mês">›</button>
+    </div>
+    <p class="cal-summary">${count("publicados")} publicados · ${count("agendados")} agendados · ${count("aprovar")} para aprovar</p>
+    <div class="cal-week" aria-hidden="true"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+    <div class="cal-grid">${cells.join("")}</div>
+    <div class="cal-legend">
+      <span><i class="lg lg-done"></i>Publicado</span>
+      <span><i class="lg lg-sched"></i>Agendado</span>
+      <span><i class="lg lg-wait"></i>Para aprovar</span>
+      <span><i class="lg lg-plan"></i>Planejado</span>
+    </div>
+    ${dayDetailHtml(state.calDay, byDay[state.calDay] || [], state.calDay >= today ? (plans || {})[state.calDay] || [] : [])}`;
+}
+
 function renderPosts() {
-  const list = sortPosts(state.posts.filter(post => postGroup(post) === state.filter), state.filter);
-  const empty = {
-    aprovar: ["Nada para aprovar agora", "Quando os agentes criarem um post novo, ele aparece aqui."],
-    agendados: ["Nenhum post agendado", "Aprove um post e ele entra na fila de publicação."],
-    publicados: ["Nenhum post publicado ainda", "Os posts publicados ficam guardados aqui."]
-  }[state.filter];
-  $("#post-list").innerHTML = list.length
-    ? list.map(postCardHtml).join("")
-    : `<div class="empty"><strong>${empty[0]}</strong>${empty[1]}</div>`;
+  const calendar = state.filter === "calendario";
+  $("#calendar").hidden = !calendar;
+  $("#post-list").hidden = calendar;
+  if (calendar) {
+    renderCalendar();
+  } else {
+    const list = sortPosts(state.posts.filter(post => postGroup(post) === state.filter), state.filter);
+    const empty = {
+      aprovar: ["Nada para aprovar agora", "Quando os agentes criarem um post novo, ele aparece aqui."],
+      agendados: ["Nenhum post agendado", "Aprove um post e ele entra na fila de publicação."],
+      publicados: ["Nenhum post publicado ainda", "Os posts publicados ficam guardados aqui."]
+    }[state.filter] || ["Nada aqui", ""];
+    $("#post-list").innerHTML = list.length
+      ? list.map(postCardHtml).join("")
+      : `<div class="empty"><strong>${empty[0]}</strong>${empty[1]}</div>`;
+  }
   $$(".segmented [data-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.filter === state.filter));
   const pending = state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested").length;
   const badge = $("#badge-posts");
@@ -164,11 +301,16 @@ function renderHome() {
   const name = String(state.client?.displayName || state.client?.contact?.name || state.client?.name || "").trim();
   $("#hello").textContent = name ? "Olá, " + name : "Olá";
   const connected = Boolean(state.connection?.connected);
+  const loading = state.connection === null;
   const status = $("#agent-status");
-  status.className = "status " + (connected ? "on" : "off");
-  status.lastElementChild.textContent = connected
+  status.className = "status " + (loading ? "" : connected ? "on" : "off");
+  status.lastElementChild.textContent = loading ? "Carregando…" : connected
     ? "Seus agentes estão trabalhando"
     : "Conecte o Instagram para começar";
+  if (loading) {
+    $("#next-post").innerHTML = `<article class="hero hero-empty"><h2>Carregando seu painel…</h2><p class="muted">Só um instante.</p></article>`;
+    return;
+  }
 
   const waiting = sortPosts(state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested"), "aprovar");
   const next = waiting.find(postImage) || waiting[0];
@@ -199,7 +341,7 @@ function renderHome() {
   const insights = state.insights?.ok ? state.insights : null;
   $("#home-stats").innerHTML = [
     [insights?.followers ?? "—", "seguidores"],
-    [insights ? insights.totals.reach : "—", "alcance recente"],
+    [insights?.totals?.reach ?? "—", "alcance recente"],
     [published, "posts publicados"]
   ].map(([value, label]) => `<div class="stat"><strong>${escapeHtml(typeof value === "number" ? formatNumber(value) : value)}</strong><span>${label}</span></div>`).join("");
 
@@ -316,7 +458,7 @@ async function loadAll() {
   ]);
   const [posts, connections, leads, contact, insights] = results.map(result => result.status === "fulfilled" ? result.value : null);
   if (posts) state.posts = Array.isArray(posts.posts) ? posts.posts : [];
-  if (connections) state.connection = connections.connections?.instagram || null;
+  state.connection = connections?.connections?.instagram || { connected: false };
   if (leads) state.leads = Array.isArray(leads.leads) ? leads.leads : [];
   if (contact) state.contact = safeUrl(contact.whatsapp);
   state.insights = insights || { ok: false, error: "instagram_unavailable" };
@@ -324,11 +466,10 @@ async function loadAll() {
 }
 
 function renderAll() {
-  renderHome();
-  renderPosts();
-  renderInsights();
-  renderLeads();
-  renderAccount();
+  // Um bloco com dado inesperado não pode travar o painel inteiro.
+  for (const render of [renderHome, renderPosts, renderInsights, renderLeads, renderAccount]) {
+    try { render(); } catch (error) { console.error("painel:", render.name, error); }
+  }
 }
 
 function showTab(tab) {
@@ -410,6 +551,21 @@ document.addEventListener("click", event => {
   if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
   const go = target.closest("[data-go]");
   if (go) { showTab(go.dataset.go); return; }
+  const calDay = target.closest("[data-cal-day]");
+  if (calDay) {
+    state.calDay = calDay.dataset.calDay;
+    renderCalendar();
+    const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    $(".cal-detail")?.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+    return;
+  }
+  const calMove = target.closest("[data-cal-move]");
+  if (calMove) {
+    state.calMonth = shiftMonth(state.calMonth || todayKey().slice(0, 7), Number(calMove.dataset.calMove));
+    state.calDay = "";
+    renderCalendar();
+    return;
+  }
   const filter = target.closest("[data-filter]");
   if (filter) { state.filter = filter.dataset.filter; renderPosts(); return; }
   const approve = target.closest("[data-approve]");
