@@ -622,6 +622,30 @@ export async function handleMaster(request, env, url) {
     return json({ client: masterClientView(client), portalCredentials }, 201);
   }
 
+  // Zera a memória aprendida dos agentes de um cliente (termos, estratégia, pesquisa,
+  // análises) e apaga rascunhos vencidos de perfis antigos. Configuração é mantida.
+  const resetMemoryMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/reset-agent-memory$/);
+  if (resetMemoryMatch && request.method === "POST") {
+    const clientId = decodeURIComponent(resetMemoryMatch[1]);
+    if (!await getClient(env, clientId)) return json({ error: "client_not_found" }, 404);
+    const state = await env.DB.prepare(
+      "DELETE FROM nexus_state WHERE namespace = 'agent-core' AND item_key = 'state' AND client_id = ?1"
+    ).bind(clientId).run();
+    const oldDrafts = await env.DB.prepare(
+      `DELETE FROM post_ledger WHERE client_id = ?1 AND status IN ('expired','cancelled')
+         AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.brandProfileVersion'),'') = ''`
+    ).bind(clientId).run();
+    const features = await env.DB.prepare(
+      "DELETE FROM post_features WHERE client_id = ?1 AND post_id NOT IN (SELECT id FROM post_ledger WHERE client_id = ?1)"
+    ).bind(clientId).run().catch(() => null);
+    return json({
+      ok: true,
+      stateCleared: Number(state?.meta?.changes || 0) > 0,
+      deletedOldDrafts: Number(oldDrafts?.meta?.changes || 0),
+      deletedFeatures: Number(features?.meta?.changes || 0)
+    });
+  }
+
   // Remove de vez as postagens que não foram publicadas (fila, falhas e vencidas)
   // e os trabalhos pendentes do cliente. Publicadas ficam como histórico.
   const clearPendingMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/clear-pending-posts$/);

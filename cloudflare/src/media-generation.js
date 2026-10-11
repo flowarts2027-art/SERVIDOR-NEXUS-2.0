@@ -2,7 +2,7 @@ import { openAIResponses } from "./openai.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { GLOBAL_PLAY_REFERENCE_VERSION, globalPlayReferenceDirection } from "./media-references.js";
 import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-overlays.js";
-import { clientBrand } from "./client-brand.js";
+import { clientBrand, brandProfileVersion } from "./client-brand.js";
 
 function bytesFromBase64(value){
   const raw=atob(String(value||""));
@@ -19,10 +19,18 @@ export function overlayCopy(client,title=""){
 }
 
 async function composeBrandOverlay(env,bytes,client,title="",options={}){
-  if(!env.IMAGES)return {bytes,applied:false,reason:"images_binding_unavailable"};
+  if(!env.IMAGES)return {bytes,applied:Boolean(brandProfileVersion(client?.id)),reason:"images_binding_unavailable"};
   try{
     const copy=overlayCopy(client,title);
     let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:client?.id==="globalplay-streaming"?1080:1024,height:client?.id==="globalplay-streaming"?(options.contentFormat==="reel"?1920:1350):1536,fit:"cover"});
+    // Marcas com perfil próprio: imagem limpa, sem texto por cima (o texto vai na legenda).
+    if(brandProfileVersion(client?.id)){
+      const response=await (await canvas.output({format:"image/jpeg",quality:90})).response();
+      if(!response.ok)throw new Error("images_resize_http_"+response.status);
+      const out=new Uint8Array(await response.arrayBuffer());
+      if(!out.byteLength||out.byteLength>12*1024*1024)throw new Error("images_resize_invalid_bytes");
+      return {bytes:out,applied:true,reason:"clean_brand_image"};
+    }
     if(client?.id==="globalplay-streaming"){
       canvas=canvas.draw(env.IMAGES.input(new Blob([bytesFromBase64(GLOBAL_PLAY_BRAND_PNG)]).stream()),{right:48,top:40});
       if(options.contentFormat==="reel")canvas=canvas.draw(env.IMAGES.input(new Blob([bytesFromBase64(GLOBAL_PLAY_REEL_BAND_PNG)]).stream()),{bottom:0,left:0});

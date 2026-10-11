@@ -1,4 +1,5 @@
 import { openAIResponses } from './openai.js';
+import { clientBrand, brandProfileVersion } from "./client-brand.js";
 
 const VERSION = 'visual-review-v3';
 const MAX_ATTEMPTS = 3;
@@ -30,7 +31,9 @@ export async function reviewImage(env, client, media, previous, request = openAI
     ? 'Ragnar One is an independent brand. Reward premium contemporary photorealistic home-entertainment scenes, one clear idea, strong visual hook, clean composition and original generic people. Reject protected characters, official logos, recognizable protected scenes and repeated compositions.'
     : isGlobal
       ? 'Global Play uses the audited visual system. Reward premium contemporary photorealistic home-entertainment scenes, one clear idea, strong visual hook, clean composition, natural people when useful, brand visibility and readable discreet CTA. Reject legacy campaign styles, protected characters, third-party logos and split layouts.'
-      : 'Judge brand fit for the supplied brand.';
+      : brandProfileVersion(client?.id)
+        ? (()=>{ const b=clientBrand(client); return b.brandName+' is a '+b.niche+' brand for '+b.audience+'. Reward clean, professional, photorealistic scenes about small businesses, marketing, social media and technology, matching this direction: '+b.visualDirection+' There is no TV or entertainment requirement. Reject collages, third-party logos and unreadable fake text.'; })()
+        : 'Judge brand fit for the supplied brand.';
 
   try {
     const response = await request(env, client.id, {
