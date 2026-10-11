@@ -215,6 +215,10 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .temp-warm { background: var(--warm-soft); color: var(--warm); }
 .temp-cold { background: #E7EBF3; color: var(--muted); }
 
+.lead-landing { border-left: 4px solid var(--ok); }
+.next-action { color: var(--ink) !important; font-weight: 700; }
+.lead-whats { grid-column: 1 / -1; min-height: 44px; margin-top: 6px; }
+
 /* Conta */
 .ig-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 #support-link { margin-top: 12px; width: 100%; }

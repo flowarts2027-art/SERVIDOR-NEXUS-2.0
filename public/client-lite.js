@@ -442,7 +442,23 @@ function renderInsights() {
 
 /* ---------- Contatos ---------- */
 
+// Contato que veio da página de captura (/exemplo): nome, WhatsApp e próxima ação.
+function landingLeadHtml(lead) {
+  const c = lead.contact || {};
+  const digits = String(c.whatsapp || "").replace(/\D/g, "");
+  const next = lead.nextAction || {};
+  const due = next.due ? formatDate(next.due, false) : "";
+  return `<div class="lead lead-landing">
+    <strong>${escapeHtml(c.name || "Contato")}</strong>
+    <span class="temp temp-hot">Pediu exemplo</span>
+    <p>${escapeHtml(c.business || "")}${c.segment ? " · " + escapeHtml(c.segment) : ""}</p>
+    ${next.text ? `<p class="next-action">Próximo passo: ${escapeHtml(next.text)}${due ? " · até " + escapeHtml(due) : ""}</p>` : ""}
+    ${digits ? `<a class="btn btn-whats lead-whats" href="https://wa.me/${escapeHtml(digits)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>` : ""}
+  </div>`;
+}
+
 function leadHtml(lead) {
+  if (lead.contact && lead.source === "landing") return landingLeadHtml(lead);
   const temp = ["hot", "warm", "cold"].includes(lead.temperature) ? lead.temperature : "cold";
   const label = { hot: "Quente", warm: "Morno", cold: "Frio" }[temp];
   const user = String(lead.instagramUsername || "").replace(/^@/, "");

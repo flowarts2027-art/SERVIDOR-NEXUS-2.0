@@ -32,6 +32,7 @@ import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { instagramSnapshot } from "./agent-runtime.js";
 import { whatsappLink, clientBrand, brandProfileVersion, DEMO_CLIENT_ID } from "./client-brand.js";
 import { campaignCalendar } from "./flowarts-campaign.js";
+import { handleLandingLead } from "./landing.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -540,6 +541,10 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (url.pathname === "/api/demo/panel" && request.method === "GET") {
     return demoPanel(env, ctx, url);
   }
+  if (url.pathname === "/api/public/lead" && request.method === "POST") {
+    return handleLandingLead(request, env);
+  }
+
   if ((url.pathname === "/demo" || url.pathname === "/demo/") && request.method === "GET") {
     return redirect("/portal.html?demo=1");
   }

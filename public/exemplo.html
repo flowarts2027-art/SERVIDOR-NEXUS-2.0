@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F1E3D">
+<title>Exemplo grátis · Flow Arts</title>
+<meta name="description" content="Instagram do seu negócio postando sozinho, com IA. Você só aprova. Peça um exemplo grátis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Página de captura da Flow Arts: celular primeiro, uma ação só (pedir o exemplo grátis). */
+:root {
+  --navy: #0F1E3D; --navy-2: #1A2D55; --blue: #2B63F0; --blue-soft: #E6EDFF;
+  --bg: #F4F6FA; --card: #FFFFFF; --ink: #16233F; --muted: #5B6680; --line: #D5DCE8;
+  --ok: #17895E; --danger: #B42318; --whats: #128C4B;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0B1426; --card: #111D35; --ink: #E7ECF7; --muted: #A3AFC7; --line: #24345A; --blue-soft: #1C2D57; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 17px; line-height: 1.55; }
+a { color: var(--blue); }
+.hero { background: var(--navy); color: #fff; padding: calc(28px + env(safe-area-inset-top)) 16px 64px; }
+.wrap { max-width: 980px; margin: 0 auto; }
+.eyebrow { margin: 0 0 10px; color: #9DB4F5; font-weight: 700; letter-spacing: .04em; }
+h1 { margin: 0; font-size: clamp(1.9rem, 6vw, 3rem); line-height: 1.12; text-wrap: balance; max-width: 18ch; }
+.lead { margin: 14px 0 0; color: #D3DCF2; font-size: 1.1rem; max-width: 46ch; }
+.points { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; max-width: 46ch; }
+.points li { display: flex; gap: 10px; align-items: flex-start; }
+.points li::before { content: "✓"; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font-size: .85rem; font-weight: 700; margin-top: 1px; }
+.demo-link { display: inline-flex; margin-top: 22px; color: #fff; font-weight: 700; border-bottom: 2px solid #9DB4F5; text-decoration: none; padding-bottom: 2px; }
+main { padding: 0 16px 40px; }
+.grid { display: grid; gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px 18px; margin-top: -40px; box-shadow: 0 12px 32px rgba(15,30,61,.12); }
+.card h2 { margin: 0 0 4px; font-size: 1.35rem; }
+.card .sub { margin: 0 0 16px; color: var(--muted); }
+form { display: grid; gap: 14px; }
+label { display: grid; gap: 6px; font-weight: 700; }
+input, select { font: inherit; color: var(--ink); background: var(--card); min-height: 50px; border: 1.5px solid var(--line); border-radius: 10px; padding: 0 14px; width: 100%; }
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--muted); font-size: .95rem; }
+.check input { width: 22px; min-height: 22px; height: 22px; margin-top: 2px; flex: none; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+button, .btn { min-height: 54px; border: 0; border-radius: 999px; background: var(--blue); color: #fff; font: inherit; font-weight: 700; font-size: 1.05rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; padding: 0 22px; width: 100%; }
+button:disabled { opacity: .6; cursor: wait; }
+.btn-whats { background: var(--whats); }
+.error { color: var(--danger); margin: 0; min-height: 1.2em; }
+.done { text-align: center; }
+.done .big { font-size: 2.4rem; margin: 0; }
+.how { padding: 4px 2px; }
+.how h2 { font-size: 1.2rem; margin: 0 0 10px; }
+.how ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+footer { padding: 0 16px calc(28px + env(safe-area-inset-bottom)); color: var(--muted); font-size: .9rem; }
+@media (min-width: 860px) {
+  .hero { padding-bottom: 90px; }
+  .grid { grid-template-columns: 1fr 420px; align-items: start; }
+  .card { margin-top: -70px; grid-column: 2; grid-row: 1 / span 2; }
+  .how { grid-column: 1; grid-row: 1; padding-top: 28px; }
+}
+@media (prefers-reduced-motion: no-preference) { .card { animation: up .35s ease-out both; } @keyframes up { from { transform: translateY(8px); } to { transform: none; } } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Flow Arts · Rio de Janeiro</p>
+    <h1>Seu Instagram postando sozinho, com IA. Você só aprova.</h1>
+    <p class="lead">Posts feitos para o seu negócio toda semana: fotos, carrosséis e Reels. Veja um exemplo grátis antes de decidir.</p>
+    <ul class="points">
+      <li>Imagens e textos no estilo da sua marca</li>
+      <li>Nada é publicado sem a sua aprovação</li>
+      <li>Painel simples no celular para aprovar e ver os números</li>
+    </ul>
+    <a class="demo-link" href="/demo">Ver um painel de exemplo →</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap grid">
+    <section class="card" aria-labelledby="form-title">
+      <div id="form-box">
+        <h2 id="form-title">Peça seu exemplo grátis</h2>
+        <p class="sub">Leva 1 minuto. A gente te chama no WhatsApp.</p>
+        <form id="lead-form" novalidate>
+          <label for="nome">Seu nome<input id="nome" name="nome" autocomplete="given-name" required></label>
+          <label for="whatsapp">WhatsApp com DDD<input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="21 98888-7777" required></label>
+          <label for="negocio">Nome do seu negócio<input id="negocio" name="negocio" autocomplete="organization" required></label>
+          <label for="segmento">Tipo de negócio
+            <select id="segmento" name="segmento">
+              <option>Café, padaria ou restaurante</option>
+              <option>Salão, barbearia ou estética</option>
+              <option>Loja ou comércio</option>
+              <option>Prestador de serviço</option>
+              <option>Saúde ou clínica</option>
+              <option>Outro</option>
+            </select>
+          </label>
+          <div class="hp" aria-hidden="true"><label for="website">Site<input id="website" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <label class="check" for="consentimento"><input id="consentimento" name="consentimento" type="checkbox"> <span>Aceito que a Flow Arts me chame no WhatsApp sobre o exemplo grátis. Veja a <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.</span></label>
+          <button type="submit">Quero meu exemplo grátis</button>
+          <p class="error" id="form-error" role="alert"></p>
+        </form>
+      </div>
+      <div id="done-box" class="done" hidden>
+        <p class="big" aria-hidden="true">✓</p>
+        <h2>Recebemos o seu pedido!</h2>
+        <p class="sub">Vamos te chamar no WhatsApp em até 1 dia útil. Se quiser adiantar, fale agora:</p>
+        <a id="whats-now" class="btn btn-whats" href="https://wa.me/5521964816185" target="_blank" rel="noopener">Falar agora no WhatsApp</a>
+      </div>
+    </section>
+
+    <section class="how" aria-labelledby="how-title">
+      <h2 id="how-title">Como funciona</h2>
+      <ol>
+        <li>Você pede o exemplo grátis aqui.</li>
+        <li>A gente cria um post de exemplo para o seu negócio.</li>
+        <li>Se gostar, os agentes de IA preparam os posts do mês e você aprova cada um pelo celular.</li>
+      </ol>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Flow Arts · CNPJ 65.299.616/0001-50 · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="https://www.instagram.com/flowarts2026/">@flowarts2026</a></div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById("lead-form");
+  var error = document.getElementById("form-error");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    error.textContent = "";
+    var data = {
+      nome: form.elements.nome.value,
+      whatsapp: form.elements.whatsapp.value,
+      negocio: form.elements.negocio.value,
+      segmento: form.elements.segmento.value,
+      website: form.elements.website.value,
+      consentimento: form.elements.consentimento.checked
+    };
+    var button = form.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Enviando…";
+    fetch("/api/public/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (body) { return { ok: r.ok, body: body }; }); })
+      .then(function (res) {
+        if (!res.ok || !res.body.ok) throw new Error(res.body.message || "Não deu certo. Tente de novo.");
+        if (res.body.whatsapp) document.getElementById("whats-now").href = res.body.whatsapp;
+        document.getElementById("form-box").hidden = true;
+        document.getElementById("done-box").hidden = false;
+      })
+      .catch(function (e) {
+        error.textContent = e.message || "Não deu certo. Tente de novo.";
+        button.disabled = false;
+        button.textContent = "Quero meu exemplo grátis";
+      });
+  });
+})();
+</script>
+</body>
+</html>

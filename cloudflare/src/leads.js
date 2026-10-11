@@ -178,7 +178,10 @@ export async function upsertLead(env, client, lead) {
     clientName: client.name || client.id,
     instagram: client.instagram || "",
     sources: Array.isArray(lead.sources) ? lead.sources : [],
-    evidence: Array.isArray(lead.evidence) ? lead.evidence.slice(-20) : []
+    evidence: Array.isArray(lead.evidence) ? lead.evidence.slice(-20) : [],
+    // Página de captura: dados que a própria pessoa enviou e a próxima ação do CRM.
+    ...(lead.contact && typeof lead.contact === "object" ? { contact: lead.contact } : {}),
+    ...(lead.nextAction && typeof lead.nextAction === "object" ? { nextAction: lead.nextAction } : {})
   };
   await env.DB.prepare(
     `INSERT INTO leads(
