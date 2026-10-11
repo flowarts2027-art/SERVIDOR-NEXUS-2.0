@@ -2,7 +2,8 @@
 
 ## 2026-10-11 ~07h BRT — Global Play encerrada
 - A pedido do proprietário: `globalplay-streaming` com status `paused` e 48 postagens não publicadas apagadas (fila, falhas e vencidas) + 1 trabalho agendado, pela rota nova `POST /api/master/clients/:id/clear-pending-posts`. Restam só 12 registros publicados (histórico; os posts continuam no Instagram).
-- Ragnar One (já pausado) ainda tem 1 pronta e 53 vencidas; aguardando decisão do proprietário.
+- Ragnar One: 54 postagens não publicadas apagadas. Ragnar e Global Play com status `archived` (somem das listas do Master; `/api/clients?all=1` mostra). Único cliente ativo: Flow Arts (`primeiro-teste`).
+- Imagens liberadas: limite diário de tokens da Flow Arts 30.000 → 150.000 (texto já consumia ~32k/dia, ~US$ 0,02).
 
 ## 2026-10-11 manhã — painel do cliente novo
 - Proprietário aprovou a lista da auditoria e passou o WhatsApp 21964816185.
