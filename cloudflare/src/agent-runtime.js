@@ -1179,6 +1179,8 @@ async function runCreator(env,client,strategy,options) {
 }
 
 async function runPublisher(env,client,options) {
+  // Corrige posts presos em "publishing" (servidor parou depois de publicar).
+  await import("./executor.js").then(mod=>mod.recoverStuckPublishing(env,client.id,new Date())).catch(()=>null);
   const startedAt=new Date().toISOString();
   const config=normalizeAgentCoreConfig(client);
   const rows=await env.DB.prepare(
