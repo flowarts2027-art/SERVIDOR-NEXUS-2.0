@@ -48,15 +48,15 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11f",
+    profileVersion: "2026-10-11g",
     // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
     niche: "Agência de marketing e automação com IA",
-    audience: "Pequenos negócios e empreendedores do Rio de Janeiro e região",
+    audience: "Pequenos negócios e empreendedores de todo o Brasil, atendidos 100% online",
     whatsapp: "5521964816185",
     offer: "Marketing e automação de Instagram 24h com IA, além de sites, fotos e vídeos para pequenos negócios",
     cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
-    hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #RioDeJaneiro",
+    hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #PequenosNegocios",
     followerCta: "Siga a Flow Arts para ver mais exemplos feitos com IA.",
     contentFocus: "Mostrar como o marketing com IA (sites, fotos e vídeos) ajuda pequenos negócios a vender mais nas redes, com exemplos práticos e antes/depois descritos em texto",
     morningTheme: "Erros de imagem e presença digital que afastam clientes de pequenos negócios",
@@ -73,7 +73,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Bio do Instagram que traz clientes",
       "Identidade visual que passa confiança",
       "Como transformar seguidores em clientes",
-      "Marketing para negócios do Rio de Janeiro",
+      "Marketing online para pequenos negócios de qualquer cidade",
       "Automação de Instagram: agentes trabalhando 24h por você",
       "O que uma agência com IA faz por você",
       "Peça um exemplo grátis antes de contratar"
@@ -102,7 +102,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Vou perder o controle do meu Instagram? Nada é publicado sem a aprovação do cliente no painel.",
       "Deve ser caro. A IA reduz o custo de estúdio e produção; peça o exemplo grátis primeiro."
     ]),
-    visualDirection: "Photorealistic premium scenes for small local businesses in Rio de Janeiro (cafés, salons, shops, restaurants, service providers). Follow the scene given in the brief; vary subjects between posts (products, storefronts, phones, desks, business owners). The persona Marina (curly dark hair, navy blazer) appears only when the brief asks for her. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
+    visualDirection: "Photorealistic premium scenes for small local businesses in Brazilian cities (cafés, salons, shops, restaurants, service providers). Follow the scene given in the brief; vary subjects between posts (products, storefronts, phones, desks, business owners). The persona Marina (curly dark hair, navy blazer) appears only when the brief asks for her. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
   })
 });
 

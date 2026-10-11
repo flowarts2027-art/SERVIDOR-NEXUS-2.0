@@ -32,7 +32,7 @@ const DAYS = [
   ["reel", "Automação de Instagram: o que é e como funciona", "explicação simples", "salvamento"],
   ["carousel", "Bio do Instagram que traz clientes: passo a passo", "tutorial de bio", "salvamento"],
   ["reel", "Seu concorrente já está usando IA", "urgência leve", "compartilhamento"],
-  ["post", "Atendemos negócios do Rio de Janeiro e região", "negócio local", "seguir"],
+  ["post", "Atendemos pequenos negócios de todo o Brasil, 100% online", "atendimento online em qualquer cidade", "seguir"],
   ["reel", "3 erros de marketing que custam clientes", "erros comuns", "compartilhamento"],
   ["carousel", "Peça seu exemplo grátis: como funciona", "processo do exemplo grátis", "conversão"],
   // Semana 2 — Educação
@@ -44,7 +44,7 @@ const DAYS = [
   ["carousel", "Métricas do Instagram que realmente importam", "métricas para iniciantes", "salvamento"],
   ["reel", "Identidade visual que passa confiança", "cores, fontes e consistência", "compartilhamento"],
   ["carousel", "Tráfego pago para iniciantes: por onde começar", "anúncios com pouco dinheiro", "salvamento"],
-  ["reel", "Hashtags locais: como ser encontrado no Rio", "alcance local", "salvamento"],
+  ["reel", "Hashtags locais: como ser encontrado na sua cidade", "alcance local", "salvamento"],
   ["post", "Você já pensou em ter um site simples?", "site para pequeno negócio", "comentário"],
   ["reel", "Como a IA deixa o marketing mais barato", "economia com IA", "compartilhamento"],
   ["carousel", "Como transformar seguidores em clientes", "funil simples", "salvamento"],
@@ -98,7 +98,7 @@ const VISUAL_BY_FORMAT = {
 const SCENES = [
   "close-up of a small business product beautifully photographed on a clean counter (coffee, pastry, cosmetics or clothing), no people",
   "a hand holding a phone that clearly shows an Instagram profile feed full of bright, appetizing photos of a local café's coffee and cakes",
-  "a modern small storefront in Rio de Janeiro at golden hour, inviting entrance with real products in the window",
+  "a modern small storefront in a Brazilian city at golden hour, inviting entrance with real products in the window",
   "top view of a work desk: a laptop showing a social media analytics dashboard with real-looking line charts, bar charts and photo thumbnails, a smartphone showing a photo feed, printed product photos, a camera and a cup of coffee, no people",
   "the owner of a small café or salon smiling while checking a phone behind the counter, real products around, candid natural light",
   "Marina, a friendly professional woman with curly dark hair in a navy blazer, showing a tablet with a colorful Instagram feed of a client's products to a small business owner",
@@ -129,7 +129,7 @@ export function flowArtsCampaignForDay(date = new Date(), options = {}) {
       campaignWeek: Math.min(4, Math.floor(dayIndex / 7) + 1),
       storytelling: row[0] !== "post",
       storyStructure: ["gancho", "problema", "dica ou virada", "CTA"],
-      targetSegment: "pequenos negócios e empreendedores do Rio de Janeiro",
+      targetSegment: "pequenos negócios e empreendedores de todo o Brasil",
       conversionBridge: row[3] === "conversão"
         ? "Levar o interesse para o comentário EXEMPLO e depois para a conversa no WhatsApp."
         : "Gerar confiança e interação primeiro; oferta só nas peças de conversão.",
@@ -164,7 +164,7 @@ export function flowArtsCampaignStrategy() {
     },
     hooks: DAYS.filter(row => row[0] === "reel").map(row => row[1]),
     priorities: [
-      "Conta nova: priorizar Reels de descoberta e hashtags locais do Rio de Janeiro.",
+      "Conta nova: priorizar Reels de descoberta e hashtags de nicho (pequenos negócios, marketing digital); atendimento em todo o Brasil.",
       "Uma ideia por peça; gancho visível no primeiro segundo.",
       "Carrosséis educativos para gerar salvamentos e autoridade.",
       "Ser transparente sobre o uso de IA; nunca inventar clientes, números ou depoimentos.",

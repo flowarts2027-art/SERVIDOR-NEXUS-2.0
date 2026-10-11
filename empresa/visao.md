@@ -2,10 +2,10 @@
 
 Fonte compartilhada dos departamentos (CEO, Marketing, Vendas). Atualize quando algo mudar.
 
-- **Empresa:** Flow Arts (@flowarts2026), Rio de Janeiro. Dono: Rodrigo.
+- **Empresa:** Flow Arts (@flowarts2026), sede no Rio de Janeiro, atendimento 100% online em todo o Brasil (decisão do Rodrigo, 11/10/2026). Dono: Rodrigo.
 - **O que vendemos:** "Instagram no Automático": 12 posts por mês feitos com IA (4 Reels, 4 carrosséis, 4 posts). Nada sai sem o cliente aprovar no painel.
 - **Preço de fundador (3 primeiros clientes, 6 meses):** R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, aviso de 30 dias, Pix.
-- **Para quem:** pequenos negócios locais do Rio (cafés, salões, lojas, restaurantes, prestadores de serviço).
+- **Para quem:** pequenos negócios de todo o Brasil (cafés, salões, lojas, restaurantes, prestadores de serviço).
 - **Problema que resolvemos:** o dono não tem tempo, posta sem constância e o perfil não traz cliente.
 - **Por que nos escolher:** IA faz a produção, o dono só aprova; mais barato que agência; exemplo grátis antes de contratar.
 - **Ferramenta:** o Nexus (painel do cliente + agentes). Demonstração pública: https://servidor-nexus.diamantehinode2015.workers.dev/demo

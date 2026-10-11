@@ -45,7 +45,7 @@ function brandCarouselPlan(client = {}, payload = {}) {
   const conversion = String(features.campaignGoal || "") === "conversão";
   return [
     { role:"hook", message:hook, overlay:compact(hook, 40).toUpperCase(),
-      scene:"Open with a relatable moment of a small business owner in Rio de Janeiro facing this topic: " + theme + ". Stop the scroll with curiosity, not with a solution yet." },
+      scene:"Open with a relatable moment of a small business owner in Brazil facing this topic: " + theme + ". Stop the scroll with curiosity, not with a solution yet." },
     { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay:"PASSO 1",
       scene:"Show the first practical step of the topic in a clean business setting (desk, laptop, phone, product, storefront). Vary framing from card 1." },
     { role:"turn", message:"Mostre o segundo ponto e a virada.", overlay:"PASSO 2",

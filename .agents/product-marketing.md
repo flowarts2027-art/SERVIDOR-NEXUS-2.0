@@ -1,20 +1,20 @@
 # Product Marketing Context — Flow Arts
 
-**Document version:** v1
+**Document version:** v2
 **Last updated:** 2026-10-11
 
 Fontes: `cloudflare/src/client-brand.js` (profileVersion 2026-10-11e) e `docs/nexus-memory/AUDITORIA-FLOW-ARTS.md`.
 Itens marcados **[A CONFIRMAR]** ainda dependem do proprietário.
 
 ## Product Overview
-**One-liner:** Agência de marketing e automação com IA para pequenos negócios do Rio de Janeiro.
+**One-liner:** Agência de marketing e automação com IA para pequenos negócios de todo o Brasil, 100% online.
 **What it does:** Cria fotos, vídeos e sites com IA para pequenos negócios e mantém o Instagram deles funcionando 24h com agentes de IA (planejam, escrevem, criam a imagem e publicam depois da aprovação do cliente).
 **Product category:** Agência de marketing digital / social media com IA.
 **Product type:** Serviço (agência), com painel do cliente para aprovar posts e ver resultados.
 **Business model:** Pacotes e preços ainda não definidos (confirmado pelo proprietário em 2026-10-11). Não citar valores nos posts.
 
 ## Target Audience
-**Target companies:** Pequenos negócios locais do Rio de Janeiro e região: cafés, salões, lojas, restaurantes, prestadores de serviço.
+**Target companies:** Pequenos negócios de todo o Brasil (atendimento online; sede no Rio): cafés, salões, lojas, restaurantes, prestadores de serviço.
 **Decision-makers:** O próprio dono / empreendedor.
 **Primary use case:** Ter um Instagram profissional e constante, que atrai clientes, sem tempo nem dinheiro para estúdio ou agência tradicional.
 **Jobs to be done:**
@@ -40,7 +40,7 @@ Não se aplica (B2C/pequeno negócio: quem usa, decide e paga é a mesma pessoa)
 
 ## Competitive Landscape
 *Concorrentes específicos não identificados pelo proprietário (2026-10-11). Não citar nomes nos posts.*
-**Direct:** Agências e social medias do Rio (genérico) — mais caros e menos constantes.
+**Direct:** Agências e social medias locais (genérico) — mais caros e menos constantes.
 **Secondary:** Apps de design/IA que o dono usa sozinho (genérico) — exigem tempo e habilidade.
 **Indirect:** Fazer tudo sozinho ou não investir em Instagram.
 
@@ -75,7 +75,7 @@ Não se aplica (B2C/pequeno negócio: quem usa, decide e paga é a mesma pessoa)
 **How they describe the problem:**
 - "Você posta todo dia e mesmo assim não vende?" (gancho da marca, não frase de cliente real)
 **How they describe us:** [A CONFIRMAR] ainda sem frases de clientes reais.
-**Words to use:** exemplo grátis, IA, 24h, pequeno negócio, Rio de Janeiro, prático, simples.
+**Words to use:** exemplo grátis, IA, 24h, pequeno negócio, online, todo o Brasil, prático, simples.
 **Words to avoid:** streaming, entretenimento, promessas de número de seguidores ou vendas.
 **Glossary:**
 | Term | Meaning |
@@ -87,7 +87,7 @@ Não se aplica (B2C/pequeno negócio: quem usa, decide e paga é a mesma pessoa)
 **Tone:** Próximo, direto, prático e confiante.
 **Style:** Conversacional, frases curtas, dicas aplicáveis no mesmo dia.
 **Personality:** Próxima, prática, confiante, transparente, moderna.
-**Visual:** Azul-marinho, azul elétrico e prata; luz branca limpa; cenas de negócios locais do Rio; persona Marina (cabelo cacheado escuro, blazer azul-marinho); sem texto na imagem.
+**Visual:** Azul-marinho, azul elétrico e prata; luz branca limpa; cenas de pequenos negócios de cidades brasileiras; persona Marina (cabelo cacheado escuro, blazer azul-marinho); sem texto na imagem.
 
 ## Proof Points
 **Metrics:** Conta nova (2 posts, 2 seguidores em 2026-10-10). Sem métricas úteis ainda.
@@ -100,10 +100,11 @@ Não se aplica (B2C/pequeno negócio: quem usa, decide e paga é a mesma pessoa)
 | Instagram 24h automático | O próprio perfil @flowarts2026 é operado pelo Nexus |
 
 ## Goals
-**Business goal:** Conseguir os primeiros clientes pequenos negócios no Rio.
+**Business goal:** Conseguir os primeiros clientes pequenos negócios, em qualquer cidade do Brasil.
 **Conversion action:** Comentar "EXEMPLO" → conversa no WhatsApp (21) 96481-6185.
 **Current metrics:** Fase zero.
 
 ## Changelog
 *Newest first. One line per revision: what changed and why.*
+- v2 (2026-10-11) — Atendimento ampliado para todo o Brasil (venda online), decisão do Rodrigo.
 - v1 (2026-10-11) — Initial context: rascunho a partir de client-brand.js e da auditoria do Instagram, completado com respostas do proprietário (sem preços, sem concorrentes nomeados, objeções como hipótese, Global Play não citada).
