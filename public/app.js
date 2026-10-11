@@ -53,7 +53,7 @@ function render() {
   $("#funnel-warm").textContent = totals.warm;
   $("#funnel-hot").textContent = totals.hot;
 
-  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#22c55e"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
+  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#22c55e"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : client.status === "paused" ? "PAUSADO" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
 
   const managedUsageClients = clients.filter(client => client.id !== "ragnar-one");
   $("#usage-list").innerHTML = managedUsageClients.length ? managedUsageClients.map(client => {
@@ -701,29 +701,24 @@ async function loadIntegrations() {
     if($("#instagram-callback-url"))$("#instagram-callback-url").value=instagram.callbackUrl||"";
 
     const accountStates=instagramAccounts?.accounts||{};
-    ["globalplay-streaming","ragnar-one"].forEach(clientId=>{
-      const account=accountStates[clientId]||{};
+    const names=new Map((state.clients||[]).map(client=>[client.id,client]));
+    const rows=Object.entries(accountStates).filter(([clientId])=>names.has(clientId)).map(([clientId,account])=>{
+      const client=names.get(clientId)||{};
       const valid=Boolean(account.tokenValid&&account.accountMatches);
-      const badgeEl=$('[data-instagram-account-badge="'+clientId+'"]');
-      const detailEl=$('[data-instagram-account-detail="'+clientId+'"]');
-      const linkEl=$('[data-instagram-account-link="'+clientId+'"]');
-      if(badgeEl){
-        badgeEl.textContent=valid?"CONECTADO":"NÃO CONECTADO";
-        badgeEl.classList.toggle("off",!valid);
-      }
-      if(detailEl){
-        detailEl.textContent=valid
-          ? "Token válido e conta confirmada pelo Instagram."
-          : account.expired
-            ? "Autorização expirada. Autorize novamente."
-            : "Aguardando autorização válida do Instagram.";
-      }
-      if(linkEl){
-        linkEl.hidden=valid;
-        linkEl.style.display=valid?"none":"inline-flex";
-        linkEl.setAttribute("aria-hidden",valid?"true":"false");
-      }
+      const paused=String(client.status||"")==="paused";
+      const detail=paused?"Cliente pausado. Não publica."
+        :valid?"Conectado e confirmado pelo Instagram."
+        :account.expired?"Autorização expirada. Autorize de novo."
+        :"Ainda não autorizou o Instagram.";
+      return `<div class="integration" data-instagram-account-row="${escapeHtml(clientId)}">
+        <div><strong>${escapeHtml(client.name||clientId)} · ${escapeHtml(client.instagram||"sem @")}</strong><small data-instagram-account-detail="${escapeHtml(clientId)}">${detail}</small></div>
+        <div class="integration-actions">
+          <span class="badge ${valid?"":"off"}" data-instagram-account-badge="${escapeHtml(clientId)}">${valid?"CONECTADO":"NÃO CONECTADO"}</span>
+          ${valid||paused?"":`<a class="primary link-button" data-instagram-account-link="${escapeHtml(clientId)}" href="/api/master/instagram/authorize?clientId=${encodeURIComponent(clientId)}">Autorizar</a>`}
+        </div>
+      </div>`;
     });
+    if($("#instagram-account-rows"))$("#instagram-account-rows").innerHTML=rows.join("")||'<p class="muted">Nenhum cliente cadastrado.</p>';
   } catch (error) {
     console.error(error);
   }

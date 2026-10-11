@@ -121,3 +121,6 @@
 .post-decision .post-approve{color:#22c55e}
 .post-decision .post-reject{color:#f87171}
 .post-decision button:disabled{opacity:.5;cursor:wait}
+
+/* Links dentro de textos (ex.: atalhos para Campanhas e Suporte) */
+.link-inline{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;display:inline-flex;align-items:center;gap:6px}

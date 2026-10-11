@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=18">
+  <link rel="stylesheet" href="/styles.css?v=19">
 </head>
 <body>
   <div class="shell">
@@ -14,13 +14,9 @@
       <nav>
         <button class="nav-item active" data-view="dashboard">▦ <span>Visão geral</span></button>
         <button class="nav-item" data-view="clients">◉ <span>Clientes</span></button>
-        <button class="nav-item" data-view="agents">⬡ <span>Agent Core</span></button>
-        <button class="nav-item" data-view="posts">▤ <span>Postagens & custos</span></button>
-        <button class="nav-item" data-view="campaigns">◫ <span>Campanhas</span></button>
-        <button class="nav-item nav-notifications" data-view="notifications">✦ <span>Notificações</span><b id="notification-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item" data-view="portal">⌁ <span>Portal do cliente</span></button>
-        <button class="nav-item" data-view="odin">◆ <span>Odin & Leads</span></button>
-        <button class="nav-item" data-view="onboarding">＋ <span>Novo cliente</span></button>
+        <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
+        <button class="nav-item" data-view="agents">⬡ <span>Agentes</span></button>
+        <button class="nav-item" data-view="odin">◆ <span>Contatos</span></button>
         <button class="nav-item" data-view="settings">⚙ <span>Integrações</span></button>
       </nav>
       <div class="core-card"><span class="pulse"></span><div><strong>Agent Core</strong><small>Motor central disponível</small></div></div>
@@ -40,7 +36,7 @@
           <article><span>Alertas</span><strong id="metric-alerts">—</strong><small>consumo e operação</small></article>
         </div>
         <div class="grid-main">
-          <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
           <section class="panel consumption"><div class="panel-head"><div><p class="eyebrow">CONSUMO</p><h2>Uso por cliente</h2></div></div><div id="usage-list"></div><p class="disclaimer">Valores percentuais configurados. Dados reais serão conectados somente quando a API do provedor os disponibilizar.</p></section>
         </div>
       </section>
@@ -80,7 +76,7 @@
         <div class="agent-core-layout">
           <section class="panel agent-core-control">
             <div class="panel-head">
-              <div><p class="eyebrow">CONTROLE POR CLIENTE</p><h2>Operação dos agentes</h2><p class="muted">Por padrão, o Creator prepara a pauta e o Publisher só publica depois da aprovação do cliente.</p></div>
+              <div><p class="eyebrow">CONTROLE POR CLIENTE</p><h2>Operação dos agentes</h2><p class="muted"><button type="button" class="link-inline" data-go="campaigns">Campanhas e comandos para os agentes</button></p><p class="muted">Por padrão, o Creator prepara a pauta e o Publisher só publica depois da aprovação do cliente.</p></div>
               <span id="agent-core-client-state" class="badge">ATIVO</span>
             </div>
             <label class="agent-core-client-select">Cliente<select id="agent-core-client"></select></label>
@@ -155,7 +151,7 @@
 
         <section class="panel master-post-ledger">
           <div class="panel-head">
-            <div><p class="eyebrow">HISTÓRICO DETALHADO</p><h2>Postagens por cliente</h2><p class="muted">A Global Play (@globalplay_streaming) aparece como cliente para que sua operação seja comparada com as demais.</p></div>
+            <div><p class="eyebrow">HISTÓRICO DETALHADO</p><h2>Postagens por cliente</h2><p class="muted">Veja a prévia, aprove ou recuse cada post antes da publicação.</p></div>
             <label class="post-client-filter">Cliente<select id="post-client-filter"><option value="">Todos</option></select></label>
           </div>
           <div class="table-wrap">
@@ -185,7 +181,7 @@
             <div class="panel-head"><div><p class="eyebrow">COMANDOS PERSISTENTES</p><h2>Orientar os agentes</h2><p class="muted">As regras ficam salvas e passam a ser lidas no ciclo real dos agentes.</p></div></div>
             <form id="directive-form" class="campaign-form">
               <label>Aplicar a<select name="appliesTo"><option value="all">Todos os agentes</option><option value="estrategista">ESTRATEGISTA</option><option value="creator">CREATOR</option><option value="designer">DESIGNER</option><option value="publisher">PUBLISHER</option><option value="odin">ODIN</option><option value="growth">GROWTH</option></select></label>
-              <label class="wide">Orientação<textarea name="text" rows="6" required placeholder="Ex.: Até 12/10 usar tema infantil apenas no Global Play; não publicar preços; CTA Digite QUERO."></textarea></label>
+              <label class="wide">Orientação<textarea name="text" rows="6" required placeholder="Ex.: Esta semana, falar de automação de Instagram; não publicar preços; CTA Comente EXEMPLO."></textarea></label>
               <button class="primary" type="submit">Enviar comando aos agentes</button>
               <span id="directive-message" class="form-status"></span>
             </form>
@@ -259,7 +255,7 @@
           <form id="client-form">
             <div class="form-grid">
               <label>Empresa / nome<input name="name" required placeholder="Ex.: Loja Alpha"></label>
-              <label>Nicho<input name="niche" placeholder="Ex.: Restaurante, loja, streaming"></label>
+              <label>Nicho<input name="niche" placeholder="Ex.: Restaurante, loja, salão de beleza"></label>
               
               <label>Usuário do painel<input name="username" placeholder="Gerado automaticamente"></label>
               <label>Senha inicial<input name="password" type="text" minlength="8" placeholder="Gerada automaticamente"></label>
@@ -290,7 +286,7 @@
 
         <div class="panel master-openai-panel">
           <div class="panel-head">
-            <div><p class="eyebrow">CENTRAL DE CRÉDITOS</p><h2>OpenAI NEXUS</h2><p class="muted">Uma conta central abastece os clientes NEXUS. Ragnar continua separado e não consome estes créditos.</p></div>
+            <div><p class="eyebrow">CENTRAL DE CRÉDITOS</p><h2>OpenAI NEXUS</h2><p class="muted">Uma conta central da OpenAI abastece todos os clientes.</p></div>
             <span id="openai-master-state" class="badge off">NÃO CONECTADA</span>
           </div>
           <div class="finance-grid finance-grid-four">
@@ -326,31 +322,18 @@
             <span id="instagram-secret-message" class="form-status"></span>
           </form>
           <label>OAuth Redirect URL<input id="instagram-callback-url" readonly value="Carregando..."></label>
-          <p class="disclaimer">Não use token de Global Play ou Ragnar neste campo. Use somente o App Secret do aplicativo NEXUS IA CENTRAL.</p>
+          <p class="disclaimer">Use somente o App Secret do aplicativo NEXUS IA CENTRAL. Nunca cole aqui o token de um cliente.</p>
 
           <div class="panel-head" style="margin-top:24px">
             <div><p class="eyebrow">RECONECTAR CONTAS</p><h3>Autorizar pelo Instagram</h3><p class="muted">Sem copiar token. O NEXUS abre o login oficial do Instagram, recebe a autorização e salva a conexão criptografada automaticamente.</p></div>
           </div>
 
           <div class="openai-master-form instagram-oauth-actions">
-            <div class="integration" data-instagram-account-row="globalplay-streaming">
-              <div><strong>Conta principal · @globalplay_streaming</strong><small data-instagram-account-detail="globalplay-streaming">Verificando conexão…</small></div>
-              <div class="integration-actions">
-                <span class="badge off" data-instagram-account-badge="globalplay-streaming">VERIFICANDO</span>
-                <a class="primary link-button" data-instagram-account-link="globalplay-streaming" href="/api/master/instagram/authorize?clientId=globalplay-streaming">Autorizar</a>
-              </div>
-            </div>
-            <div class="integration" data-instagram-account-row="ragnar-one">
-              <div><strong>Ragnar One · @ragnarplay1</strong><small data-instagram-account-detail="ragnar-one">Verificando conexão…</small></div>
-              <div class="integration-actions">
-                <span class="badge off" data-instagram-account-badge="ragnar-one">VERIFICANDO</span>
-                <a class="primary link-button" data-instagram-account-link="ragnar-one" href="/api/master/instagram/authorize?clientId=ragnar-one">Autorizar</a>
-              </div>
-            </div>
+            <div id="instagram-account-rows"><p class="muted">Verificando contas…</p></div>
             <span id="instagram-oauth-message" class="form-status"></span>
           </div>
 
-          <p class="disclaimer">A Global Play é a conta principal do NEXUS e não aparece mais como cliente. A autorização abre diretamente no Instagram e volta para esta tela.</p>
+          <p class="disclaimer">A autorização abre direto no Instagram e volta para esta tela.</p>
         </div>
       </section>
     </main>
@@ -371,6 +354,6 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=35" defer></script>
+  <script src="/app.js?v=36" defer></script>
 </body>
 </html>

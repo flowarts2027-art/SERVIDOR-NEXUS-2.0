@@ -12,9 +12,9 @@ test("Master exposes safe per-account Instagram connection status", () => {
   assert.match(master, /instagramCredentialStatus\(env, id\)/);
 });
 
-test("Master hides authorize link when Instagram account is valid", () => {
+test("Master lista a conexão do Instagram de todos os clientes e esconde Autorizar quando válida", () => {
   assert.match(app, /account\.tokenValid&&account\.accountMatches/);
-  assert.match(app, /linkEl\.hidden=valid/);
-  assert.match(html, /data-instagram-account-link="ragnar-one"/);
-  assert.match(html, /data-instagram-account-badge="globalplay-streaming"/);
+  assert.match(app, /valid\|\|paused\?"":/);
+  assert.match(html, /id="instagram-account-rows"/);
+  assert.doesNotMatch(html, /Global Play|Ragnar/);
 });

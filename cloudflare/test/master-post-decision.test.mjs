@@ -16,3 +16,10 @@ test("painel mostra botões Aprovar e Recusar com confirmação", () => {
   assert.match(app, /data-post-decision="rejected"/);
   assert.match(app, /window\.confirm\(question\)/);
 });
+
+test("menu do Master tem só os 6 itens combinados", () => {
+  const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
+  const nav = html.slice(html.indexOf("<nav>"), html.indexOf("</nav>"));
+  const views = [...nav.matchAll(/data-view="([^"]+)"/g)].map(m => m[1]);
+  assert.deepEqual(views, ["dashboard", "clients", "posts", "agents", "odin", "settings"]);
+});
