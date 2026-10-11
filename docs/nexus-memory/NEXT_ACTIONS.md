@@ -1,5 +1,10 @@
 # Próximas ações, em ordem
 
+## Standup CEO (2026-10-11)
+- Primeiro standup gravado em `empresa/standup/2026-10-11.md`. Só recomendação, nada enviado nem publicado.
+- Prioridade recomendada: Rodrigo envia as 3 primeiras mensagens aos cafés da lista, depois de conferir se a /demo tem posts do Café Brisa.
+- Falta o dado: quantas mensagens já foram enviadas e respostas recebidas.
+
 ## Próximo passo exato (2026-10-11 15h20 BRT)
 1. Conferir se o cron criou o cliente demo-cafe e se os agentes geraram posts com imagem (ver /api/demo/panel).
 2. Ajustar o texto "Contatos recentes" da tela Início no modo demonstração.
