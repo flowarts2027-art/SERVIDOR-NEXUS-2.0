@@ -1,5 +1,8 @@
 # Próximas ações, em ordem
 
+## Próximo passo exato (2026-10-11 manhã)
+- Auditoria dos painéis concluída em `AUDITORIA-PAINEIS.md`. Aguardando aprovação do proprietário para começar pelo painel do cliente novo (celular primeiro).
+
 ## Próximo passo exato (2026-10-10 noite)
 0. Campanha de 30 dias da Flow Arts ativa no código (profileVersion 2026-10-11e). Conferir no painel os posts do dia com formato da campanha; pedir ao proprietário o token do GitHub para os Reels.
 1. (Feito 2026-10-10) Token Instagram da Flow Arts confirmado válido.
