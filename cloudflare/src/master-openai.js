@@ -107,6 +107,26 @@ async function fetchCosts(key, startTime, endTime) {
   return Number(total.toFixed(6));
 }
 
+// Saldo pré-pago: a OpenAI não tem rota oficial (resposta do suporte em 09/2026).
+// Tentamos a rota não oficial de créditos; se ela recusar, fica a estimativa.
+export async function fetchCreditBalance(keys = [], request = fetch) {
+  for (const key of keys.filter(Boolean)) {
+    try {
+      const response = await request("https://api.openai.com/v1/dashboard/billing/credit_grants", {
+        headers: { authorization: "Bearer " + key, "user-agent": "Servidor-Nexus/1.0" },
+        signal: AbortSignal.timeout(8000)
+      });
+      if (!response.ok) continue;
+      const data = await response.json().catch(() => ({}));
+      const value = Number(data?.total_available);
+      if (Number.isFinite(value) && value >= 0) return Number(value.toFixed(6));
+    } catch {
+      // tenta a próxima chave
+    }
+  }
+  return null;
+}
+
 async function summary(env) {
   const current = await record(env);
   const pKey = await projectKey(env, current);
@@ -133,10 +153,12 @@ async function summary(env) {
   }
 
   const budgetConfigured = Number.isFinite(monthlyBudgetUsd) && monthlyBudgetUsd > 0;
-  const balanceEstimatedUsd =
+  const exactBalanceUsd = await fetchCreditBalance([aKey, pKey]).catch(() => null);
+  const estimatedFromBaseline =
     Number.isFinite(baselineUsd) && baselineAt > 0 && Number.isFinite(baselineCostUsd)
       ? Math.max(0, Number((baselineUsd - baselineCostUsd).toFixed(6)))
       : null;
+  const balanceEstimatedUsd = exactBalanceUsd != null ? exactBalanceUsd : estimatedFromBaseline;
   const budgetRemainingUsd =
     budgetConfigured && Number.isFinite(monthCostUsd)
       ? Math.max(0, Number((monthlyBudgetUsd - monthCostUsd).toFixed(6)))
@@ -157,7 +179,8 @@ async function summary(env) {
     monthlyBudgetUsd: budgetConfigured ? monthlyBudgetUsd : null,
     budgetRemainingUsd,
     budgetPercent,
-    exactPrepaidBalanceAvailable: false,
+    exactPrepaidBalanceAvailable: exactBalanceUsd != null,
+    balanceSource: exactBalanceUsd != null ? "openai" : (estimatedFromBaseline != null ? "estimate" : "none"),
     ragnarExcluded: true,
     projectKeySource: String(env.OPENAI_API_KEY_SHARED || "").trim() ? "cloudflare-secret" : "master-panel",
     adminKeySource: String(env.OPENAI_ADMIN_KEY || "").trim() ? "cloudflare-secret" : (aKey ? "master-panel" : "none"),

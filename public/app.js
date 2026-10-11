@@ -686,8 +686,10 @@ async function loadIntegrations() {
     const informedAt = openai.balanceBaselineAt
       ? new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(openai.balanceBaselineAt * 1000))
       : "";
-    $("#openai-balance-note").textContent = openai.balanceEstimatedUsd != null
-      ? "Você informou " + money(openai.balanceBaselineUsd) + " em " + informedAt + ". Este valor desconta o que foi gasto desde então. Ao recarregar a OpenAI, informe o novo saldo."
+    $("#openai-balance-note").textContent = openai.balanceSource === "openai"
+      ? "Saldo lido direto da OpenAI, automático."
+      : openai.balanceEstimatedUsd != null
+      ? "A OpenAI não liberou a leitura automática para esta chave. Você informou " + money(openai.balanceBaselineUsd) + " em " + informedAt + ". Este valor desconta o que foi gasto desde então. Ao recarregar a OpenAI, informe o novo saldo."
       : "A OpenAI não informa o saldo. Digite o saldo atual abaixo uma vez.";
     const budgetNote = $("#openai-budget-note");
     if (budgetNote) {
