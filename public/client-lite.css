@@ -219,6 +219,8 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .next-action { color: var(--ink) !important; font-weight: 700; }
 .lead-whats { grid-column: 1 / -1; min-height: 44px; margin-top: 6px; }
 
+.lead-remove { grid-column: 1 / -1; justify-self: start; color: var(--danger); font-size: .92rem; }
+
 /* Conta */
 .ig-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 #support-link { margin-top: 12px; width: 100%; }

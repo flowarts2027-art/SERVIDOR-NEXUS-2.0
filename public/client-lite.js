@@ -454,7 +454,31 @@ function landingLeadHtml(lead) {
     <p>${escapeHtml(c.business || "")}${c.segment ? " · " + escapeHtml(c.segment) : ""}</p>
     ${next.text ? `<p class="next-action">Próximo passo: ${escapeHtml(next.text)}${due ? " · até " + escapeHtml(due) : ""}</p>` : ""}
     ${digits ? `<a class="btn btn-whats lead-whats" href="https://wa.me/${escapeHtml(digits)}" target="_blank" rel="noopener">Chamar no WhatsApp</a>` : ""}
+    ${removeLeadButton(lead)}
   </div>`;
+}
+
+function removeLeadButton(lead) {
+  return lead.id ? `<button type="button" class="link lead-remove" data-discard-lead="${escapeHtml(lead.id)}">Remover contato</button>` : "";
+}
+
+// Remover contato em dois toques (o visualizador não mostra confirm()).
+async function discardLeadClick(button) {
+  if (button.dataset.armed !== "1") {
+    button.dataset.armed = "1";
+    button.textContent = "Toque de novo para remover";
+    setTimeout(() => { if (button.isConnected) { button.dataset.armed = ""; button.textContent = "Remover contato"; } }, 5000);
+    return;
+  }
+  button.disabled = true;
+  try {
+    await api("/api/portal/lead-hunter/leads/" + encodeURIComponent(button.dataset.discardLead) + "/discard", { method: "POST" });
+    toast("Contato removido.");
+    await loadAll();
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
 }
 
 function leadHtml(lead) {
@@ -466,6 +490,7 @@ function leadHtml(lead) {
     <strong>${user ? `<a href="https://www.instagram.com/${encodeURIComponent(user)}/" target="_blank" rel="noopener">@${escapeHtml(user)}</a>` : "Contato"}</strong>
     <span class="temp temp-${temp}">${label}</span>
     <p>${escapeHtml(lead.lastMessage || lead.intent || "Mostrou interesse")}${lead.lastContactAt || lead.updatedAt ? " · " + escapeHtml(formatDate(lead.lastContactAt || lead.updatedAt)) : ""}</p>
+    ${removeLeadButton(lead)}
   </div>`;
 }
 
@@ -604,7 +629,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-connect], #logout")) {
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-connect], [data-discard-lead], #logout")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -614,6 +639,8 @@ document.addEventListener("click", event => {
   if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
   const go = target.closest("[data-go]");
   if (go) { showTab(go.dataset.go); return; }
+  const discard = target.closest("[data-discard-lead]");
+  if (discard) { discardLeadClick(discard); return; }
   const calDay = target.closest("[data-cal-day]");
   if (calDay) {
     state.calDay = calDay.dataset.calDay;
