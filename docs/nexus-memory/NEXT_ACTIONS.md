@@ -14,6 +14,14 @@
 - Funil EU QUERO: o Nexus não responde comentários nem DM; construir resposta automática (private reply) com link wa.me/5521964816185 e descobrir de onde vem o texto que leva ao site da Global Play.
 - `globalplay-streaming` segue online (travado para publicar); sugerir pausar.
 
+## Ideias da Castilho IA (2026-10-11 14h BRT, só leitura dos títulos; artigos exigem cadastro)
+Pedido do Rodrigo: ver o que dá para trazer do blog castilhoia.com para o Nexus (CRM + Instagram). Nada implementado ainda.
+- Página de material grátis da Flow Arts com cadastro (nome, WhatsApp, segmento) gravando no CRM.
+- CRM com "próxima ação" e data em cada contato (follow-up de 7 dias).
+- Regra "a IA não inventa" também nas respostas de DM e WhatsApp.
+- Comentário com palavra-chave → material na DM (já existe; depende do acesso da Meta).
+- Inspiração apenas; não copiar textos do site.
+
 ## Próximo passo exato (2026-10-10 noite)
 0. Campanha de 30 dias da Flow Arts ativa no código (profileVersion 2026-10-11e). Conferir no painel os posts do dia com formato da campanha; pedir ao proprietário o token do GitHub para os Reels.
 1. (Feito 2026-10-10) Token Instagram da Flow Arts confirmado válido.
