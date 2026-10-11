@@ -14,6 +14,12 @@
 - Funil EU QUERO: o Nexus não responde comentários nem DM; construir resposta automática (private reply) com link wa.me/5521964816185 e descobrir de onde vem o texto que leva ao site da Global Play.
 - `globalplay-streaming` segue online (travado para publicar); sugerir pausar.
 
+## Análise de 3 artigos Castilho IA (2026-10-11 15h BRT) — Rodrigo quer empreender
+Pedido: "analise e agregue o que vai nos ajudar". Nada implementado ainda; aguardando escolha do Rodrigo.
+- FORJA (números → estratégia → calendário cheio): Nexus já tem estratégia (.agents/product-marketing.md) e calendário cheio (campanha + calendário no painel). Falta o ciclo de números: relatório semanal "quais posts trouxeram seguidores" e pesos por pilar. Requer adicionar `instagram_business_manage_insights` ao caso de uso do app Meta.
+- 7 repositórios/7 ofertas: lição de negócio = vender resultado, setup + mensalidade, limites por escrito, revisão humana, testar custo de API antes de precificar. A oferta da Flow Arts equivale à "operação de conteúdo". Plano de 7 dias: demo com cliente fictício → 10 negócios reais → 10 mensagens (Rodrigo aprova) → reuniões. Preços: Rodrigo decide; não usar as faixas em dólar do artigo.
+- Startup OS (7 departamentos): montar versão própria (sem copiar prompts) começando por CEO + Marketing + Vendas, com empresa/visao.md, metricas.md, decisoes.md e standup diário.
+
 ## Ideias da Castilho IA (2026-10-11 14h BRT, só leitura dos títulos; artigos exigem cadastro)
 Pedido do Rodrigo: ver o que dá para trazer do blog castilhoia.com para o Nexus (CRM + Instagram). Nada implementado ainda.
 - Página de material grátis da Flow Arts com cadastro (nome, WhatsApp, segmento) gravando no CRM.
