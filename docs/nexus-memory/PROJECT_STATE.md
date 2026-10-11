@@ -5,6 +5,7 @@
 - Constatado no código: o Nexus não responde comentários nem envia DM. O texto que leva para o site da Global Play não vem do Nexus (origem a confirmar com o proprietário).
 - Painel do cliente refeito; testes locais 242/242.
 - Saldo OpenAI: a API não expõe saldo pré-pago; o Master estima saldo = último saldo informado − custo real desde então (Admin API). Base antiga US$ 3,12 (01/10) já consumida (gasto US$ 3,51) → mostrava 0. Registrado novo saldo informado pelo proprietário: US$ 5,53 em 2026-10-11 ~06:40. Texto do painel explica a estimativa.
+- Leitura automática do saldo: implementada tentativa na rota não oficial `/v1/dashboard/billing/credit_grants` (Admin key do painel e project key). Em produção (deploy b3159df) a OpenAI recusou as duas chaves → `balanceSource: estimate`. Sem rota oficial (suporte OpenAI, 09/2026). O proprietário só precisa informar o saldo após recargas.
 
 ## 2026-10-10 ~21h30 BRT — repositório novo, trava das contas de streaming, Flow Arts
 - Código completo enviado para `flowarts2027-art/SERVIDOR-NEXUS-2.0` (merge com o histórico de recuperação, sem force-push). README antigo de recuperação movido para `docs/RECUPERACAO-ESTADO.md`.
