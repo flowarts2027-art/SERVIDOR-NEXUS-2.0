@@ -1,5 +1,9 @@
 # Estado do Nexus 2.0
 
+## 2026-10-11 ~07h BRT — Global Play encerrada
+- A pedido do proprietário: `globalplay-streaming` com status `paused` e 48 postagens não publicadas apagadas (fila, falhas e vencidas) + 1 trabalho agendado, pela rota nova `POST /api/master/clients/:id/clear-pending-posts`. Restam só 12 registros publicados (histórico; os posts continuam no Instagram).
+- Ragnar One (já pausado) ainda tem 1 pronta e 53 vencidas; aguardando decisão do proprietário.
+
 ## 2026-10-11 manhã — painel do cliente novo
 - Proprietário aprovou a lista da auditoria e passou o WhatsApp 21964816185.
 - Constatado no código: o Nexus não responde comentários nem envia DM. O texto que leva para o site da Global Play não vem do Nexus (origem a confirmar com o proprietário).
