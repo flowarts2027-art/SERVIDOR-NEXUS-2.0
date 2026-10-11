@@ -30,7 +30,7 @@ import { enrichVerifiedFilmPresentation } from "./video-metadata-enrichment.js";
 import { clientInsights } from "./insights.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { instagramSnapshot } from "./agent-runtime.js";
-import { whatsappLink, clientBrand, brandProfileVersion } from "./client-brand.js";
+import { whatsappLink, clientBrand, brandProfileVersion, DEMO_CLIENT_ID } from "./client-brand.js";
 import { campaignCalendar } from "./flowarts-campaign.js";
 
 function json(data, status = 200, headers = {}) {
@@ -493,7 +493,57 @@ async function listPosts(env, clientId) {
   }));
 }
 
+// Painel de demonstração público (negócio fictício). Só leitura, só campos seguros.
+export function demoPostView(post = {}) {
+  const https = value => /^https:\/\//i.test(String(value || "")) ? String(value) : "";
+  const build = post.formatBuild && typeof post.formatBuild === "object" ? post.formatBuild : {};
+  return {
+    id: String(post.id || ""),
+    status: String(post.status || ""),
+    approvalStatus: String(post.approvalStatus || ""),
+    scheduledFor: post.scheduledFor || null,
+    publishedAt: post.publishedAt || null,
+    updatedAt: post.updatedAt || null,
+    caption: String(post.caption || "").slice(0, 2200),
+    imageUrl: https(post.imageUrl || post.publicImageUrl),
+    formatBuild: {
+      kind: String(build.kind || ""),
+      imageUrl: https(build.imageUrl),
+      carouselUrls: (Array.isArray(build.carouselUrls) ? build.carouselUrls : []).map(https).filter(Boolean).slice(0, 10)
+    },
+    creativeFeatures: { requestedFormat: String(post.creativeFeatures?.requestedFormat || "") }
+  };
+}
+
+async function demoPanel(env, ctx, url) {
+  const cache = typeof caches !== "undefined" ? caches.default : null;
+  const key = new Request(url.origin + "/api/demo/panel");
+  const hit = cache ? await cache.match(key).catch(() => null) : null;
+  if (hit) return hit;
+  const posts = (await listPosts(env, DEMO_CLIENT_ID).catch(() => []))
+    .filter(post => !["expired", "cancelled"].includes(String(post.status)) && String(post.approvalStatus) !== "rejected")
+    .slice(0, 40)
+    .map(demoPostView);
+  const owner = { id: "primeiro-teste", name: "Flow Arts", config: {} };
+  const response = json({
+    ok: true,
+    demo: true,
+    client: { displayName: clientBrand({ id: DEMO_CLIENT_ID }).brandName },
+    posts,
+    whatsapp: whatsappLink(owner, "Olá! Vi a demonstração do painel da Flow Arts e quero isso para o meu negócio.")
+  }, 200, { "cache-control": "public, max-age=300" });
+  if (cache) ctx?.waitUntil?.(cache.put(key, response.clone()).catch(() => null));
+  return response;
+}
+
 export async function handlePortalApi(request, env, url, ctx) {
+  if (url.pathname === "/api/demo/panel" && request.method === "GET") {
+    return demoPanel(env, ctx, url);
+  }
+  if ((url.pathname === "/demo" || url.pathname === "/demo/") && request.method === "GET") {
+    return redirect("/portal.html?demo=1");
+  }
+
   const instagramCallback = await handleInstagramOAuthCallback(env, request, url);
   if (instagramCallback) return instagramCallback;
 

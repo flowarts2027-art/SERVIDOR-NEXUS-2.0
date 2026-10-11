@@ -2,7 +2,48 @@
 // Usado para gerar imagens e textos com o assunto certo de cada cliente.
 // O nome e o nicho salvos no painel (agentProfile) sempre têm prioridade.
 
+export const DEMO_CLIENT_ID = "demo-cafe";
+
 export const CLIENT_BRAND_DEFAULTS = Object.freeze({
+  // Negócio FICTÍCIO usado como demonstração da Flow Arts (painel público /demo).
+  // Nunca publica no Instagram (BLOCKED_PUBLISH_CLIENTS em publisher.js).
+  "demo-cafe": Object.freeze({
+    profileVersion: "2026-10-11-demo1",
+    brandName: "Café Brisa",
+    niche: "Cafeteria de bairro",
+    audience: "Moradores e quem trabalha perto, no Rio de Janeiro, que gostam de um café caprichado e um lanche rápido",
+    whatsapp: "",
+    offer: "Café especial, pão de queijo, bolos caseiros e lanches rápidos, para comer no local ou levar",
+    cta: "Salve este post e marque quem vai tomar um café com você.",
+    hashtags: "#CafeBrisa #CafeNoRio #CafeEspecial #RioDeJaneiro #CafeDaManha",
+    followerCta: "Siga o Café Brisa para ver as novidades da semana.",
+    contentFocus: "Mostrar os produtos do café com fotos apetitosas, a rotina do balcão e convites simples para visitar; negócio fictício de demonstração, sem endereço, preço ou promoção reais",
+    morningTheme: "Café da manhã: café coado, pão de queijo e o começo do dia",
+    afternoonTheme: "Pausa da tarde: bolo caseiro e café gelado",
+    eveningTheme: "Bastidores do café e convite para voltar amanhã",
+    tone: "Acolhedor, leve e carioca; frases curtas",
+    themes: Object.freeze([
+      "O café coado da manhã",
+      "Pão de queijo saindo do forno",
+      "Bolo caseiro do dia",
+      "Café gelado para a tarde quente",
+      "Bastidores: como preparamos o café",
+      "Combinação perfeita: café e pão na chapa",
+      "Cantinho para trabalhar com calma",
+      "Dica: como escolher o grão do seu café"
+    ]),
+    hooks: Object.freeze([
+      "Esse cheirinho você sente daqui?",
+      "O melhor jeito de começar o dia.",
+      "Pausa da tarde merece isso.",
+      "Você sabia que o café muda com o grão?",
+      "Saindo do forno agora."
+    ]),
+    avoidRules: "Negócio fictício de demonstração: nunca citar endereço, telefone, preço, promoção ou horário real. Nunca citar outras marcas. Nunca inventar avaliações ou depoimentos.",
+    painPoints: Object.freeze([]),
+    objections: Object.freeze([]),
+    visualDirection: "Photorealistic, warm and appetizing scenes of a small neighborhood café in Rio de Janeiro: coffee cups with latte art, fresh cheese bread, homemade cake slices, a wooden counter, soft morning light, plants and tiles. One clear scene, no text, no logos, no people's faces in close-up."
+  }),
   // @flowarts2026 — cadastrado no painel como "PRIMEIRO TESTE".
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão

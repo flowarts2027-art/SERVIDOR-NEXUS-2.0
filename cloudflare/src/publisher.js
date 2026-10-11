@@ -2,7 +2,8 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 
 // Contas antigas de streaming desligadas em 2026-10-10 a pedido do proprietário.
 // Nenhuma publicação no Instagram pode sair para elas, por nenhum caminho.
-export const BLOCKED_PUBLISH_CLIENTS = Object.freeze(new Set(["ragnar-one", "globalplay-streaming", "global-play-streaming"]));
+// demo-cafe: negócio fictício de demonstração (painel público /demo), nunca publica.
+export const BLOCKED_PUBLISH_CLIENTS = Object.freeze(new Set(["ragnar-one", "globalplay-streaming", "global-play-streaming", "demo-cafe"]));
 
 export function assertClientMayPublish(clientId) {
   if (BLOCKED_PUBLISH_CLIENTS.has(String(clientId || "").trim())) {

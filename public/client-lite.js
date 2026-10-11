@@ -5,6 +5,10 @@
 const $ = selector => document.querySelector(selector);
 const $$ = selector => Array.from(document.querySelectorAll(selector));
 
+// Demonstração pública (/demo): negócio fictício, só leitura.
+const DEMO = new URLSearchParams(window.location.search).get("demo") === "1";
+const DEMO_BLOCKED = "Isto é uma demonstração. No painel de verdade, este botão funciona.";
+
 const state = {
   client: null,
   posts: [],
@@ -366,6 +370,10 @@ function renderInsights() {
   const box = $("#insights");
   const data = state.insights;
   if (!data) { box.innerHTML = `<p class="muted">Carregando números…</p>`; return; }
+  if (!data.ok && data.error === "demo") {
+    box.innerHTML = `<div class="empty"><strong>Números reais aparecem aqui</strong>No painel de verdade, você vê seguidores, alcance, curtidas e salvamentos de cada post, direto da Meta.</div>`;
+    return;
+  }
   if (!data.ok) {
     box.innerHTML = `<div class="empty"><strong>${data.error === "instagram_not_connected" ? "Instagram não conectado" : "Números indisponíveis agora"}</strong>${
       data.error === "instagram_not_connected"
@@ -425,13 +433,22 @@ function leadHtml(lead) {
 function renderLeads() {
   $("#lead-list").innerHTML = state.leads.length
     ? state.leads.map(leadHtml).join("")
-    : `<div class="empty"><strong>Nenhum contato ainda</strong>Quando alguém comentar nos seus posts pedindo informação, a pessoa aparece aqui.</div>`;
+    : DEMO
+      ? `<div class="empty"><strong>Seus contatos aparecem aqui</strong>Quem comentar nos posts pedindo informação vira um contato, com o próximo passo para você responder.</div>`
+      : `<div class="empty"><strong>Nenhum contato ainda</strong>Quando alguém comentar nos seus posts pedindo informação, a pessoa aparece aqui.</div>`;
 }
 
 /* ---------- Conta ---------- */
 
 function renderAccount() {
   const ig = state.connection || {};
+  if (ig.demo) {
+    $("#instagram-box").innerHTML = `<h2>Instagram</h2>
+      <p class="muted" style="margin:8px 0 0">Conta de exemplo. Na demonstração, nada é publicado no Instagram.</p>`;
+    const demoLink = $("#support-link");
+    if (state.contact) { demoLink.href = state.contact; demoLink.hidden = false; } else { demoLink.hidden = true; }
+    return;
+  }
   $("#instagram-box").innerHTML = `<h2>Instagram</h2>
     <div class="ig-row">
       <div>
@@ -449,6 +466,7 @@ function renderAccount() {
 /* ---------- Carregar e navegar ---------- */
 
 async function loadAll() {
+  if (DEMO) { await loadDemo(); return; }
   const results = await Promise.allSettled([
     api("/api/portal/posts"),
     api("/api/portal/connections"),
@@ -547,6 +565,12 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-connect], #logout")) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    toast(DEMO_BLOCKED);
+    return;
+  }
   const tabBtn = target.closest(".tabbar [data-tab]");
   if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
   const go = target.closest("[data-go]");
@@ -584,13 +608,48 @@ document.addEventListener("click", event => {
 
 document.addEventListener("submit", event => {
   const form = event.target;
+  if (DEMO) { event.preventDefault(); toast(DEMO_BLOCKED); return; }
   if (form instanceof HTMLFormElement && form.dataset.revisionForm) {
     event.preventDefault();
     sendRevision(form);
   }
 });
 
+async function bootDemo() {
+  document.title = "Demonstração · Painel Flow Arts";
+  const banner = document.createElement("p");
+  banner.className = "demo-banner";
+  banner.textContent = "Demonstração com um café fictício. Os posts foram criados pelos agentes de IA da Flow Arts.";
+  $(".top-inner")?.after(banner);
+  if ($("#logout")) $("#logout").hidden = true;
+  showApp({ displayName: "Café Brisa" });
+  await loadDemo();
+  const link = $("#support-link");
+  if (link) link.textContent = "Quero isso no meu negócio";
+  const help = link?.previousElementSibling;
+  if (help) help.textContent = "Gostou? Fale com a Flow Arts pelo WhatsApp e peça um exemplo grátis.";
+  const title = help?.previousElementSibling;
+  if (title) title.textContent = "Quer isso no seu negócio?";
+  showTab("inicio");
+}
+
+async function loadDemo() {
+  try {
+    const data = await api("/api/demo/panel");
+    state.posts = Array.isArray(data.posts) ? data.posts : [];
+    state.contact = safeUrl(data.whatsapp);
+    if (data.client) state.client = data.client;
+  } catch {
+    toast("Não foi possível carregar a demonstração. Tente de novo.");
+  }
+  state.connection = { connected: true, username: "cafebrisa", demo: true };
+  state.insights = { ok: false, error: "demo" };
+  state.leads = [];
+  renderAll();
+}
+
 async function boot() {
+  if (DEMO) { bootDemo(); return; }
   try {
     const data = await api("/api/portal/session", { signal: AbortSignal.timeout(8000) });
     showApp(data.client || data);

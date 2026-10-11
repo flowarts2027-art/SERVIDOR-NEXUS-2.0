@@ -20,6 +20,7 @@ import { emergencyPublisherStatus, isD1Emergency, runEmergencyPublisher } from "
 import { emergencyPublisherDiagnostic } from "./emergency-publisher-diagnostic.js";
 import { handleSocialFormatRenderCallback } from "./format-builder.js";
 import { runCommentAutoReplies } from "./comment-autoreply.js";
+import { ensureDemoClient } from "./demo-client.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -517,6 +518,10 @@ export default {
     // Poster discovery runs independently; failures must never block Instagram cron.
     ctx.waitUntil(warmYoutubePosterLibrary(env, at).catch(error =>
       console.warn("youtube_poster_library_refresh_failed", String(error?.message || error).slice(0, 140))
+    ));
+    // Café Brisa (demonstração): cria uma vez e pausa ao chegar no limite de posts.
+    ctx.waitUntil(ensureDemoClient(env).catch(error =>
+      console.warn("demo_client_failed", String(error?.message || error).slice(0, 140))
     ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
