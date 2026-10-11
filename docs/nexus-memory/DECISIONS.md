@@ -1,5 +1,14 @@
 # Decisões e limites
 
+## 2026-10-11 15h — Oferta "Instagram no Automático" (Flow Arts)
+- Rodrigo pediu que Claude decidisse para começar ("depois eu modifico o valor").
+- 12 posts/mês (4 Reels, 4 carrosséis, 4 posts); entrada R$ 297 + mensalidade R$ 697; preço de fundador para os 3 primeiros clientes, travado por 6 meses; sem fidelidade (aviso de 30 dias); Pix mensal.
+- Base: mercado BR, pacote básico de 8–12 posts entre R$ 800 e R$ 1.500/mês (Jamile Fernandes 2026; mLabs).
+- Não vender ainda: auto-resposta a comentários e conexão sem convite (dependem de App Review da Meta). Posts continuam sem citar preços.
+- Documento: Claude Docs "Oferta Flow Arts — Instagram no Automático" (artifact 57da9395-b2c3-40c3-8b58-ad40e0f482b6).
+- Pendente: medir custo de OpenAI por cliente durante 1 semana antes do primeiro contrato.
+
+
 ## 2026-10-11 — perfil de marketing da Flow Arts
 - Criado `.agents/product-marketing.md` (contexto de marketing da Flow Arts), a partir de `client-brand.js` e respostas do proprietário.
 - Sem pacotes/preços definidos: posts não citam valores. Concorrentes não nomeados.
