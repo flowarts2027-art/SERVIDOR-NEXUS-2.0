@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- feat (ff7e4fb, deploy ~15h53 BRT): "Lembrar a senha" no login do Master (novo) e autopreenchimento no login do cliente, via gerenciador de senhas do navegador (Credential Management API). Pedido do Rodrigo.
+- Card de custo conferido no ar às 15h49: US$ 2,75 em 7 dias, 2 posts com imagem → US$ 1,37/post, US$ 16,49 para 12 posts/mês (superestimado: inclui gasto da Global Play e imagens refeitas). Café Brisa aparece online no Master (2.045 tokens, 0 posts).
 - feat (4e35a10, deploy ~15h50 BRT): card "Custo da IA por cliente" no Master (GET /api/master/openai/cost-report?days=7): custo real OpenAI (chave admin) ÷ posts com imagem; custo por post e de 1 cliente com 12 posts/mês. Valores reais ainda não conferidos (precisa de login no Master).
 - fix (561ba2b + 3ebec79, deploy ~15h45 BRT): Rodrigo apontou post de 12/10 12:00 ruim (tema repetido de 11/10 e tela do notebook/objetos só com blocos de cor). Causas: Criador usava o tema do dia de hoje para posts de amanhã; prompt "sem texto" gerava telas vazias; cenas pediam "abstrato" e "amostras de cor". Agora: tema pelo dia do post; 8 cenas que se revezam (Marina só em 1); telas com feed/painel realistas e proibição de blocos de cor. profileVersion 2026-10-11f refaz rascunhos não aprovados. Resultado visual ainda não conferido.
 - feat (a3aa935, deploy ~15h28 BRT): relatório FORJA "Posts que trouxeram seguidores" na aba Números; snapshot pede follows/profile_visits dos 3 posts mais recentes (não Reels); Radar pesa follows x10 e visitas x2. Ainda não confirmado se a Meta devolve follows para a Flow Arts (só 2 seguidores).
