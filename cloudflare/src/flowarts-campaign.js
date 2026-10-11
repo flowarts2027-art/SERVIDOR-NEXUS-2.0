@@ -97,13 +97,13 @@ const VISUAL_BY_FORMAT = {
 // A Marina (persona) aparece só em parte delas.
 const SCENES = [
   "close-up of a small business product beautifully photographed on a clean counter (coffee, pastry, cosmetics or clothing), no people",
-  "a phone held in a hand showing an abstract, unreadable Instagram-style grid of bright product photos, shallow depth of field",
-  "a modern small storefront in Rio de Janeiro at golden hour, inviting entrance, no readable signs",
-  "flat-lay top view of a desk with a laptop showing abstract charts, a notebook, coffee and color swatches in navy, electric blue and silver, no people",
-  "the owner of a small café or salon smiling while checking a phone behind the counter, candid, natural light",
-  "Marina, a friendly professional woman with curly dark hair in a navy blazer, explaining something on a tablet to a small business owner",
-  "a before-and-after style split of the same product: plain amateur photo on the left, bright professional photo on the right, no text",
-  "abstract visual of automation: soft glowing navy and electric blue light trails connecting small icons of a shop, a phone and a chat bubble, no text"
+  "a hand holding a phone that clearly shows an Instagram profile feed full of bright, appetizing photos of a local café's coffee and cakes",
+  "a modern small storefront in Rio de Janeiro at golden hour, inviting entrance with real products in the window",
+  "top view of a work desk: a laptop showing a social media analytics dashboard with real-looking line charts, bar charts and photo thumbnails, a smartphone showing a photo feed, printed product photos, a camera and a cup of coffee, no people",
+  "the owner of a small café or salon smiling while checking a phone behind the counter, real products around, candid natural light",
+  "Marina, a friendly professional woman with curly dark hair in a navy blazer, showing a tablet with a colorful Instagram feed of a client's products to a small business owner",
+  "before-and-after of the same product: on the left a dull, dark amateur phone photo, on the right a bright professional photo of it, side by side on a table",
+  "a café owner holding a phone with a chat full of new customer messages, happy customers at tables in the background"
 ];
 
 function campaignDayIndex(date = new Date()) {
