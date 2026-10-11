@@ -249,8 +249,12 @@ function renderPostLedger() {
     const detail = post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
     const image = /^https:\/\//i.test(String(post.imageUrl || "")) ? String(post.imageUrl) : "";
     const caption = String(post.caption || "").trim();
-    const approval = String(post.approvalStatus || "") === "approved" ? "Aprovado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
-    const preview = `<div class="post-preview">${image ? `<a href="${escapeHtml(image)}" target="_blank" rel="noopener"><img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy"></a>` : '<span class="post-preview-empty">Sem imagem</span>'}${caption ? `<details><summary>Ver legenda</summary><p>${escapeHtml(caption).replace(/\n/g, "<br>")}</p></details>` : ""}${approval ? `<small>${approval}</small>` : ""}</div>`;
+    const approval = String(post.approvalStatus || "") === "approved" ? "Aprovado · publica no horário" : String(post.approvalStatus || "") === "rejected" ? "Recusado · não será publicado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
+    const canDecide = ["ready", "scheduled"].includes(String(post.status || "")) && String(post.approvalStatus || "") !== "approved";
+    const decisionButtons = canDecide
+      ? `<div class="post-decision"><button type="button" class="post-approve" data-post-decision="approved" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✓ Aprovar</button><button type="button" class="post-reject" data-post-decision="rejected" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✕ Recusar</button></div>`
+      : "";
+    const preview = `<div class="post-preview">${image ? `<a href="${escapeHtml(image)}" target="_blank" rel="noopener"><img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy"></a>` : '<span class="post-preview-empty">Sem imagem</span>'}${caption ? `<details><summary>Ver legenda</summary><p>${escapeHtml(caption).replace(/\n/g, "<br>")}</p></details>` : ""}${approval ? `<small>${approval}</small>` : ""}${decisionButtons}</div>`;
     return `<tr>
       <td>${preview}</td>
       <td><strong>${escapeHtml(post.clientName || post.clientId)}</strong></td>
@@ -264,6 +268,32 @@ function renderPostLedger() {
     </tr>`;
   }).join("") : '<tr><td colspan="9">Nenhuma postagem registrada para este filtro.</td></tr>';
 }
+
+async function decideMasterPost(button) {
+  const decision = button.dataset.postDecision;
+  const question = decision === "approved"
+    ? "Aprovar este post? Ele será publicado no Instagram no horário marcado."
+    : "Recusar este post? Ele não será publicado.";
+  if (!window.confirm(question)) return;
+  const row = button.closest(".post-decision");
+  row?.querySelectorAll("button").forEach(item => { item.disabled = true; });
+  try {
+    await api("/api/master/posts/decision", {
+      method: "POST",
+      body: JSON.stringify({ clientId: button.dataset.clientId, postId: button.dataset.postId, decision })
+    });
+    await loadPostLedger();
+  } catch (error) {
+    console.error(error);
+    window.alert("Não foi possível salvar a decisão. Tente de novo.");
+    row?.querySelectorAll("button").forEach(item => { item.disabled = false; });
+  }
+}
+
+document.addEventListener("click", event => {
+  const button = event.target instanceof Element ? event.target.closest("[data-post-decision]") : null;
+  if (button) decideMasterPost(button);
+});
 
 async function loadPostLedger() {
   try {

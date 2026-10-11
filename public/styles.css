@@ -116,3 +116,8 @@
 .post-preview details summary{cursor:pointer;font-size:12px}
 .post-preview details p{font-size:12px;line-height:1.4;white-space:normal;margin:6px 0 0}
 .post-preview-empty{font-size:12px;opacity:.7}
+.post-decision{display:flex;gap:6px;flex-wrap:wrap}
+.post-decision button{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid currentColor;background:transparent;cursor:pointer}
+.post-decision .post-approve{color:#22c55e}
+.post-decision .post-reject{color:#f87171}
+.post-decision button:disabled{opacity:.5;cursor:wait}

@@ -9,6 +9,8 @@
 - feat: Flow Arts liberada para gerar imagens próprias com IA (`IMAGE_GENERATION_CLIENTS`).
 - fix: palavras de comentário/CTA ("quero", "comente", "conteudo") não viram tema; sem 3 temas úteis, usa os temas do perfil.
 - feat: painel Master › Postagens & custos mostra prévia (imagem + legenda + aprovação).
+- feat: botões Aprovar/Recusar no painel Master (`POST /api/master/posts/decision`, usa `decidePost`). Aprovado = Publisher publica no horário após Copy Chief e Designer aprovarem.
+- feat: rascunhos não aprovados da Flow Arts feitos antes do perfil de marca (`profileVersion`) são apagados e refeitos pelo Creator.
 
 
 ## 2026-10-10 — limpeza de legado da raiz (executada localmente, não implantada)

@@ -19,6 +19,7 @@ import { masterLeadSummary } from "./leads.js";
 import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { addDirective, createCampaign, masterWorkspace, updateCampaign } from "./master-workspace.js";
 import { handleMasterOpenAI } from "./master-openai.js";
+import { decidePost } from "./posts.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -712,6 +713,23 @@ export async function handleMaster(request, env, url) {
 
   if (url.pathname === "/api/master/posts" && request.method === "GET") {
     return json({ ok: true, posts: await allPosts(env) });
+  }
+
+  // Aprovar ou recusar um post criado pelos agentes (botões do painel Master).
+  if (url.pathname === "/api/master/posts/decision" && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    const clientId = String(body?.clientId || "").trim();
+    const postId = String(body?.postId || "").trim();
+    const decision = String(body?.decision || "").trim().toLowerCase();
+    if (!clientId || !postId) return json({ error: "client_and_post_required" }, 400);
+    const client = await getClient(env, clientId);
+    if (!client) return json({ error: "client_not_found" }, 404);
+    try {
+      return json(await decidePost(env, client, postId, decision));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      return json({ error: code }, code === "not_found" ? 404 : 400);
+    }
   }
 
   if (url.pathname === "/api/master/leads" && request.method === "GET") {

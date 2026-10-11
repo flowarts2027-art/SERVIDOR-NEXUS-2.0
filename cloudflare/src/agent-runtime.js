@@ -21,7 +21,7 @@ import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } f
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
-import { clientBrand, IMAGE_GENERATION_CLIENTS, usefulThemeTerms } from "./client-brand.js";
+import { clientBrand, IMAGE_GENERATION_CLIENTS, usefulThemeTerms, brandProfileVersion, isOutdatedBrandDraft } from "./client-brand.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -848,9 +848,18 @@ async function runCreator(env,client,strategy,options) {
       :scheduleIso(time,index);
     const day=localDay(scheduledFor);
     const id="agentcore:"+client.id+":"+day+":"+String(time).replace(":","");
-    const exists=await env.DB.prepare(
+    let exists=await env.DB.prepare(
       "SELECT id,status,approval_status,caption,error,payload_json FROM post_ledger WHERE id=?1 LIMIT 1"
     ).bind(id).first();
+    if(exists&&isOutdatedBrandDraft(client.id,exists,parseJson(exists.payload_json,{}))){
+      // Rascunho não aprovado do perfil de marca antigo: libera o horário para um post novo.
+      await env.DB.prepare(
+        "DELETE FROM post_ledger WHERE id=?1 AND status='ready' AND COALESCE(approval_status,'')<>'approved'"
+      ).bind(id).run();
+      const freedDay=localDay(scheduledFor);
+      plannedByDay.set(freedDay,Math.max(0,(plannedByDay.get(freedDay)||0)-1));
+      exists=null;
+    }
     if(exists){
       const existingPayload=parseJson(exists.payload_json,{});
       const aiCreative=aiBatch[index]||null;
@@ -1091,7 +1100,8 @@ async function runCreator(env,client,strategy,options) {
               :"standard"
         }
       },
-      qualityGates:{copyChief:"pending",designer:"pending"}
+      qualityGates:{copyChief:"pending",designer:"pending"},
+      brandProfileVersion:brandProfileVersion(client.id)
     };
     await env.DB.prepare(
       "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,?4,'ready',?5,'',?6,'',?7,0,?8,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"

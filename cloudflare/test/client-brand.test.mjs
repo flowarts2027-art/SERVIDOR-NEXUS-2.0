@@ -43,3 +43,20 @@ test("Flow Arts pode gerar imagens próprias", () => {
 test("palavras de comentário não viram tema de post", () => {
   assert.deepEqual(usefulThemeTerms(["quero", "comente", "conteudo", "anúncios", "Instagram", "eu"]), ["anúncios", "Instagram"]);
 });
+
+import { isOutdatedBrandDraft, brandProfileVersion } from "../src/client-brand.js";
+
+test("rascunho antigo e não aprovado da Flow Arts é refeito", () => {
+  assert.equal(isOutdatedBrandDraft("primeiro-teste", { status: "ready", approval_status: "pending" }, {}), true);
+});
+
+test("post aprovado, publicado ou já na versão atual é mantido", () => {
+  const v = brandProfileVersion("primeiro-teste");
+  assert.equal(isOutdatedBrandDraft("primeiro-teste", { status: "ready", approval_status: "approved" }, {}), false);
+  assert.equal(isOutdatedBrandDraft("primeiro-teste", { status: "published", approval_status: "pending" }, {}), false);
+  assert.equal(isOutdatedBrandDraft("primeiro-teste", { status: "ready", approval_status: "pending" }, { brandProfileVersion: v }), false);
+});
+
+test("clientes sem perfil de marca não são afetados", () => {
+  assert.equal(isOutdatedBrandDraft("outro-cliente", { status: "ready", approval_status: "pending" }, {}), false);
+});

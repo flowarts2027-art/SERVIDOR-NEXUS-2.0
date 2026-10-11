@@ -5,6 +5,9 @@
 export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   // @flowarts2026 — cadastrado no painel como "PRIMEIRO TESTE".
   "primeiro-teste": Object.freeze({
+    // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
+    // anterior são refeitos pelo Creator no próximo ciclo.
+    profileVersion: "2026-10-11",
     brandName: "Flow Arts",
     niche: "Marketing digital",
     audience: "Pequenos empresários e empreendedores brasileiros",
@@ -61,4 +64,17 @@ export function usefulThemeTerms(terms = []) {
   return (Array.isArray(terms) ? terms : [])
     .map(term => String(term || "").trim())
     .filter(term => term.length >= 4 && !JUNK_THEME_WORDS.has(term.toLowerCase()));
+}
+
+export function brandProfileVersion(clientId) {
+  return text(CLIENT_BRAND_DEFAULTS[text(clientId)]?.profileVersion);
+}
+
+// Rascunho antigo, nunca aprovado nem publicado, feito antes do perfil atual.
+export function isOutdatedBrandDraft(clientId, row = {}, payload = {}) {
+  const version = brandProfileVersion(clientId);
+  if (!version) return false;
+  if (String(row.status || "") !== "ready") return false;
+  if (String(row.approval_status || "") === "approved") return false;
+  return text(payload?.brandProfileVersion) !== version;
 }
