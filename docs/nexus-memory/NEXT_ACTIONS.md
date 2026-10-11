@@ -12,7 +12,8 @@
 4. Medir o custo de OpenAI por cliente durante 1 semana (oferta R$ 297 + R$ 697).
 5. Conferir em /api/portal/insights se `follows`/`profileVisits` chegam (permissão instagram_business_manage_insights não está no caso de uso do app Meta).
 6. FEITO: departamentos CEO/Marketing/Vendas (e819ebf); standup do CEO rodou no PC (bd01d83).
-7. Publicar o app Meta: falta (a) Verificação da empresa "Rodrigo Carvalho" (2082464929068014, não verificada; Rodrigo envia documentos), (b) Verificação do acesso (provedor de tecnologia, depois da a), (c) Análise do app para instagram_business_manage_comments / manage_messages / manage_insights com vídeos de demonstração.
+7. Verificação da empresa na Meta (11/10 16h): Rodrigo começou com o CCMEI; a Meta pede documento com razão social + telefone. CCMEI não tem telefone; Cartão CNPJ tinha telefone antigo. Rodrigo atualizou o cadastro do MEI (telefone celular atual e e-mail flowarts2027@gmail.com) no Portal do Empreendedor; aguardar alguns dias até o Cartão CNPJ mostrar o telefone novo, então refazer a verificação com o Cartão CNPJ ("Documento fiscal da empresa") e site /privacidade (já mostra o CNPJ, commit 9ad6091).
+8. Publicar o app Meta: falta (a) Verificação da empresa "Rodrigo Carvalho" (2082464929068014, não verificada; Rodrigo envia documentos), (b) Verificação do acesso (provedor de tecnologia, depois da a), (c) Análise do app para instagram_business_manage_comments / manage_messages / manage_insights com vídeos de demonstração.
 
 ## Próximo passo exato (2026-10-11 14h BRT)
 1. Rodrigo reconecta o Instagram da Flow Arts pelo painel (logado como flowarts2026, aceitando todas as permissões).
