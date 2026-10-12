@@ -19,6 +19,6 @@
 - Ao terminar, atualize `docs/nexus-memory/` com o que foi feito de verdade e o próximo passo.
 
 ## Departamentos da Flow Arts (subagentes)
-- `.claude/agents/ceo.md`, `marketing.md`, `vendas.md`. Contexto comum em `empresa/visao.md` e `empresa/metricas.md`.
+- `.claude/agents/ceo.md`, `marketing.md`, `vendas.md`, `revisor.md` (o Revisor critica e confere fatos antes de chegar ao Rodrigo). Contexto comum em `empresa/visao.md` e `empresa/metricas.md`.
 - Standup diário: peça "CEO, rode o standup de hoje". O arquivo fica em `empresa/standup/`.
 - Eles só rascunham e recomendam. Publicar, enviar mensagem, gastar ou prometer algo ao cliente: só com o OK do Rodrigo.

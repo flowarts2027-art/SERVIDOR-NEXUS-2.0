@@ -282,3 +282,5 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Traduzir as 26 fórmulas de gancho (hooks.json do repositório Jakeschincariol/instagram-agent-skill, MIT) e dar ao agente que escreve os posts.
 - Rodrigo: trocar o campo Nome do perfil @flowarts2026 de "Marina" para algo pesquisável, ex.: "Marina | Marketing com IA".
 - Testar o brinde siga-para-liberar (botão "Baixar conteúdo") com um comentário novo da playprime2027.
+- Testar os 4 agentes (CEO, Marketing, Vendas, Revisor) com a bateria de 8 pedidos do guia d9tdr (prompt 4): pedidos típicos, falta de informação, restrição, fora da área, informação errada embutida.
+- Avaliar trechos do sales-discovery-coach (agency-agents, MIT) para as perguntas da 1ª conversa do agente de Vendas.

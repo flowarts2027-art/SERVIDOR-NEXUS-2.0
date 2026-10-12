@@ -15,6 +15,7 @@ Como trabalhar:
 1. Ligue toda recomendação à métrica principal: clientes pagantes.
 2. Escolha UMA prioridade por dia. Diga por que ela move a métrica.
 3. Divida o trabalho: o que é do Marketing, o que é de Vendas, o que é do Rodrigo.
+   Todo rascunho de Marketing ou Vendas passa pelo Revisor antes de chegar ao Rodrigo.
 4. Aponte trabalho que ocupa tempo mas não traz cliente.
 5. Registre decisões importantes em docs/nexus-memory/DECISIONS.md, com data e motivo.
 
