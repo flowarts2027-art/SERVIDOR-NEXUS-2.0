@@ -1,5 +1,12 @@
 # Estado do Nexus 2.0
 
+## 2026-10-12 ~16h40 BRT — WhatsApp parado na verificação da empresa
+- Master › WhatsApp mostra "Conectado"; Rodrigo ligou o robô. Webhook salvo na Meta (app Flow Arts WhatsApp, nome de exibição "Atendente Flow Arts"), campo messages assinado; URLs de privacidade/termos/exclusão preenchidas (flowarts.com.br).
+- Mensagem real do celular NÃO chegou: app não publicado só recebe webhooks de teste do painel. Publicar exige verificação da empresa do portfólio "Rodrigo Carvalho" (iniciada 11/10, envio pendente).
+- Bloqueio: a Meta não achou o telefone 5521964816185 no cartão CNPJ 65.299.616/0001-50 (Receita ainda mostra o número antigo, que o Rodrigo ainda tem). Rodrigo decidiu esperar a Receita atualizar; não enviou. Alternativa: enviar com o número antigo do cartão.
+- Pendências pequenas: (1) Política de Privacidade não cita mensagens de WhatsApp tratadas por IA — escrever trecho com OK do Rodrigo; (2) na aba WhatsApp, o painel da conversa aparece vazio com bordas quando nenhuma conversa está aberta (CSS `#wa-thread-wrap` ignora `hidden`) — corrigir com `#wa-thread-wrap[hidden]{display:none}`.
+- O dashboard da Cloudflare mostra o Worker ligado ao repositório antigo globalplay27/SERVIDOR-GLOBAL-PLAY (Workers Builds). Deploy atual vem do GitHub Actions do repositório novo; conferir se a integração antiga pode sobrescrever.
+
 ## 2026-10-12 ~16h10 BRT — correção: Master deslogava sozinho
 - Causa (introduzida no deploy 1b141f7): rotas /api/whatsapp/* aceitavam só Bearer NEXUS_SECRET_KEY; o Master usa cookie → 401 → api() do app.js redireciona para o login. O contador do menu chamava a rota ao abrir, então o painel deslogava em qualquer tela.
 - Correção 2c8217e: rotas aceitam resolveMasterSession (Bearer ou cookie); whatsapp-inbox.js tem helper próprio que nunca redireciona. Teste de regressão; 319/319. Deploy run 38295842935 com sucesso.

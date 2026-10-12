@@ -313,3 +313,9 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 4. Teste: Rodrigo manda "oi" do celular → aparece no Master › WhatsApp → ligar o robô → nova mensagem → conferir resposta real. Registrar evidência.
 5. Token permanente (usuário do sistema) e chip pré-pago como número de produção.
 6. Decidir se a IA oferece "Instagram que responde sozinho" (R$ 197).
+
+## 2026-10-12 tarde — WhatsApp: onde paramos
+1. Rodrigo: concluir verificação da empresa na Meta (Central de Segurança › Verificação da empresa › Continuar) com telefone igual ao do cartão CNPJ (PDF do cartão via Ctrl+P › Salvar como PDF).
+2. Depois de aprovada: Publicar o app Flow Arts WhatsApp; mandar "oi" do celular para o número de teste; conferir resposta do robô e a conversa no Master.
+3. Token permanente (usuário do sistema) antes de vencer o token de teste de 24 h; chip pré-pago como número de produção.
+4. Com OK: trecho de WhatsApp/IA na Política de Privacidade; correção do painel vazio na aba WhatsApp.
