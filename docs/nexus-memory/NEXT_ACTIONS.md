@@ -305,3 +305,11 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Global Play: continua travada (sem comprovação de licença). Rodrigo perguntou sobre IPTV; resposta: não fazemos marketing de IPTV sem licença. Sugerido: cláusula nos Termos + trava de nichos ilegais no Nexus (não feito, aguardando OK).
 - DEPOIS (Rodrigo pediu adiar): atendente de WhatsApp com IA. Precisa de chip novo (o número da API sai do app do celular), produto WhatsApp no app "Flow Arts Nexus", e trocar o texto antigo de whatsapp-agent.js ("uso próprio ou revenda") pelos prompts de Vendas/Qualificação do PDF (com "sou a assistente virtual" e passagem para humano).
 - Quando fechar o 1º cliente: criar perfil de marca dele (client-brand.js) para ganhar gancho na imagem, legendas com dicas, brinde no direct e Revisor.
+
+## 2026-10-12 — WhatsApp: próximos passos
+1. Rodrigo dá OK → merge da branch `feat/whatsapp-atendente` na main (deploy automático).
+2. Rodrigo digita na Cloudflare: WHATSAPP_VERIFY_TOKEN, WHATSAPP_ACCESS_TOKEN (teste), WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_APP_SECRET (app Flow Arts WhatsApp).
+3. Meta: webhook /api/whatsapp/webhook com o verify token; assinar `messages`.
+4. Teste: Rodrigo manda "oi" do celular → aparece no Master › WhatsApp → ligar o robô → nova mensagem → conferir resposta real. Registrar evidência.
+5. Token permanente (usuário do sistema) e chip pré-pago como número de produção.
+6. Decidir se a IA oferece "Instagram que responde sozinho" (R$ 197).

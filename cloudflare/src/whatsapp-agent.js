@@ -1,4 +1,5 @@
 import { openAIResponses } from "./openai.js";
+import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -115,6 +116,21 @@ export async function ensureWhatsAppSchema(env) {
     )
   `).run();
 
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS whatsapp_settings (
+      client_id TEXT PRIMARY KEY,
+      auto_reply INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+
+  // Coluna nova em base antiga: pausa o robô numa conversa (pessoa assumiu).
+  try {
+    await env.DB.prepare("ALTER TABLE whatsapp_contacts ADD COLUMN bot_paused INTEGER NOT NULL DEFAULT 0").run();
+  } catch {
+    // coluna já existe
+  }
+
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_contacts_updated ON whatsapp_contacts(client_id, updated_at DESC)").run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_messages_phone ON whatsapp_messages(client_id, wa_id, created_at DESC)").run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_drafts_status ON whatsapp_drafts(client_id, status, created_at DESC)").run();
@@ -161,20 +177,23 @@ function messageText(message) {
   return "";
 }
 
-function localTriage(text) {
+function localTriage(text, clientId = "") {
   const value = String(text || "").toLowerCase();
   const urgent = /urgente|agora|parou|fora do ar|não funciona|nao funciona|problema|erro/.test(value);
-  const lead = /preço|preco|valor|plano|assinar|revenda|quero|como funciona|teste/.test(value);
+  const lead = /preço|preco|valor|plano|quanto|quero|como funciona|exemplo|orçamento|orcamento/.test(value);
+  const business = whatsappKnowledge(clientId)?.businessName || "da empresa";
   return {
     classification: urgent ? "urgente" : lead ? "lead" : "cliente",
     priority: urgent ? 90 : lead ? 70 : 45,
-    needsHuman: urgent,
-    reply: lead
-      ? "Oi! Claro. Posso te ajudar. Você procura uma opção para uso próprio ou para revenda?"
-      : "Oi! Recebi sua mensagem. Pode me contar em uma frase o que você precisa?",
-    reason: urgent ? "palavra-chave de urgência detectada" : lead ? "sinal de intenção comercial" : "triagem inicial"
+    // Sem IA não há resposta segura: sempre chama uma pessoa.
+    needsHuman: true,
+    fallback: true,
+    reply: `Oi! Sou a assistente virtual ${business === "da empresa" ? business : "da " + business}. Recebi sua mensagem e uma pessoa da equipe vai te responder em breve.`,
+    reason: urgent ? "palavra-chave de urgência detectada" : lead ? "sinal de intenção comercial" : "triagem inicial sem IA"
   };
 }
+
+const NON_TEXT_REPLY = "Por aqui eu só consigo ler mensagens de texto. Pode escrever o que você precisa? Se preferir, já aviso a equipe para te responder.";
 
 function responseText(data) {
   if (typeof data?.output_text === "string") return data.output_text;
@@ -196,37 +215,48 @@ function parseDraft(text, fallback) {
     priority: Math.max(0, Math.min(100, Number(parsed.priority ?? fallback.priority))),
     needsHuman: parsed.needsHuman === true,
     reply: String(parsed.reply || fallback.reply).slice(0, 1000),
-    reason: String(parsed.reason || fallback.reason).slice(0, 300)
+    reason: String(parsed.reason || fallback.reason).slice(0, 300),
+    fallback: false
   };
 }
 
 async function buildDraft(env, clientId, waId, displayName, inboundText) {
-  const fallback = localTriage(inboundText);
+  const fallback = localTriage(inboundText, clientId);
   const historyResult = await env.DB.prepare(
     `SELECT direction,text,created_at FROM whatsapp_messages
      WHERE client_id=?1 AND wa_id=?2 ORDER BY created_at DESC LIMIT 20`
   ).bind(clientId, waId).all();
 
-  const history = [...(historyResult?.results || [])].reverse()
+  const rows = [...(historyResult?.results || [])].reverse();
+  const alreadyIntroduced = rows.some(row => row.direction === "outbound");
+  const history = rows
     .map(row => `${row.direction === "outbound" ? "EMPRESA" : "CLIENTE"}: ${String(row.text || "").slice(0, 500)}`)
     .join("\n");
 
   try {
     const data = await openAIResponses(env, clientId, {
+      nexusPurpose: "whatsapp-reply",
       input: [
-        "Você faz triagem de WhatsApp empresarial em português do Brasil.",
+        "Você é a assistente virtual de atendimento no WhatsApp desta empresa. Escreva em português do Brasil.",
+        alreadyIntroduced
+          ? "Você já se apresentou nesta conversa; não se apresente de novo."
+          : "Esta é a primeira resposta: comece dizendo que é a assistente virtual da empresa.",
+        "Seja simpática, direta e curta: no máximo 5 linhas e no máximo uma pergunta por mensagem.",
+        "Use SOMENTE as informações abaixo. Nunca invente preço, prazo, desconto, resultado ou cliente.",
+        "Objetivo: entender o negócio da pessoa, explicar o serviço certo e oferecer o exemplo grátis.",
+        "Quando for passar para a pessoa responsável, avise na resposta que vai chamar essa pessoa.",
         "Classifique em exatamente uma categoria: urgente, lead, cliente, fornecedor, pessoal ou ruido.",
-        "Escreva um rascunho curto, natural, no máximo 5 linhas e no máximo uma pergunta.",
-        "Nunca invente preço, prazo, condição comercial ou informação que não esteja no histórico.",
-        "Nunca envie nada: apenas produza rascunho.",
         'Responda SOMENTE JSON válido no formato {"classification":"lead","priority":70,"needsHuman":false,"reply":"...","reason":"..."}.',
+        "",
+        knowledgePrompt(clientId),
+        "",
         `Contato: ${displayName || waId}`,
         "Histórico:",
         history || "(sem histórico anterior)",
-        "Nova mensagem:",
+        "Nova mensagem do cliente:",
         inboundText
       ].join("\n"),
-      max_output_tokens: 320
+      max_output_tokens: 400
     });
     return parseDraft(responseText(data), fallback);
   } catch {
@@ -246,9 +276,9 @@ async function storeInbound(env, clientId, value) {
     if (!waId) continue;
     const providerId = String(message?.id || "");
     const text = messageText(message);
-    const createdAt = Number(message?.timestamp)
-      ? new Date(Number(message.timestamp) * 1000).toISOString()
-      : nowIso();
+    // Hora em que o Nexus recebeu (mesmo relógio das respostas enviadas):
+    // mantém a conversa na ordem certa. A hora da Meta fica no payload_json.
+    const createdAt = nowIso();
     const displayName = contacts.get(waId) || "";
 
     const rowId = providerId || `wa-in-${clientId}-${waId}-${Date.now()}`;
@@ -277,25 +307,65 @@ async function storeInbound(env, clientId, value) {
         updated_at=CURRENT_TIMESTAMP`
     ).bind(`wa-contact-${clientId}-${waId}`, clientId, waId, displayName, createdAt).run();
 
-    if (text) {
-      const draft = await buildDraft(env, clientId, waId, displayName, text);
-      await env.DB.prepare(
-        `INSERT INTO whatsapp_drafts(
-          id,message_id,client_id,wa_id,classification,priority,needs_human,reply_text,reason,status,created_at,updated_at
-        ) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,'pending',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)`
-      ).bind(
-        `wa-draft-${providerId || Date.now()}`,
-        rowId, clientId, waId, draft.classification,
-        draft.priority, draft.needsHuman ? 1 : 0,
-        draft.reply, draft.reason
-      ).run();
+    const draft = text
+      ? await buildDraft(env, clientId, waId, displayName, text)
+      : { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
+          reply: NON_TEXT_REPLY, reason: `mensagem do tipo ${String(message?.type || "desconhecido")}` };
+    const draftId = `wa-draft-${providerId || Date.now()}`;
+    await env.DB.prepare(
+      `INSERT INTO whatsapp_drafts(
+        id,message_id,client_id,wa_id,classification,priority,needs_human,reply_text,reason,status,created_at,updated_at
+      ) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,'pending',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)`
+    ).bind(
+      draftId,
+      rowId, clientId, waId, draft.classification,
+      draft.priority, draft.needsHuman ? 1 : 0,
+      draft.reply, draft.reason
+    ).run();
 
-      await env.DB.prepare(
-        `UPDATE whatsapp_contacts SET classification=?3,priority=?4,needs_human=?5,updated_at=CURRENT_TIMESTAMP
-         WHERE client_id=?1 AND wa_id=?2`
-      ).bind(clientId, waId, draft.classification, draft.priority, draft.needsHuman ? 1 : 0).run();
-    }
+    await env.DB.prepare(
+      `UPDATE whatsapp_contacts SET classification=?3,priority=?4,needs_human=CASE WHEN ?5=1 THEN 1 ELSE needs_human END,updated_at=CURRENT_TIMESTAMP
+       WHERE client_id=?1 AND wa_id=?2`
+    ).bind(clientId, waId, draft.classification, draft.priority, draft.needsHuman ? 1 : 0).run();
+
+    await autoReply(env, clientId, waId, draft, draftId);
   }
+}
+
+// Resposta automática: só com o robô ligado no painel, conversa não pausada
+// e dentro do limite por hora. Ao passar para humano, o robô pausa a conversa.
+async function autoReply(env, clientId, waId, draft, draftId) {
+  if (!(await autoReplyEnabled(env, clientId))) return { sent: false, reason: "auto_reply_off" };
+  const contact = await env.DB.prepare(
+    "SELECT bot_paused FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2"
+  ).bind(clientId, waId).first();
+  if (Number(contact?.bot_paused || 0)) return { sent: false, reason: "bot_paused" };
+  try {
+    await sendAndRecord(env, clientId, waId, draft.reply, { draftId, auto: true });
+  } catch (error) {
+    await env.DB.prepare(
+      "UPDATE whatsapp_drafts SET status='auto_failed',reason=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2"
+    ).bind(draftId, clientId, String(error?.message || error).slice(0, 300)).run();
+    return { sent: false, reason: String(error?.message || error) };
+  }
+  if (draft.needsHuman) {
+    await env.DB.prepare(
+      "UPDATE whatsapp_contacts SET bot_paused=1,needs_human=1,updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND wa_id=?2"
+    ).bind(clientId, waId).run();
+  }
+  return { sent: true };
+}
+
+async function autoReplyEnabled(env, clientId) {
+  const row = await env.DB.prepare("SELECT auto_reply FROM whatsapp_settings WHERE client_id=?1").bind(clientId).first();
+  return Number(row?.auto_reply || 0) === 1;
+}
+
+async function setAutoReply(env, clientId, enabled) {
+  await env.DB.prepare(
+    `INSERT INTO whatsapp_settings(client_id,auto_reply,updated_at) VALUES(?1,?2,CURRENT_TIMESTAMP)
+     ON CONFLICT(client_id) DO UPDATE SET auto_reply=excluded.auto_reply,updated_at=CURRENT_TIMESTAMP`
+  ).bind(clientId, enabled ? 1 : 0).run();
 }
 
 export async function handleWhatsAppWebhook(request, env, url, ctx) {
@@ -376,6 +446,42 @@ async function sendText(env, to, text) {
   return data;
 }
 
+// Envia (manual ou automático) respeitando o limite por hora e registra tudo no D1.
+async function sendAndRecord(env, clientId, to, text, { draftId = "", auto = false } = {}) {
+  const limit = configStatus(env).sendLimitPerHour;
+  const row = await env.DB.prepare(
+    "SELECT COUNT(*) AS total FROM whatsapp_send_log WHERE client_id=?1 AND created_at>=datetime('now','-1 hour')"
+  ).bind(clientId).first();
+  if (Number(row?.total || 0) >= limit) {
+    const error = new Error("whatsapp_hourly_send_limit_reached");
+    error.status = 429;
+    error.limit = limit;
+    throw error;
+  }
+
+  const result = await sendText(env, to, text);
+  const providerId = String(result?.messages?.[0]?.id || "");
+  const id = providerId || `wa-out-${clientId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  await env.DB.prepare(
+    `INSERT OR IGNORE INTO whatsapp_messages(
+      id,client_id,wa_id,provider_message_id,direction,message_type,text,status,payload_json,created_at
+    ) VALUES(?1,?2,?3,?4,'outbound','text',?5,?6,?7,?8)`
+  ).bind(id, clientId, to, providerId || null, text, auto ? "sent_auto" : "sent", JSON.stringify(result), nowIso()).run();
+
+  await env.DB.prepare(
+    `INSERT INTO whatsapp_send_log(id,client_id,wa_id,message_id,text_preview,created_at)
+     VALUES(?1,?2,?3,?4,?5,CURRENT_TIMESTAMP)`
+  ).bind(`wa-log-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, clientId, to, providerId, text.slice(0, 120)).run();
+
+  if (draftId) {
+    await env.DB.prepare(
+      "UPDATE whatsapp_drafts SET status=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2"
+    ).bind(String(draftId), clientId, auto ? "auto_sent" : "sent").run();
+  }
+  return { providerMessageId: providerId || null };
+}
+
 export async function handleWhatsAppProtected(request, env, url) {
   if (!url.pathname.startsWith("/api/whatsapp/") || url.pathname === "/api/whatsapp/webhook") {
     return null;
@@ -393,7 +499,8 @@ export async function handleWhatsAppProtected(request, env, url) {
             (SELECT COUNT(*) FROM whatsapp_messages WHERE client_id=?1) AS messages`
         ).bind(clientId).first()
       : {};
-    return json({ ok: true, ...configStatus(env), counts: {
+    const autoReplyOn = clientId ? await autoReplyEnabled(env, clientId) : false;
+    return json({ ok: true, ...configStatus(env), autoReply: autoReplyOn, counts: {
       contacts: Number(counts?.contacts || 0),
       pendingDrafts: Number(counts?.pending_drafts || 0),
       messages: Number(counts?.messages || 0)
@@ -405,9 +512,14 @@ export async function handleWhatsAppProtected(request, env, url) {
   if (url.pathname === "/api/whatsapp/inbox" && request.method === "GET") {
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 30)));
     const rows = await env.DB.prepare(
-      `SELECT wa_id,display_name,classification,priority,needs_human,unread_count,last_message_at,updated_at
-       FROM whatsapp_contacts WHERE client_id=?1
-       ORDER BY priority DESC, COALESCE(last_message_at,updated_at) DESC LIMIT ?2`
+      `SELECT c.wa_id,c.display_name,c.classification,c.priority,c.needs_human,c.bot_paused,c.unread_count,
+              c.last_message_at,c.updated_at,
+              (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
+               ORDER BY m.created_at DESC LIMIT 1) AS last_text,
+              (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
+               ORDER BY m.created_at DESC LIMIT 1) AS last_direction
+       FROM whatsapp_contacts c WHERE c.client_id=?1
+       ORDER BY c.needs_human DESC, COALESCE(c.updated_at,c.last_message_at) DESC LIMIT ?2`
     ).bind(clientId, limit).all();
     return json({ ok: true, items: rows?.results || [] });
   }
@@ -446,40 +558,43 @@ export async function handleWhatsAppProtected(request, env, url) {
     if (!text) return json({ error: "text_required" }, 400);
     if (text.length > 4096) return json({ error: "text_too_long" }, 400);
 
-    const limit = configStatus(env).sendLimitPerHour;
-    const row = await env.DB.prepare(
-      "SELECT COUNT(*) AS total FROM whatsapp_send_log WHERE client_id=?1 AND created_at>=datetime('now','-1 hour')"
-    ).bind(clientId).first();
-    if (Number(row?.total || 0) >= limit) {
-      return json({ error: "whatsapp_hourly_send_limit_reached", limit }, 429);
-    }
-
     try {
-      const result = await sendText(env, to, text);
-      const providerId = String(result?.messages?.[0]?.id || "");
-      const id = providerId || `wa-out-${clientId}-${Date.now()}`;
-
+      const result = await sendAndRecord(env, clientId, to, text, { draftId: body?.draftId, auto: false });
+      // Uma pessoa respondeu: o robô sai dessa conversa até ser religado.
       await env.DB.prepare(
-        `INSERT OR IGNORE INTO whatsapp_messages(
-          id,client_id,wa_id,provider_message_id,direction,message_type,text,status,payload_json,created_at
-        ) VALUES(?1,?2,?3,?4,'outbound','text',?5,'sent',?6,CURRENT_TIMESTAMP)`
-      ).bind(id, clientId, to, providerId || null, text, JSON.stringify(result)).run();
-
-      await env.DB.prepare(
-        `INSERT INTO whatsapp_send_log(id,client_id,wa_id,message_id,text_preview,created_at)
-         VALUES(?1,?2,?3,?4,?5,CURRENT_TIMESTAMP)`
-      ).bind(`wa-log-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, clientId, to, providerId, text.slice(0, 120)).run();
-
-      if (body?.draftId) {
-        await env.DB.prepare(
-          "UPDATE whatsapp_drafts SET status='sent',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2"
-        ).bind(String(body.draftId), clientId).run();
-      }
-
-      return json({ ok: true, to, providerMessageId: providerId || null });
+        "UPDATE whatsapp_contacts SET bot_paused=1,unread_count=0,updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND wa_id=?2"
+      ).bind(clientId, to).run();
+      return json({ ok: true, to, providerMessageId: result.providerMessageId });
     } catch (error) {
-      return json({ error: String(error?.message || error) }, Number(error?.status || 502));
+      return json({ error: String(error?.message || error), limit: error?.limit }, Number(error?.status || 502));
     }
+  }
+
+  if (url.pathname === "/api/whatsapp/settings" && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    if (typeof body?.autoReply !== "boolean") return json({ error: "auto_reply_boolean_required" }, 400);
+    await setAutoReply(env, clientId, body.autoReply);
+    return json({ ok: true, autoReply: body.autoReply });
+  }
+
+  if (url.pathname === "/api/whatsapp/contact" && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    const waId = cleanPhone(body?.phone);
+    if (!waId) return json({ error: "phone_required" }, 400);
+    const fields = [];
+    const values = [clientId, waId];
+    if (typeof body?.botPaused === "boolean") {
+      values.push(body.botPaused ? 1 : 0);
+      fields.push(`bot_paused=?${values.length}`);
+      if (!body.botPaused) fields.push("needs_human=0");
+    }
+    if (body?.read === true) fields.push("unread_count=0");
+    if (!fields.length) return json({ error: "nothing_to_update" }, 400);
+    const result = await env.DB.prepare(
+      `UPDATE whatsapp_contacts SET ${fields.join(",")},updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND wa_id=?2`
+    ).bind(...values).run();
+    if (!Number(result?.meta?.changes || 0)) return json({ error: "contact_not_found" }, 404);
+    return json({ ok: true });
   }
 
   return json({ error: "not_found" }, 404);

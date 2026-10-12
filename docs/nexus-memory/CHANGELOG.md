@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-12 — branch feat/whatsapp-atendente
+- feat: atendente virtual da Flow Arts no WhatsApp (whatsapp-knowledge.js, resposta automática com liga/desliga, pausa por conversa, passagem para humano, fallback seguro).
+- feat: aba WhatsApp no Master (public/whatsapp-inbox.js).
+- fix: WHATSAPP_CLIENT_ID de globalplay-streaming para primeiro-teste; texto antigo "uso próprio ou revenda" removido; ordem das mensagens.
+- test: whatsapp-agent.test.mjs com SQLite real (10 testes); menu do Master com 7 itens.
+
 ## 2026-10-12
 - 13h46 BRT: Perfil da Empresa no Google criado (Rodrigo, guiado): Flow Arts, categoria Agência de marketing digital, área Brasil, telefone, site flowarts.com.br, 4 serviços + 2 personalizados, descrição. Já aparece como verificado ("Você gerencia este Perfil") com a logo. Sem fotos da empresa e sem avaliações ainda.
 - 13h31 BRT: Search Console (Rodrigo, guiado): propriedade de domínio flowarts.com.br verificada (provedor de domínio), sitemap https://flowarts.com.br/sitemap.xml enviado, indexação da home solicitada. Existe sitemap antigo de 2018 (dono anterior) na lista, ignorar.
