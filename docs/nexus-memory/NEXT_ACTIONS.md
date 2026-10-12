@@ -277,3 +277,8 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## 2026-10-12 — Próximos do pacote instagram-agent
+- Traduzir as 26 fórmulas de gancho (hooks.json do repositório Jakeschincariol/instagram-agent-skill, MIT) e dar ao agente que escreve os posts.
+- Rodrigo: trocar o campo Nome do perfil @flowarts2026 de "Marina" para algo pesquisável, ex.: "Marina | Marketing com IA".
+- Testar o brinde siga-para-liberar (botão "Baixar conteúdo") com um comentário novo da playprime2027.

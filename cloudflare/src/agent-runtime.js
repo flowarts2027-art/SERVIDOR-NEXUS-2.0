@@ -18,6 +18,7 @@ import { generateOriginalMedia } from "./media-generation.js";
 import { isPublishingWindow, publishingGate, sameSaoPauloDay } from "./publishing-policy.js";
 import { upsertPostFeatures, recordMetricCheckpoints, recentPublishedPostFeatures } from "./post-learning.js";
 import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } from "./scene-grammar.js";
+import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS } from "./caption-polish.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
@@ -155,7 +156,7 @@ function postingProfile(client) {
     followerCta: isGlobal ? "Siga a Global Play para ver as próximas sugestões." : isRagnar ? "Siga a Ragnar One para acompanhar as próximas sugestões." : (current.followerCta || clientBrand(client).followerCta || "Siga o perfil para não perder as próximas indicações."),
     shareCta: isGlobal ? "Envie para alguém que vai curtir essa sessão em família." : isRagnar ? "Envie para quem também curte uma boa noite de entretenimento." : (current.shareCta || "Envie para alguém que também curte esse tipo de conteúdo."),
     hashtags: isGlobal ? "#GlobalPlay #Streaming #Entretenimento #CinemaEmCasa #Dicas" : isRagnar ? "#RagnarOne #Streaming #Entretenimento #CinemaEmCasa #Dicas" : (current.hashtags || clientBrand(client).hashtags || "#Dicas"),
-    avoidTopics: "Texto genérico, repetição de criativos, poluição visual, tela vazia, collage/split-screen, promessas irreais, referências protegidas e ofertas de revenda. "+commercialPromptGuard(client)+(clientBrand(client).avoidRules?" "+clientBrand(client).avoidRules:""),
+    avoidTopics: "Texto genérico, repetição de criativos, poluição visual, tela vazia, collage/split-screen, promessas irreais, referências protegidas e ofertas de revenda. Legenda: primeira linha com até 125 caracteres, no máximo 5 hashtags, sem travessão (—) e sem frases de robô como: "+ROBOT_PHRASES.join(", ")+". "+commercialPromptGuard(client)+(clientBrand(client).avoidRules?" "+clientBrand(client).avoidRules:""),
     creativeRotation: String(client?.id || "") === "globalplay-streaming"
       ? {
           enabled:true,
@@ -1020,7 +1021,7 @@ async function runCreator(env,client,strategy,options) {
       ? brandHooks[([...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17))%brandHooks.length]
       : pickUniqueHook(index,day,strategy?.radarTerms||[],recentCaptions))).trim();
     const cta=String(campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
-    let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,6).join(" ");
+    let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,MAX_HASHTAGS).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();
     if(!caption){
       const brandOffer=brandProfileVersion(client.id)?clientBrand(client).offer:"";
@@ -1054,6 +1055,8 @@ async function runCreator(env,client,strategy,options) {
         tags||null
       ].filter(x=>x!==null).join("\n").slice(0,2200);
     }
+    // Acabamento: até 5 hashtags, sem travessão nem caracteres invisíveis, 1ª linha curta.
+    caption=polishCaption(caption);
 
     let creativeFeatures={
       format:"image",

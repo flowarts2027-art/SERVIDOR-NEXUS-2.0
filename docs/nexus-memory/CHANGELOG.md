@@ -245,3 +245,7 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Se o Instagram não deixar ver se a pessoa segue, a página pede para mandar "SEGUI" no direct e tocar de novo.
 - Testes: 289 + novos de gift passando. Ainda não enviado (aguardando OK).
 - 22:50 (Rodrigo): texto do direct bagunçado. Agora o direct é só "Me siga para receber o conteúdo 🎁" + botão "Baixar conteúdo" (modelo de botão do Instagram; se recusar, manda a frase com o link). A página confere sozinha ao abrir; se não segue, diz "Você precisa me seguir primeiro". Prova real do 1º envio: 22:45, DM com link curto chegou na playprime2027.
+
+## 2026-10-12 — Ideias do pacote instagram-agent (Jake Schincariol, MIT)
+- Rodrigo pediu para analisar a página do Notion "instagram-agent: 13 skills". O pacote só escreve texto; o Nexus já publica, gera imagem, responde QUERO e mede seguidores (Radar).
+- Aplicado: `cloudflare/src/caption-polish.js` + uso em agent-runtime: até 5 hashtags (limite do Instagram desde dez/2025; antes aceitava 6), remove travessão e caracteres invisíveis, primeira linha com até 125 caracteres, e lista de frases de robô no prompt. 294 testes passando.
