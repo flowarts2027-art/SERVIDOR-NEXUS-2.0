@@ -2,7 +2,7 @@
 
 ## Domínio (2026-10-12)
 1. Rodrigo: trocar o link da bio do @flowarts2026 para flowarts.com.br.
-2. Google Search Console: adicionar flowarts.com.br (verificação por DNS na Cloudflare) e enviar sitemap.xml.
+2. FEITO 12/10: Search Console verificado, sitemap enviado, home pedida. Conferir em alguns dias se a home foi indexada.
 3. Perfil da Empresa no Google (atendimento online).
 4. Opcional: URLs de privacidade/termos do app Meta para o domínio novo.
 
