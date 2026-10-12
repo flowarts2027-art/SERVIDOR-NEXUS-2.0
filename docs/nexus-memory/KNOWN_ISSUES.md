@@ -171,3 +171,10 @@ Botão anterior Baixar do YouTube também tentava download no servidor e falhou 
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## 2026-10-12 — Mensagens antigas da Global Play na conversa de teste
+- Rodrigo viu "REVENDA", "Acessar site" (globalplay.fun) e "Vim pelo Instagram da Global Play" no direct.
+- Diagnóstico: a conversa é entre flowarts2026 e globalplay_streaming. As mensagens de revenda e os botões foram enviados pela conta globalplay_streaming (robô antigo da Global Play, desde 23/09). Não existem no código do Nexus (nem no histórico do git).
+- O DM do Nexus (00:30 UTC de 12/10) saiu certo: texto Flow Arts + wa.me com "Comentei no Instagram da Flow Arts".
+- A automação do Meta Business Suite da Global Play ("Perguntas e respostas") está desativada; o robô antigo vem de fora do Nexus.
+- Próximo passo: testar com uma conta pessoal que não seja a Global Play. Opcional: na conta globalplay_streaming, remover apps antigos em Configurações › Apps e sites.
