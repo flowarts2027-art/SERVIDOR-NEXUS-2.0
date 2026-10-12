@@ -291,3 +291,10 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 3. Perfil: Nome "Marina | Marketing com IA"; bio "Atendimento em todo o Brasil"; avaliar trocar a foto de IA pelo logo ou foto real (rótulo "Perfil gerado por IA").
 4. Aprovar os posts no painel todo dia (só 4 publicados até agora).
 5. 15 min/dia de interação manual (comentar em perfis de pequenos negócios) e stories.
+
+## 2026-10-12 — Vendas e próximos produtos (conversa com o Rodrigo)
+- Rodrigo está em casa com o pé quebrado e sem receber; prioridade é caixa rápido. Lembrete dado: ver auxílio por incapacidade no Meu INSS (acidente dispensa carência) — ele confirma no 135.
+- Ofertas sugeridas: "Instagram que responde sozinho" (resposta automática QUERO→direct→WhatsApp + 10 posts) R$ 197; "5 Reels com IA" R$ 147; "10 posts prontos" R$ 97; logo R$ 67. Mensagens prontas entregues no chat.
+- Global Play: continua travada (sem comprovação de licença). Rodrigo perguntou sobre IPTV; resposta: não fazemos marketing de IPTV sem licença. Sugerido: cláusula nos Termos + trava de nichos ilegais no Nexus (não feito, aguardando OK).
+- DEPOIS (Rodrigo pediu adiar): atendente de WhatsApp com IA. Precisa de chip novo (o número da API sai do app do celular), produto WhatsApp no app "Flow Arts Nexus", e trocar o texto antigo de whatsapp-agent.js ("uso próprio ou revenda") pelos prompts de Vendas/Qualificação do PDF (com "sou a assistente virtual" e passagem para humano).
+- Quando fechar o 1º cliente: criar perfil de marca dele (client-brand.js) para ganhar gancho na imagem, legendas com dicas, brinde no direct e Revisor.
