@@ -565,6 +565,8 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/" && request.method === "GET") {
+      // flowarts.com.br (e www) abre o site da Flow Arts; o painel fica em painel.flowarts.com.br.
+      if (/^(www\.)?flowarts\.com\.br$/i.test(url.hostname)) return asset(env, request, "/site.html");
       return redirect("/login");
     }
 

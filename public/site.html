@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050B1F">
+<title>Flow Arts · Instagram que responde sozinho</title>
+<meta name="description" content="A Flow Arts cria os posts do seu negócio com IA e responde quem comenta, na hora, levando a pessoa direto para o seu WhatsApp. Atendimento online em todo o Brasil.">
+<meta property="og:title" content="Flow Arts · Instagram que responde sozinho">
+<meta property="og:description" content="Posts com IA e resposta automática no direct, levando o cliente direto para o seu WhatsApp.">
+<meta property="og:image" content="/brand/flowarts-logo.webp">
+<link rel="icon" href="/brand/flowarts-icon.png">
+<link rel="apple-touch-icon" href="/brand/flowarts-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+:root{
+  --ink:#050B1F;        /* azul-noite do fundo do logo */
+  --deep:#0A1636;       /* superfícies */
+  --line:#1C2B57;
+  --chrome:#C9D1DE;     /* prata do logo */
+  --bright:#F2F5FA;
+  --muted:#93A0BB;
+  --blue:#1F6BFF;       /* azul elétrico */
+  --glow:#49A3FF;
+  --whats:#1FAF5F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--chrome);font:400 17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--glow)}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--glow);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:Unbounded,"Atkinson Hyperlegible",sans-serif;color:var(--bright);font-weight:700;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(2rem,5.6vw,3.6rem);line-height:1.08;text-wrap:balance}
+h2{font-size:clamp(1.5rem,3.6vw,2.3rem);line-height:1.15;text-wrap:balance}
+h3{font-size:1.15rem;line-height:1.3;font-weight:500}
+p{margin:0}
+.lead{font-size:1.15rem;color:var(--chrome);max-width:34em}
+
+/* Botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;font:700 1rem "Atkinson Hyperlegible",sans-serif;text-decoration:none;border:0;cursor:pointer}
+.btn-whats{background:var(--whats);color:#fff}
+.btn-whats:hover{background:#1a9a53}
+.btn-line{color:var(--bright);border:1.5px solid #3A4E86;background:transparent}
+.btn-line:hover{border-color:var(--glow)}
+.btn svg{width:20px;height:20px;flex:none}
+
+/* Topo */
+.top{position:sticky;top:0;z-index:5;background:rgba(5,11,31,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(28,43,87,.6)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--bright);font-family:Unbounded,sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.02em}
+.brand img{height:38px;width:auto}
+.top .btn{min-height:42px;padding:0 18px;font-size:.95rem}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;padding:56px 0 72px}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:780px;height:780px;background:radial-gradient(closest-side,rgba(31,107,255,.32),transparent 70%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;gap:44px;align-items:center}
+.hero-logo{width:min(220px,46vw);filter:drop-shadow(0 0 28px rgba(73,163,255,.35));margin-bottom:22px}
+.hero h1{margin-bottom:18px}
+.hero .lead{margin-bottom:28px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.note{margin-top:16px;color:var(--muted);font-size:.95rem}
+
+/* O celular com o fluxo real */
+.phone{justify-self:center;width:min(330px,88vw);border-radius:42px;padding:12px;background:linear-gradient(160deg,#D9E0EC,#6E7B95 40%,#C9D1DE 60%,#5B6782);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 60px rgba(31,107,255,.25)}
+.screen{border-radius:32px;background:#0E1424;overflow:hidden;min-height:540px;display:flex;flex-direction:column}
+.screen-head{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid #1E2740}
+.screen-head img{width:34px;height:34px;border-radius:50%;background:var(--ink);object-fit:contain;padding:4px}
+.screen-head b{color:#fff;font-size:.95rem;display:block}
+.screen-head small{color:#8C96AD;font-size:.78rem}
+.chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:16px}
+.comment{background:#151D33;border:1px solid #232D4A;border-radius:14px;padding:10px 12px;font-size:.88rem;color:#C7CFE0}
+.comment b{color:#fff}
+.bubble{max-width:86%;padding:10px 14px;border-radius:20px;font-size:.92rem;line-height:1.4}
+.from-brand{align-self:flex-start;background:#262B3B;color:#F1F3F8;border-bottom-left-radius:6px}
+.from-client{align-self:flex-end;background:linear-gradient(135deg,#5A3CF0,#2F6BFF);color:#fff;border-bottom-right-radius:6px}
+.chip{align-self:flex-start;border:1px solid #3B4462;color:#E6EAF3;border-radius:999px;padding:6px 14px;font-size:.85rem}
+.card-btn{display:block;margin-top:8px;text-align:center;background:#323849;border-radius:10px;padding:9px;color:#fff;font-weight:700}
+.wa{align-self:center;margin-top:auto;font-size:.8rem;color:#7DDBA3;display:flex;align-items:center;gap:6px}
+.step{opacity:0;transform:translateY(8px)}
+.play .step{animation:pop .45s ease-out forwards}
+.play .s1{animation-delay:.3s}.play .s2{animation-delay:1.3s}.play .s3{animation-delay:2.2s}.play .s4{animation-delay:3.1s}.play .s5{animation-delay:4.1s}.play .s6{animation-delay:5s}
+@keyframes pop{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step{opacity:1;transform:none}.play .step{animation:none}}
+
+/* Faixa de teste ao vivo */
+.try{background:linear-gradient(180deg,var(--deep),var(--ink));border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:56px 0}
+.try .wrap{display:grid;gap:22px;align-items:center}
+.try p{color:var(--chrome);max-width:40em}
+.kbd{display:inline-block;font-family:Unbounded,sans-serif;font-weight:700;color:var(--bright);background:var(--blue);border-radius:10px;padding:2px 12px;margin:0 2px}
+
+/* Seções */
+.section{padding:80px 0}
+.section h2{margin-bottom:14px}
+.section .intro{color:var(--muted);max-width:40em;margin-bottom:36px}
+
+/* Pacotes: um destaque grande + lista */
+.offer{display:grid;gap:28px}
+.feature{position:relative;border-radius:28px;padding:30px 26px;background:radial-gradient(120% 120% at 0% 0%,rgba(31,107,255,.28),transparent 55%),var(--deep);border:1px solid #2A3E77}
+.feature .price{font-family:Unbounded,sans-serif;font-size:2.4rem;color:var(--bright);margin:16px 0 4px}
+.feature .price small{font-size:1rem;color:var(--muted);font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400}
+.feature ul,.more li ul{margin:16px 0 24px;padding-left:20px;display:grid;gap:8px}
+.feature .tag{display:inline-block;background:rgba(73,163,255,.15);color:var(--glow);border-radius:999px;padding:4px 12px;font-size:.88rem;font-weight:700;margin-bottom:14px}
+.more{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.more li{display:grid;grid-template-columns:1fr auto;gap:6px 20px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+.more h3{grid-column:1}
+.more p{grid-column:1;color:var(--muted);font-size:.98rem}
+.more .p{grid-column:2;grid-row:1 / span 2;text-align:right}
+.more .p b{display:block;font-family:Unbounded,sans-serif;color:var(--bright);font-size:1.35rem}
+.more .p a{font-size:.92rem;font-weight:700;text-decoration:none}
+.more .p a:hover{text-decoration:underline}
+
+/* Como funciona (sequência real) */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:22px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;gap:16px;align-items:start}
+.steps li::before{content:counter(s);width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:700;color:var(--bright);background:var(--deep);border:1.5px solid #34508F}
+.steps p{color:var(--muted)}
+.steps h3{margin:6px 0 4px}
+.demo-link{margin-top:30px}
+
+/* Perguntas */
+.faq{display:grid;gap:10px;max-width:780px}
+.faq details{background:var(--deep);border:1px solid var(--line);border-radius:16px;padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;color:var(--bright);display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:Unbounded,sans-serif;color:var(--glow);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 0 18px;color:var(--chrome)}
+
+/* Final */
+.final{text-align:center;padding:90px 0;background:radial-gradient(60% 80% at 50% 100%,rgba(31,107,255,.28),transparent 70%)}
+.final img{width:min(150px,40vw);margin:0 auto 26px;filter:drop-shadow(0 0 24px rgba(73,163,255,.35))}
+.final h2{margin-bottom:14px}
+.final p{color:var(--muted);margin:0 auto 28px;max-width:32em}
+footer{border-top:1px solid var(--line);padding:28px 0 calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:18px}
+footer a{color:var(--chrome);text-decoration:none}
+footer a:hover{color:var(--bright)}
+
+@media (min-width:880px){
+  .hero{padding:80px 0 100px}
+  .hero .wrap{grid-template-columns:1.15fr .85fr}
+  .try .wrap{grid-template-columns:1.4fr auto}
+  .offer{grid-template-columns:1fr 1fr;align-items:start}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .steps li{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .top .btn span{display:none}
+  .actions .btn{width:100%}
+  .more li{grid-template-columns:1fr}
+  .more .p{grid-column:1;grid-row:auto;text-align:left;display:flex;align-items:baseline;gap:16px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio"><img src="/brand/flowarts-symbol.webp" alt="" width="31" height="38">Flow Arts</a>
+    <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Flow%20Arts." target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.3 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.5Z"/></svg>
+      <span>Falar no WhatsApp</span>
+    </a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <img class="hero-logo" src="/brand/flowarts-logo.webp" alt="Flow Arts — Ideas in motion" width="720" height="892">
+        <h1>Seu Instagram respondendo cliente enquanto você trabalha.</h1>
+        <p class="lead">A Flow Arts cria os posts do seu negócio com IA e responde quem comenta, na hora, levando a pessoa direto para o seu WhatsApp.</p>
+        <div class="actions">
+          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20meu%20Instagram%20respondendo%20sozinho." target="_blank" rel="noopener">Quero no meu negócio</a>
+          <a class="btn btn-line" href="#teste">Ver funcionando</a>
+        </div>
+        <p class="note">Atendimento 100% online para pequenos negócios de todo o Brasil.</p>
+      </div>
+
+      <div class="phone" aria-label="Exemplo: uma cliente comenta QUERO e recebe a resposta no direct">
+        <div class="screen" id="screen">
+          <div class="screen-head">
+            <img src="/brand/flowarts-symbol.webp" alt="">
+            <div><b>sualoja</b><small>Responde na hora</small></div>
+          </div>
+          <div class="chat">
+            <div class="comment step s1"><b>ana.doces</b> comentou no seu post: QUERO</div>
+            <div class="bubble from-brand step s2">Me siga para receber o conteúdo 🎁</div>
+            <div class="chip step s2">Já segui</div>
+            <div class="bubble from-client step s3">Já segui</div>
+            <div class="bubble from-brand step s4">Pronto! Toque para baixar o seu conteúdo 🎁<span class="card-btn">Baixar conteúdo</span></div>
+            <div class="bubble from-client step s5">Amei! Quero saber o preço 😍</div>
+            <div class="wa step s6">● Novo contato chegou no seu WhatsApp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="try" id="teste">
+    <div class="wrap">
+      <div>
+        <h2>Teste agora, no seu celular</h2>
+        <p>Comente <span class="kbd">QUERO</span> em qualquer post do <b>@flowarts2026</b>. Em instantes chega um direct no seu Instagram, do mesmo jeito que vai chegar para os seus clientes.</p>
+      </div>
+      <a class="btn btn-line" href="https://www.instagram.com/flowarts2026/" target="_blank" rel="noopener">Abrir o Instagram</a>
+    </div>
+  </section>
+
+  <section class="section" id="pacotes">
+    <div class="wrap">
+      <h2>Escolha por onde começar</h2>
+      <p class="intro">Pagamento no Pix, sem fidelidade. Nada é publicado sem a sua aprovação.</p>
+      <div class="offer">
+        <article class="feature">
+          <span class="tag">Mais pedido</span>
+          <h3>Instagram que responde sozinho</h3>
+          <p class="price">R$ 197 <small>pagamento único</small></p>
+          <ul>
+            <li>Resposta automática no direct para quem comenta</li>
+            <li>A pessoa segue o seu perfil e vai direto para o seu WhatsApp</li>
+            <li>10 posts prontos, com imagens e legendas</li>
+            <li>Tudo funcionando em até 2 dias</li>
+          </ul>
+          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20pacote%20Instagram%20que%20responde%20sozinho." target="_blank" rel="noopener">Quero este pacote</a>
+        </article>
+        <ul class="more">
+          <li>
+            <h3>5 Reels com IA</h3>
+            <p>Vídeos curtos para o seu negócio aparecer para quem ainda não te segue.</p>
+            <div class="p"><b>R$ 147</b><a href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20pacote%20de%205%20Reels%20com%20IA." target="_blank" rel="noopener">Pedir no WhatsApp</a></div>
+          </li>
+          <li>
+            <h3>10 posts prontos</h3>
+            <p>Imagens e legendas no estilo da sua marca, entregues em 24h.</p>
+            <div class="p"><b>R$ 97</b><a href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20pacote%20de%2010%20posts%20prontos." target="_blank" rel="noopener">Pedir no WhatsApp</a></div>
+          </li>
+          <li>
+            <h3>Logo profissional</h3>
+            <p>Três opções originais para você escolher, em 24h.</p>
+            <div class="p"><b>R$ 67</b><a href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20um%20logo%20profissional." target="_blank" rel="noopener">Pedir no WhatsApp</a></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="como-funciona" style="padding-top:0">
+    <div class="wrap">
+      <h2>Como funciona</h2>
+      <p class="intro">Você não precisa entender de tecnologia.</p>
+      <ol class="steps">
+        <li><div><h3>Você conta sobre o seu negócio</h3><p>Uma conversa rápida no WhatsApp: o que você vende, para quem e o seu jeito de falar.</p></div></li>
+        <li><div><h3>A gente prepara tudo</h3><p>Criamos os posts e ligamos a resposta automática no seu Instagram.</p></div></li>
+        <li><div><h3>Você aprova pelo celular</h3><p>Num painel simples você aprova cada post e vê os contatos que chegaram.</p></div></li>
+      </ol>
+      <p class="demo-link"><a class="btn btn-line" href="/demo">Ver um painel de exemplo</a></p>
+    </div>
+  </section>
+
+  <section class="section" id="perguntas" style="padding-top:0">
+    <div class="wrap">
+      <h2>Perguntas frequentes</h2>
+      <p class="intro">Ficou alguma dúvida? Chame no WhatsApp.</p>
+      <div class="faq">
+        <details><summary>Os posts saem sem eu ver?</summary><p>Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste.</p></details>
+        <details><summary>Preciso dar a senha do meu Instagram?</summary><p>Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser.</p></details>
+        <details><summary>Funciona para o meu tipo de negócio?</summary><p>Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais. Não atendemos produtos ilegais nem conteúdo pirata.</p></details>
+        <details><summary>A resposta automática diz que é um robô?</summary><p>As mensagens têm tom humano e simpático, mas a gente não engana ninguém: quando a conversa precisa de uma pessoa, ela vai para o seu WhatsApp.</p></details>
+        <details><summary>Como eu pago?</summary><p>No Pix. Os pacotes são de pagamento único e não têm fidelidade.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <img src="/brand/flowarts-symbol.webp" alt="" width="256" height="331">
+      <h2>Vamos colocar o seu Instagram para trabalhar?</h2>
+      <p>Chame no WhatsApp e receba um exemplo grátis para o seu negócio.</p>
+      <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20receber%20um%20exemplo%20gr%C3%A1tis%20para%20o%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Quero meu exemplo grátis</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Flow Arts — CNPJ 65.299.616/0001-50</span>
+    <nav aria-label="Rodapé">
+      <a href="https://www.instagram.com/flowarts2026/" target="_blank" rel="noopener">Instagram</a>
+      <a href="/exemplo">Exemplo grátis</a>
+      <a href="/privacidade">Privacidade</a>
+      <a href="/termos">Termos</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+// Uma única animação: a conversa do celular aparece quando ele entra na tela.
+(function () {
+  var screen = document.getElementById("screen");
+  if (!("IntersectionObserver" in window)) { screen.classList.add("play"); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { screen.classList.add("play"); io.disconnect(); } });
+  }, { threshold: 0.35 });
+  io.observe(screen);
+})();
+</script>
+</body>
+</html>
