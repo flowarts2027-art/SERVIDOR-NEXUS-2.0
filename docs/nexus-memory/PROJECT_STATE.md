@@ -1,5 +1,12 @@
 # Estado do Nexus 2.0
 
+## 2026-10-12 ~16h10 BRT — correção: Master deslogava sozinho
+- Causa (introduzida no deploy 1b141f7): rotas /api/whatsapp/* aceitavam só Bearer NEXUS_SECRET_KEY; o Master usa cookie → 401 → api() do app.js redireciona para o login. O contador do menu chamava a rota ao abrir, então o painel deslogava em qualquer tela.
+- Correção 2c8217e: rotas aceitam resolveMasterSession (Bearer ou cookie); whatsapp-inbox.js tem helper próprio que nunca redireciona. Teste de regressão; 319/319. Deploy run 38295842935 com sucesso.
+- Rodrigo colocou na Cloudflare os 4 segredos (WHATSAPP_VERIFY_TOKEN, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN de teste, WHATSAPP_APP_SECRET). Uma variável de texto com nome/valor trocados foi criada por engano e apagada; Rodrigo foi orientado a trocar a senha pessoal que apareceu nela.
+- Aprendizado: os testes da aba usaram API simulada e não pegaram a autenticação real. Testar rotas novas do Master com sessão de cookie.
+- Próximo: Rodrigo confere a aba WhatsApp ("Conectado") e configura o webhook na Meta.
+
 ## 2026-10-12 ~15h45 BRT — atendente de WhatsApp implantado (robô desligado)
 - Rodrigo deu OK. PR #109 integrado em main 1b141f7; deploy Cloudflare run 38292599222 concluído com sucesso. Conferência HTTP direta da aba não feita nesta sessão (permissão de rede). Robô começa desligado; segredos da Meta ainda não colocados; nenhuma mensagem real trocada pelo Nexus.
 - Próximo: Rodrigo digita os 4 segredos do WhatsApp na Cloudflare e configura o webhook na Meta.
