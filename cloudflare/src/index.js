@@ -20,6 +20,7 @@ import { emergencyPublisherStatus, isD1Emergency, runEmergencyPublisher } from "
 import { emergencyPublisherDiagnostic } from "./emergency-publisher-diagnostic.js";
 import { handleSocialFormatRenderCallback } from "./format-builder.js";
 import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autoreply.js";
+import { handleGiftRequest } from "./gift.js";
 import { ensureDemoClient } from "./demo-client.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -591,6 +592,9 @@ export default {
 
     const instagramOAuthResponse = await handleInstagramOAuthCallback(env, request, url);
     if (instagramOAuthResponse) return instagramOAuthResponse;
+
+    const giftResponse = await handleGiftRequest(request, env, url);
+    if (giftResponse) return giftResponse;
 
     const instagramWebhookResponse = await handleInstagramWebhook(request, env, url, ctx);
     if (instagramWebhookResponse) return instagramWebhookResponse;

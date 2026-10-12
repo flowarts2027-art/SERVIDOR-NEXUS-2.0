@@ -237,3 +237,10 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## 2026-10-12 — Brinde "siga para liberar" no QUERO
+- Pedido do Rodrigo: direct com uma frase só, sem link longo do WhatsApp; a pessoa segue, depois preenche o WhatsApp numa página e recebe o brinde.
+- Novo `cloudflare/src/gift.js`: link curto `/b/CODIGO` (guardado em nexus_state "gift-link", 30 dias), botão "Já segui" confere `is_user_follow_business` no Instagram, formulário nome + WhatsApp vira contato quente no painel (source instagram-brinde), e libera o guia `/brinde/guia` ("10 ideias de post que trazem clientes").
+- `comment-autoreply.js`: DM agora é "Siga @flowarts2026 e pegue seu brinde aqui 🎁 <link>". Sem NEXUS_SECRET_KEY volta ao texto antigo.
+- Se o Instagram não deixar ver se a pessoa segue, a página pede para mandar "SEGUI" no direct e tocar de novo.
+- Testes: 289 + novos de gift passando. Ainda não enviado (aguardando OK).

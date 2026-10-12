@@ -9,6 +9,7 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
+import { giftLink, giftDmText, giftStatus } from "./gift.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -31,6 +32,21 @@ export function dmText(client) {
     "Chama a gente no WhatsApp e receba um exemplo grátis para o seu negócio:",
     link
   ].join("\n");
+}
+
+// Mensagem do direct para UM comentário: brinde "siga para liberar" com link pessoal.
+// Sem a chave de assinatura, volta para o texto simples do WhatsApp.
+export function messageBuilder(env, client, handle = "") {
+  return async (comment = {}, now = new Date()) => {
+    const igsid = String(comment.fromId || comment.from?.id || "");
+    if (!igsid || !String(env?.NEXUS_SECRET_KEY || "").trim()) return dmText(client);
+    try {
+      const link = await giftLink(env, { clientId: client.id, igsid, commentId: comment.id, username: comment.username || comment.from?.username || "" }, now);
+      return giftDmText(client, link, handle);
+    } catch {
+      return dmText(client);
+    }
+  };
 }
 
 function parseJson(raw, fallback = {}) {
@@ -91,10 +107,11 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
   if (previous.status === "sent" || Number(previous.attempts || 0) >= MAX_ATTEMPTS) { res.skipped = "already_handled"; return res; }
   res.checked = true;
   try {
+    const text = typeof message === "function" ? await message(comment, now) : message;
     await graph(request, token, encodeURIComponent(igUserId) + "/messages", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ recipient: { comment_id: id }, message: { text: message } })
+      body: JSON.stringify({ recipient: { comment_id: id }, message: { text } })
     });
     await graph(request, token, encodeURIComponent(id) + "/replies", {
       method: "POST",
@@ -147,7 +164,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   } catch (error) {
     out.errors.push("media:" + error.message);
   }
-  const message = dmText(client);
+  const message = messageBuilder(env, client, ownUsername);
 
   for (const item of Array.isArray(media?.data) ? media.data : []) {
     if (out.replied >= MAX_REPLIES_PER_RUN) break;
@@ -189,7 +206,8 @@ export async function runCommentAutoReplies(env, now = new Date(), options = {})
 export async function commentAutoReplyStatus(env, clientId) {
   const state = await readState(env, clientId);
   const handled = Object.entries(state.handled || {}).slice(0, 20).map(([id, value]) => ({ id, ...value }));
-  return { lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled };
+  const gift = await giftStatus(env, clientId).catch(() => null);
+  return { lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
 }
 
 
@@ -260,7 +278,7 @@ export async function processWebhookComments(env, items, { request = fetch, now 
     const res = await replyToComment({
       request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""),
       ownUsername: String(conn.username || client.instagram || "").replace(/^@/, ""),
-      state, message: dmText(client), now
+      state, message: messageBuilder(env, client, String(conn.username || client.instagram || "").replace(/^@/, "")), now
     }, comment);
     state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
     await writeState(env, client.id, state).catch(() => null);
