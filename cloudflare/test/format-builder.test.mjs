@@ -38,3 +38,11 @@ test("carousel builder adds commercial overlay titles to every card",()=>{
   assert.match(formatBuilder,/title: card\.overlay/);
   assert.match(formatBuilder,/not generic lifestyle stock photography/);
 });
+
+test("card 2 do carrossel nunca escreve a descrição da cena na arte", async () => {
+  const { firstTipOverlay } = await import("../src/format-builder.js");
+  const t = firstTipOverlay({ scene: "Balcão de uma pequena loja fictícia, com cartaz de atendimento" });
+  assert.equal(t, "1. Comece por aqui");
+  assert.equal(firstTipOverlay({ angle: "tutorial de bio" }), "1. Tutorial de bio");
+  assert.ok(!firstTipOverlay({ angle: "checklist de 5 itens que quem nunca te viu olha primeiro" }).includes("…"));
+});

@@ -295,3 +295,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Rodrigo comprou flowarts.com.br na Hostinger (1º ano R$ 1; renovação R$ 64,99). Zona criada na Cloudflare (plano Free), nameservers mia/todd.ns.cloudflare.com salvos na Hostinger às 12:52 (antes dava erro porque o .com.br estava "Cadastrando-se"). Zona pendente até o registro propagar.
 - Site novo `public/site.html` com o logo do Rodrigo (`public/brand/flowarts-logo.webp`, símbolo e ícone): hero com celular mostrando o fluxo QUERO → "Me siga" → "Já segui" → "Baixar conteúdo" → contato no WhatsApp; "Teste agora" (comentar QUERO no @flowarts2026); pacotes (R$ 197 Instagram que responde sozinho, R$ 147 5 Reels, R$ 97 10 posts, R$ 67 logo); como funciona; perguntas; rodapé com CNPJ. index.js: raiz de flowarts.com.br/www serve /site.html; outros hosts continuam indo para /login.
 - PENDENTE: quando a zona ficar ativa, adicionar em wrangler.jsonc "workers_dev": true + routes custom_domain (flowarts.com.br, www, painel.flowarts.com.br). Não fazer antes: deploy com custom_domain em zona pendente falha.
+
+## 2026-10-12 — Correção do carrossel (texto cortado e descrição vazando)
+- Pedido do Rodrigo pelo app (prints do post de @flowarts2026): título do topo cortado e card 2 com "1. Balcão de uma pequena loja fictícia, com cartaz...".
+- Causa 1: imagem gerada em 1024x1536 e recortada para 1080x1350 (fit cover) corta ~9% em cima e embaixo; o prompt mandava o título no terço superior. Corrigido em `media-generation.js`: texto começa 18% abaixo do topo e nada nos 15% de baixo.
+- Causa 2: `format-builder.js` usava `features.scene` como título do card 2. Agora usa `firstTipOverlay` (ângulo curto ou "1. Comece por aqui").
+- Testes: 320/320 passando. Commit local; push só com OK do Rodrigo. O post já publicado não muda: precisa ser refeito.

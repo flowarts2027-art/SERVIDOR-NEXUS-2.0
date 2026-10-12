@@ -35,6 +35,14 @@ function brandName(client = {}) {
   return raw || "marca";
 }
 
+// Título do card 2. Nunca usar features.scene: é a descrição da cena (em inglês ou
+// português) e ia parar escrita na arte, cortada com "...". Só usa o ângulo se for curto.
+export function firstTipOverlay(features = {}) {
+  const angle = String(features.angle || "").replace(/\s+/g, " ").trim();
+  if (angle && angle.length <= 34 && !/[(:]/.test(angle)) return "1. " + angle.charAt(0).toUpperCase() + angle.slice(1);
+  return "1. Comece por aqui";
+}
+
 // Carrossel educativo para marcas com perfil próprio (ex.: Flow Arts).
 function brandCarouselPlan(client = {}, payload = {}) {
   const brand = clientBrand(client);
@@ -46,7 +54,7 @@ function brandCarouselPlan(client = {}, payload = {}) {
   return [
     { role:"hook", message:hook, overlay:compact(hook, 70),
       scene:"Open with a relatable moment of a small business owner in Brazil facing this topic: " + theme + ". Stop the scroll with curiosity, not with a solution yet." },
-    { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay: compact("1. " + (features.scene || theme), 60),
+    { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay: firstTipOverlay(features),
       scene:"Show the first practical step of the topic in a clean business setting (desk, laptop, phone, product, storefront). Vary framing from card 1." },
     { role:"turn", message:"Mostre o segundo ponto e a virada.", overlay:"2. Faça isso toda semana",
       scene:"Show the improvement or result of applying the tip, still in the same visual campaign, with a different angle and gesture." },
