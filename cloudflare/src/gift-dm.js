@@ -161,7 +161,13 @@ export async function runGiftInbox(env, now = new Date(), options = {}) {
   const results = {};
   for (const row of rows?.results || []) {
     if (BLOCKED_PUBLISH_CLIENTS.has(String(row.id)) || !brandProfileVersion(row.id)) continue;
-    results[row.id] = await runGiftInboxForClient(env, row, { ...options, now }).catch(error => ({ error: String(error?.message || error).slice(0, 200) }));
+    results[row.id] = await runGiftInboxForClient(env, row, { ...options, now }).catch(async error => {
+      const message = String(error?.message || error).slice(0, 200);
+      // Guarda o erro para aparecer no status (antes ele sumia).
+      const state = await readGiftDmState(env, row.id).catch(() => null);
+      if (state) await writeGiftDmState(env, row.id, { ...state, lastRun: { at: now.toISOString(), error: message } }, now).catch(() => null);
+      return { error: message };
+    });
   }
   return results;
 }

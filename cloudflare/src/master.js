@@ -21,6 +21,7 @@ import { addDirective, createCampaign, masterWorkspace, updateCampaign } from ".
 import { handleMasterOpenAI } from "./master-openai.js";
 import { decidePost } from "./posts.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
+import { runGiftInboxForClient } from "./gift-dm.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -654,6 +655,16 @@ export async function handleMaster(request, env, url) {
   const autoReplyStatusMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/autoreply-status$/);
   if (autoReplyStatusMatch && request.method === "GET") {
     return json({ ok: true, ...(await commentAutoReplyStatus(env, decodeURIComponent(autoReplyStatusMatch[1]))) });
+  }
+
+  // Teste: lê o direct do brinde agora (o mesmo que o cron de 1 minuto faz) e mostra o resultado.
+  const giftInboxMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/gift-inbox-run$/);
+  if (giftInboxMatch && request.method === "GET") {
+    const clientId = decodeURIComponent(giftInboxMatch[1]);
+    const client = await getClient(env, clientId);
+    if (!client) return json({ error: "client_not_found" }, 404);
+    const result = await runGiftInboxForClient(env, client, { now: new Date() }).catch(error => ({ error: String(error?.message || error).slice(0, 300) }));
+    return json({ ok: true, result });
   }
 
   // Zera a memória aprendida dos agentes de um cliente (termos, estratégia, pesquisa,
