@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { giftDmText, giftLink, readGiftCode, signGift, readGift, validateGiftLead, checkFollows, handleGiftLead, handleGiftRequest } from "../src/gift.js";
+import { giftDmText, giftButtonMessage, giftLink, readGiftCode, signGift, readGift, validateGiftLead, checkFollows, handleGiftLead, handleGiftRequest } from "../src/gift.js";
 import { messageBuilder } from "../src/comment-autoreply.js";
 
 function memoryEnv() {
@@ -29,11 +29,14 @@ function memoryEnv() {
 
 const NOW = new Date("2026-10-12T01:00:00Z");
 
-test("direct do brinde é uma frase só com link curto", () => {
-  const text = giftDmText({ instagram: "@flowarts2026" }, "https://x.test/b/AbCdEfGh2", "flowarts2026");
-  assert.equal(text, "Siga @flowarts2026 e pegue seu brinde aqui 🎁 https://x.test/b/AbCdEfGh2");
-  assert.ok(!text.includes("\n"));
-  assert.ok(!text.includes("wa.me"));
+test("direct do brinde é uma frase só com botão Baixar conteúdo", () => {
+  const dm = giftDmText({ instagram: "@flowarts2026" }, "https://x.test/b/AbCdEfGh2", "flowarts2026");
+  assert.equal(dm.text, "Me siga para receber o conteúdo 🎁");
+  const msg = giftButtonMessage(dm);
+  assert.equal(msg.attachment.payload.template_type, "button");
+  assert.equal(msg.attachment.payload.text, "Me siga para receber o conteúdo 🎁");
+  assert.deepEqual(msg.attachment.payload.buttons, [{ type: "web_url", url: "https://x.test/b/AbCdEfGh2", title: "Baixar conteúdo" }]);
+  assert.ok(!msg.attachment.payload.text.includes("http"));
 });
 
 test("link curto guarda quem comentou e vence em 30 dias", async () => {
@@ -112,8 +115,26 @@ test("guia só abre com chave válida", async () => {
 test("resposta do comentário usa o brinde; sem chave volta ao texto antigo", async () => {
   const env = memoryEnv();
   const client = { id: "primeiro-teste", instagram: "@flowarts2026", config: {} };
-  const text = await messageBuilder(env, client, "flowarts2026")({ id: "c9", fromId: "55", username: "ana" }, NOW);
-  assert.match(text, /^Siga @flowarts2026 e pegue seu brinde aqui 🎁 https:\/\/.+\/b\/[A-Za-z0-9]{9}$/);
+  const dm = await messageBuilder(env, client, "flowarts2026")({ id: "c9", fromId: "55", username: "ana" }, NOW);
+  assert.equal(dm.text, "Me siga para receber o conteúdo 🎁");
+  assert.match(dm.url, /^https:\/\/.+\/b\/[A-Za-z0-9]{9}$/);
   const old = await messageBuilder({ ...env, NEXUS_SECRET_KEY: "" }, client, "flowarts2026")({ id: "c9", fromId: "55" }, NOW);
   assert.match(old, /wa\.me/);
+});
+
+test("envia o botão; se o Instagram recusar, manda a frase com o link", async () => {
+  const { replyToComment } = await import("../src/comment-autoreply.js");
+  const dm = { text: "Me siga para receber o conteúdo 🎁", buttonTitle: "Baixar conteúdo", url: "https://x.test/b/AbCdEfGh2" };
+  const sent = [];
+  const ok = async (url, opts) => { sent.push({ url, body: opts?.body }); return new Response("{}"); };
+  const state = { handled: {} };
+  const r = await replyToComment({ request: ok, token: "t", igUserId: "1", state, message: async () => dm, now: NOW }, { id: "c1", fromId: "9", text: "quero", timestamp: NOW.toISOString() });
+  assert.equal(r.replied, true);
+  assert.equal(JSON.parse(sent[0].body).message.attachment.payload.buttons[0].title, "Baixar conteúdo");
+  const sent2 = [];
+  let first = true;
+  const fails = async (url, opts) => { sent2.push(opts?.body); if (first && /messages/.test(url)) { first = false; return new Response(JSON.stringify({ error: { message: "no template" } }), { status: 400 }); } return new Response("{}"); };
+  const r2 = await replyToComment({ request: fails, token: "t", igUserId: "1", state: { handled: {} }, message: async () => dm, now: NOW }, { id: "c2", fromId: "9", text: "quero", timestamp: NOW.toISOString() });
+  assert.equal(r2.replied, true);
+  assert.equal(JSON.parse(sent2[1]).message.text, "Me siga para receber o conteúdo 🎁 https://x.test/b/AbCdEfGh2");
 });

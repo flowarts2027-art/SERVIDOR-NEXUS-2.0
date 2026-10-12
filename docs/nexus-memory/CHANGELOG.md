@@ -244,3 +244,4 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - `comment-autoreply.js`: DM agora é "Siga @flowarts2026 e pegue seu brinde aqui 🎁 <link>". Sem NEXUS_SECRET_KEY volta ao texto antigo.
 - Se o Instagram não deixar ver se a pessoa segue, a página pede para mandar "SEGUI" no direct e tocar de novo.
 - Testes: 289 + novos de gift passando. Ainda não enviado (aguardando OK).
+- 22:50 (Rodrigo): texto do direct bagunçado. Agora o direct é só "Me siga para receber o conteúdo 🎁" + botão "Baixar conteúdo" (modelo de botão do Instagram; se recusar, manda a frase com o link). A página confere sozinha ao abrir; se não segue, diz "Você precisa me seguir primeiro". Prova real do 1º envio: 22:45, DM com link curto chegou na playprime2027.

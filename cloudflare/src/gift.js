@@ -97,10 +97,17 @@ export async function readGiftCode(env, code, now = new Date()) {
   }
 }
 
-// Uma frase só, com o link curto.
+// Uma frase só + botão "Baixar conteúdo" (o link não aparece no texto).
+export const GIFT_DM_TEXT = "Me siga para receber o conteúdo 🎁";
+export const GIFT_BUTTON = "Baixar conteúdo";
+
 export function giftDmText(client, link, handle = "") {
-  const at = "@" + String(handle || client?.instagram || "").replace(/^@/, "").trim();
-  return "Siga " + (at.length > 1 ? at : "o nosso perfil") + " e pegue seu brinde aqui 🎁 " + link;
+  return { text: GIFT_DM_TEXT, buttonTitle: GIFT_BUTTON, url: link };
+}
+
+// Corpo da mensagem do Instagram: modelo com botão que abre o link.
+export function giftButtonMessage(dm) {
+  return { attachment: { type: "template", payload: { template_type: "button", text: dm.text, buttons: [{ type: "web_url", url: dm.url, title: dm.buttonTitle }] } } };
 }
 
 async function writeGiftState(env, clientId, patch) {
@@ -160,7 +167,7 @@ export async function handleGiftCheck(request, env, { fetchImpl = fetch, now = n
   }
   if (result.follows === false) {
     await writeGiftState(env, gift.c, { lastCheck: { at, result: "not_following" } });
-    return json({ ok: true, follows: false, message: "Ainda não vi você seguindo " + handle + ". Siga o perfil e toque em \"Já segui\" de novo." });
+    return json({ ok: true, follows: false, message: "Você precisa me seguir primeiro: siga " + handle + " e toque em \"Já segui\"." });
   }
   await writeGiftState(env, gift.c, { lastCheck: { at, result: "unknown", error: result.error || "" } });
   return json({ ok: true, follows: null, message: "Falta um passo: mande a palavra SEGUI no direct do " + handle + ". Depois toque em \"Já segui\" de novo." });
@@ -265,10 +272,11 @@ export function giftPageHtml(handle = "@flowarts2026", code = "") {
 function say(t,c){m.textContent=t||"";m.className="msg "+(c||"");}
 function post(u,d){return fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(d)}).then(function(r){return r.json().catch(function(){return {};});});}
 if(!code){say("Este link está incompleto. Abra o link que chegou no seu direct.","warn");b.disabled=true;return;}
-b.addEventListener("click",function(){b.disabled=true;b.textContent="Conferindo…";say("");
+function check(){b.disabled=true;b.textContent="Conferindo…";say("");
 post("${GIFT_CHECK}",{code:code}).then(function(d){if(d.follows===true&&d.key){key=d.key;document.getElementById("step1").hidden=true;f.hidden=false;say("");f.elements.nome.focus();return;}
 say(d.message||"Não consegui conferir. Tente de novo.","warn");b.disabled=false;b.textContent="Já segui";})
-.catch(function(){say("Sem conexão. Tente de novo.","warn");b.disabled=false;b.textContent="Já segui";});});
+.catch(function(){say("Sem conexão. Tente de novo.","warn");b.disabled=false;b.textContent="Já segui";});}
+b.addEventListener("click",check);check();
 f.addEventListener("submit",function(e){e.preventDefault();var s=f.querySelector("button");s.disabled=true;s.textContent="Enviando…";say("");
 post("${GIFT_LEAD}",{key:key,nome:f.elements.nome.value,whatsapp:f.elements.whatsapp.value,website:f.elements.website.value,consentimento:f.elements.consentimento.checked})
 .then(function(d){if(d.ok&&d.url){say("Tudo certo! Abrindo o seu brinde…","ok");location.href=d.url;return;}

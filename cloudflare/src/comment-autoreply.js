@@ -9,7 +9,7 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
-import { giftLink, giftDmText, giftStatus } from "./gift.js";
+import { giftLink, giftDmText, giftStatus, giftButtonMessage } from "./gift.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -107,12 +107,21 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
   if (previous.status === "sent" || Number(previous.attempts || 0) >= MAX_ATTEMPTS) { res.skipped = "already_handled"; return res; }
   res.checked = true;
   try {
-    const text = typeof message === "function" ? await message(comment, now) : message;
-    await graph(request, token, encodeURIComponent(igUserId) + "/messages", {
+    const built = typeof message === "function" ? await message(comment, now) : message;
+    const send = body => graph(request, token, encodeURIComponent(igUserId) + "/messages", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ recipient: { comment_id: id }, message: { text } })
+      body: JSON.stringify({ recipient: { comment_id: id }, message: body })
     });
+    if (built && typeof built === "object") {
+      // Frase + botão. Se o Instagram recusar o botão, manda a frase com o link.
+      await send(giftButtonMessage(built)).catch(async error => {
+        res.errors.push("button:" + error.message);
+        await send({ text: built.text + " " + built.url });
+      });
+    } else {
+      await send({ text: String(built || "") });
+    }
     await graph(request, token, encodeURIComponent(id) + "/replies", {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
