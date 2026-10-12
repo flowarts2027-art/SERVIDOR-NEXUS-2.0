@@ -80,9 +80,11 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
   const res = { checked: false, replied: false, errors: [], skipped: "" };
   const id = String(comment.id || "");
   const username = String(comment.username || comment.from?.username || "").replace(/^@/, "").toLowerCase();
+  const fromId = String(comment.fromId || comment.from?.id || "");
   const createdMs = Date.parse(String(comment.timestamp || ""));
-  if (!id || !username) { res.skipped = "incomplete"; return res; }
-  if (username === String(ownUsername || "").toLowerCase()) { res.skipped = "own_comment"; return res; }
+  // A Meta nem sempre manda o nome de quem comentou; basta o id do comentário e de quem comentou.
+  if (!id || (!username && !fromId)) { res.skipped = "incomplete"; return res; }
+  if ((username && username === String(ownUsername || "").toLowerCase()) || (fromId && fromId === String(igUserId || ""))) { res.skipped = "own_comment"; return res; }
   if (!wantsReply(comment.text)) { res.skipped = "no_interest_word"; return res; }
   if (Number.isFinite(createdMs) && now.getTime() - createdMs > WINDOW_MS) { res.skipped = "too_old"; return res; }
   const previous = state.handled[id] || {};
@@ -99,10 +101,10 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
       headers: { "content-type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ message: "Te chamei no direct! 📩" })
     }).catch(error => res.errors.push("public_reply:" + error.message));
-    state.handled[id] = { status: "sent", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1 };
+    state.handled[id] = { status: "sent", username: username || fromId, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1 };
     res.replied = true;
   } catch (error) {
-    state.handled[id] = { status: "error", username, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1, error: error.message };
+    state.handled[id] = { status: "error", username: username || fromId, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1, error: error.message };
     res.errors.push("dm:" + error.message);
   }
   return res;
@@ -110,14 +112,21 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
 
 // Pede à Meta para avisar o NEXUS (webhook) sobre comentários e mensagens desta conta.
 // Refeito no máximo uma vez por dia; o resultado fica em state.webhook.
+async function tokenTag(token) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(token || "")));
+  return [...new Uint8Array(digest)].slice(0, 6).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 async function ensureWebhookSubscription(request, token, state, now) {
   const last = Date.parse(String(state.webhook?.at || ""));
-  if (Number.isFinite(last) && now.getTime() - last < 24 * 3600000 && state.webhook?.ok) return state.webhook;
+  const tag = await tokenTag(token);
+  // Refaz quando a conexão (token) muda, por exemplo ao trocar de app, ou a cada 24 h.
+  if (Number.isFinite(last) && now.getTime() - last < 24 * 3600000 && state.webhook?.ok && state.webhook?.tag === tag) return state.webhook;
   try {
     const data = await graph(request, token, "me/subscribed_apps?subscribed_fields=comments,messages", { method: "POST" });
-    state.webhook = { ok: data?.success !== false, at: now.toISOString(), error: "" };
+    state.webhook = { ok: data?.success !== false, at: now.toISOString(), error: "", tag };
   } catch (error) {
-    state.webhook = { ok: false, at: now.toISOString(), error: String(error.message || error).slice(0, 160) };
+    state.webhook = { ok: false, at: now.toISOString(), error: String(error.message || error).slice(0, 160), tag };
   }
   return state.webhook;
 }
@@ -144,9 +153,9 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     if (out.replied >= MAX_REPLIES_PER_RUN) break;
     let comments = [];
     try {
-      const data = await graph(request, token, encodeURIComponent(String(item.id)) + "/comments?fields=id,text,username,timestamp&limit=50");
+      const data = await graph(request, token, encodeURIComponent(String(item.id)) + "/comments?fields=id,text,username,timestamp,from&limit=50");
       comments = Array.isArray(data?.data) ? data.data : [];
-      out.seen.push({ media: String(item.id), count: comments.length, igCount: Number(item.comments_count ?? -1), sample: comments.slice(0, 3).map(c => [String(c.username || "?").slice(0, 30), String(c.text || "").slice(0, 30)]) });
+      out.seen.push({ media: String(item.id), count: comments.length, igCount: Number(item.comments_count ?? -1), sample: comments.slice(0, 3).map(c => [String(c.username || c.from?.username || "?").slice(0, 30), String(c.text || "").slice(0, 30)]) });
     } catch (error) {
       out.errors.push("comments:" + error.message);
       continue;

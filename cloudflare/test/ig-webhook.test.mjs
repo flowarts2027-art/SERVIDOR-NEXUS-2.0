@@ -62,3 +62,13 @@ test("responde QUERO com DM e resposta pública, uma vez só", async () => {
   assert.equal((await replyToComment(ctx, { id: "c2", text: "QUERO", username: "flowarts2026" })).skipped, "own_comment");
   assert.equal((await replyToComment(ctx, { id: "c3", text: "lindo!", username: "x" })).skipped, "no_interest_word");
 });
+
+test("comentário sem nome, só com id de quem comentou, também é respondido", async () => {
+  const request = async () => new Response("{}", { status: 200 });
+  const state = { handled: {} };
+  const ctx = { request, token: "t", igUserId: "999", ownUsername: "flowarts2026", state, message: "Oi", now: new Date() };
+  const res = await replyToComment(ctx, { id: "c9", text: "Quero", from: { id: "123" } });
+  assert.equal(res.replied, true);
+  const own = await replyToComment(ctx, { id: "c10", text: "Quero", from: { id: "999" } });
+  assert.equal(own.skipped, "own_comment");
+});
