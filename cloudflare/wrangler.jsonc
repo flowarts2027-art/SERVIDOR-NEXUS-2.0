@@ -6,6 +6,13 @@
   "compatibility_date": "2026-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "keep_vars": true,
+  "workers_dev": true,
+  // Domínio próprio (Cloudflare cria o DNS sozinha). O endereço workers.dev continua funcionando.
+  "routes": [
+    { "pattern": "flowarts.com.br", "custom_domain": true },
+    { "pattern": "www.flowarts.com.br", "custom_domain": true },
+    { "pattern": "painel.flowarts.com.br", "custom_domain": true }
+  ],
   "observability": {
     "enabled": true
   },

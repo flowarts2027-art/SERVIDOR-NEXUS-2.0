@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login
+Disallow: /portal
+Disallow: /master
+Disallow: /b/
+Disallow: /brinde
+Disallow: /downloads/
+
+Sitemap: https://flowarts.com.br/sitemap.xml
