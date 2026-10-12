@@ -1,6 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-11
+- 21h30 BRT — AUTO-RESPONDER FUNCIONANDO (prova em produção): após migrar para o app "Flow Arts Nexus" (publicado, sem portfólio; ID do app do Instagram 1642200040634174, salvo no Master pelo Rodrigo) e reconectar @flowarts2026 (BUSINESS), a API passou a devolver os comentários (count = igCount). Fix e1e837b (comentário sem username: usa from.id; reinscrição do webhook quando o token muda). Run 00:30 UTC: checked 3, replied 3, errors 0 — DM + resposta pública para 3 comentários "Quero" da globalplay_streaming; webhook inscrito com o token novo (ok). Falta testar o aviso na hora (webhook) com um comentário novo.
+- 5366b6e: Master permite trocar ID + chave do app do Instagram.
 - 17h41: demo do Café Brisa com 3 posts e imagens boas (conferido por print do Rodrigo). Bug: legenda sem campanha incluía o contentFocus (instrução interna). fix c2058ca (deploy ~17h46 BRT): legenda usa a oferta da marca; demo profileVersion demo2 refaz os rascunhos do café.
 - 17h15: link /exemplo colocado na bio do @flowarts2026 (Rodrigo). Testes de lead removidos pelo próprio Rodrigo (conferido: 0 leads). Rascunho de 12/10 12:00 refeito com o tema certo ("Hashtags locais: como ser encontrado no Rio", profileVersion f), imagem em geração. Carrossel "Tráfego pago" de 11/10 19:00 aprovado e pronto.
 - 16h59: Rodrigo apagou sem querer o cliente demo-cafe no Master; o cron (ensureDemoClient) recriou às 17h00 BRT (conferido: demo-cafe online). Posts do café começam do zero.
