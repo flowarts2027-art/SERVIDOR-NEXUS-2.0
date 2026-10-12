@@ -98,6 +98,77 @@ export function followedReply(messages = [], igUserId = "", handledUntil = "") {
   return hit || null;
 }
 
+// Responde a UMA pessoa que disse "Já segui": confere no Instagram e manda a resposta certa.
+export async function respondToFollowed(env, client, { request = fetch, token, igUserId, handle, now = new Date() }, igsid, pending) {
+  const out = { sent: 0, errors: [] };
+  try {
+    const check = await checkFollows({ request, token, igsid });
+    if (check.follows === true) {
+      const link = await giftLink(env, { clientId: client.id, igsid, commentId: pending.commentId, username: check.username || pending.username }, now);
+      await sendTo(request, token, igUserId, igsid, downloadMessage(link)).catch(async error => {
+        out.errors.push("button:" + error.message);
+        await sendTo(request, token, igUserId, igsid, { text: READY_TEXT + " " + link });
+      });
+      pending.stage = "done";
+      pending.doneAt = now.toISOString();
+    } else if (check.follows === false) {
+      await sendTo(request, token, igUserId, igsid, askMessage(NOT_FOLLOWING_TEXT + " Siga " + handle + " e toque em \"" + FOLLOWED_TITLE + "\"."));
+      pending.stage = "not_following";
+    } else {
+      out.errors.push("follow_check:" + String(check.error || "unknown"));
+      await sendTo(request, token, igUserId, igsid, askMessage("Não consegui conferir agora. Toque em \"" + FOLLOWED_TITLE + "\" de novo em 1 minuto."));
+      pending.stage = "retry";
+    }
+    out.sent += 1;
+  } catch (error) {
+    out.errors.push("send:" + error.message);
+  }
+  return out;
+}
+
+// Mensagens que chegam pelo aviso da Meta (webhook "messages"): [{ igUserId, igsid, text, payload, at }]
+export function followedFromWebhook(body = {}) {
+  const out = [];
+  for (const entry of Array.isArray(body.entry) ? body.entry : []) {
+    for (const item of Array.isArray(entry.messaging) ? entry.messaging : []) {
+      if (item?.message?.is_echo) continue;
+      const text = String(item?.message?.text || item?.postback?.title || "");
+      const payload = String(item?.message?.quick_reply?.payload || item?.postback?.payload || "");
+      if (payload !== "GIFT_FOLLOWED" && !FOLLOWED_PATTERN.test(text)) continue;
+      const ts = Number(item.timestamp || entry.time || 0);
+      out.push({
+        igUserId: String(entry.id || item?.recipient?.id || ""),
+        igsid: String(item?.sender?.id || ""),
+        text, payload,
+        at: ts ? new Date(ts > 1e12 ? ts : ts * 1000).toISOString() : ""
+      });
+    }
+  }
+  return out.filter(x => x.igsid && x.igUserId);
+}
+
+// Responde na hora quem tocou em "Já segui" (usa a mesma regra da leitura a cada minuto).
+export async function processWebhookFollowed(env, items, { request = fetch, now = new Date(), findClient } = {}) {
+  const results = [];
+  for (const item of items) {
+    const found = findClient ? await findClient(item.igUserId) : null;
+    if (!found) { results.push({ igsid: item.igsid, skipped: "unknown_account" }); continue; }
+    const { client, conn } = found;
+    const state = await readGiftDmState(env, client.id);
+    const pending = state.pending[item.igsid];
+    if (!pending || pending.stage === "done") { results.push({ igsid: item.igsid, skipped: pending ? "done" : "not_pending" }); continue; }
+    const at = item.at || now.toISOString();
+    if ((Date.parse(at) || 0) <= (Date.parse(String(pending.handledUntil || "")) || 0)) { results.push({ igsid: item.igsid, skipped: "already_handled" }); continue; }
+    pending.handledUntil = at;
+    const handle = "@" + String(conn?.username || client.instagram || "").replace(/^@/, "");
+    const res = await respondToFollowed(env, client, { request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""), handle, now }, item.igsid, pending);
+    state.lastWebhook = { at: now.toISOString(), igsid: item.igsid, stage: pending.stage, errors: res.errors.slice(0, 3) };
+    await writeGiftDmState(env, client.id, state, now).catch(() => null);
+    results.push({ igsid: item.igsid, stage: pending.stage, sent: res.sent });
+  }
+  return results;
+}
+
 export async function runGiftInboxForClient(env, client, { request = fetch, now = new Date(), conn: given = null } = {}) {
   const out = { checked: 0, sent: 0, errors: [] };
   const state = await readGiftDmState(env, client.id);
@@ -128,28 +199,9 @@ export async function runGiftInboxForClient(env, client, { request = fetch, now 
     out.checked += 1;
     actions += 1;
     pending.handledUntil = String(reply.created_time || now.toISOString());
-    try {
-      const check = await checkFollows({ request, token, igsid });
-      if (check.follows === true) {
-        const link = await giftLink(env, { clientId: client.id, igsid, commentId: pending.commentId, username: check.username || pending.username }, now);
-        await sendTo(request, token, igUserId, igsid, downloadMessage(link)).catch(async error => {
-          out.errors.push("button:" + error.message);
-          await sendTo(request, token, igUserId, igsid, { text: READY_TEXT + " " + link });
-        });
-        pending.stage = "done";
-        pending.doneAt = now.toISOString();
-      } else if (check.follows === false) {
-        await sendTo(request, token, igUserId, igsid, askMessage(NOT_FOLLOWING_TEXT + " Siga " + handle + " e toque em \"" + FOLLOWED_TITLE + "\"."));
-        pending.stage = "not_following";
-      } else {
-        out.errors.push("follow_check:" + String(check.error || "unknown"));
-        await sendTo(request, token, igUserId, igsid, askMessage("Não consegui conferir agora. Toque em \"" + FOLLOWED_TITLE + "\" de novo em 1 minuto."));
-        pending.stage = "retry";
-      }
-      out.sent += 1;
-    } catch (error) {
-      out.errors.push("send:" + error.message);
-    }
+    const res = await respondToFollowed(env, client, { request, token, igUserId, handle, now }, igsid, pending);
+    out.sent += res.sent;
+    out.errors.push(...res.errors);
   }
   state.lastRun = { at: now.toISOString(), conversations: conversations.length, checked: out.checked, sent: out.sent, errors: out.errors.slice(0, 5) };
   await writeGiftDmState(env, client.id, state, now).catch(() => null);

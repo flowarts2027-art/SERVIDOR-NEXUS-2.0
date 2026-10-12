@@ -10,7 +10,7 @@ import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.j
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
 import { giftStatus, giftButtonMessage } from "./gift.js";
-import { ASK_TEXT, FOLLOWED_TITLE, askMessage, markGiftAsked, readGiftDmState } from "./gift-dm.js";
+import { ASK_TEXT, FOLLOWED_TITLE, askMessage, markGiftAsked, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -223,7 +223,7 @@ export async function commentAutoReplyStatus(env, clientId) {
   const state = await readState(env, clientId);
   const handled = Object.entries(state.handled || {}).slice(0, 20).map(([id, value]) => ({ id, ...value }));
   const gift = await giftStatus(env, clientId).catch(() => null);
-  const giftDm = await readGiftDmState(env, clientId).then(v => ({ lastRun: v.lastRun || null, pending: Object.entries(v.pending || {}).slice(0, 10).map(([id, p]) => ({ id, stage: p.stage, username: p.username, askedAt: p.askedAt })) })).catch(() => null);
+  const giftDm = await readGiftDmState(env, clientId).then(v => ({ lastRun: v.lastRun || null, lastWebhook: v.lastWebhook || null, pending: Object.entries(v.pending || {}).slice(0, 10).map(([id, p]) => ({ id, stage: p.stage, username: p.username, askedAt: p.askedAt })) })).catch(() => null);
   return { giftDm, lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
 }
 
@@ -315,9 +315,17 @@ export async function handleInstagramWebhook(request, env, url, ctx) {
   const raw = await request.text();
   const { appSecret } = await masterInstagramCredentials(env).catch(() => ({ appSecret: "" }));
   if (!(await validMetaSignature(raw, request.headers.get("x-hub-signature-256"), appSecret))) return plain("invalid_signature", 401);
-  const items = commentsFromWebhook(parseJson(raw, {}));
+  const body = parseJson(raw, {});
+  const items = commentsFromWebhook(body);
   if (items.length) {
     const work = processWebhookComments(env, items).catch(error => console.warn("ig_webhook_failed", String(error?.message || error).slice(0, 140)));
+    if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
+  }
+  // "Já segui" no direct: responde na hora.
+  const followed = followedFromWebhook(body);
+  if (followed.length) {
+    const work = processWebhookFollowed(env, followed, { findClient: igUserId => clientForInstagramUser(env, igUserId) })
+      .catch(error => console.warn("ig_webhook_followed_failed", String(error?.message || error).slice(0, 140)));
     if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
   }
   return plain("ok");

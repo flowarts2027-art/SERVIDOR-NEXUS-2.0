@@ -99,3 +99,33 @@ test("sem ninguém esperando, não chama o Instagram", async () => {
   assert.equal(out.skipped, "nothing_pending");
   assert.equal(calls, 0);
 });
+
+import { followedFromWebhook, processWebhookFollowed } from "../src/gift-dm.js";
+
+test("aviso da Meta: pega o toque em Já segui e ignora eco e outras mensagens", () => {
+  const body = { object: "instagram", entry: [{ id: "100", time: 1760235000, messaging: [
+    { sender: { id: "9" }, recipient: { id: "100" }, timestamp: 1760235000123, message: { mid: "a", text: "Já segui", quick_reply: { payload: "GIFT_FOLLOWED" } } },
+    { sender: { id: "100" }, recipient: { id: "9" }, timestamp: 1760235000200, message: { mid: "b", text: "Já segui", is_echo: true } },
+    { sender: { id: "9" }, recipient: { id: "100" }, timestamp: 1760235000300, message: { mid: "c", text: "oi" } }
+  ] }] };
+  const items = followedFromWebhook(body);
+  assert.equal(items.length, 1);
+  assert.equal(items[0].igsid, "9");
+  assert.equal(items[0].igUserId, "100");
+});
+
+test("aviso da Meta: responde na hora e não repete o mesmo toque", async () => {
+  const env = memoryEnv();
+  await markGiftAsked(env, client.id, { igsid: "9", username: "ana", commentId: "c1" }, new Date("2026-10-12T02:00:00Z"));
+  const ig = fakeInstagram({ follows: false });
+  const items = [{ igUserId: "100", igsid: "9", text: "Já segui", payload: "GIFT_FOLLOWED", at: "2026-10-12T02:09:00.000Z" }];
+  const findClient = async id => id === "100" ? { client, conn } : null;
+  const r = await processWebhookFollowed(env, items, { request: ig.request, now: NOW, findClient });
+  assert.equal(r[0].stage, "not_following");
+  assert.match(ig.sent[0].message.text, /^Você precisa me seguir primeiro/);
+  const r2 = await processWebhookFollowed(env, items, { request: ig.request, now: NOW, findClient });
+  assert.equal(r2[0].skipped, "already_handled");
+  // A leitura de 1 minuto também não repete a mesma mensagem.
+  const again = await runGiftInboxForClient(env, client, { request: ig.request, now: NOW, conn });
+  assert.equal(again.sent, 0);
+});
