@@ -133,3 +133,56 @@
 .cost-table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
 .cost-table th, .cost-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(127,127,127,.2); }
 .usage-title { font-size: .95rem; margin: 16px 0 6px; }
+
+
+/* WhatsApp inbox (atendente virtual) */
+.wa-top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:16px;flex-wrap:wrap}
+.wa-top h2{margin:4px 0}
+.wa-switch{display:flex;align-items:center;gap:12px;cursor:pointer;padding:12px 16px;border:1px solid #173126;border-radius:14px;background:#07100c;max-width:420px}
+.wa-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.wa-switch-ui{flex:none;width:46px;height:26px;border-radius:999px;background:#26302b;position:relative;transition:background .2s}
+.wa-switch-ui::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#cfd8d3;transition:left .2s}
+.wa-switch input:checked+.wa-switch-ui{background:var(--green)}
+.wa-switch input:checked+.wa-switch-ui::after{left:23px;background:#fff}
+.wa-switch input:focus-visible+.wa-switch-ui{outline:2px solid var(--green2);outline-offset:2px}
+.wa-switch strong{display:block;font-size:14px}.wa-switch small{display:block;color:var(--muted);font-size:11px}
+.wa-layout{display:grid;grid-template-columns:330px 1fr;gap:16px;min-height:560px}
+.wa-list-panel{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.wa-list-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.wa-list{overflow:auto;max-height:640px}
+.wa-list>.muted{padding:18px}
+.wa-item{display:grid;gap:3px;width:100%;text-align:left;padding:14px 18px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer}
+.wa-item:hover,.wa-item.active{background:#0b1612}
+.wa-item.human{box-shadow:inset 3px 0 0 var(--amber)}
+.wa-item-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.wa-item-top strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wa-item-top small{color:var(--muted);font-size:11px;flex:none}
+.wa-item p{margin:0;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wa-tags{display:flex;gap:6px;flex-wrap:wrap}
+.wa-tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid #2c3a33;color:#9bb0a4}
+.wa-tag.human{border-color:#ffbe5566;color:var(--amber)}
+.wa-tag.unread{border-color:#22c55e66;color:var(--green2)}
+.wa-thread-panel{display:flex;flex-direction:column;min-height:560px}
+.wa-empty{margin:auto;color:var(--muted)}
+#wa-thread-wrap{display:flex;flex-direction:column;flex:1;min-height:0}
+.wa-thread-head{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.wa-thread-head>div{flex:1;display:grid;min-width:0}
+.wa-thread-head small{font-size:11px}
+.wa-back{display:none}
+.wa-handoff{margin:12px 0 0;padding:10px 12px;border-radius:10px;border:1px solid #ffbe5555;background:#ffbe5512;color:var(--amber);font-size:13px}
+.wa-thread{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:16px 2px;max-height:520px}
+.wa-msg{max-width:78%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.wa-msg small{display:block;margin-top:4px;font-size:10px;opacity:.7}
+.wa-msg.in{align-self:flex-start;background:#18201c;border-bottom-left-radius:4px}
+.wa-msg.out{align-self:flex-end;background:#0f3a24;border-bottom-right-radius:4px}
+.wa-msg.out.auto{background:#14304a}
+.wa-form{display:flex;gap:10px;align-items:flex-end;padding-top:12px;border-top:1px solid var(--line)}
+.wa-form textarea{flex:1;resize:vertical;min-height:46px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:#07100c;color:var(--text);font:inherit}
+.wa-form-msg{min-height:1em;margin:6px 0 0;font-size:12px}
+@media(max-width:860px){
+  .wa-layout{grid-template-columns:1fr}
+  .wa-layout.open .wa-list-panel{display:none}
+  .wa-layout:not(.open) .wa-thread-panel{display:none}
+  .wa-back{display:inline-block}
+  .wa-msg{max-width:90%}
+}

@@ -1,5 +1,12 @@
 # Decisões e limites
 
+## 2026-10-12 — WhatsApp com IA respondendo sozinha
+- Rodrigo pediu um agente de IA respondendo no WhatsApp e autorizou falar preços. Isto substitui a regra antiga "IA só gera rascunho": a resposta automática existe, mas começa **desligada** e só liga pelo painel Master.
+- Regra da Meta (desde 15/01/2026): proibido robô de conversa livre; permitido atendente de negócio com passagem para humano. O prompt limita a IA aos fatos da Flow Arts e manda chamar o Rodrigo para fechar/pagar, desconto, reclamação ou dúvida fora do roteiro.
+- Fora da lista de preços da IA: "Instagram que responde sozinho" (R$ 197), por conflitar com "ainda não vender resposta automática a comentários" (empresa/visao.md). Rodrigo pode decidir incluir.
+- Menu do Master passa a ter 7 itens (entrou WhatsApp).
+- Número: teste da Meta agora; depois chip pré-pago dedicado (sem coexistência, que exigiria parceiro pago).
+
 ## 2026-10-11 20h45–21h — Novo app Meta "Flow Arts Nexus" (sem portfólio)
 - Rodrigo apontou (com razão) que publicar o app não exige CNPJ: o NEXUS IA CENTRAL estava ligado ao portfólio "Rodrigo Carvalho" e por isso o Publicar exigia verificação. Novo app "Flow Arts Nexus" criado pelo Rodrigo SEM portfólio, caso de uso API do Instagram, testador flowarts2026, webhook https://…/api/meta/instagram/webhook verificado, campos comments e messages assinados, configurações básicas preenchidas, app PUBLICADO (Rodrigo, 20h59).
 - Próximo: Master › Integrações › salvar ID + chave secreta do app do Instagram novo (Rodrigo digita), configurar redirect OAuth /api/oauth/instagram/callback no app novo e reconectar o Instagram da Flow Arts.

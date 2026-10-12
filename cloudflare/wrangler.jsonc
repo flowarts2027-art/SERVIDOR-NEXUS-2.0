@@ -29,7 +29,7 @@
     "NEXUS_OPENAI_MAX_OUTPUT_TOKENS": "1200",
     "NEXUS_DOWNLOADER_URL": "https://nexus-video-engine.onrender.com",
     "INSTAGRAM_APP_ID": "1053178344199625",
-    "WHATSAPP_CLIENT_ID": "globalplay-streaming",
+    "WHATSAPP_CLIENT_ID": "primeiro-teste",
     "WHATSAPP_GRAPH_VERSION": "v26.0",
     "WHATSAPP_SEND_LIMIT_PER_HOUR": "30"
   },

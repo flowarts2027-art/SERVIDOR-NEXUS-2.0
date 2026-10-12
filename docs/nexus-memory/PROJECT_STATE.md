@@ -1,5 +1,11 @@
 # Estado do Nexus 2.0
 
+## 2026-10-12 tarde — atendente de WhatsApp com IA (código pronto, não implantado)
+- Rodrigo decidiu: começar com número de teste da Meta e depois um chip pré-pago só para o robô (número sai do app do celular). Acompanhar conversas pelo painel Master. IA = OpenAI já existente. IA pode falar preços.
+- Meta: app novo "Flow Arts WhatsApp" (portfólio Rodrigo Carvalho, separado do app do Instagram). Número de teste +1 555 142-0295; mensagem modelo chegou no celular do Rodrigo. Token de teste gerado (24 h); segredos ainda não colocados na Cloudflare; webhook ainda não configurado.
+- Código (branch `feat/whatsapp-atendente`): cliente do WhatsApp trocado para `primeiro-teste`; `whatsapp-knowledge.js` com fatos/preços da Flow Arts; resposta automática com liga/desliga (desligada por padrão), pausa por conversa, passagem para humano, aviso seguro se a IA falhar, pedido de texto para áudio; aba WhatsApp no Master (lista, conversa, responder, pausar/religar). Hora das mensagens recebidas passou a ser a do Nexus (ordem da conversa).
+- Evidência: 318/318 testes locais (10 do WhatsApp com SQLite real e Meta/OpenAI simuladas); tela conferida em navegador de teste com dados simulados. Nenhuma mensagem real enviada pelo Nexus; nada implantado.
+
 ## 2026-10-11 — projeto preparado no PC do proprietário e perfil de marketing
 - Pedido: baixar o projeto em `C:\Users\playprime\nexus` e deixar pronto para rodar. Feito: clone, dependências instaladas, 247/247 testes e bundle dry-run aprovados. Sem deploy, sem `wrangler dev`, sem publicação.
 - Criado `.agents/product-marketing.md` (contexto de marketing da Flow Arts para as skills de marketing do Claude Code; não é lido pelo Worker). Decisões em DECISIONS.md.

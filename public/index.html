@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=20">
+  <link rel="stylesheet" href="/styles.css?v=21">
 </head>
 <body>
   <div class="shell">
@@ -17,6 +17,7 @@
         <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
         <button class="nav-item" data-view="agents">⬡ <span>Agentes</span></button>
         <button class="nav-item" data-view="odin">◆ <span>Contatos</span></button>
+        <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item" data-view="settings">⚙ <span>Integrações</span></button>
       </nav>
       <div class="core-card"><span class="pulse"></span><div><strong>Agent Core</strong><small>Motor central disponível</small></div></div>
@@ -278,6 +279,44 @@
         </div>
       </section>
 
+      <section id="whatsapp" class="view">
+        <div class="panel wa-top">
+          <div>
+            <p class="eyebrow">ATENDENTE VIRTUAL · FLOW ARTS</p>
+            <h2>Conversas do WhatsApp</h2>
+            <p class="muted" id="wa-config">Carregando…</p>
+          </div>
+          <label class="wa-switch">
+            <input type="checkbox" id="wa-auto">
+            <span class="wa-switch-ui" aria-hidden="true"></span>
+            <span><strong id="wa-auto-label">Robô desligado</strong><small id="wa-auto-help">A IA só escreve rascunhos. Ninguém recebe nada sozinho.</small></span>
+          </label>
+        </div>
+        <div class="wa-layout">
+          <aside class="panel wa-list-panel">
+            <div class="wa-list-head"><strong>Conversas</strong><small class="muted" id="wa-list-count"></small></div>
+            <div id="wa-list" class="wa-list"><p class="muted">Nenhuma conversa ainda.</p></div>
+          </aside>
+          <section class="panel wa-thread-panel" id="wa-thread-panel">
+            <div id="wa-empty" class="wa-empty">Escolha uma conversa à esquerda.</div>
+            <div id="wa-thread-wrap" hidden>
+              <div class="wa-thread-head">
+                <button type="button" class="ghost wa-back" id="wa-back">← Conversas</button>
+                <div><strong id="wa-name"></strong><small class="muted" id="wa-phone"></small></div>
+                <button type="button" class="ghost" id="wa-bot-toggle"></button>
+              </div>
+              <p class="wa-handoff" id="wa-handoff" hidden>A IA chamou você nesta conversa. O robô está pausado aqui até você religar.</p>
+              <div id="wa-thread" class="wa-thread"></div>
+              <form id="wa-form" class="wa-form">
+                <textarea id="wa-text" rows="2" maxlength="4096" placeholder="Escreva sua resposta… (o robô pausa nesta conversa)"></textarea>
+                <button class="primary" type="submit">Enviar</button>
+              </form>
+              <p class="muted wa-form-msg" id="wa-form-msg"></p>
+            </div>
+          </section>
+        </div>
+      </section>
+
       <section id="settings" class="view">
         <div class="panel">
           <div class="panel-head"><div><p class="eyebrow">NEXUS CORE</p><h2>Infraestrutura central</h2><p class="muted">Estas conexões pertencem ao NEXUS. Seus clientes não precisam criar contas técnicas.</p></div></div>
@@ -354,6 +393,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=40" defer></script>
+  <script src="/app.js?v=41" defer></script>
+  <script src="/whatsapp-inbox.js?v=1" defer></script>
 </body>
 </html>
