@@ -269,3 +269,4 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
   - caption-polish.js: chamada única (remove "Responda nos comentários", "Salve para...", etc. quando há o QUERO); o cron corrige posts prontos.
   - Meta de seguidores para marca: 1.000 em 90 dias (ignora valores > 100.000).
   - 309 testes.
+- 08:12 (Rodrigo): criou token GitHub granular "nexus-reels-2" (conta flowarts2027-art, só SERVIDOR-NEXUS-2.0, Actions + Contents leitura/gravação, 90 dias) e trocou o segredo GITHUB_ACTIONS_TOKEN na Cloudflare ele mesmo. Conferido no painel: GITHUB_INGEST_REPOSITORY = flowarts2027-art/SERVIDOR-NEXUS-2.0. Ainda sem prova de Reel renderizado: o 1º teste real é o post Reel das 12:00 de 12/10 (já aprovado).
