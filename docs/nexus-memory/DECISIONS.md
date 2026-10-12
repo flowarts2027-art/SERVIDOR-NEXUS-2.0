@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-11 20h45–21h — Novo app Meta "Flow Arts Nexus" (sem portfólio)
+- Rodrigo apontou (com razão) que publicar o app não exige CNPJ: o NEXUS IA CENTRAL estava ligado ao portfólio "Rodrigo Carvalho" e por isso o Publicar exigia verificação. Novo app "Flow Arts Nexus" criado pelo Rodrigo SEM portfólio, caso de uso API do Instagram, testador flowarts2026, webhook https://…/api/meta/instagram/webhook verificado, campos comments e messages assinados, configurações básicas preenchidas, app PUBLICADO (Rodrigo, 20h59).
+- Próximo: Master › Integrações › salvar ID + chave secreta do app do Instagram novo (Rodrigo digita), configurar redirect OAuth /api/oauth/instagram/callback no app novo e reconectar o Instagram da Flow Arts.
+
+
 ## 2026-10-11 17h47 — Atendimento para todo o Brasil
 - Rodrigo: "vamos expandir o alcance do negócio para o Brasil todo, visto que é venda online".
 - Flow Arts: público, hashtags (#PequenosNegocios no lugar de #RioDeJaneiro), temas, campanha, cenas das imagens, página /exemplo, visão da empresa e perfil de marketing (v2) agora falam de todo o Brasil. Sede continua no Rio (rodapés legais). profileVersion 2026-10-11g refaz rascunhos não aprovados.

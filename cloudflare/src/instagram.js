@@ -58,11 +58,15 @@ export async function getMasterInstagramSummary(env, request) {
 
 export async function saveMasterInstagramConfig(env, request, body = {}) {
   const current = await masterInstagramRecord(env);
-  const appId = String(body.appId || env.INSTAGRAM_APP_ID || current.appId || "").trim();
+  const suppliedAppId = String(body.appId || "").replace(/\D/g, "");
+  const appId = String(suppliedAppId || current.appId || env.INSTAGRAM_APP_ID || "").trim();
   const suppliedSecret = String(body.appSecret || "").trim();
-  const existingSecret = String(current.appSecret || "");
+  // Trocar de app exige a chave secreta do app novo (a antiga não serve).
+  const changingApp = suppliedAppId && suppliedAppId !== String(current.appId || env.INSTAGRAM_APP_ID || "");
+  const existingSecret = changingApp ? "" : String(current.appSecret || "");
 
   if (!appId) throw new Error("instagram_app_id_required");
+  if (changingApp && !suppliedSecret) throw new Error("instagram_app_secret_required");
   if (!suppliedSecret && !String(env.INSTAGRAM_APP_SECRET || "").trim() && !existingSecret) {
     throw new Error("instagram_app_secret_required");
   }

@@ -976,20 +976,22 @@ if(instagramSecretForm)instagramSecretForm.addEventListener("submit",async event
   const message=$("#instagram-secret-message");
   const button=form.querySelector('button[type="submit"]');
   const appSecret=String(input?.value||"").trim();
-  if(!appSecret){if(message)message.textContent="Cole o App Secret do NEXUS.";return;}
+  const appId=String(form.querySelector('input[name="appId"]')?.value||"").replace(/\D/g,"");
+  if(!appId||appId.length<8){if(message)message.textContent="Digite o ID do app do Instagram (só números).";return;}
+  if(!appSecret){if(message)message.textContent="Digite a chave secreta do app.";return;}
   if(button)button.disabled=true;
   if(message)message.textContent="Salvando com criptografia…";
   try{
     const result=await api("/api/master/instagram",{
       method:"POST",
-      body:JSON.stringify({appSecret})
+      body:JSON.stringify({appId,appSecret})
     });
     if(input)input.value="";
     if($("#instagram-current-app-id"))$("#instagram-current-app-id").value=result.appId||"";
-    if(message)message.textContent="App Secret do NEXUS salvo com segurança.";
+    if(message)message.textContent="App do Instagram salvo. Agora reconecte o Instagram dos clientes.";
     await loadIntegrations();
   }catch(error){
-    if(message)message.textContent="Não foi possível salvar o App Secret.";
+    if(message)message.textContent="Não foi possível salvar. Confira o ID e a chave.";
   }finally{
     if(button)button.disabled=false;
   }
