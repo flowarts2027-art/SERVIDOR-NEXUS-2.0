@@ -224,7 +224,8 @@ export async function commentAutoReplyStatus(env, clientId) {
   const handled = Object.entries(state.handled || {}).slice(0, 20).map(([id, value]) => ({ id, ...value }));
   const gift = await giftStatus(env, clientId).catch(() => null);
   const giftDm = await readGiftDmState(env, clientId).then(v => ({ lastRun: v.lastRun || null, lastWebhook: v.lastWebhook || null, pending: Object.entries(v.pending || {}).slice(0, 10).map(([id, p]) => ({ id, stage: p.stage, username: p.username, askedAt: p.askedAt })) })).catch(() => null);
-  return { giftDm, lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
+  const webhookLog = await env.DB.prepare("SELECT value_json FROM nexus_state WHERE namespace='ig-webhook-log' AND item_key='state' AND client_id='_' LIMIT 1").first().then(r => parseJson(r?.value_json, {}).items || []).catch(() => []);
+  return { webhookLog: webhookLog.slice(0, 5), giftDm, lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
 }
 
 
@@ -274,14 +275,67 @@ export function commentsFromWebhook(body = {}) {
   return out;
 }
 
-async function clientForInstagramUser(env, igUserId) {
+// O aviso da Meta usa o "user_id" da conta profissional, que é diferente do "id"
+// guardado no login. Pergunta o user_id ao Instagram uma vez e guarda.
+async function webhookAccountId(env, clientId, conn, request = fetch) {
+  const row = await env.DB.prepare("SELECT value_json FROM nexus_state WHERE namespace='ig-webhook-id' AND item_key='state' AND client_id=?1 LIMIT 1")
+    .bind(String(clientId)).first().catch(() => null);
+  const cached = parseJson(row?.value_json, {});
+  const tag = await tokenTag(conn?.accessToken || "");
+  if (cached.userId && cached.tag === tag) return String(cached.userId);
+  try {
+    const me = await graph(request, String(conn.accessToken || ""), "me?fields=user_id,username");
+    const userId = String(me?.user_id || "");
+    if (userId) {
+      await env.DB.prepare(
+        `INSERT INTO nexus_state(namespace, item_key, client_id, value_json, updated_at)
+         VALUES('ig-webhook-id', 'state', ?1, ?2, CURRENT_TIMESTAMP)
+         ON CONFLICT(namespace, item_key, client_id) DO UPDATE SET value_json = excluded.value_json, updated_at = CURRENT_TIMESTAMP`
+      ).bind(String(clientId), JSON.stringify({ userId, tag })).run().catch(() => null);
+    }
+    return userId;
+  } catch {
+    return "";
+  }
+}
+
+export async function clientForInstagramUser(env, igUserId, { request = fetch } = {}) {
   const rows = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE status = 'online'").all().catch(() => ({ results: [] }));
+  const target = String(igUserId || "");
   for (const row of rows?.results || []) {
     if (BLOCKED_PUBLISH_CLIENTS.has(String(row.id))) continue;
     const conn = await resolveInstagramCredentials(env, row.id).catch(() => null);
-    if (conn?.igUserId && String(conn.igUserId) === String(igUserId)) return { client: { ...row, config: parseJson(row.config_json, {}) }, conn };
+    if (!conn?.accessToken) continue;
+    const found = { client: { ...row, config: parseJson(row.config_json, {}) }, conn };
+    if (conn.igUserId && String(conn.igUserId) === target) return found;
+    if (target && await webhookAccountId(env, row.id, conn, request) === target) return found;
   }
   return null;
+}
+
+// Resumo dos últimos avisos da Meta (sem textos), para conferir no status.
+async function logWebhook(env, summary) {
+  const row = await env.DB.prepare("SELECT value_json FROM nexus_state WHERE namespace='ig-webhook-log' AND item_key='state' AND client_id='_' LIMIT 1").first().catch(() => null);
+  const list = Array.isArray(parseJson(row?.value_json, {}).items) ? parseJson(row?.value_json, {}).items : [];
+  const items = [summary, ...list].slice(0, 10);
+  await env.DB.prepare(
+    `INSERT INTO nexus_state(namespace, item_key, client_id, value_json, updated_at)
+     VALUES('ig-webhook-log', 'state', '_', ?1, CURRENT_TIMESTAMP)
+     ON CONFLICT(namespace, item_key, client_id) DO UPDATE SET value_json = excluded.value_json, updated_at = CURRENT_TIMESTAMP`
+  ).bind(JSON.stringify({ items })).run().catch(() => null);
+}
+
+export function webhookSummary(body = {}, now = new Date()) {
+  const entries = Array.isArray(body.entry) ? body.entry : [];
+  return {
+    at: now.toISOString(),
+    object: String(body.object || ""),
+    entries: entries.slice(0, 3).map(e => ({
+      id: String(e.id || ""),
+      changes: (Array.isArray(e.changes) ? e.changes : []).map(c => String(c.field || "")).slice(0, 5),
+      messaging: (Array.isArray(e.messaging) ? e.messaging : []).map(m => Object.keys(m || {}).filter(k => !["sender", "recipient", "timestamp"].includes(k)).join("+") + (m?.message?.is_echo ? "(echo)" : "") + (m?.message?.quick_reply ? "(quick_reply)" : "")).slice(0, 5)
+    }))
+  };
 }
 
 export async function processWebhookComments(env, items, { request = fetch, now = new Date() } = {}) {
@@ -316,6 +370,8 @@ export async function handleInstagramWebhook(request, env, url, ctx) {
   const { appSecret } = await masterInstagramCredentials(env).catch(() => ({ appSecret: "" }));
   if (!(await validMetaSignature(raw, request.headers.get("x-hub-signature-256"), appSecret))) return plain("invalid_signature", 401);
   const body = parseJson(raw, {});
+  const logWork = logWebhook(env, webhookSummary(body)).catch(() => null);
+  if (ctx?.waitUntil) ctx.waitUntil(logWork); else await logWork;
   const items = commentsFromWebhook(body);
   if (items.length) {
     const work = processWebhookComments(env, items).catch(error => console.warn("ig_webhook_failed", String(error?.message || error).slice(0, 140)));

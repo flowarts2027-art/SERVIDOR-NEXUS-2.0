@@ -13,6 +13,7 @@ export const GIFT_PAGE = "/b/";
 export const GIFT_CHECK = "/api/public/brinde/check";
 export const GIFT_LEAD = "/api/public/brinde/lead";
 export const GIFT_GUIDE = "/brinde/guia";
+export const GIFT_PDF = "/downloads/guia-10-ideias-flowarts.pdf";
 export const GIFT_TITLE = "10 ideias de post que trazem clientes";
 const NAMESPACE = "gift";
 const LINK_NAMESPACE = "gift-link";
@@ -339,7 +340,7 @@ const GUIDE_STYLE = `
 .mark{margin-top:12px;background:transparent;color:var(--accent-2);border:1.5px solid var(--line);padding:8px 14px}
 .step.done .mark{color:var(--ok);border-color:var(--ok)}
 .tip{border-left:4px solid var(--accent);margin-top:28px}
-@media print{body{background:#fff;color:#000}.progress,.btn,.mark,.copy button,.jump,.bonus,footer{display:none!important}.panel,.copy{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}}
+@media print{body{background:#fff;color:#000}.noprint,.progress,.btn,.mark,.copy button,.jump,.bonus,footer{display:none!important}.panel,.copy{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}}
 `;
 
 export function guideHtml(client = {}) {
@@ -363,10 +364,10 @@ ${whats ? `<section class="panel bonus"><span class="pill">🎁 Bônus liberado<
 <h1><em>10 ideias de post</em> que trazem clientes para pequenos negócios</h1>
 <p class="sub">Cada ideia vem com a legenda pronta para copiar. Faça uma por dia: em 10 dias o seu perfil já parece outro.</p></div>
 <a class="jump" href="#passos"><span class="ico">⚡</span><span><b>Ir direto para as ideias</b><span>As 10 ideias, uma por uma, com legenda pronta</span></span></a>
-<p style="margin:14px 0 0"><button class="btn" type="button" onclick="window.print()">⬇ Baixar PDF</button></p>
+<p style="margin:14px 0 0"><a class="btn" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ Baixar PDF</a></p>
 <div class="stats"><div class="stat"><b>10</b><span>ideias com legenda pronta</span></div><div class="stat"><b>5 min</b><span>para montar cada post</span></div><div class="stat"><b>R$ 0</b><span>para colocar em prática</span></div></div>
 <h2 id="passos" style="margin-top:34px">Do primeiro post ao décimo</h2>
-<p class="sub" style="margin:0">Vá marcando conforme faz. Fica salvo neste celular.</p>
+<p class="sub noprint" style="margin:0">Vá marcando conforme faz. Fica salvo neste celular.</p>
 <div class="progress"><b id="ptext">Seu progresso: 0 de 10</b><div class="bar"><i id="pbar"></i></div></div>
 ${steps}
 <section class="panel tip"><b>Dica da ${name}</b><p class="sub" style="margin-top:6px">Poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores. Depois repita a que funcionou. Se quiser que isso rode sozinho, a ${name} faz os posts e você só aprova.</p></section>
