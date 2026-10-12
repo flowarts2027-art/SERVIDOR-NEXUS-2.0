@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-12
+- 13h24 BRT: no PC do Rodrigo o site dava DNS_PROBE_FINISHED_NXDOMAIN (cache antigo). Resolvido com ipconfig /flushdns; site abriu. Rodrigo vai trocar o link da bio para flowarts.com.br.
 - Domínio flowarts.com.br (Hostinger) com nameservers da Cloudflare; zona conferida ATIVA no painel da Cloudflare.
 - Site e SEO (3c7a5b4 + 6cdf87e, deploys ok 16:15 e 16:20 UTC; conferido no navegador: flowarts.com.br e www abrem o site sem pular para /site, painel.flowarts.com.br abre o login, robots.txt no ar): rotas custom_domain no wrangler.jsonc (flowarts.com.br, www, painel.flowarts.com.br; workers.dev continua). site.html com título, descrição, canonical, Open Graph e dados estruturados (ProfessionalService + FAQPage). robots.txt (esconde /api, /login, /portal, /master, /b/, /brinde, /downloads) e sitemap.xml. exemplo.html com canonical. 311 testes ok.
 
