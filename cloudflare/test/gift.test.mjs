@@ -61,12 +61,13 @@ test("chave assinada não aceita alteração nem vencimento", async () => {
   assert.equal(await readGift({ ...env, NEXUS_SECRET_KEY: "outra" }, key, NOW), null);
 });
 
-test("formulário do brinde valida nome, WhatsApp e consentimento", () => {
-  const ok = { nome: "Ana", whatsapp: "(21) 98888-7777", consentimento: true };
+test("formulário do brinde valida nome, e-mail e WhatsApp", () => {
+  const ok = { nome: "Ana", email: "ana@cafe.com.br", whatsapp: "(21) 98888-7777" };
   assert.equal(validateGiftLead(ok).lead.whatsapp, "5521988887777");
+  assert.equal(validateGiftLead(ok).lead.email, "ana@cafe.com.br");
+  assert.equal(validateGiftLead({ ...ok, email: "ana@" }).error, "email");
   assert.equal(validateGiftLead({ ...ok, whatsapp: "55 21 98888-7777" }).lead.whatsapp, "5521988887777");
   assert.equal(validateGiftLead({ ...ok, whatsapp: "123" }).error, "whatsapp");
-  assert.equal(validateGiftLead({ ...ok, consentimento: false }).error, "consentimento");
   assert.equal(validateGiftLead({ ...ok, nome: "" }).error, "nome");
   assert.equal(validateGiftLead({ ...ok, website: "x" }).error, "spam");
 });
@@ -83,7 +84,7 @@ test("confere se a pessoa segue o perfil", async () => {
 test("depois de seguir, o WhatsApp vira contato quente e libera o guia", async () => {
   const env = memoryEnv();
   const key = await signGift(env, { c: "primeiro-teste", u: "777", n: "ana", f: 1, e: Math.floor(NOW.getTime() / 1000) + 3600 });
-  const req = new Request("https://x.test/api/public/brinde/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key, nome: "Ana", whatsapp: "21988887777", consentimento: true }) });
+  const req = new Request("https://x.test/api/public/brinde/lead", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ key, nome: "Ana", email: "ana@cafe.com.br", whatsapp: "21988887777" }) });
   const res = await handleGiftLead(req, env, { now: NOW });
   const data = await res.json();
   assert.equal(data.ok, true);
@@ -94,9 +95,10 @@ test("depois de seguir, o WhatsApp vira contato quente e libera o guia", async (
   assert.equal(insert.args[4], "hot");
   const payload = JSON.parse(insert.args[14]);
   assert.equal(payload.contact.whatsapp, "5521988887777");
+  assert.equal(payload.contact.email, "ana@cafe.com.br");
   // Sem ter tocado em "Já segui" (chave sem f:1) não libera.
   const bad = await signGift(env, { c: "primeiro-teste", u: "777", e: Math.floor(NOW.getTime() / 1000) + 3600 });
-  const res2 = await handleGiftLead(new Request("https://x.test/a", { method: "POST", body: JSON.stringify({ key: bad, nome: "Ana", whatsapp: "21988887777", consentimento: true }) }), env, { now: NOW });
+  const res2 = await handleGiftLead(new Request("https://x.test/a", { method: "POST", body: JSON.stringify({ key: bad, nome: "Ana", email: "ana@cafe.com.br", whatsapp: "21988887777" }) }), env, { now: NOW });
   assert.equal(res2.status, 400);
 });
 

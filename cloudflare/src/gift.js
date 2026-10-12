@@ -174,14 +174,15 @@ export async function handleGiftCheck(request, env, { fetchImpl = fetch, now = n
 }
 
 export function validateGiftLead(body = {}) {
-  const name = String(body.nome || "").trim().replace(/\s+/g, " ").slice(0, 60);
+  const name = String(body.nome || "").trim().replace(/\s+/g, " ").replace(/[<>]/g, "").slice(0, 60);
+  const email = String(body.email || "").trim().toLowerCase().slice(0, 120);
   let phone = String(body.whatsapp || "").replace(/\D/g, "");
   if (phone.length >= 12 && phone.startsWith("55")) phone = phone.slice(2);
   if (String(body.website || "").trim()) return { error: "spam" };
   if (name.length < 2) return { error: "nome", message: "Escreva o seu nome." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { error: "email", message: "Confira o seu e-mail." };
   if (phone.length < 10 || phone.length > 11) return { error: "whatsapp", message: "Confira o WhatsApp com DDD." };
-  if (body.consentimento !== true) return { error: "consentimento", message: "Marque a caixa para receber no WhatsApp." };
-  return { lead: { name, whatsapp: "55" + phone } };
+  return { lead: { name, email, whatsapp: "55" + phone } };
 }
 
 // Formulário depois de seguir: guarda o WhatsApp como contato quente e libera o guia.
@@ -210,7 +211,7 @@ export async function handleGiftLead(request, env, { now = new Date() } = {}) {
     lastContactAt: at,
     source: "instagram-brinde",
     sourceUrl: "/b/",
-    contact: { name: lead.name, whatsapp: lead.whatsapp, instagram: username ? "@" + username : "" },
+    contact: { name: lead.name, email: lead.email, whatsapp: lead.whatsapp, instagram: username ? "@" + username : "" },
     nextAction: { text: "Chamar no WhatsApp e perguntar se o guia ajudou", due: new Date(now.getTime() + 24 * 3600000).toISOString() }
   });
   const guide = await signGift(env, { c: key.c, u: key.u, g: 1, e: Math.floor(now.getTime() / 1000) + GUIDE_HOURS * 3600 });
@@ -223,94 +224,163 @@ function escapeHtml(value) {
 }
 
 const BASE_STYLE = `
-:root{--navy:#0F1E3D;--blue:#2B63F0;--bg:#F4F6FA;--card:#fff;--ink:#16233F;--muted:#5B6680;--line:#D5DCE8;--ok:#17895E;--warn:#9A5B00;--whats:#128C4B}
-@media (prefers-color-scheme:dark){:root{--bg:#0B1426;--card:#111D35;--ink:#E7ECF7;--muted:#A3AFC7;--line:#24345A;color-scheme:dark}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.55}
-.hero{background:var(--navy);color:#fff;padding:calc(24px + env(safe-area-inset-top)) 16px 56px}.wrap{max-width:640px;margin:0 auto}
-.eyebrow{margin:0 0 8px;color:#9DB4F5;font-weight:700}h1{margin:0;font-size:clamp(1.6rem,6vw,2.3rem);line-height:1.15;text-wrap:balance}
-.lead{margin:12px 0 0;color:#D3DCF2}main{padding:0 16px 40px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 18px;margin-top:-34px;box-shadow:0 12px 32px rgba(15,30,61,.12)}
-ol.steps{margin:0 0 18px;padding-left:22px;display:grid;gap:8px}
-.btn{min-height:54px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:0 22px;width:100%}
-.btn:disabled{opacity:.6;cursor:wait}.btn-ghost{background:transparent;color:var(--blue);border:2px solid var(--blue);margin-top:12px}.btn-whats{background:var(--whats);margin-top:12px}
-form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:700}input{font:inherit;color:var(--ink);background:var(--card);min-height:50px;border:1.5px solid var(--line);border-radius:10px;padding:0 14px;width:100%}
-.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;color:var(--muted);font-size:.95rem}.check input{width:22px;min-height:22px;height:22px;margin-top:2px;flex:none}.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.msg{margin:14px 0 0;min-height:1.2em;font-weight:700}.msg.ok{color:var(--ok)}.msg.warn{color:var(--warn)}
-a:focus-visible,.btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}footer{padding:0 16px 28px;color:var(--muted);font-size:.9rem;text-align:center}
+:root{--bg:#070D1A;--panel:#0E1729;--panel-2:#13203A;--line:#22314F;--ink:#EEF2FA;--muted:#9AA8C4;--accent:#4F86FF;--accent-2:#7FA8FF;--accent-soft:rgba(79,134,255,.14);--ok:#3DD68C;--warn:#FFB547;--whats:#1FAF5F;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.6}
+a{color:var(--accent-2)}.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent-2);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:999px}
+h1{margin:14px 0 0;font-size:clamp(1.7rem,6.4vw,2.5rem);line-height:1.15;text-wrap:balance}h1 em{font-style:normal;color:var(--accent-2)}
+h2{font-size:1.35rem;line-height:1.25;margin:0 0 6px}.sub{color:var(--muted);margin:12px 0 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 18px}
+.btn{min-height:52px;border:0;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;padding:0 22px}
+.btn.block{width:100%}.btn:disabled{opacity:.6;cursor:wait}.btn-ghost{background:transparent;color:var(--accent-2);border:1.5px solid var(--accent)}.btn-whats{background:var(--whats)}
+form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:700;font-size:.95rem}
+input{font:inherit;color:var(--ink);background:var(--bg);min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;width:100%}
+input::placeholder{color:#5D6B88}.phone{display:grid;grid-template-columns:auto 1fr;gap:8px}.ddi{display:flex;align-items:center;padding:0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--muted);font-weight:700}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+input:focus-visible,a:focus-visible,.btn:focus-visible,button:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+.msg{margin:0;min-height:1.2em;font-weight:700}.msg.ok{color:var(--ok)}.msg.warn{color:var(--warn)}
+.note{color:var(--muted);font-size:.85rem;text-align:center;margin:0}
+footer{padding:28px 16px calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.85rem;text-align:center}
 `;
 
-function page(title, inner) {
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0F1E3D"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"><style>${BASE_STYLE}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
+function page(title, inner, extraStyle = "") {
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070D1A"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"><style>${BASE_STYLE}${extraStyle}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
 }
 
 function html(body, status = 200) {
   return new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" } });
 }
 
+// Uma janela só: Nome, E-mail e WhatsApp. A conferência de "segue?" roda escondida;
+// a tela de seguir só aparece para quem ainda não segue.
 export function giftPageHtml(handle = "@flowarts2026", code = "") {
   const h = escapeHtml(handle);
-  return page("Seu brinde · Flow Arts", `
-<header class="hero"><div class="wrap"><p class="eyebrow">Brinde da Flow Arts</p><h1>Guia grátis: ${escapeHtml(GIFT_TITLE)}</h1><p class="lead">Ideias simples para o Instagram do seu negócio atrair clientes.</p></div></header>
-<main><div class="wrap"><section class="card">
-<div id="step1">
-<ol class="steps"><li>Siga <b>${h}</b> no Instagram.</li><li>Volte aqui e toque em <b>Já segui</b>.</li></ol>
-<a class="btn btn-ghost" href="https://www.instagram.com/${h.replace(/^@/, "")}/" target="_blank" rel="noopener">Abrir ${h}</a>
-<button id="check" class="btn" type="button" style="margin-top:12px">Já segui</button>
-</div>
-<form id="step2" hidden novalidate>
-<p style="margin:0 0 14px;font-weight:700">Pronto! Agora diga para onde mandar o seu brinde.</p>
-<label>Seu nome<input name="nome" autocomplete="given-name" required></label>
-<label>WhatsApp com DDD<input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="21 98888-7777" required></label>
+  return page("Material gratuito · Flow Arts", `
+<main class="wrap" style="padding-top:calc(36px + env(safe-area-inset-top));max-width:480px;text-align:center">
+<span class="pill">⚡ Material gratuito</span>
+<h1><em>${escapeHtml(GIFT_TITLE)}</em></h1>
+<p class="sub">O guia com 10 ideias prontas, legendas para copiar e um plano de 10 dias para o Instagram do seu negócio.</p>
+<section class="panel" style="margin-top:24px;text-align:left">
+<form id="lead" novalidate>
+<p class="note" style="font-size:.95rem">Preencha seus dados para acessar o guia completo.</p>
+<label>Nome<input name="nome" autocomplete="given-name" placeholder="Seu nome" required></label>
+<label>E-mail<input name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" required></label>
+<label>WhatsApp<span class="phone"><span class="ddi">🇧🇷 +55</span><input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(21) 98888-7777" required></span></label>
 <div class="hp" aria-hidden="true"><label>Site<input name="website" tabindex="-1" autocomplete="off"></label></div>
-<label class="check"><input name="consentimento" type="checkbox"> <span>Aceito receber o brinde e mensagens da Flow Arts no WhatsApp. <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a>.</span></label>
-<button class="btn" type="submit">Receber meu brinde</button>
-</form>
+<button class="btn block" type="submit">Acessar guia completo</button>
 <p id="msg" class="msg" role="status"></p>
-</section></div></main>
+<p class="note">Seus dados estão seguros e não serão compartilhados. Ao continuar, você aceita receber o guia e mensagens da Flow Arts no WhatsApp. <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a>.</p>
+</form>
+<div id="follow" hidden style="text-align:center">
+<p style="margin:0 0 16px;font-weight:700;font-size:1.1rem">Você precisa me seguir primeiro 🙂</p>
+<a class="btn btn-ghost block" href="https://www.instagram.com/${h.replace(/^@/, "")}/" target="_blank" rel="noopener">Seguir ${h}</a>
+<button id="check" class="btn block" type="button" style="margin-top:12px">Já segui</button>
+<p id="fmsg" class="msg" role="status" style="margin-top:12px"></p>
+</div>
+</section>
+</main>
 <script>
-(function(){var code=${JSON.stringify(String(code))};var key="";var b=document.getElementById("check"),m=document.getElementById("msg"),f=document.getElementById("step2");
-function say(t,c){m.textContent=t||"";m.className="msg "+(c||"");}
+(function(){var code=${JSON.stringify(String(code))};var key="",waiting=null;
+var f=document.getElementById("lead"),m=document.getElementById("msg"),fw=document.getElementById("follow"),b=document.getElementById("check"),fm=document.getElementById("fmsg");
+function say(el,t,c){el.textContent=t||"";el.className="msg "+(c||"");}
 function post(u,d){return fetch(u,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(d)}).then(function(r){return r.json().catch(function(){return {};});});}
-if(!code){say("Este link está incompleto. Abra o link que chegou no seu direct.","warn");b.disabled=true;return;}
-function check(){b.disabled=true;b.textContent="Conferindo…";say("");
-post("${GIFT_CHECK}",{code:code}).then(function(d){if(d.follows===true&&d.key){key=d.key;document.getElementById("step1").hidden=true;f.hidden=false;say("");f.elements.nome.focus();return;}
-say(d.message||"Não consegui conferir. Tente de novo.","warn");b.disabled=false;b.textContent="Já segui";})
-.catch(function(){say("Sem conexão. Tente de novo.","warn");b.disabled=false;b.textContent="Já segui";});}
-b.addEventListener("click",check);check();
-f.addEventListener("submit",function(e){e.preventDefault();var s=f.querySelector("button");s.disabled=true;s.textContent="Enviando…";say("");
-post("${GIFT_LEAD}",{key:key,nome:f.elements.nome.value,whatsapp:f.elements.whatsapp.value,website:f.elements.website.value,consentimento:f.elements.consentimento.checked})
-.then(function(d){if(d.ok&&d.url){say("Tudo certo! Abrindo o seu brinde…","ok");location.href=d.url;return;}
-say(d.message||"Não deu certo. Tente de novo.","warn");s.disabled=false;s.textContent="Receber meu brinde";})
-.catch(function(){say("Sem conexão. Tente de novo.","warn");s.disabled=false;s.textContent="Receber meu brinde";});});})();
+function check(){return post("${GIFT_CHECK}",{code:code}).then(function(d){
+if(d.follows===true&&d.key){key=d.key;fw.hidden=true;f.hidden=false;return true;}
+f.hidden=true;fw.hidden=false;say(fm,d.follows===false?"":(d.message||""),"warn");return false;});}
+if(!code){say(m,"Este link está incompleto. Abra o link que chegou no seu direct.","warn");return;}
+waiting=check().catch(function(){return false;});
+b.addEventListener("click",function(){b.disabled=true;b.textContent="Conferindo…";say(fm,"");
+check().then(function(ok){if(!ok&&!fm.textContent)say(fm,"Ainda não vi você seguindo. Siga e toque de novo.","warn");})
+.catch(function(){say(fm,"Sem conexão. Tente de novo.","warn");}).then(function(){b.disabled=false;b.textContent="Já segui";});});
+f.addEventListener("submit",function(e){e.preventDefault();var s=f.querySelector("button");s.disabled=true;s.textContent="Enviando…";say(m,"");
+Promise.resolve(waiting).then(function(){if(!key)return {ok:false,message:"Confira se você segue ${h} e tente de novo."};
+return post("${GIFT_LEAD}",{key:key,nome:f.elements.nome.value,email:f.elements.email.value,whatsapp:f.elements.whatsapp.value,website:f.elements.website.value});})
+.then(function(d){if(d.ok&&d.url){say(m,"Tudo certo! Abrindo o seu guia…","ok");location.href=d.url;return;}
+say(m,d.message||"Não deu certo. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";})
+.catch(function(){say(m,"Sem conexão. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";});});})();
 </script>`);
 }
 
+// Ideia, como fazer e a legenda pronta para copiar (troque o que está entre colchetes).
 const GUIDE_IDEAS = [
-  ["Bastidores de 15 segundos", "Mostre algo sendo feito: o café saindo, o corte acontecendo, a embalagem sendo fechada. Gente gosta de ver o processo."],
-  ["Antes e depois", "Uma foto do problema e outra do resultado. Funciona para salão, reforma, limpeza, roupa, comida."],
-  ["Pergunta do cliente", "Pegue uma dúvida que você ouve toda semana e responda em um post. Termine com: “Tem outra dúvida? Comenta aqui.”"],
-  ["O produto mais pedido", "Mostre o campeão de vendas e diga em uma frase por que as pessoas voltam para comprar."],
-  ["Quem está por trás", "Apresente você ou alguém da equipe com nome e uma curiosidade. Pessoas compram de pessoas."],
-  ["Prova de cliente", "Print de uma mensagem elogiando (com permissão) ou foto do cliente usando. Uma prova vale mais que dez promessas."],
-  ["Erro comum", "“3 erros que as pessoas cometem ao…” ensina e mostra que você entende do assunto."],
-  ["Oferta com prazo", "Uma condição real com data para acabar. Diga o que é, até quando e como pedir."],
-  ["Enquete nos stories", "Duas opções simples: “Qual você prefere?”. Quem vota já está conversando com você."],
-  ["Chamada clara", "Todo post termina com um próximo passo: “Comente QUERO”, “Chame no WhatsApp” ou “Salve para depois”."]
+  ["Bastidores de 15 segundos", "Grave algo sendo feito: o café saindo, o corte acontecendo, a embalagem sendo fechada. Gente gosta de ver o processo.", "Ninguém vê essa parte, mas é aqui que o [PRODUTO] fica bom de verdade.\n\nCada [PEDIDO/CLIENTE] passa por isso antes de chegar até você.\n\nQuer um? Chama no direct."],
+  ["Antes e depois", "Uma foto do problema e outra do resultado. Funciona para salão, reforma, limpeza, roupa e comida.", "Antes 👉 depois.\n\n[O QUE FOI FEITO] em [TEMPO].\n\nQuer esse resultado também? Comente QUERO."],
+  ["Pergunta do cliente", "Pegue uma dúvida que você ouve toda semana e responda em um post.", "\"[PERGUNTA QUE VOCÊ MAIS OUVE]?\"\n\nResposta curta: [RESPOSTA EM UMA FRASE].\n\nTem outra dúvida? Comenta aqui que eu respondo."],
+  ["O mais pedido", "Mostre o campeão de vendas e diga por que as pessoas voltam para comprar.", "Esse é o mais pedido da casa: [PRODUTO].\n\nO motivo: [O QUE ELE TEM DE ESPECIAL].\n\nSalve para lembrar na próxima vez."],
+  ["Quem está por trás", "Apresente você ou alguém da equipe com nome e uma curiosidade. Pessoas compram de pessoas.", "Prazer, eu sou [NOME] 👋\n\nCuido do [NEGÓCIO] há [TEMPO] e o que eu mais gosto é [CURIOSIDADE].\n\nMe conta: há quanto tempo você acompanha a gente?"],
+  ["Prova de cliente", "Print de um elogio (com permissão) ou foto do cliente usando. Uma prova vale mais que dez promessas.", "Recebemos essa mensagem hoje e precisávamos mostrar 🥹\n\nObrigado, [NOME DO CLIENTE]!\n\nQuer ser o próximo? Chama no direct."],
+  ["Erro comum", "\"3 erros que as pessoas cometem ao…\" ensina e mostra que você entende do assunto.", "3 erros que quase todo mundo comete com [ASSUNTO]:\n\n1. [ERRO 1]\n2. [ERRO 2]\n3. [ERRO 3]\n\nSalve para não esquecer."],
+  ["Oferta com prazo", "Uma condição real com data para acabar. Diga o que é, até quando e como pedir.", "Só até [DIA]: [OFERTA].\n\nPara pedir, é só [COMO PEDIR].\n\nDepois disso, volta ao normal."],
+  ["Enquete nos stories", "Duas opções simples. Quem vota já está conversando com você.", "Story com enquete: \"Qual você prefere?\" [OPÇÃO A] ou [OPÇÃO B].\n\nNo dia seguinte, poste o resultado e marque quem votou."],
+  ["Chamada clara", "Todo post termina com um próximo passo. Escolha um só por post.", "Comente QUERO que eu te mando [O QUE A PESSOA GANHA] no direct."]
 ];
+
+const GUIDE_STYLE = `
+.top{padding-top:calc(28px + env(safe-area-inset-top))}
+.bonus{text-align:center;background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+.bonus h2{margin:10px 0 8px;font-size:1.3rem}.bonus h2 em{font-style:normal;color:var(--accent-2)}
+.jump{display:flex;gap:14px;align-items:center;text-decoration:none;color:var(--ink);border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:16px;padding:16px;margin-top:22px}
+.jump .ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);display:grid;place-items:center;font-size:1.2rem}
+.jump b{display:block;color:var(--ink)}.jump span{color:var(--muted);font-size:.92rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center}
+.stat b{display:block;font-size:1.5rem;color:var(--accent-2)}.stat span{color:var(--muted);font-size:.82rem;line-height:1.3;display:block}
+.progress{position:sticky;top:0;z-index:2;background:var(--bg);padding:12px 0}
+.bar{height:8px;border-radius:999px;background:var(--panel-2);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.step{display:grid;grid-template-columns:40px 1fr;gap:12px;margin-top:16px}
+.num{width:40px;height:40px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--accent-2)}
+.step.done .num{background:var(--ok);color:#06231A;border-color:var(--ok)}
+.step h3{margin:6px 0 4px;font-size:1.1rem}.step p{margin:0;color:var(--muted)}
+.copy{margin-top:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.copy header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.copy button,.mark{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px}
+.copy button{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);padding:4px 10px}
+.copy pre{margin:0;padding:12px;white-space:pre-wrap;font-family:inherit;font-size:.95rem;color:var(--ink)}
+.mark{margin-top:12px;background:transparent;color:var(--accent-2);border:1.5px solid var(--line);padding:8px 14px}
+.step.done .mark{color:var(--ok);border-color:var(--ok)}
+.tip{border-left:4px solid var(--accent);margin-top:28px}
+@media print{body{background:#fff;color:#000}.progress,.btn,.mark,.copy button,.jump,.bonus,footer{display:none!important}.panel,.copy{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}}
+`;
 
 export function guideHtml(client = {}) {
   const brand = clientBrand(client);
-  const whats = whatsappLink(client, "Olá! Baixei o guia de ideias de post da " + brand.brandName + " e quero ajuda com o meu Instagram.");
-  const items = GUIDE_IDEAS.map(([title, text]) => `<li><b>${escapeHtml(title)}.</b> ${escapeHtml(text)}</li>`).join("");
+  const name = escapeHtml(brand.brandName);
+  const whats = whatsappLink(client, "Olá! Baixei o guia de ideias de post da " + brand.brandName + " e quero o meu post de exemplo grátis.");
+  const steps = GUIDE_IDEAS.map(([title, how, caption], i) => `
+<article class="step" data-step="${i + 1}">
+<div class="num">${i + 1}</div>
+<div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(how)}</p>
+<div class="copy"><header><span>LEGENDA PRONTA</span><button type="button" data-copy>Copiar</button></header><pre>${escapeHtml(caption)}</pre></div>
+<button type="button" class="mark" data-mark>Marcar como feito</button></div>
+</article>`).join("");
   return page(GIFT_TITLE + " · " + brand.brandName, `
-<header class="hero"><div class="wrap"><p class="eyebrow">Guia grátis · ${escapeHtml(brand.brandName)}</p><h1>${escapeHtml(GIFT_TITLE)}</h1><p class="lead">Escolha uma ideia por dia. Em 10 dias o seu perfil já parece outro.</p></div></header>
-<main><div class="wrap"><section class="card">
-<ol class="steps" style="gap:14px">${items}</ol>
-<p><b>Dica:</b> poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores.</p>
-<button class="btn" type="button" onclick="window.print()">Salvar em PDF</button>
-${whats ? `<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Quero ajuda com meus posts</a>` : ""}
-</section></div></main>
-<style>@media print{.btn,footer{display:none}.hero{background:#fff;color:#000}.hero .eyebrow,.hero .lead{color:#333}.card{box-shadow:none;margin-top:0}}</style>`);
+<main class="wrap top">
+${whats ? `<section class="panel bonus"><span class="pill">🎁 Bônus liberado</span>
+<h2>Um <em>post de exemplo grátis</em>, feito para o seu negócio</h2>
+<p class="sub" style="margin:0 0 16px">A ${name} cria um post com a cara da sua marca para você ver como fica, sem compromisso.</p>
+<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Quero o meu exemplo</a></section>` : ""}
+<div style="margin-top:28px"><span class="pill">⚡ Guia exclusivo</span>
+<h1><em>10 ideias de post</em> que trazem clientes para pequenos negócios</h1>
+<p class="sub">Cada ideia vem com a legenda pronta para copiar. Faça uma por dia: em 10 dias o seu perfil já parece outro.</p></div>
+<a class="jump" href="#passos"><span class="ico">⚡</span><span><b>Ir direto para as ideias</b><span>As 10 ideias, uma por uma, com legenda pronta</span></span></a>
+<p style="margin:14px 0 0"><button class="btn" type="button" onclick="window.print()">⬇ Baixar PDF</button></p>
+<div class="stats"><div class="stat"><b>10</b><span>ideias com legenda pronta</span></div><div class="stat"><b>5 min</b><span>para montar cada post</span></div><div class="stat"><b>R$ 0</b><span>para colocar em prática</span></div></div>
+<h2 id="passos" style="margin-top:34px">Do primeiro post ao décimo</h2>
+<p class="sub" style="margin:0">Vá marcando conforme faz. Fica salvo neste celular.</p>
+<div class="progress"><b id="ptext">Seu progresso: 0 de 10</b><div class="bar"><i id="pbar"></i></div></div>
+${steps}
+<section class="panel tip"><b>Dica da ${name}</b><p class="sub" style="margin-top:6px">Poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores. Depois repita a que funcionou. Se quiser que isso rode sozinho, a ${name} faz os posts e você só aprova.</p></section>
+</main>
+<script>
+(function(){var KEY="flowarts-guia-10";var done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){done={};}
+var steps=[].slice.call(document.querySelectorAll(".step"));
+function paint(){var n=0;steps.forEach(function(s){var on=!!done[s.dataset.step];if(on)n++;s.classList.toggle("done",on);s.querySelector("[data-mark]").textContent=on?"✓ Feito":"Marcar como feito";});
+document.getElementById("ptext").textContent="Seu progresso: "+n+" de "+steps.length;document.getElementById("pbar").style.width=(n*100/steps.length)+"%";}
+steps.forEach(function(s){s.querySelector("[data-mark]").addEventListener("click",function(){done[s.dataset.step]=!done[s.dataset.step];try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){}paint();});
+s.querySelector("[data-copy]").addEventListener("click",function(e){var t=s.querySelector("pre").textContent,btn=e.currentTarget;
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){btn.textContent="Copiado ✓";setTimeout(function(){btn.textContent="Copiar";},1500);}).catch(function(){btn.textContent="Segure o texto";});});});
+paint();})();
+</script>`, GUIDE_STYLE);
 }
 
 // Rotas públicas do brinde. Retorna null quando a URL não é do brinde.
@@ -323,14 +393,14 @@ export async function handleGiftRequest(request, env, url, options = {}) {
   if (url.pathname.startsWith(GIFT_PAGE)) {
     const code = url.pathname.slice(GIFT_PAGE.length);
     const gift = await readGiftCode(env, code, options.now || new Date());
-    if (!gift) return html(page("Link vencido · Flow Arts", `<header class="hero"><div class="wrap"><h1>Este link venceu</h1><p class="lead">Comente QUERO de novo no post para receber outro.</p></div></header>`), 404);
+    if (!gift) return html(page("Link vencido · Flow Arts", `<main class="wrap" style="padding-top:60px;text-align:center"><h1>Este link venceu</h1><p class="sub">Comente QUERO de novo no post para receber outro.</p></main>`), 404);
     const conn = await resolveInstagramCredentials(env, gift.c).catch(() => null);
     return html(giftPageHtml("@" + String(conn?.username || "flowarts2026").replace(/^@/, ""), code));
   }
   if (url.pathname === GIFT_GUIDE) {
     const key = await readGift(env, url.searchParams.get("k"), options.now || new Date());
     if (!key || key.g !== 1) {
-      return html(page("Link vencido · Flow Arts", `<header class="hero"><div class="wrap"><h1>Este link venceu</h1><p class="lead">Abra de novo o link do seu direct e toque em “Já segui”.</p></div></header>`), 403);
+      return html(page("Link vencido · Flow Arts", `<main class="wrap" style="padding-top:60px;text-align:center"><h1>Este link venceu</h1><p class="sub">Abra de novo o link do seu direct.</p></main>`), 403);
     }
     const row = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE id=?1 LIMIT 1").bind(String(key.c)).first().catch(() => null);
     let config = {};
