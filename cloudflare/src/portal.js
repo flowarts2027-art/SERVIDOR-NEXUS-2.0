@@ -33,6 +33,7 @@ import { instagramSnapshot } from "./agent-runtime.js";
 import { whatsappLink, clientBrand, brandProfileVersion, DEMO_CLIENT_ID } from "./client-brand.js";
 import { campaignCalendar } from "./flowarts-campaign.js";
 import { handleLandingLead } from "./landing.js";
+import { reviewCopy } from "./brand-guard.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -490,7 +491,9 @@ async function listPosts(env, clientId) {
     error: row.error || "",
     costUsd: Number(row.cost_usd || 0),
     createdAt: row.created_at || null,
-    updatedAt: row.updated_at || null
+    updatedAt: row.updated_at || null,
+    // Revisor automático: avisos sobre a legenda (não bloqueia nada).
+    reviewWarnings: reviewCopy({ id: row.client_id }, row.caption || "")
   }));
 }
 

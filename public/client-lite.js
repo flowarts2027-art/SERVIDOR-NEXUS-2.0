@@ -126,12 +126,21 @@ function tagHtml(post) {
   return `<span class="tag tag-ok">Publicado</span>`;
 }
 
+// Aviso do Revisor automático: só aparece em post que ainda não foi publicado.
+function reviewHtml(post) {
+  const list = Array.isArray(post.reviewWarnings) ? post.reviewWarnings : [];
+  if (!list.length || post.status === "published") return "";
+  const items = list.map(w => `<li><b>${escapeHtml(w.label)}</b>: “${escapeHtml(w.trecho)}”</li>`).join("");
+  return `<div class="review-warn" role="note"><p>⚠️ Revisor: confira antes de aprovar</p><ul>${items}</ul></div>`;
+}
+
 function postCardHtml(post) {
   const when = post.status === "published" ? (post.publishedAt || post.updatedAt) : post.scheduledFor;
   return `<article class="post">
     ${mediaHtml(post, "post-media")}
     <div class="post-body">
       ${tagHtml(post)}
+      ${reviewHtml(post)}
       <p class="when">${formatName(post)} · ${escapeHtml(formatDate(when) || "data a definir")}</p>
       <p class="caption short">${escapeHtml(post.caption || "Legenda sendo escrita.")}</p>
       ${String(post.caption || "").length > 180 ? `<button type="button" class="more" data-more>Ler legenda inteira</button>` : ""}
