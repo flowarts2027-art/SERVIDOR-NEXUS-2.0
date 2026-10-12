@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-12
+- 13h46 BRT: Perfil da Empresa no Google criado (Rodrigo, guiado): Flow Arts, categoria Agência de marketing digital, área Brasil, telefone, site flowarts.com.br, 4 serviços + 2 personalizados, descrição. Já aparece como verificado ("Você gerencia este Perfil") com a logo. Sem fotos da empresa e sem avaliações ainda.
 - 13h31 BRT: Search Console (Rodrigo, guiado): propriedade de domínio flowarts.com.br verificada (provedor de domínio), sitemap https://flowarts.com.br/sitemap.xml enviado, indexação da home solicitada. Existe sitemap antigo de 2018 (dono anterior) na lista, ignorar.
 - 13h24 BRT: no PC do Rodrigo o site dava DNS_PROBE_FINISHED_NXDOMAIN (cache antigo). Resolvido com ipconfig /flushdns; site abriu. Rodrigo vai trocar o link da bio para flowarts.com.br.
 - Domínio flowarts.com.br (Hostinger) com nameservers da Cloudflare; zona conferida ATIVA no painel da Cloudflare.
