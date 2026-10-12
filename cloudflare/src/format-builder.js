@@ -283,6 +283,17 @@ export async function runFormatBuilder(env, client, options = {}) {
 
     const formatAttempts=Math.max(0,Number(payload?.formatBuild?.attempts||0));
     if(formatAttempts>=3&&String(payload?.formatBuild?.status||"")==="failed"){
+      // Reel aprovado que não conseguiu virar vídeo: sai como imagem em vez de ficar travado.
+      if(format==="reel"&&/^https:\/\//i.test(String(payload.imageUrl||payload.publicImageUrl||""))){
+        const reason=String(payload?.formatBuild?.error||"reel_build_failed").slice(0,120);
+        payload.formatBuild={status:"approved",kind:"post",fallbackFrom:"reel",fallbackReason:reason,imageUrl:String(payload.imageUrl||payload.publicImageUrl||""),builtAt:new Date().toISOString()};
+        payload.creativeFeatures={...(payload.creativeFeatures||{}),requestedFormat:"post",plannedFormat:"reel"};
+        payload.qualityGates.formatBuilder="approved";
+        await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
+        built++;
+        items.push({id:row.id,format:"post",status:"approved",fallbackFrom:"reel"});
+        continue;
+      }
       payload.qualityGates.formatBuilder="rejected";
       await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='format_build_retry_limit_reached',updated_at=CURRENT_TIMESTAMP WHERE id=?1")
         .bind(row.id,JSON.stringify(payload)).run();
@@ -305,7 +316,7 @@ export async function runFormatBuilder(env, client, options = {}) {
       const message=String(error?.message||error);
       // Sem acesso ao GitHub (token ausente, inválido ou de conta suspensa), o Reel
       // sai como post de imagem para não travar a publicação aprovada.
-      if(format==="reel"&&/github_actions_token_missing|social_reel_dispatch_failed_40[13]/.test(message)
+      if(format==="reel"&&/github_actions_token_missing|social_reel_dispatch_failed_(40[1349]|422)/.test(message)
         &&/^https:\/\//i.test(String(payload.imageUrl||payload.publicImageUrl||""))){
         payload.formatBuild={status:"approved",kind:"post",fallbackFrom:"reel",fallbackReason:message.slice(0,120),imageUrl:String(payload.imageUrl||payload.publicImageUrl||""),builtAt:new Date().toISOString()};
         payload.creativeFeatures={...(payload.creativeFeatures||{}),requestedFormat:"post",plannedFormat:"reel"};

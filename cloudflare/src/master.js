@@ -667,6 +667,17 @@ export async function handleMaster(request, env, url) {
     return json({ ok: true, result });
   }
 
+  // Teste do token do GitHub usado para montar Reels (não mostra o token).
+  if (url.pathname === "/api/master/github-check" && request.method === "GET") {
+    const token = String(env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || "").trim();
+    const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
+    if (!token) return json({ ok: false, error: "token_missing", repo });
+    const headers = { authorization: "Bearer " + token, accept: "application/vnd.github+json", "user-agent": "NEXUS-Check" };
+    const who = await fetch("https://api.github.com/user", { headers }).then(async r => ({ status: r.status, login: (await r.json().catch(() => ({})))?.login || "" })).catch(e => ({ status: 0, error: String(e?.message || e) }));
+    const repoRes = await fetch("https://api.github.com/repos/" + repo, { headers }).then(async r => { const b = await r.json().catch(() => ({})); return { status: r.status, permissions: b?.permissions || null }; }).catch(e => ({ status: 0, error: String(e?.message || e) }));
+    return json({ ok: repoRes.status === 200, repo, tokenLength: token.length, tokenPrefix: token.slice(0, 11), user: who, repoAccess: repoRes });
+  }
+
   // Zera a memória aprendida dos agentes de um cliente (termos, estratégia, pesquisa,
   // análises) e apaga rascunhos vencidos de perfis antigos. Configuração é mantida.
   const resetMemoryMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/reset-agent-memory$/);
