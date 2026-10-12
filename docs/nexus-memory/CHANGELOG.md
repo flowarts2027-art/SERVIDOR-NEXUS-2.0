@@ -2,7 +2,7 @@
 
 ## 2026-10-12
 - Domínio flowarts.com.br (Hostinger) com nameservers da Cloudflare; zona conferida ATIVA no painel da Cloudflare.
-- Site e SEO (aguardando push): rotas custom_domain no wrangler.jsonc (flowarts.com.br, www, painel.flowarts.com.br; workers.dev continua). site.html com título, descrição, canonical, Open Graph e dados estruturados (ProfessionalService + FAQPage). robots.txt (esconde /api, /login, /portal, /master, /b/, /brinde, /downloads) e sitemap.xml. exemplo.html com canonical. 311 testes ok.
+- Site e SEO (3c7a5b4 + 6cdf87e, deploys ok 16:15 e 16:20 UTC; conferido no navegador: flowarts.com.br e www abrem o site sem pular para /site, painel.flowarts.com.br abre o login, robots.txt no ar): rotas custom_domain no wrangler.jsonc (flowarts.com.br, www, painel.flowarts.com.br; workers.dev continua). site.html com título, descrição, canonical, Open Graph e dados estruturados (ProfessionalService + FAQPage). robots.txt (esconde /api, /login, /portal, /master, /b/, /brinde, /downloads) e sitemap.xml. exemplo.html com canonical. 311 testes ok.
 
 ## 2026-10-11
 - 21h30 BRT — AUTO-RESPONDER FUNCIONANDO (prova em produção): após migrar para o app "Flow Arts Nexus" (publicado, sem portfólio; ID do app do Instagram 1642200040634174, salvo no Master pelo Rodrigo) e reconectar @flowarts2026 (BUSINESS), a API passou a devolver os comentários (count = igCount). Fix e1e837b (comentário sem username: usa from.id; reinscrição do webhook quando o token muda). Run 00:30 UTC: checked 3, replied 3, errors 0 — DM + resposta pública para 3 comentários "Quero" da globalplay_streaming; webhook inscrito com o token novo (ok). Falta testar o aviso na hora (webhook) com um comentário novo.

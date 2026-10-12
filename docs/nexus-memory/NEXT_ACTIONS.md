@@ -1,4 +1,11 @@
-# Próximas ações, em ordem
+# Próximas ações
+
+## Domínio (2026-10-12)
+1. Rodrigo: trocar o link da bio do @flowarts2026 para flowarts.com.br.
+2. Google Search Console: adicionar flowarts.com.br (verificação por DNS na Cloudflare) e enviar sitemap.xml.
+3. Perfil da Empresa no Google (atendimento online).
+4. Opcional: URLs de privacidade/termos do app Meta para o domínio novo.
+
 
 ## Próximo passo exato (2026-10-11 16h30 BRT)
 1. Rodrigo testa /exemplo com os próprios dados e confere o contato na aba Contatos do painel.
