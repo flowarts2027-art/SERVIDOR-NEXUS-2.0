@@ -1,7 +1,7 @@
-// Coloca o "Comente QUERO" (brinde) nos posts que já estavam prontos e ainda não saíram.
+// Coloca o "Comente QUERO" (brinde) nos posts prontos que ainda não saíram e tira as outras chamadas.
 // Roda no cron de 15 minutos; só mexe em post não publicado de cliente com brinde configurado.
 import { clientBrand } from "./client-brand.js";
-import { ensureGiftCta, QUERO_PATTERN } from "./caption-polish.js";
+import { ensureGiftCta } from "./caption-polish.js";
 
 const OPEN_STATUSES = ["ready", "scheduled", "failed"];
 
@@ -19,7 +19,7 @@ export async function fixGiftCtaInOpenPosts(env, { limit = 40 } = {}) {
     ).bind(String(row.id), limit).all().catch(() => ({ results: [] }));
     for (const post of posts?.results || []) {
       const caption = String(post.caption || "");
-      if (!caption.trim() || QUERO_PATTERN.test(caption)) continue;
+      if (!caption.trim()) continue;
       const next = ensureGiftCta(caption, cta);
       if (next === caption) continue;
       await env.DB.prepare("UPDATE post_ledger SET caption = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2 AND COALESCE(media_id,'') = ''")

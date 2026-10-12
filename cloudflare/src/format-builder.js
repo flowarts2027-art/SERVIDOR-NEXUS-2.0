@@ -44,13 +44,13 @@ function brandCarouselPlan(client = {}, payload = {}) {
   const cta = compact(features.cta || brand.cta || "Salve para usar depois.", 120);
   const conversion = String(features.campaignGoal || "") === "conversão";
   return [
-    { role:"hook", message:hook, overlay:compact(hook, 40).toUpperCase(),
+    { role:"hook", message:hook, overlay:compact(hook, 70),
       scene:"Open with a relatable moment of a small business owner in Brazil facing this topic: " + theme + ". Stop the scroll with curiosity, not with a solution yet." },
-    { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay:"PASSO 1",
+    { role:"development", message:"Explique o primeiro ponto prático de: " + theme + ".", overlay: compact("1. " + (features.scene || theme), 60),
       scene:"Show the first practical step of the topic in a clean business setting (desk, laptop, phone, product, storefront). Vary framing from card 1." },
-    { role:"turn", message:"Mostre o segundo ponto e a virada.", overlay:"PASSO 2",
+    { role:"turn", message:"Mostre o segundo ponto e a virada.", overlay:"2. Faça isso toda semana",
       scene:"Show the improvement or result of applying the tip, still in the same visual campaign, with a different angle and gesture." },
-    { role:"result", message:"Feche com o resultado e o CTA.", overlay: conversion ? "COMENTE EXEMPLO" : "SALVE ESTE POST",
+    { role:"result", message:"Feche com o resultado e o CTA.", overlay: brand.giftCta ? "Comente QUERO e ganhe o guia grátis" : conversion ? "COMENTE EXEMPLO" : "SALVE ESTE POST",
       scene:"Close with a confident, satisfied business owner or a polished brand result. Leave clean space for the CTA: " + cta }
   ];
 }
@@ -124,7 +124,7 @@ async function buildCarousel(env, client, row, payload) {
       "Card role: " + card.role + ". Message intent: " + card.message + ".",
       "Required scene: " + card.scene,
       clientBrand(client).visualDirection,
-      "System overlay title to support: " + card.overlay + ". Leave clean negative space for this title and do not generate text inside the image.",
+      "The card headline (written on the image as instructed) is: " + card.overlay + ". The scene must illustrate exactly this headline.",
       "Keep one coherent visual campaign across all cards. No collage, no split screen, no logos of other companies.",
       "Generate exactly one standalone vertical card image."
     ].join(" ") : "";

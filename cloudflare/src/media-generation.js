@@ -22,8 +22,9 @@ async function composeBrandOverlay(env,bytes,client,title="",options={}){
   if(!env.IMAGES)return {bytes,applied:Boolean(brandProfileVersion(client?.id)),reason:"images_binding_unavailable"};
   try{
     const copy=overlayCopy(client,title);
-    let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:client?.id==="globalplay-streaming"?1080:1024,height:client?.id==="globalplay-streaming"?(options.contentFormat==="reel"?1920:1350):1536,fit:"cover"});
-    // Marcas com perfil próprio: imagem limpa, sem texto por cima (o texto vai na legenda).
+    const sized=client?.id==="globalplay-streaming"||brandProfileVersion(client?.id);
+    let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:sized?1080:1024,height:sized?(options.contentFormat==="reel"?1920:1350):1536,fit:"cover"});
+    // Marcas com perfil próprio: o gancho já vem escrito pela IA na imagem; aqui só ajusta para 4:5 (feed) ou 9:16 (reel).
     if(brandProfileVersion(client?.id)){
       const response=await (await canvas.output({format:"image/jpeg",quality:90})).response();
       if(!response.ok)throw new Error("images_resize_http_"+response.status);
@@ -56,11 +57,23 @@ async function composeBrandOverlay(env,bytes,client,title="",options={}){
   }
 }
 
+// Gancho curto que vai escrito na imagem das marcas com perfil próprio (ex.: Flow Arts).
+export function brandHeadline(client,title=""){
+  if(!brandProfileVersion(client?.id))return "";
+  const clean=String(title||"").replace(/["“”]/g,"").replace(/\s+/g," ").trim();
+  if(!clean||/^(portrait|vertical|create|scene)\b/i.test(clean))return "";
+  const words=clean.split(" ");
+  return (words.length>9?words.slice(0,9).join(" ")+"…":clean).slice(0,70);
+}
+
 export function buildVisualPrompt(client, visualBrief="", variationSeed="", options={}){
   const id=String(client?.id||"");
+  const headline=brandHeadline(client,options.title);
   const common=[
-    options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork, composed for a 4:5 crop.":"Create one premium vertical social-media advertising artwork, composed for a 9:16 crop.",
-    "No text, no words, no logos, no watermarks, no split screen, no collage.",
+    options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork, composed for a 4:5 crop.":options.contentFormat==="reel"?"Create one premium vertical social-media advertising artwork, composed for a 9:16 crop.":"Create one premium portrait Instagram feed artwork, composed for a 4:5 crop (keep everything important inside the central 4:5 area).",
+    headline
+      ? "Write exactly this headline in Brazilian Portuguese, spelled exactly as given, with all accents: \""+headline+"\". Large bold clean sans-serif, white or very light text with strong contrast, in the upper third, max 3 lines, fully inside the safe area with generous margins. Add a small discreet wordmark \"FLOW ARTS\" at the bottom. No other words, no other logos, no watermarks, no split screen, no collage."
+      : "No text, no words, no logos, no watermarks, no split screen, no collage.",
     "One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
     "Make the composition noticeably different from generic stock imagery.",
     "Variation seed: "+String(variationSeed||"new")

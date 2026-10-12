@@ -284,3 +284,10 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Testar o brinde siga-para-liberar (botão "Baixar conteúdo") com um comentário novo da playprime2027.
 - Testar os 4 agentes (CEO, Marketing, Vendas, Revisor) com a bateria de 8 pedidos do guia d9tdr (prompt 4): pedidos típicos, falta de informação, restrição, fora da área, informação errada embutida.
 - Avaliar trechos do sales-discovery-coach (agency-agents, MIT) para as perguntas da 1ª conversa do agente de Vendas.
+
+## 2026-10-12 — Depois da auditoria (dependem do Rodrigo)
+1. Reels: criar um token novo do GitHub na conta flowarts2027-art e trocar o segredo GITHUB_ACTIONS_TOKEN do Worker (+ GITHUB_INGEST_REPOSITORY = flowarts2027-art/SERVIDOR-NEXUS-2.0). Sem isso não sai Reel.
+2. Decidir cota diária de texto da OpenAI (hoje 30.000 tokens) — legendas da IA + imagens disputam a mesma cota.
+3. Perfil: Nome "Marina | Marketing com IA"; bio "Atendimento em todo o Brasil"; avaliar trocar a foto de IA pelo logo ou foto real (rótulo "Perfil gerado por IA").
+4. Aprovar os posts no painel todo dia (só 4 publicados até agora).
+5. 15 min/dia de interação manual (comentar em perfis de pequenos negócios) e stories.

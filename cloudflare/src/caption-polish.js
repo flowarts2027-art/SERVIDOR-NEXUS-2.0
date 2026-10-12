@@ -50,10 +50,15 @@ export function polishCaption(text = "") {
 
 export const QUERO_PATTERN = /coment[ae]\s+["“']?quero/i;
 
-// Garante a chamada "Comente QUERO" (brinde). Entra antes das hashtags do fim.
+// Outras chamadas que competem com o QUERO (uma chamada só por post).
+export const OTHER_ASK_LINE = /^\s*(responda nos coment[áa]rios|salve (?:para|este post)|envie para|siga (?:a|o) |comente ["“']?exemplo|marque quem|compartilhe com)[^\n]{0,140}$/i;
+
+// Garante a chamada "Comente QUERO" (brinde), única, antes das hashtags do fim.
 export function ensureGiftCta(text = "", cta = "") {
-  const value = String(text || "").trim();
-  if (!cta || QUERO_PATTERN.test(value)) return value;
+  let value = String(text || "").trim();
+  if (!cta) return value;
+  value = value.split("\n").filter(line => !OTHER_ASK_LINE.test(line)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (QUERO_PATTERN.test(value)) return value;
   const lines = value.split("\n");
   let i = lines.length;
   while (i > 0 && (/^\s*(#[\p{L}\p{N}_]+\s*)+$/u.test(lines[i - 1]) || !lines[i - 1].trim())) i -= 1;

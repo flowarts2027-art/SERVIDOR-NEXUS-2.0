@@ -76,7 +76,8 @@ export async function consultGrowthAI(env, client, signals = {}, previous = null
     const response = await openAIResponses(env, client.id, {
       nexusPurpose: "strategy",
       model: env.NEXUS_GROWTH_MODEL || "gpt-5.6-luna",
-      max_output_tokens: 1100,
+      // 1100 cortava a resposta no meio (JSON incompleto) e a IA nunca era usada.
+      max_output_tokens: 7000,
       instructions: [
         "Você é o cérebro de crescimento do NEXUS para Instagram.",
         "Analise SOMENTE os sinais reais fornecidos. Não invente alcance, views, curtidas, tendências ou resultados.",

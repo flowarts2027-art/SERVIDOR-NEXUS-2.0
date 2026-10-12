@@ -36,3 +36,10 @@ test("todo post ganha o Comente QUERO antes das hashtags", () => {
   assert.equal(ensureGiftCta("Gancho\n\nComente QUERO aqui", cta), "Gancho\n\nComente QUERO aqui");
   assert.equal(ensureGiftCta("Só texto", ""), "Só texto");
 });
+
+test("tira a chamada antiga e deixa só o QUERO", () => {
+  const cta = 'Comente "QUERO" e receba grátis o guia 🎁';
+  const before = 'Gancho\n\nTexto\n\nResponda nos comentários.\n\nComente "QUERO" e receba grátis o guia 🎁\n\n#FlowArts';
+  assert.equal(ensureGiftCta(before, cta), 'Gancho\n\nTexto\n\nComente "QUERO" e receba grátis o guia 🎁\n\n#FlowArts');
+  assert.equal(ensureGiftCta("Gancho\n\nSalve para usar depois.\n\n#IA", cta), 'Gancho\n\nComente "QUERO" e receba grátis o guia 🎁\n\n#IA');
+});

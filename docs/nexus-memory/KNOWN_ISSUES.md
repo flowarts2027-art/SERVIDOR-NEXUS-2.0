@@ -182,3 +182,14 @@ Botão anterior Baixar do YouTube também tentava download no servidor e falhou 
 ## 2026-10-12 — Webhook da Meta não chega (lastWebhook sempre null)
 - Documentação da Meta: webhooks de comments/messages exigem acesso avançado + verificação da empresa + app Live. O app "Flow Arts Nexus" está Live mas sem acesso avançado.
 - Contorno: leitura do direct a cada 1 min (gift-dm.js) e dos comentários a cada 5 min. Quando o CNPJ estiver verificado, pedir acesso avançado e o aviso fica instantâneo.
+
+## 2026-10-12 — Auditoria ponta a ponta (alcance zero, 2 seguidores)
+Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
+- @flowarts2026: 4 posts, 2 seguidores (contas de teste do Rodrigo). Rótulo "Perfil gerado por IA" visível; campo Nome = "Marina"; bio ainda diz "Rio de Janeiro".
+- Cérebro de crescimento (ai-growth.js) falhava em TODO ciclo: "Unterminated string in JSON" (max_output_tokens 1100 cortava a resposta) → creativeBatch vazio → strategySource "fallback-rules". Também retentava a cada ciclo, gastando cota.
+- Posts da campanha Flow Arts NUNCA usavam texto da IA (`caption = campaignItem ? "" : ...`) → corpo fixo "A Flow Arts ajuda com isso: ..." sem dica real.
+- Imagens da marca saíam sem texto de propósito (clean_brand_image) e o "título" passado era a 1ª frase do briefing em inglês ("Portrait 4:5 single image..."). Tamanho 1024×1536 (2:3), fora do 4:5 do feed. Cena muitas vezes sem relação com o tema.
+- Posts com duas chamadas ("Responda nos comentários." + "Comente QUERO").
+- Meta de crescimento 1.000.000 seguidores em 30 dias (33.334/dia) para todos os clientes.
+- Reels: despacho de render no GitHub falha com "Sorry. Your account was suspended" (token GITHUB_ACTIONS_TOKEN de conta suspensa; repositório padrão do vídeo ainda globalplay27/SERVIDOR-GLOBAL-PLAY). Todo Reel vira imagem estática. rendererAvailable=false.
+- Cota de texto da OpenAI: 30.000 tokens/dia (NEXUS_OPENAI_DAILY_TOKEN_LIMIT); posts já expiraram por openai_daily_budget_reached.

@@ -19,6 +19,7 @@ import { isPublishingWindow, publishingGate, sameSaoPauloDay } from "./publishin
 import { upsertPostFeatures, recordMetricCheckpoints, recentPublishedPostFeatures } from "./post-learning.js";
 import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } from "./scene-grammar.js";
 import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS, ensureGiftCta } from "./caption-polish.js";
+import { writeCampaignCaption } from "./campaign-copy.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
@@ -194,8 +195,9 @@ function postingProfile(client) {
           rule: "Criar somente conteúdo original. Não imitar rosto, personagem, cena, logo, pôster, figurino específico ou material promocional protegido."
         }
       : null,
-    growthTargetFollowers: Math.max(1000, Math.min(100000000, Number(current.growthTargetFollowers || 1000000))),
-    growthHorizonDays: Math.max(7, Math.min(90, Number(current.growthHorizonDays || 30))),
+    // Meta realista para marca nova (antes: 1 milhão em 30 dias, que fazia os agentes "correrem" sem sentido).
+    growthTargetFollowers: Math.max(100, Math.min(100000000, Number((brandProfileVersion(client?.id) && Number(current.growthTargetFollowers) > 100000 ? 0 : current.growthTargetFollowers) || (brandProfileVersion(client?.id) ? 1000 : 1000000)))),
+    growthHorizonDays: Math.max(7, Math.min(120, Number(current.growthHorizonDays || (brandProfileVersion(client?.id) ? 90 : 30)))),
     standardMediaUrls: configuredMedia
   };
 }
@@ -750,14 +752,15 @@ async function runCreator(env,client,strategy,options) {
     plannedByDay.set(day,(plannedByDay.get(day)||0)+1);
   }
 
-  async function nextMedia(postId,visualBrief="",contentFormat="image") {
+  async function nextMedia(postId,visualBrief="",contentFormat="image",headline="") {
     const guidedVisualBrief=String(visualBrief||"").trim().slice(0,1800);
     if(IMAGE_GENERATION_CLIENTS.has(client.id)){
       try{
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
           contentFormat,
           variationSeed:String(postId)+"|"+String(Date.now()),
-          title:String((visualBrief||"").split(".")[0]||"").slice(0,42)
+          // Gancho do post: vai escrito na imagem das marcas com perfil próprio.
+          title:String(headline||"").slice(0,90)
         });
         return {
           url:generated.url,source:"openai-original-media",sourceInstagramMediaId:"",
@@ -809,7 +812,7 @@ async function runCreator(env,client,strategy,options) {
       &&!payload.blockedDesignerRecoveryAttemptedAt;
     const mediaInfo=safeRecheck
       ?{url:blocked,source:"blocked-media-recheck",sourceInstagramMediaId:""}
-      :await nextMedia(pending.id,String(payload.visualBrief||""),payload.creativeFeatures?.requestedFormat);
+      :await nextMedia(pending.id,String(payload.visualBrief||""),payload.creativeFeatures?.requestedFormat,String(payload.creativeFeatures?.hook||payload.title||""));
     if(!mediaInfo.url){
       payload.mediaGeneration={status:"requested",attempts:generationAttempts+(isBudgetError(mediaInfo.error)?0:1),lastError:String(mediaInfo.error||"media_generation_failed").slice(0,120),updatedAt:new Date().toISOString()};
       const exhausted=payload.mediaGeneration.attempts>=3;
@@ -968,7 +971,8 @@ async function runCreator(env,client,strategy,options) {
                 ? "Client requested revision: " + String(existingPayload.revisionRequest)
                 : ""
             ].filter(Boolean).join(" | "),
-            existingPayload.creativeFeatures?.requestedFormat
+            existingPayload.creativeFeatures?.requestedFormat,
+            String(existingPayload.creativeFeatures?.hook||existingPayload.title||"")
           );
       const replacement=String(replacementInfo.url||"");
       if(replacement){
@@ -1025,6 +1029,14 @@ async function runCreator(env,client,strategy,options) {
     const cta=String(giftCta||campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,MAX_HASHTAGS).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();
+    // Post da campanha de marca: a IA escreve dicas reais sobre o tema (antes era sempre texto fixo).
+    if(!caption&&campaignItem&&brandProfileVersion(client.id)){
+      const written=await writeCampaignCaption(env,client,{...campaignItem,theme,hook});
+      if(written){
+        hook=written.hook;
+        caption=[written.hook,"",written.body,"",cta,tags?"":null,tags||null].filter(x=>x!==null).join("\n");
+      }
+    }
     if(!caption){
       const brandOffer=brandProfileVersion(client.id)?clientBrand(client).offer:"";
       const storyLine=campaignItem&&brandOffer
@@ -1114,7 +1126,7 @@ async function runCreator(env,client,strategy,options) {
       creativeFeatures.action?"Action: "+creativeFeatures.action:"",
       creativeFeatures.prop?"Prop: "+creativeFeatures.prop:""
     ].filter(Boolean).join(". ");
-    const mediaInfo=await nextMedia(id,structuredVisualBrief,creativeFeatures.requestedFormat);
+    const mediaInfo=await nextMedia(id,structuredVisualBrief,creativeFeatures.requestedFormat,hook);
     const imageUrl=String(mediaInfo.url||"");
     const payload={
       clientName:client.name||client.id,
