@@ -270,3 +270,6 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
   - Meta de seguidores para marca: 1.000 em 90 dias (ignora valores > 100.000).
   - 309 testes.
 - 08:12 (Rodrigo): criou token GitHub granular "nexus-reels-2" (conta flowarts2027-art, só SERVIDOR-NEXUS-2.0, Actions + Contents leitura/gravação, 90 dias) e trocou o segredo GITHUB_ACTIONS_TOKEN na Cloudflare ele mesmo. Conferido no painel: GITHUB_INGEST_REPOSITORY = flowarts2027-art/SERVIDOR-NEXUS-2.0. Ainda sem prova de Reel renderizado: o 1º teste real é o post Reel das 12:00 de 12/10 (já aprovado).
+- 10:00 (Rodrigo enviou 2 PDFs). PDF 1 (agentes Vendas/Assistente/Qualificação/Agendamento): não fala de alcance; útil depois para o agente de Vendas e para o WhatsApp do Nexus (que ainda tem texto antigo "uso próprio ou revenda"). Pendente de decisão. PDF 2 ("alcance massivo com perfil zero"): aplicado.
+  - A) `cloudflare/src/reach-playbook.js` (REACH_RULES) entra no prompt da legenda da campanha (campaign-copy.js) e do cérebro de crescimento (ai-growth.js).
+  - B) `flowarts-campaign.js`: dias 13–17 trocados por sequência de 10 posts de alcance (5 Reels, 3 carrosséis, 2 posts), cada um com cena própria (5º campo da linha); visualBrief não diz mais "No text" (conflitava com o gancho escrito na imagem). 311 testes.

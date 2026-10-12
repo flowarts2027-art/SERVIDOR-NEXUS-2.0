@@ -46,17 +46,18 @@ const DAYS = [
   ["carousel", "Tráfego pago para iniciantes: por onde começar", "anúncios com pouco dinheiro", "salvamento"],
   ["reel", "Hashtags locais: como ser encontrado na sua cidade", "alcance local", "salvamento"],
   ["post", "Você já pensou em ter um site simples?", "site para pequeno negócio", "comentário"],
-  ["reel", "Como a IA deixa o marketing mais barato", "economia com IA", "compartilhamento"],
-  ["carousel", "Como transformar seguidores em clientes", "funil simples", "salvamento"],
-  ["reel", "Responder rápido vende mais: automação de mensagens", "atendimento automático", "comentário"],
-  ["post", "Dica da semana: poste com constância", "constância", "seguir"],
-  // Semana 3 — Prova
-  ["reel", "Fotos de produto feitas com IA, sem estúdio", "demonstração de foto de produto", "compartilhamento"],
-  ["carousel", "Antes e depois: perfil de uma loja de bairro", "transformação de perfil (exemplo ilustrativo)", "salvamento"],
-  ["reel", "Bastidores: como os agentes criam um post", "bastidores da automação", "comentário"],
-  ["post", "Exemplo: post criado para um salão de beleza", "exemplo de trabalho (ilustrativo)", "comentário"],
-  ["reel", "Vídeo curto com IA para divulgar o seu negócio", "demonstração de vídeo", "compartilhamento"],
-  ["carousel", "Site simples em 4 passos", "processo de criação de site", "salvamento"],
+  // Dias 13–17 — Sequência "alcance com perfil zero": ganchos para quem nunca viu o perfil,
+  // retenção, sinais de salvar/compartilhar e linguagem simples. Do mais simples ao mais ousado.
+  ["reel", "Seu Instagram tem 3 segundos para convencer um estranho", "o teste dos 3 segundos: foto, nome e primeira linha da bio", "compartilhamento", "a thumb scrolling fast through an Instagram feed on a phone, motion blur, one small business profile clearly standing out"],
+  ["carousel", "Faça este teste no seu perfil antes do próximo post", "checklist de 5 itens que quem nunca te viu olha primeiro", "salvamento", "a phone on a desk showing a small business Instagram profile, a paper checklist with checkmarks beside it"],
+  ["reel", "O post que vende não fala do seu produto", "mostrar o problema do cliente antes do produto", "comentário", "a small bakery owner handing a paper bag to a smiling customer across the counter"],
+  ["carousel", "3 frases que fazem um estranho parar de rolar a tela", "modelos de primeira linha prontos para copiar", "salvamento", "close-up of a thumb pausing on a phone screen over an appetizing product photo"],
+  ["reel", "Você posta e ninguém vê? O motivo é este", "o Instagram testa o post com poucas pessoas antes de mostrar para mais", "compartilhamento", "a small shop owner looking at her phone, puzzled, at the counter after closing time, warm light"],
+  ["post", "Salvar vale mais que curtir", "quais sinais fazem o Instagram mostrar seu post para mais gente", "salvamento", "a phone showing a product photo post with the save bookmark icon glowing, on a wooden table"],
+  ["reel", "Grave isto amanhã: 3 vídeos de 7 segundos", "ideias de Reels que qualquer comércio grava com o celular", "salvamento", "a café owner filming coffee being poured with a phone on a small tripod"],
+  ["carousel", "Antes de postar, responda estas 3 perguntas", "para quem é, qual problema resolve, qual o próximo passo", "salvamento", "an open notebook with three handwritten questions next to a phone and a coffee cup"],
+  ["reel", "O erro que faz seu post sumir em 1 hora", "começo devagar, sem gancho e com texto difícil", "compartilhamento", "a phone showing a post with few views next to a small hourglass on a desk"],
+  ["post", "Quer que a gente faça isso por você?", "convite simples depois das dicas, sem pressão", "comentário", "a friendly marketing professional reviewing an Instagram content plan on a laptop with a small business owner, both smiling"],
   ["reel", "Um dia de Instagram no automático", "rotina automatizada", "seguir"],
   ["carousel", "Exemplo: campanha para uma lanchonete", "exemplo de campanha (ilustrativo)", "salvamento"],
   ["reel", "O que muda quando o perfil fica profissional", "resultado esperado sem promessa absoluta", "compartilhamento"],
@@ -135,7 +136,7 @@ export function flowArtsCampaignForDay(date = new Date(), options = {}) {
         : "Gerar confiança e interação primeiro; oferta só nas peças de conversão.",
       language: "pt-BR simples e direto; frases curtas; transparente sobre o uso de IA",
       cta: CTA[row[3]] || CTA["comentário"],
-      visualBrief: VISUAL_BY_FORMAT[format] + " Scene: " + SCENES[(dayIndex * 2 + index) % SCENES.length] + ". Theme: " + row[1] + ". Angle: " + row[2] + ". Use Flow Arts colors (deep navy, electric blue, silver). No text, no logos of other companies, no copyrighted references.",
+      visualBrief: VISUAL_BY_FORMAT[format] + " Scene: " + (row[4] || SCENES[(dayIndex * 2 + index) % SCENES.length]) + ". Theme: " + row[1] + ". Angle: " + row[2] + ". Use Flow Arts colors (deep navy, electric blue, silver). The only text allowed is the headline given in the instructions; no logos of other companies, no copyrighted references.",
       variationKey: "flowarts-" + (dayIndex + 1) + "-" + index
     };
   });

@@ -5,6 +5,7 @@
 import { openAIResponses } from "./openai.js";
 import { clientBrand } from "./client-brand.js";
 import { ROBOT_PHRASES } from "./caption-polish.js";
+import { reachRulesText } from "./reach-playbook.js";
 
 function extractText(response) {
   if (response?.output_text) return String(response.output_text);
@@ -26,6 +27,7 @@ export function campaignCopyPrompt(client, item = {}) {
     "Feche com uma frase curta que conecta a dica ao resultado (mais clientes, menos tempo), sem vender diretamente.",
     "Não escreva chamada para ação nem hashtags (elas são adicionadas depois). Não use travessão (—).",
     "Máximo 600 caracteres no total.",
+    reachRulesText(),
     "Regras da marca: " + (brand.avoidRules || ""),
     "Nunca use estas frases de robô: " + ROBOT_PHRASES.join(", ") + ".",
     "Tema do post: " + String(item.theme || ""),
