@@ -794,8 +794,10 @@ export default {
     }
 
     if (url.pathname.startsWith("/api/whatsapp/")) {
-      const denied = requireAuth(request, env);
-      if (denied) return denied;
+      // Aceita a chave interna (Bearer) ou o login do painel Master (cookie),
+      // porque a aba WhatsApp do Master chama estas rotas pelo navegador.
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleWhatsAppProtected(request, env, url);
       if (response) return response;
     }

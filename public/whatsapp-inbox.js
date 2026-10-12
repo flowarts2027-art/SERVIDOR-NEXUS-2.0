@@ -1,8 +1,15 @@
 // Tela de conversas do WhatsApp no painel Master.
-// Usa api() e escapeHtml() do app.js (carregado antes).
+// Usa escapeHtml() do app.js (carregado antes).
 (() => {
   "use strict";
   const $ = selector => document.querySelector(selector);
+  // Chamada própria: um erro aqui nunca tira o Rodrigo do painel Master.
+  async function api(path, options = {}) {
+    const response = await fetch(path, { ...options, credentials: "same-origin",
+      headers: { "content-type": "application/json", ...(options.headers || {}) } });
+    if (!response.ok) throw new Error(response.status === 401 ? "Login do painel não aceito nesta aba. Recarregue a página." : `Erro ${response.status}`);
+    return response.json();
+  }
   const wa = { items: [], phone: "", contact: null, timer: null, autoReply: false, sending: false };
 
   const when = value => {
@@ -29,8 +36,8 @@
       $("#wa-config").textContent = missing.length
         ? "Falta configurar na Cloudflare: " + missing.map(key => names[key] || key).join(", ") + "."
         : `Conectado. Limite: ${status.sendLimitPerHour} mensagens por hora.`;
-    } catch {
-      $("#wa-config").textContent = "Não consegui ler a configuração do WhatsApp.";
+    } catch (error) {
+      $("#wa-config").textContent = "Não consegui ler a configuração do WhatsApp. " + error.message;
     }
   }
 

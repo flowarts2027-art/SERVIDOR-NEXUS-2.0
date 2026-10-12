@@ -201,3 +201,22 @@ test("hourly limit stops automatic replies too", async () => {
     assert.match(failed.reason, /hourly_send_limit/);
   } finally { f.close(); }
 });
+
+test("WhatsApp routes accept the Master panel login (cookie), not only the internal Bearer key", async () => {
+  // Regressão de 2026-10-12: a aba WhatsApp recebia 401 e o painel deslogava sozinho.
+  const index = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+  const block = index.slice(index.indexOf('url.pathname.startsWith("/api/whatsapp/")'), index.indexOf("handleWhatsAppProtected(request, env, url);"));
+  assert.match(block, /resolveMasterSession\(env, request\)/);
+  assert.doesNotMatch(block, /requireAuth\(/);
+
+  const { createMasterSession, resolveMasterSession } = await import("../src/auth.js");
+  const env = { NEXUS_SECRET_KEY: "fixture-secret-key" };
+  const session = await createMasterSession(env);
+  const withCookie = new Request("https://nexus.test/api/whatsapp/inbox", { headers: { cookie: "nexus_master=" + session.token } });
+  assert.ok(await resolveMasterSession(env, withCookie));
+  const anonymous = new Request("https://nexus.test/api/whatsapp/inbox");
+  assert.equal(await resolveMasterSession(env, anonymous).catch(() => null), null);
+
+  const inbox = fs.readFileSync(new URL("../../public/whatsapp-inbox.js", import.meta.url), "utf8");
+  assert.doesNotMatch(inbox, /location\.href/, "a aba WhatsApp nunca redireciona para o login");
+});
