@@ -670,7 +670,7 @@ export async function handleMaster(request, env, url) {
   // Teste do token do GitHub usado para montar Reels (não mostra o token).
   if (url.pathname === "/api/master/github-check" && request.method === "GET") {
     const token = String(env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || "").trim();
-    const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
+    const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0").trim();
     if (!token) return json({ ok: false, error: "token_missing", repo });
     const headers = { authorization: "Bearer " + token, accept: "application/vnd.github+json", "user-agent": "NEXUS-Check" };
     const who = await fetch("https://api.github.com/user", { headers }).then(async r => ({ status: r.status, login: (await r.json().catch(() => ({})))?.login || "" })).catch(e => ({ status: 0, error: String(e?.message || e) }));

@@ -397,7 +397,7 @@ export async function startYouTubeVideoIngest(env, clientId, jobId) {
     }
   }
 
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY").trim();
   const [owner, name] = repo.split("/");
   let response;
   try {
@@ -699,7 +699,7 @@ export async function startGitHubVideoRender(env, clientId, jobId, patch = {}) {
   ).run();
   if (!claim?.meta?.changes) throw new Error("video_render_in_progress");
 
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY").trim();
   const [owner, name] = repo.split("/");
   let response;
   try { response = await fetch(`https://api.github.com/repos/${owner}/${name}/dispatches`, {

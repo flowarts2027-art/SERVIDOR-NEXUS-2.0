@@ -203,7 +203,7 @@ async function dispatchReel(env, client, row, payload) {
     await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
   } else if (current.sourceImage) sourceImage=current.sourceImage;
   if (!/^https:\/\//i.test(sourceImage)) throw new Error("reel_source_image_required");
-  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0").trim();
   const [owner, name] = repo.split("/");
   const callbackToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
   const base = publicBase(env);

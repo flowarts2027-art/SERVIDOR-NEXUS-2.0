@@ -515,7 +515,7 @@ export async function dispatchVideoSearch(env, clientId, query, type, aliases = 
     .map(value => String(value || "").trim()).filter(Boolean))].slice(0, 4);
   await env.DB.prepare("INSERT INTO video_jobs(id,client_id,source_object_key,status,settings_json,result_json,created_at,updated_at) VALUES(?1,?2,'','searching',?3,'{}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)")
     .bind(id, clientId, JSON.stringify({ contentTitle: query, searchType: type === "series" ? "series" : "movie", searchAliases: cleanAliases, githubRenderToken: callbackToken, searchOnly: true })).run();
-  const r = await fetch("https://api.github.com/repos/" + (env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY") + "/dispatches", {
+  const r = await fetch("https://api.github.com/repos/" + String(env.GITHUB_INGEST_REPOSITORY || "globalplay27/SERVIDOR-GLOBAL-PLAY").trim() + "/dispatches", {
     method: "POST", headers: { authorization: "Bearer " + token, accept: "application/vnd.github+json", "content-type": "application/json", "user-agent": "NEXUS" },
     body: JSON.stringify({ event_type: "video-youtube-search", client_payload: {
       job_id: id, client_id: clientId, callback_token: callbackToken,
