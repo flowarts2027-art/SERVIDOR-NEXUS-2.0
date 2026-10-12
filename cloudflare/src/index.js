@@ -78,7 +78,8 @@ async function asset(env, request, pathname) {
   const target = new URL(request.url);
   // ASSETS canonicalizes portal.html to /portal. Fetch the canonical URL
   // directly so the outer /portal response cannot redirect to itself.
-  target.pathname = pathname === "/portal.html" ? "/portal" : pathname;
+  // O mesmo vale para /site.html (o site abre em flowarts.com.br sem pular para /site).
+  target.pathname = /^\/(portal|site)\.html$/.test(pathname) ? pathname.slice(0, -5) : pathname;
   target.search = "";
   const response = await env.ASSETS.fetch(new Request(target.toString(), request));
   const headers = new Headers(response.headers);
