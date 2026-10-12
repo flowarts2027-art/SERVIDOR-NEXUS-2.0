@@ -47,3 +47,17 @@ export function polishCaption(text = "") {
   out = shortenFirstLine(out);
   return out.replace(/\n{3,}/g, "\n\n").trim().slice(0, 2200);
 }
+
+export const QUERO_PATTERN = /coment[ae]\s+["“']?quero/i;
+
+// Garante a chamada "Comente QUERO" (brinde). Entra antes das hashtags do fim.
+export function ensureGiftCta(text = "", cta = "") {
+  const value = String(text || "").trim();
+  if (!cta || QUERO_PATTERN.test(value)) return value;
+  const lines = value.split("\n");
+  let i = lines.length;
+  while (i > 0 && (/^\s*(#[\p{L}\p{N}_]+\s*)+$/u.test(lines[i - 1]) || !lines[i - 1].trim())) i -= 1;
+  const body = lines.slice(0, i).join("\n").trim();
+  const tags = lines.slice(i).join("\n").trim();
+  return [body, cta, tags].filter(Boolean).join("\n\n").slice(0, 2200);
+}

@@ -18,7 +18,7 @@ import { generateOriginalMedia } from "./media-generation.js";
 import { isPublishingWindow, publishingGate, sameSaoPauloDay } from "./publishing-policy.js";
 import { upsertPostFeatures, recordMetricCheckpoints, recentPublishedPostFeatures } from "./post-learning.js";
 import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } from "./scene-grammar.js";
-import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS } from "./caption-polish.js";
+import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS, ensureGiftCta } from "./caption-polish.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
@@ -1020,7 +1020,9 @@ async function runCreator(env,client,strategy,options) {
     let hook=String(campaignItem?.hook||aiCreative?.hook||(brandHooks.length
       ? brandHooks[([...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17))%brandHooks.length]
       : pickUniqueHook(index,day,strategy?.radarTerms||[],recentCaptions))).trim();
-    const cta=String(campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
+    const giftCta=clientBrand(client).giftCta;
+    // Com brinde configurado, a única chamada do post é o QUERO (é ele que dispara o direct).
+    const cta=String(giftCta||campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,MAX_HASHTAGS).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();
     if(!caption){
@@ -1056,7 +1058,7 @@ async function runCreator(env,client,strategy,options) {
       ].filter(x=>x!==null).join("\n").slice(0,2200);
     }
     // Acabamento: até 5 hashtags, sem travessão nem caracteres invisíveis, 1ª linha curta.
-    caption=polishCaption(caption);
+    caption=ensureGiftCta(polishCaption(caption),giftCta);
 
     let creativeFeatures={
       format:"image",

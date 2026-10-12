@@ -28,3 +28,11 @@ test("legenda normal fica igual", () => {
   const c = "Pare de postar sem plano.\n\nA Flow Arts organiza o mês.\n\nComente QUERO\n\n#FlowArts #MarketingDigital";
   assert.equal(polishCaption(c), c);
 });
+
+import { ensureGiftCta } from "../src/caption-polish.js";
+test("todo post ganha o Comente QUERO antes das hashtags", () => {
+  const cta = 'Comente "QUERO" e receba grátis o guia 🎁';
+  assert.equal(ensureGiftCta("Gancho\n\nTexto\n\n#FlowArts #IA", cta), 'Gancho\n\nTexto\n\nComente "QUERO" e receba grátis o guia 🎁\n\n#FlowArts #IA');
+  assert.equal(ensureGiftCta("Gancho\n\nComente QUERO aqui", cta), "Gancho\n\nComente QUERO aqui");
+  assert.equal(ensureGiftCta("Só texto", ""), "Só texto");
+});

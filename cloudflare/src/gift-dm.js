@@ -64,6 +64,15 @@ export async function markGiftAsked(env, clientId, { igsid, username = "", comme
   await writeGiftDmState(env, clientId, state, now);
 }
 
+// Marca como entregue (a pessoa já seguia e recebeu o botão direto no primeiro direct).
+export async function markGiftDone(env, clientId, igsid, now = new Date()) {
+  if (!igsid || !env?.DB) return;
+  const state = await readGiftDmState(env, clientId);
+  const previous = state.pending[igsid] || { askedAt: now.toISOString() };
+  state.pending[igsid] = { ...previous, stage: "done", doneAt: now.toISOString(), handledUntil: now.toISOString() };
+  await writeGiftDmState(env, clientId, state, now);
+}
+
 async function graph(request, token, path, options = {}) {
   const response = await request("https://graph.instagram.com/" + path, {
     ...options,

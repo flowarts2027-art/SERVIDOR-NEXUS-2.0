@@ -22,6 +22,7 @@ import { handleSocialFormatRenderCallback } from "./format-builder.js";
 import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autoreply.js";
 import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
+import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -538,6 +539,10 @@ export default {
     // Café Brisa (demonstração): cria uma vez e pausa ao chegar no limite de posts.
     ctx.waitUntil(ensureDemoClient(env).catch(error =>
       console.warn("demo_client_failed", String(error?.message || error).slice(0, 140))
+    ));
+    // Posts prontos sem "Comente QUERO" ganham a chamada do brinde antes de sair.
+    ctx.waitUntil(fixGiftCtaInOpenPosts(env).catch(error =>
+      console.warn("gift_cta_fix_failed", String(error?.message || error).slice(0, 140))
     ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>

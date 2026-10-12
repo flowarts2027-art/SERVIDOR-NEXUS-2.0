@@ -56,6 +56,8 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     whatsapp: "5521964816185",
     offer: "Marketing e automação de Instagram 24h com IA, além de sites, fotos e vídeos para pequenos negócios",
     cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
+    // Todo post termina com o QUERO do brinde (resposta automática → direct → guia).
+    giftCta: 'Comente "QUERO" e receba grátis o guia com 10 ideias de post que trazem clientes 🎁',
     hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #PequenosNegocios",
     followerCta: "Siga a Flow Arts para ver mais exemplos feitos com IA.",
     contentFocus: "Mostrar como o marketing com IA (sites, fotos e vídeos) ajuda pequenos negócios a vender mais nas redes, com exemplos práticos e antes/depois descritos em texto",
@@ -125,6 +127,7 @@ export function clientBrand(client = {}) {
     offer: pick(profile.offer, defaults.offer),
     whatsapp: pick(String(profile.whatsapp || "").replace(/\D/g, ""), defaults.whatsapp),
     cta: pick(profile.cta, defaults.cta),
+    giftCta: pick(defaults.giftCta),
     hashtags: pick(defaults.hashtags),
     followerCta: pick(defaults.followerCta),
     contentFocus: pick(defaults.contentFocus),

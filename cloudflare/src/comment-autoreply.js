@@ -9,8 +9,8 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
-import { giftStatus, giftButtonMessage } from "./gift.js";
-import { ASK_TEXT, FOLLOWED_TITLE, askMessage, markGiftAsked, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
+import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js";
+import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -35,14 +35,25 @@ export function dmText(client) {
   ].join("\n");
 }
 
-// Mensagem do direct para UM comentário: "Me siga para receber o conteúdo" + botão "Já segui".
-// O resto acontece no direct (gift-dm.js). Sem banco/chave, volta para o texto simples do WhatsApp.
-export function messageBuilder(env, client, handle = "") {
+// Mensagem do direct para UM comentário:
+// - se o Instagram já deixa ver que a pessoa segue: manda direto o botão "Baixar conteúdo";
+// - senão: "Me siga para receber o conteúdo" + botão "Já segui" (o resto é no direct, gift-dm.js).
+// Sem banco/chave, volta para o texto simples do WhatsApp.
+export function messageBuilder(env, client, handle = "", { token = "", request = fetch } = {}) {
   return async (comment = {}, now = new Date()) => {
     const igsid = String(comment.fromId || comment.from?.id || "");
     if (!igsid || !env?.DB || !String(env?.NEXUS_SECRET_KEY || "").trim()) return dmText(client);
+    const username = comment.username || comment.from?.username || "";
     try {
-      await markGiftAsked(env, client.id, { igsid, username: comment.username || comment.from?.username || "", commentId: comment.id }, now);
+      await markGiftAsked(env, client.id, { igsid, username, commentId: comment.id }, now);
+      if (token) {
+        const check = await checkFollows({ request, token, igsid }).catch(() => ({ follows: null }));
+        if (check.follows === true) {
+          const url = await giftLink(env, { clientId: client.id, igsid, commentId: comment.id, username: check.username || username }, now);
+          await markGiftDone(env, client.id, igsid, now).catch(() => null);
+          return { text: READY_TEXT, buttonTitle: DOWNLOAD_TITLE, url };
+        }
+      }
       return { kind: "ask", text: ASK_TEXT };
     } catch {
       return dmText(client);
@@ -180,7 +191,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   } catch (error) {
     out.errors.push("media:" + error.message);
   }
-  const message = messageBuilder(env, client, ownUsername);
+  const message = messageBuilder(env, client, ownUsername, { token, request });
 
   for (const item of Array.isArray(media?.data) ? media.data : []) {
     if (out.replied >= MAX_REPLIES_PER_RUN) break;
@@ -349,7 +360,7 @@ export async function processWebhookComments(env, items, { request = fetch, now 
     const res = await replyToComment({
       request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""),
       ownUsername: String(conn.username || client.instagram || "").replace(/^@/, ""),
-      state, message: messageBuilder(env, client, String(conn.username || client.instagram || "").replace(/^@/, "")), now
+      state, message: messageBuilder(env, client, String(conn.username || client.instagram || "").replace(/^@/, ""), { token: String(conn.accessToken || ""), request }), now
     }, comment);
     state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
     await writeState(env, client.id, state).catch(() => null);

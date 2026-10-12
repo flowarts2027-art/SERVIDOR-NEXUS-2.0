@@ -140,3 +140,16 @@ test("envia o botão; se o Instagram recusar, manda a frase com o link", async (
   assert.equal(r2.replied, true);
   assert.equal(JSON.parse(sent2[1]).message.text, "Me siga para receber o conteúdo 🎁 https://x.test/b/AbCdEfGh2");
 });
+
+test("quem já segue recebe o botão Baixar conteúdo direto no primeiro direct", async () => {
+  const env = memoryEnv();
+  const client = { id: "primeiro-teste", instagram: "@flowarts2026", config: {} };
+  const follows = async () => new Response(JSON.stringify({ username: "ana", is_user_follow_business: true }));
+  const dm = await messageBuilder(env, client, "flowarts2026", { token: "t", request: follows })({ id: "c9", fromId: "55", username: "ana" }, NOW);
+  assert.equal(dm.buttonTitle, "Baixar conteúdo");
+  assert.match(dm.url, /\/b\/[A-Za-z0-9]{9}$/);
+  // Sem permissão para ver (ainda sem conversa): pede para seguir.
+  const blocked = async () => new Response(JSON.stringify({ error: { message: "User consent is required" } }), { status: 400 });
+  const ask = await messageBuilder(env, client, "flowarts2026", { token: "t", request: blocked })({ id: "c10", fromId: "56" }, NOW);
+  assert.deepEqual(ask, { kind: "ask", text: "Me siga para receber o conteúdo 🎁" });
+});
