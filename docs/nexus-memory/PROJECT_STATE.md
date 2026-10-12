@@ -1,5 +1,10 @@
 # Estado do Nexus 2.0
 
+## 2026-10-12 ~17h BRT — verificação da empresa enviada à Meta
+- Criado e-mail contato@flowarts.com.br (Cloudflare Email Routing → flowarts2027@gmail.com, destino verificado, regra ativa). Usado para confirmar a empresa na Meta.
+- Verificação do portfólio "Rodrigo Carvalho" enviada: status "Em análise", previsão ~2 dias úteis.
+- Próximo: quando aprovada, publicar o app Flow Arts WhatsApp, gerar token novo (o de teste vence ~13/10 15h24) ou permanente, e testar "oi" do celular com o robô ligado.
+
 ## 2026-10-12 ~16h40 BRT — WhatsApp parado na verificação da empresa
 - Master › WhatsApp mostra "Conectado"; Rodrigo ligou o robô. Webhook salvo na Meta (app Flow Arts WhatsApp, nome de exibição "Atendente Flow Arts"), campo messages assinado; URLs de privacidade/termos/exclusão preenchidas (flowarts.com.br).
 - Mensagem real do celular NÃO chegou: app não publicado só recebe webhooks de teste do painel. Publicar exige verificação da empresa do portfólio "Rodrigo Carvalho" (iniciada 11/10, envio pendente).
