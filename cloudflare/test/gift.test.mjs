@@ -116,8 +116,8 @@ test("resposta do comentário usa o brinde; sem chave volta ao texto antigo", as
   const env = memoryEnv();
   const client = { id: "primeiro-teste", instagram: "@flowarts2026", config: {} };
   const dm = await messageBuilder(env, client, "flowarts2026")({ id: "c9", fromId: "55", username: "ana" }, NOW);
-  assert.equal(dm.text, "Me siga para receber o conteúdo 🎁");
-  assert.match(dm.url, /^https:\/\/.+\/b\/[A-Za-z0-9]{9}$/);
+  assert.deepEqual(dm, { kind: "ask", text: "Me siga para receber o conteúdo 🎁" });
+  assert.ok([...env.rows.keys()].some(k => k.startsWith("gift-dm|")) || env.calls.some(c => /INSERT INTO nexus_state/.test(c.sql) && c.args[0] === "gift-dm"));
   const old = await messageBuilder({ ...env, NEXUS_SECRET_KEY: "" }, client, "flowarts2026")({ id: "c9", fromId: "55" }, NOW);
   assert.match(old, /wa\.me/);
 });

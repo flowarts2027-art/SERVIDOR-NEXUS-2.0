@@ -178,3 +178,7 @@ Botão anterior Baixar do YouTube também tentava download no servidor e falhou 
 - O DM do Nexus (00:30 UTC de 12/10) saiu certo: texto Flow Arts + wa.me com "Comentei no Instagram da Flow Arts".
 - A automação do Meta Business Suite da Global Play ("Perguntas e respostas") está desativada; o robô antigo vem de fora do Nexus.
 - Próximo passo: testar com uma conta pessoal que não seja a Global Play. Opcional: na conta globalplay_streaming, remover apps antigos em Configurações › Apps e sites.
+
+## 2026-10-12 — Webhook da Meta não chega (lastWebhook sempre null)
+- Documentação da Meta: webhooks de comments/messages exigem acesso avançado + verificação da empresa + app Live. O app "Flow Arts Nexus" está Live mas sem acesso avançado.
+- Contorno: leitura do direct a cada 1 min (gift-dm.js) e dos comentários a cada 5 min. Quando o CNPJ estiver verificado, pedir acesso avançado e o aviso fica instantâneo.

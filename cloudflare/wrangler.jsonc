@@ -10,7 +10,7 @@
     "enabled": true
   },
   "triggers": {
-    "crons": ["*/15 * * * *"]
+    "crons": ["*/15 * * * *", "* * * * *"]
   },
   "vars": {
     "APP_NAME": "Servidor Nexus",

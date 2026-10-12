@@ -21,6 +21,7 @@ import { emergencyPublisherDiagnostic } from "./emergency-publisher-diagnostic.j
 import { handleSocialFormatRenderCallback } from "./format-builder.js";
 import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autoreply.js";
 import { handleGiftRequest } from "./gift.js";
+import { runGiftInbox } from "./gift-dm.js";
 import { ensureDemoClient } from "./demo-client.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -513,9 +514,23 @@ async function handleOpenAIResponses(request, env) {
   }
 }
 
+const MINUTE_CRON = "* * * * *";
+
 export default {
   async scheduled(event, env, ctx) {
     const at = new Date(event.scheduledTime || Date.now());
+    // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
+    if (String(event.cron || "") === MINUTE_CRON) {
+      ctx.waitUntil(runGiftInbox(env, at).catch(error =>
+        console.warn("gift_inbox_failed", String(error?.message || error).slice(0, 140))
+      ));
+      if (at.getUTCMinutes() % 5 === 0 && at.getUTCMinutes() % 15 !== 0) {
+        ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
+          console.warn("comment_autoreply_failed", String(error?.message || error).slice(0, 140))
+        ));
+      }
+      return;
+    }
     // Poster discovery runs independently; failures must never block Instagram cron.
     ctx.waitUntil(warmYoutubePosterLibrary(env, at).catch(error =>
       console.warn("youtube_poster_library_refresh_failed", String(error?.message || error).slice(0, 140))

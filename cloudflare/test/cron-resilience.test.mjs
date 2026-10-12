@@ -39,8 +39,13 @@ test("wrangler keeps production cron on a D1-safe fifteen-minute cadence", async
     readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
     readFile(new URL("../cron.schedule", import.meta.url), "utf8")
   ]);
-  assert.match(wrangler, /"triggers"\s*:\s*\{[\s\S]*"crons"\s*:\s*\["\*\/15 \* \* \* \*"]/);
+  // O agendador pesado (D1) continua a cada 15 min; o cron de 1 min é leve (só direct do brinde).
+  assert.match(wrangler, /"triggers"\s*:\s*\{[\s\S]*"crons"\s*:\s*\["\*\/15 \* \* \* \*"(, "\* \* \* \* \*")?]/);
   assert.equal(schedule.trim(), "*/15 * * * *");
+  const index = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+  const minuteBranch = index.match(/if \(String\(event\.cron \|\| ""\) === MINUTE_CRON\) \{[\s\S]*?return;\n    \}/)?.[0] || "";
+  assert.ok(minuteBranch, "cron de 1 minuto precisa sair antes do agendador");
+  assert.doesNotMatch(minuteBranch, /runCronIteration|runSchedulerTick|processDueJobs/);
 });
 
 

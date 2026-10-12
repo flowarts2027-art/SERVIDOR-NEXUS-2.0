@@ -9,7 +9,8 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
-import { giftLink, giftDmText, giftStatus, giftButtonMessage } from "./gift.js";
+import { giftStatus, giftButtonMessage } from "./gift.js";
+import { ASK_TEXT, FOLLOWED_TITLE, askMessage, markGiftAsked, readGiftDmState } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
 const MAX_MEDIA = 4;
@@ -34,15 +35,15 @@ export function dmText(client) {
   ].join("\n");
 }
 
-// Mensagem do direct para UM comentário: brinde "siga para liberar" com link pessoal.
-// Sem a chave de assinatura, volta para o texto simples do WhatsApp.
+// Mensagem do direct para UM comentário: "Me siga para receber o conteúdo" + botão "Já segui".
+// O resto acontece no direct (gift-dm.js). Sem banco/chave, volta para o texto simples do WhatsApp.
 export function messageBuilder(env, client, handle = "") {
   return async (comment = {}, now = new Date()) => {
     const igsid = String(comment.fromId || comment.from?.id || "");
-    if (!igsid || !String(env?.NEXUS_SECRET_KEY || "").trim()) return dmText(client);
+    if (!igsid || !env?.DB || !String(env?.NEXUS_SECRET_KEY || "").trim()) return dmText(client);
     try {
-      const link = await giftLink(env, { clientId: client.id, igsid, commentId: comment.id, username: comment.username || comment.from?.username || "" }, now);
-      return giftDmText(client, link, handle);
+      await markGiftAsked(env, client.id, { igsid, username: comment.username || comment.from?.username || "", commentId: comment.id }, now);
+      return { kind: "ask", text: ASK_TEXT };
     } catch {
       return dmText(client);
     }
@@ -113,7 +114,13 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ recipient: { comment_id: id }, message: body })
     });
-    if (built && typeof built === "object") {
+    if (built && built.kind === "ask") {
+      // Frase + botão rápido "Já segui". Se o Instagram recusar, pede para responder SEGUI.
+      await send(askMessage(built.text)).catch(async error => {
+        res.errors.push("quick_reply:" + error.message);
+        await send({ text: built.text + " Depois responda SEGUI aqui." });
+      });
+    } else if (built && typeof built === "object") {
       // Frase + botão. Se o Instagram recusar o botão, manda a frase com o link.
       await send(giftButtonMessage(built)).catch(async error => {
         res.errors.push("button:" + error.message);
@@ -216,7 +223,8 @@ export async function commentAutoReplyStatus(env, clientId) {
   const state = await readState(env, clientId);
   const handled = Object.entries(state.handled || {}).slice(0, 20).map(([id, value]) => ({ id, ...value }));
   const gift = await giftStatus(env, clientId).catch(() => null);
-  return { lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
+  const giftDm = await readGiftDmState(env, clientId).then(v => ({ lastRun: v.lastRun || null, pending: Object.entries(v.pending || {}).slice(0, 10).map(([id, p]) => ({ id, stage: p.stage, username: p.username, askedAt: p.askedAt })) })).catch(() => null);
+  return { giftDm, lastRun: state.lastRun || null, webhook: state.webhook || null, lastWebhook: state.lastWebhook || null, recent: handled, gift };
 }
 
 
