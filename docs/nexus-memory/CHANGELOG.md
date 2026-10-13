@@ -317,3 +317,4 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Atenção: migrações novas do D1 não são mais aplicadas sozinhas (na prática já não eram, porque o CI parava antes). Quando houver migração nova, aplicar com `npm run d1:migrations:apply` e o OK do Rodrigo.
 - Teste `issue100-production` passou a conferir que o CI não implanta nem publica. Local: 322/322, AutoFix 4/4, overlay ok. Bundle do Wrangler não rodou nesta sessão (npm sem rede); é o mesmo passo do deploy, que funciona.
 - Branch `fix/ci-somente-testes`; aguardando OK do Rodrigo.
+- CI novo rodou VERDE no GitHub no PR #122 (commit 9a6dc99), incluindo o bundle do Wrangler. Precisou instalar python3-pil e fontes no passo de overlay.
