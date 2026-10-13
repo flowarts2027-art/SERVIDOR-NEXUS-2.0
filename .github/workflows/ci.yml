@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core python3-pil >/dev/null
           /usr/bin/python3 -m py_compile scripts/render_overlay_layers.py
           /usr/bin/python3 scripts/test_render_overlay_layers.py
           /usr/bin/python3 scripts/test_render_overlay_mp4.py
