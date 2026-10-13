@@ -198,7 +198,9 @@ function postStatusMeta(status) {
     publishing: ["PUBLICANDO", "running"],
     generating: ["GERANDO", "running"],
     ready: ["PRONTA", "running"],
-    scheduled: ["AGENDADA", "running"]
+    scheduled: ["AGENDADA", "running"],
+    expired: ["VENCIDA", "failed"],
+    cancelled: ["CANCELADA", "failed"]
   };
   return map[status] || [String(status || "AGENDADA").toUpperCase(), "running"];
 }
@@ -244,12 +246,31 @@ function renderPostLedger() {
   if (!body) return;
   let posts = Array.isArray(data.posts) ? data.posts : [];
   if (state.postClientFilter) posts = posts.filter(post => post.clientId === state.postClientFilter);
+  // Aviso: post aprovado que passou do horário sem sair no Instagram.
+  const missed = posts.filter(post => String(post.error || "") === "approved_post_missed");
+  const table = body.closest("table");
+  let missedBox = $("#posts-missed-warning");
+  if (!missedBox && table) {
+    missedBox = document.createElement("div");
+    missedBox.id = "posts-missed-warning";
+    missedBox.className = "card";
+    missedBox.setAttribute("role", "alert");
+    table.parentNode.insertBefore(missedBox, table);
+  }
+  if (missedBox) {
+    missedBox.style.display = missed.length ? "" : "none";
+    missedBox.innerHTML = missed.length
+      ? `<strong>⚠ ${missed.length} post(s) aprovado(s) não saíram no Instagram.</strong><br><small>Passaram do horário com erro. Veja na lista abaixo, com o status VENCIDA.</small>`
+      : "";
+  }
   body.innerHTML = posts.length ? posts.map(post => {
     const [label, cls] = postStatusMeta(post.status);
-    const detail = post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
+    const errorText = { approved_post_missed: "Aprovado, mas passou do horário sem publicar.", stale_ready_expired: "Venceu sem aprovação." }[String(post.error || "")];
+    const detail = errorText ? escapeHtml(errorText) : post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
+    const finished = ["expired", "cancelled", "failed", "skipped"].includes(String(post.status || ""));
     const image = /^https:\/\//i.test(String(post.imageUrl || "")) ? String(post.imageUrl) : "";
     const caption = String(post.caption || "").trim();
-    const approval = String(post.approvalStatus || "") === "approved" ? "Aprovado · publica no horário" : String(post.approvalStatus || "") === "rejected" ? "Recusado · não será publicado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
+    const approval = String(post.approvalStatus || "") === "approved" ? (finished ? "Aprovado · NÃO foi publicado" : "Aprovado · publica no horário") : String(post.approvalStatus || "") === "rejected" ? "Recusado · não será publicado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
     const canDecide = ["ready", "scheduled"].includes(String(post.status || "")) && String(post.approvalStatus || "") !== "approved";
     const decisionButtons = canDecide
       ? `<div class="post-decision"><button type="button" class="post-approve" data-post-decision="approved" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✓ Aprovar</button><button type="button" class="post-reject" data-post-decision="rejected" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✕ Recusar</button></div>`

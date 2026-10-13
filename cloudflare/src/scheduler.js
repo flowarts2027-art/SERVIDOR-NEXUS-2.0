@@ -151,6 +151,32 @@ export async function recordSchedulerFailure(env, scheduledAt, error) {
   return code;
 }
 
+// Posts velhos que passaram do horário saem da fila (não publicam atrasados).
+// Post APROVADO pelo Rodrigo ganha um erro próprio, para o painel avisar que
+// ele não saiu, em vez de sumir junto com os rascunhos sem aprovação.
+export async function expireStalePosts(env, clientId, now = new Date()) {
+  const stale = `client_id=?1
+         AND status IN ('ready','scheduled','failed')
+         AND scheduled_for IS NOT NULL
+         AND scheduled_for<=?2
+         AND created_at<datetime(?2,'-24 hours')`;
+  const at = now.toISOString();
+  const approved = await env.DB.prepare(
+    `UPDATE post_ledger
+     SET status='expired',error='approved_post_missed',updated_at=CURRENT_TIMESTAMP
+     WHERE ${stale} AND COALESCE(approval_status,'')='approved'`
+  ).bind(clientId, at).run();
+  const drafts = await env.DB.prepare(
+    `UPDATE post_ledger
+     SET status='expired',error='stale_ready_expired',updated_at=CURRENT_TIMESTAMP
+     WHERE ${stale}`
+  ).bind(clientId, at).run();
+  return {
+    approvedMissed: Number(approved?.meta?.changes || 0),
+    drafts: Number(drafts?.meta?.changes || 0)
+  };
+}
+
 export async function runSchedulerTick(env, scheduledAt = new Date()) {
   const now = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt || Date.now());
   const nowMs = now.getTime();
@@ -182,16 +208,9 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
     const state = await schedulerState(env, client.id);
     const next = { ...state };
 
-    const expired = await env.DB.prepare(
-      `UPDATE post_ledger
-       SET status='expired',error='stale_ready_expired',updated_at=CURRENT_TIMESTAMP
-       WHERE client_id=?1
-         AND status IN ('ready','scheduled','failed')
-         AND scheduled_for IS NOT NULL
-         AND scheduled_for<=?2
-         AND created_at<datetime(?2,'-24 hours')`
-    ).bind(client.id,now.toISOString()).run();
-    next.expiredStaleDrafts = Number(expired?.meta?.changes || 0);
+    const expired = await expireStalePosts(env, client.id, now);
+    next.expiredStaleDrafts = expired.drafts;
+    next.missedApprovedPosts = expired.approvedMissed;
 
     let cycleIsDue = due(state.lastCycleQueuedAt, config.cycleMinutes, nowMs);
 

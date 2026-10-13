@@ -301,3 +301,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Causa 1: imagem gerada em 1024x1536 e recortada para 1080x1350 (fit cover) corta ~9% em cima e embaixo; o prompt mandava o título no terço superior. Corrigido em `media-generation.js`: texto começa 18% abaixo do topo e nada nos 15% de baixo.
 - Causa 2: `format-builder.js` usava `features.scene` como título do card 2. Agora usa `firstTipOverlay` (ângulo curto ou "1. Comece por aqui").
 - Testes: 320/320 passando. Commit local; push só com OK do Rodrigo. O post já publicado não muda: precisa ser refeito.
+
+## 2026-10-13 — aviso de post aprovado que não saiu (item 1 da auditoria)
+- Pedido do Rodrigo: corrigir o item 1 de `AUDITORIA-2026-10-13.md`.
+- `scheduler.js`: nova `expireStalePosts`. Post aprovado vencido (>24 h, ready/scheduled/failed) agora recebe `error='approved_post_missed'`; rascunho sem aprovação continua `stale_ready_expired`. Os dois seguem `expired` (não publicam atrasados). Estado do scheduler guarda `missedApprovedPosts`.
+- `public/app.js` (Master › Posts): status `expired` aparece como VENCIDA; aviso no topo com quantos aprovados não saíram; texto "Aprovado · NÃO foi publicado" no lugar de "publica no horário" quando o post terminou sem sair; erros traduzidos.
+- Teste novo `expire-approved-posts.test.mjs` (SQLite real). 322/322. Em branch `fix/aviso-post-aprovado`; não implantado até o OK do Rodrigo. Posts que já venceram antes desta mudança continuam com o erro antigo.
