@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gera as páginas de nicho do site da Flow Arts (public/marketing-para-*.html).
 
-Fatos e preços vêm de cloudflare/src/whatsapp-knowledge.js (fonte oficial).
+Preços iguais aos da página principal (public/site.html), decisão do Rodrigo em 2026-10-13.
 Nada de resultados, clientes ou números inventados.
 """
 import html
@@ -15,10 +15,10 @@ WA = "5521964816185"
 SITE = "https://flowarts.com.br"
 
 PRECOS = [
-    ("Instagram no Automático", "12 posts por mês feitos com IA (4 Reels, 4 carrosséis e 4 posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix."),
-    ("5 Reels com IA", "R$ 147."),
-    ("10 posts prontos", "R$ 97."),
-    ("Criação de logo", "R$ 67."),
+    ("Instagram que responde sozinho", "R$ 197, pagamento único. Resposta automática no direct para quem comenta, a pessoa segue o seu perfil e vai direto para o seu WhatsApp, 10 posts prontos com imagens e legendas. Tudo funcionando em até 2 dias."),
+    ("5 Reels com IA", "R$ 147. Vídeos curtos para o seu negócio aparecer para quem ainda não te segue."),
+    ("10 posts prontos", "R$ 97. Imagens e legendas no estilo da sua marca, entregues em 24h."),
+    ("Logo profissional", "R$ 67. Três opções originais para você escolher, em 24h."),
 ]
 
 COMO = [

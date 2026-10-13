@@ -18,11 +18,13 @@ test("páginas de nicho existem, estão no sitemap e no rodapé do site", () => 
   }
 });
 
-test("páginas de nicho usam os preços oficiais e não citam clientes antigos", () => {
+test("páginas de nicho usam os mesmos preços da página principal e não citam clientes antigos", () => {
+  const site = read("site.html");
   for (const slug of pages) {
     const html = read(slug + ".html");
-    assert.match(html, /R\$ 297 de entrada \+ R\$ 697 por mês/);
+    assert.match(html, /R\$ 197, pagamento único/);
+    assert.match(site, /R\$ 197 <small>pagamento único<\/small>/);
+    assert.doesNotMatch(html, /R\$ 697/);
     assert.doesNotMatch(html, /global ?play|ragnar/i);
-    assert.doesNotMatch(html, /resposta automática/i);
   }
 });
