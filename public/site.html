@@ -364,16 +364,13 @@ footer a:hover{color:var(--bright)}
 </footer>
 
 <script>
-// Posts do site. Para trocar, edite a lista (arquivos em /brand/posts/).
+// Posts do site: imagens reais geradas pelo Nexus (demo Café Brisa). Para trocar, edite a lista.
 // Enquanto um arquivo não existe, aparece um bloco provisório no lugar.
 (function () {
   var POSTS = [
-    { src: "/brand/posts/post-1.webp", alt: "Post de cafeteria feito pela Flow Arts", tag: "cafe" },
-    { src: "/brand/posts/post-2.webp", alt: "Post de salão de beleza feito pela Flow Arts", tag: "salao" },
-    { src: "/brand/posts/post-3.webp", alt: "Post de lanchonete feito pela Flow Arts", tag: "lanche" },
-    { src: "/brand/posts/post-4.webp", alt: "Post feito pela Flow Arts", tag: "" },
-    { src: "/brand/posts/post-5.webp", alt: "Post feito pela Flow Arts", tag: "" },
-    { src: "/brand/posts/post-6.webp", alt: "Post feito pela Flow Arts", tag: "" }
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1000/generated-fec642cd-3be1-4456-b2fe-38f916e49c24.jpg", alt: "Post de cafeteria: café com pão de queijo saindo do forno", tag: "cafe" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1400/generated-42a28287-86a7-44c0-bf45-343492cc77b6.jpg", alt: "Post de cafeteria: pão de queijo aberto ao lado de um café", tag: "cafe2" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1800/generated-bb0d7839-f373-4083-a96e-db96a558f43d.jpg", alt: "Post de cafeteria: cliente tomando café da manhã", tag: "cafe3" }
   ];
   function tile(post, big) {
     var box = document.createElement("div");
