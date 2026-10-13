@@ -332,3 +332,7 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Páginas no `sitemap.xml` e no rodapé do `site.html`. Conferidas em celular (390 px) e computador sem rolagem lateral. Teste `site-niche-pages.test.mjs`; 324/324.
 - Branch `feat/paginas-nicho`; aguardando OK do Rodrigo. Depois do deploy: pedir indexação das 3 URLs no Search Console.
 - Implantado com OK do Rodrigo (11h32): main 5bb31f0, deploy com sucesso; /marketing-para-cafeteria conferida no ar. Próximo: Rodrigo pede indexação das 3 URLs no Search Console.
+
+## 2026-10-13 — seção "Para o seu tipo de negócio" na home
+- Rodrigo não viu as páginas novas (estavam só no rodapé). Nova seção `#para-quem` no `site.html`, antes de "Como funciona", com links para as 3 páginas de nicho. Conferida no celular sem rolagem lateral. Branch `feat/menu-paginas-nicho`.
+- CONFLITO a decidir pelo Rodrigo: a home vende "Instagram que responde sozinho" por R$ 197 (pagamento único) com resposta automática no direct, e o hero diz "responde quem comenta, na hora". Já `whatsapp-knowledge.js` (preços oficiais, OK de 12/10) tem "Instagram no Automático" R$ 297 + R$ 697/mês e proíbe vender resposta automática a comentários enquanto a Meta não aprovar. As páginas de nicho usam os preços do `whatsapp-knowledge.js`.
