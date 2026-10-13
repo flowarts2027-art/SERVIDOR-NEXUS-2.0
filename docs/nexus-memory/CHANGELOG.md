@@ -324,3 +324,10 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Pedido do Rodrigo: o nome "Flow Arts" se confunde com "flow arts" (malabarismo). `public/site.html`: título "Flow Arts Marketing | IA e Instagram para pequenos negócios" (59 caracteres), og:site_name e og:title com "Flow Arts Marketing", schema ProfessionalService com alternateName ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]. H1 e textos visíveis não mudaram.
 - 322/322. Branch `fix/seo-flow-arts-marketing`; aguardando OK do Rodrigo. Depois do deploy: Search Console › Inspeção de URL › Solicitar indexação.
 - Implantado com OK do Rodrigo (11h17): main 193e66d, deploy com sucesso; título e og:site_name novos conferidos no ar em flowarts.com.br.
+
+## 2026-10-13 — 3 páginas de nicho no site (SEO)
+- Pedido do Rodrigo: mais conteúdo no site; escolheu "uma página por tipo de negócio". Primeiras: /marketing-para-cafeteria, /marketing-para-salao-de-beleza, /marketing-para-lanchonete.
+- Cada página: problema do nicho, 5 ideias de post úteis, como funciona, preços oficiais (de `whatsapp-knowledge.js`), FAQ e chamada para WhatsApp/exemplo grátis. Dados para o Google: Service, FAQPage e BreadcrumbList. ~500 palavras cada. Sem resultados, clientes ou números inventados; sem citar resposta automática.
+- Gerador: `scripts/site/gerar_paginas_nicho.py` (para criar novos nichos, adicione em NICHOS e rode `python3 scripts/site/gerar_paginas_nicho.py public`).
+- Páginas no `sitemap.xml` e no rodapé do `site.html`. Conferidas em celular (390 px) e computador sem rolagem lateral. Teste `site-niche-pages.test.mjs`; 324/324.
+- Branch `feat/paginas-nicho`; aguardando OK do Rodrigo. Depois do deploy: pedir indexação das 3 URLs no Search Console.
