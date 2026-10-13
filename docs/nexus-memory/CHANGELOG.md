@@ -323,3 +323,4 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Search Console já estava verificado (domínio, via Cloudflare) e a home já indexada (feito em 12/10). Sitemap reenviado com URL completa em 13/10.
 - Pedido do Rodrigo: o nome "Flow Arts" se confunde com "flow arts" (malabarismo). `public/site.html`: título "Flow Arts Marketing | IA e Instagram para pequenos negócios" (59 caracteres), og:site_name e og:title com "Flow Arts Marketing", schema ProfessionalService com alternateName ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]. H1 e textos visíveis não mudaram.
 - 322/322. Branch `fix/seo-flow-arts-marketing`; aguardando OK do Rodrigo. Depois do deploy: Search Console › Inspeção de URL › Solicitar indexação.
+- Implantado com OK do Rodrigo (11h17): main 193e66d, deploy com sucesso; título e og:site_name novos conferidos no ar em flowarts.com.br.
