@@ -66,6 +66,29 @@ async function runAnalyst(env,client,options){
 }
 
 
+const STREAMING_CLIENTS=new Set(["globalplay-streaming","global-play-streaming","ragnar-one"]);
+export const STREAMING_HOOKS=Object.freeze([
+  "Você está assistindo errado e nem percebeu.",
+  "O problema não é falta de conteúdo.",
+  "Quase ninguém percebe isso antes de travar.",
+  "Tem um erro que estraga qualquer noite.",
+  "Filme bom não salva uma experiência ruim.",
+  "A parte mais irritante acontece antes do play.",
+  "Todo mundo reclama disso, mas aceita mesmo assim.",
+  "Se isso acontece com você, veja até o fim.",
+  "O que parece vantagem pode estar te atrapalhando."
+]);
+export const BUSINESS_HOOKS=Object.freeze([
+  "Você está perdendo cliente por um detalhe simples.",
+  "O problema não é o seu produto.",
+  "Quase ninguém percebe isso no próprio perfil.",
+  "Tem um erro que afasta cliente novo.",
+  "Se isso acontece no seu negócio, veja até o fim.",
+  "O que parece pequeno faz o cliente voltar.",
+  "Antes de postar, responda esta pergunta.",
+  "Todo cliente olha isso antes de comprar."
+]);
+
 function compactWords(text,max=10){
   return String(text||"").trim().split(/\s+/).filter(Boolean).slice(0,Math.max(1,max)).join(" ");
 }
@@ -75,17 +98,10 @@ async function runHookLab(env,client,options){
   const rows=(await ledgerRows(env,client.id,120))
     .filter(x=>["ready","scheduled"].includes(String(x.status||"")))
     .slice(0,20);
-  const bank=[
-    "Você está assistindo errado e nem percebeu.",
-    "O problema não é falta de conteúdo.",
-    "Quase ninguém percebe isso antes de travar.",
-    "Tem um erro que estraga qualquer noite.",
-    "Filme bom não salva uma experiência ruim.",
-    "A parte mais irritante acontece antes do play.",
-    "Todo mundo reclama disso, mas aceita mesmo assim.",
-    "Se isso acontece com você, veja até o fim.",
-    "O que parece vantagem pode estar te atrapalhando."
-  ];
+  // Frases de filme/streaming são só para a Global Play (arquivada). Para os outros
+  // clientes (Flow Arts, Café Brisa da demo) usamos ganchos de pequeno negócio.
+  const streaming=STREAMING_CLIENTS.has(String(client.id||""));
+  const bank=streaming?STREAMING_HOOKS:BUSINESS_HOOKS;
   let improved=0;
   const reviews=[];
   for(const row of rows){
@@ -95,9 +111,12 @@ async function runHookLab(env,client,options){
     const words=current.split(/\s+/).filter(Boolean).length;
     const hasLoop=/\b(você|isso|problema|erro|ninguém|antes|depois|qual|pior|melhor|acontece)\b/i.test(current);
     let hook=current;
-    if(!current||words>10||!hasLoop){
+    // Conserta legendas antigas que receberam frase de filme por engano.
+    const wrongBank=!streaming&&STREAMING_HOOKS.includes(current);
+    if(!current||words>10||!hasLoop||wrongBank){
       const preferred=String(payload.creativeFeatures?.hook||"").trim();
-      const candidate=preferred&&preferred.split(/\s+/).filter(Boolean).length<=10?preferred:bank[Math.abs([...String(row.id)].reduce((n,c)=>n+c.charCodeAt(0),0))%bank.length];
+      const usable=preferred&&preferred.split(/\s+/).filter(Boolean).length<=10&&(streaming||!STREAMING_HOOKS.includes(preferred));
+      const candidate=usable?preferred:bank[Math.abs([...String(row.id)].reduce((n,c)=>n+c.charCodeAt(0),0))%bank.length];
       hook=compactWords(candidate,10);
       const firstIndex=lines.findIndex(x=>x.trim());
       if(firstIndex>=0)lines[firstIndex]=hook; else lines.unshift(hook);
