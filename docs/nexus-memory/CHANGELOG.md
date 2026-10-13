@@ -308,3 +308,12 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - `public/app.js` (Master › Posts): status `expired` aparece como VENCIDA; aviso no topo com quantos aprovados não saíram; texto "Aprovado · NÃO foi publicado" no lugar de "publica no horário" quando o post terminou sem sair; erros traduzidos.
 - Teste novo `expire-approved-posts.test.mjs` (SQLite real). 322/322. Em branch `fix/aviso-post-aprovado`; não implantado até o OK do Rodrigo. Posts que já venceram antes desta mudança continuam com o erro antigo.
 - Implantado com OK do Rodrigo (09h22): main 150e9e1, deploy run 38396871374 com sucesso. Conferência do painel ao vivo não feita desta sessão (rede bloqueada); Rodrigo confere em Master › Posts.
+
+## 2026-10-13 — CI virou "só testes" (item 2 da auditoria)
+- Causa do CI vermelho: `scripts/test_premium_editor_layout.cjs` conferia o editor de vídeo antigo, que não está em nenhuma página de `public/`.
+- Achado importante: o `ci.yml` antigo, depois dos testes, aplicava migrações no D1 de produção, fazia um segundo deploy, refazia o ZIP do instalador e chamava `/api/emergency-publish-now` (publicação de emergência). O vermelho estava, sem querer, impedindo isso.
+- Novo `ci.yml`: só checagem de sintaxe, testes do AutoFix, 322 testes do Worker, testes do render de overlay e bundle do Wrangler. Sem deploy, sem D1 remoto, sem publicação. Deploy continua no `deploy-nexus-cloudflare.yml`. Versão antiga guardada em `docs/legacy/ci-antigo-2026-10-13.yml.txt`.
+- Saíram junto: passos da Global Play/Ragnar (cartazes, trailers, iTunes, Commons), editor premium e workspace de vídeo.
+- Atenção: migrações novas do D1 não são mais aplicadas sozinhas (na prática já não eram, porque o CI parava antes). Quando houver migração nova, aplicar com `npm run d1:migrations:apply` e o OK do Rodrigo.
+- Teste `issue100-production` passou a conferir que o CI não implanta nem publica. Local: 322/322, AutoFix 4/4, overlay ok. Bundle do Wrangler não rodou nesta sessão (npm sem rede); é o mesmo passo do deploy, que funciona.
+- Branch `fix/ci-somente-testes`; aguardando OK do Rodrigo.

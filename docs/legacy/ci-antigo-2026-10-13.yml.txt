@@ -1,0 +1,544 @@
+name: NEXUS CI
+
+on:
+  push:
+    branches: [main, cloudflare-migration]
+  pull_request:
+
+concurrency:
+  group: nexus-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cloudflare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check panel JavaScript
+        run: |
+          node --check public/app.js
+          node --check public/client-lite.js
+
+      - name: Check Cloudflare Worker syntax
+        shell: bash
+        run: |
+          for file in cloudflare/src/*.js; do
+            node --check "$file"
+          done
+
+      - name: Validate Nexus AutoFix safety and self-recovery
+        run: |
+          node --check .github/scripts/nexus-autofix.mjs
+          node --check .github/scripts/nexus-autofix-policy.mjs
+          node --test .github/scripts/nexus-autofix.test.mjs
+          node .github/scripts/nexus-autofix.mjs --self-test
+
+      - name: Test visual quality gate
+        run: node --test cloudflare/test/*.test.mjs
+
+      - name: Verify official poster downloads in real GitHub renderer
+        run: |
+          curl --fail --location --silent --show-error --max-time 30 \
+            'https://www.sonypictures.com.br/sites/brazil/files/2026-09/SMBND_BRA_1400%20X%202100%20%28Vertical%29.jpg' \
+            -o /tmp/nexus-sony-official-poster.jpg
+          python3 -c "from pathlib import Path; data=Path('/tmp/nexus-sony-official-poster.jpg').read_bytes(); assert len(data)>4096 and data[:3] == bytes([255,216,255]), 'Invalid JPEG'; print('OFFICIAL_POSTER_DOWNLOAD_OK', len(data))"
+
+      - name: Test cast portraits fallback and timing of WhatsApp
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq python3-pil
+          /usr/bin/python3 scripts/test_cast_portraits.py
+          grep -Fq "[f][watermark]overlay=0:0:enable='between(t," .github/workflows/video-template-render.yml
+
+      - name: Verify real Commons portrait discovery
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, urllib.parse
+          params=urllib.parse.urlencode({'action':'query','prop':'pageimages','piprop':'thumbnail',
+             'pithumbsize':'420','format':'json','formatversion':'2',
+             'titles':'Tom Holland (actor)|Zendaya|Mark Ruffalo'})
+          request=urllib.request.Request('https://en.wikipedia.org/w/api.php?'+params,
+              headers={'User-Agent':'NEXUSPromo/2.1 (https://globalplay.fun)', 'Accept':'application/json'})
+          with urllib.request.urlopen(request,timeout=18) as response:
+              pages=json.load(response).get('query',{}).get('pages',[])
+          print('ACTOR_PHOTO_API_PAGES',[(page.get('title'),page.get('thumbnail',{}).get('source','')) for page in pages])
+          portraits=[page.get('thumbnail',{}).get('source','') for page in pages]
+          portraits=[u for u in portraits if u.startswith(('https://upload.wikimedia.org/wikipedia/commons/','https://thumb.wikimedia.org/wikipedia/commons/'))]
+          assert len(portraits)>=2, 'No real actor portrait thumbnails were returned'
+          print('WIKIMEDIA_COMMONS_CAST_AVAILABLE',len(portraits))
+          PY
+
+      - name: Verify actual Spider-Man sequel posters from iTunes
+        run: |
+          node --input-type=module <<'JS'
+          import { fetchRelatedFranchiseFilms } from './cloudflare/src/video-metadata-enrichment.js';
+          import { searchCatalog } from './cloudflare/src/video-catalog.js';
+          import { verifyPosterLocation } from './cloudflare/src/video-demand-catalog.js';
+          for(const term of ['Spider-Man No Way Home','Spider-Man Far From Home','Spider-Man Homecoming']){
+            for(const country of ['BR','US']){
+              try {
+                const rows=await searchCatalog(term,'movie',{timeoutMs:4500,country});
+                console.log('RELATED_CATALOG_DIAG',country,term,
+                  rows.slice(0,5).map(r=>({id:r.id,title:r.title,year:r.year,image:!!r.posterUrl})));
+                if(rows[0]?.posterUrl) console.log('RELATED_POSTER_PROBE',country,term,await verifyPosterLocation(rows[0].posterUrl));
+              } catch(e){ console.log('RELATED_CATALOG_DIAG_ERROR',country,term,String(e)); }
+            }
+          }
+          const titles=await fetchRelatedFranchiseFilms({id:'sony:spider-man-brand-new-day-2026',
+            title:'Homem-Aranha: Um Novo Dia',posterUrl:'https://www.sonypictures.com.br/official.jpg'});
+          console.log('VERIFIED_SPIDER_RELATED_TITLES',JSON.stringify(titles.map(x=>({id:x.id,title:x.title,year:x.year,image:x.image}))));
+          if(titles.length<2) throw new Error('Only '+titles.length+' sequel artworks verified: related scene would be empty');
+          JS
+
+      - name: Test official Portuguese trailer verification
+        run: python scripts/test_portuguese_trailer.py
+
+      - name: Verify current Windows helper ZIP contains latest Python uploader
+        run: |
+          python3 scripts/build-local-helper-zip.py
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          with ZipFile('public/nexus-baixar-no-pc.zip') as archive:
+              assert set(archive.namelist()) >= {'helper.py','INICIAR.cmd','start.ps1'}
+              current = Path('scripts/local-youtube/helper.py').read_bytes()
+              assert archive.read('helper.py') == current
+              assert b'uploaded_bytes' in current and b'timeout=600' in current
+          print('CURRENT_WINDOWS_HELPER_PACKAGED')
+          PY
+
+      - name: Test local PC downloader boundary and error handling
+        run: python -m unittest discover -s scripts/local-youtube -p 'test_*.py'
+
+      - name: Smoke test locked phone video template
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core python3-pil
+          ffmpeg -hide_banner -loglevel error -f lavfi -i 'color=c=navy:s=640x360:r=30:d=3' -c:v libx264 /tmp/template-source.mp4
+          TITLE=Michael OVERVIEW='Uma sinopse curta para validar o smartphone.' RELEASE_YEAR=2026 MEDIA_TYPE=FILME \
+            /usr/bin/python3 scripts/render_video_template.py \
+            --source /tmp/template-source.mp4 --output /tmp/template-output.mp4 --work /tmp/template-smoke
+          ffmpeg -hide_banner -loglevel error -i /tmp/template-output.mp4 -f null -
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 /tmp/template-output.mp4)" = '1080x1920'
+          test "$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/template-output.mp4)" = '3.000000'
+          test -s /tmp/template-smoke/phone-underlay.png
+          test -s /tmp/template-smoke/phone-foreground.png
+          grep -Fq 'duration = min(source_duration, args.duration) if args.duration > 0 else source_duration' scripts/render_video_template.py
+          grep -Fq 'Synopsis is always inside the phone' scripts/render_video_template.py
+          rm -rf /tmp/promo-scenes
+          TITLE=Michael OVERVIEW='Uma sinopse curta com margem segura para validar o modelo em cenas.' RELEASE_YEAR=2026 MEDIA_TYPE=FILME END_CONTACT=21999999999 \
+            MOVIE_METADATA='{"runtime":"110 min","rating":"8.5/10","genres":"Ação • Drama"}' \
+            /usr/bin/python3 scripts/build_promo_card.py --output-dir /tmp/promo-scenes --poster /tmp/template-smoke/source-frame.jpg
+          for f in scene-phone-under.png scene-phone-front.png scene-watermark.png; do
+            test -s "/tmp/promo-scenes/$f"
+          done
+          python3 -c "from PIL import Image; from pathlib import Path; names=['scene-phone-under.png','scene-phone-front.png','scene-watermark.png']; assert all(Image.open(Path('/tmp/promo-scenes')/n).size == (1080,1920) for n in names)"
+          python3 - <<'PY'
+          import importlib.util, json
+          spec = importlib.util.spec_from_file_location("promo", "scripts/build_promo_card.py")
+          promo = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(promo)
+          styles = {}
+          for preset in ("nexus", "minimal", "cinema"):
+              promo.FRAME_PRESET = preset
+              styles[preset] = promo.preset_style()
+          assert len({json.dumps(v, sort_keys=True) for v in styles.values()}) == 3
+          PY
+          grep -Fq '[scene-base][phoneunder]overlay=0:0' .github/workflows/video-template-render.yml
+          grep -Fq '[branded][closing]overlay=0:0' .github/workflows/video-template-render.yml
+          grep -Fq 'phone/poster until one third' .github/workflows/video-template-render.yml
+          grep -Fq 'PHONE_END="$(awk -v d="$PROMO_DUR" '\''BEGIN{printf "%.3f",d/3}'\'')"' .github/workflows/video-template-render.yml
+          grep -Fq 'contact = f"({digits[:2]}) {digits[2:7]}-{digits[7:]}"' scripts/build_promo_card.py
+          /usr/bin/python3 scripts/test_promo_related.py
+          ! grep -Fq 'or poster' scripts/build_promo_card.py
+          grep -Fq 'Sugestões verificadas indisponíveis' scripts/build_promo_card.py
+          grep -Fq 'video_official_poster_required' .github/workflows/video-template-render.yml
+          grep -Fq 'function normalizeBrazilWhatsapp(value)' cloudflare/src/portal.js
+
+      - name: Verify clean trailer background matches approved Lanternas format
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 scripts/test_clean_trailer_background.py
+
+      - name: Test cinematic 60s trailer, source sound and approved phone poster
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet "scenedetect-headless==0.7.1"
+          python3 scripts/test_auto_cinematic_cut.py
+
+      - name: Test missing-poster trailer frame fallback and promotional phone
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 scripts/test_trailer_frame_poster.py
+
+      - name: Test editor overlay export pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -m py_compile scripts/render_overlay_layers.py
+          /usr/bin/python3 scripts/test_render_overlay_layers.py
+          /usr/bin/python3 scripts/test_render_overlay_mp4.py
+          node --check public/video-overlay-core.js
+          node --check public/video-overlay-ui.js
+          node --test scripts/test_video_overlay_core.cjs
+          node --test scripts/test_premium_editor_layout.cjs
+
+      - name: Test premium editor in Chromium desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
+          npx playwright install --with-deps chromium
+          node scripts/test_premium_editor_browser.cjs
+
+      - name: Upload premium editor browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-premium-visual-qa
+          path: nexus-premium-*.png
+          if-no-files-found: ignore
+
+      - name: Test client workspace HTTP, database and storage flow
+        env:
+          NEXUS_E2E_SOURCE: /tmp/template-source.mp4
+          NEXUS_E2E_RESULT: /tmp/template-output.mp4
+        run: node scripts/test-client-workspace.mjs
+
+      - name: Validate Wrangler bundle
+        working-directory: cloudflare
+        run: |
+          npm install --no-audit --no-fund
+          npm run check
+
+      - name: Verify deployment targets current main
+        id: deploy_guard
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_sha="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "$remote_sha" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+            echo "Deployment guard: current main confirmed."
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Deployment skipped: run $GITHUB_SHA is superseded by $remote_sha."
+          fi
+
+      - name: Apply D1 production migrations
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        continue-on-error: true
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: |
+          set -euo pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::warning::D1 migration skipped: Cloudflare token is not configured."
+            exit 1
+          fi
+          npm run d1:migrations:apply
+
+      - name: Rebuild Windows helper ZIP from latest source
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        run: |
+          python3 scripts/build-local-helper-zip.py
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          with ZipFile('public/nexus-baixar-no-pc.zip') as archive:
+              assert archive.read('helper.py') == Path('scripts/local-youtube/helper.py').read_bytes()
+          print('WINDOWS_HELPER_DOWNLOAD_MATCHES_MAIN')
+          PY
+
+      - name: Deploy servidor-nexus to Cloudflare
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        working-directory: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: |
+          set -euo pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Cloudflare deploy blocked: CLOUDFLARE_API_TOKEN is not configured."
+            exit 1
+          fi
+          npm run deploy
+
+      - name: Verify client panel
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://servidor-nexus.diamantehinode2015.workers.dev"
+          for attempt in 1 2 3 4 5 6; do
+            portal="$(curl --fail --silent --show-error --max-time 20 "$base/portal?verify=$GITHUB_SHA-$attempt" || true)"
+            js="$(curl --fail --silent --show-error --max-time 20 "$base/client-lite.js?verify=$GITHUB_SHA-$attempt" || true)"
+            headers="$(curl --fail --silent --show-error --max-time 20 -I "$base/portal?verify=$GITHUB_SHA-$attempt" || true)"
+            if grep -Fq 'data-tab="inicio"' <<<"$portal" \
+              && grep -Fq 'data-tab="numeros"' <<<"$portal" \
+              && grep -Fq '/api/portal/insights' <<<"$js" \
+              && grep -Fq 'nexusWindowsCredentials' <<<"$js" \
+              && grep -qi 'cache-control:.*no-store' <<<"$headers"; then
+              echo "Client panel verified on attempt $attempt."
+              exit 0
+            fi
+            echo "::warning::Client panel assets not fully propagated on attempt $attempt."
+            sleep 5
+          done
+          echo "::error::Client panel did not converge after deploy."
+          exit 1
+
+      - name: Verify Master access page
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(curl --fail --silent --show-error --max-time 15 https://servidor-nexus.diamantehinode2015.workers.dev/api/master/access)"
+          echo "$body" | grep -F "Acesso administrativo" >/dev/null
+          echo "Master access page verified."
+
+      - name: Verify Master authentication configuration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 15 https://servidor-nexus.diamantehinode2015.workers.dev/api/master/diagnostic | jq '{ok,d1Ready,masterUsers,canonicalMasterConfigured,canonicalMasterUsername,legacyMasterConfigured,legacyMasterUsername,nexusSecretConfigured}'
+          curl --silent --show-error --max-time 15 https://servidor-nexus.diamantehinode2015.workers.dev/api/master/self-test | jq '{ok,configured,credentialsValid,sessionCreated,sessionResolved,assetsBound,databaseBound,error}'
+
+
+      - name: Recover publishing during D1 daily limit
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true' && !contains(github.event.head_commit.message, '[video-only]') && !contains(github.event.head_commit.message, '[force-instagram-test]') && !contains(github.event.head_commit.message, '[social-reference]')
+        continue-on-error: true
+        working-directory: cloudflare
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+          NEXUS_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/autonomy-health
+          NEXUS_INSTAGRAM_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/instagram-publishing-health
+          NEXUS_EMERGENCY_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publish-now
+          NEXUS_EMERGENCY_STATUS_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publisher-status
+        run: |
+          set -euo pipefail
+          health="$(curl --silent --show-error --max-time 15 "$NEXUS_HEALTH_URL" || true)"
+          code="$(echo "$health" | jq -r '.errorCode // ""' 2>/dev/null || true)"
+          if [ "$code" != "d1_daily_read_limit" ]; then
+            echo "D1 daily limit not active; emergency publisher not needed."
+            exit 0
+          fi
+
+          token="$(openssl rand -hex 32)"
+          cleanup() {
+            printf 'y\n' | npx wrangler secret delete EMERGENCY_TRIGGER_TOKEN >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          printf '%s' "$token" | npx wrangler secret put EMERGENCY_TRIGGER_TOKEN >/dev/null
+          result="$(curl --fail --silent --show-error --max-time 180 \
+            -X POST \
+            -H "x-nexus-emergency-token: $token" \
+            "$NEXUS_EMERGENCY_URL")"
+
+          echo "$result" | jq '{ok,attempted,published,errors}'
+          status="$(curl --fail --silent --show-error --max-time 15 "$NEXUS_EMERGENCY_STATUS_URL")"
+          echo "$status" | jq '{storage,clients}'
+
+          echo "$status" | jq -e '
+            .ok == true and
+            (.clients | length == 2) and
+            ([.clients[] | .count > 0 and .mediaIdPresent == true] | all)
+          ' >/dev/null
+
+      - name: Force one controlled Global Play Instagram post
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true' && contains(github.event.head_commit.message, '[force-instagram-test]')
+        working-directory: cloudflare
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+          NEXUS_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          token="$(openssl rand -hex 32)"
+          cleanup() {
+            printf 'y\n' | npx wrangler secret delete EMERGENCY_TRIGGER_TOKEN >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          printf '%s' "$token" | npx wrangler secret put EMERGENCY_TRIGGER_TOKEN >/dev/null
+          if [[ "$NEXUS_COMMIT_MESSAGE" == *"[retry-social-test]"* ]]; then
+            previous_test="2bc23e74c3d046091f5752a91dad0e0d0eb910c8"
+            diagnostic=""
+            for attempt in 1 2 3 4 5 6; do
+              body_file="$(mktemp)"
+              diagnostic_code="$(curl --silent --show-error --max-time 30 -o "$body_file" -w '%{http_code}' \
+                -H "x-nexus-emergency-token: $token" \
+                "https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publisher-diagnostic?clientId=globalplay-streaming&testId=$previous_test" || true)"
+              diagnostic="$(cat "$body_file")"
+              rm -f "$body_file"
+              if [ "$diagnostic_code" = "200" ]; then break; fi
+              if [ "$diagnostic_code" != "401" ]; then exit 1; fi
+              sleep 10
+            done
+            echo "$diagnostic" | jq '{ok,clientId,controlledTest,recentMedia,hasMore}'
+            echo "$diagnostic" | jq -e '
+              def epoch: sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601;
+              (.controlledTest.startedAt | epoch) as $started
+              | .ok == true and .clientId == "globalplay-streaming"
+              and .controlledTest.status == "started"
+              and (.hasMore == false or ([.recentMedia[].timestamp | epoch] | min) <= $started)
+              and ([.recentMedia[] | select((.media_type == "CAROUSEL" or .media_type == "CAROUSEL_ALBUM")
+                and ((.timestamp | epoch) >= $started))] | length == 0)
+            ' >/dev/null
+          fi
+          result=""
+          http_code=""
+          for attempt in 1 2 3 4 5 6; do
+            body_file="$(mktemp)"
+            http_code="$(curl --silent --show-error --max-time 600 \
+              -o "$body_file" -w '%{http_code}' \
+              -X POST \
+              -H "x-nexus-emergency-token: $token" \
+              "https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publish-now?clientId=globalplay-streaming&format=carousel&forceTest=1&testId=${{ github.sha }}" || true)"
+            result="$(cat "$body_file")"
+            rm -f "$body_file"
+            if [ "$http_code" = "200" ]; then
+              break
+            fi
+            if [ "$http_code" != "401" ]; then
+              echo "::error::Global Play controlled publish returned HTTP $http_code"
+              echo "$result" | jq . || true
+              exit 1
+            fi
+            echo "::warning::Emergency trigger secret not propagated yet (attempt $attempt/6); retrying."
+            sleep 10
+          done
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Global Play controlled publish authorization did not propagate."
+            exit 1
+          fi
+          echo "$result" | jq '{ok,targetClientId,attempted,published,errors,posts}'
+          echo "$result" | jq -e '.ok == true and .targetClientId == "globalplay-streaming" and .format == "carousel" and .attempted == 1 and .published == 1 and (.errors | length == 0)' >/dev/null
+
+      - name: Force one controlled Ragnar Instagram post
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true' && contains(github.event.head_commit.message, '[force-ragnar-test]')
+        working-directory: cloudflare
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: |
+          set -euo pipefail
+          token="$(openssl rand -hex 32)"
+          cleanup() {
+            printf 'y\n' | npx wrangler secret delete EMERGENCY_TRIGGER_TOKEN >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          printf '%s' "$token" | npx wrangler secret put EMERGENCY_TRIGGER_TOKEN >/dev/null
+          result=""
+          http_code=""
+          for attempt in 1 2 3 4 5 6; do
+            body_file="$(mktemp)"
+            http_code="$(curl --silent --show-error --max-time 600 \
+              -o "$body_file" -w '%{http_code}' \
+              -X POST \
+              -H "x-nexus-emergency-token: $token" \
+              "https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publish-now?clientId=ragnar-one&format=carousel&forceTest=1&testId=${{ github.sha }}" || true)"
+            result="$(cat "$body_file")"
+            rm -f "$body_file"
+            if [ "$http_code" = "200" ]; then
+              break
+            fi
+            if [ "$http_code" != "401" ]; then
+              echo "::error::Ragnar controlled publish returned HTTP $http_code"
+              echo "$result" | jq . || true
+              exit 1
+            fi
+            echo "::warning::Emergency trigger secret not propagated yet (attempt $attempt/6); retrying."
+            sleep 10
+          done
+          if [ "$http_code" != "200" ]; then
+            echo "::error::Ragnar controlled publish authorization did not propagate."
+            exit 1
+          fi
+          echo "$result" | jq '{ok,targetClientId,attempted,published,errors}'
+          echo "$result" | jq -e '.ok == true and .targetClientId == "ragnar-one" and .format == "carousel" and .attempted == 1 and .published == 1 and (.errors | length == 0)' >/dev/null
+
+      - name: Verify Nexus production autonomy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && steps.deploy_guard.outputs.current == 'true'
+        shell: bash
+        env:
+          NEXUS_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/autonomy-health
+          NEXUS_INSTAGRAM_HEALTH_URL: https://servidor-nexus.diamantehinode2015.workers.dev/api/instagram-publishing-health
+        run: |
+          set -euo pipefail
+          ok=0
+          last=""
+          for attempt in $(seq 1 6); do
+            last="$(curl --silent --show-error --max-time 15 "$NEXUS_HEALTH_URL" || true)"
+            if [ -n "$last" ]; then
+              echo "$last" | jq '{
+                ok,
+                automationActive,
+                expectedAgents,
+                instagramCentral,
+                scheduler: {
+                  healthy: .scheduler.healthy,
+                  lastHeartbeatAt: .scheduler.lastHeartbeatAt,
+                  ageSeconds: .scheduler.ageSeconds
+                },
+                clients: [.clients[]? | {
+                  clientId,
+                  allAgentsSeen,
+                  missingAgents,
+                  instagramConnection
+                }]
+              }'
+              if echo "$last" | jq -e '
+                .automationActive == true and
+                .expectedAgents == 17 and
+                .scheduler.healthy == true and
+                ([.clients[]? | select(.clientId=="globalplay-streaming" or .clientId=="ragnar-one")] | length == 2) and
+                ([.clients[]? | select(.clientId=="globalplay-streaming" or .clientId=="ragnar-one") | .allAgentsSeen == true] | all)
+              ' >/dev/null; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 15
+          done
+          if [ "$ok" -ne 1 ]; then
+            code="$(echo "$last" | jq -r '.errorCode // ""' 2>/dev/null || true)"
+            if [ "$code" = "d1_daily_read_limit" ]; then
+              emergency="$(curl --fail --silent --show-error --max-time 15 https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publisher-status || true)"
+              if echo "$emergency" | jq -e '
+                .ok == true and
+                (.clients | length == 2) and
+                ([.clients[] | .count > 0 and .mediaIdPresent == true] | all)
+              ' >/dev/null 2>&1; then
+                echo "::warning::D1 daily read limit active; emergency publishing is verified for both managed accounts."
+                exit 0
+              fi
+            fi
+            echo "::error::Nexus production autonomy check failed after deploy."
+            echo "$last" | jq . || true
+            exit 1
+          fi
+          instagram="$(curl --fail --silent --show-error --max-time 30 "$NEXUS_INSTAGRAM_HEALTH_URL" || true)"
+          echo "$instagram" | jq '{ok,clients}'
+          echo "$instagram" | jq -e '
+            .ok == true and
+            (.clients | length == 2) and
+            ([.clients[] | .connected == true and .tokenValid == true and .accountMatches == true] | all)
+          ' >/dev/null
+          echo "Nexus production autonomy and Instagram publishing credentials verified."

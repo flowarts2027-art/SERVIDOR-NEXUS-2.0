@@ -23,8 +23,11 @@ test("Hook Story Viral chain applies storytelling to protected Instagram account
   assert.match(agents, /protectedStoryClient=\["globalplay-streaming","ragnar-one"\]/);
 });
 
-test("production CI waits for the two managed Instagram accounts", () => {
-  assert.match(ci, /clientId=="globalplay-streaming"/);
-  assert.match(ci, /clientId=="ragnar-one"/);
-  assert.match(ci, /length == 2/);
+// 2026-10-13: o CI virou "só testes" e não mexe mais na produção. A espera pelas
+// contas Global Play/Ragnar (arquivadas) saiu junto com os passos de produção.
+test("CI só testa: sem deploy, sem migração no banco real e sem publicação", () => {
+  assert.doesNotMatch(ci, /npm run deploy/);
+  assert.doesNotMatch(ci, /d1:migrations:apply/);
+  assert.doesNotMatch(ci, /emergency-publish-now/);
+  assert.match(ci, /node --test cloudflare\/test\/\*\.test\.mjs/);
 });
