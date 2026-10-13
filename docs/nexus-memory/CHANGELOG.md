@@ -318,3 +318,8 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Teste `issue100-production` passou a conferir que o CI não implanta nem publica. Local: 322/322, AutoFix 4/4, overlay ok. Bundle do Wrangler não rodou nesta sessão (npm sem rede); é o mesmo passo do deploy, que funciona.
 - Branch `fix/ci-somente-testes`; aguardando OK do Rodrigo.
 - CI novo rodou VERDE no GitHub no PR #122 (commit 9a6dc99), incluindo o bundle do Wrangler. Precisou instalar python3-pil e fontes no passo de overlay.
+
+## 2026-10-13 — SEO: nome "Flow Arts Marketing" no site
+- Search Console já estava verificado (domínio, via Cloudflare) e a home já indexada (feito em 12/10). Sitemap reenviado com URL completa em 13/10.
+- Pedido do Rodrigo: o nome "Flow Arts" se confunde com "flow arts" (malabarismo). `public/site.html`: título "Flow Arts Marketing | IA e Instagram para pequenos negócios" (59 caracteres), og:site_name e og:title com "Flow Arts Marketing", schema ProfessionalService com alternateName ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]. H1 e textos visíveis não mudaram.
+- 322/322. Branch `fix/seo-flow-arts-marketing`; aguardando OK do Rodrigo. Depois do deploy: Search Console › Inspeção de URL › Solicitar indexação.
