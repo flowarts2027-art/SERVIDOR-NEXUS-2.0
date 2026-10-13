@@ -338,3 +338,10 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - CONFLITO a decidir pelo Rodrigo: a home vende "Instagram que responde sozinho" por R$ 197 (pagamento único) com resposta automática no direct, e o hero diz "responde quem comenta, na hora". Já `whatsapp-knowledge.js` (preços oficiais, OK de 12/10) tem "Instagram no Automático" R$ 297 + R$ 697/mês e proíbe vender resposta automática a comentários enquanto a Meta não aprovar. As páginas de nicho usam os preços do `whatsapp-knowledge.js`.
 - Decisão do Rodrigo (11h49): vale o preço da página principal ("A"). Páginas de nicho regeradas com os 4 pacotes da home (R$ 197 único, R$ 147, R$ 97, R$ 67). 324/324.
 - PENDENTE de confirmação: `whatsapp-knowledge.js` (robô) e `empresa/visao.md` ainda têm o plano mensal R$ 297 + R$ 697 e a regra de não vender resposta automática. Não alterados até o Rodrigo confirmar. Alerta dado: a resposta automática a comentários depende do app publicado na Meta, que espera a verificação da empresa.
+
+## 2026-10-13 — site mais visual (em andamento, branch `feat/site-visual`)
+- Pedido do Rodrigo: "ninguém lê, as imagens falam mais". Analisado o PDF "Claude Web Designers" (skills Kowalski/Impeccable/Taste + Figma/Playwright): mesma ideia feita aqui com a skill de design + Playwright; skills de terceiros não instaladas. Rodrigo escolheu usar posts reais + visuais novos (opção C).
+- Nova home: celular grande com perfil cheio de posts (destaque), antes e depois em dois celulares, galeria de posts para arrastar, como funciona com a conversa animada, portas por tipo de negócio com imagem, pacotes com menos texto, perguntas fechadas. Cabeçalho, título, dados do Google (JSON-LD) e preços mantidos.
+- Saiu a faixa "Teste agora: comente QUERO" (a resposta automática ainda espera a Meta).
+- Imagens: lista POSTS no script da página aponta para /brand/posts/post-1..6.webp; sem o arquivo aparece bloco provisório. Aguardando 4–6 imagens de posts do Rodrigo.
+- Fontes da página em `scripts/site/site-visual.css` e `site-visual.body.html`. Celular 390 px sem rolagem lateral. 324/324. Não implantado.
