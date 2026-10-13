@@ -331,3 +331,4 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Gerador: `scripts/site/gerar_paginas_nicho.py` (para criar novos nichos, adicione em NICHOS e rode `python3 scripts/site/gerar_paginas_nicho.py public`).
 - Páginas no `sitemap.xml` e no rodapé do `site.html`. Conferidas em celular (390 px) e computador sem rolagem lateral. Teste `site-niche-pages.test.mjs`; 324/324.
 - Branch `feat/paginas-nicho`; aguardando OK do Rodrigo. Depois do deploy: pedir indexação das 3 URLs no Search Console.
+- Implantado com OK do Rodrigo (11h32): main 5bb31f0, deploy com sucesso; /marketing-para-cafeteria conferida no ar. Próximo: Rodrigo pede indexação das 3 URLs no Search Console.
