@@ -7,6 +7,9 @@
 - Antes de começar uma tarefa, diga em uma frase o que vai fazer.
 - Peça só o necessário. Senhas, tokens e chaves: ele mesmo digita; nunca peça para colar no chat.
 - Depois de cada passo que depende dele, espere a resposta antes de seguir.
+- Pedido dele (2026-10-14): mande procedimentos em blocos de no máximo 5 passos curtos, para economizar o consumo diário.
+- Quando tiver muita coisa para dizer, mande um resumo bem explicado, não um texto longo.
+- Evite pedir print. Use o acesso ao navegador quando der e só peça print quando não houver outro jeito.
 
 ## Como trabalhar neste projeto
 - Leia os arquivos de `docs/nexus-memory/` antes de mudar qualquer coisa (regra do AGENTS.md).

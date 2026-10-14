@@ -6,6 +6,9 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Conversa 2026-10-14 11h20
+- Rodrigo pediu: passos em blocos de 5, resumos, menos prints (gravado no CLAUDE.md). Perguntou se fazer o captador no n8n seria melhor que pagar mais R$ 120 no Google. Resposta: o n8n não traz os dados sozinho; usaria a mesma API do Google (mesma cobrança) ou um serviço pago de raspagem. Os R$ 150 viram crédito na conta, não são taxa. Recomendado completar os R$ 120 quando puder; o Nexus já está pronto.
+
 ## Próximo passo exato (2026-10-14 10h00, sessão terminando)
 1. FEITO 10h13: feat/cacador-google publicada (9bcbce6, deploy ok, prospects-ui.js novo conferido no ar) com o "vamos deixar pronto" do Rodrigo.
 2. Rodrigo completa R$ 120 no Google Cloud (conta 014D52-2FFA79-70D022) e segue o passo a passo da chave enviado no chat: ativar Places API (New) no projeto flow-arts-nexus → Criar credenciais → Chave de API → restringir só à Places API (New) → cota diária e orçamento com alerta → digitar a chave em Master → Contatos → "Chave do Google Maps".
