@@ -204,3 +204,27 @@
 .site-row b{color:var(--green2)}
 @media(max-width:700px){.site-kpis{grid-template-columns:1fr 1fr 1fr;gap:6px}.site-kpis strong{font-size:20px}.site-two{grid-template-columns:1fr}.site-chart{gap:2px;height:130px}.site-col small{display:none}}
 .site-kpis>p{grid-column:1/-1;margin:0}
+
+/* Caçador de clientes (aba Contatos) */
+.prospect-panel{margin-bottom:16px}
+.prospect-key{display:grid;gap:10px;max-width:520px;margin-bottom:16px;padding:14px;border:1px solid #6b5520;border-radius:12px;background:#1a1508}
+.prospect-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:14px}
+.prospect-actions label{min-width:220px}
+.prospect-actions .primary{min-height:44px}
+.prospect-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.prospect-tabs button{border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:99px;padding:8px 13px;cursor:pointer;font:inherit;font-size:12px}
+.prospect-tabs button.active{color:white;border-color:#35dc73;background:#15321e}
+.prospect-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.prospect-card{border:1px solid var(--line);border-radius:13px;background:#090d0b;padding:15px;display:grid;gap:8px;min-width:0;align-content:start}
+.prospect-key[hidden]{display:none}
+.prospect-card header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:0}
+.prospect-card h3{margin:0;font-size:15px;overflow-wrap:anywhere}
+.prospect-score{flex:none;font-weight:800;font-size:13px;color:#07130b;background:var(--green2);border-radius:99px;padding:4px 9px}
+.prospect-card p{margin:0;font-size:12px;color:#b9c5be;overflow-wrap:anywhere}
+.prospect-card details{font-size:12px;color:#b9c5be}
+.prospect-card summary{cursor:pointer;color:var(--green2)}
+.prospect-card pre{white-space:pre-wrap;font:inherit;margin:8px 0 0;padding:10px;border-radius:9px;background:#0f1512}
+.prospect-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.prospect-buttons a,.prospect-buttons button{flex:1 1 auto;text-align:center;text-decoration:none;font-size:12px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.prospect-wa{background:#1faf5f;border:1px solid #1faf5f;color:white;border-radius:9px;padding:9px 13px;font-weight:700}
+@media(max-width:700px){.prospect-actions label,.prospect-actions .primary{width:100%}.prospect-list{grid-template-columns:1fr}}

@@ -25,6 +25,7 @@ import { runGiftInbox } from "./gift-dm.js";
 import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
+import { handleProspectsRoute } from "./prospects.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -624,6 +625,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       return json(await siteStats(env, url.searchParams.get("days") || 30));
+    }
+
+    // Caçador de clientes (empresas sem site no Google Maps). Só com login do Master.
+    if (url.pathname.startsWith("/api/master/prospects")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleProspectsRoute(request, env, url);
+      if (response) return response;
     }
 
     const instagramOAuthResponse = await handleInstagramOAuthCallback(env, request, url);
