@@ -29,7 +29,9 @@
           });
           if (response.ok) {
             const data = await response.json();
-            if (Array.isArray(data.elements)) return data.elements;
+            // O Overpass às vezes responde 200 com lista vazia e um aviso de erro (tempo esgotado).
+            const failedRemark = /error|timed out|timeout|out of memory/i.test(String(data.remark || ""));
+            if (Array.isArray(data.elements) && !failedRemark) return data.elements;
           }
         } catch {}
         await new Promise(resolve => setTimeout(resolve, 2500));
@@ -40,7 +42,7 @@
 
   async function browserSearch(niche, progress) {
     const plan = await call("/api/master/prospects/plan", { method: "POST", body: JSON.stringify({ calls: 3, niche }) });
-    let added = 0, failed = 0;
+    let added = 0, failed = 0, found = 0;
     for (const [i, job] of plan.jobs.entries()) {
       progress(`Buscando ${job.label} (${i + 1} de ${plan.jobs.length})…`);
       try {
@@ -48,9 +50,10 @@
         const slim = elements.map(e => ({ type: e.type, id: e.id, tags: e.tags || {} }));
         const result = await call("/api/master/prospects/import", { method: "POST", body: JSON.stringify({ niche: job.niche, cityIndex: job.cityIndex, elements: slim }) });
         added += Number(result.added || 0);
+        found += Number(result.found || 0);
       } catch { failed++; }
     }
-    return { added, failed, usedToday: plan.usedToday, dailyLimit: plan.dailyLimit };
+    return { added, failed, found, usedToday: plan.usedToday, dailyLimit: plan.dailyLimit };
   }
 
   const call = async (path, options = {}) => {
@@ -153,7 +156,7 @@
         }
         status = "novo";
         await load();
-        usage.textContent = `${result.added || 0} empresas novas sem site. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.` + (result.failed ? ` ${result.failed} busca(s) falharam: o mapa grátis estava ocupado.` : "");
+        usage.textContent = `${result.found != null ? result.found + " lugares no mapa, " : ""}${result.added || 0} empresas novas sem site. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.` + (result.failed ? ` ${result.failed} busca(s) falharam: o mapa grátis estava ocupado.` : "");
       } catch (error) {
         usage.textContent = error.message;
       } finally {

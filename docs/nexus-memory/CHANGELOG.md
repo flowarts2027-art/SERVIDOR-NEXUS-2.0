@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 08h22–08h35 BRT — teste real da busca pelo navegador
+- fix/cacador-osm-navegador publicado (6d8266d, deploy ok) com OK do Rodrigo.
+- Teste no Master (Claude no Chrome do Rodrigo, sessão do Master): 3 buscas terminaram com "0 empresas novas", sem aviso de falha. Logo depois, o Overpass principal deu 504 até para uma consulta mínima, e o private.coffee não respondeu: serviço público fora do ar nesse horário. Hipótese: as 3 buscas voltaram 200 com lista vazia e aviso de erro (remark).
+- Branch fix/cacador-osm-remark (não publicada): aviso de erro do Overpass conta como falha; o painel mostra quantos lugares vieram do mapa. 339 testes ok.
+- Contador de buscas do dia chegou a 12 de 30 (várias foram tentativas que falharam).
+- Próximo passo: publicar com OK; repetir a busca mais tarde, quando o Overpass voltar (testar em https://overpass-api.de/api/status).
+
 ## 2026-10-14 08h10–08h25 BRT — caçador OSM pelo navegador (branch fix/cacador-osm-navegador, não publicado)
 - feat/cacador-osm publicado (e4b016e, deploy ok) com OK do Rodrigo. Teste real pelo Master: 3 buscas pelo Worker deram "osm_busy" (Overpass recusou/timeout vindo da Cloudflare). 0 contatos guardados.
 - No navegador, o Overpass principal funcionou às 08h05 e deu 504 às 08h15–08h20 (status: 4 slots livres, ou seja, servidor sobrecarregado, não bloqueio). Espelhos private.coffee (timeout) e mail.ru (504) também falharam.
