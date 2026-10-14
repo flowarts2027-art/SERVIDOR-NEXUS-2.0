@@ -1,30 +1,41 @@
 // Caçador de clientes da Flow Arts.
-// Busca empresas no Google Maps (API oficial do Google Places), guarda só
+// Busca empresas no OpenStreetMap (grátis, sem chave) ou, se houver chave,
+// no Google Maps (API oficial do Google Places). Guarda só
 // as que não têm site próprio, dá uma nota de 0 a 10 e prepara a primeira
 // mensagem. Quem envia é o Rodrigo, pelo próprio WhatsApp (link wa.me).
 // Nada é enviado sozinho daqui.
 
 import { encryptSecret, decryptSecret } from "./secrets.js";
 
-export const DAILY_SEARCH_LIMIT = 30; // ~900 buscas/mês, dentro da cota grátis (1.000/mês) do Google.
+export const DAILY_SEARCH_LIMIT = 30; // Google: ~900/mês, dentro da cota grátis. OSM: uso educado do servidor público.
+const OVERPASS = "https://overpass-api.de/api/interpreter";
 const SITE = "https://flowarts.com.br";
 
 export const NICHES = {
-  cafeteria: { query: "cafeteria", plural: "cafeterias", page: "/marketing-para-cafeteria" },
-  salao: { query: "salão de beleza", plural: "salões de beleza", page: "/marketing-para-salao-de-beleza" },
-  lanchonete: { query: "lanchonete", plural: "lanchonetes", page: "/marketing-para-lanchonete" }
+  cafeteria: { query: "cafeteria", plural: "cafeterias", page: "/marketing-para-cafeteria", osm: [["amenity", "cafe"]] },
+  salao: { query: "salão de beleza", plural: "salões de beleza", page: "/marketing-para-salao-de-beleza", osm: [["shop", "hairdresser"], ["shop", "beauty"]] },
+  lanchonete: { query: "lanchonete", plural: "lanchonetes", page: "/marketing-para-lanchonete", osm: [["amenity", "fast_food"]] }
 };
 
-// Cidades grandes do Brasil, em rodízio.
-export const CITIES = [
-  "São Paulo SP", "Rio de Janeiro RJ", "Belo Horizonte MG", "Brasília DF", "Salvador BA", "Fortaleza CE",
-  "Curitiba PR", "Recife PE", "Porto Alegre RS", "Goiânia GO", "Belém PA", "Manaus AM", "Campinas SP",
-  "São Luís MA", "Maceió AL", "Natal RN", "João Pessoa PB", "Teresina PI", "Campo Grande MS", "Cuiabá MT",
-  "Florianópolis SC", "Vitória ES", "Aracaju SE", "Ribeirão Preto SP", "Sorocaba SP", "Uberlândia MG",
-  "Juiz de Fora MG", "Londrina PR", "Joinville SC", "Niterói RJ", "Santos SP", "São José dos Campos SP",
-  "Feira de Santana BA", "Caxias do Sul RS", "Maringá PR", "Campina Grande PB", "Montes Claros MG",
-  "Anápolis GO", "Porto Velho RO", "Macapá AP", "Boa Vista RR", "Palmas TO", "Rio Branco AC"
+// Cidades grandes do Brasil, em rodízio (centro aproximado para a busca no OpenStreetMap).
+const CITY_POINTS = [
+  ["São Paulo SP", -23.55, -46.63], ["Rio de Janeiro RJ", -22.91, -43.2], ["Belo Horizonte MG", -19.92, -43.94],
+  ["Brasília DF", -15.79, -47.88], ["Salvador BA", -12.97, -38.5], ["Fortaleza CE", -3.73, -38.53],
+  ["Curitiba PR", -25.43, -49.27], ["Recife PE", -8.05, -34.88], ["Porto Alegre RS", -30.03, -51.23],
+  ["Goiânia GO", -16.68, -49.25], ["Belém PA", -1.46, -48.49], ["Manaus AM", -3.12, -60.02],
+  ["Campinas SP", -22.91, -47.06], ["São Luís MA", -2.53, -44.3], ["Maceió AL", -9.66, -35.73],
+  ["Natal RN", -5.79, -35.21], ["João Pessoa PB", -7.12, -34.86], ["Teresina PI", -5.09, -42.8],
+  ["Campo Grande MS", -20.47, -54.62], ["Cuiabá MT", -15.6, -56.1], ["Florianópolis SC", -27.6, -48.55],
+  ["Vitória ES", -20.32, -40.34], ["Aracaju SE", -10.91, -37.07], ["Ribeirão Preto SP", -21.18, -47.81],
+  ["Sorocaba SP", -23.5, -47.46], ["Uberlândia MG", -18.92, -48.28], ["Juiz de Fora MG", -21.76, -43.35],
+  ["Londrina PR", -23.31, -51.16], ["Joinville SC", -26.3, -48.85], ["Niterói RJ", -22.88, -43.1],
+  ["Santos SP", -23.96, -46.33], ["São José dos Campos SP", -23.18, -45.89], ["Feira de Santana BA", -12.27, -38.97],
+  ["Caxias do Sul RS", -29.17, -51.18], ["Maringá PR", -23.42, -51.94], ["Campina Grande PB", -7.23, -35.88],
+  ["Montes Claros MG", -16.73, -43.86], ["Anápolis GO", -16.33, -48.95], ["Porto Velho RO", -8.76, -63.9],
+  ["Macapá AP", 0.03, -51.07], ["Boa Vista RR", 2.82, -60.67], ["Palmas TO", -10.18, -48.33],
+  ["Rio Branco AC", -9.97, -67.81]
 ];
+export const CITIES = CITY_POINTS.map(([name]) => name);
 
 export const STATUSES = ["novo", "enviado", "respondeu", "reuniao", "nao-quer"];
 
@@ -105,13 +116,72 @@ export function siteInfo(websiteUri) {
 }
 
 // Nota de 0 a 10: muita gente gosta da empresa, mas ela aparece pouco na internet.
-export function prospectScore({ reviews = 0, rating = 0, photos = 0, mobile = false }) {
+// No Google contam avaliações e nota. No OpenStreetMap (sem avaliações) contam
+// sinais de empresa ativa: horário cadastrado, endereço e rede social.
+export function prospectScore({ reviews = 0, rating = 0, photos = 0, mobile = false, instagram = "", hours = false, address = "", source = "google" }) {
   let score = 3; // já passou no filtro "sem site próprio"
+  if (source === "osm") {
+    if (mobile) score += 2;
+    if (hours) score += 2;
+    if (address) score += 1;
+    if (instagram) score += 1;
+    return Math.max(0, Math.min(10, score));
+  }
   if (reviews >= 300) score += 3; else if (reviews >= 100) score += 2; else if (reviews >= 30) score += 1;
   if (rating >= 4.5) score += 2; else if (rating >= 4.0) score += 1;
   if (photos < 5) score += 1;
   if (mobile) score += 1;
   return Math.max(0, Math.min(10, score));
+}
+
+export function mapsSearchLink(name, city) {
+  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${name} ${city}`);
+}
+
+// Um ponto do OpenStreetMap vira um contato (ou null se não servir).
+export function osmToProspect(element, nicheKey, city) {
+  const tags = element?.tags || {};
+  const name = String(tags.name || "").trim().slice(0, 120);
+  if (!name || !element?.type || !element?.id) return null;
+  if (tags.disused || tags["disused:amenity"] || tags["disused:shop"]) return null;
+  // Redes e franquias (Starbucks, McDonald's...) não são o nosso cliente.
+  if (tags.brand || tags["brand:wikidata"] || tags.operator && tags["operator:wikidata"]) return null;
+  const rawPhone = String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0];
+  const { phone, mobile } = phoneInfo(rawPhone);
+  if (!phone) return null;
+  const website = String(tags.website || tags["contact:website"] || tags.url || "").trim();
+  const site = siteInfo(website && !/^https?:/i.test(website) ? "https://" + website : website);
+  if (site.hasOwnSite) return null;
+  const igTag = String(tags["contact:instagram"] || "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?]/)[0];
+  const instagram = site.instagram || (/^[a-z0-9._]{1,30}$/i.test(igTag) ? igTag : "");
+  const address = [tags["addr:street"], tags["addr:housenumber"], tags["addr:suburb"]].filter(Boolean).join(", ").slice(0, 200);
+  const item = {
+    id: `osm:${element.type}/${element.id}`,
+    name, niche: nicheKey, city, address, phone, mobile,
+    website: website.slice(0, 200), instagram,
+    rating: 0, reviews: 0, photos: 0,
+    maps_url: mapsSearchLink(name, city)
+  };
+  item.score = prospectScore({ ...item, hours: Boolean(tags.opening_hours), source: "osm" });
+  return item;
+}
+
+export function overpassQuery(nicheKey, cityIndex, radius = 12000) {
+  const [, lat, lon] = CITY_POINTS[cityIndex % CITY_POINTS.length];
+  const parts = NICHES[nicheKey].osm.map(([k, v]) => `nwr["${k}"="${v}"]["name"](around:${radius},${lat},${lon});`);
+  return `[out:json][timeout:25];(${parts.join("")});out tags center 800;`;
+}
+
+async function searchOSM(nicheKey, cityIndex, fetcher) {
+  const response = await fetcher(OVERPASS, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "FlowArtsNexus/1.0 (+https://flowarts.com.br)" },
+    body: "data=" + encodeURIComponent(overpassQuery(nicheKey, cityIndex)),
+    signal: AbortSignal.timeout(30000)
+  });
+  if (!response.ok) throw new Error(response.status === 429 || response.status >= 500 ? "osm_busy" : "osm_" + response.status);
+  const data = await response.json().catch(() => ({}));
+  return Array.isArray(data.elements) ? data.elements : [];
 }
 
 export function placeToProspect(place, nicheKey, city) {
@@ -151,8 +221,8 @@ export function firstMessage(p) {
     lines.push(`Encontrei a ${p.name} no Google, aqui em ${cityName}.`);
   }
   lines.push(p.instagram
-    ? "Notei que o Instagram é o principal canal de vocês na internet."
-    : "Notei que vocês ainda não têm um site.");
+    ? "Notei que o Instagram é o principal canal de vocês na internet, e não encontrei um site."
+    : "Procurei vocês na internet e não encontrei um site.");
   lines.push(p.instagram
     ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${niche.page}`
     : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${niche.page}`);
@@ -190,11 +260,11 @@ async function searchPlaces(key, query, fetcher) {
 export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fetcher = fetch) {
   await ensureProspectSchema(env);
   const key = await placesKey(env);
-  if (!key) return { ok: false, error: "google_key_missing" };
+  const provider = key ? "google" : "osm";
   const usage = await readState(env, "usage", { day: "", count: 0 });
   const used = usage.day === today() ? Number(usage.count || 0) : 0;
   const allowed = Math.max(0, Math.min(Number(calls) || 3, 5, DAILY_SEARCH_LIMIT - used));
-  if (!allowed) return { ok: false, error: "daily_limit", usedToday: used, dailyLimit: DAILY_SEARCH_LIMIT };
+  if (!allowed) return { ok: false, error: "daily_limit", usedToday: used, dailyLimit: DAILY_SEARCH_LIMIT, provider };
 
   const nicheKeys = NICHES[niche] ? [niche] : Object.keys(NICHES);
   const cursor = await readState(env, "cursor", { n: 0 });
@@ -207,19 +277,26 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
 
   for (; done < allowed; done++) {
     const nicheKey = nicheKeys[position % nicheKeys.length];
-    const city = CITIES[Math.floor(position / nicheKeys.length) % CITIES.length];
+    const cityIndex = Math.floor(position / nicheKeys.length) % CITIES.length;
+    const city = CITIES[cityIndex];
     position++;
-    let places;
+    let items;
     try {
-      places = await searchPlaces(key, `${NICHES[nicheKey].query} em ${city}`, fetcher);
+      if (provider === "google") {
+        const places = await searchPlaces(key, `${NICHES[nicheKey].query} em ${city}`, fetcher);
+        found += places.length;
+        items = places.map(place => placeToProspect(place, nicheKey, city));
+      } else {
+        const elements = await searchOSM(nicheKey, cityIndex, fetcher);
+        found += elements.length;
+        items = elements.map(element => osmToProspect(element, nicheKey, city));
+      }
     } catch (e) {
       error = String(e?.message || e);
       done++;
       break;
     }
-    found += places.length;
-    for (const place of places) {
-      const item = placeToProspect(place, nicheKey, city);
+    for (const item of items) {
       if (!item) continue;
       // INSERT OR IGNORE: quem já está na lista (inclusive "não quer") não volta.
       const result = await env.DB.prepare(
@@ -234,7 +311,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
 
   await writeState(env, "usage", { day: today(), count: used + done });
   if (!NICHES[niche]) await writeState(env, "cursor", { n: position });
-  return { ok: !error, error: error || undefined, searched, found, added, usedToday: used + done, dailyLimit: DAILY_SEARCH_LIMIT };
+  return { ok: !error, error: error || undefined, provider, searched, found, added, usedToday: used + done, dailyLimit: DAILY_SEARCH_LIMIT };
 }
 
 export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
@@ -251,7 +328,8 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
   const usage = await readState(env, "usage", { day: "", count: 0 });
   return {
     ok: true,
-    configured: Boolean(await placesKey(env)),
+    configured: true,
+    provider: (await placesKey(env)) ? "google" : "osm",
     usedToday: usage.day === today() ? Number(usage.count || 0) : 0,
     dailyLimit: DAILY_SEARCH_LIMIT,
     counts,

@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 07h43–08h15 BRT — Google recusado, caçador grátis (branch feat/cacador-osm, não publicado)
+- Google Cloud (Rodrigo, guiado): projeto "Flow Arts Nexus" (flow-arts-nexus) criado na conta flowarts2027@gmail.com; conta de faturamento de teste criada com cartão. O Google exige pré-pagamento único de R$ 150 (vira crédito) para ativar. Rodrigo NÃO pagou (cancelou) e pediu opção grátis. Saldo R$ 0,00. Erro meu: antes eu tinha dito que não custaria nada.
+- feat: prospects.js usa OpenStreetMap (Overpass API, overpass-api.de, grátis, sem chave) quando não há chave do Google; Google continua opcional. Filtros: nome, telefone, sem site próprio, sem marca/franquia (brand). Nota sem avaliações: celular, horário cadastrado, endereço, Instagram. Link "Ver no Maps" = busca no Google Maps para o Rodrigo conferir. Erro 429/5xx vira "servidor do mapa ocupado".
+- Mensagem mais honesta: "Procurei vocês na internet e não encontrei um site."
+- Teste real no navegador (08h05): Recife salões 30 no mapa, 4 com telefone, 3 sem site; São Paulo cafés 349, 38 com telefone, 15 sem site. Ou seja: poucos contatos por busca. overpass-api.de deu 504 uma vez e 200 depois.
+- Painel: a chave do Google virou opcional (caixa fechada). 338 testes ok.
+
 ## 2026-10-14 07h30–07h40 BRT — branch fix/planos-robo (não publicado)
 - Rodrigo: prazo de 5 dias; pediu para vender site também e para eu criar o preço.
 - Novo pacote "Site do seu negócio": R$ 497, pagamento único. 1 página (fotos, serviços, horário, mapa, botão WhatsApp, feito para o Google). Pronto em até 5 dias. Hospedagem inclusa no 1º ano. Domínio .com.br por conta do cliente (~R$ 40/ano). Referência: landing page de freelancer no Brasil R$ 500–1.000 (metodoviral.com, 2026).

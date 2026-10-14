@@ -4,7 +4,8 @@ import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import {
   phoneInfo, siteInfo, prospectScore, placeToProspect, firstMessage, whatsappLink,
-  runProspectSearch, listProspects, setProspectStatus, savePlacesKey, DAILY_SEARCH_LIMIT
+  runProspectSearch, listProspects, setProspectStatus, savePlacesKey, DAILY_SEARCH_LIMIT,
+  osmToProspect, overpassQuery
 } from "../src/prospects.js";
 
 function fakeEnv() {
@@ -115,4 +116,38 @@ test("pacote de site aparece no site, nas páginas de nicho e no robô com o mes
   }
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
   assert.match(knowledgePrompt("primeiro-teste"), /Site do seu negócio: R\$ 497/);
+});
+
+test("sem chave do Google, busca grátis no OpenStreetMap", async () => {
+  const { db, env } = fakeEnv();
+  delete env.GOOGLE_PLACES_API_KEY;
+  const elements = [
+    { type: "node", id: 1, tags: { name: "Salão Nilson", shop: "hairdresser", phone: "+55 81 98888-1111", opening_hours: "Mo-Sa 09:00-19:00", "addr:street": "Rua B" } },
+    { type: "node", id: 2, tags: { name: "Com Site", shop: "hairdresser", phone: "+55 81 98888-2222", website: "https://comsite.com.br" } },
+    { type: "node", id: 3, tags: { name: "Sem Telefone", shop: "hairdresser" } },
+    { type: "node", id: 4, tags: { name: "Starbucks", amenity: "cafe", phone: "+55 11 3333-4444", brand: "Starbucks" } },
+    { type: "way", id: 5, tags: { name: "Beleza Pura", shop: "beauty", "contact:whatsapp": "81 99999-0000", "contact:instagram": "https://instagram.com/belezapura" } }
+  ];
+  let url = "";
+  const result = await runProspectSearch(env, { calls: 1, niche: "salao" }, async (u, init) => {
+    url = u;
+    assert.match(decodeURIComponent(init.body), /"shop"="hairdresser"/);
+    return new Response(JSON.stringify({ elements }), { status: 200 });
+  });
+  assert.equal(url, "https://overpass-api.de/api/interpreter");
+  assert.equal(result.provider, "osm");
+  assert.equal(result.added, 2);
+  const rows = db.prepare("SELECT * FROM prospects ORDER BY score DESC").all();
+  assert.deepEqual(rows.map(r => r.name), ["Salão Nilson", "Beleza Pura"]);
+  assert.equal(rows[1].instagram, "belezapura");
+  assert.match(rows[0].maps_url, /google\.com\/maps\/search/);
+  assert.match((await listProspects(env)).items[0].message, /não encontrei um site/);
+  const busy = await runProspectSearch(env, { calls: 1 }, async () => new Response("", { status: 504 }));
+  assert.equal(busy.error, "osm_busy");
+});
+
+test("ponto do mapa: só nome, telefone e sem site próprio", () => {
+  assert.equal(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "123" } }, "cafeteria", "Recife PE"), null);
+  assert.ok(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "(81) 3333-4444", website: "instagram.com/x" } }, "cafeteria", "Recife PE"));
+  assert.match(overpassQuery("lanchonete", 0), /"amenity"="fast_food"/);
 });

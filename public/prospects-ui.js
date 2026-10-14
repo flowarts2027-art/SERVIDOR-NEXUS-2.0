@@ -11,7 +11,8 @@
   const ERRORS = {
     google_key_missing: "Falta a chave do Google Maps.",
     daily_limit: "Chegou no limite de buscas de hoje. Amanhã libera de novo.",
-    google_key_invalid: "Essa chave não parece certa. Confira e digite de novo."
+    google_key_invalid: "Essa chave não parece certa. Confira e digite de novo.",
+    osm_busy: "O servidor do mapa gratuito está ocupado. Tente de novo em 1 minuto."
   };
   let status = "novo";
   let busy = false;
@@ -35,8 +36,8 @@
   }
 
   function card(p) {
-    const stars = p.reviews ? `⭐ ${String(Number(p.rating || 0).toFixed(1)).replace(".", ",")} · ${p.reviews} avaliações` : "Ainda sem avaliações";
-    const web = p.instagram ? `Sem site · usa o Instagram @${esc(p.instagram)}` : "Sem site";
+    const stars = p.reviews ? `⭐ ${String(Number(p.rating || 0).toFixed(1)).replace(".", ",")} · ${p.reviews} avaliações` : (String(p.id).startsWith("osm:") ? "Do OpenStreetMap (sem avaliações)" : "Ainda sem avaliações");
+    const web = p.instagram ? `Sem site no mapa · Instagram @${esc(p.instagram)}` : "Sem site no mapa";
     const phone = p.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)";
     return `<article class="prospect-card">
       <header><h3>${esc(p.name)}</h3><span class="prospect-score" title="Nota de potencial">${Number(p.score || 0)}/10</span></header>
@@ -55,15 +56,14 @@
     try {
       const data = await call("/api/master/prospects?status=" + encodeURIComponent(status) + "&limit=60");
       items = data.items || [];
-      $("#prospect-key-form").hidden = Boolean(data.configured);
-      $("#prospect-search").disabled = !data.configured;
-      $("#prospect-usage").textContent = `Buscas hoje: ${data.usedToday || 0} de ${data.dailyLimit || 30}`;
+      const source = data.provider === "google" ? "Google Maps" : "OpenStreetMap (grátis)";
+      $("#prospect-usage").textContent = `Fonte: ${source}. Buscas hoje: ${data.usedToday || 0} de ${data.dailyLimit || 30}`;
       const counts = data.counts || {};
       $("#prospect-tabs").innerHTML = TABS.map(([key, label]) =>
         `<button type="button" role="tab" data-tab="${key}" class="${key === status ? "active" : ""}" aria-selected="${key === status}">${label} (${Number(counts[key] || 0)})</button>`).join("");
       list.innerHTML = items.length
         ? items.map(card).join("")
-        : `<p class="muted">${status === "novo" ? (data.configured ? 'Nenhuma empresa nova. Toque em "Buscar empresas".' : "Salve a chave do Google Maps para começar.") : "Nada aqui ainda."}</p>`;
+        : `<p class="muted">${status === "novo" ? 'Nenhuma empresa nova. Toque em "Buscar empresas".' : "Nada aqui ainda."}</p>`;
     } catch (error) {
       list.innerHTML = `<p class="muted">Não consegui carregar a lista. ${esc(error.message)}</p>`;
     }
@@ -105,7 +105,7 @@
       const button = $("#prospect-search");
       const usage = $("#prospect-usage");
       button.disabled = true;
-      usage.textContent = "Buscando no Google Maps…";
+      usage.textContent = "Buscando no mapa… pode levar até 1 minuto.";
       try {
         const result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche: $("#prospect-niche").value }) });
         status = "novo";

@@ -228,3 +228,5 @@
 .prospect-buttons a,.prospect-buttons button{flex:1 1 auto;text-align:center;text-decoration:none;font-size:12px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
 .prospect-wa{background:#1faf5f;border:1px solid #1faf5f;color:white;border-radius:9px;padding:9px 13px;font-weight:700}
 @media(max-width:700px){.prospect-actions label,.prospect-actions .primary{width:100%}.prospect-list{grid-template-columns:1fr}}
+.prospect-google{margin-bottom:14px;font-size:12px;color:var(--muted)}
+.prospect-google summary{cursor:pointer;margin-bottom:10px}

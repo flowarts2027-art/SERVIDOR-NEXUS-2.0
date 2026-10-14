@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=24">
+  <link rel="stylesheet" href="/styles.css?v=25">
 </head>
 <body>
   <div class="shell">
@@ -228,14 +228,17 @@
       <section id="odin" class="view">
         <div class="panel prospect-panel" id="prospect-panel">
           <div class="panel-head">
-            <div><p class="eyebrow">CAÇADOR DE CLIENTES</p><h2>Empresas sem site</h2><p class="muted">Vêm do Google Maps, com nota de 0 a 10. A mensagem já vem pronta. Você toca em "Abrir no WhatsApp" e envia do seu celular.</p></div>
+            <div><p class="eyebrow">CAÇADOR DE CLIENTES</p><h2>Empresas sem site</h2><p class="muted">Vêm do mapa (OpenStreetMap, grátis), com nota de 0 a 10. Confira no "Ver no Maps" antes de mandar. A mensagem já vem pronta. Você toca em "Abrir no WhatsApp" e envia do seu celular.</p></div>
           </div>
-          <form id="prospect-key-form" class="prospect-key" hidden>
-            <p class="muted">Para buscar, o Nexus precisa da chave do Google Maps. Você mesmo digita aqui. Ela fica guardada com criptografia.</p>
-            <label>Chave do Google Maps<input name="apiKey" type="password" autocomplete="off" placeholder="Digite a chave" required></label>
-            <button class="primary" type="submit">Salvar chave</button>
-            <span id="prospect-key-message" class="form-status"></span>
-          </form>
+          <details class="prospect-google">
+            <summary>Opcional: usar o Google Maps (pede R$ 150 de crédito no Google)</summary>
+            <form id="prospect-key-form" class="prospect-key">
+              <p class="muted">Sem chave, a busca usa o OpenStreetMap, que é grátis. Com a chave do Google Maps, vêm também as avaliações. Você mesmo digita a chave aqui. Ela fica guardada com criptografia.</p>
+              <label>Chave do Google Maps<input name="apiKey" type="password" autocomplete="off" placeholder="Digite a chave" required></label>
+              <button class="primary" type="submit">Salvar chave</button>
+              <span id="prospect-key-message" class="form-status"></span>
+            </form>
+          </details>
           <div class="prospect-actions">
             <label>Tipo de negócio<select id="prospect-niche"><option value="">Todos, em rodízio</option><option value="cafeteria">Cafeteria</option><option value="salao">Salão de beleza</option><option value="lanchonete">Lanchonete</option></select></label>
             <button class="primary" id="prospect-search" type="button">Buscar empresas</button>
@@ -428,6 +431,6 @@
   <script src="/app.js?v=42" defer></script>
   <script src="/whatsapp-inbox.js?v=2" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
-  <script src="/prospects-ui.js?v=1" defer></script>
+  <script src="/prospects-ui.js?v=2" defer></script>
 </body>
 </html>
