@@ -1,6 +1,6 @@
 // O que a atendente virtual do WhatsApp sabe sobre cada cliente.
 // Fonte: empresa/visao.md, docs/nexus-memory/DECISIONS.md e o OK do Rodrigo em 2026-10-12
-// para a IA falar preços. Mude aqui quando um preço ou serviço mudar.
+// para a IA falar preços; pacote de R$ 197 e prazo de 5 dias incluídos em 2026-10-14. Mude aqui quando um preço ou serviço mudar.
 
 const FLOW_ARTS = Object.freeze({
   businessName: "Flow Arts",
@@ -14,12 +14,13 @@ const FLOW_ARTS = Object.freeze({
   ]),
   offers: Object.freeze([
     "Instagram no Automático: 12 posts por mês feitos com IA (4 Reels, 4 carrosséis e 4 posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
-    "5 Reels com IA: R$ 147.",
-    "10 posts prontos: R$ 97.",
-    "Criação de logo: R$ 67."
+    "Instagram que responde sozinho: R$ 197, pagamento único. Resposta automática no direct para quem comenta, levando a pessoa para o WhatsApp do negócio, e 10 posts prontos.",
+    "5 Reels com IA: R$ 147, pagamento único.",
+    "10 posts prontos: R$ 97, pagamento único.",
+    "Criação de logo: R$ 67, pagamento único.",
+    "Prazo: até 5 dias para entregar os pacotes. No plano mensal, os primeiros posts ficam prontos em até 5 dias."
   ]),
   limits: Object.freeze([
-    "Não vender resposta automática a comentários do Instagram (ainda depende de aprovação da Meta).",
     "Nunca citar a Global Play nem outros clientes antigos.",
     "Nunca inventar números, clientes, resultados, depoimentos, prazos ou descontos."
   ]),

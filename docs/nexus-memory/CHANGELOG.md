@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 07h30 BRT — branch fix/planos-robo (não publicado)
+- Rodrigo definiu prazo de entrega: até 5 dias.
+- whatsapp-knowledge.js: incluído o pacote "Instagram que responde sozinho" (R$ 197), "pagamento único" nos pacotes e o prazo de 5 dias; removido o limite antigo "não vender resposta automática" (o auto-responder funciona em produção desde 2026-10-11). 335 testes ok.
+- Doc "Planos e preços Flow Arts" atualizado com o prazo.
+- Pergunta aberta ao Rodrigo: ele falou em "construir o site" em 5 dias, mas a Flow Arts não tem pacote de site. Decidir se vende site (e o preço).
+
 ## 2026-10-14 — caçador de clientes (5c162b5, deploy ok)
 - Pedido do Rodrigo (07h17–07h19 BRT): achar empresas sem site, fracas em propaganda e com potencial, no Brasil todo; enquanto a Meta não libera, ele manda a primeira mensagem pelo próprio celular.
 - feat: cloudflare/src/prospects.js. Busca na API oficial do Google Places (Text Search, campos com telefone/site = SKU Enterprise, 1.000 grátis/mês). Limite de 30 buscas por dia. Nicho x 43 cidades grandes, em rodízio. Guarda só empresas abertas, sem site próprio (Instagram, Linktree, iFood etc. contam como "sem site") e com telefone. Nota 0–10 (avaliações, nota, poucas fotos, celular). Quem é marcado "não quer" nunca volta.
