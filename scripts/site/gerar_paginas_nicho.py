@@ -269,6 +269,7 @@ def pagina(n):
   <span>Flow Arts — CNPJ 65.299.616/0001-50 · Agência de marketing com IA, atendimento online para todo o Brasil.</span>
   <nav aria-label="Outras páginas">{outros_links(n['slug'])} · <a href="/">Início</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></nav>
 </div></footer>
+<script>/* Contador de visitas da Flow Arts: só a página e de onde veio, sem dados pessoais. */try{{navigator.sendBeacon&&navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify({{p:location.pathname,r:document.referrer}})],{{type:"text/plain"}}))}}catch(e){{}}</script>
 </body>
 </html>
 """

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=21">
+  <link rel="stylesheet" href="/styles.css?v=23">
 </head>
 <body>
   <div class="shell">
@@ -18,6 +18,7 @@
         <button class="nav-item" data-view="agents">⬡ <span>Agentes</span></button>
         <button class="nav-item" data-view="odin">◆ <span>Contatos</span></button>
         <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
+        <button class="nav-item" data-view="site">◍ <span>Site</span></button>
         <button class="nav-item" data-view="settings">⚙ <span>Integrações</span></button>
       </nav>
       <div class="core-card"><span class="pulse"></span><div><strong>Agent Core</strong><small>Motor central disponível</small></div></div>
@@ -317,6 +318,19 @@
         </div>
       </section>
 
+      <section id="site" class="view">
+        <div class="panel">
+          <p class="eyebrow">SITE · FLOWARTS.COM.BR</p>
+          <h2>Visitas do site</h2>
+          <p class="muted">Páginas vistas por dia. Sem dados pessoais: só a página e de onde a pessoa veio.</p>
+          <div class="site-kpis" id="site-kpis"><p class="muted">Carregando…</p></div>
+        </div>
+        <div class="panel"><h3>Últimos 30 dias</h3><div id="site-days" class="site-days"></div></div>
+        <div class="site-two">
+          <div class="panel"><h3>De onde vieram</h3><div id="site-sources"></div></div>
+          <div class="panel"><h3>Páginas mais vistas</h3><div id="site-pages"></div></div>
+        </div>
+      </section>
       <section id="settings" class="view">
         <div class="panel">
           <div class="panel-head"><div><p class="eyebrow">NEXUS CORE</p><h2>Infraestrutura central</h2><p class="muted">Estas conexões pertencem ao NEXUS. Seus clientes não precisam criar contas técnicas.</p></div></div>
@@ -393,7 +407,8 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=41" defer></script>
+  <script src="/app.js?v=42" defer></script>
   <script src="/whatsapp-inbox.js?v=2" defer></script>
+  <script src="/site-stats.js?v=2" defer></script>
 </body>
 </html>

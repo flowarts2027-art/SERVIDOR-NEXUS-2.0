@@ -24,6 +24,7 @@ import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
 import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
+import { handleSiteHit, siteStats } from "./site-analytics.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -611,6 +612,18 @@ export default {
 
     if (url.pathname === "/api/whatsapp/webhook") {
       return handleWhatsAppWebhook(request, env, url, ctx);
+    }
+
+    // Contador de visitas do site (público, sem dados pessoais).
+    if (url.pathname === "/api/site/hit" && request.method === "POST") {
+      return handleSiteHit(request, env).catch(() => new Response(null, { status: 204 }));
+    }
+
+    // Resumo das visitas para o painel Master (login do Master).
+    if (url.pathname === "/api/master/site-stats" && request.method === "GET") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return json(await siteStats(env, url.searchParams.get("days") || 30));
     }
 
     const instagramOAuthResponse = await handleInstagramOAuthCallback(env, request, url);

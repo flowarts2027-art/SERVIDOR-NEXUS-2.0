@@ -186,3 +186,21 @@
   .wa-back{display:inline-block}
   .wa-msg{max-width:90%}
 }
+
+/* Aba Site: visitas do flowarts.com.br */
+#site .panel{margin-bottom:16px}
+.site-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.site-kpis article{padding:16px;border:1px solid var(--line);border-radius:13px;background:#090d0b}
+.site-kpis span,.site-kpis small{display:block;color:var(--muted);font-size:11px}
+.site-kpis strong{display:block;font-size:28px;margin:6px 0 2px}
+.site-chart{display:grid;grid-template-columns:repeat(30,1fr);gap:4px;align-items:end;height:170px;margin-top:12px}
+.site-col{display:flex;flex-direction:column;justify-content:flex-end;height:100%;min-width:0}
+.site-col i{display:block;min-height:2px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#38e477,#159343)}
+.site-col small{font-size:8px;color:var(--muted);text-align:center;margin-top:4px;white-space:nowrap;overflow:hidden}
+.site-col:nth-child(odd) small{visibility:hidden}
+.site-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.site-row{display:grid;grid-template-columns:minmax(0,1.4fr) 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.site-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site-row b{color:var(--green2)}
+@media(max-width:700px){.site-kpis{grid-template-columns:1fr 1fr 1fr;gap:6px}.site-kpis strong{font-size:20px}.site-two{grid-template-columns:1fr}.site-chart{gap:2px;height:130px}.site-col small{display:none}}
+.site-kpis>p{grid-column:1/-1;margin:0}

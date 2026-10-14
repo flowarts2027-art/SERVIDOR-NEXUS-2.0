@@ -576,7 +576,7 @@ async function loadWorkspace(){
 function showView(id) {
   $$(".view").forEach(view => view.classList.toggle("active", view.id === id));
   $$(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === id));
-  const titles = { dashboard: "Visão geral", clients: "Clientes", agents: "Agent Core", posts: "Postagens & custos", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Odin & Leads", onboarding: "Novo cliente", settings: "Integrações" };
+  const titles = { dashboard: "Visão geral", clients: "Clientes", agents: "Agent Core", posts: "Postagens & custos", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Odin & Leads", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
   $("#page-title").textContent = titles[id] || "NEXUS AI";
 }
 
