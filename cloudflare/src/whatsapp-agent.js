@@ -497,6 +497,29 @@ export async function handleWhatsAppProtected(request, env, url) {
   await ensureWhatsAppSchema(env);
   const clientId = String(env.WHATSAPP_CLIENT_ID || "").trim();
 
+  // Diagnóstico do número na Meta (só leitura): mostra se ele está ativo na
+  // Cloud API, o nome aprovado e o limite. Não expõe token.
+  if (url.pathname === "/api/whatsapp/number-check" && request.method === "GET") {
+    const version = String(env.WHATSAPP_GRAPH_VERSION || "").trim();
+    const phoneNumberId = String(env.WHATSAPP_PHONE_NUMBER_ID || "").trim();
+    const token = String(env.WHATSAPP_ACCESS_TOKEN || "").trim();
+    if (!version || !phoneNumberId || !token) return json({ ok: false, error: "whatsapp_send_not_configured" }, 503);
+    const fields = "display_phone_number,verified_name,code_verification_status,status,platform_type,name_status,quality_rating,account_mode,messaging_limit_tier,throughput";
+    const response = await fetch(
+      `https://graph.facebook.com/${encodeURIComponent(version)}/${encodeURIComponent(phoneNumberId)}?fields=${fields}`,
+      { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15000) }
+    ).catch(error => ({ ok: false, status: 0, json: async () => ({ error: { message: String(error?.message || error) } }) }));
+    const data = await response.json().catch(() => ({}));
+    return json({
+      ok: Boolean(response.ok),
+      httpStatus: response.status,
+      phoneNumberIdEnd: phoneNumberId.slice(-4),
+      graphVersion: version,
+      number: response.ok ? data : null,
+      error: response.ok ? null : { code: data?.error?.code || null, subcode: data?.error?.error_subcode || null, message: String(data?.error?.message || "").slice(0, 200) }
+    }, response.ok ? 200 : 502);
+  }
+
   if (url.pathname === "/api/whatsapp/status" && request.method === "GET") {
     const counts = clientId
       ? await env.DB.prepare(
