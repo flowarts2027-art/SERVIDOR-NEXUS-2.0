@@ -211,6 +211,51 @@
     loadAccess();
   });
 
-  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); }));
-  if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); }
+  // Imagem por IA para clientes: liga/desliga e limite do mês por cliente.
+  async function loadAiAccess() {
+    const box = $("#ai-images-access-list");
+    if (!box) return;
+    try {
+      const data = await call("/api/master/ai-images/access");
+      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row">
+          <label><input type="checkbox" data-ai-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
+          <span><b>${esc(c.name)}</b><small>${c.artSource === "ai" ? "Escolheu: criar com IA" : c.artSource === "own" ? "Escolheu: artes prontas" : "Ainda não escolheu"}</small></span>
+          <em>${c.enabled ? "Ligado" : "Desligado"}</em></label>
+          <form class="captador-limit" data-ai-limit="${esc(c.id)}">
+            <label>Imagens por mês <input type="number" name="limit" min="0" max="600" step="1" value="${Number(c.monthlyLimit ?? 30)}" inputmode="numeric"></label>
+            <button type="submit" class="ghost">Salvar</button>
+            <small>Usou ${Number(c.usedMonth || 0)} este mês</small>
+          </form>
+        </div>`).join("") : '<p class="muted">Nenhum cliente cadastrado.</p>';
+    } catch (error) {
+      box.innerHTML = `<p class="muted">Não consegui carregar. ${esc(error.message)}</p>`;
+    }
+  }
+
+  document.addEventListener("submit", async event => {
+    const form = event.target.closest?.("[data-ai-limit]");
+    if (!form) return;
+    event.preventDefault();
+    const button = form.querySelector("button");
+    button.disabled = true;
+    try {
+      await call("/api/master/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.aiLimit, monthlyLimit: Number(form.limit.value) }) });
+      button.textContent = "Salvo!";
+      setTimeout(loadAiAccess, 900);
+    } catch { button.disabled = false; button.textContent = "Erro, tente de novo"; }
+  });
+
+  document.addEventListener("change", async event => {
+    const input = event.target.closest?.("[data-ai-client]");
+    if (!input) return;
+    input.disabled = true;
+    try {
+      await call("/api/master/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.aiClient, enabled: input.checked }) });
+    } catch { input.checked = !input.checked; }
+    input.disabled = false;
+    loadAiAccess();
+  });
+
+  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); loadAiAccess(); }));
+  if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); loadAiAccess(); }
 })();

@@ -25,6 +25,7 @@ import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.j
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
 import { flowArtsCampaignForDay, flowArtsCampaignStrategy } from "./flowarts-campaign.js";
 import { clientBrand, IMAGE_GENERATION_CLIENTS, usefulThemeTerms, brandProfileVersion, isOutdatedBrandDraft } from "./client-brand.js";
+import { campaignSettings, campaignActiveOn, campaignPostsPerDay, reserveAiImage, refundAiImage, nextCampaignArt } from "./client-campaign.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -559,7 +560,7 @@ async function runStrategist(env,client,context,options) {
       targetFollowers:profile.growthTargetFollowers,
       horizonDays:profile.growthHorizonDays
     },
-    dailySlots:globalCampaign?.dailySlots||3,
+    dailySlots:globalCampaign?.dailySlots||campaignPostsPerDay(client)||3,
     adaptiveTiming:!globalCampaign,
     recommendedPostTimes:globalCampaign?.recommendedPostTimes || (Array.isArray(radar.recommendedPostTimes)&&radar.recommendedPostTimes.length===3
       ?radar.recommendedPostTimes
@@ -754,6 +755,27 @@ async function runCreator(env,client,strategy,options) {
 
   async function nextMedia(postId,visualBrief="",contentFormat="image",headline="") {
     const guidedVisualBrief=String(visualBrief||"").trim().slice(0,1800);
+    // Campanha escolhida pelo cliente no painel: artes dele ou imagem por IA (se liberada no Master).
+    const clientCampaign=IMAGE_GENERATION_CLIENTS.has(client.id)?null:campaignSettings(client);
+    if(clientCampaign?.artSource==="own"){
+      const art=await nextCampaignArt(env,client,postId).catch(()=>null);
+      if(art)return {url:art.url,source:"client-campaign-art",sourceInstagramMediaId:"",sourceLibraryKey:art.sourceLibraryKey};
+    }
+    if(clientCampaign?.artSource==="ai"&&await reserveAiImage(env,client.id).catch(()=>false)){
+      try{
+        const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
+          contentFormat:"image",cleanImage:true,
+          variationSeed:String(postId)+"|"+String(Date.now())
+        });
+        return {
+          url:generated.url,source:"client-campaign-ai",sourceInstagramMediaId:"",
+          fingerprint:String(generated.fingerprint||""),brandingApplied:false,brandingError:"",
+          referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:"image"
+        };
+      }catch(error){
+        await refundAiImage(env,client.id).catch(()=>{});
+      }
+    }
     if(IMAGE_GENERATION_CLIENTS.has(client.id)){
       try{
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
@@ -1012,6 +1034,8 @@ async function runCreator(env,client,strategy,options) {
       continue;
     }
 
+    // Campanha do cliente (7, 15 ou 30 dias): fora desses dias, não cria post.
+    if(!campaignActiveOn(client,day))continue;
     if((plannedByDay.get(day)||0)>=dailyPublishTarget)continue;
     // A campanha da Flow Arts é por dia do mês: usa o dia do POST (não o dia de hoje),
     // senão o post de amanhã repete o tema de hoje.

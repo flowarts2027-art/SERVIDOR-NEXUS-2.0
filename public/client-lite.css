@@ -324,3 +324,23 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .negocio-form textarea { resize: vertical; }
 .negocio-form .btn { justify-self: start; }
 #negocio-status { margin: 0; }
+
+/* Campanha (artes, dias, posts por dia) */
+.camp-form { display: grid; gap: 16px; margin-top: 12px; }
+.camp-form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.camp-form legend { font-weight: 700; margin-bottom: 6px; }
+.camp-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.camp-choice { display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; min-height: 48px; cursor: pointer; background: #fff; }
+.camp-choice input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; }
+.camp-choice span { display: grid; gap: 2px; }
+.camp-choice small { color: var(--muted); font-size: .9rem; }
+.camp-choice:has(input:checked) { border-color: var(--blue); }
+.camp-choice.is-off { opacity: .6; cursor: not-allowed; }
+.camp-form .btn { justify-self: start; }
+.camp-upload { display: inline-flex; margin: 8px 0; cursor: pointer; }
+.camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 8px; }
+.camp-art { margin: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
+.camp-art img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.camp-art figcaption { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 6px 8px; font-size: .85rem; }
+.camp-art.is-used { opacity: .55; }
+@media (prefers-color-scheme: dark) { .camp-choice, .camp-art { background: transparent; } }

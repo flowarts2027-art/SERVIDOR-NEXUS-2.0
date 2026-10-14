@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h46–19h15 BRT — Aba "Campanha" no painel do cliente (branch feat/aba-campanha, não publicada)
+- Pedido do Rodrigo: cliente escolhe enviar arte pronta ou criar por IA, aba para enviar as artes, dias da campanha etc. Escolhas dele: IA só depois que ele libera no Master; 30 imagens IA/mês por cliente (muda no Master); 7, 15 ou 30 dias; 1 ou 2 posts/dia.
+- client-campaign.js: config.campaignSettings {artSource own|ai, days, postsPerDay, startDate}; começa no dia em que salva (mudar só arte/posts mantém o começo). Liberação IA e uso por mês em nexus_state namespace client-campaign (ai-access, ai-usage); artes usadas em art-used.
+- agent-runtime.js: para clientes fora de IMAGE_GENERATION_CLIENTS: dailySlots = posts/dia da campanha; fora dos dias da campanha não cria post; artSource own → próxima arte enviada (purpose publish, mais antiga primeiro, copiada para posts/); artSource ai → reserva 1 do limite e gera imagem limpa 4:5 (sem texto por cima; falha devolve a reserva). Sem arte/sem saldo: cai no comportamento antigo (fotos do Instagram dele). Flow Arts não muda.
+- Portal: aba "Campanha" (public/campanha.js): escolhas, resumo (datas, total de posts, artes na fila/faltando), envio de várias artes (usa /api/portal/media com purpose publish), apagar arte da fila. Master → Contatos: quadro "Imagem por IA para clientes" (liga/desliga, imagens por mês, uso). GET/POST /api/master/ai-images/access.
+- 357 testes ok. Não testado no navegador nem com geração real.
+
 ## 2026-10-14 18h35–18h50 BRT — Aba "Meu negócio" no painel do cliente (publicado dff599d às 18h43 com OK do Rodrigo; deploy e CI ok; negocio.js conferido no ar)
 - Pedido do Rodrigo: aba para o cliente colocar o perfil dele. Achado: o Master tem "Perfis enviados pelos clientes" (agentProfile.submittedAt), mas o painel novo não tinha mais o formulário; /api/portal/profile só salva nome/@/telefone e não tinha tela.
 - business-profile.js + GET/POST /api/portal/business (depois do login): nome da empresa, ramo, o que vende (obrigatórios); produtos, público, região, diferenciais, WhatsApp (opcionais). Salva em config.agentProfile (mantém o resto), marca submittedAt e status "submitted" (aparece como NOVO PERFIL no Master). clientBrand já usa nome, ramo, público, oferta e WhatsApp nos posts.

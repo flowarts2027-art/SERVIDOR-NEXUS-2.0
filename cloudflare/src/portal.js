@@ -1,5 +1,6 @@
 import { handleCaptadorPortal } from "./captador.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
+import { handleClientCampaignPortal } from "./client-campaign.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import {
   authenticatePortalUser,
@@ -676,6 +677,8 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (captadorResponse) return captadorResponse;
   const businessResponse = await handleBusinessProfilePortal(request, env, url, client);
   if (businessResponse) return businessResponse;
+  const campaignResponse = await handleClientCampaignPortal(request, env, url, client);
+  if (campaignResponse) return campaignResponse;
 
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(

@@ -8,10 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=109">
-  <script src="/client-lite.js?v=112" defer></script>
+  <link rel="stylesheet" href="/client-lite.css?v=110">
+  <script src="/client-lite.js?v=113" defer></script>
   <script src="/captador.js?v=3" defer></script>
   <script src="/negocio.js?v=1" defer></script>
+  <script src="/campanha.js?v=1" defer></script>
 </head>
 <body>
   <main id="login" class="login" hidden>
@@ -45,6 +46,7 @@
       <button type="button" data-tab="numeros"><span aria-hidden="true">↗</span>Números</button>
       <button type="button" data-tab="contatos"><span aria-hidden="true">☺</span>Contatos</button>
       <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
+      <button type="button" data-tab="campanha"><span aria-hidden="true">◷</span>Campanha</button>
       <button type="button" data-tab="negocio"><span aria-hidden="true">▣</span>Meu negócio</button>
       <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
     </nav>
@@ -87,6 +89,11 @@
       <section id="tab-buscar" class="tab" hidden>
         <h1 class="page-title">Buscar clientes</h1>
         <div id="captador"><div class="empty"><strong>Carregando…</strong></div></div>
+      </section>
+
+      <section id="tab-campanha" class="tab" hidden>
+        <h1 class="page-title">Campanha</h1>
+        <div id="campanha"><div class="empty"><strong>Carregando…</strong></div></div>
       </section>
 
       <section id="tab-negocio" class="tab" hidden>

@@ -24,8 +24,9 @@ async function composeBrandOverlay(env,bytes,client,title="",options={}){
     const copy=overlayCopy(client,title);
     // A imagem já nasce em 4:5 ou 9:16 (imageSizeFor): aqui só amplia, sem cortar.
     let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:1080,height:options.contentFormat==="reel"?1920:1350,fit:"cover"});
-    // Marcas com perfil próprio: o gancho já vem escrito pela IA na imagem; aqui só ajusta para 4:5 (feed) ou 9:16 (reel).
-    if(brandProfileVersion(client?.id)){
+    // Marcas com perfil próprio (gancho já escrito pela IA) e campanhas de clientes (imagem limpa):
+    // aqui só ajusta para 4:5 (feed) ou 9:16 (reel), sem escrever nada por cima.
+    if(brandProfileVersion(client?.id)||options.cleanImage===true){
       const response=await (await canvas.output({format:"image/jpeg",quality:90})).response();
       if(!response.ok)throw new Error("images_resize_http_"+response.status);
       const out=new Uint8Array(await response.arrayBuffer());

@@ -27,6 +27,7 @@ import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCaptadorMaster } from "./captador.js";
+import { handleClientCampaignMaster } from "./client-campaign.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -634,6 +635,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleCaptadorMaster(request, env, url, listClients);
+      if (response) return response;
+    }
+
+    // Imagem por IA para clientes: liberação e limite por mês. Só com login do Master.
+    if (url.pathname === "/api/master/ai-images/access") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleClientCampaignMaster(request, env, url, listClients);
       if (response) return response;
     }
 
