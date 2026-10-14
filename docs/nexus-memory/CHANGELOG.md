@@ -1,8 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 19h05–19h15 BRT — Ligar imagem por IA na tela Clientes (branch fix/ia-na-tela-clientes, não publicada)
+## 2026-10-14 19h05–19h15 BRT — Ligar imagem por IA na tela Clientes (publicado a0b4b01 às 19h09 com OK do Rodrigo; deploy ok; app.js v43 conferido no ar)
 - Rodrigo não achou onde liberar a IA: olhava Master → Clientes, coluna "IA do cliente", que mostrava um texto fixo antigo ("imagem IA paga desativada", até para a Flow Arts, que gera imagem). O quadro novo estava só em Contatos.
 - app.js (v43): a coluna agora tem a caixa "Imagem por IA" por cliente (liga/desliga em /api/master/ai-images/access) e mostra "usou X de Y no mês"; Flow Arts mostra "sempre ligada". styles v30. O quadro em Contatos continua (limite por mês).
+- Sobra: app.js linha ~211 (renderClientPortal) ainda tem o texto fixo "geração paga de imagens desativada". Não corrigido; avisar o Rodrigo.
 
 ## 2026-10-14 18h58–19h05 BRT — Exemplos do painel falavam de Quatree para todos (publicado ef35585 às 19h01 com OK do Rodrigo; deploy ok; negocio.js v2 conferido no ar sem "Quatree")
 - Rodrigo: "a regra de perfil entrou em todos os clientes". Perguntado; era isto: os exemplos cinzas da aba Meu negócio citavam Quatree/ração/Minas para qualquer cliente.
