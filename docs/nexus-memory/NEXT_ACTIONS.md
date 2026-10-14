@@ -6,6 +6,12 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Robô do WhatsApp: planos e contrato (plano aprovado pelo Rodrigo em 2026-10-14 08h34, ainda não feito)
+- Planos: quando o cliente perguntar preço, o robô responde e manda o link https://flowarts.com.br/#pacotes. Automático.
+- Contrato: página pública do contrato-modelo no site (só depois da revisão de advogado/contador e do nome do responsável). Quando o cliente disser que quer fechar, o robô prepara a mensagem com o link e o Rodrigo aprova o envio por um botão "Enviar contrato" no painel (regra do CLAUDE.md: prometer algo ao cliente só com OK do Rodrigo). Não enviar sozinho.
+- Tudo só funciona depois que a Meta liberar o app "Atendente Flow Arts".
+- Branch feat/manutencao-site (manutenção R$ 29/mês ou R$ 297/ano no robô) pronta, esperando OK para publicar.
+
 ## Google Maps (decisão 2026-10-14 08h29)
 - Rodrigo: vai pagar os R$ 150 de pré-pagamento do Google quando fechar o primeiro cliente. Então: Places API (New) no projeto flow-arts-nexus, chave restrita só a essa API, cota diária, e ele digita a chave em Master → Contatos (caixa "Opcional: usar o Google Maps").
 - Até lá: busca grátis pelo OpenStreetMap, que às vezes fica fora do ar.
