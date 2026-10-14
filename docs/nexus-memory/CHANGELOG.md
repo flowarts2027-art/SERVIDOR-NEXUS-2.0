@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 19h27–19h35 BRT — Reel com frase cortada publicado às ~19h03 (branch fix/refazer-rascunhos-antigos, não publicada)
+## 2026-10-14 19h27–19h35 BRT — Reel com frase cortada publicado às ~19h03 (publicado d39d7c0 às 19h30 com OK do Rodrigo; deploy e CI ok)
 - Rodrigo mandou print: Reel da Flow Arts com a frase cortada, publicado há 24 min, depois da correção 4:5.
 - Evidência: o render desse Reel rodou às 10h00 BRT (GitHub run 38568226987, 13:00 UTC), com o código antigo. A correção (0e24431) entrou às 18h22. O post estava pronto e aprovado desde cedo; só foi publicado no horário.
 - Correção: Flow Arts profileVersion 2026-10-11g → 2026-10-14-45. Rascunhos ainda NÃO aprovados da versão antiga são refeitos no próximo ciclo, já em 4:5. Aprovados não mudam (decisão do Rodrigo): ele precisa conferir/cancelar os aprovados ainda não publicados no painel. 359 testes ok.
