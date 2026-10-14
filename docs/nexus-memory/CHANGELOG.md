@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h35–18h50 BRT — Aba "Meu negócio" no painel do cliente (branch feat/aba-meu-negocio, não publicada)
+- Pedido do Rodrigo: aba para o cliente colocar o perfil dele. Achado: o Master tem "Perfis enviados pelos clientes" (agentProfile.submittedAt), mas o painel novo não tinha mais o formulário; /api/portal/profile só salva nome/@/telefone e não tinha tela.
+- business-profile.js + GET/POST /api/portal/business (depois do login): nome da empresa, ramo, o que vende (obrigatórios); produtos, público, região, diferenciais, WhatsApp (opcionais). Salva em config.agentProfile (mantém o resto), marca submittedAt e status "submitted" (aparece como NOVO PERFIL no Master). clientBrand já usa nome, ramo, público, oferta e WhatsApp nos posts.
+- Portal: aba "Meu negócio" (public/negocio.js, client-lite v112, css v109). Demo não salva. 353 testes ok.
+- Observação: clientes fora de IMAGE_GENERATION_CLIENTS (ex.: Quatree Dog) não ganham imagem por IA; os posts usam fotos do próprio Instagram/banco. O perfil melhora o texto, não a imagem.
+
 ## 2026-10-14 18h23–18h30 BRT — Post 4:5 publicado; NVIDIA descartada
 - Publicado 0e24431 com OK do Rodrigo (18h27): Reel da Flow Arts vira post 4:5; imagens já nascem em 4:5/9:16 (frases sem corte). Deploy Cloudflare e CI ok. Não conferido num post real ainda: olhar o próximo post gerado.
 - Rodrigo perguntou da ferramenta NVIDIA: é o auditor de código experimental `cloudflare/src/experimental/nemotron-audit.js`, sem rota, sem cron, sem chave, nunca usado. Não foi testado. Expliquei o plano grátis (trial, ~40 pedidos/min, uso comercial não claro). Decisão dele: descartar e deixar desabilitado (código continua no repositório, desligado).

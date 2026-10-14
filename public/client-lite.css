@@ -313,3 +313,14 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .cap-actions .btn { width: 100%; margin: 0; }
 .cap-credit { font-size: .82rem; margin: 16px 0 0; }
 @media (min-width: 900px) { .cap-list { grid-template-columns: repeat(2, 1fr); } .cap-search { grid-template-columns: 1fr 1fr auto; align-items: end; } }
+
+/* Meu negócio (perfil do cliente) */
+.negocio-form { display: grid; gap: 14px; margin-top: 12px; max-width: 640px; }
+.negocio-form label { display: grid; gap: 6px; font-weight: 700; }
+.negocio-form label .muted { font-weight: 400; }
+.negocio-form input, .negocio-form textarea {
+  min-height: 50px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 10px 14px; background: #fff; font: inherit; color: var(--ink); width: 100%;
+}
+.negocio-form textarea { resize: vertical; }
+.negocio-form .btn { justify-self: start; }
+#negocio-status { margin: 0; }

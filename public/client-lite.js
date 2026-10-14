@@ -564,7 +564,7 @@ function renderAll() {
 }
 
 function showTab(tab) {
-  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "conta"].includes(tab) ? tab : "inicio";
+  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "negocio", "conta"].includes(tab) ? tab : "inicio";
   $$(".tab").forEach(section => { section.hidden = section.id !== "tab-" + state.tab; });
   $$(".tabbar [data-tab]").forEach(btn => {
     const active = btn.dataset.tab === state.tab;
