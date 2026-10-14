@@ -351,3 +351,7 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Imagens: lista POSTS no script da página aponta para /brand/posts/post-1..6.webp; sem o arquivo aparece bloco provisório. Aguardando 4–6 imagens de posts do Rodrigo.
 - Fontes da página em `scripts/site/site-visual.css` e `site-visual.body.html`. Celular 390 px sem rolagem lateral. 324/324. Não implantado.
 - Implantado com OK do Rodrigo (22h16): site novo no ar, com 12 imagens reais de posts (Flow Arts e demo Café Brisa) servidas de /media/posts/.
+
+## 2026-10-13 — plano mensal no site
+- Rodrigo notou que o site só tinha pacotes de pagamento único. Pensou em R$ 350 + R$ 95/mês; alertado de que 12 posts com imagem custam ~US$ 16/mês em IA (estimativa de 12/10), decidiu manter o preço que já existia.
+- `site.html`: bloco em destaque "Instagram no Automático" — R$ 297 de entrada + R$ 697/mês, 12 posts/mês (4 Reels, 4 carrosséis, 4 posts), postagem automática após aprovação, painel com números, preço de fundador (3 primeiros, 6 meses), sem fidelidade (aviso de 30 dias). Oferta adicionada ao JSON-LD. Resposta automática NÃO entra no plano (depende da Meta). Igual ao `whatsapp-knowledge.js`.
