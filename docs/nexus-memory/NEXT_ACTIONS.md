@@ -7,7 +7,7 @@
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
 ## Próximo passo exato (2026-10-14 10h00, sessão terminando)
-1. Pedir o OK do Rodrigo e publicar a branch feat/cacador-google ANTES de ele salvar a chave (a versão no ar ainda grava todos os dados do Google).
+1. FEITO 10h13: feat/cacador-google publicada (9bcbce6, deploy ok, prospects-ui.js novo conferido no ar) com o "vamos deixar pronto" do Rodrigo.
 2. Rodrigo completa R$ 120 no Google Cloud (conta 014D52-2FFA79-70D022) e segue o passo a passo da chave enviado no chat: ativar Places API (New) no projeto flow-arts-nexus → Criar credenciais → Chave de API → restringir só à Places API (New) → cota diária e orçamento com alerta → digitar a chave em Master → Contatos → "Chave do Google Maps".
 3. Depois: primeira busca real e conferir no D1 que só os contatos chamados ficam guardados.
 - 10h11: Places API ativada e chave "Maps Platform API Key" criada no projeto flow-arts-nexus (conta flowarts2027; restrita às 32 APIs do Maps, sem tela de restrição por API; restrição de aplicativo: Nenhum). Orçamento NÃO criado: o Google diz que a conta de faturamento está encerrada/inativa (falta completar R$ 120 do pré-pagamento). Até ativar, a chave não vai buscar. Chave ainda NÃO salva no Master.
