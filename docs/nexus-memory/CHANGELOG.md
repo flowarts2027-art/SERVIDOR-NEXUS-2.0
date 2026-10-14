@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h23–18h30 BRT — Post 4:5 publicado; NVIDIA descartada
+- Publicado 0e24431 com OK do Rodrigo (18h27): Reel da Flow Arts vira post 4:5; imagens já nascem em 4:5/9:16 (frases sem corte). Deploy Cloudflare e CI ok. Não conferido num post real ainda: olhar o próximo post gerado.
+- Rodrigo perguntou da ferramenta NVIDIA: é o auditor de código experimental `cloudflare/src/experimental/nemotron-audit.js`, sem rota, sem cron, sem chave, nunca usado. Não foi testado. Expliquei o plano grátis (trial, ~40 pedidos/min, uso comercial não claro). Decisão dele: descartar e deixar desabilitado (código continua no repositório, desligado).
+
 ## 2026-10-14 18h15–18h40 BRT — Reels parecendo foto e frases cortadas no feed (branch fix/reel-movimento-feed-45, não publicada)
 - Rodrigo: Reels da Flow Arts parecem foto parada; frases dos posts do feed ficam cortadas (pediu 4:5).
 - Causa Reel: social-format-render.yml fazia zoom de só 6% em 10 s (on*0.0002), sem suavização: quase invisível. O render no GitHub funciona (3 runs ok em 12–14/10).

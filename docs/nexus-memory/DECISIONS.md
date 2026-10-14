@@ -119,3 +119,7 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## 2026-10-14 — Reels e NVIDIA
+- Rodrigo: "se não der para fazer vídeo, não faça". Reel que é só 1 imagem com zoom não sai; vira post 4:5 (`FLOWARTS_REAL_VIDEO_REELS=false` em flowarts-campaign.js). Religar só com vídeo de verdade (várias cenas ou vídeo por IA), com OK dele.
+- NVIDIA Nemotron: descartada, fica desabilitada. Não ligar sem pedido dele.
