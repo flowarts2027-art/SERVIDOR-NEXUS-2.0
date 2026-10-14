@@ -99,9 +99,9 @@ async function fillAiImageCells() {
   try { rows = (await api("/api/master/ai-images/access")).clients || []; }
   catch { cells.forEach(cell => { cell.innerHTML = "<small>imagem por IA: não consegui carregar</small>"; }); return; }
   for (const cell of cells) {
-    const row = rows.find(item => item.id === cell.dataset.aiImageCell) || { enabled: false, usedMonth: 0, monthlyLimit: 30 };
+    const row = rows.find(item => item.id === cell.dataset.aiImageCell) || { enabled: false, usedCampaign: 0, campaignLimit: 0 };
     cell.innerHTML = `<label class="ai-image-toggle"><input type="checkbox" data-ai-image-toggle="${escapeHtml(cell.dataset.aiImageCell)}" ${row.enabled ? "checked" : ""}> Imagem por IA</label>
-      <small>${row.enabled ? `Ligada · usou ${Number(row.usedMonth || 0)} de ${Number(row.monthlyLimit || 0)} no mês` : "Desligada"}</small>`;
+      <small>${!row.enabled ? "Desligada" : Number(row.campaignLimit) ? `Ligada · usou ${Number(row.usedCampaign || 0)} de ${Number(row.campaignLimit)} da campanha` : "Ligada · sem campanha com IA ainda"}</small>`;
   }
 }
 
@@ -207,8 +207,10 @@ function renderClientPortal(client) {
   agentBadge.textContent = online ? "ONLINE" : "SETUP";
   agentBadge.classList.toggle("off", !online);
   const ragnar = client.id === "ragnar-one";
-  const mode = ragnar ? "Conta OpenAI própria" : "NEXUS sem imagem paga";
-  const aiDetail = ragnar ? "isolada do NEXUS central" : "geração paga de imagens desativada";
+  const mode = ragnar ? "Conta OpenAI própria" : "NEXUS gerenciada";
+  const aiDetail = ragnar ? "isolada do NEXUS central"
+    : client.id === "primeiro-teste" ? "imagem por IA sempre ligada"
+    : "imagem por IA: ligue na tela Clientes, coluna IA do cliente";
   $("#portal-usage").innerHTML = `<div class="usage-row"><div><span>Modo de IA</span><strong>${mode}</strong></div><small>${aiDetail}</small></div><div class="usage-row"><div><span>Infraestrutura</span><strong>Gerenciada pelo NEXUS</strong></div><small>GitHub e Cloudflare são gerenciados centralmente pelo NEXUS.</small></div>`;
 }
 

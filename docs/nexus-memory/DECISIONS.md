@@ -123,3 +123,6 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 ## 2026-10-14 — Reels e NVIDIA
 - Rodrigo: "se não der para fazer vídeo, não faça". Reel que é só 1 imagem com zoom não sai; vira post 4:5 (`FLOWARTS_REAL_VIDEO_REELS=false` em flowarts-campaign.js). Religar só com vídeo de verdade (várias cenas ou vídeo por IA), com OK dele.
 - NVIDIA Nemotron: descartada, fica desabilitada. Não ligar sem pedido dele.
+
+## 2026-10-14 — Imagem por IA para clientes
+- Só depois que o Rodrigo liga (Master → Clientes → coluna IA do cliente). Limite = total da campanha do cliente (dias x posts), no máximo 60 por mês. Custo na OpenAI da Flow Arts.

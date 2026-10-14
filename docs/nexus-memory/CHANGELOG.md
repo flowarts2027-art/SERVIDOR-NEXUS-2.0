@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 19h15–19h35 BRT — Limite de IA acompanha a campanha (branch fix/limite-ia-campanha, não publicada)
+- Rodrigo: campanha de 30 dias x 2 posts = 60 imagens, mas o limite era 30/mês. Escolha dele: o limite acompanha a campanha.
+- client-campaign.js: limite = dias x posts/dia da campanha atual; uso contado por campanha (cada campanha tem id próprio; mudar os dias cria campanha nova). Trava extra de 60 por mês (máximo de uma campanha) contra recomeçar para ganhar imagens. Master só liga/desliga (sem número). Falha devolve.
+- Telas: aba Campanha "usou X de Y imagens desta campanha"; Master → Clientes "usou X de Y da campanha"; quadro em Contatos sem o campo de número. Corrigido também o texto fixo antigo "geração paga de imagens desativada" na tela do painel do cliente no Master. 359 testes ok.
+
 ## 2026-10-14 19h05–19h15 BRT — Ligar imagem por IA na tela Clientes (publicado a0b4b01 às 19h09 com OK do Rodrigo; deploy ok; app.js v43 conferido no ar)
 - Rodrigo não achou onde liberar a IA: olhava Master → Clientes, coluna "IA do cliente", que mostrava um texto fixo antigo ("imagem IA paga desativada", até para a Flow Arts, que gera imagem). O quadro novo estava só em Contatos.
 - app.js (v43): a coluna agora tem a caixa "Imagem por IA" por cliente (liga/desliga em /api/master/ai-images/access) e mostra "usou X de Y no mês"; Flow Arts mostra "sempre ligada". styles v30. O quadro em Contatos continua (limite por mês).

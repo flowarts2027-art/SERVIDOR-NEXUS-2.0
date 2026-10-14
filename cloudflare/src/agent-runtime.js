@@ -761,7 +761,7 @@ async function runCreator(env,client,strategy,options) {
       const art=await nextCampaignArt(env,client,postId).catch(()=>null);
       if(art)return {url:art.url,source:"client-campaign-art",sourceInstagramMediaId:"",sourceLibraryKey:art.sourceLibraryKey};
     }
-    if(clientCampaign?.artSource==="ai"&&await reserveAiImage(env,client.id).catch(()=>false)){
+    if(clientCampaign?.artSource==="ai"&&await reserveAiImage(env,client).catch(()=>false)){
       try{
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
           contentFormat:"image",cleanImage:true,
@@ -773,7 +773,7 @@ async function runCreator(env,client,strategy,options) {
           referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:"image"
         };
       }catch(error){
-        await refundAiImage(env,client.id).catch(()=>{});
+        await refundAiImage(env,client).catch(()=>{});
       }
     }
     if(IMAGE_GENERATION_CLIENTS.has(client.id)){

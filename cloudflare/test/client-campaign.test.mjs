@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import {
   handleClientCampaignPortal, handleClientCampaignMaster, campaignSettings, campaignActiveOn, campaignPostsPerDay,
-  reserveAiImage, refundAiImage, aiImagesAccess, clientWantsAiImage, nextCampaignArt, AI_IMAGES_MONTHLY_LIMIT
+  reserveAiImage, refundAiImage, aiImagesAccess, clientWantsAiImage, nextCampaignArt, AI_IMAGES_MONTH_CAP
 } from "../src/client-campaign.js";
 
 function fakeEnv() {
@@ -35,6 +35,7 @@ const call = async (env, client, body) => {
   return { status: response.status, data: await response.json() };
 };
 const savedConfig = db => JSON.parse(db.prepare("SELECT config_json FROM clients WHERE id='quatree-dog'").get().config_json);
+const savedConfigOr = db => { try { return savedConfig(db); } catch { return {}; } };
 
 test("cliente escolhe dias e posts por dia; sem liberação não escolhe IA", async () => {
   const { db, env } = fakeEnv();
@@ -60,30 +61,38 @@ test("cliente escolhe dias e posts por dia; sem liberação não escolhe IA", as
   assert.equal(campaignActiveOn({ id: "x", config: {} }, "2030-01-01"), true, "sem campanha, segue como antes");
 });
 
-test("imagem por IA: Master libera, limite do mês e falha não conta", async () => {
+test("imagem por IA: Master libera; limite = total da campanha; falha não conta; trava de 60 por mês", async () => {
   const { db, env } = fakeEnv();
   db.prepare("INSERT INTO clients(id,config_json) VALUES('quatree-dog','{}')").run();
-  assert.equal(await reserveAiImage(env, quatree.id), false, "sem liberação não gera");
-  const listClients = async () => [{ ...quatree, config: {} }];
+  assert.equal(await reserveAiImage(env, quatree), false, "sem liberação não gera");
+  const listClients = async () => [{ ...quatree, config: savedConfigOr(db) }];
   const post = body => handleClientCampaignMaster(new Request("https://m/api/master/ai-images/access", { method: "POST", body: JSON.stringify(body) }), env, new URL("https://m/api/master/ai-images/access"), listClients);
-  assert.deepEqual(await (await post({ clientId: quatree.id, enabled: true })).json(), { ok: true, clientId: quatree.id, enabled: true, monthlyLimit: AI_IMAGES_MONTHLY_LIMIT });
-  assert.equal(AI_IMAGES_MONTHLY_LIMIT, 30);
+  assert.deepEqual(await (await post({ clientId: quatree.id, enabled: true })).json(), { ok: true, clientId: quatree.id, enabled: true });
+  assert.equal((await post({ clientId: quatree.id })).status, 400);
 
-  const ok = await call(env, quatree, { artSource: "ai", days: 7, postsPerDay: 1 });
-  assert.equal(ok.status, 200);
-  const client = { ...quatree, config: savedConfig(db) };
+  // 30 dias x 2 posts = 60 imagens (o caso do Rodrigo).
+  assert.equal((await call(env, quatree, { artSource: "ai", days: 30, postsPerDay: 2 })).status, 200);
+  let client = { ...quatree, config: savedConfig(db) };
+  let access = await aiImagesAccess(env, client);
+  assert.equal(access.campaignLimit, 60);
+  assert.equal(AI_IMAGES_MONTH_CAP, 60);
+  for (let i = 0; i < 60; i++) assert.equal(await reserveAiImage(env, client), true, "imagem " + (i + 1));
+  assert.equal(await reserveAiImage(env, client), false, "acabou a campanha");
+  await refundAiImage(env, client);
+  assert.equal((await aiImagesAccess(env, client)).usedCampaign, 59, "falha devolve");
   assert.equal(await clientWantsAiImage(env, client), true);
 
-  await post({ clientId: quatree.id, monthlyLimit: 2 });
-  assert.equal(await reserveAiImage(env, quatree.id), true);
-  assert.equal(await reserveAiImage(env, quatree.id), true);
-  assert.equal(await reserveAiImage(env, quatree.id), false, "acabou o limite");
-  await refundAiImage(env, quatree.id);
-  assert.equal((await aiImagesAccess(env, quatree.id)).usedMonth, 1);
-  assert.equal((await post({ clientId: quatree.id, monthlyLimit: -1 })).status, 400);
+  // Recomeçar com outra campanha no mesmo mês não passa de 60 no mês.
+  assert.equal((await call(env, client, { artSource: "ai", days: 7, postsPerDay: 1 })).status, 200);
+  client = { ...quatree, config: savedConfig(db) };
+  access = await aiImagesAccess(env, client);
+  assert.equal(access.campaignLimit, 7);
+  assert.equal(access.usedCampaign, 0);
+  assert.equal(await reserveAiImage(env, client), true, "ainda tinha 1 no mês");
+  assert.equal(await reserveAiImage(env, client), false, "trava de 60 no mês");
 
-  const list = await (await handleClientCampaignMaster(new Request("https://m/api/master/ai-images/access"), env, new URL("https://m/api/master/ai-images/access"), listClients)).json();
-  assert.deepEqual(list.clients.map(c => [c.id, c.enabled, c.monthlyLimit, c.usedMonth]), [[quatree.id, true, 2, 1]]);
+  const list = await (await handleClientCampaignMaster(new Request("https://m/api/master/ai-images/access"), env, new URL("https://m/api/master/ai-images/access"), async () => [client])).json();
+  assert.deepEqual(list.clients.map(c => [c.id, c.enabled, c.campaignLimit, c.usedCampaign, c.usedMonth]), [[quatree.id, true, 7, 1, 60]]);
 });
 
 test("artes prontas: posta a mais antiga primeiro, uma vez só, e ignora referências e vídeos", async () => {
@@ -125,4 +134,5 @@ test("tela Clientes do Master liga a imagem por IA na coluna IA do cliente", () 
   assert.doesNotMatch(app, /imagem IA paga desativada/);
   assert.match(app, /data-ai-image-toggle/);
   assert.match(app, /\/api\/master\/ai-images\/access/);
+  assert.doesNotMatch(app, /geração paga de imagens desativada|NEXUS sem imagem paga/);
 });

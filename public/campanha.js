@@ -30,7 +30,7 @@
     const s = data.settings || { artSource: "own", days: 30, postsPerDay: 1 };
     const ai = data.ai || {};
     const aiHint = ai.enabled
-      ? `Você usou ${Number(ai.usedMonth || 0)} de ${Number(ai.monthlyLimit || 0)} imagens este mês.`
+      ? (Number(ai.campaignLimit) ? `Você usou ${Number(ai.usedCampaign || 0)} de ${Number(ai.campaignLimit)} imagens desta campanha.` : "Liberado. As imagens acompanham o tamanho da sua campanha.")
       : "Ainda não liberado na sua conta. Fale com a Flow Arts.";
     return `<section class="block">
       <h2>Como vai ser a sua campanha</h2>

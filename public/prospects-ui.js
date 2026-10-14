@@ -221,29 +221,12 @@
           <label><input type="checkbox" data-ai-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${c.artSource === "ai" ? "Escolheu: criar com IA" : c.artSource === "own" ? "Escolheu: artes prontas" : "Ainda não escolheu"}</small></span>
           <em>${c.enabled ? "Ligado" : "Desligado"}</em></label>
-          <form class="captador-limit" data-ai-limit="${esc(c.id)}">
-            <label>Imagens por mês <input type="number" name="limit" min="0" max="600" step="1" value="${Number(c.monthlyLimit ?? 30)}" inputmode="numeric"></label>
-            <button type="submit" class="ghost">Salvar</button>
-            <small>Usou ${Number(c.usedMonth || 0)} este mês</small>
-          </form>
+          <p class="captador-limit"><small>${Number(c.campaignLimit) ? `Usou ${Number(c.usedCampaign || 0)} de ${Number(c.campaignLimit)} da campanha` : "Sem campanha salva"}</small></p>
         </div>`).join("") : '<p class="muted">Nenhum cliente cadastrado.</p>';
     } catch (error) {
       box.innerHTML = `<p class="muted">Não consegui carregar. ${esc(error.message)}</p>`;
     }
   }
-
-  document.addEventListener("submit", async event => {
-    const form = event.target.closest?.("[data-ai-limit]");
-    if (!form) return;
-    event.preventDefault();
-    const button = form.querySelector("button");
-    button.disabled = true;
-    try {
-      await call("/api/master/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.aiLimit, monthlyLimit: Number(form.limit.value) }) });
-      button.textContent = "Salvo!";
-      setTimeout(loadAiAccess, 900);
-    } catch { button.disabled = false; button.textContent = "Erro, tente de novo"; }
-  });
 
   document.addEventListener("change", async event => {
     const input = event.target.closest?.("[data-ai-client]");

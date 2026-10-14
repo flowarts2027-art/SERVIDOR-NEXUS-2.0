@@ -2,12 +2,11 @@
 // O cliente escolhe: artes prontas (ele envia) ou criadas por IA, quantos dias
 // (7, 15 ou 30) e quantos posts por dia (1 ou 2).
 // Imagem por IA gasta na conta da Flow Arts: só aparece depois que o Rodrigo
-// libera no Master, com limite por mês (padrão 30, muda no Master).
+// libera no Master. Limite = total da campanha (dias x posts), no máximo 60 por mês.
 
 export const CAMPAIGN_DAYS = [7, 15, 30];
 export const CAMPAIGN_POSTS_PER_DAY = [1, 2];
-export const AI_IMAGES_MONTHLY_LIMIT = 30;
-export const AI_IMAGES_MAX_LIMIT = 600;
+export const AI_IMAGES_MONTH_CAP = 60;
 
 const localDay = (value = new Date()) => new Intl.DateTimeFormat("en-CA", {
   timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit"
@@ -30,6 +29,7 @@ export function campaignSettings(client = {}) {
   const startDate = /^\d{4}-\d{2}-\d{2}$/.test(String(raw.startDate || "")) ? String(raw.startDate) : localDay();
   return {
     artSource: raw.artSource === "ai" ? "ai" : "own",
+    id: String(raw.id || startDate),
     days, postsPerDay, startDate,
     endDate: addDays(startDate, days - 1),
     updatedAt: raw.updatedAt || null
@@ -58,8 +58,10 @@ export async function saveCampaignSettings(env, client, body = {}) {
   const config = client?.config && typeof client.config === "object" ? client.config : {};
   const previous = campaignSettings(client);
   // Começa hoje. Se só mudou a arte ou os posts por dia, mantém o começo.
-  const startDate = previous && previous.days === days && body.restart !== true ? previous.startDate : localDay();
-  const nextConfig = { ...config, campaignSettings: { artSource, days, postsPerDay, startDate, updatedAt: new Date().toISOString() } };
+  const keep = previous && previous.days === days && body.restart !== true;
+  const startDate = keep ? previous.startDate : localDay();
+  const id = keep ? previous.id : crypto.randomUUID();
+  const nextConfig = { ...config, campaignSettings: { id, artSource, days, postsPerDay, startDate, updatedAt: new Date().toISOString() } };
   await env.DB.prepare("UPDATE clients SET config_json = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2")
     .bind(JSON.stringify(nextConfig), client.id).run();
   return campaignSettings({ ...client, config: nextConfig });
@@ -82,51 +84,62 @@ async function writeState(env, clientId, key, value) {
   ).bind(key, String(clientId || ""), JSON.stringify(value)).run();
 }
 
-export async function aiImagesAccess(env, clientId) {
-  const access = await readState(env, clientId, "ai-access", { enabled: false });
-  const limit = Math.round(Number(access.monthlyLimit));
-  const usage = await readState(env, clientId, "ai-usage", { month: "", count: 0 });
+// Limite = total da campanha do cliente (dias x posts por dia), pedido do Rodrigo em 14/10.
+// Trava extra: no máximo 60 por mês (o máximo de uma campanha), para quem recomeçar
+// a campanha várias vezes não ganhar imagens extras.
+const clientIdOf = client => String(typeof client === "object" ? client?.id || "" : client || "");
+
+export async function aiImagesAccess(env, client) {
+  const id = clientIdOf(client);
+  const access = await readState(env, id, "ai-access", { enabled: false });
+  const usage = await readState(env, id, "ai-usage", {});
+  const settings = typeof client === "object" ? campaignSettings(client) : null;
+  const campaignLimit = settings ? settings.days * settings.postsPerDay : 0;
   return {
     enabled: access.enabled === true,
-    monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : AI_IMAGES_MONTHLY_LIMIT,
-    usedMonth: usage.month === thisMonth() ? Number(usage.count || 0) : 0
+    campaignLimit,
+    usedCampaign: settings && usage.campaign === settings.id ? Number(usage.count || 0) : 0,
+    monthCap: AI_IMAGES_MONTH_CAP,
+    usedMonth: usage.month === thisMonth() ? Number(usage.monthCount || 0) : 0
   };
 }
 
-export async function setAiImagesAccess(env, clientId, enabled, monthlyLimit) {
+export async function setAiImagesAccess(env, clientId, enabled) {
   const id = String(clientId || "").trim();
   if (!id) throw new Error("client_id_required");
-  const current = await aiImagesAccess(env, id);
-  let limit = current.monthlyLimit;
-  if (monthlyLimit !== undefined && monthlyLimit !== null && monthlyLimit !== "") {
-    limit = Math.round(Number(monthlyLimit));
-    if (!Number.isFinite(limit) || limit < 0 || limit > AI_IMAGES_MAX_LIMIT) throw new Error("limit_invalid");
-  }
-  const on = enabled === undefined ? current.enabled : Boolean(enabled);
-  await writeState(env, id, "ai-access", { enabled: on, monthlyLimit: limit, updatedAt: new Date().toISOString() });
-  return { ok: true, clientId: id, enabled: on, monthlyLimit: limit };
+  const on = Boolean(enabled);
+  await writeState(env, id, "ai-access", { enabled: on, updatedAt: new Date().toISOString() });
+  return { ok: true, clientId: id, enabled: on };
 }
 
-// Reserva 1 imagem do mês antes de gerar. Devolve false se não pode.
-export async function reserveAiImage(env, clientId) {
-  const access = await aiImagesAccess(env, clientId);
-  if (!access.enabled || access.usedMonth >= access.monthlyLimit) return false;
-  await writeState(env, clientId, "ai-usage", { month: thisMonth(), count: access.usedMonth + 1 });
+async function writeUsage(env, client, campaignCount, monthCount) {
+  const settings = campaignSettings(client);
+  await writeState(env, clientIdOf(client), "ai-usage", {
+    campaign: settings?.id || "", count: Math.max(0, campaignCount),
+    month: thisMonth(), monthCount: Math.max(0, monthCount)
+  });
+}
+
+// Reserva 1 imagem antes de gerar. Devolve false se não pode.
+export async function reserveAiImage(env, client) {
+  const access = await aiImagesAccess(env, client);
+  if (!access.enabled || access.usedCampaign >= access.campaignLimit || access.usedMonth >= access.monthCap) return false;
+  await writeUsage(env, client, access.usedCampaign + 1, access.usedMonth + 1);
   return true;
 }
 
 // Geração falhou: a imagem não conta.
-export async function refundAiImage(env, clientId) {
-  const access = await aiImagesAccess(env, clientId);
-  await writeState(env, clientId, "ai-usage", { month: thisMonth(), count: Math.max(0, access.usedMonth - 1) });
+export async function refundAiImage(env, client) {
+  const access = await aiImagesAccess(env, client);
+  await writeUsage(env, client, access.usedCampaign - 1, access.usedMonth - 1);
 }
 
 // O cliente pode usar IA agora? (escolheu IA, está liberado e tem saldo)
 export async function clientWantsAiImage(env, client) {
   const settings = campaignSettings(client);
   if (settings?.artSource !== "ai") return false;
-  const access = await aiImagesAccess(env, client.id);
-  return access.enabled && access.usedMonth < access.monthlyLimit;
+  const access = await aiImagesAccess(env, client);
+  return access.enabled && access.usedCampaign < access.campaignLimit && access.usedMonth < access.monthCap;
 }
 
 /* ---------- Artes prontas do cliente ---------- */
@@ -189,7 +202,7 @@ async function campaignView(env, client) {
   return {
     ok: true,
     settings: campaignSettings(client),
-    ai: await aiImagesAccess(env, client.id),
+    ai: await aiImagesAccess(env, client),
     art: art.map(item => ({ ...item, url: "/media/" + item.key })),
     artLeft: art.filter(item => !item.used).length
   };
@@ -224,13 +237,14 @@ export async function handleClientCampaignMaster(request, env, url, listClients)
         const id = String(client?.id || "");
         if (!id) continue;
         const settings = campaignSettings(client);
-        rows.push({ id, name: String(client.name || id), ...(await aiImagesAccess(env, id)), artSource: settings?.artSource || "" });
+        rows.push({ id, name: String(client.name || id), ...(await aiImagesAccess(env, client)), artSource: settings?.artSource || "" });
       }
-      return send({ ok: true, defaultLimit: AI_IMAGES_MONTHLY_LIMIT, clients: rows });
+      return send({ ok: true, monthCap: AI_IMAGES_MONTH_CAP, clients: rows });
     }
     if (request.method === "POST") {
       const body = await request.json().catch(() => ({}));
-      return send(await setAiImagesAccess(env, body.clientId, typeof body.enabled === "boolean" ? body.enabled : undefined, body.monthlyLimit));
+      if (typeof body.enabled !== "boolean") throw new Error("enabled_required");
+      return send(await setAiImagesAccess(env, body.clientId, body.enabled));
     }
   } catch (error) {
     return send({ ok: false, error: String(error?.message || error).slice(0, 80) }, 400);
