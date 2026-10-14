@@ -51,7 +51,7 @@
         <figure class="phone phone-small is-after">
           <div class="screen">
             <p class="when">Post novo hoje</p>
-            <div class="grid" data-posts="9"></div>
+            <div class="grid" data-posts="9" data-start="3"></div>
           </div>
           <figcaption>Com a Flow Arts</figcaption>
         </figure>
@@ -66,7 +66,7 @@
       <p class="hint">Arraste para o lado.</p>
     </div>
     <div class="strip" tabindex="0" aria-label="Galeria de posts">
-      <div class="strip-track" data-posts="8" data-big="1"></div>
+      <div class="strip-track" data-posts="8" data-start="4" data-big="1"></div>
     </div>
   </section>
 
@@ -174,13 +174,22 @@
 </footer>
 
 <script>
-// Posts do site: imagens reais geradas pelo Nexus (demo Café Brisa). Para trocar, edite a lista.
+// Posts do site: imagens reais geradas pelo Nexus (Flow Arts e demo Café Brisa). Para trocar, edite a lista.
 // Enquanto um arquivo não existe, aparece um bloco provisório no lugar.
 (function () {
   var POSTS = [
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1000/generated-fec642cd-3be1-4456-b2fe-38f916e49c24.jpg", alt: "Post de cafeteria: café com pão de queijo saindo do forno", tag: "cafe" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1400/generated-42a28287-86a7-44c0-bf45-343492cc77b6.jpg", alt: "Post de cafeteria: pão de queijo aberto ao lado de um café", tag: "cafe2" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1800/generated-bb0d7839-f373-4083-a96e-db96a558f43d.jpg", alt: "Post de cafeteria: cliente tomando café da manhã", tag: "cafe3" }
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1000/generated-fec642cd-3be1-4456-b2fe-38f916e49c24.jpg", alt: "Café com pão de queijo saindo do forno", tag: "" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1800/generated-c949c495-7010-4084-8103-4b7e3ee38cb8.jpg", alt: "Mesa de café com bolo, pão de queijo e celular", tag: "cafe" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900/generated-95e02ec9-2d37-4ea6-b7fd-da25eaed467c.jpg", alt: "Barista sorrindo e mostrando o celular", tag: "" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-13:1900-carousel-4/generated-7f4f81f4-4734-4d76-9474-cd188e976971.jpg", alt: "Post com o convite Comente QUERO", tag: "" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1400/generated-3eb4f456-3c77-4b74-85e7-73d3397d3c54.jpg", alt: "Café e doces numa mesa de madeira", tag: "" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1200/generated-5720abb3-f51f-469b-97a1-eb54c76477ab.jpg", alt: "Dois celulares mostrando fotos de produtos", tag: "" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900-carousel-4/generated-9e9bf15b-3e94-48c0-a029-9e72f52cd478.jpg", alt: "Dona de cafeteria sorrindo atrás do balcão", tag: "" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-11:1000/generated-1532f731-5418-40f2-b1b4-412a88a0d93a.jpg", alt: "Café da manhã com vista para o Pão de Açúcar", tag: "" },
+    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1000/generated-941d816b-ce4f-48a9-90c4-c9d62549eeeb.jpg", alt: "Cappuccino e pão de queijo perto da janela", tag: "" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-11:1900-carousel-3/generated-5eba9ec8-496e-4f32-af6c-d41d95686a37.jpg", alt: "Dona de negócio sorrindo na sua loja", tag: "salao" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900-carousel-3/generated-b13e9370-0822-41e4-b58b-8a79da202a2a.jpg", alt: "Balcão com doces e celular mostrando o feed", tag: "lanche" },
+    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-11:1200/generated-aeb0d8e4-6dd4-4094-b120-05f57b3bf82b.jpg", alt: "Consultora da Flow Arts com materiais da marca", tag: "" }
   ];
   function tile(post, big) {
     var box = document.createElement("div");
@@ -192,8 +201,8 @@
     return box;
   }
   document.querySelectorAll("[data-posts]").forEach(function (el) {
-    var n = Number(el.getAttribute("data-posts")), big = el.hasAttribute("data-big");
-    for (var i = 0; i < n; i++) el.appendChild(tile(POSTS[i % POSTS.length], big));
+    var n = Number(el.getAttribute("data-posts")), start = Number(el.getAttribute("data-start") || 0), big = el.hasAttribute("data-big");
+    for (var i = 0; i < n; i++) el.appendChild(tile(POSTS[(start + i) % POSTS.length], big));
   });
   document.querySelectorAll("[data-post]").forEach(function (el) {
     var tag = el.getAttribute("data-post");
