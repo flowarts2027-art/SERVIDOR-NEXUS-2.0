@@ -14,7 +14,7 @@ const FLOW_ARTS = Object.freeze({
   ]),
   offers: Object.freeze([
     "Instagram no Automático: 12 posts por mês feitos com IA (4 Reels, 4 carrosséis e 4 posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
-    "Site do seu negócio: R$ 497, pagamento único. Site de 1 página com fotos, serviços, horário, mapa e botão para o WhatsApp, feito para aparecer no Google e abrir bem no celular. Pronto em até 5 dias. Hospedagem inclusa no primeiro ano. O domínio .com.br fica por conta do cliente (cerca de R$ 40 por ano).",
+    "Site do seu negócio: R$ 497, pagamento único. Site de 1 página com fotos, serviços, horário, mapa e botão para o WhatsApp, feito para aparecer no Google e abrir bem no celular. Pronto em até 5 dias. Hospedagem e ajustes pequenos inclusos no primeiro ano; depois, R$ 29 por mês ou R$ 297 por ano. Tem contrato. O domínio .com.br fica por conta do cliente (cerca de R$ 40 por ano).",
     "Instagram que responde sozinho: R$ 197, pagamento único. Resposta automática no direct para quem comenta, levando a pessoa para o WhatsApp do negócio, e 10 posts prontos. Funcionando em até 2 dias.",
     "5 Reels com IA: R$ 147, pagamento único. Entrega em até 5 dias.",
     "10 posts prontos: R$ 97, pagamento único. Entrega em 24 horas.",

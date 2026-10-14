@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 08h29–08h40 BRT — Google depois, contrato do site (branch feat/manutencao-site, não publicada)
+- fix/cacador-osm-remark publicado (d8fa73c, deploy ok) com OK do Rodrigo.
+- Decisão do Rodrigo: paga os R$ 150 do Google quando fechar o primeiro cliente.
+- Manutenção do site depois do 1º ano: R$ 29/mês ou R$ 297/ano (sugestão minha, aprovada pelo Rodrigo: "pode sim").
+- Doc novo "Contrato de criação de site Flow Arts" (Claude Docs, https://claude.ai/artifact/GNmuf47161iGKhmxgzXTF7): partes, serviço, R$ 497 (50% na assinatura, 50% na entrega — escolha minha, Rodrigo pode mudar), prazo de 5 dias contado do envio do material, 2 rodadas de ajustes, domínio no nome do cliente, 1º ano incluso, manutenção, aviso de 15 dias, cancelamento, LGPD, foro do Rio. Marcado para revisão de advogado/contador. Falta: nome do responsável da Flow Arts.
+- Doc "Planos e preços" atualizado com a manutenção. whatsapp-knowledge.js: manutenção e "tem contrato".
+
 ## 2026-10-14 08h22–08h35 BRT — teste real da busca pelo navegador
 - fix/cacador-osm-navegador publicado (6d8266d, deploy ok) com OK do Rodrigo.
 - Teste no Master (Claude no Chrome do Rodrigo, sessão do Master): 3 buscas terminaram com "0 empresas novas", sem aviso de falha. Logo depois, o Overpass principal deu 504 até para uma consulta mínima, e o private.coffee não respondeu: serviço público fora do ar nesse horário. Hipótese: as 3 buscas voltaram 200 com lista vazia e aviso de erro (remark).
