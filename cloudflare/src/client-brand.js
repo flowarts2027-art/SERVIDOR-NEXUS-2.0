@@ -48,7 +48,8 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
   "primeiro-teste": Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
-    profileVersion: "2026-10-11g",
+    // 2026-10-14: imagens já nascem em 4:5 e Reel virou post; refaz rascunhos antigos.
+    profileVersion: "2026-10-14-45",
     // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
     niche: "Agência de marketing e automação com IA",
