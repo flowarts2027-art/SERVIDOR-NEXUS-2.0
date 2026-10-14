@@ -1,5 +1,10 @@
 # Próximas ações
 
+## Ideia: caçador de leads (conversa 2026-10-14 07h15 BRT, nada feito ainda)
+- Pedido do Rodrigo: repetir um projeto antigo do n8n. Buscar empresas no Google Maps, montar uma lista de leads, a IA conversa, oferece os planos, marca reunião e passa para o WhatsApp dele. De preferência grátis.
+- Resposta dada: dá para fazer dentro do próprio Nexus, sem n8n. A busca usa a API oficial do Google (tem cota grátis), não raspagem. O primeiro contato frio pelo WhatsApp Cloud API vai contra a regra da Meta (exige opt-in e modelo pago) e pode bloquear o número. Proposta: o Nexus monta a lista e o rascunho; o Rodrigo manda a primeira mensagem; quando o lead responde, a atendente IA continua, oferece plano, marca reunião e avisa o Rodrigo.
+- Esperando a escolha do Rodrigo.
+
 ## Visitas do site (2026-10-14)
 - No ar desde 22c5cea. Conferir: abrir flowarts.com.br e depois Master → aba Site; deve contar 1 visita hoje. Se ficar em zero, olhar POST /api/site/hit no navegador.
 - Talvez citar o contador em privacidade.html (só números, sem dados pessoais). Perguntar ao Rodrigo antes.
