@@ -15,6 +15,7 @@ WA = "5521964816185"
 SITE = "https://flowarts.com.br"
 
 PRECOS = [
+    ("Site do seu negócio", "R$ 497, pagamento único. Site de 1 página com fotos, serviços, mapa e botão para o seu WhatsApp, feito para aparecer no Google. Pronto em até 5 dias."),
     ("Instagram que responde sozinho", "R$ 197, pagamento único. Resposta automática no direct para quem comenta, a pessoa segue o seu perfil e vai direto para o seu WhatsApp, 10 posts prontos com imagens e legendas. Tudo funcionando em até 2 dias."),
     ("5 Reels com IA", "R$ 147. Vídeos curtos para o seu negócio aparecer para quem ainda não te segue."),
     ("10 posts prontos", "R$ 97. Imagens e legendas no estilo da sua marca, entregues em 24h."),

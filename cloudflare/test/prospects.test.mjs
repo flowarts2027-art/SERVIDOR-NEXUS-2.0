@@ -107,3 +107,12 @@ test("painel tem o caçador e a rota exige login do Master", () => {
   const worker = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(worker, /\/api\/master\/prospects[\s\S]{0,200}resolveMasterSession/);
 });
+
+test("pacote de site aparece no site, nas páginas de nicho e no robô com o mesmo preço", async () => {
+  const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
+  for (const page of ["site.html", "marketing-para-cafeteria.html", "marketing-para-salao-de-beleza.html", "marketing-para-lanchonete.html"]) {
+    assert.match(read(page), /Site do seu negócio[\s\S]{0,120}R\$ 497/, page);
+  }
+  const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
+  assert.match(knowledgePrompt("primeiro-teste"), /Site do seu negócio: R\$ 497/);
+});

@@ -153,7 +153,9 @@ export function firstMessage(p) {
   lines.push(p.instagram
     ? "Notei que o Instagram é o principal canal de vocês na internet."
     : "Notei que vocês ainda não têm um site.");
-  lines.push(`Eu cuido do Instagram de ${niche.plural}: posts prontos toda semana e resposta para quem chama. Fiz uma página de exemplo para você ver: ${SITE}${niche.page}`);
+  lines.push(p.instagram
+    ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${niche.page}`
+    : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${niche.page}`);
   lines.push(`Posso te mostrar como ficaria para a ${p.name}?`);
   lines.push("Se preferir não receber mensagens, é só me avisar.");
   return lines.join("\n\n");
