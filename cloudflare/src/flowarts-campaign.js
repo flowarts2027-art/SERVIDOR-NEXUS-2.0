@@ -112,10 +112,13 @@ function campaignDayIndex(date = new Date()) {
   return ((local.getDate() - 1) % 30 + 30) % 30;
 }
 
-// reelsEnabled=false enquanto o render de Reels não tiver token do GitHub:
-// o Reel vira post de imagem, mantendo tema e gancho (nunca fica travado).
+// Decisão do Rodrigo (14/10): "se não der para fazer vídeo, não faça".
+// O Reel atual é 1 imagem com zoom e parece foto. Enquanto não houver vídeo
+// de verdade, todo Reel vira post de imagem 4:5, mantendo tema e gancho.
+export const FLOWARTS_REAL_VIDEO_REELS = false;
+
 export function flowArtsCampaignForDay(date = new Date(), options = {}) {
-  const reelsEnabled = options.reelsEnabled !== false;
+  const reelsEnabled = FLOWARTS_REAL_VIDEO_REELS && options.reelsEnabled !== false;
   const dayIndex = campaignDayIndex(date);
   return [DAYS[dayIndex * 2], DAYS[dayIndex * 2 + 1]].map((row, index) => {
     const format = row[0] === "reel" && !reelsEnabled ? "post" : row[0];
@@ -202,7 +205,7 @@ export function campaignCalendar(clientId, month, now = new Date()) {
     const date = new Date(Date.UTC(year, mon - 1, day, 15));
     const items = flowArtsCampaignForDay(date).map((item, index) => ({
       time: strategy.recommendedPostTimes[index] || "",
-      format: item.plannedFormat,
+      format: item.format,
       theme: item.theme,
       goal: GOAL_LABEL[item.goal] || item.goal,
       week: item.campaignWeek,

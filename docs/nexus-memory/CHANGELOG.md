@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 18h15–18h35 BRT — Reels parecendo foto e frases cortadas no feed (branch fix/reel-movimento-feed-45, não publicada)
+## 2026-10-14 18h15–18h40 BRT — Reels parecendo foto e frases cortadas no feed (branch fix/reel-movimento-feed-45, não publicada)
 - Rodrigo: Reels da Flow Arts parecem foto parada; frases dos posts do feed ficam cortadas (pediu 4:5).
 - Causa Reel: social-format-render.yml fazia zoom de só 6% em 10 s (on*0.0002), sem suavização: quase invisível. O render no GitHub funciona (3 runs ok em 12–14/10).
 - Correção Reel: scripts/social/render_reel.sh — zoom 10% com subida leve, curva suave, imagem ampliada 2x (sem tremer), entrada e saída em fade. Medido num teste: ~70% mais movimento. Zoom limitado a 10% para não cortar a frase escrita na imagem.
@@ -8,6 +8,8 @@
 - Correção feed: media-generation.js gera já no formato final (gpt-image-2 aceita tamanho livre): 1024x1280 (4:5) no feed/carrossel e 1008x1792 (9:16) no Reel; depois só amplia para 1080x1350/1080x1920, sem corte. Prompt: frase com 10% de margem nas laterais e nada nos 20% de baixo (botões do Instagram).
 - 350 testes ok. Não testado com imagem real da OpenAI nem Reel real: conferir no próximo post depois de publicar. Posts já publicados não mudam.
 - Limite honesto: o Reel continua sendo 1 imagem com movimento. Para parecer vídeo de verdade: várias cenas por Reel (mais imagens = mais custo) ou vídeo por IA (custo maior).
+- Rodrigo viu a comparação e não notou diferença. Ofereci 3 cenas por Reel ou vídeo por IA. Decisão dele (18h21): "se não der para fazer vídeo, não faça".
+- flowarts-campaign.js: FLOWARTS_REAL_VIDEO_REELS=false. Todo Reel da campanha vira post de imagem 4:5 (mesmo tema e gancho); o calendário do painel mostra "Post". 351 testes ok. O novo movimento do Reel fica no código, mas não é usado pela Flow Arts.
 
 ## 2026-10-14 18h07–18h12 BRT — Busca do cliente sem resultado: Google ainda não ativo (publicado 2bff639 às 18h10 com OK do Rodrigo; deploy ok)
 - Rodrigo testou o Quatree Dog: não apareceu nada; ele mesmo disse que o serviço de busca (Google) ainda não está ativo. Pendência já conhecida: completar R$ 120 de crédito, ativar Places API (New) e salvar a chave no Master.

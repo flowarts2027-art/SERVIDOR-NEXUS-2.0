@@ -29,6 +29,15 @@ test("sem render de Reels, o Reel vira post de imagem", () => {
   assert.equal(items[0].format, "post");
 });
 
+test("sem vídeo de verdade, nenhum Reel sai: vira post de imagem 4:5", () => {
+  for (let day = 1; day <= 30; day++) {
+    for (const item of flowArtsCampaignForDay(new Date(Date.UTC(2026, 9, day, 15)), { reelsEnabled: true })) {
+      assert.notEqual(item.format, "reel");
+      if (item.plannedFormat === "reel") assert.match(item.visualBrief, /^Portrait 4:5/);
+    }
+  }
+});
+
 test("conversão usa o CTA EXEMPLO", () => {
   const conv = FLOW_ARTS_CAMPAIGN_DAYS.findIndex(row => row[3] === "conversão");
   const items = flowArtsCampaignForDay(new Date(Date.UTC(2026, 9, Math.floor(conv / 2) + 1, 15)));
