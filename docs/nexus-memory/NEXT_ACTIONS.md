@@ -8,6 +8,9 @@
 
 ## Verificação da empresa na Meta (2026-10-14 08h52)
 - Status: "Mais informações são necessárias" (empresa "Rodrigo Carvalho", ID 2082464929068014). O documento enviado para provar o telefone +55 21 99855-9965 não foi aceito: precisa mostrar razão social E esse telefone (contrato, alvará, extrato/carta bancária, conta de água/luz/gás/telefone).
+- 09h00–09h10: Cartão CNPJ (12/10) mostra telefone ERRADO na Receita: (21) 9985-5996 (falta um dígito). Nome empresarial: 65.299.616 RODRIGO ALEXANDRE DE CARVALHO. Conta de luz do Rodrigo não mostra telefone. Rodrigo vai usar o WhatsApp só para a própria empresa.
+- Diagnóstico ao vivo (09h07): número 1357206410813430 CONNECTED, account_mode LIVE, TIER_250, nome "Flow Arts" AVAILABLE_WITHOUT_REVIEW. Mensagens recebidas chegam (última "Bom dia" 07h27). Permissões do app em acesso padrão ("Pronto para teste"). "Verificação do acesso" é de provedor de tecnologia: não se aplica. Recomendado NÃO excluir o app.
+- Teste de envio com OK do Rodrigo (09h08, para 5521964816185): de novo "whatsapp_http_400: OAuthException | code=100 | Authorization Error". Leitura do número com o mesmo token funciona. Hipótese nova: o token não tem a permissão whatsapp_business_messaging (só management), ou o usuário do sistema não tem o número com controle total. Obs.: o envio manual pausou o robô nessa conversa (bot_paused=1).
 - Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
 
 ## Captador de clientes (ferramenta R$ 97/mês)
