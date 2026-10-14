@@ -129,6 +129,8 @@ figure{margin:0}
 .more b{font-family:Unbounded,sans-serif;color:var(--bright);font-size:1.25rem}
 .more a{font-weight:700;text-decoration:none}
 
+.plan{margin-bottom:28px;border-color:var(--glow);background:radial-gradient(120% 120% at 100% 0%,rgba(73,163,255,.30),transparent 55%),var(--deep)}
+.plan .price small{display:block;margin-top:4px}
 /* 7. Perguntas */
 .faq{display:grid;gap:10px;max-width:780px}
 .faq details{background:var(--deep);border:1px solid var(--line);border-radius:16px;padding:0 20px}
