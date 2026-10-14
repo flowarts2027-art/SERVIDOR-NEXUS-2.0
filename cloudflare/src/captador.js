@@ -8,7 +8,9 @@
 
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces } from "./prospects.js";
 
-export const CAPTADOR_DAILY_LIMIT = 10;
+// Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
+export const CAPTADOR_MONTHLY_LIMIT = 100;
+export const CAPTADOR_MAX_LIMIT = 3000;
 export const CAPTADOR_PRICE = "R$ 97 por mês";
 
 // `query` é o texto da busca no Google ("<query> em <cidade>").
@@ -38,7 +40,7 @@ export const CAPTADOR_NICHES = {
   material: { label: "Material de construção", query: "loja de material de construção" }
 };
 
-const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+const thisMonth = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()).slice(0, 7);
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 const GOOGLE_ID = /^[A-Za-z0-9_-]{10,300}$/;
 
@@ -87,15 +89,35 @@ async function writeState(env, clientId, key, value) {
   ).bind(key, clientId, JSON.stringify(value)).run();
 }
 
-export async function captadorEnabled(env, clientId) {
-  return (await readState(env, String(clientId || ""), "access", { enabled: false })).enabled === true;
+async function readAccess(env, clientId) {
+  const access = await readState(env, String(clientId || ""), "access", { enabled: false });
+  const limit = Math.round(Number(access.monthlyLimit));
+  return { enabled: access.enabled === true, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT };
 }
 
-export async function setCaptadorAccess(env, clientId, enabled) {
+export async function captadorEnabled(env, clientId) {
+  return (await readAccess(env, clientId)).enabled;
+}
+
+// Buscas já feitas pelo cliente neste mês.
+export async function captadorUsage(env, clientId) {
+  const usage = await readState(env, String(clientId || ""), "usage", { month: "", count: 0 });
+  return usage.month === thisMonth() ? Number(usage.count || 0) : 0;
+}
+
+// Liga/desliga e, se vier, muda o limite do mês daquele cliente.
+export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit) {
   const id = String(clientId || "").trim();
   if (!id) throw new Error("client_id_required");
-  await writeState(env, id, "access", { enabled: Boolean(enabled), updatedAt: new Date().toISOString() });
-  return { ok: true, clientId: id, enabled: Boolean(enabled) };
+  const current = await readAccess(env, id);
+  let limit = current.monthlyLimit;
+  if (monthlyLimit !== undefined && monthlyLimit !== null && monthlyLimit !== "") {
+    limit = Math.round(Number(monthlyLimit));
+    if (!Number.isFinite(limit) || limit < 0 || limit > CAPTADOR_MAX_LIMIT) throw new Error("limit_invalid");
+  }
+  const on = enabled === undefined ? current.enabled : Boolean(enabled);
+  await writeState(env, id, "access", { enabled: on, monthlyLimit: limit, updatedAt: new Date().toISOString() });
+  return { ok: true, clientId: id, enabled: on, monthlyLimit: limit };
 }
 
 export function defaultConfig(client = {}) {
@@ -180,10 +202,10 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
   const key = await placesKey(env);
   if (!key) throw new Error("google_unavailable");
-  const usage = await readState(env, client.id, "usage", { day: "", count: 0 });
-  const used = usage.day === today() ? Number(usage.count || 0) : 0;
-  if (used >= CAPTADOR_DAILY_LIMIT) throw new Error("daily_limit");
-  await writeState(env, client.id, "usage", { day: today(), count: used + 1 });
+  const { monthlyLimit } = await readAccess(env, client.id);
+  const used = await captadorUsage(env, client.id);
+  if (used >= monthlyLimit) throw new Error("monthly_limit");
+  await writeState(env, client.id, "usage", { month: thisMonth(), count: used + 1 });
   let places;
   try {
     places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
@@ -198,7 +220,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
     items.push(withMessage(config, { ...lead, status: "novo" }));
   }
   items.sort((a, b) => b.score - a.score);
-  return { ok: true, found: places.length, items, usedToday: used + 1, dailyLimit: CAPTADOR_DAILY_LIMIT };
+  return { ok: true, found: places.length, items, usedMonth: used + 1, monthlyLimit };
 }
 
 // Quem o cliente chamou no WhatsApp vira contato dele (nome, telefone, cidade).
@@ -245,10 +267,9 @@ export async function captadorView(env, client, status = "enviado") {
   }
   counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM captador_skips WHERE client_id=?1").bind(client.id).first())?.n || 0);
   counts.novo = 0; // a lista de novos fica só na tela
-  const usage = await readState(env, client.id, "usage", { day: "", count: 0 });
   return {
     ok: true, enabled: true, ready: Boolean(await placesKey(env)), config, counts,
-    usedToday: usage.day === today() ? Number(usage.count || 0) : 0, dailyLimit: CAPTADOR_DAILY_LIMIT,
+    usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
     items: rows.map(row => withMessage(config, row))
   };
@@ -275,7 +296,7 @@ const send = (data, status = 200) => new Response(JSON.stringify(data), {
 
 const MESSAGES = {
   captador_disabled: "O Captador de clientes não está ativo na sua conta.",
-  daily_limit: "Você chegou no limite de buscas de hoje. Amanhã libera de novo.",
+  monthly_limit: "Você usou todas as buscas deste mês. Para buscar mais, fale com a Flow Arts.",
   city_invalid: "Escreva a cidade e o estado, por exemplo: Uberlândia MG.",
   niche_invalid: "Escolha um tipo de negócio da lista.",
   google_unavailable: "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.",
@@ -328,13 +349,14 @@ export async function handleCaptadorMaster(request, env, url, listClients) {
       for (const client of clients) {
         const id = String(client?.id || "");
         if (!id) continue;
-        rows.push({ id, name: String(client.name || id), enabled: await captadorEnabled(env, id) });
+        const access = await readAccess(env, id);
+        rows.push({ id, name: String(client.name || id), enabled: access.enabled, monthlyLimit: access.monthlyLimit, usedMonth: await captadorUsage(env, id) });
       }
-      return send({ ok: true, price: CAPTADOR_PRICE, clients: rows });
+      return send({ ok: true, price: CAPTADOR_PRICE, defaultLimit: CAPTADOR_MONTHLY_LIMIT, clients: rows });
     }
     if (request.method === "POST") {
       const body = await request.json().catch(() => ({}));
-      return send(await setCaptadorAccess(env, body.clientId, body.enabled === true));
+      return send(await setCaptadorAccess(env, body.clientId, typeof body.enabled === "boolean" ? body.enabled : undefined, body.monthlyLimit));
     }
   } catch (error) {
     return send({ ok: false, error: String(error?.message || error).slice(0, 80) }, 400);

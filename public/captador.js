@@ -55,7 +55,7 @@
   function usageLine() {
     if (note) return note;
     if (!data.ready) return "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.";
-    return `Fonte: Google Maps. Buscas hoje: ${Number(data.usedToday || 0)} de ${Number(data.dailyLimit || 10)}`;
+    return `Fonte: Google Maps. Buscas este mês: ${Number(data.usedMonth || 0)} de ${Number(data.monthlyLimit || 0)}`;
   }
 
   function searchForm() {
@@ -155,7 +155,7 @@
         for (const item of result.items || []) if (!seen.has(item.id)) { seen.add(item.id); found.push(item); added++; }
         found.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
         status = "novo";
-        note = `${added} empresas novas na lista. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.`;
+        note = `${added} empresas novas na lista. Buscas este mês: ${result.usedMonth} de ${result.monthlyLimit}.`;
         await load();
       } catch (error) {
         alertLine(error.message);

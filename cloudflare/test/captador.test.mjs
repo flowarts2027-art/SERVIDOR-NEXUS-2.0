@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import {
   handleCaptadorPortal, handleCaptadorMaster, captadorLead, captadorMessage, CAPTADOR_NICHES,
-  setCaptadorAccess, CAPTADOR_DAILY_LIMIT
+  setCaptadorAccess, captadorEnabled, CAPTADOR_MONTHLY_LIMIT
 } from "../src/captador.js";
 
 function fakeEnv(withKey = true) {
@@ -94,10 +94,21 @@ test("busca do cliente no Google: lista na hora, guarda só quem ele chamou, sep
   await call(env, ana, "/api/portal/captador/ChIJagro000001/status", { status: "novo" });
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM captador_leads").get().n, 0, "não cheguei a mandar apaga o contato");
 
-  db.prepare("UPDATE nexus_state SET value_json=? WHERE namespace='captador' AND item_key='usage' AND client_id=?")
-    .run(JSON.stringify({ day: new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()), count: CAPTADOR_DAILY_LIMIT }), ana.id);
+  const used = await call(env, ana, "/api/portal/captador?status=enviado");
+  assert.equal(used.data.monthlyLimit, CAPTADOR_MONTHLY_LIMIT);
+  assert.equal(used.data.usedMonth, 2);
+  assert.equal(CAPTADOR_MONTHLY_LIMIT, 100);
+
+  // Limite do mês por cliente: Rodrigo baixa para 2 e a próxima busca é recusada.
+  await setCaptadorAccess(env, ana.id, undefined, 2);
   const limit = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" });
-  assert.equal(limit.data.error, "daily_limit");
+  assert.equal(limit.data.error, "monthly_limit");
+  assert.match(limit.data.message, /deste mês/);
+  const bob = await call(env, beto, "/api/portal/captador/search", { niche: "pet", city: "Belo Horizonte MG" });
+  assert.equal(bob.status, 200, "o limite de um cliente não trava o outro");
+  await setCaptadorAccess(env, ana.id, undefined, 50);
+  assert.equal((await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" })).status, 200, "aumentar libera de novo");
+  assert.equal(await captadorEnabled(env, ana.id), true, "mudar o limite não desliga");
 });
 
 test("sem chave do Google a busca avisa e não gasta", async () => {
@@ -123,6 +134,12 @@ test("Master liga o Captador por cliente; portal e telas existem", async () => {
   const get = new Request("https://x/api/master/captador/access");
   const data = await (await handleCaptadorMaster(get, env, new URL(get.url), listClients)).json();
   assert.deepEqual(data.clients.map(c => [c.id, c.enabled]), [[ana.id, true], [beto.id, false]]);
+  assert.deepEqual(data.clients.map(c => c.monthlyLimit), [100, 100]);
+  const change = new Request("https://x/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: beto.id, monthlyLimit: 300 }) });
+  assert.deepEqual(await (await handleCaptadorMaster(change, env, new URL(change.url), listClients)).json(),
+    { ok: true, clientId: beto.id, enabled: false, monthlyLimit: 300 });
+  const bad = new Request("https://x/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: beto.id, monthlyLimit: -5 }) });
+  assert.equal((await handleCaptadorMaster(bad, env, new URL(bad.url), listClients)).status, 400);
 
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   assert.match(read("portal.html"), /captador\.js/);
