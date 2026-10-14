@@ -119,3 +119,10 @@ test("aba Campanha no painel, Master com liberação da IA e agente usa a campan
   assert.match(runtime, /campaignPostsPerDay\(client\)/);
   assert.match(runtime, /refundAiImage/);
 });
+
+test("tela Clientes do Master liga a imagem por IA na coluna IA do cliente", () => {
+  const app = fs.readFileSync(new URL("../../public/app.js", import.meta.url), "utf8");
+  assert.doesNotMatch(app, /imagem IA paga desativada/);
+  assert.match(app, /data-ai-image-toggle/);
+  assert.match(app, /\/api\/master\/ai-images\/access/);
+});

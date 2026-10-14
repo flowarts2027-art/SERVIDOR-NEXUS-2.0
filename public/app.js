@@ -71,7 +71,10 @@ function render() {
   $("#clients-table").innerHTML = clients.map(client => {
     const ragnar = client.id === "ragnar-one";
     const mode = ragnar ? "Conta própria" : "NEXUS GERENCIADA";
-    const extra = !ragnar ? `<br><small>imagem IA paga desativada</small>` : "";
+    // Imagem por IA: Flow Arts sempre tem; os outros clientes, você liga aqui (fillAiImageCells).
+    const extra = ragnar ? "" : client.id === "primeiro-teste"
+      ? `<br><small>imagem por IA: sempre ligada</small>`
+      : `<div class="ai-image-cell" data-ai-image-cell="${escapeHtml(client.id)}"><small>imagem por IA: carregando…</small></div>`;
     const protect = ragnar
       ? `<span class="protected-client">PILOTO PROTEGIDO</span>`
       : client.ownerAccount
@@ -85,7 +88,33 @@ function render() {
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();
+  fillAiImageCells();
 }
+
+// Coluna "IA do cliente": liga/desliga a imagem por IA e mostra o uso do mês.
+async function fillAiImageCells() {
+  const cells = [...document.querySelectorAll("[data-ai-image-cell]")];
+  if (!cells.length) return;
+  let rows = [];
+  try { rows = (await api("/api/master/ai-images/access")).clients || []; }
+  catch { cells.forEach(cell => { cell.innerHTML = "<small>imagem por IA: não consegui carregar</small>"; }); return; }
+  for (const cell of cells) {
+    const row = rows.find(item => item.id === cell.dataset.aiImageCell) || { enabled: false, usedMonth: 0, monthlyLimit: 30 };
+    cell.innerHTML = `<label class="ai-image-toggle"><input type="checkbox" data-ai-image-toggle="${escapeHtml(cell.dataset.aiImageCell)}" ${row.enabled ? "checked" : ""}> Imagem por IA</label>
+      <small>${row.enabled ? `Ligada · usou ${Number(row.usedMonth || 0)} de ${Number(row.monthlyLimit || 0)} no mês` : "Desligada"}</small>`;
+  }
+}
+
+document.addEventListener("change", async event => {
+  const input = event.target.closest?.("[data-ai-image-toggle]");
+  if (!input) return;
+  input.disabled = true;
+  try {
+    await api("/api/master/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.aiImageToggle, enabled: input.checked }) });
+  } catch { input.checked = !input.checked; alert("Não consegui mudar a imagem por IA. Tente de novo."); }
+  input.disabled = false;
+  fillAiImageCells();
+});
 
 function renderAgentProfiles() {
   const root = $("#master-agent-profiles");

@@ -246,3 +246,6 @@
 .wa-quick + .wa-form{border-top:0}
 .prospect-actions .primary:disabled{opacity:.45;cursor:not-allowed}
 .prospect-list>p{grid-column:1/-1}
+.ai-image-cell{margin-top:6px;display:grid;gap:4px}
+.ai-image-toggle{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;cursor:pointer;min-height:32px}
+.ai-image-toggle input{width:20px;height:20px;margin:0}
