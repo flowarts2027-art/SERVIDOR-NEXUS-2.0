@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 09h45–10h00 BRT — ajustes finais do robô (branch feat/robo-planos-contrato, não publicada)
+- whatsapp-knowledge.js: robô manda o link https://flowarts.com.br/#pacotes quando perguntam preço; links das páginas de nicho como exemplo de site; contrato e Pix só pelo Rodrigo (quer fechar → needsHuman).
+- public/contrato-site.html (noindex, fora do robots): contrato do site para o cliente ler/imprimir, igual ao doc, com o nome do responsável (Rodrigo Alexandre de Carvalho, do Cartão CNPJ) e a cláusula "concordância por escrito no WhatsApp vale como aceite" (nova, também no doc).
+- Master → WhatsApp: botões "Planos e preços" e "Enviar contrato do site" preenchem a caixa de resposta; o Rodrigo confere e aperta Enviar (nada sai sozinho).
+- Doc do contrato atualizado. 345 testes ok. Contrato ainda sem revisão de advogado/contador.
+
 ## 2026-10-14 09h22 BRT — robô do WhatsApp respondeu de verdade
 - Prova: mensagem do Rodrigo 'OI, bom dia' (12:21:59 UTC) e resposta automática do Nexus (12:22:04 UTC, status sent_auto). Número +55 21 99855-9965, app Atendente Flow Arts, sem verificação da empresa (limite 250 conversas iniciadas pela empresa/24 h).
 - O que destravou: Rodrigo gerou o token na tela da Meta 'Configuração da produção → Enviar mensagem'. Branch fix/whatsapp-versao-graph não publicada.

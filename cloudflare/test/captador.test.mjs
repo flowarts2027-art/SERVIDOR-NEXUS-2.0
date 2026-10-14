@@ -116,3 +116,18 @@ test("Captador à venda com o mesmo preço no site, nas páginas de nicho e no r
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
   assert.match(knowledgePrompt("primeiro-teste"), /Captador de clientes: R\$ 97 por mês/);
 });
+
+test("robô manda planos e o contrato só sai pelo Rodrigo", async () => {
+  const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
+  const contract = read("contrato-site.html");
+  assert.match(contract, /noindex/);
+  assert.match(contract, /R\$ 497,00/);
+  assert.match(contract, /R\$ 29,00 por mês ou R\$ 297,00 por ano/);
+  assert.match(read("robots.txt"), /Disallow: \/contrato-site/);
+  assert.match(read("whatsapp-inbox.js"), /data-wa-quick|QUICK/);
+  assert.match(read("index.html"), /data-wa-quick="contrato"/);
+  const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
+  const prompt = knowledgePrompt("primeiro-teste");
+  assert.match(prompt, /flowarts\.com\.br\/#pacotes/);
+  assert.match(prompt, /Quem envia o contrato e o Pix é sempre o Rodrigo/);
+});

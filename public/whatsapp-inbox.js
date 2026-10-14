@@ -184,6 +184,20 @@
     renderList();
   });
   $("#wa-bot-toggle").addEventListener("click", () => setBot(Number(wa.contact?.bot_paused) !== 1));
+  // Respostas prontas: preenchem a caixa; o Rodrigo confere e aperta Enviar.
+  const QUICK = {
+    planos: "Aqui estão todos os planos e preços da Flow Arts: https://flowarts.com.br/#pacotes\n\nSe me contar qual é o seu negócio, eu te digo qual plano combina mais com você.",
+    contrato: "Que bom que você quer fechar o site! Este é o contrato para você ler com calma: https://flowarts.com.br/contrato-site\n\nSe estiver tudo certo, me responda \"de acordo\" que eu te mando o Pix da primeira parte (R$ 248,50). O prazo de até 5 dias começa quando você me enviar fotos, logo, serviços, horário e endereço."
+  };
+  document.addEventListener("click", event => {
+    const quick = event.target.closest?.("[data-wa-quick]");
+    if (!quick) return;
+    const box = $("#wa-text");
+    box.value = QUICK[quick.dataset.waQuick] || "";
+    box.focus();
+    $("#wa-form-msg").textContent = "Confira o texto e aperte Enviar.";
+  });
+
   $("#wa-form").addEventListener("submit", send);
   $("#wa-text").addEventListener("keydown", event => {
     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) $("#wa-form").requestSubmit();

@@ -10,7 +10,10 @@ const FLOW_ARTS = Object.freeze({
     "Atende pequenos negócios: cafés, salões, lojas, restaurantes e prestadores de serviço.",
     "Problema que resolve: o dono não tem tempo, posta sem constância e o Instagram não traz cliente.",
     "Como funciona: a IA produz os posts e o dono só aprova num painel. Nada é publicado sem a aprovação do cliente.",
-    "A Flow Arts faz um exemplo grátis para o negócio antes da pessoa contratar."
+    "A Flow Arts faz um exemplo grátis para o negócio antes da pessoa contratar.",
+    "Todos os planos e preços estão em https://flowarts.com.br/#pacotes . Quando a pessoa perguntar preço, planos ou pacotes, responda o principal e mande esse link.",
+    "Quem tem negócio sem site pode ver um exemplo de página em https://flowarts.com.br/marketing-para-cafeteria , https://flowarts.com.br/marketing-para-salao-de-beleza ou https://flowarts.com.br/marketing-para-lanchonete .",
+    "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo: quando a pessoa quiser fechar, diga que o Rodrigo vai mandar o contrato e marque needsHuman=true."
   ]),
   offers: Object.freeze([
     "Instagram no Automático: 12 posts por mês feitos com IA (4 Reels, 4 carrosséis e 4 posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",

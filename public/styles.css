@@ -236,3 +236,6 @@
 .captador-row small{color:var(--muted);font-size:11px;margin-top:2px}
 .captador-row em{font-style:normal;font-size:11px;color:var(--muted)}
 .captador-row input:checked~em{color:var(--green2)}
+.wa-quick{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line);margin-bottom:-4px}
+.wa-quick .ghost{font-size:12px;min-height:38px}
+.wa-quick + .wa-form{border-top:0}

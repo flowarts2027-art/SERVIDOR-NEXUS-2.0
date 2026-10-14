@@ -7,5 +7,6 @@ Disallow: /master
 Disallow: /b/
 Disallow: /brinde
 Disallow: /downloads/
+Disallow: /contrato-site
 
 Sitemap: https://flowarts.com.br/sitemap.xml

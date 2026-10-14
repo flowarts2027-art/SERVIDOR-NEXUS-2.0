@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=26">
+  <link rel="stylesheet" href="/styles.css?v=27">
 </head>
 <body>
   <div class="shell">
@@ -335,6 +335,10 @@
               </div>
               <p class="wa-handoff" id="wa-handoff" hidden>A IA chamou você nesta conversa. O robô está pausado aqui até você religar.</p>
               <div id="wa-thread" class="wa-thread"></div>
+              <div class="wa-quick" aria-label="Respostas prontas">
+                <button type="button" class="ghost" data-wa-quick="planos">Planos e preços</button>
+                <button type="button" class="ghost" data-wa-quick="contrato">Enviar contrato do site</button>
+              </div>
               <form id="wa-form" class="wa-form">
                 <textarea id="wa-text" rows="2" maxlength="4096" placeholder="Escreva sua resposta… (o robô pausa nesta conversa)"></textarea>
                 <button class="primary" type="submit">Enviar</button>
@@ -435,7 +439,7 @@
     </form>
   </dialog>
   <script src="/app.js?v=42" defer></script>
-  <script src="/whatsapp-inbox.js?v=2" defer></script>
+  <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=5" defer></script>
 </body>
