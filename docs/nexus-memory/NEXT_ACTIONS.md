@@ -319,3 +319,9 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 2. Depois de aprovada: Publicar o app Flow Arts WhatsApp; mandar "oi" do celular para o número de teste; conferir resposta do robô e a conversa no Master.
 3. Token permanente (usuário do sistema) antes de vencer o token de teste de 24 h; chip pré-pago como número de produção.
 4. Com OK: trecho de WhatsApp/IA na Política de Privacidade; correção do painel vazio na aba WhatsApp.
+
+## 2026-10-14 — WhatsApp: robô recebe mas não consegue responder
+1. Na Meta, Etapa 2 › "Enviar mensagem" do +55 21 99855-9965 para o celular do Rodrigo e ler o erro da tela.
+2. Conferir o número `to` usado pelo Nexus (wa_id do webhook) e testar envio manual pela aba WhatsApp do Master.
+3. Se for o modo desenvolvimento: aguardar a verificação da empresa (em processamento) e publicar o app.
+4. Conferir a demo do Café Brisa (legendas sem frases de filme após o Hook Lab).
