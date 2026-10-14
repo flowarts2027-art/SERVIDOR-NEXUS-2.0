@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 19h15–19h35 BRT — Limite de IA acompanha a campanha (branch fix/limite-ia-campanha, não publicada)
+## 2026-10-14 19h15–19h35 BRT — Limite de IA acompanha a campanha (publicado 3faf9e0 às 19h19 com OK do Rodrigo; deploy ok; campanha.js v2 conferido no ar)
 - Rodrigo: campanha de 30 dias x 2 posts = 60 imagens, mas o limite era 30/mês. Escolha dele: o limite acompanha a campanha.
 - client-campaign.js: limite = dias x posts/dia da campanha atual; uso contado por campanha (cada campanha tem id próprio; mudar os dias cria campanha nova). Trava extra de 60 por mês (máximo de uma campanha) contra recomeçar para ganhar imagens. Master só liga/desliga (sem número). Falha devolve.
 - Telas: aba Campanha "usou X de Y imagens desta campanha"; Master → Clientes "usou X de Y da campanha"; quadro em Contatos sem o campo de número. Corrigido também o texto fixo antigo "geração paga de imagens desativada" na tela do painel do cliente no Master. 359 testes ok.
