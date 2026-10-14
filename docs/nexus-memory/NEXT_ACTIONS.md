@@ -25,7 +25,7 @@
 
 ## Aba "Meu negócio" (publicada 14/10)
 - Pedir ao Quatree Dog para preencher a aba "Meu negócio"; conferir o perfil no Master (Perfis enviados pelos clientes).
-- Decisão pendente do Rodrigo: ligar imagem por IA para o Quatree Dog (custo na OpenAI) ou manter fotos do Instagram dele.
+- Aba "Campanha" publicada (40cd939). Próximo: Quatree Dog escolhe artes prontas ou IA, dias e posts/dia; se IA, Rodrigo liga em Master → Contatos → "Imagem por IA para clientes". Conferir o primeiro post gerado (arte certa, 4:5, horário) antes de aprovar.
 
 ## Captador de clientes (ferramenta R$ 97/mês)
 - 14/10 tarde: tipos Ração, Casa de ração e Agropecuária prontos na branch feat/captador-racao-agro (cliente Quatree em MG). Captador do cliente passou a usar o Google Maps (mesma regra do Master). Publicado 14/10 18h02 (e454a1a). Falta ligar o Captador do Quatree Dog em Master → Contatos e fazer 1 busca real. Atenção ao custo: buscas dos clientes somam na cota do Google da Flow Arts. Limite por cliente: 100/mês (muda no Master).

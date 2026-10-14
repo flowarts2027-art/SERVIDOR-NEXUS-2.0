@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 18h46–19h15 BRT — Aba "Campanha" no painel do cliente (branch feat/aba-campanha, não publicada)
+## 2026-10-14 18h46–19h15 BRT — Aba "Campanha" no painel do cliente (publicado 40cd939 às 18h52 com OK do Rodrigo; deploy e CI ok; campanha.js conferido no ar)
 - Pedido do Rodrigo: cliente escolhe enviar arte pronta ou criar por IA, aba para enviar as artes, dias da campanha etc. Escolhas dele: IA só depois que ele libera no Master; 30 imagens IA/mês por cliente (muda no Master); 7, 15 ou 30 dias; 1 ou 2 posts/dia.
 - client-campaign.js: config.campaignSettings {artSource own|ai, days, postsPerDay, startDate}; começa no dia em que salva (mudar só arte/posts mantém o começo). Liberação IA e uso por mês em nexus_state namespace client-campaign (ai-access, ai-usage); artes usadas em art-used.
 - agent-runtime.js: para clientes fora de IMAGE_GENERATION_CLIENTS: dailySlots = posts/dia da campanha; fora dos dias da campanha não cria post; artSource own → próxima arte enviada (purpose publish, mais antiga primeiro, copiada para posts/); artSource ai → reserva 1 do limite e gera imagem limpa 4:5 (sem texto por cima; falha devolve a reserva). Sem arte/sem saldo: cai no comportamento antigo (fotos do Instagram dele). Flow Arts não muda.
