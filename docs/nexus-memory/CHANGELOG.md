@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 20h26–20h35 BRT — Acesso do cliente com o domínio próprio (branch fix/acesso-dominio-proprio, não publicada)
+## 2026-10-14 20h26–20h35 BRT — Acesso do cliente com o domínio próprio (publicado be3db4f às 20h29 com OK do Rodrigo; deploy e CI ok; leitura externa do app.js veio com versão anterior — provável cache da ferramenta de leitura, não confirmado)
 - Rodrigo: o texto de acesso do cliente novo sai com servidor-nexus.diamantehinode2015.workers.dev. Causa: app.js montava com location.origin (o Master é aberto no workers.dev).
 - app.js (v45): CLIENT_PANEL_URL = https://painel.flowarts.com.br/ no texto "NEXUS AI / Acesso / Usuário / Senha". 360 testes ok. Não conferido daqui que /login abre no domínio (o acesso a esse site é bloqueado pelo ambiente); os arquivos do painel já respondem nesse domínio.
 - Rodrigo colou no chat usuário e senha de um cliente (senha fraca 12345678). Recomendado trocar a senha desse cliente pelo "Definir acesso". Não usei a senha.
