@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 17h46–18h10 BRT — Captador: ração, casa de ração e agropecuária (branch feat/captador-racao-agro, não publicada)
+- Pedido do Rodrigo: cliente que revende a marca Quatree em Minas Gerais precisa achar quem compra; adicionar na aba Buscar do portal as áreas ração, casa de ração, petshop e agropecuária, para o cliente escolher o que buscar.
+- captador.js: 3 tipos novos (Ração, Casa de ração, Agropecuária). "Pet shop" já existia. Busca por tag do OSM (shop=agrarian, agrarian~feed, shop=pet_food) e também pelo nome da loja ("ração/rações", "casa de/das ra…", "agropecu…/agrovet"), porque muitas lojas no mapa não têm a tag certa. Agora são 22 tipos.
+- captadorQuery aceita filtro extra e chave sem valor. Teste novo; 346 testes ok.
+- Não testado ao vivo: o Overpass não abre a partir do ambiente do Claude. Conferir numa busca real (ex.: Belo Horizonte) depois do deploy.
+
 ## 2026-10-14 09h50–10h15 BRT — Caçador do Master só com Google (branch feat/cacador-google, não publicada)
 - robô (feat/robo-planos-contrato, 671629e) publicado 09h49 com OK; contrato no ar em /contrato-site e botões no WhatsApp conferidos.
 - Rodrigo: "deixa ele com o maps já, não vou testar o grátis, é muito ruim". Escolheu guardar "só quem você chamou".

@@ -131,3 +131,13 @@ test("robô manda planos e o contrato só sai pelo Rodrigo", async () => {
   assert.match(prompt, /flowarts\.com\.br\/#pacotes/);
   assert.match(prompt, /Quem envia o contrato e o Pix é sempre o Rodrigo/);
 });
+
+test("Captador tem ração, casa de ração, agropecuária e pet shop", async () => {
+  const { CAPTADOR_NICHES } = await import("../src/captador.js");
+  for (const key of ["racao", "casa_racao", "agropecuaria", "pet"]) assert.ok(CAPTADOR_NICHES[key], key);
+  assert.match(captadorQuery("racao", -19.9, -43.9), /"agrarian"~"feed"/);
+  assert.match(captadorQuery("racao", -19.9, -43.9), /nwr\["shop"\]\["name"~"ração/);
+  assert.match(captadorQuery("casa_racao", -19.9, -43.9), /casa d\[aeo\]s\? ra",i/);
+  assert.match(captadorQuery("agropecuaria", -19.9, -43.9), /"shop"="agrarian"\]\["name"\]/);
+  assert.doesNotMatch(captadorQuery("agropecuaria", -19.9, -43.9), /="null"/);
+});

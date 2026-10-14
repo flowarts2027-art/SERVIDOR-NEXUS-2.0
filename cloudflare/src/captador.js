@@ -9,6 +9,9 @@ import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, OVERPASS_ENDPOINTS } fro
 export const CAPTADOR_DAILY_LIMIT = 10;
 export const CAPTADOR_PRICE = "R$ 97 por mês";
 
+// Overpass compara o nome por bytes: acentos vão escritos em maiúscula e minúscula.
+const RACAO_NAMES = "ração|rações|racao|racoes|RAÇÃO|RAÇÕES|Ração|Rações";
+
 export const CAPTADOR_NICHES = {
   restaurante: { label: "Restaurante", tags: [["amenity", "restaurant"]] },
   cafeteria: { label: "Cafeteria", tags: [["amenity", "cafe"]] },
@@ -18,6 +21,20 @@ export const CAPTADOR_NICHES = {
   salao: { label: "Salão de beleza e barbearia", tags: [["shop", "hairdresser"], ["shop", "beauty"]] },
   academia: { label: "Academia", tags: [["leisure", "fitness_centre"]] },
   pet: { label: "Pet shop", tags: [["shop", "pet"]] },
+  // Lojas de ração e agro (pedido de 14/10: cliente que revende Quatree em MG).
+  // Terceiro item = filtro extra do Overpass; valor null = qualquer valor da chave.
+  racao: { label: "Ração (loja de ração)", tags: [
+    ["shop", "agrarian", '["agrarian"~"feed"]'],
+    ["shop", "pet_food"],
+    ["shop", null, `["name"~"${RACAO_NAMES}",i]`]
+  ] },
+  casa_racao: { label: "Casa de ração", tags: [
+    ["shop", null, '["name"~"casa d[aeo]s? ra",i]']
+  ] },
+  agropecuaria: { label: "Agropecuária", tags: [
+    ["shop", "agrarian"],
+    ["shop", null, '["name"~"agropecu|agrovet|agro ",i]']
+  ] },
   veterinario: { label: "Veterinário", tags: [["amenity", "veterinary"]] },
   dentista: { label: "Dentista", tags: [["amenity", "dentist"], ["healthcare", "dentist"]] },
   clinica: { label: "Clínica e consultório", tags: [["amenity", "clinic"], ["amenity", "doctors"]] },
@@ -146,7 +163,8 @@ export function captadorLead(element, nicheKey, city, onlyNoSite = false) {
 }
 
 export function captadorQuery(nicheKey, lat, lon, radius = 10000) {
-  const parts = CAPTADOR_NICHES[nicheKey].tags.map(([k, v]) => `nwr["${k}"="${v}"]["name"](around:${radius},${lat},${lon});`);
+  const parts = CAPTADOR_NICHES[nicheKey].tags.map(([k, v, extra = ""]) =>
+    `nwr["${k}"${v === null ? "" : `="${v}"`}]${extra}["name"](around:${radius},${lat},${lon});`);
   return `[out:json][timeout:25];(${parts.join("")});out tags center 800;`;
 }
 
