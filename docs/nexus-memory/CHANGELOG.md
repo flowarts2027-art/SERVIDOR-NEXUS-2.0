@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h01–18h05 BRT — Captador com Google Maps publicado (e454a1a)
+- OK do Rodrigo às 18h01. Push na main; "Deploy NEXUS Cloudflare" e "NEXUS CI" com sucesso no e454a1a.
+- Conferido ao vivo: painel.flowarts.com.br/captador.js?v=3 já mostra "Fonte: Google Maps" e "Buscas este mês".
+- Falta: ligar o Captador do Quatree Dog no Master (Contatos → Captador para clientes) e fazer 1 busca real.
+
 ## 2026-10-14 17h59–18h25 BRT — Captador: limite por cliente, por mês (mesma branch, não publicada)
 - Pedido do Rodrigo: limite para cada cliente antes de publicar; aumentar depois. Escolha dele: 100 buscas por mês.
 - captador.js: limite mensal por cliente guardado junto da liberação (nexus_state captador/access.monthlyLimit, padrão 100, máx. 3000). Contagem por mês (usage.month). Limite de 10/dia removido. Passou do limite: "Você usou todas as buscas deste mês. Para buscar mais, fale com a Flow Arts."
