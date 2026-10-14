@@ -1,3 +1,4 @@
+import { handleCaptadorPortal } from "./captador.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import {
   authenticatePortalUser,
@@ -669,6 +670,9 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   const { session, client } = await sessionClient(request, env);
   if (!session || !client) return json({ error: "unauthorized" }, 401);
+
+  const captadorResponse = await handleCaptadorPortal(request, env, url, client);
+  if (captadorResponse) return captadorResponse;
 
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(

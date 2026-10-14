@@ -8,8 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=107">
-  <script src="/client-lite.js?v=110" defer></script>
+  <link rel="stylesheet" href="/client-lite.css?v=108">
+  <script src="/client-lite.js?v=111" defer></script>
+  <script src="/captador.js?v=1" defer></script>
 </head>
 <body>
   <main id="login" class="login" hidden>
@@ -42,6 +43,7 @@
       <button type="button" data-tab="posts"><span aria-hidden="true">▦</span>Posts<b class="badge" id="badge-posts" hidden></b></button>
       <button type="button" data-tab="numeros"><span aria-hidden="true">↗</span>Números</button>
       <button type="button" data-tab="contatos"><span aria-hidden="true">☺</span>Contatos</button>
+      <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
       <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
     </nav>
 
@@ -78,6 +80,11 @@
         <h1 class="page-title">Contatos</h1>
         <p class="lead-intro">Pessoas que mostraram interesse nos seus posts.</p>
         <div id="lead-list"></div>
+      </section>
+
+      <section id="tab-buscar" class="tab" hidden>
+        <h1 class="page-title">Buscar clientes</h1>
+        <div id="captador"><div class="empty"><strong>Carregando…</strong></div></div>
       </section>
 
       <section id="tab-conta" class="tab" hidden>

@@ -26,6 +26,8 @@ import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
+import { handleCaptadorMaster } from "./captador.js";
+import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -628,6 +630,13 @@ export default {
     }
 
     // Caçador de clientes (empresas sem site no Google Maps). Só com login do Master.
+    if (url.pathname === "/api/master/captador/access") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleCaptadorMaster(request, env, url, listClients);
+      if (response) return response;
+    }
+
     if (url.pathname.startsWith("/api/master/prospects")) {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);

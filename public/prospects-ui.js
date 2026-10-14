@@ -182,6 +182,33 @@
     }
   });
 
-  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", load));
-  if (document.getElementById("odin")?.classList.contains("active")) load();
+  // Captador para clientes: liga ou desliga por cliente.
+  async function loadAccess() {
+    const box = $("#captador-access-list");
+    if (!box) return;
+    try {
+      const data = await call("/api/master/captador/access");
+      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<label class="captador-row">
+          <input type="checkbox" data-captador-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
+          <span><b>${esc(c.name)}</b><small>${esc(c.id)}</small></span>
+          <em>${c.enabled ? "Ligado" : "Desligado"}</em>
+        </label>`).join("") : '<p class="muted">Nenhum cliente cadastrado.</p>';
+    } catch (error) {
+      box.innerHTML = `<p class="muted">Não consegui carregar. ${esc(error.message)}</p>`;
+    }
+  }
+
+  document.addEventListener("change", async event => {
+    const input = event.target.closest?.("[data-captador-client]");
+    if (!input) return;
+    input.disabled = true;
+    try {
+      await call("/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.captadorClient, enabled: input.checked }) });
+    } catch { input.checked = !input.checked; }
+    input.disabled = false;
+    loadAccess();
+  });
+
+  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); }));
+  if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); }
 })();

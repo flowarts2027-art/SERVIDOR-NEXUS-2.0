@@ -1,5 +1,15 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 08h40–09h20 BRT — Captador de clientes para clientes (branch feat/captador-clientes, não publicada)
+- Pedido do Rodrigo: vender ferramentas (automação do Instagram, site e o captador). Escolhas dele: cliente usa sozinho no portal; R$ 97/mês.
+- Ideia anterior dele ("vender listas de leads quentes do Google") respondida: Google proíbe revender os dados; LGPD arriscada; lista não é lead quente. Sugerido vender a ferramenta/prospecção. Ele concordou.
+- feat: cloudflare/src/captador.js. Tabela captador_leads (client_id + id), separada por cliente. Liberação por cliente (nexus_state captador/access). Config da mensagem do cliente (nome, empresa, oferta, "só sem site"); frase de "não receber" sempre no fim. 19 tipos de negócio (tags do OSM). Limite 10 buscas/dia por cliente. Busca: navegador do cliente acha a cidade no Nominatim → /api/portal/captador/plan (valida Brasil, guarda a busca por 15 min) → Overpass no navegador → /api/portal/captador/import. Redes/franquias fora.
+- Portal: aba nova "Buscar" (public/captador.js); sem liberação mostra a oferta R$ 97/mês e botão para falar com a Flow Arts. Crédito "© colaboradores do OpenStreetMap".
+- Master → Contatos: painel "Captador para clientes · Quem pode usar" com liga/desliga por cliente (GET/POST /api/master/captador/access).
+- À venda: site (lista de pacotes + JSON-LD), páginas de nicho, robô do WhatsApp, doc "Planos e preços".
+- test: captador.test.mjs (5 testes). 344 testes ok. Prints conferidos (portal celular/computador, oferta, Master).
+- Conferido ao vivo no navegador: Nominatim OK (Recife). Overpass principal ainda 504 às 09h15 — RISCO: não vender antes de ver o mapa grátis funcionando por alguns dias.
+
 ## 2026-10-14 08h29–08h40 BRT — Google depois, contrato do site (branch feat/manutencao-site, não publicada)
 - fix/cacador-osm-remark publicado (d8fa73c, deploy ok) com OK do Rodrigo.
 - Decisão do Rodrigo: paga os R$ 150 do Google quando fechar o primeiro cliente.

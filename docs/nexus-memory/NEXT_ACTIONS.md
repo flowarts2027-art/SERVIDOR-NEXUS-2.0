@@ -6,6 +6,10 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Captador de clientes (ferramenta R$ 97/mês)
+- Código pronto (branch feat/captador-clientes). Antes de vender: confirmar por alguns dias que o Overpass (mapa grátis) responde; ele deu 504 em 14/10 de manhã. Se continuar instável, avaliar servidor Overpass próprio ou Google (custo por busca).
+- Quando a Meta liberar o número: ajustes finais (robô oferece o Captador e manda o link do portal).
+
 ## Robô do WhatsApp: planos e contrato (plano aprovado pelo Rodrigo em 2026-10-14 08h34, ainda não feito)
 - Planos: quando o cliente perguntar preço, o robô responde e manda o link https://flowarts.com.br/#pacotes. Automático.
 - Contrato: página pública do contrato-modelo no site (só depois da revisão de advogado/contador e do nome do responsável). Quando o cliente disser que quer fechar, o robô prepara a mensagem com o link e o Rodrigo aprova o envio por um botão "Enviar contrato" no painel (regra do CLAUDE.md: prometer algo ao cliente só com OK do Rodrigo). Não enviar sozinho.
