@@ -1,0 +1,163 @@
+:root{
+  --ink:#050B1F;        /* azul-noite do fundo do logo */
+  --deep:#0A1636;       /* superfícies */
+  --line:#1C2B57;
+  --chrome:#C9D1DE;     /* prata do logo */
+  --bright:#F2F5FA;
+  --muted:#93A0BB;
+  --blue:#1F6BFF;       /* azul elétrico */
+  --glow:#49A3FF;
+  --whats:#1FAF5F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--chrome);font:400 17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--glow)}
+a:focus-visible,button:focus-visible,summary:focus-visible,.strip:focus-visible{outline:3px solid var(--glow);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:Unbounded,"Atkinson Hyperlegible",sans-serif;color:var(--bright);font-weight:700;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.1rem,6vw,3.9rem);line-height:1.04;text-wrap:balance}
+h2{font-size:clamp(1.55rem,4vw,2.5rem);line-height:1.1;text-wrap:balance;margin-bottom:28px}
+h3{font-size:1.1rem;line-height:1.3;font-weight:500}
+p{margin:0}
+figure{margin:0}
+.lead{font-size:1.2rem;color:var(--chrome);max-width:28em}
+
+/* Botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;font:700 1rem "Atkinson Hyperlegible",sans-serif;text-decoration:none;border:0;cursor:pointer}
+.btn-whats{background:var(--whats);color:#fff}
+.btn-whats:hover{background:#1a9a53}
+.btn-line{color:var(--bright);border:1.5px solid #3A4E86;background:transparent}
+.btn-line:hover{border-color:var(--glow)}
+.btn svg{width:20px;height:20px;flex:none}
+
+/* Topo */
+.top{position:sticky;top:0;z-index:5;background:rgba(5,11,31,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(28,43,87,.6)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--bright);font-family:Unbounded,sans-serif;font-weight:700;font-size:1.05rem}
+.brand img{height:38px;width:auto}
+.top .btn{min-height:42px;padding:0 18px;font-size:.95rem}
+
+/* Celular (moldura prata do logo) */
+.phone{position:relative;border-radius:40px;padding:10px;background:linear-gradient(160deg,#D9E0EC,#6E7B95 40%,#C9D1DE 60%,#5B6782);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.screen{border-radius:31px;background:#0E1424;overflow:hidden}
+
+/* Quadradinhos de post (imagem real ou bloco provisório) */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.post{position:relative;aspect-ratio:4/5;background:#1A2340;overflow:hidden}
+.post img{width:100%;height:100%;object-fit:cover}
+.post.placeholder{background:linear-gradient(150deg,#1D3B8F,#0F1E4A 55%,#28407F)}
+.post.placeholder::after{content:"";position:absolute;inset:30% 30%;border-radius:8px;border:2px solid rgba(201,209,222,.35)}
+
+/* 1. Hero */
+.hero{position:relative;overflow:hidden;padding:44px 0 64px}
+.hero::before{content:"";position:absolute;inset:-10% -20% auto auto;width:760px;height:760px;background:radial-gradient(closest-side,rgba(31,107,255,.30),transparent 70%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;gap:40px;align-items:center}
+.hero h1{margin-bottom:18px}
+.hero .lead{margin-bottom:28px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.phone-hero{justify-self:center;width:min(340px,86vw);transform:rotate(-2.5deg)}
+.profile{display:flex;align-items:center;gap:14px;padding:18px 16px 14px}
+.profile img{width:58px;height:58px;border-radius:50%;background:var(--ink);padding:8px;border:2px solid var(--blue)}
+.profile-name{color:#fff;font-weight:700}
+.profile-note{color:#7DDBA3;font-size:.85rem}
+
+/* 2. Antes e depois */
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:640px}
+.phone-small{padding:7px;border-radius:30px}
+.phone-small .screen{border-radius:24px;padding-top:12px}
+.phone-small figcaption{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);white-space:nowrap;font-family:Unbounded,sans-serif;font-weight:700;color:var(--bright);font-size:.95rem}
+.when{font-size:.78rem;padding:0 12px 10px;color:var(--muted)}
+.is-after .when{color:#7DDBA3}
+.grid-empty i{display:block;aspect-ratio:4/5;background:#2A3044}
+.grid-empty i.off{background:#141A2B}
+.is-before{filter:saturate(.4)}
+.before-after{padding-bottom:110px}
+
+/* 3. Galeria */
+.gallery .hint{color:var(--muted);margin:-18px 0 18px}
+.strip{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px 0 18px;scrollbar-width:thin}
+.strip-track{display:flex;gap:14px;padding:0 20px;width:max-content}
+.post-big{width:min(72vw,300px);border-radius:18px;scroll-snap-align:center;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+
+/* 4. Como funciona */
+.how .wrap{display:grid;gap:40px;align-items:center}
+.steps{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:18px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:48px 1fr;column-gap:14px;color:var(--muted)}
+.steps li::before{content:counter(s);grid-row:span 2;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:700;color:var(--bright);background:var(--deep);border:1.5px solid #34508F}
+.steps b{color:var(--bright);font-size:1.1rem}
+.phone-chat{justify-self:center;width:min(320px,84vw)}
+.phone-chat .screen{min-height:420px;display:flex;flex-direction:column}
+.screen-head{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid #1E2740}
+.screen-head img{width:34px;height:34px;border-radius:50%;background:var(--ink);object-fit:contain;padding:4px}
+.screen-head b{color:#fff;font-size:.95rem;display:block}
+.screen-head small{color:#8C96AD;font-size:.78rem}
+.chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:16px}
+.comment{background:#151D33;border:1px solid #232D4A;border-radius:14px;padding:10px 12px;font-size:.88rem;color:#C7CFE0}
+.comment b{color:#fff}
+.bubble{max-width:86%;padding:10px 14px;border-radius:20px;font-size:.92rem;line-height:1.4}
+.from-brand{align-self:flex-start;background:#262B3B;color:#F1F3F8;border-bottom-left-radius:6px}
+.from-client{align-self:flex-end;background:linear-gradient(135deg,#5A3CF0,#2F6BFF);color:#fff;border-bottom-right-radius:6px}
+.wa{align-self:center;margin-top:auto;font-size:.82rem;color:#7DDBA3}
+.step{opacity:0;transform:translateY(8px)}
+.play .step{animation:pop .45s ease-out forwards}
+.play .s1{animation-delay:.3s}.play .s2{animation-delay:1.3s}.play .s3{animation-delay:2.3s}.play .s4{animation-delay:3.3s}
+@keyframes pop{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step{opacity:1;transform:none}.play .step{animation:none}.phone-hero{transform:none}}
+
+/* 5. Portas por tipo de negócio */
+.doors{display:grid;gap:14px}
+.door{position:relative;display:block;border-radius:22px;overflow:hidden;min-height:150px;background:linear-gradient(150deg,#1D3B8F,#0F1E4A);text-decoration:none}
+.door .post{position:absolute;inset:0;aspect-ratio:auto}
+.door span{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 16px;background:linear-gradient(transparent,rgba(5,11,31,.92));color:var(--bright);font-family:Unbounded,sans-serif;font-weight:700;font-size:1.15rem}
+.door:hover span{color:var(--glow)}
+
+/* Seções */
+.section{padding:72px 0}
+.section .intro{color:var(--muted);margin:-16px 0 28px}
+
+/* 6. Pacotes */
+.offer{display:grid;gap:28px}
+.feature{border-radius:28px;padding:28px 24px;background:radial-gradient(120% 120% at 0% 0%,rgba(31,107,255,.28),transparent 55%),var(--deep);border:1px solid #2A3E77}
+.feature .price{font-family:Unbounded,sans-serif;font-size:2.6rem;color:var(--bright);margin:12px 0 4px}
+.feature .price small{font-size:1rem;color:var(--muted);font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400}
+.feature ul{margin:14px 0 24px;padding-left:20px;display:grid;gap:6px}
+.more{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.more li{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
+.more b{font-family:Unbounded,sans-serif;color:var(--bright);font-size:1.25rem}
+.more a{font-weight:700;text-decoration:none}
+
+/* 7. Perguntas */
+.faq{display:grid;gap:10px;max-width:780px}
+.faq details{background:var(--deep);border:1px solid var(--line);border-radius:16px;padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;color:var(--bright);display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:Unbounded,sans-serif;color:var(--glow);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 0 18px}
+
+/* Final */
+.final{text-align:center;padding:84px 0;background:radial-gradient(60% 80% at 50% 100%,rgba(31,107,255,.28),transparent 70%)}
+.final img{width:min(140px,38vw);margin:0 auto 24px;filter:drop-shadow(0 0 24px rgba(73,163,255,.35))}
+.final h2{margin-bottom:24px}
+footer{border-top:1px solid var(--line);padding:28px 0 calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:12px 18px}
+footer a{color:var(--chrome);text-decoration:none}
+footer a:hover{color:var(--bright)}
+
+@media (min-width:880px){
+  .hero{padding:72px 0 96px}
+  .hero .wrap{grid-template-columns:1.1fr .9fr}
+  .how .wrap{grid-template-columns:1fr auto}
+  .doors{grid-template-columns:repeat(3,1fr)}
+  .door{min-height:300px}
+  .offer{grid-template-columns:1fr 1fr;align-items:start}
+  .strip-track{padding:0 max(20px,calc((100vw - 1080px)/2))}
+}
+@media (max-width:520px){
+  .top .btn span{display:none}
+  .actions .btn{width:100%}
+}
