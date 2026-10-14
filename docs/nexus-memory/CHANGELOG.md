@@ -4,7 +4,7 @@
 - Pedido do Rodrigo: limite para cada cliente antes de publicar; aumentar depois. Escolha dele: 100 buscas por mês.
 - captador.js: limite mensal por cliente guardado junto da liberação (nexus_state captador/access.monthlyLimit, padrão 100, máx. 3000). Contagem por mês (usage.month). Limite de 10/dia removido. Passou do limite: "Você usou todas as buscas deste mês. Para buscar mais, fale com a Flow Arts."
 - Master → Contatos → Captador para clientes: em cada cliente, campo "Buscas por mês" + Salvar e "Usou X este mês". Mudar o limite não liga nem desliga.
-- Portal: "Buscas este mês: X de Y". 347 testes ok.
+- Portal: "Buscas este mês: X de Y". Robô do WhatsApp: Captador "busca no Google Maps, 100 buscas por mês" (antes falava mapa grátis e 10/dia). 347 testes ok.
 
 ## 2026-10-14 17h52–18h20 BRT — Captador do cliente agora busca no Google Maps (mesma branch, não publicada)
 - Pedido do Rodrigo: o cliente (ex.: Quatree Dog) deve ter na aba Buscar a mesma busca do Caçador do Master (Google Maps) e a mesma regra de captação.
