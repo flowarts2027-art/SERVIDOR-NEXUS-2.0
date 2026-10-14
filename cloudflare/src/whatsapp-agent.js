@@ -439,13 +439,15 @@ async function sendText(env, to, text) {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    // Guarda o código e a explicação da Meta (sem token nem dados do cliente),
-    // para o painel mostrar o motivo real da recusa.
+    // Guarda a recusa completa da Meta (tipo, códigos, mensagem e detalhes),
+    // sem token nem texto do cliente, para o painel mostrar o motivo real.
     const meta = data?.error || {};
-    const code = meta.code ? `_${meta.code}` : "";
-    const sub = meta.error_subcode ? `_${meta.error_subcode}` : "";
-    const detail = String(meta.error_data?.details || meta.message || "").replace(/\s+/g, " ").slice(0, 200);
-    const error = new Error(`whatsapp_http_${response.status}${code}${sub}${detail ? ": " + detail : ""}`);
+    const parts = [
+      meta.type, meta.code && `code=${meta.code}`, meta.error_subcode && `sub=${meta.error_subcode}`,
+      meta.message, meta.error_user_title, meta.error_user_msg, meta.error_data?.details
+    ].filter(Boolean).map(x => String(x).replace(/\s+/g, " ").trim());
+    const detail = [...new Set(parts)].join(" | ").slice(0, 280);
+    const error = new Error(`whatsapp_http_${response.status}${detail ? ": " + detail : ""}`);
     error.status = response.status;
     error.metaCode = meta.code || null;
     throw error;
