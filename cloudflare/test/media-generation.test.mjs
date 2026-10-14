@@ -70,3 +70,24 @@ test("generation uses approved direction without reading or sending private libr
   assert.equal(result.referenceMode,"text-direction");assert.equal(result.referenceCount,0);
   assert.equal(payload.nexusBypassDailyBudget,false);
 });
+
+test("imagem já nasce em 4:5 (feed/carrossel) e 9:16 (Reel), sem corte das frases", async () => {
+  const { imageSizeFor, buildVisualPrompt } = await import("../src/media-generation.js");
+  const ratio = size => { const [w, h] = size.split("x").map(Number); assert.equal(w % 16, 0); assert.equal(h % 16, 0); return h / w; };
+  assert.equal(ratio(imageSizeFor("image")), 1.25);
+  assert.equal(ratio(imageSizeFor("carousel")), 1.25);
+  assert.equal(Math.abs(ratio(imageSizeFor("reel")) - 16 / 9) < 0.001, true);
+  const prompt = buildVisualPrompt({ id: "primeiro-teste", name: "Flow Arts" }, "", "x", { title: "Seu Instagram parado está custando clientes", contentFormat: "image" });
+  assert.doesNotMatch(prompt, /cropped/);
+  assert.match(prompt, /4:5 format/);
+});
+
+test("Reel usa o movimento novo (zoom visível e suave, sem cortar a frase)", async () => {
+  const fs = await import("node:fs");
+  const workflow = fs.readFileSync(new URL("../../.github/workflows/social-format-render.yml", import.meta.url), "utf8");
+  assert.match(workflow, /scripts\/social\/render_reel\.sh/);
+  assert.doesNotMatch(workflow, /on\*0\.0002/);
+  const script = fs.readFileSync(new URL("../../scripts/social/render_reel.sh", import.meta.url), "utf8");
+  assert.match(script, /z='1\+0\.10\*/);
+  assert.match(script, /scale=2160:3840/);
+});

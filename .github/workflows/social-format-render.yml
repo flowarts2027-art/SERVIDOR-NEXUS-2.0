@@ -25,6 +25,12 @@ jobs:
           case "$CALLBACK_URL" in https://servidor-nexus.diamantehinode2015.workers.dev/api/internal/social-format-render/upload) ;; *) exit 1 ;; esac
           case "$SOURCE_IMAGE" in https://servidor-nexus.diamantehinode2015.workers.dev/media/posts/*) ;; *) exit 1 ;; esac
 
+      - name: Checkout render script
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/social
+          sparse-checkout-cone-mode: false
+
       - name: Render vertical Reel
         shell: bash
         env:
@@ -35,9 +41,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
           curl --fail --silent --show-error --location --max-time 60 "$SOURCE_IMAGE" -o /tmp/source.jpg
-          duration="${DURATION:-10}"
-          ffmpeg -hide_banner -loglevel error -loop 1 -i /tmp/source.jpg -t "$duration" -r 30             -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='min(1.0+on*0.0002,1.06)':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d=1:s=1080x1920:fps=30,format=yuv420p"             -c:v libx264 -preset medium -crf 20 -movflags +faststart -an /tmp/reel.mp4
-          test -s /tmp/reel.mp4
+          bash scripts/social/render_reel.sh /tmp/source.jpg /tmp/reel.mp4 "${DURATION:-10}"
           test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 /tmp/reel.mp4)" = "1080x1920"
 
       - name: Upload Reel to NEXUS

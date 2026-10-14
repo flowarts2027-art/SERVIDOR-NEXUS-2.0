@@ -22,8 +22,8 @@ async function composeBrandOverlay(env,bytes,client,title="",options={}){
   if(!env.IMAGES)return {bytes,applied:Boolean(brandProfileVersion(client?.id)),reason:"images_binding_unavailable"};
   try{
     const copy=overlayCopy(client,title);
-    const sized=client?.id==="globalplay-streaming"||brandProfileVersion(client?.id);
-    let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:sized?1080:1024,height:sized?(options.contentFormat==="reel"?1920:1350):1536,fit:"cover"});
+    // A imagem já nasce em 4:5 ou 9:16 (imageSizeFor): aqui só amplia, sem cortar.
+    let canvas=env.IMAGES.input(new Blob([bytes]).stream()).transform({width:1080,height:options.contentFormat==="reel"?1920:1350,fit:"cover"});
     // Marcas com perfil próprio: o gancho já vem escrito pela IA na imagem; aqui só ajusta para 4:5 (feed) ou 9:16 (reel).
     if(brandProfileVersion(client?.id)){
       const response=await (await canvas.output({format:"image/jpeg",quality:90})).response();
@@ -66,13 +66,17 @@ export function brandHeadline(client,title=""){
   return (words.length>9?words.slice(0,9).join(" ")+"…":clean).slice(0,70);
 }
 
+export function imageSizeFor(contentFormat){
+  return contentFormat==="reel"?"1008x1792":"1024x1280";
+}
+
 export function buildVisualPrompt(client, visualBrief="", variationSeed="", options={}){
   const id=String(client?.id||"");
   const headline=brandHeadline(client,options.title);
   const common=[
-    options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork, composed for a 4:5 crop.":options.contentFormat==="reel"?"Create one premium vertical social-media advertising artwork, composed for a 9:16 crop.":"Create one premium portrait Instagram feed artwork, composed for a 4:5 crop (keep everything important inside the central 4:5 area).",
+    options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork in 4:5 format.":options.contentFormat==="reel"?"Create one premium vertical social-media advertising artwork in 9:16 format.":"Create one premium portrait Instagram feed artwork in 4:5 format.",
     headline
-      ? "Write exactly this headline in Brazilian Portuguese, spelled exactly as given, with all accents: \""+headline+"\". Large bold clean sans-serif, white or very light text with strong contrast, placed in the upper part of the image but starting at least 18% below the top edge, max 3 lines, at least 8% away from the left and right edges. The image will be cropped about 9% at the top and 9% at the bottom, so never put any letter in the top 18% or bottom 15% of the image. Add a small discreet wordmark \"FLOW ARTS\" above the bottom 15%. No other words, no other logos, no watermarks, no split screen, no collage."
+      ? "Write exactly this headline in Brazilian Portuguese, spelled exactly as given, with all accents: \""+headline+"\". Large bold clean sans-serif, white or very light text with strong contrast, placed in the upper half of the image, starting about 12% below the top edge, max 3 lines, every letter fully visible and at least 10% away from the left and right edges (Instagram shows a narrower preview in the profile grid). Never put any letter in the bottom 20% of the image, where Instagram shows buttons and captions. Add a small discreet wordmark \"FLOW ARTS\" above the bottom 20%. No other words, no other logos, no watermarks, no split screen, no collage."
       : "No text, no words, no logos, no watermarks, no split screen, no collage.",
     "One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
     "Make the composition noticeably different from generic stock imagery.",
@@ -128,7 +132,9 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
       type:"image_generation",
       model:env.NEXUS_IMAGE_MODEL||"gpt-image-2",
       quality:String(env.NEXUS_IMAGE_QUALITY||"medium"),
-      size:"1024x1536",
+      // Já no formato final (sem corte depois): 4:5 no feed/carrossel, 9:16 no Reel.
+      // gpt-image-2 aceita tamanho livre (lados múltiplos de 16).
+      size:imageSizeFor(options.contentFormat),
       output_format:"jpeg"
     }],
     tool_choice:"required"
