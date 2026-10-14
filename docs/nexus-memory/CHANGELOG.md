@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 08h10–08h25 BRT — caçador OSM pelo navegador (branch fix/cacador-osm-navegador, não publicado)
+- feat/cacador-osm publicado (e4b016e, deploy ok) com OK do Rodrigo. Teste real pelo Master: 3 buscas pelo Worker deram "osm_busy" (Overpass recusou/timeout vindo da Cloudflare). 0 contatos guardados.
+- No navegador, o Overpass principal funcionou às 08h05 e deu 504 às 08h15–08h20 (status: 4 slots livres, ou seja, servidor sobrecarregado, não bloqueio). Espelhos private.coffee (timeout) e mail.ru (504) também falharam.
+- fix: a busca grátis agora sai do navegador do Master: POST /api/master/prospects/plan (reserva buscas e devolve as consultas) → navegador consulta o Overpass com 3 tentativas por servidor → POST /api/master/prospects/import (servidor filtra e guarda). Google continua no servidor quando houver chave. 339 testes ok.
+- Risco: o Overpass público fica sobrecarregado em alguns horários; nessas horas a busca falha e é preciso tentar mais tarde.
+
 ## 2026-10-14 07h43–08h15 BRT — Google recusado, caçador grátis (branch feat/cacador-osm, não publicado)
 - Google Cloud (Rodrigo, guiado): projeto "Flow Arts Nexus" (flow-arts-nexus) criado na conta flowarts2027@gmail.com; conta de faturamento de teste criada com cartão. O Google exige pré-pagamento único de R$ 150 (vira crédito) para ativar. Rodrigo NÃO pagou (cancelou) e pediu opção grátis. Saldo R$ 0,00. Erro meu: antes eu tinha dito que não custaria nada.
 - feat: prospects.js usa OpenStreetMap (Overpass API, overpass-api.de, grátis, sem chave) quando não há chave do Google; Google continua opcional. Filtros: nome, telefone, sem site próprio, sem marca/franquia (brand). Nota sem avaliações: celular, horário cadastrado, endereço, Instagram. Link "Ver no Maps" = busca no Google Maps para o Rodrigo conferir. Erro 429/5xx vira "servidor do mapa ocupado".

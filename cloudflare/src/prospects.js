@@ -9,6 +9,7 @@ import { encryptSecret, decryptSecret } from "./secrets.js";
 
 export const DAILY_SEARCH_LIMIT = 30; // Google: ~900/mês, dentro da cota grátis. OSM: uso educado do servidor público.
 const OVERPASS = "https://overpass-api.de/api/interpreter";
+export const OVERPASS_ENDPOINTS = [OVERPASS, "https://overpass.private.coffee/api/interpreter"];
 const SITE = "https://flowarts.com.br";
 
 export const NICHES = {
@@ -257,6 +258,58 @@ async function searchPlaces(key, query, fetcher) {
 }
 
 // Faz algumas buscas (nicho x cidade, em rodízio) e guarda as empresas novas.
+async function saveProspects(env, items) {
+  let added = 0;
+  for (const item of items) {
+    if (!item) continue;
+    // INSERT OR IGNORE: quem já está na lista (inclusive "não quer") não volta.
+    const result = await env.DB.prepare(
+      `INSERT OR IGNORE INTO prospects(id,name,niche,city,address,phone,mobile,website,instagram,rating,reviews,photos,maps_url,score)
+       VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)`
+    ).bind(item.id, item.name, item.niche, item.city, item.address, item.phone, item.mobile ? 1 : 0, item.website,
+      item.instagram, item.rating, item.reviews, item.photos, item.maps_url, item.score).run();
+    if (Number(result?.meta?.changes || 0) > 0) added++;
+  }
+  return added;
+}
+
+// Busca grátis feita pelo navegador do Master: o servidor da Cloudflare costuma
+// ser recusado pelo servidor público do OpenStreetMap, o navegador não.
+// 1) plan: reserva as próximas buscas (rodízio e limite do dia) e devolve as consultas.
+export async function planBrowserSearch(env, { calls = 3, niche = "" } = {}) {
+  await ensureProspectSchema(env);
+  const usage = await readState(env, "usage", { day: "", count: 0 });
+  const used = usage.day === today() ? Number(usage.count || 0) : 0;
+  const allowed = Math.max(0, Math.min(Number(calls) || 3, 5, DAILY_SEARCH_LIMIT - used));
+  if (!allowed) return { ok: false, error: "daily_limit", usedToday: used, dailyLimit: DAILY_SEARCH_LIMIT };
+  const nicheKeys = NICHES[niche] ? [niche] : Object.keys(NICHES);
+  const cursor = await readState(env, "cursor", { n: 0 });
+  let position = Number(cursor.n || 0);
+  const jobs = [];
+  for (let i = 0; i < allowed; i++) {
+    const nicheKey = nicheKeys[position % nicheKeys.length];
+    const cityIndex = Math.floor(position / nicheKeys.length) % CITIES.length;
+    jobs.push({ niche: nicheKey, cityIndex, label: `${NICHES[nicheKey].query} em ${CITIES[cityIndex]}`, query: overpassQuery(nicheKey, cityIndex) });
+    position++;
+  }
+  await writeState(env, "usage", { day: today(), count: used + jobs.length });
+  if (!NICHES[niche]) await writeState(env, "cursor", { n: position });
+  return { ok: true, jobs, endpoints: OVERPASS_ENDPOINTS, usedToday: used + jobs.length, dailyLimit: DAILY_SEARCH_LIMIT };
+}
+
+// 2) import: recebe os pontos do mapa e guarda só os que servem.
+export async function importBrowserResults(env, { niche, cityIndex, elements } = {}) {
+  await ensureProspectSchema(env);
+  if (!NICHES[niche]) throw new Error("niche_invalid");
+  const index = Number(cityIndex);
+  if (!Number.isInteger(index) || index < 0 || index >= CITIES.length) throw new Error("city_invalid");
+  const list = Array.isArray(elements) ? elements.slice(0, 1000) : [];
+  const items = list
+    .filter(e => e && typeof e === "object" && ["node", "way", "relation"].includes(e.type) && Number.isFinite(Number(e.id)))
+    .map(e => osmToProspect({ type: e.type, id: Number(e.id), tags: typeof e.tags === "object" && e.tags ? e.tags : {} }, niche, CITIES[index]));
+  return { ok: true, found: list.length, added: await saveProspects(env, items) };
+}
+
 export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fetcher = fetch) {
   await ensureProspectSchema(env);
   const key = await placesKey(env);
@@ -296,16 +349,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
       done++;
       break;
     }
-    for (const item of items) {
-      if (!item) continue;
-      // INSERT OR IGNORE: quem já está na lista (inclusive "não quer") não volta.
-      const result = await env.DB.prepare(
-        `INSERT OR IGNORE INTO prospects(id,name,niche,city,address,phone,mobile,website,instagram,rating,reviews,photos,maps_url,score)
-         VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)`
-      ).bind(item.id, item.name, item.niche, item.city, item.address, item.phone, item.mobile ? 1 : 0, item.website,
-        item.instagram, item.rating, item.reviews, item.photos, item.maps_url, item.score).run();
-      if (Number(result?.meta?.changes || 0) > 0) added++;
-    }
+    added += await saveProspects(env, items);
     searched.push(`${NICHES[nicheKey].query} em ${city}`);
   }
 
@@ -365,6 +409,18 @@ export async function handleProspectsRoute(request, env, url) {
       const body = await request.json().catch(() => ({}));
       const result = await runProspectSearch(env, { calls: body.calls, niche: body.niche });
       return send(result, result.ok || result.added ? 200 : 400);
+    }
+    if (url.pathname === "/api/master/prospects/plan" && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      const result = await planBrowserSearch(env, { calls: body.calls, niche: body.niche });
+      return send(result, result.ok ? 200 : 400);
+    }
+    if (url.pathname === "/api/master/prospects/import" && request.method === "POST") {
+      const raw = await request.text();
+      if (raw.length > 3_000_000) return send({ ok: false, error: "too_large" }, 413);
+      let body = {};
+      try { body = JSON.parse(raw); } catch {}
+      return send(await importBrowserResults(env, body));
     }
     if (url.pathname === "/api/master/prospects/key" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));

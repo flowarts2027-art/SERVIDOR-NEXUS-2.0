@@ -16,6 +16,42 @@
   };
   let status = "novo";
   let busy = false;
+  let provider = "osm";
+
+  // Busca grátis: o navegador consulta o OpenStreetMap e manda o resultado ao Nexus.
+  async function overpass(endpoints, query) {
+    for (const url of endpoints) {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const response = await fetch(url, {
+            method: "POST", body: "data=" + encodeURIComponent(query),
+            headers: { "content-type": "application/x-www-form-urlencoded" }, signal: AbortSignal.timeout(40000)
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data.elements)) return data.elements;
+          }
+        } catch {}
+        await new Promise(resolve => setTimeout(resolve, 2500));
+      }
+    }
+    throw new Error("osm_busy");
+  }
+
+  async function browserSearch(niche, progress) {
+    const plan = await call("/api/master/prospects/plan", { method: "POST", body: JSON.stringify({ calls: 3, niche }) });
+    let added = 0, failed = 0;
+    for (const [i, job] of plan.jobs.entries()) {
+      progress(`Buscando ${job.label} (${i + 1} de ${plan.jobs.length})…`);
+      try {
+        const elements = await overpass(plan.endpoints, job.query);
+        const slim = elements.map(e => ({ type: e.type, id: e.id, tags: e.tags || {} }));
+        const result = await call("/api/master/prospects/import", { method: "POST", body: JSON.stringify({ niche: job.niche, cityIndex: job.cityIndex, elements: slim }) });
+        added += Number(result.added || 0);
+      } catch { failed++; }
+    }
+    return { added, failed, usedToday: plan.usedToday, dailyLimit: plan.dailyLimit };
+  }
 
   const call = async (path, options = {}) => {
     const response = await fetch(path, { credentials: "same-origin", headers: { "content-type": "application/json" }, ...options });
@@ -56,7 +92,8 @@
     try {
       const data = await call("/api/master/prospects?status=" + encodeURIComponent(status) + "&limit=60");
       items = data.items || [];
-      const source = data.provider === "google" ? "Google Maps" : "OpenStreetMap (grátis)";
+      provider = data.provider || "osm";
+      const source = provider === "google" ? "Google Maps" : "OpenStreetMap (grátis)";
       $("#prospect-usage").textContent = `Fonte: ${source}. Buscas hoje: ${data.usedToday || 0} de ${data.dailyLimit || 30}`;
       const counts = data.counts || {};
       $("#prospect-tabs").innerHTML = TABS.map(([key, label]) =>
@@ -107,10 +144,16 @@
       button.disabled = true;
       usage.textContent = "Buscando no mapa… pode levar até 1 minuto.";
       try {
-        const result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche: $("#prospect-niche").value }) });
+        const niche = $("#prospect-niche").value;
+        let result;
+        if (provider === "google") {
+          result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche }) });
+        } else {
+          result = await browserSearch(niche, text => { usage.textContent = text; });
+        }
         status = "novo";
         await load();
-        usage.textContent = `${result.added || 0} empresas novas sem site. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.` + (result.error ? " Uma busca falhou." : "");
+        usage.textContent = `${result.added || 0} empresas novas sem site. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.` + (result.failed ? ` ${result.failed} busca(s) falharam: o mapa grátis estava ocupado.` : "");
       } catch (error) {
         usage.textContent = error.message;
       } finally {

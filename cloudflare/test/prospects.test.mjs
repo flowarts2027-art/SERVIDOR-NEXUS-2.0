@@ -5,7 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import {
   phoneInfo, siteInfo, prospectScore, placeToProspect, firstMessage, whatsappLink,
   runProspectSearch, listProspects, setProspectStatus, savePlacesKey, DAILY_SEARCH_LIMIT,
-  osmToProspect, overpassQuery
+  osmToProspect, overpassQuery, planBrowserSearch, importBrowserResults
 } from "../src/prospects.js";
 
 function fakeEnv() {
@@ -150,4 +150,26 @@ test("ponto do mapa: só nome, telefone e sem site próprio", () => {
   assert.equal(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "123" } }, "cafeteria", "Recife PE"), null);
   assert.ok(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "(81) 3333-4444", website: "instagram.com/x" } }, "cafeteria", "Recife PE"));
   assert.match(overpassQuery("lanchonete", 0), /"amenity"="fast_food"/);
+});
+
+test("busca pelo navegador: o servidor planeja, o navegador busca e o servidor guarda", async () => {
+  const { db, env } = fakeEnv();
+  delete env.GOOGLE_PLACES_API_KEY;
+  const plan = await planBrowserSearch(env, { calls: 2 });
+  assert.equal(plan.jobs.length, 2);
+  assert.equal(plan.usedToday, 2);
+  assert.match(plan.jobs[0].query, /out tags center/);
+  assert.ok(plan.endpoints[0].startsWith("https://overpass-api.de"));
+  const next = await planBrowserSearch(env, { calls: 1 });
+  assert.notEqual(next.jobs[0].label, plan.jobs[0].label, "rodízio anda");
+  const job = plan.jobs[0];
+  const result = await importBrowserResults(env, { niche: job.niche, cityIndex: job.cityIndex, elements: [
+    { type: "node", id: 7, tags: { name: "Café do Bairro", phone: "(11) 97777-6666", opening_hours: "Mo-Fr 07:00-18:00" } },
+    { type: "node", id: 8, tags: { name: "Rede Grande", phone: "(11) 97777-5555", brand: "Rede" } },
+    { type: "bad", id: 9, tags: { name: "X", phone: "(11) 97777-4444" } }
+  ] });
+  assert.equal(result.added, 1);
+  assert.equal(db.prepare("SELECT city FROM prospects").get().city, "São Paulo SP");
+  await assert.rejects(importBrowserResults(env, { niche: "x", cityIndex: 0, elements: [] }), /niche_invalid/);
+  await assert.rejects(importBrowserResults(env, { niche: "cafeteria", cityIndex: 999, elements: [] }), /city_invalid/);
 });
