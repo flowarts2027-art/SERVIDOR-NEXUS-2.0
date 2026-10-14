@@ -1,0 +1,15 @@
+{
+  "name": "Nexus Master · Flow Arts",
+  "short_name": "Nexus Master",
+  "description": "Painel Master do Nexus da Flow Arts.",
+  "lang": "pt-BR",
+  "start_url": "/api/master/console",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080b0a",
+  "theme_color": "#080b0a",
+  "icons": [
+    { "src": "/assets/app-master-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/assets/app-master-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

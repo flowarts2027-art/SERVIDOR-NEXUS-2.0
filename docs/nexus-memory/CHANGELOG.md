@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 20h36–21h10 BRT — Painéis no celular e "app" na tela inicial (branch feat/celular-painel, não publicada)
+- Rodrigo (print do login vazando para a direita): Master e painel do cliente ruins no telefone; sem conta de desenvolvedor para app.
+- Diagnóstico com navegador simulado (360px e letra grande, como acessibilidade do Android): login vazava (inputs cresciam com a letra); menu do cliente tinha 8 abas para 6 colunas (Campanha sumia, Meu negócio/Conta quebravam linha); Master tinha 9 itens com letra de 8px; tabela de Clientes com min-width 760 (arrastar para o lado).
+- Cliente: menu de baixo com 5 (Início, Posts, Campanha, Buscar, Mais); "Mais" abre botões grandes (Números, Contatos, Meu negócio, Conta). Login sem vazar. No computador, barra lateral igual. client-lite v114/css v111.
+- Master: celular com Visão geral, Clientes, Postagens, WhatsApp e Mais (Agentes, Contatos, Site, Integrações); tabelas viram cartões; botões com 44px. app.js v46, styles v31.
+- PWA: portal.webmanifest (start /portal) e master.webmanifest (start /api/master/console), ícones Flow Arts 180/192/512. No Android: menu ⋮ → "Adicionar à tela inicial"/"Instalar app"; no iPhone: Compartilhar → "Adicionar à Tela de Início". Sem service worker (não funciona offline).
+- Conferido em prints simulados (celular com letra grande e computador). 362 testes ok.
+
 ## 2026-10-14 20h26–20h35 BRT — Acesso do cliente com o domínio próprio (publicado be3db4f às 20h29 com OK do Rodrigo; deploy e CI ok; leitura externa do app.js veio com versão anterior — provável cache da ferramenta de leitura, não confirmado)
 - Rodrigo: o texto de acesso do cliente novo sai com servidor-nexus.diamantehinode2015.workers.dev. Causa: app.js montava com location.origin (o Master é aberto no workers.dev).
 - app.js (v45): CLIENT_PANEL_URL = https://painel.flowarts.com.br/ no texto "NEXUS AI / Acesso / Usuário / Senha". 360 testes ok. Não conferido daqui que /login abre no domínio (o acesso a esse site é bloqueado pelo ambiente); os arquivos do painel já respondem nesse domínio.

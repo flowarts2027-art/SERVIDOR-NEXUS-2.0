@@ -249,3 +249,32 @@
 .ai-image-cell{margin-top:6px;display:grid;gap:4px}
 .ai-image-toggle{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;cursor:pointer;min-height:32px}
 .ai-image-toggle input{width:20px;height:20px;margin:0}
+/* Celular: 4 telas principais + "Mais"; tabelas viram cartões; nada passa da largura da tela. */
+.master-more-btn,.master-more-sheet{display:none}
+@media(max-width:700px){
+.sidebar{height:auto;min-height:68px;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.sidebar nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.sidebar nav>.nav-item.more-tab{display:none}
+.sidebar nav>.nav-item{min-height:56px;padding:6px 2px;font-size:20px;align-content:center}
+.sidebar nav>.nav-item span{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.master-more-btn{display:grid}
+.master-more-sheet{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom));z-index:11;background:#0d1110;border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px;box-shadow:0 -14px 34px #000a}
+.master-more-sheet:not([hidden]){display:block}
+.master-more-title{font-weight:800;margin:0 0 12px}
+.master-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.master-more-grid .nav-item{min-height:74px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;text-align:center;font-size:22px;padding:10px}
+.master-more-grid .nav-item span{font-size:14px}
+.master-more-grid .nav-item.active{box-shadow:none;border-color:var(--green)}
+main{min-width:0;overflow-wrap:anywhere}
+header{gap:10px}
+.panel-head{flex-wrap:wrap;gap:10px}
+.table-wrap{overflow:visible}
+.table-wrap table{min-width:0}
+.table-wrap thead{display:none}
+.table-wrap table,.table-wrap tbody,.table-wrap tr,.table-wrap td{display:block;width:100%}
+.table-wrap tr{border:1px solid var(--line);border-radius:14px;padding:6px 12px;margin-bottom:12px;background:#0b0f0d}
+.table-wrap td{border-bottom:0;padding:7px 0;font-size:14px}
+.client-action-stack{display:flex;flex-wrap:wrap;gap:8px}
+.client-action-stack>*{min-height:44px;display:inline-flex;align-items:center}
+.ghost,.primary,.small-primary,.small-danger{min-height:44px}
+}

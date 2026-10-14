@@ -612,7 +612,23 @@ function showView(id) {
   $$(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === id));
   const titles = { dashboard: "Visão geral", clients: "Clientes", agents: "Agent Core", posts: "Postagens & custos", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Odin & Leads", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
   $("#page-title").textContent = titles[id] || "NEXUS AI";
+  // Celular: "Mais" fica marcado quando a tela aberta está dentro dele.
+  $("#master-more-btn")?.classList.toggle("active", ["agents", "odin", "site", "settings"].includes(id));
+  toggleMasterMore(false);
 }
+
+function toggleMasterMore(open) {
+  const sheet = $("#master-more-sheet");
+  const button = $("#master-more-btn");
+  if (!sheet || !button) return;
+  const show = open === undefined ? sheet.hidden : Boolean(open);
+  sheet.hidden = !show;
+  button.setAttribute("aria-expanded", String(show));
+}
+document.addEventListener("click", event => {
+  if (event.target.closest?.("#master-more-btn")) { toggleMasterMore(); return; }
+  if (!event.target.closest?.("#master-more-sheet")) toggleMasterMore(false);
+});
 
 // Custo da IA por cliente (7 dias): custo real da OpenAI dividido pelos posts com imagem.
 async function loadCostReport() {

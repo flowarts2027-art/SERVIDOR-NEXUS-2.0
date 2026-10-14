@@ -64,12 +64,12 @@ h1, h2 { line-height: 1.2; margin: 0; }
 
 /* Login */
 .login { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--navy); }
-.login-card { width: min(420px, 100%); background: var(--card); border-radius: 20px; padding: 28px 22px; }
+.login-card { width: min(420px, 100%); min-width: 0; overflow-wrap: anywhere; background: var(--card); border-radius: 20px; padding: 28px 22px; }
 .login-brand { color: var(--blue); font-weight: 700; margin: 0 0 6px; }
 .login h1 { font-size: 1.45rem; margin-bottom: 18px; }
 .login form { display: grid; gap: 14px; }
-.login label { display: grid; gap: 6px; font-weight: 700; }
-.login input[name] { min-height: 50px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 0 14px; background: #fff; }
+.login label { display: grid; gap: 6px; font-weight: 700; min-width: 0; }
+.login input[name] { width: 100%; min-width: 0; min-height: 50px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 0 14px; background: #fff; }
 .login .check { display: flex; align-items: center; gap: 10px; font-weight: 400; }
 .login .check input { width: 22px; height: 22px; }
 .form-error { color: var(--danger); margin: 0; min-height: 1.2em; }
@@ -235,15 +235,31 @@ h1, h2 { line-height: 1.2; margin: 0; }
 /* Menu de baixo (celular) */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(6, 1fr);
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
   background: var(--card); border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom); height: calc(var(--nav-h) + env(safe-area-inset-bottom));
 }
 .tabbar button {
   position: relative; border: 0; background: none; color: var(--muted); cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  font-size: .82rem; font-weight: 700;
+  font-size: .82rem; font-weight: 700; min-width: 0; padding: 0 2px;
 }
+/* Celular: 5 botões no menu de baixo; o resto fica em "Mais". */
+.tabbar > button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tabbar > .more-tab { display: none; }
+.more-sheet {
+  position: fixed; left: 0; right: 0; bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); z-index: 21;
+  background: var(--card); border-top: 1px solid var(--line); border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 32px rgba(15, 31, 61, .18); padding: 16px 16px 20px;
+}
+.more-sheet[hidden] { display: none; }
+.more-title { margin: 0 0 12px; font-weight: 700; color: var(--ink); }
+.more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tabbar .more-grid button {
+  min-height: 76px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card);
+  color: var(--ink); font-size: 1rem; gap: 6px; padding: 10px; white-space: normal; overflow-wrap: anywhere; text-align: center;
+}
+.tabbar .more-grid button.active { border-color: var(--blue); color: var(--blue); }
 .tabbar button span { font-size: 1.3rem; line-height: 1; }
 .tabbar button.active { color: var(--blue); }
 .badge {
@@ -262,6 +278,8 @@ h1, h2 { line-height: 1.2; margin: 0; }
   }
   .tabbar button { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 12px 14px; border-radius: 12px; font-size: 1rem; }
   .tabbar button.active { background: var(--blue-soft); }
+  .tabbar > .more-tab { display: flex; }
+  .more-btn, .more-sheet { display: none !important; }
   .badge { position: static; margin-left: auto; }
   .content { padding-bottom: 40px; }
   .toast { bottom: 24px; }
@@ -344,3 +362,7 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .camp-art figcaption { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 6px 8px; font-size: .85rem; }
 .camp-art.is-used { opacity: .55; }
 @media (prefers-color-scheme: dark) { .camp-choice, .camp-art { background: transparent; } }
+
+/* Celular com letra grande: nada passa da largura da tela. */
+.content, .block, .empty { min-width: 0; overflow-wrap: anywhere; }
+input, select, textarea, button { max-width: 100%; }

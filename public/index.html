@@ -4,8 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b0a">
+  <link rel="manifest" href="/master.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/app-master-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=30">
+  <link rel="stylesheet" href="/styles.css?v=31">
 </head>
 <body>
   <div class="shell">
@@ -15,12 +20,22 @@
         <button class="nav-item active" data-view="dashboard">▦ <span>Visão geral</span></button>
         <button class="nav-item" data-view="clients">◉ <span>Clientes</span></button>
         <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
-        <button class="nav-item" data-view="agents">⬡ <span>Agentes</span></button>
-        <button class="nav-item" data-view="odin">◆ <span>Contatos</span></button>
+        <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
+        <button class="nav-item more-tab" data-view="odin">◆ <span>Contatos</span></button>
         <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item" data-view="site">◍ <span>Site</span></button>
-        <button class="nav-item" data-view="settings">⚙ <span>Integrações</span></button>
+        <button class="nav-item more-tab" data-view="site">◍ <span>Site</span></button>
+        <button class="nav-item more-tab" data-view="settings">⚙ <span>Integrações</span></button>
+        <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet">☰ <span>Mais</span></button>
       </nav>
+      <div id="master-more-sheet" class="master-more-sheet" hidden>
+        <p class="master-more-title">Mais opções</p>
+        <div class="master-more-grid">
+          <button class="nav-item" type="button" data-view="agents">⬡ <span>Agentes</span></button>
+          <button class="nav-item" type="button" data-view="odin">◆ <span>Contatos</span></button>
+          <button class="nav-item" type="button" data-view="site">◍ <span>Site</span></button>
+          <button class="nav-item" type="button" data-view="settings">⚙ <span>Integrações</span></button>
+        </div>
+      </div>
       <div class="core-card"><span class="pulse"></span><div><strong>Agent Core</strong><small>Motor central disponível</small></div></div>
     </aside>
 
@@ -444,7 +459,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=45" defer></script>
+  <script src="/app.js?v=46" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

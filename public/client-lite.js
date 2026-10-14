@@ -571,7 +571,19 @@ function showTab(tab) {
     btn.classList.toggle("active", active);
     if (active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
   });
+  // No celular, "Mais" fica marcado quando a aba aberta está dentro dele.
+  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "negocio", "conta"].includes(state.tab));
+  toggleMore(false);
   window.scrollTo({ top: 0 });
+}
+
+function toggleMore(open) {
+  const sheet = $("#more-sheet");
+  const button = $("#more-btn");
+  if (!sheet || !button) return;
+  const show = open === undefined ? sheet.hidden : Boolean(open);
+  sheet.hidden = !show;
+  button.setAttribute("aria-expanded", String(show));
 }
 
 function showLogin(message = "") {
@@ -644,8 +656,10 @@ document.addEventListener("click", event => {
     toast(DEMO_BLOCKED);
     return;
   }
+  if (target.closest("#more-btn")) { toggleMore(); return; }
   const tabBtn = target.closest(".tabbar [data-tab]");
   if (tabBtn) { showTab(tabBtn.dataset.tab); return; }
+  if (!target.closest("#more-sheet")) toggleMore(false);
   const go = target.closest("[data-go]");
   if (go) { showTab(go.dataset.go); return; }
   const discard = target.closest("[data-discard-lead]");

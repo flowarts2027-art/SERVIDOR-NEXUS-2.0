@@ -4,12 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0F1E3D">
+  <link rel="manifest" href="/portal.webmanifest">
+  <link rel="apple-touch-icon" href="/brand/app-cliente-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Flow Arts">
   <title>Meu Instagram · Painel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=110">
-  <script src="/client-lite.js?v=113" defer></script>
+  <link rel="stylesheet" href="/client-lite.css?v=111">
+  <script src="/client-lite.js?v=114" defer></script>
   <script src="/captador.js?v=4" defer></script>
   <script src="/negocio.js?v=2" defer></script>
   <script src="/campanha.js?v=2" defer></script>
@@ -43,12 +48,22 @@
     <nav class="tabbar" aria-label="Seções do painel">
       <button type="button" data-tab="inicio" class="active"><span aria-hidden="true">⌂</span>Início</button>
       <button type="button" data-tab="posts"><span aria-hidden="true">▦</span>Posts<b class="badge" id="badge-posts" hidden></b></button>
-      <button type="button" data-tab="numeros"><span aria-hidden="true">↗</span>Números</button>
-      <button type="button" data-tab="contatos"><span aria-hidden="true">☺</span>Contatos</button>
-      <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
+      <button type="button" data-tab="numeros" class="more-tab"><span aria-hidden="true">↗</span>Números</button>
+      <button type="button" data-tab="contatos" class="more-tab"><span aria-hidden="true">☺</span>Contatos</button>
       <button type="button" data-tab="campanha"><span aria-hidden="true">◷</span>Campanha</button>
-      <button type="button" data-tab="negocio"><span aria-hidden="true">▣</span>Meu negócio</button>
-      <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
+      <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
+      <button type="button" data-tab="negocio" class="more-tab"><span aria-hidden="true">▣</span>Meu negócio</button>
+      <button type="button" data-tab="conta" class="more-tab"><span aria-hidden="true">⚙</span>Conta</button>
+      <button type="button" id="more-btn" class="more-btn" aria-expanded="false" aria-controls="more-sheet"><span aria-hidden="true">☰</span>Mais</button>
+      <div id="more-sheet" class="more-sheet" hidden>
+        <p class="more-title">Mais opções</p>
+        <div class="more-grid">
+          <button type="button" data-tab="numeros"><span aria-hidden="true">↗</span>Números</button>
+          <button type="button" data-tab="contatos"><span aria-hidden="true">☺</span>Contatos</button>
+          <button type="button" data-tab="negocio"><span aria-hidden="true">▣</span>Meu negócio</button>
+          <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
+        </div>
+      </div>
     </nav>
 
     <div id="toast" class="toast" role="status" hidden></div>
