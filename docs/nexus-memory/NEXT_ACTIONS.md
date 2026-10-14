@@ -24,7 +24,7 @@
 - Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
 
 ## Captador de clientes (ferramenta R$ 97/mês)
-- 14/10 tarde: tipos Ração, Casa de ração e Agropecuária prontos na branch feat/captador-racao-agro (cliente Quatree em MG). Falta OK do Rodrigo para publicar e uma busca real em BH para conferir.
+- 14/10 tarde: tipos Ração, Casa de ração e Agropecuária prontos na branch feat/captador-racao-agro (cliente Quatree em MG). Captador do cliente passou a usar o Google Maps (mesma regra do Master). Falta OK do Rodrigo para publicar; depois ligar o Captador do Quatree Dog em Master → Contatos e fazer 1 busca real. Atenção ao custo: buscas dos clientes somam na cota do Google da Flow Arts.
 - Código pronto (branch feat/captador-clientes). Antes de vender: confirmar por alguns dias que o Overpass (mapa grátis) responde; ele deu 504 em 14/10 de manhã. Se continuar instável, avaliar servidor Overpass próprio ou Google (custo por busca).
 - Quando a Meta liberar o número: ajustes finais (robô oferece o Captador e manda o link do portal).
 

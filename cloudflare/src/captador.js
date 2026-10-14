@@ -1,55 +1,46 @@
 // Captador de clientes: ferramenta vendida aos clientes da Flow Arts (R$ 97/mês).
-// O cliente escolhe o tipo de negócio e a cidade no portal. O navegador dele
-// consulta o OpenStreetMap (grátis) e manda o resultado para cá. Aqui a gente
-// filtra, guarda só para aquele cliente e monta a mensagem com o texto dele.
+// Mesma busca do Caçador do Master: Google Maps (API oficial do Google Places,
+// com a chave da Flow Arts). O cliente escolhe o tipo de negócio e escreve a cidade.
+// Regra do Google: a lista aparece na hora e NÃO é guardada. Fica guardado só
+// quem o cliente chamar no WhatsApp (nome, telefone, cidade) e o código do lugar
+// de quem ele marcar "não serve". Tudo separado por cliente.
 // Nada é enviado pelo servidor: o cliente manda pelo próprio WhatsApp.
 
-import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, OVERPASS_ENDPOINTS } from "./prospects.js";
+import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces } from "./prospects.js";
 
 export const CAPTADOR_DAILY_LIMIT = 10;
 export const CAPTADOR_PRICE = "R$ 97 por mês";
 
-// Overpass compara o nome por bytes: acentos vão escritos em maiúscula e minúscula.
-const RACAO_NAMES = "ração|rações|racao|racoes|RAÇÃO|RAÇÕES|Ração|Rações";
-
+// `query` é o texto da busca no Google ("<query> em <cidade>").
 export const CAPTADOR_NICHES = {
-  restaurante: { label: "Restaurante", tags: [["amenity", "restaurant"]] },
-  cafeteria: { label: "Cafeteria", tags: [["amenity", "cafe"]] },
-  lanchonete: { label: "Lanchonete", tags: [["amenity", "fast_food"]] },
-  padaria: { label: "Padaria", tags: [["shop", "bakery"]] },
-  bar: { label: "Bar", tags: [["amenity", "bar"], ["amenity", "pub"]] },
-  salao: { label: "Salão de beleza e barbearia", tags: [["shop", "hairdresser"], ["shop", "beauty"]] },
-  academia: { label: "Academia", tags: [["leisure", "fitness_centre"]] },
-  pet: { label: "Pet shop", tags: [["shop", "pet"]] },
+  restaurante: { label: "Restaurante", query: "restaurante" },
+  cafeteria: { label: "Cafeteria", query: "cafeteria" },
+  lanchonete: { label: "Lanchonete", query: "lanchonete" },
+  padaria: { label: "Padaria", query: "padaria" },
+  bar: { label: "Bar", query: "bar" },
+  salao: { label: "Salão de beleza e barbearia", query: "salão de beleza" },
+  academia: { label: "Academia", query: "academia" },
+  pet: { label: "Pet shop", query: "pet shop" },
   // Lojas de ração e agro (pedido de 14/10: cliente que revende Quatree em MG).
-  // Terceiro item = filtro extra do Overpass; valor null = qualquer valor da chave.
-  racao: { label: "Ração (loja de ração)", tags: [
-    ["shop", "agrarian", '["agrarian"~"feed"]'],
-    ["shop", "pet_food"],
-    ["shop", null, `["name"~"${RACAO_NAMES}",i]`]
-  ] },
-  casa_racao: { label: "Casa de ração", tags: [
-    ["shop", null, '["name"~"casa d[aeo]s? ra",i]']
-  ] },
-  agropecuaria: { label: "Agropecuária", tags: [
-    ["shop", "agrarian"],
-    ["shop", null, '["name"~"agropecu|agrovet|agro ",i]']
-  ] },
-  veterinario: { label: "Veterinário", tags: [["amenity", "veterinary"]] },
-  dentista: { label: "Dentista", tags: [["amenity", "dentist"], ["healthcare", "dentist"]] },
-  clinica: { label: "Clínica e consultório", tags: [["amenity", "clinic"], ["amenity", "doctors"]] },
-  farmacia: { label: "Farmácia", tags: [["amenity", "pharmacy"]] },
-  mercado: { label: "Mercado", tags: [["shop", "supermarket"], ["shop", "convenience"]] },
-  roupas: { label: "Loja de roupas", tags: [["shop", "clothes"]] },
-  oficina: { label: "Oficina mecânica", tags: [["shop", "car_repair"]] },
-  hotel: { label: "Hotel e pousada", tags: [["tourism", "hotel"], ["tourism", "guest_house"]] },
-  imobiliaria: { label: "Imobiliária", tags: [["office", "estate_agent"]] },
-  contabilidade: { label: "Contabilidade", tags: [["office", "accountant"]] },
-  material: { label: "Material de construção", tags: [["shop", "hardware"], ["shop", "doityourself"]] }
+  racao: { label: "Ração (loja de ração)", query: "loja de ração" },
+  casa_racao: { label: "Casa de ração", query: "casa de ração" },
+  agropecuaria: { label: "Agropecuária", query: "agropecuária" },
+  veterinario: { label: "Veterinário", query: "clínica veterinária" },
+  dentista: { label: "Dentista", query: "dentista" },
+  clinica: { label: "Clínica e consultório", query: "clínica médica" },
+  farmacia: { label: "Farmácia", query: "farmácia" },
+  mercado: { label: "Mercado", query: "mercado" },
+  roupas: { label: "Loja de roupas", query: "loja de roupas" },
+  oficina: { label: "Oficina mecânica", query: "oficina mecânica" },
+  hotel: { label: "Hotel e pousada", query: "pousada" },
+  imobiliaria: { label: "Imobiliária", query: "imobiliária" },
+  contabilidade: { label: "Contabilidade", query: "escritório de contabilidade" },
+  material: { label: "Material de construção", query: "loja de material de construção" }
 };
 
 const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+const GOOGLE_ID = /^[A-Za-z0-9_-]{10,300}$/;
 
 export async function ensureCaptadorSchema(env) {
   await env.DB.prepare(`
@@ -69,6 +60,14 @@ export async function ensureCaptadorSchema(env) {
       status TEXT NOT NULL DEFAULT 'novo',
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (client_id, id)
+    )`).run();
+  // Só o código do lugar de quem o cliente marcou "não serve" (permitido pelo Google).
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS captador_skips (
+      client_id TEXT NOT NULL,
+      id TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (client_id, id)
     )`).run();
 }
@@ -129,120 +128,140 @@ export function captadorMessage(config, lead) {
   return lines.join("\n\n");
 }
 
-export function captadorScore({ mobile, hours, address, instagram, hasSite }) {
+const withMessage = (config, lead) => {
+  const message = captadorMessage(config, lead);
+  return { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
+    whatsapp: `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` };
+};
+
+// Nota de 0 a 10: empresa ativa e bem avaliada, fácil de chamar no WhatsApp.
+export function captadorScore({ reviews = 0, rating = 0, mobile = false, hasSite = false }) {
   let score = 3;
+  if (reviews >= 100) score += 2; else if (reviews >= 20) score += 1;
+  if (rating >= 4.5) score += 2; else if (rating >= 4.0) score += 1;
   if (mobile) score += 2;
-  if (hours) score += 2;
-  if (address) score += 1;
-  if (instagram) score += 1;
   if (!hasSite) score += 1;
-  return Math.min(10, score);
+  return Math.max(0, Math.min(10, score));
 }
 
-export function captadorLead(element, nicheKey, city, onlyNoSite = false) {
-  const tags = element?.tags || {};
-  const name = clean(tags.name, 120);
-  if (!name || !["node", "way", "relation"].includes(element?.type) || !Number.isFinite(Number(element?.id))) return null;
-  if (tags.disused || tags["disused:amenity"] || tags["disused:shop"]) return null;
-  if (tags.brand || tags["brand:wikidata"]) return null;
-  const rawPhone = String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0];
-  const { phone, mobile } = phoneInfo(rawPhone);
-  if (!phone) return null;
-  const website = String(tags.website || tags["contact:website"] || tags.url || "").trim();
-  const site = siteInfo(website && !/^https?:/i.test(website) ? "https://" + website : website);
+// Um lugar do Google vira um contato (ou null se não servir).
+export function captadorLead(place, nicheKey, city, onlyNoSite = false) {
+  if (!place?.id || !GOOGLE_ID.test(String(place.id))) return null;
+  if (place.businessStatus && place.businessStatus !== "OPERATIONAL") return null;
+  const name = clean(place.displayName?.text, 120);
+  if (!name) return null;
+  const site = siteInfo(place.websiteUri);
   if (onlyNoSite && site.hasOwnSite) return null;
-  const igTag = String(tags["contact:instagram"] || "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?]/)[0];
-  const instagram = site.instagram || (/^[a-z0-9._]{1,30}$/i.test(igTag) ? igTag : "");
-  const address = clean([tags["addr:street"], tags["addr:housenumber"], tags["addr:suburb"]].filter(Boolean).join(", "), 200);
-  const lead = {
-    id: `osm:${element.type}/${Number(element.id)}`, name, niche: nicheKey, city, address, phone, mobile,
-    has_site: site.hasOwnSite, instagram, maps_url: mapsSearchLink(name, city)
+  const { phone, mobile } = phoneInfo(place.nationalPhoneNumber || place.internationalPhoneNumber);
+  if (!phone) return null;
+  const reviews = Number(place.userRatingCount || 0);
+  const rating = Number(place.rating || 0);
+  return {
+    id: String(place.id), name, niche: nicheKey, city,
+    address: clean(place.formattedAddress, 200), phone, mobile,
+    has_site: site.hasOwnSite, instagram: site.instagram, rating, reviews,
+    maps_url: /^https:\/\//.test(String(place.googleMapsUri || "")) ? String(place.googleMapsUri).slice(0, 300) : mapsSearchLink(name, city),
+    score: captadorScore({ reviews, rating, mobile, hasSite: site.hasOwnSite })
   };
-  lead.score = captadorScore({ mobile, hours: Boolean(tags.opening_hours), address, instagram, hasSite: site.hasOwnSite });
-  return lead;
 }
 
-export function captadorQuery(nicheKey, lat, lon, radius = 10000) {
-  const parts = CAPTADOR_NICHES[nicheKey].tags.map(([k, v, extra = ""]) =>
-    `nwr["${k}"${v === null ? "" : `="${v}"`}]${extra}["name"](around:${radius},${lat},${lon});`);
-  return `[out:json][timeout:25];(${parts.join("")});out tags center 800;`;
+async function alreadyKnown(env, clientId, id) {
+  if (await env.DB.prepare("SELECT 1 AS x FROM captador_leads WHERE client_id=?1 AND id=?2").bind(clientId, id).first()) return true;
+  return Boolean(await env.DB.prepare("SELECT 1 AS x FROM captador_skips WHERE client_id=?1 AND id=?2").bind(clientId, id).first());
 }
 
-// Território brasileiro, com folga.
-const inBrazil = (lat, lon) => lat >= -34.5 && lat <= 6 && lon >= -74.5 && lon <= -28.5;
-
-export async function planCaptadorSearch(env, client, body = {}) {
+// Busca no Google Maps. A lista vai direto para a tela do cliente, sem guardar.
+export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch) {
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
   const niche = String(body.niche || "");
   if (!CAPTADOR_NICHES[niche]) throw new Error("niche_invalid");
-  const lat = Number(body.lat), lon = Number(body.lon);
-  if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inBrazil(lat, lon)) throw new Error("city_invalid");
   const city = clean(body.city, 60);
-  if (!city) throw new Error("city_invalid");
+  if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
+  const key = await placesKey(env);
+  if (!key) throw new Error("google_unavailable");
   const usage = await readState(env, client.id, "usage", { day: "", count: 0 });
   const used = usage.day === today() ? Number(usage.count || 0) : 0;
   if (used >= CAPTADOR_DAILY_LIMIT) throw new Error("daily_limit");
   await writeState(env, client.id, "usage", { day: today(), count: used + 1 });
-  await writeState(env, client.id, "job", { niche, city, at: Date.now() });
-  return {
-    ok: true, query: captadorQuery(niche, lat.toFixed(4), lon.toFixed(4)), endpoints: OVERPASS_ENDPOINTS,
-    usedToday: used + 1, dailyLimit: CAPTADOR_DAILY_LIMIT
-  };
-}
-
-export async function importCaptadorResults(env, client, body = {}) {
-  await ensureCaptadorSchema(env);
-  if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
-  const job = await readState(env, client.id, "job", null);
-  if (!job || !CAPTADOR_NICHES[job.niche] || Date.now() - Number(job.at || 0) > 15 * 60 * 1000) throw new Error("search_expired");
-  const config = await captadorConfig(env, client);
-  const list = Array.isArray(body.elements) ? body.elements.slice(0, 1000) : [];
-  let added = 0;
-  for (const element of list) {
-    const lead = captadorLead({ type: element?.type, id: element?.id, tags: element && typeof element.tags === "object" ? element.tags : {} },
-      job.niche, job.city, config.onlyNoSite);
-    if (!lead) continue;
-    const result = await env.DB.prepare(
-      `INSERT OR IGNORE INTO captador_leads(client_id,id,name,niche,city,address,phone,mobile,has_site,instagram,maps_url,score)
-       VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
-    ).bind(client.id, lead.id, lead.name, lead.niche, lead.city, lead.address, lead.phone, lead.mobile ? 1 : 0,
-      lead.has_site ? 1 : 0, lead.instagram, lead.maps_url, lead.score).run();
-    if (Number(result?.meta?.changes || 0) > 0) added++;
+  let places;
+  try {
+    places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
+  } catch {
+    throw new Error("google_failed");
   }
-  await writeState(env, client.id, "job", null);
-  return { ok: true, found: list.length, added };
+  const config = await captadorConfig(env, client);
+  const items = [];
+  for (const place of places) {
+    const lead = captadorLead(place, niche, city, config.onlyNoSite);
+    if (!lead || await alreadyKnown(env, client.id, lead.id)) continue;
+    items.push(withMessage(config, { ...lead, status: "novo" }));
+  }
+  items.sort((a, b) => b.score - a.score);
+  return { ok: true, found: places.length, items, usedToday: used + 1, dailyLimit: CAPTADOR_DAILY_LIMIT };
 }
 
-export async function captadorView(env, client, status = "novo") {
+// Quem o cliente chamou no WhatsApp vira contato dele (nome, telefone, cidade).
+export async function saveCaptadorContacted(env, client, body = {}) {
+  await ensureCaptadorSchema(env);
+  const id = String(body.id || "");
+  if (!GOOGLE_ID.test(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
+  const city = clean(body.city, 60);
+  const name = clean(body.name, 120);
+  const { phone, mobile } = phoneInfo(body.phone);
+  if (!phone || !name || !city) throw new Error("lead_invalid");
+  const maps = String(body.maps_url || "");
+  const mapsUrl = /^https:\/\/(maps\.google\.com|www\.google\.com\/maps)\//.test(maps) ? maps.slice(0, 300) : mapsSearchLink(name, city);
+  const instagram = /^[a-z0-9._]{1,30}$/i.test(String(body.instagram || "")) ? String(body.instagram) : "";
+  const score = Math.max(0, Math.min(10, Math.round(Number(body.score) || 0)));
+  await env.DB.prepare(
+    `INSERT INTO captador_leads(client_id,id,name,niche,city,address,phone,mobile,has_site,instagram,maps_url,score,status)
+     VALUES(?1,?2,?3,?4,?5,'',?6,?7,?8,?9,?10,?11,'enviado')
+     ON CONFLICT(client_id,id) DO UPDATE SET status='enviado',updated_at=CURRENT_TIMESTAMP`
+  ).bind(client.id, id, name, body.niche, city, phone, mobile ? 1 : 0, body.has_site === true ? 1 : 0, instagram, mapsUrl, score).run();
+  return { ok: true, id };
+}
+
+export async function skipCaptadorLead(env, client, id) {
+  await ensureCaptadorSchema(env);
+  const value = String(id || "");
+  if (!GOOGLE_ID.test(value)) throw new Error("lead_invalid");
+  await env.DB.prepare("INSERT OR IGNORE INTO captador_skips(client_id,id) VALUES(?1,?2)").bind(client.id, value).run();
+  return { ok: true };
+}
+
+export async function captadorView(env, client, status = "enviado") {
   const enabled = await captadorEnabled(env, client.id);
   if (!enabled) return { ok: true, enabled: false, price: CAPTADOR_PRICE };
   await ensureCaptadorSchema(env);
-  const filter = STATUSES.includes(status) ? status : "novo";
+  const filter = STATUSES.includes(status) && status !== "novo" ? status : "enviado";
   const config = await captadorConfig(env, client);
   const rows = (await env.DB.prepare(
-    "SELECT * FROM captador_leads WHERE client_id=?1 AND status=?2 ORDER BY score DESC, updated_at DESC LIMIT 100"
+    "SELECT * FROM captador_leads WHERE client_id=?1 AND status=?2 ORDER BY updated_at DESC LIMIT 100"
   ).bind(client.id, filter).all())?.results || [];
   const counts = Object.fromEntries(STATUSES.map(s => [s, 0]));
   for (const row of (await env.DB.prepare("SELECT status, COUNT(*) AS n FROM captador_leads WHERE client_id=?1 GROUP BY status").bind(client.id).all())?.results || []) {
     counts[row.status] = Number(row.n || 0);
   }
+  counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM captador_skips WHERE client_id=?1").bind(client.id).first())?.n || 0);
+  counts.novo = 0; // a lista de novos fica só na tela
   const usage = await readState(env, client.id, "usage", { day: "", count: 0 });
   return {
-    ok: true, enabled: true, config, counts,
+    ok: true, enabled: true, ready: Boolean(await placesKey(env)), config, counts,
     usedToday: usage.day === today() ? Number(usage.count || 0) : 0, dailyLimit: CAPTADOR_DAILY_LIMIT,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
-    items: rows.map(row => {
-      const message = captadorMessage(config, row);
-      return { ...row, mobile: Boolean(row.mobile), has_site: Boolean(row.has_site), message,
-        whatsapp: `https://wa.me/55${row.phone}?text=${encodeURIComponent(message)}` };
-    })
+    items: rows.map(row => withMessage(config, row))
   };
 }
 
 export async function setCaptadorStatus(env, client, id, status) {
   if (!STATUSES.includes(status)) throw new Error("status_invalid");
   await ensureCaptadorSchema(env);
+  if (status === "novo") {
+    // "Não cheguei a mandar": apaga o contato; ele pode aparecer de novo numa busca.
+    await env.DB.prepare("DELETE FROM captador_leads WHERE client_id=?1 AND id=?2").bind(client.id, String(id || "")).run();
+    return { ok: true };
+  }
   const result = await env.DB.prepare(
     "UPDATE captador_leads SET status=?3, updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND id=?2"
   ).bind(client.id, String(id || ""), status).run();
@@ -257,37 +276,39 @@ const send = (data, status = 200) => new Response(JSON.stringify(data), {
 const MESSAGES = {
   captador_disabled: "O Captador de clientes não está ativo na sua conta.",
   daily_limit: "Você chegou no limite de buscas de hoje. Amanhã libera de novo.",
-  city_invalid: "Não encontrei essa cidade. Escreva o nome da cidade e o estado, por exemplo: Recife PE.",
+  city_invalid: "Escreva a cidade e o estado, por exemplo: Uberlândia MG.",
   niche_invalid: "Escolha um tipo de negócio da lista.",
-  search_expired: "A busca demorou demais. Tente de novo.",
+  google_unavailable: "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.",
+  google_failed: "O Google Maps não respondeu agora. Tente de novo daqui a pouco.",
+  lead_invalid: "Não deu para salvar esse contato.",
   status_invalid: "Não deu para mudar a etapa.",
   lead_not_found: "Esse contato não foi encontrado."
 };
 
 // Rotas do portal. Quem chama já conferiu o login do cliente.
-export async function handleCaptadorPortal(request, env, url, client) {
+export async function handleCaptadorPortal(request, env, url, client, fetcher = fetch) {
   if (!url.pathname.startsWith("/api/portal/captador")) return null;
   try {
     if (url.pathname === "/api/portal/captador" && request.method === "GET") {
-      return send(await captadorView(env, client, url.searchParams.get("status") || "novo"));
+      return send(await captadorView(env, client, url.searchParams.get("status") || "enviado"));
     }
-    const raw = request.method === "POST" ? await request.text() : "";
-    if (raw.length > 3_000_000) return send({ ok: false, error: "too_large", message: "Resultado grande demais." }, 413);
-    let body = {};
-    try { body = JSON.parse(raw || "{}"); } catch {}
-    if (url.pathname === "/api/portal/captador/config" && request.method === "POST") {
-      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+    if (request.method !== "POST") return send({ ok: false, error: "not_found" }, 404);
+    const body = await request.json().catch(() => ({}));
+    if (url.pathname === "/api/portal/captador/search") {
+      return send(await runCaptadorSearch(env, client, body, fetcher));
+    }
+    if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+    if (url.pathname === "/api/portal/captador/config") {
       return send({ ok: true, config: await saveCaptadorConfig(env, client, body) });
     }
-    if (url.pathname === "/api/portal/captador/plan" && request.method === "POST") {
-      return send(await planCaptadorSearch(env, client, body));
+    if (url.pathname === "/api/portal/captador/contacted") {
+      return send(await saveCaptadorContacted(env, client, body));
     }
-    if (url.pathname === "/api/portal/captador/import" && request.method === "POST") {
-      return send(await importCaptadorResults(env, client, body));
+    if (url.pathname === "/api/portal/captador/skip") {
+      return send(await skipCaptadorLead(env, client, body.id));
     }
     const match = url.pathname.match(/^\/api\/portal\/captador\/([^/]+)\/status$/);
-    if (match && request.method === "POST") {
-      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+    if (match) {
       return send(await setCaptadorStatus(env, client, decodeURIComponent(match[1]), String(body.status || "")));
     }
   } catch (error) {

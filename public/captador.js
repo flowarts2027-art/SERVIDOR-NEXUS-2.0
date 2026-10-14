@@ -1,17 +1,21 @@
-// Captador de clientes (aba "Buscar" do portal do cliente).
-// O navegador do cliente acha a cidade e busca no OpenStreetMap (grátis).
-// O Nexus guarda os contatos só para este cliente e monta a mensagem dele.
-// Nada é enviado sozinho: o botão abre o WhatsApp do próprio cliente.
+// Captador de clientes (aba "Buscar" do portal do cliente). Fonte: Google Maps.
+// Mesma regra do Caçador do Master: a busca aparece na hora e não é guardada.
+// Só fica guardado quem o cliente chamar no WhatsApp. Nada é enviado sozinho:
+// o botão abre o WhatsApp do próprio cliente.
 (() => {
   "use strict";
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const DEMO = new URLSearchParams(location.search).get("demo") === "1";
   const FLOW_WHATS = "https://wa.me/5521964816185?text=" + encodeURIComponent("Olá! Quero ativar o Captador de clientes.");
-  const TABS = [["novo", "Novos"], ["enviado", "Mandei"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
+  const TABS = [["novo", "Novos"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
   let status = "novo";
   let data = null;
   let busy = false;
+  let found = []; // resultado das buscas, só na memória desta página
+  let lastNiche = "";
+  let lastCity = "";
+  let note = "";
 
   async function call(path, body) {
     const response = await fetch(path, body === undefined
@@ -23,39 +27,11 @@
     return json;
   }
 
-  async function findCity(text) {
-    const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&accept-language=pt-BR&q=" + encodeURIComponent(text);
-    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
-    const list = await response.json().catch(() => []);
-    if (!Array.isArray(list) || !list.length) throw new Error("Não encontrei essa cidade. Escreva a cidade e o estado, por exemplo: Recife PE.");
-    return { lat: Number(list[0].lat), lon: Number(list[0].lon) };
-  }
-
-  async function overpass(endpoints, query) {
-    for (const url of endpoints) {
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          const response = await fetch(url, {
-            method: "POST", body: "data=" + encodeURIComponent(query),
-            headers: { "content-type": "application/x-www-form-urlencoded" }, signal: AbortSignal.timeout(40000)
-          });
-          if (response.ok) {
-            const json = await response.json();
-            const failed = /error|timed out|timeout|out of memory/i.test(String(json.remark || ""));
-            if (Array.isArray(json.elements) && !failed) return json.elements;
-          }
-        } catch {}
-        await new Promise(resolve => setTimeout(resolve, 2500));
-      }
-    }
-    throw new Error("O mapa grátis está ocupado agora. Tente de novo daqui a alguns minutos.");
-  }
-
   function promo() {
     return `<section class="block cap-promo">
       <h2>Ache novos clientes perto de você</h2>
-      <p>Escolha o tipo de negócio e a cidade. O Captador mostra empresas com telefone e uma mensagem pronta para você mandar pelo seu WhatsApp.</p>
-      <ul><li>19 tipos de negócio: restaurantes, salões, academias, clínicas e mais</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
+      <p>Escolha o tipo de negócio e a cidade. O Captador busca no Google Maps e mostra empresas com telefone e uma mensagem pronta para você mandar pelo seu WhatsApp.</p>
+      <ul><li>22 tipos de negócio: pet shops, lojas de ração, agropecuárias, restaurantes, salões, clínicas e mais</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
       <p class="cap-price">${esc(data?.price || "R$ 97 por mês")}</p>
       ${DEMO ? '<p class="muted">Na demonstração, a busca fica desligada.</p>' : `<a class="btn btn-whats" href="${FLOW_WHATS}" target="_blank" rel="noopener">Quero ativar</a>`}
     </section>`;
@@ -76,33 +52,43 @@
     </details>`;
   }
 
+  function usageLine() {
+    if (note) return note;
+    if (!data.ready) return "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.";
+    return `Fonte: Google Maps. Buscas hoje: ${Number(data.usedToday || 0)} de ${Number(data.dailyLimit || 10)}`;
+  }
+
   function searchForm() {
     return `<section class="block">
       <h2>Buscar empresas</h2>
       <form id="cap-search" class="cap-search">
-        <label>Tipo de negócio<select name="niche" required>${(data.niches || []).map(n => `<option value="${esc(n.key)}">${esc(n.label)}</option>`).join("")}</select></label>
-        <label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Recife PE" required></label>
-        <button class="btn btn-primary" type="submit">Buscar</button>
+        <label>Tipo de negócio<select name="niche" required>${(data.niches || []).map(n =>
+          `<option value="${esc(n.key)}" ${n.key === lastNiche ? "selected" : ""}>${esc(n.label)}</option>`).join("")}</select></label>
+        <label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Uberlândia MG" value="${esc(lastCity)}" required></label>
+        <button class="btn btn-primary" type="submit" ${data.ready ? "" : "disabled"}>Buscar empresas</button>
       </form>
-      <p class="muted" id="cap-usage">Buscas hoje: ${Number(data.usedToday || 0)} de ${Number(data.dailyLimit || 10)}</p>
+      <p class="muted" id="cap-usage">${esc(usageLine())}</p>
     </section>`;
   }
 
   function leadActions(lead) {
     const move = (to, label, cls = "btn-soft") => `<button type="button" class="btn ${cls}" data-cap-move="${to}" data-id="${esc(lead.id)}">${label}</button>`;
     if (lead.status === "novo") return `<a class="btn btn-whats" href="${esc(lead.whatsapp)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">Abrir no WhatsApp</a>
-      <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>${move("nao-quer", "Não serve", "btn-ghost")}`;
+      <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>
+      <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
     if (lead.status === "enviado") return move("respondeu", "Respondeu", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost") + move("novo", "Não cheguei a mandar", "btn-ghost");
     if (lead.status === "respondeu") return move("reuniao", "Está fechando", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost");
-    return move("novo", "Voltar para novos", "btn-ghost");
+    return "";
   }
 
   function leadCard(lead) {
-    const bits = [lead.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)", lead.has_site ? "Tem site" : "Sem site no mapa"];
+    const bits = [lead.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)", lead.has_site ? "Tem site" : "Sem site"];
     if (lead.instagram) bits.push("Instagram @" + esc(lead.instagram));
+    const stars = Number(lead.reviews) ? `<p>Nota ${esc(String(Number(lead.rating || 0).toFixed(1)).replace(".", ","))} · ${Number(lead.reviews)} avaliações no Google</p>` : "";
     return `<article class="cap-lead">
       <header><strong>${esc(lead.name)}</strong><span class="cap-score" title="Nota de 0 a 10">${Number(lead.score || 0)}/10</span></header>
       <p>${esc((data.niches || []).find(n => n.key === lead.niche)?.label || lead.niche)} · ${esc(lead.city)}</p>
+      ${lead.address ? `<p>${esc(lead.address)}</p>` : ""}${stars}
       <p>${bits.join(" · ")} · <a href="${esc(lead.maps_url)}" target="_blank" rel="noopener">Ver no Maps</a></p>
       <details><summary>Ver a mensagem</summary><pre>${esc(lead.message)}</pre></details>
       <div class="cap-actions">${leadActions(lead)}</div>
@@ -113,13 +99,14 @@
     const box = $("#captador");
     if (!box) return;
     if (!data?.enabled) { box.innerHTML = promo(); return; }
-    const counts = data.counts || {};
+    const counts = { ...(data.counts || {}), novo: found.length };
+    const items = status === "novo" ? found : (data.items || []);
     box.innerHTML = configForm(data.config || {}) + searchForm() + `
       <div class="cap-tabs" role="tablist">${TABS.map(([key, label]) =>
         `<button type="button" role="tab" data-cap-tab="${key}" class="${key === status ? "active" : ""}" aria-selected="${key === status}">${label} (${Number(counts[key] || 0)})</button>`).join("")}</div>
-      <div class="cap-list">${(data.items || []).length ? data.items.map(leadCard).join("")
-        : `<div class="empty"><strong>${status === "novo" ? "Nenhuma empresa nova" : "Nada aqui ainda"}</strong>${status === "novo" ? "Escolha o tipo de negócio e a cidade e toque em Buscar." : ""}</div>`}</div>
-      <p class="muted cap-credit">Dados do mapa: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores do OpenStreetMap</a>. Confira no Maps antes de mandar.</p>`;
+      <div class="cap-list">${items.length ? items.map(leadCard).join("")
+        : `<div class="empty"><strong>${status === "novo" ? "Nenhuma empresa na lista" : "Nada aqui ainda"}</strong>${status === "novo" ? 'Escolha o tipo de negócio, escreva a cidade e toque em "Buscar empresas". A lista aparece aqui e não fica guardada: só quem você chamar no WhatsApp fica salvo.' : ""}</div>`}</div>
+      <p class="muted cap-credit">Dados do Google Maps. Confira no Maps antes de mandar.</p>`;
   }
 
   async function load() {
@@ -127,11 +114,17 @@
     if (!box) return;
     if (DEMO) { data = { enabled: false }; render(); return; }
     try {
-      data = await call("/api/portal/captador?status=" + encodeURIComponent(status));
+      data = await call("/api/portal/captador?status=" + encodeURIComponent(status === "novo" ? "enviado" : status));
       render();
     } catch (error) {
       box.innerHTML = `<div class="empty"><strong>Não consegui abrir o Captador</strong>${esc(error.message)}</div>`;
     }
+  }
+
+  function alertLine(text) {
+    note = text;
+    const line = $("#cap-usage");
+    if (line) line.textContent = text;
   }
 
   document.addEventListener("submit", async event => {
@@ -141,6 +134,8 @@
       const fd = new FormData(form);
       try {
         await call("/api/portal/captador/config", { myName: fd.get("myName"), business: fd.get("business"), offer: fd.get("offer"), onlyNoSite: fd.get("onlyNoSite") === "on" });
+        found = []; // a mensagem mudou: as próximas buscas já vêm com o texto novo
+        note = "Mensagem salva.";
         await load();
       } catch (error) { alertLine(error.message); }
     }
@@ -148,49 +143,57 @@
       event.preventDefault();
       busy = true;
       const fd = new FormData(form);
-      const button = form.querySelector("button");
+      const button = form.querySelector('button[type="submit"]');
       button.disabled = true;
-      const usage = $("#cap-usage");
+      lastNiche = String(fd.get("niche") || "");
+      lastCity = String(fd.get("city") || "").trim();
+      alertLine("Buscando no Google Maps…");
       try {
-        const city = String(fd.get("city") || "").trim();
-        usage.textContent = "Procurando a cidade…";
-        const point = await findCity(city);
-        const plan = await call("/api/portal/captador/plan", { niche: fd.get("niche"), city, lat: point.lat, lon: point.lon });
-        usage.textContent = "Buscando no mapa… pode levar até 1 minuto.";
-        const elements = await overpass(plan.endpoints, plan.query);
-        const result = await call("/api/portal/captador/import", { elements: elements.map(e => ({ type: e.type, id: e.id, tags: e.tags || {} })) });
+        const result = await call("/api/portal/captador/search", { niche: lastNiche, city: lastCity });
+        const seen = new Set(found.map(item => item.id));
+        let added = 0;
+        for (const item of result.items || []) if (!seen.has(item.id)) { seen.add(item.id); found.push(item); added++; }
+        found.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
         status = "novo";
+        note = `${added} empresas novas na lista. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.`;
         await load();
-        $("#cap-usage").textContent = `${result.found} lugares no mapa, ${result.added} contatos novos. Buscas hoje: ${plan.usedToday} de ${plan.dailyLimit}.`;
       } catch (error) {
-        const line = $("#cap-usage");
-        if (line) line.textContent = error.message;
+        alertLine(error.message);
       } finally {
         busy = false;
-        button.disabled = false;
+        const again = $('#cap-search button[type="submit"]');
+        if (again) again.disabled = !data?.ready;
       }
     }
   });
-
-  function alertLine(text) {
-    const line = $("#cap-usage");
-    if (line) line.textContent = text;
-  }
 
   document.addEventListener("click", async event => {
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
     if (target.closest('.tabbar [data-tab="buscar"]')) { load(); return; }
     const tab = target.closest("[data-cap-tab]");
-    if (tab) { status = tab.dataset.capTab; load(); return; }
+    if (tab) { status = tab.dataset.capTab; note = ""; load(); return; }
     const sent = target.closest("[data-cap-sent]");
     if (sent) {
-      call("/api/portal/captador/" + encodeURIComponent(sent.dataset.capSent) + "/status", { status: "enviado" }).then(() => setTimeout(load, 800)).catch(() => {});
+      // O link abre o WhatsApp; aqui guardamos só este contato, como "mandei mensagem".
+      const lead = found.find(item => item.id === sent.dataset.capSent);
+      if (lead) call("/api/portal/captador/contacted", lead)
+        .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
+      return;
+    }
+    const skip = target.closest("[data-cap-skip]");
+    if (skip) {
+      skip.disabled = true;
+      try {
+        await call("/api/portal/captador/skip", { id: skip.dataset.capSkip });
+        found = found.filter(item => item.id !== skip.dataset.capSkip);
+        await load();
+      } catch { skip.disabled = false; skip.textContent = "Erro, tente de novo"; }
       return;
     }
     const copy = target.closest("[data-cap-copy]");
     if (copy) {
-      const lead = (data?.items || []).find(item => item.id === copy.dataset.capCopy);
+      const lead = [...found, ...(data?.items || [])].find(item => item.id === copy.dataset.capCopy);
       try { await navigator.clipboard.writeText(lead?.message || ""); copy.textContent = "Copiada!"; } catch { copy.textContent = "Não deu para copiar"; }
       return;
     }
@@ -200,7 +203,7 @@
       try {
         await call("/api/portal/captador/" + encodeURIComponent(move.dataset.id) + "/status", { status: move.dataset.capMove });
         await load();
-      } catch (error) { move.disabled = false; move.textContent = "Erro, tente de novo"; }
+      } catch { move.disabled = false; move.textContent = "Erro, tente de novo"; }
     }
   });
 })();

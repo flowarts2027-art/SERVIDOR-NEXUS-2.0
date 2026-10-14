@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 17h52–18h20 BRT — Captador do cliente agora busca no Google Maps (mesma branch, não publicada)
+- Pedido do Rodrigo: o cliente (ex.: Quatree Dog) deve ter na aba Buscar a mesma busca do Caçador do Master (Google Maps) e a mesma regra de captação.
+- captador.js: busca pelo Google Places com a chave da Flow Arts ("<tipo> em <cidade>", 20 resultados). Lista vai direto para a tela, sem guardar. Guardado só: quem o cliente chama no WhatsApp (POST /api/portal/captador/contacted, status enviado, sem endereço) e o código do lugar de "Não serve" (tabela nova captador_skips). "Não cheguei a mandar" apaga. Quem já foi chamado/recusado não volta. Tudo por cliente. Limite 10 buscas/dia por cliente. Sem chave: aviso "fale com a Flow Arts", sem gastar busca.
+- 22 tipos com texto de busca do Google (ração = "loja de ração", casa de ração, agropecuária, pet shop...). Rotas antigas do mapa grátis (plan/import) removidas do portal.
+- public/captador.js (v=2): botão "Buscar empresas", "Fonte: Google Maps. Buscas hoje", abas Novos/Mandei mensagem/Responderam/Fechando/Não querem, nota e avaliações do Google.
+- prospects.js: placesKey e searchPlaces exportados. 347 testes ok.
+- CUSTO: as buscas dos clientes usam a cota do Google da Flow Arts (mesma SKU do Master, ~1.000 grátis/mês; Master já usa até ~900). Cada cliente pode gastar até ~300/mês.
+
 ## 2026-10-14 17h46–18h10 BRT — Captador: ração, casa de ração e agropecuária (branch feat/captador-racao-agro, não publicada)
 - Pedido do Rodrigo: cliente que revende a marca Quatree em Minas Gerais precisa achar quem compra; adicionar na aba Buscar do portal as áreas ração, casa de ração, petshop e agropecuária, para o cliente escolher o que buscar.
 - captador.js: 3 tipos novos (Ração, Casa de ração, Agropecuária). "Pet shop" já existia. Busca por tag do OSM (shop=agrarian, agrarian~feed, shop=pet_food) e também pelo nome da loja ("ração/rações", "casa de/das ra…", "agropecu…/agrovet"), porque muitas lojas no mapa não têm a tag certa. Agora são 22 tipos.

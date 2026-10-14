@@ -92,7 +92,7 @@ export async function savePlacesKey(env, apiKey) {
   return { ok: true, configured: true };
 }
 
-async function placesKey(env) {
+export async function placesKey(env) {
   const stored = await readState(env, "google-key", null);
   if (stored?.key) return decryptSecret(env, stored.key).catch(() => "");
   return String(env.GOOGLE_PLACES_API_KEY || "").trim();
@@ -246,7 +246,7 @@ const FIELD_MASK = [
   "places.photos", "places.googleMapsUri", "places.businessStatus"
 ].join(",");
 
-async function searchPlaces(key, query, fetcher) {
+export async function searchPlaces(key, query, fetcher) {
   const response = await fetcher("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
     headers: { "content-type": "application/json", "X-Goog-Api-Key": key, "X-Goog-FieldMask": FIELD_MASK },

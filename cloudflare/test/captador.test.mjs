@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import {
-  handleCaptadorPortal, handleCaptadorMaster, captadorLead, captadorMessage, captadorQuery,
+  handleCaptadorPortal, handleCaptadorMaster, captadorLead, captadorMessage, CAPTADOR_NICHES,
   setCaptadorAccess, CAPTADOR_DAILY_LIMIT
 } from "../src/captador.js";
 
-function fakeEnv() {
+function fakeEnv(withKey = true) {
   const db = new DatabaseSync(":memory:");
   db.exec(`CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT,
     PRIMARY KEY(namespace,item_key,client_id))`);
@@ -17,17 +17,32 @@ function fakeEnv() {
       all: async () => ({ results: db.prepare(sql).all(parameters) }),
       run: async () => ({ meta: { changes: Number(db.prepare(sql).run(parameters).changes) } }) };
   }; return { ...wrap([]), bind: (...args) => wrap(args) }; } };
-  return { db, env: { DB } };
+  return { db, env: { DB, GOOGLE_PLACES_API_KEY: withKey ? "chave-de-teste-1234567890123456789" : "" } };
 }
+
+const PLACES = [
+  { id: "ChIJagro000001", displayName: { text: "Agropecuária Boi Gordo" }, nationalPhoneNumber: "(34) 99888-1111",
+    formattedAddress: "Rua A, 10, Uberlândia - MG", rating: 4.7, userRatingCount: 150, googleMapsUri: "https://maps.google.com/?cid=1",
+    websiteUri: "https://instagram.com/boigordoagro", businessStatus: "OPERATIONAL" },
+  { id: "ChIJagro000002", displayName: { text: "Rações Silva" }, nationalPhoneNumber: "(34) 3222-1111",
+    websiteUri: "https://racoessilva.com.br", businessStatus: "OPERATIONAL" },
+  { id: "ChIJagro000003", displayName: { text: "Fechada" }, nationalPhoneNumber: "(34) 99999-0000", businessStatus: "CLOSED_PERMANENTLY" },
+  { id: "ChIJagro000004", displayName: { text: "Sem Fone" } }
+];
+let lastQuery = "";
+const google = async (url, init) => {
+  lastQuery = JSON.parse(init.body).textQuery;
+  return new Response(JSON.stringify({ places: PLACES }), { status: 200 });
+};
 
 const call = async (env, client, path, body) => {
   const request = new Request("https://painel.flowarts.com.br" + path, body === undefined
     ? { method: "GET" } : { method: "POST", body: JSON.stringify(body) });
-  const response = await handleCaptadorPortal(request, env, new URL(request.url), client);
+  const response = await handleCaptadorPortal(request, env, new URL(request.url), client, google);
   return { status: response.status, data: await response.json() };
 };
 
-const ana = { id: "cliente-ana", name: "Doces da Ana" };
+const ana = { id: "cliente-ana", name: "Quatree Dog" };
 const beto = { id: "cliente-beto", name: "Beto Bebidas" };
 
 test("sem liberação o cliente vê o preço e não consegue buscar", async () => {
@@ -35,58 +50,69 @@ test("sem liberação o cliente vê o preço e não consegue buscar", async () =
   const view = await call(env, ana, "/api/portal/captador");
   assert.equal(view.data.enabled, false);
   assert.match(view.data.price, /97/);
-  const plan = await call(env, ana, "/api/portal/captador/plan", { niche: "cafeteria", lat: -8.05, lon: -34.88, city: "Recife PE" });
-  assert.equal(plan.status, 403);
+  const search = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" });
+  assert.equal(search.status, 403);
 });
 
-test("busca do cliente: planeja, importa, separa por cliente e respeita o limite", async () => {
+test("busca do cliente no Google: lista na hora, guarda só quem ele chamou, separado por cliente", async () => {
   const { db, env } = fakeEnv();
   await setCaptadorAccess(env, ana.id, true);
   await setCaptadorAccess(env, beto.id, true);
-  await call(env, ana, "/api/portal/captador/config", { myName: "Ana", business: "Doces da Ana", offer: "Faço bolos para cafeterias, com entrega no dia." });
+  await call(env, ana, "/api/portal/captador/config", { myName: "Ana", business: "Quatree Dog", offer: "Revendo ração Quatree com entrega em toda Minas." });
 
-  const bad = await call(env, ana, "/api/portal/captador/plan", { niche: "cafeteria", lat: 40.7, lon: -74, city: "Nova York" });
+  const bad = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "" });
   assert.equal(bad.data.error, "city_invalid");
 
-  const plan = await call(env, ana, "/api/portal/captador/plan", { niche: "cafeteria", lat: -8.05, lon: -34.88, city: "Recife PE" });
-  assert.equal(plan.status, 200);
-  assert.match(plan.data.query, /"amenity"="cafe"/);
-  const imported = await call(env, ana, "/api/portal/captador/import", { elements: [
-    { type: "node", id: 1, tags: { name: "Café Boa Vista", phone: "+55 81 98888-1111", opening_hours: "Mo-Sa 08:00-18:00", website: "https://cafeboavista.com.br" } },
-    { type: "node", id: 2, tags: { name: "Rede Café", phone: "+55 81 98888-2222", brand: "Rede" } },
-    { type: "node", id: 3, tags: { name: "Sem Fone" } }
-  ] });
-  assert.equal(imported.data.added, 1);
+  const result = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" });
+  assert.equal(result.status, 200);
+  assert.equal(lastQuery, "agropecuária em Uberlândia MG");
+  assert.deepEqual(result.data.items.map(i => i.name), ["Agropecuária Boi Gordo", "Rações Silva"]);
+  const [first] = result.data.items;
+  assert.equal(first.instagram, "boigordoagro");
+  assert.match(first.message, /Aqui é Ana, da Quatree Dog/);
+  assert.match(first.message, /Revendo ração Quatree/);
+  assert.match(first.message, /não receber mensagens/);
+  assert.match(first.whatsapp, /^https:\/\/wa\.me\/5534998881111\?text=/);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM captador_leads").get().n, 0, "a busca não é guardada");
 
-  const view = await call(env, ana, "/api/portal/captador");
+  await call(env, ana, "/api/portal/captador/contacted", first);
+  await call(env, ana, "/api/portal/captador/skip", { id: "ChIJagro000002" });
+  const view = await call(env, ana, "/api/portal/captador?status=enviado");
   assert.equal(view.data.items.length, 1);
-  assert.equal(view.data.items[0].has_site, true);
-  assert.match(view.data.items[0].message, /Aqui é Ana, da Doces da Ana/);
-  assert.match(view.data.items[0].message, /Faço bolos para cafeterias/);
-  assert.match(view.data.items[0].message, /não receber mensagens/);
-  assert.match(view.data.items[0].whatsapp, /^https:\/\/wa\.me\/5581988881111\?text=/);
+  assert.equal(view.data.counts["nao-quer"], 1);
+  const stored = db.prepare("SELECT * FROM captador_leads").get();
+  assert.equal(stored.address, "", "endereço do Google não fica guardado");
 
-  const other = await call(env, beto, "/api/portal/captador");
+  const again = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" });
+  assert.equal(again.data.items.length, 0, "quem já foi chamado ou recusado não volta");
+
+  const other = await call(env, beto, "/api/portal/captador?status=enviado");
   assert.equal(other.data.items.length, 0, "um cliente não vê os contatos do outro");
-  const steal = await call(env, beto, "/api/portal/captador/" + encodeURIComponent("osm:node/1") + "/status", { status: "nao-quer" });
+  const steal = await call(env, beto, "/api/portal/captador/ChIJagro000001/status", { status: "nao-quer" });
   assert.equal(steal.data.error, "lead_not_found");
 
-  const again = await call(env, ana, "/api/portal/captador/import", { elements: [] });
-  assert.equal(again.data.error, "search_expired", "importar exige uma busca planejada");
+  await call(env, ana, "/api/portal/captador/ChIJagro000001/status", { status: "novo" });
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM captador_leads").get().n, 0, "não cheguei a mandar apaga o contato");
 
   db.prepare("UPDATE nexus_state SET value_json=? WHERE namespace='captador' AND item_key='usage' AND client_id=?")
     .run(JSON.stringify({ day: new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()), count: CAPTADOR_DAILY_LIMIT }), ana.id);
-  const limit = await call(env, ana, "/api/portal/captador/plan", { niche: "cafeteria", lat: -8.05, lon: -34.88, city: "Recife PE" });
+  const limit = await call(env, ana, "/api/portal/captador/search", { niche: "agropecuaria", city: "Uberlândia MG" });
   assert.equal(limit.data.error, "daily_limit");
 });
 
-test("filtro só sem site, mensagem sem dados vazios e consulta do mapa", () => {
-  const withSite = { type: "node", id: 5, tags: { name: "X", phone: "(11) 97777-6666", website: "x.com.br" } };
-  assert.ok(captadorLead(withSite, "padaria", "São Paulo SP", false));
-  assert.equal(captadorLead(withSite, "padaria", "São Paulo SP", true), null);
+test("sem chave do Google a busca avisa e não gasta", async () => {
+  const { env } = fakeEnv(false);
+  await setCaptadorAccess(env, ana.id, true);
+  const result = await call(env, ana, "/api/portal/captador/search", { niche: "pet", city: "Belo Horizonte MG" });
+  assert.equal(result.data.error, "google_unavailable");
+  assert.match(result.data.message, /Flow Arts/);
+});
+
+test("filtro só sem site e mensagem sem dados vazios", () => {
+  assert.ok(captadorLead(PLACES[1], "racao", "Uberlândia MG", false));
+  assert.equal(captadorLead(PLACES[1], "racao", "Uberlândia MG", true), null);
   const text = captadorMessage({ myName: "", business: "", offer: "" }, { name: "Padaria Sol", city: "Santos SP" });
   assert.doesNotMatch(text, /undefined|, da \./);
-  assert.match(captadorQuery("salao", -8, -34), /"shop"="beauty"/);
 });
 
 test("Master liga o Captador por cliente; portal e telas existem", async () => {
@@ -100,7 +126,7 @@ test("Master liga o Captador por cliente; portal e telas existem", async () => {
 
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   assert.match(read("portal.html"), /captador\.js/);
-  assert.match(read("captador.js"), /OpenStreetMap/);
+  assert.match(read("captador.js"), /Google Maps/);
   const portal = fs.readFileSync(new URL("../src/portal.js", import.meta.url), "utf8");
   assert.ok(portal.indexOf("handleCaptadorPortal(request") > portal.indexOf("if (!session || !client) return json({ error: \"unauthorized\" }, 401);"),
     "captador só depois do login do cliente");
@@ -132,12 +158,9 @@ test("robô manda planos e o contrato só sai pelo Rodrigo", async () => {
   assert.match(prompt, /Quem envia o contrato e o Pix é sempre o Rodrigo/);
 });
 
-test("Captador tem ração, casa de ração, agropecuária e pet shop", async () => {
-  const { CAPTADOR_NICHES } = await import("../src/captador.js");
-  for (const key of ["racao", "casa_racao", "agropecuaria", "pet"]) assert.ok(CAPTADOR_NICHES[key], key);
-  assert.match(captadorQuery("racao", -19.9, -43.9), /"agrarian"~"feed"/);
-  assert.match(captadorQuery("racao", -19.9, -43.9), /nwr\["shop"\]\["name"~"ração/);
-  assert.match(captadorQuery("casa_racao", -19.9, -43.9), /casa d\[aeo\]s\? ra",i/);
-  assert.match(captadorQuery("agropecuaria", -19.9, -43.9), /"shop"="agrarian"\]\["name"\]/);
-  assert.doesNotMatch(captadorQuery("agropecuaria", -19.9, -43.9), /="null"/);
+test("Captador tem ração, casa de ração, agropecuária e pet shop", () => {
+  assert.equal(CAPTADOR_NICHES.racao.query, "loja de ração");
+  assert.equal(CAPTADOR_NICHES.casa_racao.query, "casa de ração");
+  assert.equal(CAPTADOR_NICHES.agropecuaria.query, "agropecuária");
+  assert.equal(CAPTADOR_NICHES.pet.query, "pet shop");
 });
