@@ -21,6 +21,9 @@ async function assumeClient(clientId) {
   }
 }
 
+// Endereço do painel do cliente no domínio da Flow Arts (não o endereço técnico workers.dev).
+const CLIENT_PANEL_URL = "https://painel.flowarts.com.br/";
+
 function api(path, options = {}) {
   const headers = { "content-type": "application/json", ...(options.headers || {}) };
   return fetch(path, { ...options, headers, credentials: "same-origin" }).then(async response => {
@@ -874,7 +877,7 @@ $("#client-form").addEventListener("submit", async event => {
     const access = result.portalCredentials || {};
     $("#new-client-user").textContent = "Usuário: " + (access.username || "—");
     $("#new-client-password").textContent = "Senha: " + (access.initialPassword || "—");
-    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + location.origin + "/\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "");
+    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + CLIENT_PANEL_URL + "\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "");
     $("#new-client-access").hidden = false;
     state.portalClientId = result.client?.id || state.portalClientId;
     await load();

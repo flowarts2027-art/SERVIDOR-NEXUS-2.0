@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 20h26–20h35 BRT — Acesso do cliente com o domínio próprio (branch fix/acesso-dominio-proprio, não publicada)
+- Rodrigo: o texto de acesso do cliente novo sai com servidor-nexus.diamantehinode2015.workers.dev. Causa: app.js montava com location.origin (o Master é aberto no workers.dev).
+- app.js (v45): CLIENT_PANEL_URL = https://painel.flowarts.com.br/ no texto "NEXUS AI / Acesso / Usuário / Senha". 360 testes ok. Não conferido daqui que /login abre no domínio (o acesso a esse site é bloqueado pelo ambiente); os arquivos do painel já respondem nesse domínio.
+- Rodrigo colou no chat usuário e senha de um cliente (senha fraca 12345678). Recomendado trocar a senha desse cliente pelo "Definir acesso". Não usei a senha.
+
 ## 2026-10-14 19h27–19h35 BRT — Reel com frase cortada publicado às ~19h03 (publicado d39d7c0 às 19h30 com OK do Rodrigo; deploy e CI ok)
 - Rodrigo mandou print: Reel da Flow Arts com a frase cortada, publicado há 24 min, depois da correção 4:5.
 - Evidência: o render desse Reel rodou às 10h00 BRT (GitHub run 38568226987, 13:00 UTC), com o código antigo. A correção (0e24431) entrou às 18h22. O post estava pronto e aprovado desde cedo; só foi publicado no horário.

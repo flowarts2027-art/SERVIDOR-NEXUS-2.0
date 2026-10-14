@@ -136,3 +136,9 @@ test("tela Clientes do Master liga a imagem por IA na coluna IA do cliente", () 
   assert.match(app, /\/api\/master\/ai-images\/access/);
   assert.doesNotMatch(app, /geração paga de imagens desativada|NEXUS sem imagem paga/);
 });
+
+test("acesso do cliente novo sai com o domínio painel.flowarts.com.br", () => {
+  const app = fs.readFileSync(new URL("../../public/app.js", import.meta.url), "utf8");
+  assert.match(app, /CLIENT_PANEL_URL = "https:\/\/painel\.flowarts\.com\.br\/"/);
+  assert.doesNotMatch(app, /Acesso: " \+ location\.origin/);
+});
