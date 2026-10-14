@@ -439,8 +439,15 @@ async function sendText(env, to, text) {
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const error = new Error(`whatsapp_http_${response.status}`);
+    // Guarda o código e a explicação da Meta (sem token nem dados do cliente),
+    // para o painel mostrar o motivo real da recusa.
+    const meta = data?.error || {};
+    const code = meta.code ? `_${meta.code}` : "";
+    const sub = meta.error_subcode ? `_${meta.error_subcode}` : "";
+    const detail = String(meta.error_data?.details || meta.message || "").replace(/\s+/g, " ").slice(0, 200);
+    const error = new Error(`whatsapp_http_${response.status}${code}${sub}${detail ? ": " + detail : ""}`);
     error.status = response.status;
+    error.metaCode = meta.code || null;
     throw error;
   }
   return data;

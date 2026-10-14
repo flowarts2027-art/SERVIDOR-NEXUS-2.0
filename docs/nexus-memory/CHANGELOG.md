@@ -355,3 +355,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 ## 2026-10-13 — plano mensal no site
 - Rodrigo notou que o site só tinha pacotes de pagamento único. Pensou em R$ 350 + R$ 95/mês; alertado de que 12 posts com imagem custam ~US$ 16/mês em IA (estimativa de 12/10), decidiu manter o preço que já existia.
 - `site.html`: bloco em destaque "Instagram no Automático" — R$ 297 de entrada + R$ 697/mês, 12 posts/mês (4 Reels, 4 carrosséis, 4 posts), postagem automática após aprovação, painel com números, preço de fundador (3 primeiros, 6 meses), sem fidelidade (aviso de 30 dias). Oferta adicionada ao JSON-LD. Resposta automática NÃO entra no plano (depende da Meta). Igual ao `whatsapp-knowledge.js`.
+
+## 2026-10-13 ~23h BRT — WhatsApp com número próprio
+- Verificação da empresa recusada de novo pela Meta. Caminho sem verificação: número próprio (chip Vivo +55 21 99855-9965) registrado no app Flow Arts WhatsApp (Messaging Account ID 2899837553722059, phone number ID 1357206410813430), "Assinar webhooks" ligado (era o passo que faltava; a regra de app publicado é do Instagram). Limites sem verificação: 2 números, 250 conversas iniciadas pela empresa/24 h.
+- Rodrigo trocou na Cloudflare WHATSAPP_PHONE_NUMBER_ID e WHATSAPP_ACCESS_TOKEN (token permanente de usuário do sistema "nexus-whatsapp", função Funcionário, permissões whatsapp_business_messaging e management; o admin já existente "administrador" NÃO foi apagado).
+- Teste 23h12/23h15: mensagens "Oi" CHEGARAM ao Nexus (inbox ok, IA gerou rascunho), mas o envio falhou com whatsapp_http_400 (motivo não guardado). Suspeitas: falta forma de pagamento na conta do WhatsApp ou PIN de duas etapas.
+- Branch `fix/whatsapp-erro-detalhado`: erro de envio passa a guardar código e explicação da Meta. 326/326. Aguardando OK para implantar.
