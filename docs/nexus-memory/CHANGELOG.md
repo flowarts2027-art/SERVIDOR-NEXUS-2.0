@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 09h22 BRT — robô do WhatsApp respondeu de verdade
+- Prova: mensagem do Rodrigo 'OI, bom dia' (12:21:59 UTC) e resposta automática do Nexus (12:22:04 UTC, status sent_auto). Número +55 21 99855-9965, app Atendente Flow Arts, sem verificação da empresa (limite 250 conversas iniciadas pela empresa/24 h).
+- O que destravou: Rodrigo gerou o token na tela da Meta 'Configuração da produção → Enviar mensagem'. Branch fix/whatsapp-versao-graph não publicada.
+
 ## 2026-10-14 08h40–09h20 BRT — Captador de clientes para clientes (9945723, publicado 08h50 com OK do Rodrigo)
 - Conferido ao vivo: /api/master/captador/access 200 com 5 clientes, todos desligados; portal.html no ar com a aba Buscar e captador.js.
 - Pedido do Rodrigo: vender ferramentas (automação do Instagram, site e o captador). Escolhas dele: cliente usa sozinho no portal; R$ 97/mês.
