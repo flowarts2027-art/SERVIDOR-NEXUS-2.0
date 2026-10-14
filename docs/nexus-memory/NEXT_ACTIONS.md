@@ -6,6 +6,10 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Google Maps (decisão 2026-10-14 08h29)
+- Rodrigo: vai pagar os R$ 150 de pré-pagamento do Google quando fechar o primeiro cliente. Então: Places API (New) no projeto flow-arts-nexus, chave restrita só a essa API, cota diária, e ele digita a chave em Master → Contatos (caixa "Opcional: usar o Google Maps").
+- Até lá: busca grátis pelo OpenStreetMap, que às vezes fica fora do ar.
+
 ## Visitas do site (2026-10-14)
 - No ar desde 22c5cea. Conferir: abrir flowarts.com.br e depois Master → aba Site; deve contar 1 visita hoje. Se ficar em zero, olhar POST /api/site/hit no navegador.
 - Talvez citar o contador em privacidade.html (só números, sem dados pessoais). Perguntar ao Rodrigo antes.
