@@ -7,7 +7,7 @@
 - Master: celular com Visão geral, Clientes, Postagens, WhatsApp e Mais (Agentes, Contatos, Site, Integrações); tabelas viram cartões; botões com 44px. app.js v46, styles v31.
 - PWA: portal.webmanifest (start /portal) e master.webmanifest (start /api/master/console), ícones Flow Arts 180/192/512. No Android: menu ⋮ → "Adicionar à tela inicial"/"Instalar app"; no iPhone: Compartilhar → "Adicionar à Tela de Início". Sem service worker (não funciona offline).
 - Conferido em prints simulados (celular com letra grande e computador). 362 testes ok.
-- Rodrigo disse (20h43): "já coloquei endereço do painel novo como domínio certo". Não está claro onde (talvez PUBLIC_BASE_URL na Cloudflare). Perguntado. Atenção se foi PUBLIC_BASE_URL: social-format-render.yml só aceita endereços workers.dev (callback e imagem).
+- Rodrigo disse (20h43): "já coloquei endereço do painel novo como domínio certo". Esclarecido: ele não mudou configuração nenhuma; falava do domínio flowarts.com.br comprado (painel em painel.flowarts.com.br), já usado no texto de acesso desde be3db4f.
 
 ## 2026-10-14 20h26–20h35 BRT — Acesso do cliente com o domínio próprio (publicado be3db4f às 20h29 com OK do Rodrigo; deploy e CI ok; leitura externa do app.js veio com versão anterior — provável cache da ferramenta de leitura, não confirmado)
 - Rodrigo: o texto de acesso do cliente novo sai com servidor-nexus.diamantehinode2015.workers.dev. Causa: app.js montava com location.origin (o Master é aberto no workers.dev).
