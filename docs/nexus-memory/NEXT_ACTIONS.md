@@ -6,6 +6,10 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Verificação da empresa na Meta (2026-10-14 08h52)
+- Status: "Mais informações são necessárias" (empresa "Rodrigo Carvalho", ID 2082464929068014). O documento enviado para provar o telefone +55 21 99855-9965 não foi aceito: precisa mostrar razão social E esse telefone (contrato, alvará, extrato/carta bancária, conta de água/luz/gás/telefone).
+- Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
+
 ## Captador de clientes (ferramenta R$ 97/mês)
 - Código pronto (branch feat/captador-clientes). Antes de vender: confirmar por alguns dias que o Overpass (mapa grátis) responde; ele deu 504 em 14/10 de manhã. Se continuar instável, avaliar servidor Overpass próprio ou Google (custo por busca).
 - Quando a Meta liberar o número: ajustes finais (robô oferece o Captador e manda o link do portal).
