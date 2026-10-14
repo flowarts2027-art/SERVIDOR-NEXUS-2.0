@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 18h58–19h05 BRT — Exemplos do painel falavam de Quatree para todos (branch fix/exemplos-gerais, não publicada)
+## 2026-10-14 18h58–19h05 BRT — Exemplos do painel falavam de Quatree para todos (publicado ef35585 às 19h01 com OK do Rodrigo; deploy ok; negocio.js v2 conferido no ar sem "Quatree")
 - Rodrigo: "a regra de perfil entrou em todos os clientes". Perguntado; era isto: os exemplos cinzas da aba Meu negócio citavam Quatree/ração/Minas para qualquer cliente.
 - Trocados por exemplos gerais (padaria) em negocio.js (v2); cidade de exemplo do Captador e mensagens do servidor também (Curitiba PR, 11 99999-1111). Teste novo garante que não há nome de cliente nos exemplos. 358 testes ok.
 - Ele também perguntou por que "Criar com IA" não marca: é a trava escolhida por ele (liberar no Master → Contatos → Imagem por IA para clientes). Não é bug.
