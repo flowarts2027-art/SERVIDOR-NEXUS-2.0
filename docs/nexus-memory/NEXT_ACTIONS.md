@@ -1,5 +1,9 @@
 # Próximas ações
 
+## Visitas do site (2026-10-14)
+- No ar desde 22c5cea. Conferir: abrir flowarts.com.br e depois Master → aba Site; deve contar 1 visita hoje. Se ficar em zero, olhar POST /api/site/hit no navegador.
+- Talvez citar o contador em privacidade.html (só números, sem dados pessoais). Perguntar ao Rodrigo antes.
+
 ## Domínio (2026-10-12)
 1. Rodrigo: trocar o link da bio do @flowarts2026 para flowarts.com.br.
 2. FEITO 12/10: Search Console verificado, sitemap enviado, home pedida. Conferir em alguns dias se a home foi indexada.

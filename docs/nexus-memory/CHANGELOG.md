@@ -1,13 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 — branch feat/visitas-site (ainda não publicado)
+## 2026-10-14 — contador de visitas do site (22c5cea, deploy ok 10:13 UTC)
 - Pedido do Rodrigo: ver as visitas do site no painel Master.
 - feat: contador de visitas sem dados pessoais (cloudflare/src/site-analytics.js). Tabela D1 `site_visits_daily` (dia, página, origem, visitas), criada na hora. Sem IP, cookie ou identificador. Robôs ficam de fora.
 - Rotas: `POST /api/site/hit` (público, sempre 204) e `GET /api/master/site-stats` (só com login do Master).
 - Aviso de visita (sendBeacon) na home, /exemplo e nas 3 páginas de nicho (gerador atualizado).
 - Master: aba "Site" (public/site-stats.js) com hoje / 7 dias / 30 dias, gráfico por dia, de onde vieram e páginas mais vistas. Conferido com dados de exemplo no celular e no computador.
 - test: site-analytics.test.mjs (3 testes); menu do Master com 8 itens. 329 testes ok.
-- Próximo passo: OK do Rodrigo → push na main → abrir flowarts.com.br e conferir a contagem na aba Site.
+- 07h12 BRT: Rodrigo deu OK; push na main; deploy "Deploy NEXUS Cloudflare" success. Ainda NÃO conferido no ar (Chrome desconectado; o terminal não alcança o site). Próximo passo: Rodrigo abre flowarts.com.br, depois Master → Site, e confere se aparece 1 visita hoje.
 
 ## 2026-10-12 — branch feat/whatsapp-atendente
 - feat: atendente virtual da Flow Arts no WhatsApp (whatsapp-knowledge.js, resposta automática com liga/desliga, pausa por conversa, passagem para humano, fallback seguro).
