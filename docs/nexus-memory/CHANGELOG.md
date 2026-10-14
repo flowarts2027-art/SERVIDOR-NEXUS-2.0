@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 — branch feat/cacador-leads (ainda não publicado)
+## 2026-10-14 — caçador de clientes (5c162b5, deploy ok)
 - Pedido do Rodrigo (07h17–07h19 BRT): achar empresas sem site, fracas em propaganda e com potencial, no Brasil todo; enquanto a Meta não libera, ele manda a primeira mensagem pelo próprio celular.
 - feat: cloudflare/src/prospects.js. Busca na API oficial do Google Places (Text Search, campos com telefone/site = SKU Enterprise, 1.000 grátis/mês). Limite de 30 buscas por dia. Nicho x 43 cidades grandes, em rodízio. Guarda só empresas abertas, sem site próprio (Instagram, Linktree, iFood etc. contam como "sem site") e com telefone. Nota 0–10 (avaliações, nota, poucas fotos, celular). Quem é marcado "não quer" nunca volta.
 - Mensagem pronta (sem preço, com link da página do nicho e "se preferir não receber, é só avisar"). Botão abre wa.me no WhatsApp do Rodrigo; nada é enviado pelo servidor.
@@ -8,7 +8,9 @@
 - Rotas Master (com login): GET /api/master/prospects, POST /search, POST /key, POST /:id/status.
 - Master → Contatos: painel "Caçador de clientes" (public/prospects-ui.js) com etapas Novos / Mandei mensagem / Responderam / Reunião marcada / Não querem. Conferido com dados de exemplo no celular e no computador.
 - test: prospects.test.mjs (6 testes). 335 testes ok.
-- Falta: criar a chave no Google Cloud (precisa do computador do Rodrigo e cartão cadastrado; pôr cota/alerta de gasto). Depois, OK para publicar.
+- 07h26 BRT: Rodrigo deu OK; publicado (Deploy NEXUS Cloudflare success). Sem chave do Google ainda: o painel mostra o campo da chave. Falta criar a chave no Google Cloud (computador do Rodrigo, cartão cadastrado, cota diária e alerta de gasto).
+- 07h26 BRT: a pedido do Rodrigo, criado o doc "Planos e preços Flow Arts" (Claude Docs, https://claude.ai/artifact/Gq4mAemEMUNAxWw1ixsr3b) com os planos do site, respostas rápidas e o que não prometer. Prazo de entrega ficou como pergunta em aberto.
+- Achado: whatsapp-knowledge.js não tem o pacote "Instagram que responde sozinho" (R$ 197) e diz para não vender resposta automática, mas o site vende. Ajustar quando a IA for responder os planos (pedido do Rodrigo: "depois a gente ajusta").
 
 ## 2026-10-14 — contador de visitas do site (22c5cea, deploy ok 10:13 UTC)
 - Pedido do Rodrigo: ver as visitas do site no painel Master.
