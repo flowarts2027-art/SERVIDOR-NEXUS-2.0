@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 09h50–10h15 BRT — Caçador do Master só com Google (branch feat/cacador-google, não publicada)
+- robô (feat/robo-planos-contrato, 671629e) publicado 09h49 com OK; contrato no ar em /contrato-site e botões no WhatsApp conferidos.
+- Rodrigo: "deixa ele com o maps já, não vou testar o grátis, é muito ruim". Escolheu guardar "só quem você chamou".
+- prospects.js: busca do Google devolve a lista na hora (não grava no D1). Gravado só: quem ele chama no WhatsApp (POST /api/master/prospects/contacted → status enviado, com nome/telefone/cidade) e o código do lugar de quem "não serve" (tabela prospect_skips). "Não cheguei a mandar" apaga o contato. Quem já foi chamado ou recusado não volta nas buscas.
+- Painel: sem chave mostra a caixa da chave aberta e o botão de busca desligado ("Falta ativar o Google Maps"). Caminho do mapa grátis removido do Master (continua só no Captador dos clientes). 345 testes ok.
+- Google: falta completar R$ 120 de crédito para ativar; depois Places API (New) e chave.
+
 ## 2026-10-14 09h45–10h00 BRT — ajustes finais do robô (branch feat/robo-planos-contrato, não publicada)
 - whatsapp-knowledge.js: robô manda o link https://flowarts.com.br/#pacotes quando perguntam preço; links das páginas de nicho como exemplo de site; contrato e Pix só pelo Rodrigo (quer fechar → needsHuman).
 - public/contrato-site.html (noindex, fora do robots): contrato do site para o cliente ler/imprimir, igual ao doc, com o nome do responsável (Rodrigo Alexandre de Carvalho, do Cartão CNPJ) e a cláusula "concordância por escrito no WhatsApp vale como aceite" (nova, também no doc).

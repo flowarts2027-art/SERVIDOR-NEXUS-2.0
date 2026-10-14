@@ -5,7 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import {
   phoneInfo, siteInfo, prospectScore, placeToProspect, firstMessage, whatsappLink,
   runProspectSearch, listProspects, setProspectStatus, savePlacesKey, DAILY_SEARCH_LIMIT,
-  osmToProspect, overpassQuery, planBrowserSearch, importBrowserResults
+  osmToProspect, overpassQuery, planBrowserSearch, importBrowserResults, saveContacted, skipProspect
 } from "../src/prospects.js";
 
 function fakeEnv() {
@@ -22,7 +22,7 @@ function fakeEnv() {
 }
 
 const place = (over = {}) => ({
-  id: "p1", displayName: { text: "Café da Praça" }, formattedAddress: "Rua A, 10, Recife - PE",
+  id: "ChIJ_place_0001", displayName: { text: "Café da Praça" }, formattedAddress: "Rua A, 10, Recife - PE",
   nationalPhoneNumber: "(81) 98888-7777", rating: 4.7, userRatingCount: 320, photos: [{}, {}],
   googleMapsUri: "https://maps.google.com/?cid=1", businessStatus: "OPERATIONAL", ...over
 });
@@ -57,26 +57,36 @@ test("mensagem pronta: honesta, com link do nicho e opção de não receber", ()
   assert.match(whatsappLink(p), /^https:\/\/wa\.me\/5581988887777\?text=/);
 });
 
-test("busca guarda só empresas sem site, não repete e respeita o limite do dia", async () => {
+test("Google: a busca mostra na hora e não guarda; só quem foi chamado fica guardado", async () => {
   const { db, env } = fakeEnv();
   let calls = 0;
   const fetcher = async (url, init) => {
     calls++;
     assert.equal(url, "https://places.googleapis.com/v1/places:searchText");
     assert.match(init.headers["X-Goog-FieldMask"], /websiteUri/);
-    return new Response(JSON.stringify({ places: [place(), place({ id: "p2", websiteUri: "https://site.com.br" })] }), { status: 200 });
+    return new Response(JSON.stringify({ places: [place(), place({ id: "ChIJ_place_0002", websiteUri: "https://site.com.br" })] }), { status: 200 });
   };
   const first = await runProspectSearch(env, { calls: 2 }, fetcher);
   assert.equal(first.ok, true);
-  assert.equal(first.added, 1);
   assert.equal(calls, 2);
-  const again = await runProspectSearch(env, { calls: 1 }, fetcher);
-  assert.equal(again.added, 0);
+  assert.equal(first.items.length, 2, "o mesmo lugar em duas buscas aparece nas duas");
+  assert.equal(first.items[0].id, "ChIJ_place_0001");
+  assert.match(first.items[0].whatsapp, /wa\.me/);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM prospects").get().n, 0, "nada dos lugares fica guardado");
 
-  await setProspectStatus(env, "p1", "nao-quer");
-  const third = await runProspectSearch(env, { calls: 1 }, fetcher);
-  assert.equal(third.added, 0, "quem não quer não volta para a lista");
-  assert.equal(db.prepare("SELECT status FROM prospects WHERE id='p1'").get().status, "nao-quer");
+  await saveContacted(env, first.items[0]);
+  const row = db.prepare("SELECT * FROM prospects").get();
+  assert.equal(row.status, "enviado");
+  assert.equal(row.phone, "81988887777");
+  assert.equal((await runProspectSearch(env, { calls: 1 }, fetcher)).items.length, 0, "quem já foi chamado não volta");
+  assert.equal((await listProspects(env, { status: "enviado" })).items.length, 1);
+
+  await setProspectStatus(env, "ChIJ_place_0001", "novo");
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM prospects").get().n, 0, "não cheguei a mandar: apaga");
+  await skipProspect(env, "ChIJ_place_0001");
+  assert.equal((await runProspectSearch(env, { calls: 1 }, fetcher)).items.length, 0, "não serve não volta");
+  assert.equal((await listProspects(env)).counts["nao-quer"], 1);
+  await assert.rejects(saveContacted(env, { id: "x", name: "A", phone: "1", niche: "cafeteria", city: "Recife PE" }), /prospect_invalid/);
 
   db.prepare("UPDATE nexus_state SET value_json=? WHERE namespace='prospects' AND item_key='usage'")
     .run(JSON.stringify({ day: new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()), count: DAILY_SEARCH_LIMIT }));
@@ -84,21 +94,16 @@ test("busca guarda só empresas sem site, não repete e respeita o limite do dia
   assert.equal(blocked.error, "daily_limit");
 });
 
-test("lista por etapa e chave salva com criptografia", async () => {
+test("chave do Google salva com criptografia e o painel sabe se falta", async () => {
   const { db, env } = fakeEnv();
-  await runProspectSearch(env, { calls: 1 }, async () => new Response(JSON.stringify({ places: [place()] })));
-  const list = await listProspects(env, { status: "novo" });
-  assert.equal(list.items.length, 1);
-  assert.equal(list.counts.novo, 1);
-  assert.match(list.items[0].whatsapp, /wa\.me/);
-  await setProspectStatus(env, "p1", "enviado");
-  assert.equal((await listProspects(env, { status: "enviado" })).items.length, 1);
-  await assert.rejects(setProspectStatus(env, "p1", "apagar"), /status_invalid/);
-
+  delete env.GOOGLE_PLACES_API_KEY;
+  assert.equal((await listProspects(env)).configured, false);
   await savePlacesKey(env, "AIzaSyD_chave_do_rodrigo_000000000000");
   const stored = db.prepare("SELECT value_json FROM nexus_state WHERE item_key='google-key'").get().value_json;
   assert.doesNotMatch(stored, /chave_do_rodrigo/);
+  assert.equal((await listProspects(env)).configured, true);
   await assert.rejects(savePlacesKey(env, "curta"), /google_key_invalid/);
+  await assert.rejects(setProspectStatus(env, "ChIJ_place_0001", "apagar"), /status_invalid/);
 });
 
 test("painel tem o caçador e a rota exige login do Master", () => {

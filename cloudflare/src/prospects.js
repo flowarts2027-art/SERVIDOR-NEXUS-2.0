@@ -64,6 +64,10 @@ export async function ensureProspectSchema(env) {
       created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`).run();
+  // Só o código do lugar de quem o Rodrigo marcou "não serve" (permitido pelo Google).
+  await env.DB.prepare(
+    "CREATE TABLE IF NOT EXISTS prospect_skips (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+  ).run();
 }
 
 async function readState(env, key, fallback) {
@@ -323,6 +327,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
   const cursor = await readState(env, "cursor", { n: 0 });
   let position = Number(cursor.n || 0);
   const searched = [];
+  const live = [];
   let added = 0;
   let found = 0;
   let error = "";
@@ -338,7 +343,14 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
       if (provider === "google") {
         const places = await searchPlaces(key, `${NICHES[nicheKey].query} em ${city}`, fetcher);
         found += places.length;
-        items = places.map(place => placeToProspect(place, nicheKey, city));
+        // Regra do Google: não guardar os dados dos lugares. A lista vai direto para a tela;
+        // só fica guardado quem o Rodrigo chamar (saveContacted) ou marcar "não serve" (só o código).
+        for (const item of places.map(place => placeToProspect(place, nicheKey, city))) {
+          if (!item || await alreadyKnown(env, item.id)) continue;
+          live.push({ ...item, status: "novo", message: firstMessage(item), whatsapp: whatsappLink(item) });
+        }
+        searched.push(`${NICHES[nicheKey].query} em ${city}`);
+        continue;
       } else {
         const elements = await searchOSM(nicheKey, cityIndex, fetcher);
         found += elements.length;
@@ -355,7 +367,47 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
 
   await writeState(env, "usage", { day: today(), count: used + done });
   if (!NICHES[niche]) await writeState(env, "cursor", { n: position });
-  return { ok: !error, error: error || undefined, provider, searched, found, added, usedToday: used + done, dailyLimit: DAILY_SEARCH_LIMIT };
+  return { ok: !error || live.length > 0, error: error || undefined, provider, searched, found,
+    added: provider === "google" ? live.length : added, items: provider === "google" ? live : undefined,
+    usedToday: used + done, dailyLimit: DAILY_SEARCH_LIMIT };
+}
+
+async function alreadyKnown(env, id) {
+  const a = await env.DB.prepare("SELECT 1 AS x FROM prospects WHERE id=?1").bind(id).first();
+  if (a) return true;
+  return Boolean(await env.DB.prepare("SELECT 1 AS x FROM prospect_skips WHERE id=?1").bind(id).first());
+}
+
+const GOOGLE_ID = /^[A-Za-z0-9_-]{10,300}$/;
+
+// Quem o Rodrigo chamou no WhatsApp vira contato dele (nome, telefone, cidade).
+export async function saveContacted(env, body = {}) {
+  await ensureProspectSchema(env);
+  const id = String(body.id || "");
+  if (!GOOGLE_ID.test(id) && !/^osm:(node|way|relation)\/\d+$/.test(id)) throw new Error("prospect_invalid");
+  if (!NICHES[body.niche] || !CITIES.includes(body.city)) throw new Error("prospect_invalid");
+  const { phone, mobile } = phoneInfo(body.phone);
+  const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 120);
+  if (!phone || !name) throw new Error("prospect_invalid");
+  const maps = String(body.maps_url || "");
+  const mapsUrl = /^https:\/\/(maps\.google\.com|www\.google\.com\/maps)\//.test(maps) ? maps.slice(0, 300) : mapsSearchLink(name, body.city);
+  const instagram = /^[a-z0-9._]{1,30}$/i.test(String(body.instagram || "")) ? String(body.instagram) : "";
+  const score = Math.max(0, Math.min(10, Math.round(Number(body.score) || 0)));
+  await env.DB.prepare(
+    `INSERT INTO prospects(id,name,niche,city,address,phone,mobile,website,instagram,rating,reviews,photos,maps_url,score,status)
+     VALUES(?1,?2,?3,?4,'',?5,?6,'',?7,0,0,0,?8,?9,'enviado')
+     ON CONFLICT(id) DO UPDATE SET status='enviado',updated_at=CURRENT_TIMESTAMP`
+  ).bind(id, name, body.niche, body.city, phone, mobile ? 1 : 0, instagram, mapsUrl, score).run();
+  return { ok: true, id };
+}
+
+export async function skipProspect(env, id) {
+  await ensureProspectSchema(env);
+  const value = String(id || "");
+  if (!GOOGLE_ID.test(value) && !/^osm:(node|way|relation)\/\d+$/.test(value)) throw new Error("prospect_invalid");
+  await env.DB.prepare("INSERT OR IGNORE INTO prospect_skips(id) VALUES(?1)").bind(value).run();
+  await env.DB.prepare("DELETE FROM prospects WHERE id=?1 AND status='novo'").bind(value).run();
+  return { ok: true };
 }
 
 export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
@@ -369,11 +421,13 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
   for (const row of (await env.DB.prepare("SELECT status, COUNT(*) AS n FROM prospects GROUP BY status").all())?.results || []) {
     counts[row.status] = Number(row.n || 0);
   }
+  counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM prospect_skips").first())?.n || 0);
   const usage = await readState(env, "usage", { day: "", count: 0 });
+  const hasKey = Boolean(await placesKey(env));
   return {
     ok: true,
-    configured: true,
-    provider: (await placesKey(env)) ? "google" : "osm",
+    configured: hasKey,
+    provider: hasKey ? "google" : "osm",
     usedToday: usage.day === today() ? Number(usage.count || 0) : 0,
     dailyLimit: DAILY_SEARCH_LIMIT,
     counts,
@@ -389,6 +443,11 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
 export async function setProspectStatus(env, id, status) {
   if (!STATUSES.includes(status)) throw new Error("status_invalid");
   await ensureProspectSchema(env);
+  if (status === "novo") {
+    // Volta a ser "não guardado": aparece de novo numa busca futura.
+    await env.DB.prepare("DELETE FROM prospects WHERE id=?1").bind(String(id || "")).run();
+    return { ok: true, id, status };
+  }
   const result = await env.DB.prepare(
     "UPDATE prospects SET status=?2, updated_at=CURRENT_TIMESTAMP WHERE id=?1"
   ).bind(String(id || ""), status).run();
@@ -421,6 +480,13 @@ export async function handleProspectsRoute(request, env, url) {
       let body = {};
       try { body = JSON.parse(raw); } catch {}
       return send(await importBrowserResults(env, body));
+    }
+    if (url.pathname === "/api/master/prospects/contacted" && request.method === "POST") {
+      return send(await saveContacted(env, await request.json().catch(() => ({}))));
+    }
+    if (url.pathname === "/api/master/prospects/skip" && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      return send(await skipProspect(env, body.id));
     }
     if (url.pathname === "/api/master/prospects/key" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));

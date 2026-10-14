@@ -239,3 +239,5 @@
 .wa-quick{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line);margin-bottom:-4px}
 .wa-quick .ghost{font-size:12px;min-height:38px}
 .wa-quick + .wa-form{border-top:0}
+.prospect-actions .primary:disabled{opacity:.45;cursor:not-allowed}
+.prospect-list>p{grid-column:1/-1}
