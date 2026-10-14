@@ -26,6 +26,7 @@
 
 ## Google Maps (decisão 2026-10-14 08h29; atualizado 09h43)
 - 09h43: Rodrigo pagou R$ 30 (campo "Outro valor" aceita mínimo R$ 30; eu tinha dito errado que só aceitava R$ 150) na conta de faturamento 014D52-2FFA79-70D022. Pagamento concluído; crédito aparece em até 24 h. Falta ver se a conta ativa com R$ 30 (a tela diz "pelo menos R$ 150 para ser ativado"). Se ativar: Places API (New) + chave restrita + cota.
+- 09h48: Google pediu mais R$ 120 para ativar (R$ 30 não ativa). Rodrigo coloca outro dia. O Master já está pronto para o Google (caixa "Opcional: usar o Google Maps" em Contatos). Atenção: os termos do Google Maps proíbem guardar os dados dos lugares por muito tempo (só o place_id); antes de usar em escala, mudar o caçador para guardar só o place_id e buscar os detalhes na hora. O Captador dos clientes continua no mapa grátis.
 - Rodrigo: vai pagar os R$ 150 de pré-pagamento do Google quando fechar o primeiro cliente. Então: Places API (New) no projeto flow-arts-nexus, chave restrita só a essa API, cota diária, e ele digita a chave em Master → Contatos (caixa "Opcional: usar o Google Maps").
 - Até lá: busca grátis pelo OpenStreetMap, que às vezes fica fora do ar.
 
