@@ -6,6 +6,11 @@
 - Rodrigo escolheu: Brasil todo, empresas sem site; ele manda a 1ª mensagem pelo celular. Depois, trocar para o robô do WhatsApp quando a Meta liberar.
 - 2026-10-14: Google pediu R$ 150 de pré-pagamento; Rodrigo recusou. Busca trocada para OpenStreetMap (grátis). Próximo passo: OK para publicar feat/cacador-osm → primeira busca real em Master → Contatos → conferir se o Worker alcança overpass-api.de.
 
+## Próximo passo exato (2026-10-14 10h00, sessão terminando)
+1. Pedir o OK do Rodrigo e publicar a branch feat/cacador-google ANTES de ele salvar a chave (a versão no ar ainda grava todos os dados do Google).
+2. Rodrigo completa R$ 120 no Google Cloud (conta 014D52-2FFA79-70D022) e segue o passo a passo da chave enviado no chat: ativar Places API (New) no projeto flow-arts-nexus → Criar credenciais → Chave de API → restringir só à Places API (New) → cota diária e orçamento com alerta → digitar a chave em Master → Contatos → "Chave do Google Maps".
+3. Depois: primeira busca real e conferir no D1 que só os contatos chamados ficam guardados.
+
 ## Verificação da empresa na Meta (2026-10-14 08h52)
 - Status: "Mais informações são necessárias" (empresa "Rodrigo Carvalho", ID 2082464929068014). O documento enviado para provar o telefone +55 21 99855-9965 não foi aceito: precisa mostrar razão social E esse telefone (contrato, alvará, extrato/carta bancária, conta de água/luz/gás/telefone).
 - 09h00–09h10: Cartão CNPJ (12/10) mostra telefone ERRADO na Receita: (21) 9985-5996 (falta um dígito). Nome empresarial: 65.299.616 RODRIGO ALEXANDRE DE CARVALHO. Conta de luz do Rodrigo não mostra telefone. Rodrigo vai usar o WhatsApp só para a própria empresa.
