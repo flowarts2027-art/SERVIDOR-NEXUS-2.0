@@ -56,3 +56,8 @@ test("aba Meu negócio existe no painel, depois do login", () => {
   const portal = fs.readFileSync(new URL("../src/portal.js", import.meta.url), "utf8");
   assert.ok(portal.indexOf("handleBusinessProfilePortal(request") > portal.indexOf('if (!session || !client) return json({ error: "unauthorized" }, 401);'));
 });
+
+test("exemplos do painel são gerais, sem nome de cliente", () => {
+  const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
+  for (const file of ["negocio.js", "campanha.js", "captador.js", "portal.html"]) assert.doesNotMatch(read(file), /quatree|uberl/i, file);
+});

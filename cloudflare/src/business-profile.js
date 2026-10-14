@@ -49,9 +49,9 @@ export async function saveBusinessProfile(env, client, body = {}) {
 
 const MESSAGES = {
   required_brandName: "Escreva o nome da sua empresa.",
-  required_niche: "Escreva o ramo do seu negócio. Ex.: distribuidora de ração.",
+  required_niche: "Escreva o ramo do seu negócio. Ex.: padaria e confeitaria.",
   required_offer: "Conte em 1 ou 2 frases o que você vende.",
-  whatsapp_invalid: "Confira o WhatsApp: escreva com DDD. Ex.: 34 99999-1111."
+  whatsapp_invalid: "Confira o WhatsApp: escreva com DDD. Ex.: 11 99999-1111."
 };
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {

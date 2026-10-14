@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h58–19h05 BRT — Exemplos do painel falavam de Quatree para todos (branch fix/exemplos-gerais, não publicada)
+- Rodrigo: "a regra de perfil entrou em todos os clientes". Perguntado; era isto: os exemplos cinzas da aba Meu negócio citavam Quatree/ração/Minas para qualquer cliente.
+- Trocados por exemplos gerais (padaria) em negocio.js (v2); cidade de exemplo do Captador e mensagens do servidor também (Curitiba PR, 11 99999-1111). Teste novo garante que não há nome de cliente nos exemplos. 358 testes ok.
+- Ele também perguntou por que "Criar com IA" não marca: é a trava escolhida por ele (liberar no Master → Contatos → Imagem por IA para clientes). Não é bug.
+
 ## 2026-10-14 18h46–19h15 BRT — Aba "Campanha" no painel do cliente (publicado 40cd939 às 18h52 com OK do Rodrigo; deploy e CI ok; campanha.js conferido no ar)
 - Pedido do Rodrigo: cliente escolhe enviar arte pronta ou criar por IA, aba para enviar as artes, dias da campanha etc. Escolhas dele: IA só depois que ele libera no Master; 30 imagens IA/mês por cliente (muda no Master); 7, 15 ou 30 dias; 1 ou 2 posts/dia.
 - client-campaign.js: config.campaignSettings {artSource own|ai, days, postsPerDay, startDate}; começa no dia em que salva (mudar só arte/posts mantém o começo). Liberação IA e uso por mês em nexus_state namespace client-campaign (ai-access, ai-usage); artes usadas em art-used.

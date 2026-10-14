@@ -6,14 +6,14 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const DEMO = new URLSearchParams(location.search).get("demo") === "1";
   const FIELDS = [
-    ["brandName", "Nome da empresa", "input", 80, "Ex.: Quatree Dog Minas", true],
-    ["niche", "Ramo do negócio", "input", 80, "Ex.: Distribuidora de ração para cães e gatos", true],
-    ["offer", "O que você vende (1 ou 2 frases)", "textarea", 400, "Ex.: Revendo a ração Quatree para pet shops e agropecuárias, com entrega em Minas Gerais.", true],
-    ["services", "Produtos ou serviços principais", "textarea", 600, "Ex.: Quatree Supreme, Quatree Life, Quatree Gourmet. Pedido mínimo de 10 sacos.", false],
-    ["audience", "Para quem você vende", "input", 300, "Ex.: Pet shops, casas de ração e agropecuárias", false],
-    ["region", "Cidade ou região que atende", "input", 120, "Ex.: Triângulo Mineiro e Belo Horizonte", false],
-    ["differentials", "Por que comprar com você", "textarea", 400, "Ex.: Entrega em 48 horas e preço de distribuidor.", false],
-    ["whatsapp", "WhatsApp do negócio (com DDD)", "input", 20, "Ex.: 34 99999-1111", false]
+    ["brandName", "Nome da empresa", "input", 80, "Ex.: Padaria Sol Nascente", true],
+    ["niche", "Ramo do negócio", "input", 80, "Ex.: Padaria e confeitaria", true],
+    ["offer", "O que você vende (1 ou 2 frases)", "textarea", 400, "Ex.: Pães, bolos e salgados feitos na hora, com entrega no bairro.", true],
+    ["services", "Produtos ou serviços principais", "textarea", 600, "Ex.: Pão francês, bolos de festa, salgados para eventos.", false],
+    ["audience", "Para quem você vende", "input", 300, "Ex.: Famílias do bairro e empresas que fazem eventos", false],
+    ["region", "Cidade ou região que atende", "input", 120, "Ex.: Centro e zona sul da cidade", false],
+    ["differentials", "Por que comprar com você", "textarea", 400, "Ex.: Receitas da família e entrega em até 1 hora.", false],
+    ["whatsapp", "WhatsApp do negócio (com DDD)", "input", 20, "Ex.: 11 99999-1111", false]
   ];
   let loaded = false;
 

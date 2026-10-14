@@ -64,7 +64,7 @@
       <form id="cap-search" class="cap-search">
         <label>Tipo de negócio<select name="niche" required>${(data.niches || []).map(n =>
           `<option value="${esc(n.key)}" ${n.key === lastNiche ? "selected" : ""}>${esc(n.label)}</option>`).join("")}</select></label>
-        <label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Uberlândia MG" value="${esc(lastCity)}" required></label>
+        <label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Curitiba PR" value="${esc(lastCity)}" required></label>
         <button class="btn btn-primary" type="submit" ${data.ready ? "" : "disabled"}>Buscar empresas</button>
       </form>
       <p class="muted" id="cap-usage">${esc(usageLine())}</p>

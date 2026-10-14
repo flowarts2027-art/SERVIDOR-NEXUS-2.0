@@ -299,7 +299,7 @@ const send = (data, status = 200) => new Response(JSON.stringify(data), {
 const MESSAGES = {
   captador_disabled: "O Captador de clientes não está ativo na sua conta.",
   monthly_limit: "Você usou todas as buscas deste mês. Para buscar mais, fale com a Flow Arts.",
-  city_invalid: "Escreva a cidade e o estado, por exemplo: Uberlândia MG.",
+  city_invalid: "Escreva a cidade e o estado, por exemplo: Curitiba PR.",
   niche_invalid: "Escolha um tipo de negócio da lista.",
   google_unavailable: "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.",
   google_failed: "O Google Maps não respondeu agora. Tente de novo daqui a pouco.",
