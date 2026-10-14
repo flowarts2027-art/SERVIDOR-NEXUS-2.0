@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 18h35–18h50 BRT — Aba "Meu negócio" no painel do cliente (branch feat/aba-meu-negocio, não publicada)
+## 2026-10-14 18h35–18h50 BRT — Aba "Meu negócio" no painel do cliente (publicado dff599d às 18h43 com OK do Rodrigo; deploy e CI ok; negocio.js conferido no ar)
 - Pedido do Rodrigo: aba para o cliente colocar o perfil dele. Achado: o Master tem "Perfis enviados pelos clientes" (agentProfile.submittedAt), mas o painel novo não tinha mais o formulário; /api/portal/profile só salva nome/@/telefone e não tinha tela.
 - business-profile.js + GET/POST /api/portal/business (depois do login): nome da empresa, ramo, o que vende (obrigatórios); produtos, público, região, diferenciais, WhatsApp (opcionais). Salva em config.agentProfile (mantém o resto), marca submittedAt e status "submitted" (aparece como NOVO PERFIL no Master). clientBrand já usa nome, ramo, público, oferta e WhatsApp nos posts.
 - Portal: aba "Meu negócio" (public/negocio.js, client-lite v112, css v109). Demo não salva. 353 testes ok.

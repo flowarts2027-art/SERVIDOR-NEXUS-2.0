@@ -23,6 +23,10 @@
 - 09h21–09h22 (14/10): FUNCIONOU. Rodrigo gerou o token na tela 'Enviar mensagem' (Etapa 2) da Meta e o teste 'Integration Test' chegou no WhatsApp dele. Às 09h22 ele mandou 'OI, bom dia' e o Nexus respondeu sozinho ('Sou a assistente virtual da Flow Arts...'), registrado como sent_auto no D1. A versão v26.0 continua e funciona: a branch fix/whatsapp-versao-graph (v25.0) NÃO foi publicada por não ser necessária. Causa provável do erro antigo: faltava concluir esse passo de token/autorização do app na conta do WhatsApp. A verificação da empresa não foi necessária para o robô responder.
 - Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
 
+## Aba "Meu negócio" (publicada 14/10)
+- Pedir ao Quatree Dog para preencher a aba "Meu negócio"; conferir o perfil no Master (Perfis enviados pelos clientes).
+- Decisão pendente do Rodrigo: ligar imagem por IA para o Quatree Dog (custo na OpenAI) ou manter fotos do Instagram dele.
+
 ## Captador de clientes (ferramenta R$ 97/mês)
 - 14/10 tarde: tipos Ração, Casa de ração e Agropecuária prontos na branch feat/captador-racao-agro (cliente Quatree em MG). Captador do cliente passou a usar o Google Maps (mesma regra do Master). Publicado 14/10 18h02 (e454a1a). Falta ligar o Captador do Quatree Dog em Master → Contatos e fazer 1 busca real. Atenção ao custo: buscas dos clientes somam na cota do Google da Flow Arts. Limite por cliente: 100/mês (muda no Master).
 - Código pronto (branch feat/captador-clientes). Antes de vender: confirmar por alguns dias que o Overpass (mapa grátis) responde; ele deu 504 em 14/10 de manhã. Se continuar instável, avaliar servidor Overpass próprio ou Google (custo por busca).
