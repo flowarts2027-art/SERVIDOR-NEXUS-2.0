@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 18h07–18h12 BRT — Busca do cliente sem resultado: Google ainda não ativo (branch feat/captador-falha-nao-conta, não publicada)
+- Rodrigo testou o Quatree Dog: não apareceu nada; ele mesmo disse que o serviço de busca (Google) ainda não está ativo. Pendência já conhecida: completar R$ 120 de crédito, ativar Places API (New) e salvar a chave no Master.
+- fix: busca do cliente que o Google recusa não conta no limite do mês (antes contava). 348 testes ok. Aguarda OK para publicar.
+
 ## 2026-10-14 18h01–18h05 BRT — Captador com Google Maps publicado (e454a1a)
 - OK do Rodrigo às 18h01. Push na main; "Deploy NEXUS Cloudflare" e "NEXUS CI" com sucesso no e454a1a.
 - Conferido ao vivo: painel.flowarts.com.br/captador.js?v=3 já mostra "Fonte: Google Maps" e "Buscas este mês".

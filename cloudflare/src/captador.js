@@ -210,6 +210,8 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   try {
     places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
   } catch {
+    // Busca que falhou não conta no limite do mês.
+    await writeState(env, client.id, "usage", { month: thisMonth(), count: used });
     throw new Error("google_failed");
   }
   const config = await captadorConfig(env, client);

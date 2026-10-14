@@ -119,6 +119,17 @@ test("sem chave do Google a busca avisa e não gasta", async () => {
   assert.match(result.data.message, /Flow Arts/);
 });
 
+test("busca que o Google recusa não conta no limite", async () => {
+  const { env } = fakeEnv();
+  await setCaptadorAccess(env, ana.id, true);
+  const request = new Request("https://painel.flowarts.com.br/api/portal/captador/search", { method: "POST", body: JSON.stringify({ niche: "pet", city: "Belo Horizonte MG" }) });
+  const refused = async () => new Response(JSON.stringify({ error: { status: "PERMISSION_DENIED" } }), { status: 403 });
+  const response = await handleCaptadorPortal(request, env, new URL(request.url), ana, refused);
+  assert.equal((await response.json()).error, "google_failed");
+  const view = await call(env, ana, "/api/portal/captador?status=enviado");
+  assert.equal(view.data.usedMonth, 0);
+});
+
 test("filtro só sem site e mensagem sem dados vazios", () => {
   assert.ok(captadorLead(PLACES[1], "racao", "Uberlândia MG", false));
   assert.equal(captadorLead(PLACES[1], "racao", "Uberlândia MG", true), null);
