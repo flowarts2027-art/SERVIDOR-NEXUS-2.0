@@ -1,6 +1,7 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 08h40–09h20 BRT — Captador de clientes para clientes (branch feat/captador-clientes, não publicada)
+## 2026-10-14 08h40–09h20 BRT — Captador de clientes para clientes (9945723, publicado 08h50 com OK do Rodrigo)
+- Conferido ao vivo: /api/master/captador/access 200 com 5 clientes, todos desligados; portal.html no ar com a aba Buscar e captador.js.
 - Pedido do Rodrigo: vender ferramentas (automação do Instagram, site e o captador). Escolhas dele: cliente usa sozinho no portal; R$ 97/mês.
 - Ideia anterior dele ("vender listas de leads quentes do Google") respondida: Google proíbe revender os dados; LGPD arriscada; lista não é lead quente. Sugerido vender a ferramenta/prospecção. Ele concordou.
 - feat: cloudflare/src/captador.js. Tabela captador_leads (client_id + id), separada por cliente. Liberação por cliente (nexus_state captador/access). Config da mensagem do cliente (nome, empresa, oferta, "só sem site"); frase de "não receber" sempre no fim. 19 tipos de negócio (tags do OSM). Limite 10 buscas/dia por cliente. Busca: navegador do cliente acha a cidade no Nominatim → /api/portal/captador/plan (valida Brasil, guarda a busca por 15 min) → Overpass no navegador → /api/portal/captador/import. Redes/franquias fora.
