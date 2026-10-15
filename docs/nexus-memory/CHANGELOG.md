@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 22h44–23h05 BRT — Vídeo de fundo no site (branch feat/video-fundo-site, não publicada)
+## 2026-10-14 22h44–23h05 BRT — Vídeo de fundo no site (publicado 0d9142d às 22h54 com OK do Rodrigo; deploy ok; conferido no ar em flowarts.com.br/site.html: seção do Reel, aviso de demonstração e cafe.brisa)
 - Rodrigo mandou 2 cenas novas: "dona sorri servindo" (8 s, 720p) ficou boa (tela virada para ela, história clara) — sugerida como Reel da Flow Arts com legenda; "mulher segurando o celular" (4 s) boa, mas é outra mulher (não juntar).
 - Pedido: o vídeo de 4 s no fundo da página, misturado ("marca d'água"). Feito: public/video/fundo-cafe.mp4 (540×960, sem som, 186 KB) + capa .jpg; .bg-video fixo atrás de tudo, opacidade 0,18 (0,14 e leve desfoque no computador) e camada escura por cima; para (fica a capa) com "menos movimento" ou economia de dados. site.html + scripts/site (body e css). 367 testes ok. Conferido em print (celular e computador).
 - Pedido extra: celular do site com cara de iPhone 2026. Explicado que não copiamos o desenho da Apple; feito celular moderno genérico (borda fina escura, cantos 54px, câmera em pílula, botão lateral) nos 4 celulares do site.
