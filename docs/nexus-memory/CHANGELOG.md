@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 18h47–19h20 BRT — Uma palavra para cada conteúdo (branch feat/brinde-por-palavra, não publicada)
+## 2026-10-15 18h47–19h20 BRT — Uma palavra para cada conteúdo (publicado 4baa302 às 18h52 com OK do Rodrigo; deploy e CI ok; falta teste real com um comentário SITE ou REELS)
 
 - Pedido do Rodrigo (passo B): cada Reel com a sua palavra e o seu conteúdo.
 - Novo `cloudflare/src/gift-materials.js`. QUERO e as palavras antigas abrem o guia "10 ideias". SITE abre o checklist "O site que traz clientes" (7 passos, com o site por R$ 497 no fim). REELS ou ROTEIRO abre "5 roteiros de Reels" (cena por cena).
