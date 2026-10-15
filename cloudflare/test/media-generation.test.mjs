@@ -91,3 +91,8 @@ test("Reel usa o movimento novo (zoom visível e suave, sem cortar a frase)", as
   assert.match(script, /z='1\+0\.10\*/);
   assert.match(script, /scale=2160:3840/);
 });
+
+test("imagem: celular na mão com a tela virada para a pessoa", async () => {
+  const { buildVisualPrompt } = await import("../src/media-generation.js");
+  assert.match(buildVisualPrompt({ id: "primeiro-teste", name: "Flow Arts" }, "", "x", {}), /screen faces the person holding it, never the viewer/);
+});

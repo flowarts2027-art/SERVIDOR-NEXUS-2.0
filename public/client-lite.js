@@ -109,6 +109,10 @@ function mediaHtml(post, cls) {
 }
 
 function actionsHtml(post) {
+  // Aprovado e ainda não publicado: dá para cancelar antes do horário.
+  if (postGroup(post) === "agendados" && !["published", "publishing"].includes(String(post.status))) {
+    return `<div class="actions"><button type="button" class="btn btn-soft btn-cancel" data-cancel-post="${escapeHtml(post.id)}">Cancelar esta postagem</button></div>`;
+  }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
   const ready = Boolean(postImage(post));
@@ -621,6 +625,19 @@ async function decide(id, button) {
   }
 }
 
+async function cancelPost(id, button) {
+  if (!window.confirm("Cancelar esta postagem? Ela não vai sair no Instagram.")) return;
+  button.disabled = true;
+  try {
+    await api("/api/portal/posts/" + encodeURIComponent(id) + "/cancel", { method: "POST" });
+    toast("Postagem cancelada. Ela não vai sair no Instagram.");
+    await loadAll();
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
+}
+
 async function sendRevision(form) {
   const id = form.dataset.revisionForm;
   const text = String(new FormData(form).get("instructions") || "").trim();
@@ -655,7 +672,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-connect], [data-discard-lead], #logout")) {
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-connect], [data-discard-lead], #logout")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -688,6 +705,8 @@ document.addEventListener("click", event => {
   if (filter) { state.filter = filter.dataset.filter; renderPosts(); return; }
   const approve = target.closest("[data-approve]");
   if (approve) { decide(approve.dataset.approve, approve); return; }
+  const cancel = target.closest("[data-cancel-post]");
+  if (cancel) { cancelPost(cancel.dataset.cancelPost, cancel); return; }
   const revise = target.closest("[data-revise]");
   if (revise) {
     const form = revise.closest(".post-body, .hero-body")?.querySelector("[data-revision-form]");

@@ -105,6 +105,8 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
       // "Sem texto" fazia a IA desenhar telas e papéis vazios, só com blocos de cor.
       "Screens and objects must show real, meaningful content: a phone or laptop shows a real-looking Instagram feed full of product photos, or an analytics dashboard with real-looking charts and photo thumbnails. Any text on screens or paper appears only as tiny, blurred interface lines.",
       "Never show blank screens, empty colored rectangles, plain color swatches, blank cards or meaningless decorative shapes. Every object must be a real item a small business uses.",
+      // Pedido do Rodrigo (15/10): celular virado para a câmera parece falso.
+      "When a person holds a phone, the screen faces the person holding it, never the viewer. To show the screen, use an over-the-shoulder view from behind the person.",
       brand.visualDirection||"Premium, photorealistic, contemporary scenes that clearly match the brand niche, with one clear idea per creative.",
       "No copyrighted characters, movie frames, sports-team marks, third-party brands or logos."
     );

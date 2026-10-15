@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 08h48–09h05 BRT — Cancelar post aprovado no painel (branch feat/cancelar-post-aprovado, não publicada)
+- Rodrigo: post da Flow Arts aprovado para hoje 12h (rótulo Reels, imagem 9:16 "O que parece pequeno faz o cliente voltar.") com a mulher segurando o celular com a tela virada para a câmera; pediu opção de cancelar.
+- O servidor já tinha POST /api/portal/posts/:id/cancel (status cancelled, approval rejected; agendador só pega ready/scheduled/failed). Faltava o botão: client-lite (v116/css v113) mostra "Cancelar esta postagem" em post aprovado e ainda não publicado, com confirmação.
+- media-generation.js: regra no prompt — celular na mão com a tela virada para a pessoa; para mostrar a tela, visão por cima do ombro.
+- 371 testes ok.
+
 ## 2026-10-14 23h03–23h10 BRT — "Assumir painel" dava erro (publicado 918d748 às 23h05 com OK do Rodrigo; deploy e CI ok; falta ele testar com login real)
 - Rodrigo: no Master, "Assumir painel" dá erro. Causa provável: os links (app.js, 3 lugares) apontavam fixo para servidor-nexus.diamantehinode2015.workers.dev; com o Master aberto em painel.flowarts.com.br (sugerido hoje), o login do Master não vale no endereço antigo. E o assume-open redirecionava para PUBLIC_BASE_URL (outro endereço que o do cookie).
 - Correção: links relativos (/api/clients/<id>/assume-open) e redirect/entryPath relativos (/portal?auth=1) em master.js. Funciona no endereço em que o Master estiver. app.js v47. 369 testes ok. Não testado com login real.

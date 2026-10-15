@@ -71,3 +71,16 @@ test("rota só no Master; tela do Master e do cliente prontas", async () => {
   assert.match(read("index.html"), /manual-reel\.js/);
   assert.match(read("client-lite.js"), /<video src=/);
 });
+
+test("cliente pode cancelar post aprovado antes de sair", async () => {
+  const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(js, /data-cancel-post=/);
+  assert.match(js, /\/cancel", \{ method: "POST" \}/);
+  const { cancelPost } = await import("../src/posts.js");
+  const { db, env } = fakeEnv();
+  db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json) VALUES('p1','quatree-dog','2026-10-15T15:00:00Z','ready','approved','x','{}')").run();
+  const out = await cancelPost(env, { id: "quatree-dog" }, "p1");
+  assert.equal(out.ok, true);
+  const row = db.prepare("SELECT status, approval_status FROM post_ledger WHERE id='p1'").get();
+  assert.deepEqual({ ...row }, { status: "cancelled", approval_status: "rejected" });
+});
