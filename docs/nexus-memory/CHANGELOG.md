@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 09h07–09h20 BRT — Pedir ajuste depois de aprovado (branch feat/ajuste-depois-aprovado, não publicada)
+## 2026-10-15 09h07–09h20 BRT — Pedir ajuste depois de aprovado (publicado b24b2a7 às 09h11 com OK do Rodrigo; deploy e CI ok; falta ele pedir o ajuste do carrossel das 19h)
 - Rodrigo: carrossel aprovado (hoje 19h, Flow Arts), imagem 2 "1. Comece por aqui" com a pessoa escrevendo na agenda fechada. Pediu botão de correção mesmo depois de aprovado e corrigir esse.
 - client-lite (v118): post aprovado e não publicado mostra "Pedir ajuste" (com o mesmo formulário) e "Cancelar". posts.js: ajuste bloqueado em publicado/publicando (antes não tinha trava). portal.js: mensagens.
 - format-builder: o pedido de ajuste do cliente entra no briefing de cada imagem do carrossel. media-generation: regra "objetos usados de verdade: escrever em caderno aberto, xícara em pé".
