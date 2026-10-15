@@ -372,3 +372,14 @@ input, select, textarea, button { max-width: 100%; }
 
 /* Cancelar postagem aprovada */
 .btn-cancel { color: var(--hot); border-color: currentColor; }
+
+/* Carrossel no cartão do post: passar com as setas ou com o dedo */
+.carousel { position: relative; }
+.car-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: inherit; }
+.car-track::-webkit-scrollbar { display: none; }
+.car-track img { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; scroll-snap-align: start; display: block; }
+.car-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(15, 30, 61, .72); color: #fff; font-size: 1.8rem; line-height: 1; display: grid; place-items: center; cursor: pointer; }
+.car-btn:disabled { opacity: .3; cursor: default; }
+.car-prev { left: 8px; }
+.car-next { right: 8px; }
+.car-count { position: absolute; top: 10px; right: 10px; background: rgba(15, 30, 61, .72); color: #fff; font-size: .85rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }

@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 08h55–09h15 BRT — Carrossel com setas no painel do cliente (branch feat/carrossel-painel, não publicada)
+- Rodrigo: no carrossel não dá para ver as outras imagens no painel do cliente.
+- client-lite (v117/css v114): carrossel com todas as imagens (formatBuild.carouselUrls), setas ‹ › de 44px, contador "1 / 4", passa também com o dedo. Testado no navegador simulado (celular). 372 testes ok.
+- Limite: os cartões 2 a 4 do carrossel só são criados DEPOIS da aprovação (format-builder pega só approval_status='approved'). Antes de aprovar, o cliente vê só a capa. Perguntado ao Rodrigo se quer criar todos antes da aprovação (custo extra só quando o cliente recusa).
+
 ## 2026-10-15 08h48–09h05 BRT — Cancelar post aprovado no painel (publicado 8d2b80f às 08h52 com OK do Rodrigo; deploy e CI ok; falta ele cancelar o post das 12h)
 - Rodrigo: post da Flow Arts aprovado para hoje 12h (rótulo Reels, imagem 9:16 "O que parece pequeno faz o cliente voltar.") com a mulher segurando o celular com a tela virada para a câmera; pediu opção de cancelar.
 - O servidor já tinha POST /api/portal/posts/:id/cancel (status cancelled, approval rejected; agendador só pega ready/scheduled/failed). Faltava o botão: client-lite (v116/css v113) mostra "Cancelar esta postagem" em post aprovado e ainda não publicado, com confirmação.

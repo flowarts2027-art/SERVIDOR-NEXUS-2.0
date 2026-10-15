@@ -84,3 +84,10 @@ test("cliente pode cancelar post aprovado antes de sair", async () => {
   const row = db.prepare("SELECT status, approval_status FROM post_ledger WHERE id='p1'").get();
   assert.deepEqual({ ...row }, { status: "cancelled", approval_status: "rejected" });
 });
+
+test("painel do cliente mostra todas as imagens do carrossel com setas", () => {
+  const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(js, /data-carousel/);
+  assert.match(js, /class="car-btn car-next" data-car="1"/);
+  assert.match(js, /car-count/);
+});

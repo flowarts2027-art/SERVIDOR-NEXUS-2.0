@@ -100,6 +100,17 @@ function mediaHtml(post, cls) {
   const image = postImage(post);
   // Reel pronto (feito no Flow): o cliente assiste antes de aprovar.
   const video = String(post.creativeFeatures?.requestedFormat || "") === "reel" ? safeUrl(post.formatBuild?.videoUrl) : "";
+  // Carrossel: todas as imagens, com setas para passar.
+  const cards = (post.formatBuild?.carouselUrls || []).map(safeUrl).filter(Boolean);
+  if (cards.length >= 2) {
+    return `<div class="${cls} carousel" data-carousel>
+      <div class="car-track" tabindex="0" aria-label="Imagens do carrossel">${cards.map((url, i) =>
+        `<img src="${escapeHtml(url)}" alt="Imagem ${i + 1} de ${cards.length} do carrossel" loading="lazy">`).join("")}</div>
+      <button type="button" class="car-btn car-prev" data-car="-1" aria-label="Imagem anterior" disabled>‹</button>
+      <button type="button" class="car-btn car-next" data-car="1" aria-label="Próxima imagem">›</button>
+      <span class="car-count" aria-live="polite">1 / ${cards.length}</span>
+    </div>`;
+  }
   if (video) {
     return `<div class="${cls} is-video"><video src="${escapeHtml(video)}" ${image ? `poster="${escapeHtml(image)}"` : ""} controls playsinline preload="none" aria-label="Vídeo do Reel"></video></div>`;
   }
@@ -705,6 +716,12 @@ document.addEventListener("click", event => {
   if (filter) { state.filter = filter.dataset.filter; renderPosts(); return; }
   const approve = target.closest("[data-approve]");
   if (approve) { decide(approve.dataset.approve, approve); return; }
+  const carBtn = target.closest("[data-car]");
+  if (carBtn) {
+    const track = carBtn.closest("[data-carousel]")?.querySelector(".car-track");
+    if (track) track.scrollBy({ left: Number(carBtn.dataset.car) * track.clientWidth, behavior: "smooth" });
+    return;
+  }
   const cancel = target.closest("[data-cancel-post]");
   if (cancel) { cancelPost(cancel.dataset.cancelPost, cancel); return; }
   const revise = target.closest("[data-revise]");
@@ -837,3 +854,16 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#refresh")?.addEventListener("click", () => { toast("Atualizando…"); loadAll().then(() => toast("Tudo atualizado.")); });
   boot();
 });
+
+// Contador do carrossel (1 / 4) ao passar as imagens, pelas setas ou com o dedo.
+document.addEventListener("scroll", event => {
+  const track = event.target instanceof Element && event.target.classList.contains("car-track") ? event.target : null;
+  if (!track) return;
+  const total = track.children.length;
+  const index = Math.min(total, Math.round(track.scrollLeft / Math.max(1, track.clientWidth)) + 1);
+  const count = track.parentElement.querySelector(".car-count");
+  if (count) count.textContent = index + " / " + total;
+  const box = track.parentElement;
+  box.querySelector(".car-prev").disabled = index <= 1;
+  box.querySelector(".car-next").disabled = index >= total;
+}, true);
