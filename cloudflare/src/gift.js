@@ -225,43 +225,67 @@ function escapeHtml(value) {
 }
 
 const BASE_STYLE = `
-:root{--bg:#070D1A;--panel:#0E1729;--panel-2:#13203A;--line:#22314F;--ink:#EEF2FA;--muted:#9AA8C4;--accent:#4F86FF;--accent-2:#7FA8FF;--accent-soft:rgba(79,134,255,.14);--ok:#3DD68C;--warn:#FFB547;--whats:#1FAF5F;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.6}
-a{color:var(--accent-2)}.wrap{max-width:720px;margin:0 auto;padding:0 16px}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent-2);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:999px}
-h1{margin:14px 0 0;font-size:clamp(1.7rem,6.4vw,2.5rem);line-height:1.15;text-wrap:balance}h1 em{font-style:normal;color:var(--accent-2)}
-h2{font-size:1.35rem;line-height:1.25;margin:0 0 6px}.sub{color:var(--muted);margin:12px 0 0}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 18px}
-.btn{min-height:52px;border:0;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;padding:0 22px}
-.btn.block{width:100%}.btn:disabled{opacity:.6;cursor:wait}.btn-ghost{background:transparent;color:var(--accent-2);border:1.5px solid var(--accent)}.btn-whats{background:var(--whats)}
-form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:700;font-size:.95rem}
-input{font:inherit;color:var(--ink);background:var(--bg);min-height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;width:100%}
-input::placeholder{color:#5D6B88}.phone{display:grid;grid-template-columns:auto 1fr;gap:8px}.ddi{display:flex;align-items:center;padding:0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--muted);font-weight:700}
+:root{--bg:#050B1F;--panel:#0A1636;--panel-2:#0F1E46;--line:#1C2B57;--ink:#F2F5FA;--chrome:#C9D1DE;--muted:#93A0BB;--accent:#1F6BFF;--accent-2:#49A3FF;--accent-soft:rgba(31,107,255,.14);--ok:#3DD68C;--warn:#FFB547;--whats:#1FAF5F;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(900px 520px at 85% -10%,rgba(31,107,255,.22),transparent 60%),radial-gradient(700px 480px at -10% 30%,rgba(73,163,255,.10),transparent 60%),var(--bg);background-attachment:fixed;color:var(--chrome);font:400 17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--accent-2)}.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+h1,h2,h3,.disp{font-family:Unbounded,"Atkinson Hyperlegible",sans-serif;color:var(--ink);letter-spacing:-.015em}
+.bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 0 14px}
+.logo{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font:700 1rem Unbounded,sans-serif}.logo img{width:26px;height:32px}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent-2);border:1px solid rgba(73,163,255,.28);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+h1{margin:16px 0 0;font-size:clamp(1.9rem,7vw,3.1rem);line-height:1.06;font-weight:700;text-wrap:balance}h1 em{font-style:normal;background:linear-gradient(90deg,#fff,var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:clamp(1.3rem,4.6vw,1.8rem);line-height:1.15;margin:0 0 8px;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);margin:14px 0 0;font-size:1.06rem}
+.panel{background:linear-gradient(180deg,rgba(15,30,70,.85),rgba(10,22,54,.85));border:1px solid var(--line);border-radius:22px;padding:24px 20px;box-shadow:0 30px 60px -30px rgba(0,0,0,.6)}
+.btn{min-height:54px;border:0;border-radius:999px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;padding:0 26px;box-shadow:0 10px 30px -10px rgba(31,107,255,.7);transition:transform .15s}
+.btn:active{transform:scale(.98)}.btn.block{width:100%}.btn:disabled{opacity:.6;cursor:wait}.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid #3A4E86;box-shadow:none}.btn-whats{background:var(--whats);box-shadow:0 10px 30px -10px rgba(31,175,95,.7)}
+form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:700;font-size:.95rem;color:var(--ink)}
+input{font:inherit;color:var(--ink);background:rgba(5,11,31,.7);min-height:52px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;width:100%}
+input:focus{border-color:var(--accent-2)}input::placeholder{color:#5D6B88}.phone{display:grid;grid-template-columns:auto 1fr;gap:8px}.ddi{display:flex;align-items:center;padding:0 12px;border:1.5px solid var(--line);border-radius:14px;background:rgba(5,11,31,.7);color:var(--muted);font-weight:700}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 input:focus-visible,a:focus-visible,.btn:focus-visible,button:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
 .msg{margin:0;min-height:1.2em;font-weight:700}.msg.ok{color:var(--ok)}.msg.warn{color:var(--warn)}
 .note{color:var(--muted);font-size:.85rem;text-align:center;margin:0}
-footer{padding:28px 16px calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.85rem;text-align:center}
+footer{padding:32px 16px calc(32px + env(safe-area-inset-bottom));color:var(--muted);font-size:.85rem;text-align:center}
 `;
 
+const LOGO = `<a class="logo" href="https://flowarts.com.br/" target="_blank" rel="noopener"><img src="/brand/flowarts-symbol.webp" alt="" width="26" height="32">Flow Arts</a>`;
+
 function page(title, inner, extraStyle = "") {
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#070D1A"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"><style>${BASE_STYLE}${extraStyle}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050B1F"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="icon" href="/brand/flowarts-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Unbounded:wght@500;700&display=swap"><style>${BASE_STYLE}${extraStyle}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
 }
 
 function html(body, status = 200) {
   return new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" } });
 }
 
+const GIFT_STYLE = `
+.cover{display:grid;place-items:center;padding:18px 0 26px;perspective:900px}
+.book{position:relative;width:min(230px,62vw);aspect-ratio:3/4;border-radius:10px 18px 18px 10px;padding:22px 18px;display:flex;flex-direction:column;gap:8px;text-align:left;background:radial-gradient(120% 80% at 100% 0%,#49A3FF 0%,transparent 55%),linear-gradient(160deg,#1F6BFF,#0A1636 70%);box-shadow:-10px 0 0 -4px #0F1E46,0 40px 70px -25px rgba(31,107,255,.75),inset 6px 0 0 rgba(255,255,255,.12);transform:rotateY(-14deg) rotateX(4deg);animation:float 6s ease-in-out infinite}
+.book-tag{font-size:.7rem;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.75)}
+.book b{font-size:1.65rem;line-height:1.02;color:#fff;margin-top:auto}.book-sub{color:rgba(255,255,255,.85);font-weight:700}
+.book-foot{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);font:700 .8rem Unbounded,sans-serif;color:#fff}
+@keyframes float{50%{transform:rotateY(-10deg) rotateX(2deg) translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.book{animation:none}}
+.gets{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
+.gets li{display:flex;gap:12px;align-items:center;background:rgba(10,22,54,.6);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.gets li::before{content:"✓";flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.gets b{color:var(--ink)}
+`;
+
 // Uma janela só: Nome, E-mail e WhatsApp. A conferência de "segue?" roda escondida;
 // a tela de seguir só aparece para quem ainda não segue.
 export function giftPageHtml(handle = "@flowarts2026", code = "") {
   const h = escapeHtml(handle);
   return page("Material gratuito · Flow Arts", `
-<main class="wrap" style="padding-top:calc(36px + env(safe-area-inset-top));max-width:480px;text-align:center">
-<span class="pill">⚡ Material gratuito</span>
+<main class="wrap" style="max-width:520px">
+<div class="bar-top">${LOGO}<span class="pill">Grátis</span></div>
+<div class="cover" aria-hidden="true"><div class="book"><span class="book-tag">GUIA · 2026</span><b class="disp">10 ideias<br>de post</b><span class="book-sub">que trazem clientes</span><span class="book-foot"><img src="/brand/flowarts-symbol.webp" alt="" width="18" height="22">Flow Arts</span></div></div>
+<div style="text-align:center"><span class="pill">⚡ Material gratuito</span>
 <h1><em>${escapeHtml(GIFT_TITLE)}</em></h1>
-<p class="sub">O guia com 10 ideias prontas, legendas para copiar e um plano de 10 dias para o Instagram do seu negócio.</p>
-<section class="panel" style="margin-top:24px;text-align:left">
+<p class="sub">O guia que mostra o que postar, com a legenda pronta e um plano de 10 dias para o Instagram do seu negócio.</p></div>
+<ul class="gets"><li><span><b>10 ideias</b> testadas, uma por dia</span></li><li><span><b>Legendas prontas</b> para copiar e colar</span></li><li><span><b>5 minutos</b> para montar cada post</span></li></ul>
+<section class="panel" style="margin-top:22px;text-align:left">
 <form id="lead" novalidate>
 <p class="note" style="font-size:.95rem">Preencha seus dados para acessar o guia completo.</p>
 <label>Nome<input name="nome" autocomplete="given-name" placeholder="Seu nome" required></label>
@@ -299,7 +323,7 @@ return post("${GIFT_LEAD}",{key:key,nome:f.elements.nome.value,email:f.elements.
 .then(function(d){if(d.ok&&d.url){say(m,"Tudo certo! Abrindo o seu guia…","ok");location.href=d.url;return;}
 say(m,d.message||"Não deu certo. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";})
 .catch(function(){say(m,"Sem conexão. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";});});})();
-</script>`);
+</script>`, GIFT_STYLE);
 }
 
 // Ideia, como fazer e a legenda pronta para copiar (troque o que está entre colchetes).
@@ -316,70 +340,93 @@ const GUIDE_IDEAS = [
   ["Chamada clara", "Todo post termina com um próximo passo. Escolha um só por post.", "Comente QUERO que eu te mando [O QUE A PESSOA GANHA] no direct."]
 ];
 
+// Formato e tempo de cada ideia (mesma ordem de GUIDE_IDEAS).
+const GUIDE_TAGS = [["Reels", "15 s"], ["Carrossel", "2 fotos"], ["Post", "5 min"], ["Foto", "5 min"], ["Foto", "5 min"], ["Print", "2 min"], ["Carrossel", "10 min"], ["Post", "5 min"], ["Stories", "1 min"], ["Toda legenda", "1 linha"]];
+
 const GUIDE_STYLE = `
-.top{padding-top:calc(28px + env(safe-area-inset-top))}
-.bonus{text-align:center;background:linear-gradient(180deg,var(--panel-2),var(--panel))}
-.bonus h2{margin:10px 0 8px;font-size:1.3rem}.bonus h2 em{font-style:normal;color:var(--accent-2)}
-.jump{display:flex;gap:14px;align-items:center;text-decoration:none;color:var(--ink);border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:16px;padding:16px;margin-top:22px}
-.jump .ico{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);display:grid;place-items:center;font-size:1.2rem}
-.jump b{display:block;color:var(--ink)}.jump span{color:var(--muted);font-size:.92rem}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center}
-.stat b{display:block;font-size:1.5rem;color:var(--accent-2)}.stat span{color:var(--muted);font-size:.82rem;line-height:1.3;display:block}
-.progress{position:sticky;top:0;z-index:2;background:var(--bg);padding:12px 0}
-.bar{height:8px;border-radius:999px;background:var(--panel-2);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
-.step{display:grid;grid-template-columns:40px 1fr;gap:12px;margin-top:16px}
-.num{width:40px;height:40px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--accent-2)}
-.step.done .num{background:var(--ok);color:#06231A;border-color:var(--ok)}
-.step h3{margin:6px 0 4px;font-size:1.1rem}.step p{margin:0;color:var(--muted)}
-.copy{margin-top:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.copy header{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.04em}
-.copy button,.mark{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px}
-.copy button{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);padding:4px 10px}
-.copy pre{margin:0;padding:12px;white-space:pre-wrap;font-family:inherit;font-size:.95rem;color:var(--ink)}
-.mark{margin-top:12px;background:transparent;color:var(--accent-2);border:1.5px solid var(--line);padding:8px 14px}
+.top-sticky{position:sticky;top:0;z-index:5;background:rgba(5,11,31,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(28,43,87,.7)}
+.top-sticky .bar-top{padding-bottom:10px}
+.prog{display:flex;align-items:center;gap:10px;padding:0 0 12px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.bar{flex:1;height:6px;border-radius:999px;background:var(--panel-2);overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.hero{padding:34px 0 8px}
+.kicker{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.meta span{border:1px solid var(--line);background:rgba(10,22,54,.6);border-radius:999px;padding:6px 12px;font-size:.88rem;color:var(--ink)}
+.meta b{color:var(--accent-2)}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:30px}
+.toc a{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--ink);font-size:.92rem;line-height:1.25;background:rgba(10,22,54,.6);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.toc a b{flex:none;font:700 .8rem Unbounded,sans-serif;color:var(--accent-2)}
+.toc a.done{border-color:var(--ok)}.toc a.done b{color:var(--ok)}
+.sec-title{margin:46px 0 4px}
+.step{position:relative;margin-top:18px;padding:22px 18px 18px;border-radius:22px;background:linear-gradient(180deg,rgba(15,30,70,.75),rgba(10,22,54,.75));border:1px solid var(--line);scroll-margin-top:110px;overflow:hidden}
+.num{position:absolute;right:14px;top:4px;font:700 4.2rem/1 Unbounded,sans-serif;color:transparent;-webkit-text-stroke:1.5px rgba(73,163,255,.35);pointer-events:none}
+.step.done{border-color:rgba(61,214,140,.55)}.step.done .num{-webkit-text-stroke-color:rgba(61,214,140,.5)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:.75rem;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-2)}
+.tags span+span{background:rgba(201,209,222,.08);color:var(--chrome)}
+.step h3{margin:12px 0 6px;font-size:1.2rem;line-height:1.2;max-width:80%}.step p{margin:0;color:var(--muted)}
+.copy{margin-top:16px;background:#fff;color:#111;border-radius:16px;overflow:hidden;box-shadow:0 16px 30px -18px rgba(0,0,0,.7)}
+.copy header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #eee}
+.who{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;color:#111}
+.who i{width:28px;height:28px;border-radius:50%;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34);padding:2px;display:block}
+.who i::after{content:"";display:block;width:100%;height:100%;border-radius:50%;background:#fff;border:2px solid #fff;box-sizing:border-box;background:#0A1636}
+.copy button{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border-radius:999px;background:#111;color:#fff;border:0;padding:6px 14px}
+.copy pre{margin:0;padding:12px 14px 14px;white-space:pre-wrap;font-family:inherit;font-size:.95rem;color:#111}
+.mark{margin-top:14px;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer;border-radius:999px;background:transparent;color:var(--ink);border:1.5px solid #3A4E86;padding:9px 16px}
 .step.done .mark{color:var(--ok);border-color:var(--ok)}
-.tip{border-left:4px solid var(--accent);margin-top:28px}
-@media print{body{background:#fff;color:#000}.noprint,.progress,.btn,.mark,.copy button,.jump,.bonus,footer{display:none!important}.panel,.copy{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}}
+.band{margin-top:26px;border-radius:22px;padding:24px 20px;text-align:center;background:radial-gradient(120% 120% at 100% 0%,rgba(73,163,255,.35),transparent 60%),linear-gradient(160deg,#1F6BFF,#0A1636 80%);border:1px solid rgba(73,163,255,.4)}
+.band h2{color:#fff}.band p{color:rgba(255,255,255,.85);margin:0 0 18px}
+.tip{margin-top:26px;border-left:4px solid var(--accent-2)}
+@media (min-width:640px){.toc{grid-template-columns:repeat(5,1fr)}.toc a{flex-direction:column;align-items:flex-start}}
+@media print{body{background:#fff;color:#000}.noprint,.top-sticky,.btn,.mark,.copy button,.toc,.band,footer{display:none!important}.step,.panel{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}h1,h2,h3{color:#000}h1 em{color:#000;-webkit-text-fill-color:#000}}
 `;
 
 export function guideHtml(client = {}) {
   const brand = clientBrand(client);
   const name = escapeHtml(brand.brandName);
   const whats = whatsappLink(client, "Olá! Baixei o guia de ideias de post da " + brand.brandName + " e quero o meu post de exemplo grátis.");
-  const steps = GUIDE_IDEAS.map(([title, how, caption], i) => `
-<article class="step" data-step="${i + 1}">
-<div class="num">${i + 1}</div>
-<div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(how)}</p>
-<div class="copy"><header><span>LEGENDA PRONTA</span><button type="button" data-copy>Copiar</button></header><pre>${escapeHtml(caption)}</pre></div>
-<button type="button" class="mark" data-mark>Marcar como feito</button></div>
-</article>`).join("");
+  const band = whats ? `<section class="band noprint"><span class="pill" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)">🎁 Bônus liberado</span>
+<h2 style="margin-top:12px">Quer ver isso pronto, com a cara da sua marca?</h2>
+<p>A ${name} cria um post de exemplo grátis para o seu negócio. Sem compromisso.</p>
+<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Quero o meu exemplo</a></section>` : "";
+  const steps = GUIDE_IDEAS.map(([title, how, caption], i) => {
+    const [format, time] = GUIDE_TAGS[i] || ["Post", "5 min"];
+    return `
+<article class="step" id="ideia-${i + 1}" data-step="${i + 1}">
+<span class="num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+<div class="tags"><span>${escapeHtml(format)}</span><span>${escapeHtml(time)}</span></div>
+<h3>${escapeHtml(title)}</h3><p>${escapeHtml(how)}</p>
+<div class="copy"><header><span class="who"><i></i>seu_negocio</span><button type="button" data-copy>Copiar legenda</button></header><pre>${escapeHtml(caption)}</pre></div>
+<button type="button" class="mark" data-mark>Marcar como feito</button>
+</article>${i === 4 ? band : ""}`;
+  }).join("");
+  const toc = GUIDE_IDEAS.map(([title], i) => `<a href="#ideia-${i + 1}" data-toc="${i + 1}"><b>${String(i + 1).padStart(2, "0")}</b>${escapeHtml(title)}</a>`).join("");
   return page(GIFT_TITLE + " · " + brand.brandName, `
-<main class="wrap top">
-${whats ? `<section class="panel bonus"><span class="pill">🎁 Bônus liberado</span>
-<h2>Um <em>post de exemplo grátis</em>, feito para o seu negócio</h2>
-<p class="sub" style="margin:0 0 16px">A ${name} cria um post com a cara da sua marca para você ver como fica, sem compromisso.</p>
-<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Quero o meu exemplo</a></section>` : ""}
-<div style="margin-top:28px"><span class="pill">⚡ Guia exclusivo</span>
+<div class="top-sticky noprint"><div class="wrap"><div class="bar-top">${LOGO}<a class="btn btn-ghost" style="min-height:40px;padding:0 16px;font-size:.9rem" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ PDF</a></div>
+<div class="prog"><span id="ptext">0 de 10</span><div class="bar"><i id="pbar"></i></div></div></div></div>
+<main class="wrap">
+<section class="hero"><span class="kicker">Guia ${name} · Edição 2026</span>
 <h1><em>10 ideias de post</em> que trazem clientes para pequenos negócios</h1>
-<p class="sub">Cada ideia vem com a legenda pronta para copiar. Faça uma por dia: em 10 dias o seu perfil já parece outro.</p></div>
-<a class="jump" href="#passos"><span class="ico">⚡</span><span><b>Ir direto para as ideias</b><span>As 10 ideias, uma por uma, com legenda pronta</span></span></a>
-<p style="margin:14px 0 0"><a class="btn" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ Baixar PDF</a></p>
-<div class="stats"><div class="stat"><b>10</b><span>ideias com legenda pronta</span></div><div class="stat"><b>5 min</b><span>para montar cada post</span></div><div class="stat"><b>R$ 0</b><span>para colocar em prática</span></div></div>
-<h2 id="passos" style="margin-top:34px">Do primeiro post ao décimo</h2>
+<p class="sub">Cada ideia vem com a legenda pronta para copiar. Faça uma por dia: em 10 dias o seu perfil já parece outro.</p>
+<div class="meta"><span><b>10</b> ideias</span><span><b>5 min</b> por post</span><span><b>R$ 0</b> para aplicar</span></div>
+<div class="ctas"><a class="btn" href="#ideia-1">Começar pela ideia 1</a><a class="btn btn-ghost" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ Baixar PDF</a></div></section>
+<h2 class="sec-title noprint" style="font-size:1rem;color:var(--muted);font-family:inherit;letter-spacing:.1em;text-transform:uppercase">Sumário</h2>
+<nav class="toc noprint" aria-label="Sumário">${toc}</nav>
+<h2 class="sec-title" id="passos">Do primeiro post ao décimo</h2>
 <p class="sub noprint" style="margin:0">Vá marcando conforme faz. Fica salvo neste celular.</p>
-<div class="progress"><b id="ptext">Seu progresso: 0 de 10</b><div class="bar"><i id="pbar"></i></div></div>
 ${steps}
-<section class="panel tip"><b>Dica da ${name}</b><p class="sub" style="margin-top:6px">Poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores. Depois repita a que funcionou. Se quiser que isso rode sozinho, a ${name} faz os posts e você só aprova.</p></section>
+<section class="panel tip"><b style="color:var(--ink)">Dica da ${name}</b><p class="sub" style="margin-top:6px">Poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores. Depois repita a que funcionou. Se quiser que isso rode sozinho, a ${name} faz os posts e você só aprova.</p></section>
+${whats ? `<p class="noprint" style="text-align:center;margin-top:22px"><a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Falar com a ${name} no WhatsApp</a></p>` : ""}
 </main>
 <script>
 (function(){var KEY="flowarts-guia-10";var done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){done={};}
 var steps=[].slice.call(document.querySelectorAll(".step"));
-function paint(){var n=0;steps.forEach(function(s){var on=!!done[s.dataset.step];if(on)n++;s.classList.toggle("done",on);s.querySelector("[data-mark]").textContent=on?"✓ Feito":"Marcar como feito";});
-document.getElementById("ptext").textContent="Seu progresso: "+n+" de "+steps.length;document.getElementById("pbar").style.width=(n*100/steps.length)+"%";}
+function paint(){var n=0;steps.forEach(function(s){var on=!!done[s.dataset.step];if(on)n++;s.classList.toggle("done",on);s.querySelector("[data-mark]").textContent=on?"✓ Feito":"Marcar como feito";var t=document.querySelector('[data-toc="'+s.dataset.step+'"]');if(t)t.classList.toggle("done",on);});
+document.getElementById("ptext").textContent=n+" de "+steps.length;document.getElementById("pbar").style.width=(n*100/steps.length)+"%";}
 steps.forEach(function(s){s.querySelector("[data-mark]").addEventListener("click",function(){done[s.dataset.step]=!done[s.dataset.step];try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){}paint();});
 s.querySelector("[data-copy]").addEventListener("click",function(e){var t=s.querySelector("pre").textContent,btn=e.currentTarget;
-(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){btn.textContent="Copiado ✓";setTimeout(function(){btn.textContent="Copiar";},1500);}).catch(function(){btn.textContent="Segure o texto";});});});
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){btn.textContent="Copiado ✓";setTimeout(function(){btn.textContent="Copiar legenda";},1500);}).catch(function(){btn.textContent="Segure o texto";});});});
 paint();})();
 </script>`, GUIDE_STYLE);
 }
