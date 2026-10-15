@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 23h03–23h10 BRT — "Assumir painel" dava erro (branch fix/assumir-painel-dominio, não publicada)
+## 2026-10-14 23h03–23h10 BRT — "Assumir painel" dava erro (publicado 918d748 às 23h05 com OK do Rodrigo; deploy e CI ok; falta ele testar com login real)
 - Rodrigo: no Master, "Assumir painel" dá erro. Causa provável: os links (app.js, 3 lugares) apontavam fixo para servidor-nexus.diamantehinode2015.workers.dev; com o Master aberto em painel.flowarts.com.br (sugerido hoje), o login do Master não vale no endereço antigo. E o assume-open redirecionava para PUBLIC_BASE_URL (outro endereço que o do cookie).
 - Correção: links relativos (/api/clients/<id>/assume-open) e redirect/entryPath relativos (/portal?auth=1) em master.js. Funciona no endereço em que o Master estiver. app.js v47. 369 testes ok. Não testado com login real.
 - Link do painel do cliente enviado: https://painel.flowarts.com.br/
