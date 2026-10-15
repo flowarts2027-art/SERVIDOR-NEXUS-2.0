@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 09h07–09h20 BRT — Pedir ajuste depois de aprovado (branch feat/ajuste-depois-aprovado, não publicada)
+- Rodrigo: carrossel aprovado (hoje 19h, Flow Arts), imagem 2 "1. Comece por aqui" com a pessoa escrevendo na agenda fechada. Pediu botão de correção mesmo depois de aprovado e corrigir esse.
+- client-lite (v118): post aprovado e não publicado mostra "Pedir ajuste" (com o mesmo formulário) e "Cancelar". posts.js: ajuste bloqueado em publicado/publicando (antes não tinha trava). portal.js: mensagens.
+- format-builder: o pedido de ajuste do cliente entra no briefing de cada imagem do carrossel. media-generation: regra "objetos usados de verdade: escrever em caderno aberto, xícara em pé".
+- Não consigo agir no painel dele daqui (sem login); ele mesmo pede o ajuste depois de publicar. 374 testes ok.
+
 ## 2026-10-15 08h55–09h15 BRT — Carrossel com setas no painel do cliente (publicado bd595bd às 09h01 com OK do Rodrigo; deploy e CI ok; conferir o próximo carrossel no painel)
 - Rodrigo: no carrossel não dá para ver as outras imagens no painel do cliente.
 - client-lite (v117/css v114): carrossel com todas as imagens (formatBuild.carouselUrls), setas ‹ › de 44px, contador "1 / 4", passa também com o dedo. Testado no navegador simulado (celular). 372 testes ok.

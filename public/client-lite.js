@@ -122,7 +122,17 @@ function mediaHtml(post, cls) {
 function actionsHtml(post) {
   // Aprovado e ainda não publicado: dá para cancelar antes do horário.
   if (postGroup(post) === "agendados" && !["published", "publishing"].includes(String(post.status))) {
-    return `<div class="actions"><button type="button" class="btn btn-soft btn-cancel" data-cancel-post="${escapeHtml(post.id)}">Cancelar esta postagem</button></div>`;
+    const id = escapeHtml(post.id);
+    return `<div class="actions">
+      <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
+      <button type="button" class="btn btn-soft btn-cancel" data-cancel-post="${id}">Cancelar esta postagem</button>
+    </div>
+    <form class="revision" data-revision-form="${id}" hidden>
+      <label for="rev-${id}">O que você quer mudar?</label>
+      <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: na imagem 2, a agenda está fechada; ela precisa estar aberta."></textarea>
+      <p class="muted">O post volta para "esperando aprovação" e só sai depois que você aprovar de novo.</p>
+      <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
+    </form>`;
   }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);

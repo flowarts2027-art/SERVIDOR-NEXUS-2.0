@@ -1780,7 +1780,12 @@ export async function handlePortalApi(request, env, url, ctx) {
       return json(await requestPostRevision(env, client, decodeURIComponent(postRevisionMatch[1]), body.instructions));
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
-      return json({ error: code, message: code === "revision_instructions_required" ? "Explique o que precisa ser corrigido." : "Não foi possível pedir a correção." }, code === "post_not_found" ? 404 : 400);
+      const messages = {
+        revision_instructions_required: "Explique o que precisa ser corrigido.",
+        already_published: "Esta postagem já foi publicada.",
+        publishing_in_progress: "A postagem já está sendo publicada."
+      };
+      return json({ error: code, message: messages[code] || "Não foi possível pedir a correção." }, code === "post_not_found" ? 404 : 400);
     }
   }
 

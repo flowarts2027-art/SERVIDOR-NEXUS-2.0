@@ -107,6 +107,8 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
       "Never show blank screens, empty colored rectangles, plain color swatches, blank cards or meaningless decorative shapes. Every object must be a real item a small business uses.",
       // Pedido do Rodrigo (15/10): celular virado para a câmera parece falso.
       "When a person holds a phone, the screen faces the person holding it, never the viewer. To show the screen, use an over-the-shoulder view from behind the person.",
+      // Pedido do Rodrigo (15/10): pessoa escrevendo em agenda fechada.
+      "People use objects realistically: someone writing writes on an open notebook page, cups are upright, tools are held the right way.",
       brand.visualDirection||"Premium, photorealistic, contemporary scenes that clearly match the brand niche, with one clear idea per creative.",
       "No copyrighted characters, movie frames, sports-team marks, third-party brands or logos."
     );

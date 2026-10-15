@@ -134,8 +134,9 @@ async function buildCarousel(env, client, row, payload) {
       clientBrand(client).visualDirection,
       "The card headline (written on the image as instructed) is: " + card.overlay + ". The scene must illustrate exactly this headline.",
       "Keep one coherent visual campaign across all cards. No collage, no split screen, no logos of other companies.",
-      "Generate exactly one standalone vertical card image."
-    ].join(" ") : "";
+      "Generate exactly one standalone vertical card image.",
+      payload.revisionRequest ? "Client requested this correction, follow it: " + String(payload.revisionRequest).slice(0, 400) : ""
+    ].filter(Boolean).join(" ") : "";
     const brief = brandBrief || (client.id === "globalplay-streaming" ? ["Generate exactly one standalone card "+(index+1)+" of 4.",card.scene,"Keep the same family and home with amber lighting across the cards. One brand placement upper-right added by the system, full scene with no lower caption panel. No montage or image counter."].join(" ") : [
       "Instagram carousel card " + (index + 1) + " of " + plan.length + ".",
       "Keep one coherent " + String(client?.name || client?.id || "brand") + " visual campaign across all cards.",

@@ -91,3 +91,17 @@ test("painel do cliente mostra todas as imagens do carrossel com setas", () => {
   assert.match(js, /class="car-btn car-next" data-car="1"/);
   assert.match(js, /car-count/);
 });
+
+test("pedir ajuste em post aprovado: volta para aprovação; publicado não pode", async () => {
+  const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(js, /postGroup\(post\) === "agendados"[\s\S]{0,300}data-revise=/);
+  const { requestPostRevision } = await import("../src/posts.js");
+  const { db, env } = fakeEnv();
+  db.exec("CREATE TABLE scheduled_jobs(id TEXT PRIMARY KEY, client_id TEXT, kind TEXT, due_at TEXT, status TEXT, attempts INTEGER, payload_json TEXT, created_at TEXT, updated_at TEXT); CREATE TABLE support_tickets(id TEXT PRIMARY KEY, client_id TEXT, subject TEXT, message TEXT, status TEXT, priority TEXT, source TEXT, created_at TEXT, updated_at TEXT);");
+  db.prepare("INSERT INTO post_ledger(id,client_id,status,approval_status,caption,payload_json) VALUES('a1','quatree-dog','ready','approved','x','{}'),('p1','quatree-dog','published','approved','x','{}')").run();
+  await requestPostRevision(env, { id: "quatree-dog", name: "Q" }, "a1", "Agenda aberta").catch(() => {});
+  assert.equal(db.prepare("SELECT approval_status FROM post_ledger WHERE id='a1'").get().approval_status, "correction_requested");
+  await assert.rejects(requestPostRevision(env, { id: "quatree-dog" }, "p1", "x"), /already_published/);
+  const fb = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
+  assert.match(fb, /Client requested this correction, follow it/);
+});

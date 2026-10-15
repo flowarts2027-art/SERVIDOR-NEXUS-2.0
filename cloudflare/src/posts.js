@@ -109,6 +109,9 @@ export async function requestPostRevision(env, client, postId, instructions) {
   if (!text) throw new Error("revision_instructions_required");
   const row = await postRow(env, client.id, postId);
   if (!row) throw new Error("post_not_found");
+  // Aprovado também pode pedir ajuste (volta para "esperando aprovação"); publicado não.
+  if (row.status === "published") throw new Error("already_published");
+  if (row.status === "publishing") throw new Error("publishing_in_progress");
 
   const currentPayload = parseJson(row.payload_json, {});
   const previousImageUrl = String(currentPayload.imageUrl || currentPayload.publicImageUrl || "");
