@@ -1,6 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 16h44–17h05 BRT — Instagram da Flow Arts conectado no Café Brisa por engano (branch fix/desconectar-instagram, não publicada)
+## 2026-10-15 16h44–17h05 BRT — Instagram da Flow Arts conectado no Café Brisa por engano (publicado em main 87af94e; deploy Cloudflare ok)
+
+- Publicado com OK do Rodrigo ("pode"). 378 testes passando. Deploy NEXUS Cloudflare: success no 87af94e.
+- A conexão do Café Brisa (demo-cafe) é apagada no próximo cron de 15 min. Falta o Rodrigo conferir no Master que a Flow Arts segue conectada.
+- Observação: "NEXUS Overnight Regression" já falhava antes (3cd13b7, 507dafe), sem relação com esta mudança. Investigar depois.
 - Rodrigo conectou a conta @flowarts2026 no cliente Café Brisa (demo-cafe) pelo Master.
 - Riscos conferidos no código: demo-cafe está em BLOCKED_PUBLISH_CLIENTS (nunca publica); webhook de comentários pula clientes travados (clientForInstagramUser); painel público /api/demo/panel não usa a conexão. A conexão da Flow Arts (primeiro-teste) é outra linha da tabela connections e não muda.
 - Sem acesso direto ao D1 daqui. Correção: demo-client.js ensureDemoClient (cron 15 min) apaga connections de demo-cafe (meta/instagram); instagram.js recusa conectar Instagram em clientes travados (OAuth start, callback e token manual) com mensagem clara. 378 testes ok.
