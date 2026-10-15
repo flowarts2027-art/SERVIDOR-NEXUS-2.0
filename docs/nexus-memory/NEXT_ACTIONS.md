@@ -23,6 +23,10 @@
 - 09h21–09h22 (14/10): FUNCIONOU. Rodrigo gerou o token na tela 'Enviar mensagem' (Etapa 2) da Meta e o teste 'Integration Test' chegou no WhatsApp dele. Às 09h22 ele mandou 'OI, bom dia' e o Nexus respondeu sozinho ('Sou a assistente virtual da Flow Arts...'), registrado como sent_auto no D1. A versão v26.0 continua e funciona: a branch fix/whatsapp-versao-graph (v25.0) NÃO foi publicada por não ser necessária. Causa provável do erro antigo: faltava concluir esse passo de token/autorização do app na conta do WhatsApp. A verificação da empresa não foi necessária para o robô responder.
 - Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
 
+## Plano com vídeo (14/10)
+- Publicado "Enviar Reel pronto" (Master → Postagens). Primeiro teste real: Rodrigo envia um Reel do Flow para um cliente, cliente aprova, conferir publicação no Instagram.
+- Falta decidir: preço/conteúdo do plano básico (sem vídeo) e renovação do site R$ 297/ano com domínio. Depois: atualizar site, robô e contrato; e o parecer do ChatGPT em 3 blocos.
+
 ## Formato 4:5 (14/10)
 - Rascunhos não aprovados da Flow Arts são refeitos no próximo ciclo (profileVersion 2026-10-14-45). Rodrigo confere e cancela no painel os posts JÁ APROVADOS e ainda não publicados feitos antes das 18h22 de 14/10. Conferir o primeiro post novo: 4:5, frase inteira.
 
