@@ -117,6 +117,8 @@ export async function requestPostRevision(env, client, postId, instructions) {
     revisionRequest: text,
     revisionRequestedAt: new Date().toISOString(),
     blockedRevisionMedia: previousImageUrl,
+    // Carrossel com ajuste pedido: as imagens antigas saem e são refeitas junto com a capa nova.
+    formatBuild: String(currentPayload.creativeFeatures?.requestedFormat || "") === "carousel" ? {} : currentPayload.formatBuild,
     imageUrl: "",
     publicImageUrl: "",
     visualReview: null,

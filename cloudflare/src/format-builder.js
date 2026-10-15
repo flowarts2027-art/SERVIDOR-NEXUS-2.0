@@ -267,7 +267,13 @@ export async function runFormatBuilder(env, client, options = {}) {
      FROM post_ledger
      WHERE client_id=?1
        AND status IN ('ready','scheduled','failed')
-       AND approval_status='approved'
+       AND (
+         approval_status='approved'
+         -- Carrossel esperando aprovação: monta todas as imagens antes, para o cliente ver
+         -- tudo no painel (pedido do Rodrigo em 15/10). Não publica: o agendador exige aprovação.
+         OR (approval_status='pending'
+             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.creativeFeatures.requestedFormat')='carousel')
+       )
      ORDER BY COALESCE(scheduled_for,created_at) ASC
      LIMIT 12`
   ).bind(client.id).all();

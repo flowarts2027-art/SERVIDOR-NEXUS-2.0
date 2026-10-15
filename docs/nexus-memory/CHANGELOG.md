@@ -4,6 +4,7 @@
 - Rodrigo: no carrossel não dá para ver as outras imagens no painel do cliente.
 - client-lite (v117/css v114): carrossel com todas as imagens (formatBuild.carouselUrls), setas ‹ › de 44px, contador "1 / 4", passa também com o dedo. Testado no navegador simulado (celular). 372 testes ok.
 - Limite: os cartões 2 a 4 do carrossel só são criados DEPOIS da aprovação (format-builder pega só approval_status='approved'). Antes de aprovar, o cliente vê só a capa. Perguntado ao Rodrigo se quer criar todos antes da aprovação (custo extra só quando o cliente recusa).
+- Rodrigo escolheu criar todos antes (08h58). format-builder.js: também monta carrossel com approval_status='pending' (não publica: agendador exige aprovado). posts.js requestPostRevision: carrossel com ajuste pedido zera formatBuild (refaz as imagens com a capa nova). 373 testes ok. Custo: cartões de carrossel recusado.
 
 ## 2026-10-15 08h48–09h05 BRT — Cancelar post aprovado no painel (publicado 8d2b80f às 08h52 com OK do Rodrigo; deploy e CI ok; falta ele cancelar o post das 12h)
 - Rodrigo: post da Flow Arts aprovado para hoje 12h (rótulo Reels, imagem 9:16 "O que parece pequeno faz o cliente voltar.") com a mulher segurando o celular com a tela virada para a câmera; pediu opção de cancelar.

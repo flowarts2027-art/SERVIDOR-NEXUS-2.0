@@ -46,3 +46,24 @@ test("card 2 do carrossel nunca escreve a descrição da cena na arte", async ()
   assert.equal(firstTipOverlay({ angle: "tutorial de bio" }), "1. Tutorial de bio");
   assert.ok(!firstTipOverlay({ angle: "checklist de 5 itens que quem nunca te viu olha primeiro" }).includes("…"));
 });
+
+test("carrossel esperando aprovação é montado antes; ajuste pedido descarta as imagens antigas", async () => {
+  const src = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
+  assert.match(src, /approval_status='approved'\s*--[\s\S]*?OR \(approval_status='pending'[\s\S]*?requestedFormat'\)='carousel'\)/);
+  const { DatabaseSync } = await import("node:sqlite");
+  const db = new DatabaseSync(":memory:");
+  db.exec(`CREATE TABLE post_ledger(id TEXT PRIMARY KEY, client_id TEXT, scheduled_for TEXT, scheduled_hour TEXT, status TEXT, approval_status TEXT, media_id TEXT, caption TEXT, image_object_key TEXT, error TEXT, cost_usd REAL, payload_json TEXT, created_at TEXT, updated_at TEXT);
+    CREATE TABLE scheduled_jobs(id TEXT PRIMARY KEY, client_id TEXT, kind TEXT, due_at TEXT, status TEXT, attempts INTEGER, payload_json TEXT, created_at TEXT, updated_at TEXT);
+    CREATE TABLE support_tickets(id TEXT PRIMARY KEY, client_id TEXT, subject TEXT, message TEXT, status TEXT, priority TEXT, source TEXT, created_at TEXT, updated_at TEXT);`);
+  const payload = { imageUrl: "https://x/capa.jpg", creativeFeatures: { requestedFormat: "carousel" }, formatBuild: { kind: "carousel", carouselUrls: ["https://x/1.jpg", "https://x/2.jpg"] } };
+  db.prepare("INSERT INTO post_ledger(id,client_id,status,approval_status,caption,payload_json) VALUES('c1','primeiro-teste','ready','pending','x',?)").run(JSON.stringify(payload));
+  const DB = { prepare(sql) { const wrap = args => {
+    const p = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
+    return { first: async () => { try { return db.prepare(sql).get(p) || null; } catch { return null; } }, all: async () => ({ results: db.prepare(sql).all(p) }),
+      run: async () => { try { return { meta: { changes: Number(db.prepare(sql).run(p).changes) } }; } catch { return { meta: { changes: 0 } }; } } };
+  }; return { ...wrap([]), bind: (...a) => wrap(a) }; } };
+  const { requestPostRevision } = await import("../src/posts.js");
+  await requestPostRevision({ DB }, { id: "primeiro-teste", name: "Flow Arts" }, "c1", "Troque a capa").catch(() => {});
+  const saved = JSON.parse(db.prepare("SELECT payload_json FROM post_ledger WHERE id='c1'").get().payload_json);
+  assert.deepEqual(saved.formatBuild, {});
+});
