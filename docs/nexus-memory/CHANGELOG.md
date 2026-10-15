@@ -1,6 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
 
+## 2026-10-15 18h40–19h05 BRT — Página do brinde com visual novo (branch feat/guia-visual, não publicada)
+
+- Rodrigo mostrou a página do Manual de Donos (Reel → comentário → ManyChat → link) e pediu o mesmo para a Flow Arts sem custo. O funil já existe no Nexus desde 12/10 (QUERO → direct → seguir → formulário → guia). Ele escolheu a opção A: deixar a página com cara de designer.
+- `cloudflare/src/gift.js`: cores e fontes do site (azul-noite, prata, Unbounded). O formulário ganhou logo, uma capa 3D do guia e 3 benefícios. O guia ganhou topo fixo com progresso e PDF, sumário clicável, cartões numerados (01–10) com formato e tempo, a legenda num cartão estilo Instagram, um bônus de WhatsApp no meio e outro no fim. A lógica não mudou.
+- 378 testes passando. Prévia no celular conferida por Playwright. A fonte Unbounded só não carregou no teste local, que não tem internet.
+
+
 ## 2026-10-15 16h53–17h08 BRT — Análise do awesome-seedance e prompts de Reels (sem mudança no código)
 
 - Rodrigo pediu para analisar o repositório LearnPrompt/awesome-seedance. Conclusão: é uma biblioteca de prompts para o Seedance. Os prompts são grátis, mas gerar vídeo pela API é pago. O grátis do Dreamina é só manual, sem API. Não roda grátis no Nexus.
