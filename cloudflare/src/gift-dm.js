@@ -56,11 +56,11 @@ async function writeGiftDmState(env, clientId, state, now = new Date()) {
 }
 
 // Anota que pedimos para esta pessoa seguir (chamado quando o direct do comentário sai).
-export async function markGiftAsked(env, clientId, { igsid, username = "", commentId = "" }, now = new Date()) {
+export async function markGiftAsked(env, clientId, { igsid, username = "", commentId = "", topic = "guia" }, now = new Date()) {
   if (!igsid || !env?.DB) return;
   const state = await readGiftDmState(env, clientId);
   const previous = state.pending[igsid] || {};
-  state.pending[igsid] = { stage: "asked", username: String(username || previous.username || ""), commentId: String(commentId || ""), askedAt: now.toISOString(), handledUntil: now.toISOString() };
+  state.pending[igsid] = { stage: "asked", username: String(username || previous.username || ""), commentId: String(commentId || ""), topic: String(topic || "guia"), askedAt: now.toISOString(), handledUntil: now.toISOString() };
   await writeGiftDmState(env, clientId, state, now);
 }
 
@@ -113,7 +113,7 @@ export async function respondToFollowed(env, client, { request = fetch, token, i
   try {
     const check = await checkFollows({ request, token, igsid });
     if (check.follows === true) {
-      const link = await giftLink(env, { clientId: client.id, igsid, commentId: pending.commentId, username: check.username || pending.username }, now);
+      const link = await giftLink(env, { clientId: client.id, igsid, commentId: pending.commentId, username: check.username || pending.username, topic: pending.topic || "guia" }, now);
       await sendTo(request, token, igUserId, igsid, downloadMessage(link)).catch(async error => {
         out.errors.push("button:" + error.message);
         await sendTo(request, token, igUserId, igsid, { text: READY_TEXT + " " + link });

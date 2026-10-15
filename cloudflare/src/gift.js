@@ -8,6 +8,7 @@
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { clientBrand, whatsappLink } from "./client-brand.js";
 import { upsertLead } from "./leads.js";
+import { giftMaterial, GIFT_MATERIALS } from "./gift-materials.js";
 
 export const GIFT_PAGE = "/b/";
 export const GIFT_CHECK = "/api/public/brinde/check";
@@ -74,10 +75,10 @@ function randomCode(size = 9) {
 }
 
 // Cria o link curto do brinde para quem comentou (vale 30 dias).
-export async function giftLink(env, { clientId, igsid, commentId = "", username = "" }, now = new Date()) {
+export async function giftLink(env, { clientId, igsid, commentId = "", username = "", topic = "" }, now = new Date()) {
   if (!env?.DB) throw new Error("gift_db_missing");
   const code = randomCode();
-  const value = { c: String(clientId), u: String(igsid), m: String(commentId).slice(0, 40), n: String(username).slice(0, 40), e: Math.floor(now.getTime() / 1000) + LINK_DAYS * 86400 };
+  const value = { c: String(clientId), u: String(igsid), m: String(commentId).slice(0, 40), n: String(username).slice(0, 40), t: GIFT_MATERIALS[topic] ? topic : "guia", e: Math.floor(now.getTime() / 1000) + LINK_DAYS * 86400 };
   await env.DB.prepare(
     `INSERT INTO nexus_state(namespace, item_key, client_id, value_json, updated_at)
      VALUES(?1, ?2, ?3, ?4, CURRENT_TIMESTAMP)`
@@ -153,7 +154,7 @@ function json(body, status = 200) {
 export async function handleGiftCheck(request, env, { fetchImpl = fetch, now = new Date() } = {}) {
   const body = await request.json().catch(() => ({}));
   const gift = await readGiftCode(env, body?.code, now);
-  if (!gift) return json({ ok: false, error: "invalid", message: "Este link venceu. Comente QUERO de novo no post para receber outro." }, 400);
+  if (!gift) return json({ ok: false, error: "invalid", message: "Este link venceu. Comente de novo no post para receber outro." }, 400);
   const conn = await resolveInstagramCredentials(env, gift.c).catch(() => null);
   const token = String(conn?.accessToken || "");
   const handle = "@" + String(conn?.username || "").replace(/^@/, "");
@@ -162,7 +163,7 @@ export async function handleGiftCheck(request, env, { fetchImpl = fetch, now = n
   const at = now.toISOString();
   if (result.follows === true) {
     // Segue: libera o formulário do WhatsApp (chave assinada vale 1 dia).
-    const key = await signGift(env, { c: gift.c, u: gift.u, n: String(result.username || gift.n || "").replace(/^@/, "").slice(0, 40), f: 1, e: Math.floor(now.getTime() / 1000) + 86400 });
+    const key = await signGift(env, { c: gift.c, u: gift.u, n: String(result.username || gift.n || "").replace(/^@/, "").slice(0, 40), f: 1, t: gift.t || "guia", e: Math.floor(now.getTime() / 1000) + 86400 });
     await writeGiftState(env, gift.c, { lastCheck: { at, result: "following" } });
     return json({ ok: true, follows: true, key });
   }
@@ -206,16 +207,16 @@ export async function handleGiftLead(request, env, { now = new Date() } = {}) {
     temperature: "hot",
     score: 75,
     stage: "new",
-    intent: "Seguiu o perfil e pegou o brinde",
+    intent: giftMaterial(key.t).leadIntent,
     needsHuman: true,
-    lastMessage: lead.name + (username ? " · @" + username : "") + " · pegou o guia",
+    lastMessage: lead.name + (username ? " · @" + username : "") + " · pegou: " + giftMaterial(key.t).title,
     lastContactAt: at,
     source: "instagram-brinde",
     sourceUrl: "/b/",
     contact: { name: lead.name, email: lead.email, whatsapp: lead.whatsapp, instagram: username ? "@" + username : "" },
     nextAction: { text: "Chamar no WhatsApp e perguntar se o guia ajudou", due: new Date(now.getTime() + 24 * 3600000).toISOString() }
   });
-  const guide = await signGift(env, { c: key.c, u: key.u, g: 1, e: Math.floor(now.getTime() / 1000) + GUIDE_HOURS * 3600 });
+  const guide = await signGift(env, { c: key.c, u: key.u, g: 1, t: key.t || "guia", e: Math.floor(now.getTime() / 1000) + GUIDE_HOURS * 3600 });
   await writeGiftState(env, key.c, { lastCheck: { at, result: "unlocked" }, unlocked: true });
   return json({ ok: true, url: GIFT_GUIDE + "?k=" + guide });
 }
@@ -275,26 +276,27 @@ const GIFT_STYLE = `
 
 // Uma janela só: Nome, E-mail e WhatsApp. A conferência de "segue?" roda escondida;
 // a tela de seguir só aparece para quem ainda não segue.
-export function giftPageHtml(handle = "@flowarts2026", code = "") {
+export function giftPageHtml(handle = "@flowarts2026", code = "", topic = "guia") {
+  const mat = giftMaterial(topic);
   const h = escapeHtml(handle);
-  return page("Material gratuito · Flow Arts", `
+  return page(mat.title + " · Flow Arts", `
 <main class="wrap" style="max-width:520px">
 <div class="bar-top">${LOGO}<span class="pill">Grátis</span></div>
-<div class="cover" aria-hidden="true"><div class="book"><span class="book-tag">GUIA · 2026</span><b class="disp">10 ideias<br>de post</b><span class="book-sub">que trazem clientes</span><span class="book-foot"><img src="/brand/flowarts-symbol.webp" alt="" width="18" height="22">Flow Arts</span></div></div>
+<div class="cover" aria-hidden="true"><div class="book"><span class="book-tag">GUIA · 2026</span><b class="disp">${mat.coverTitle}</b><span class="book-sub">${escapeHtml(mat.coverSub)}</span><span class="book-foot"><img src="/brand/flowarts-symbol.webp" alt="" width="18" height="22">Flow Arts</span></div></div>
 <div style="text-align:center"><span class="pill">⚡ Material gratuito</span>
-<h1><em>${escapeHtml(GIFT_TITLE)}</em></h1>
-<p class="sub">O guia que mostra o que postar, com a legenda pronta e um plano de 10 dias para o Instagram do seu negócio.</p></div>
-<ul class="gets"><li><span><b>10 ideias</b> testadas, uma por dia</span></li><li><span><b>Legendas prontas</b> para copiar e colar</span></li><li><span><b>5 minutos</b> para montar cada post</span></li></ul>
+<h1><em>${escapeHtml(mat.title)}</em></h1>
+<p class="sub">${escapeHtml(mat.formSub)}</p></div>
+<ul class="gets">${mat.gets.map(([b, t]) => `<li><span><b>${escapeHtml(b)}</b> ${escapeHtml(t)}</span></li>`).join("")}</ul>
 <section class="panel" style="margin-top:22px;text-align:left">
 <form id="lead" novalidate>
-<p class="note" style="font-size:.95rem">Preencha seus dados para acessar o guia completo.</p>
+<p class="note" style="font-size:.95rem">Preencha seus dados para acessar o material completo.</p>
 <label>Nome<input name="nome" autocomplete="given-name" placeholder="Seu nome" required></label>
 <label>E-mail<input name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" required></label>
 <label>WhatsApp<span class="phone"><span class="ddi">🇧🇷 +55</span><input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(21) 98888-7777" required></span></label>
 <div class="hp" aria-hidden="true"><label>Site<input name="website" tabindex="-1" autocomplete="off"></label></div>
-<button class="btn block" type="submit">Acessar guia completo</button>
+<button class="btn block" type="submit">Acessar material completo</button>
 <p id="msg" class="msg" role="status"></p>
-<p class="note">Seus dados estão seguros e não serão compartilhados. Ao continuar, você aceita receber o guia e mensagens da Flow Arts no WhatsApp. <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a>.</p>
+<p class="note">Seus dados estão seguros e não serão compartilhados. Ao continuar, você aceita receber o material e mensagens da Flow Arts no WhatsApp. <a href="/privacidade" target="_blank" rel="noopener">Privacidade</a>.</p>
 </form>
 <div id="follow" hidden style="text-align:center">
 <p style="margin:0 0 16px;font-weight:700;font-size:1.1rem">Você precisa me seguir primeiro 🙂</p>
@@ -320,28 +322,11 @@ check().then(function(ok){if(!ok&&!fm.textContent)say(fm,"Ainda não vi você se
 f.addEventListener("submit",function(e){e.preventDefault();var s=f.querySelector("button");s.disabled=true;s.textContent="Enviando…";say(m,"");
 Promise.resolve(waiting).then(function(){if(!key)return {ok:false,message:"Confira se você segue ${h} e tente de novo."};
 return post("${GIFT_LEAD}",{key:key,nome:f.elements.nome.value,email:f.elements.email.value,whatsapp:f.elements.whatsapp.value,website:f.elements.website.value});})
-.then(function(d){if(d.ok&&d.url){say(m,"Tudo certo! Abrindo o seu guia…","ok");location.href=d.url;return;}
-say(m,d.message||"Não deu certo. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";})
-.catch(function(){say(m,"Sem conexão. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar guia completo";});});})();
+.then(function(d){if(d.ok&&d.url){say(m,"Tudo certo! Abrindo o seu material…","ok");location.href=d.url;return;}
+say(m,d.message||"Não deu certo. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar material completo";})
+.catch(function(){say(m,"Sem conexão. Tente de novo.","warn");s.disabled=false;s.textContent="Acessar material completo";});});})();
 </script>`, GIFT_STYLE);
 }
-
-// Ideia, como fazer e a legenda pronta para copiar (troque o que está entre colchetes).
-const GUIDE_IDEAS = [
-  ["Bastidores de 15 segundos", "Grave algo sendo feito: o café saindo, o corte acontecendo, a embalagem sendo fechada. Gente gosta de ver o processo.", "Ninguém vê essa parte, mas é aqui que o [PRODUTO] fica bom de verdade.\n\nCada [PEDIDO/CLIENTE] passa por isso antes de chegar até você.\n\nQuer um? Chama no direct."],
-  ["Antes e depois", "Uma foto do problema e outra do resultado. Funciona para salão, reforma, limpeza, roupa e comida.", "Antes 👉 depois.\n\n[O QUE FOI FEITO] em [TEMPO].\n\nQuer esse resultado também? Comente QUERO."],
-  ["Pergunta do cliente", "Pegue uma dúvida que você ouve toda semana e responda em um post.", "\"[PERGUNTA QUE VOCÊ MAIS OUVE]?\"\n\nResposta curta: [RESPOSTA EM UMA FRASE].\n\nTem outra dúvida? Comenta aqui que eu respondo."],
-  ["O mais pedido", "Mostre o campeão de vendas e diga por que as pessoas voltam para comprar.", "Esse é o mais pedido da casa: [PRODUTO].\n\nO motivo: [O QUE ELE TEM DE ESPECIAL].\n\nSalve para lembrar na próxima vez."],
-  ["Quem está por trás", "Apresente você ou alguém da equipe com nome e uma curiosidade. Pessoas compram de pessoas.", "Prazer, eu sou [NOME] 👋\n\nCuido do [NEGÓCIO] há [TEMPO] e o que eu mais gosto é [CURIOSIDADE].\n\nMe conta: há quanto tempo você acompanha a gente?"],
-  ["Prova de cliente", "Print de um elogio (com permissão) ou foto do cliente usando. Uma prova vale mais que dez promessas.", "Recebemos essa mensagem hoje e precisávamos mostrar 🥹\n\nObrigado, [NOME DO CLIENTE]!\n\nQuer ser o próximo? Chama no direct."],
-  ["Erro comum", "\"3 erros que as pessoas cometem ao…\" ensina e mostra que você entende do assunto.", "3 erros que quase todo mundo comete com [ASSUNTO]:\n\n1. [ERRO 1]\n2. [ERRO 2]\n3. [ERRO 3]\n\nSalve para não esquecer."],
-  ["Oferta com prazo", "Uma condição real com data para acabar. Diga o que é, até quando e como pedir.", "Só até [DIA]: [OFERTA].\n\nPara pedir, é só [COMO PEDIR].\n\nDepois disso, volta ao normal."],
-  ["Enquete nos stories", "Duas opções simples. Quem vota já está conversando com você.", "Story com enquete: \"Qual você prefere?\" [OPÇÃO A] ou [OPÇÃO B].\n\nNo dia seguinte, poste o resultado e marque quem votou."],
-  ["Chamada clara", "Todo post termina com um próximo passo. Escolha um só por post.", "Comente QUERO que eu te mando [O QUE A PESSOA GANHA] no direct."]
-];
-
-// Formato e tempo de cada ideia (mesma ordem de GUIDE_IDEAS).
-const GUIDE_TAGS = [["Reels", "15 s"], ["Carrossel", "2 fotos"], ["Post", "5 min"], ["Foto", "5 min"], ["Foto", "5 min"], ["Print", "2 min"], ["Carrossel", "10 min"], ["Post", "5 min"], ["Stories", "1 min"], ["Toda legenda", "1 linha"]];
 
 const GUIDE_STYLE = `
 .top-sticky{position:sticky;top:0;z-index:5;background:rgba(5,11,31,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(28,43,87,.7)}
@@ -382,51 +367,54 @@ const GUIDE_STYLE = `
 @media print{body{background:#fff;color:#000}.noprint,.top-sticky,.btn,.mark,.copy button,.toc,.band,footer{display:none!important}.step,.panel{border-color:#ccc;background:#fff}.step p,.copy pre{color:#000}h1,h2,h3{color:#000}h1 em{color:#000;-webkit-text-fill-color:#000}}
 `;
 
-export function guideHtml(client = {}) {
+export function guideHtml(client = {}, topic = "guia") {
+  const mat = giftMaterial(topic);
   const brand = clientBrand(client);
   const name = escapeHtml(brand.brandName);
-  const whats = whatsappLink(client, "Olá! Baixei o guia de ideias de post da " + brand.brandName + " e quero o meu post de exemplo grátis.");
+  const fill = text => escapeHtml(String(text || "").replaceAll("{brand}", brand.brandName));
+  const whats = whatsappLink(client, String(mat.whatsText).replaceAll("{brand}", brand.brandName));
+  const middle = Math.floor(mat.items.length / 2) - 1;
   const band = whats ? `<section class="band noprint"><span class="pill" style="background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)">🎁 Bônus liberado</span>
-<h2 style="margin-top:12px">Quer ver isso pronto, com a cara da sua marca?</h2>
-<p>A ${name} cria um post de exemplo grátis para o seu negócio. Sem compromisso.</p>
-<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Quero o meu exemplo</a></section>` : "";
-  const steps = GUIDE_IDEAS.map(([title, how, caption], i) => {
-    const [format, time] = GUIDE_TAGS[i] || ["Post", "5 min"];
+<h2 style="margin-top:12px">${fill(mat.bandTitle)}</h2>
+<p>${fill(mat.bandText)}</p>
+<a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">${fill(mat.bandButton)}</a></section>` : "";
+  const steps = mat.items.map(([title, how, caption, format, time], i) => {
     return `
 <article class="step" id="ideia-${i + 1}" data-step="${i + 1}">
 <span class="num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
 <div class="tags"><span>${escapeHtml(format)}</span><span>${escapeHtml(time)}</span></div>
 <h3>${escapeHtml(title)}</h3><p>${escapeHtml(how)}</p>
-<div class="copy"><header><span class="who"><i></i>seu_negocio</span><button type="button" data-copy>Copiar legenda</button></header><pre>${escapeHtml(caption)}</pre></div>
+<div class="copy"><header><span class="who"><i></i>seu_negocio</span><button type="button" data-copy>${escapeHtml(mat.blockLabel)}</button></header><pre>${escapeHtml(caption)}</pre></div>
 <button type="button" class="mark" data-mark>Marcar como feito</button>
-</article>${i === 4 ? band : ""}`;
+</article>${i === middle ? band : ""}`;
   }).join("");
-  const toc = GUIDE_IDEAS.map(([title], i) => `<a href="#ideia-${i + 1}" data-toc="${i + 1}"><b>${String(i + 1).padStart(2, "0")}</b>${escapeHtml(title)}</a>`).join("");
-  return page(GIFT_TITLE + " · " + brand.brandName, `
-<div class="top-sticky noprint"><div class="wrap"><div class="bar-top">${LOGO}<a class="btn btn-ghost" style="min-height:40px;padding:0 16px;font-size:.9rem" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ PDF</a></div>
-<div class="prog"><span id="ptext">0 de 10</span><div class="bar"><i id="pbar"></i></div></div></div></div>
+  const toc = mat.items.map(([title], i) => `<a href="#ideia-${i + 1}" data-toc="${i + 1}"><b>${String(i + 1).padStart(2, "0")}</b>${escapeHtml(title)}</a>`).join("");
+  const pdfLink = label => mat.pdf ? `<a class="btn btn-ghost"${label ? "" : ' style="min-height:40px;padding:0 16px;font-size:.9rem"'} href="${mat.pdf}" download>⬇ ${label || "PDF"}</a>` : "";
+  return page(mat.title + " · " + brand.brandName, `
+<div class="top-sticky noprint"><div class="wrap"><div class="bar-top">${LOGO}${pdfLink("")}</div>
+<div class="prog"><span id="ptext">0 de ${mat.items.length}</span><div class="bar"><i id="pbar"></i></div></div></div></div>
 <main class="wrap">
 <section class="hero"><span class="kicker">Guia ${name} · Edição 2026</span>
-<h1><em>10 ideias de post</em> que trazem clientes para pequenos negócios</h1>
-<p class="sub">Cada ideia vem com a legenda pronta para copiar. Faça uma por dia: em 10 dias o seu perfil já parece outro.</p>
-<div class="meta"><span><b>10</b> ideias</span><span><b>5 min</b> por post</span><span><b>R$ 0</b> para aplicar</span></div>
-<div class="ctas"><a class="btn" href="#ideia-1">Começar pela ideia 1</a><a class="btn btn-ghost" href="${GIFT_PDF}" download="guia-10-ideias-flowarts.pdf">⬇ Baixar PDF</a></div></section>
+<h1>${mat.h1}</h1>
+<p class="sub">${escapeHtml(mat.sub)}</p>
+<div class="meta">${mat.meta.map(([b, t]) => `<span><b>${escapeHtml(b)}</b> ${escapeHtml(t)}</span>`).join("")}</div>
+<div class="ctas"><a class="btn" href="#ideia-1">${escapeHtml(mat.start)}</a>${pdfLink("Baixar PDF")}</div></section>
 <h2 class="sec-title noprint" style="font-size:1rem;color:var(--muted);font-family:inherit;letter-spacing:.1em;text-transform:uppercase">Sumário</h2>
 <nav class="toc noprint" aria-label="Sumário">${toc}</nav>
-<h2 class="sec-title" id="passos">Do primeiro post ao décimo</h2>
+<h2 class="sec-title" id="passos">${escapeHtml(mat.section)}</h2>
 <p class="sub noprint" style="margin:0">Vá marcando conforme faz. Fica salvo neste celular.</p>
 ${steps}
-<section class="panel tip"><b style="color:var(--ink)">Dica da ${name}</b><p class="sub" style="margin-top:6px">Poste no mesmo horário por uma semana e veja nos números qual ideia trouxe mais seguidores. Depois repita a que funcionou. Se quiser que isso rode sozinho, a ${name} faz os posts e você só aprova.</p></section>
+<section class="panel tip"><b style="color:var(--ink)">Dica da ${name}</b><p class="sub" style="margin-top:6px">${fill(mat.tip)}</p></section>
 ${whats ? `<p class="noprint" style="text-align:center;margin-top:22px"><a class="btn btn-whats" href="${escapeHtml(whats)}" target="_blank" rel="noopener">Falar com a ${name} no WhatsApp</a></p>` : ""}
 </main>
 <script>
-(function(){var KEY="flowarts-guia-10";var done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){done={};}
+(function(){var KEY=${JSON.stringify("flowarts-brinde-" + mat.id)};var done={};try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){done={};}
 var steps=[].slice.call(document.querySelectorAll(".step"));
 function paint(){var n=0;steps.forEach(function(s){var on=!!done[s.dataset.step];if(on)n++;s.classList.toggle("done",on);s.querySelector("[data-mark]").textContent=on?"✓ Feito":"Marcar como feito";var t=document.querySelector('[data-toc="'+s.dataset.step+'"]');if(t)t.classList.toggle("done",on);});
 document.getElementById("ptext").textContent=n+" de "+steps.length;document.getElementById("pbar").style.width=(n*100/steps.length)+"%";}
 steps.forEach(function(s){s.querySelector("[data-mark]").addEventListener("click",function(){done[s.dataset.step]=!done[s.dataset.step];try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){}paint();});
 s.querySelector("[data-copy]").addEventListener("click",function(e){var t=s.querySelector("pre").textContent,btn=e.currentTarget;
-(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){btn.textContent="Copiado ✓";setTimeout(function(){btn.textContent="Copiar legenda";},1500);}).catch(function(){btn.textContent="Segure o texto";});});});
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){btn.textContent="Copiado ✓";setTimeout(function(){btn.textContent=${JSON.stringify(mat.blockLabel)};},1500);}).catch(function(){btn.textContent="Segure o texto";});});});
 paint();})();
 </script>`, GUIDE_STYLE);
 }
@@ -441,9 +429,9 @@ export async function handleGiftRequest(request, env, url, options = {}) {
   if (url.pathname.startsWith(GIFT_PAGE)) {
     const code = url.pathname.slice(GIFT_PAGE.length);
     const gift = await readGiftCode(env, code, options.now || new Date());
-    if (!gift) return html(page("Link vencido · Flow Arts", `<main class="wrap" style="padding-top:60px;text-align:center"><h1>Este link venceu</h1><p class="sub">Comente QUERO de novo no post para receber outro.</p></main>`), 404);
+    if (!gift) return html(page("Link vencido · Flow Arts", `<main class="wrap" style="padding-top:60px;text-align:center"><h1>Este link venceu</h1><p class="sub">Comente de novo no post para receber outro.</p></main>`), 404);
     const conn = await resolveInstagramCredentials(env, gift.c).catch(() => null);
-    return html(giftPageHtml("@" + String(conn?.username || "flowarts2026").replace(/^@/, ""), code));
+    return html(giftPageHtml("@" + String(conn?.username || "flowarts2026").replace(/^@/, ""), code, gift.t));
   }
   if (url.pathname === GIFT_GUIDE) {
     const key = await readGift(env, url.searchParams.get("k"), options.now || new Date());
@@ -453,7 +441,7 @@ export async function handleGiftRequest(request, env, url, options = {}) {
     const row = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE id=?1 LIMIT 1").bind(String(key.c)).first().catch(() => null);
     let config = {};
     try { config = JSON.parse(String(row?.config_json || "{}")) || {}; } catch { config = {}; }
-    return html(guideHtml({ ...(row || { id: key.c }), config }));
+    return html(guideHtml({ ...(row || { id: key.c }), config }, key.t));
   }
   return null;
 }

@@ -10,6 +10,7 @@ import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.j
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
 import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js";
+import { materialForComment } from "./gift-materials.js";
 import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
@@ -21,7 +22,8 @@ const WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // a Meta só aceita resposta privada
 export const INTEREST_PATTERN = /\b(eu\s+)?quero\b|\bexemplo\b|\binforma[çc][aã]o\b|\binfo\b|\bpre[çc]o\b|\bvalor(es)?\b|\bquanto\s+custa\b|\bcomo\s+funciona\b/i;
 
 export function wantsReply(text = "") {
-  return INTEREST_PATTERN.test(String(text || ""));
+  // QUERO e as palavras antigas, mais SITE e REELS (cada uma com o seu conteúdo).
+  return materialForComment(text) !== null;
 }
 
 export function dmText(client) {
@@ -44,12 +46,13 @@ export function messageBuilder(env, client, handle = "", { token = "", request =
     const igsid = String(comment.fromId || comment.from?.id || "");
     if (!igsid || !env?.DB || !String(env?.NEXUS_SECRET_KEY || "").trim()) return dmText(client);
     const username = comment.username || comment.from?.username || "";
+    const topic = materialForComment(comment.text) || "guia";
     try {
-      await markGiftAsked(env, client.id, { igsid, username, commentId: comment.id }, now);
+      await markGiftAsked(env, client.id, { igsid, username, commentId: comment.id, topic }, now);
       if (token) {
         const check = await checkFollows({ request, token, igsid }).catch(() => ({ follows: null }));
         if (check.follows === true) {
-          const url = await giftLink(env, { clientId: client.id, igsid, commentId: comment.id, username: check.username || username }, now);
+          const url = await giftLink(env, { clientId: client.id, igsid, commentId: comment.id, username: check.username || username, topic }, now);
           await markGiftDone(env, client.id, igsid, now).catch(() => null);
           return { text: READY_TEXT, buttonTitle: DOWNLOAD_TITLE, url };
         }

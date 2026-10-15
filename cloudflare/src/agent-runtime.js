@@ -19,6 +19,7 @@ import { isPublishingWindow, publishingGate, sameSaoPauloDay } from "./publishin
 import { upsertPostFeatures, recordMetricCheckpoints, recentPublishedPostFeatures } from "./post-learning.js";
 import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } from "./scene-grammar.js";
 import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS, ensureGiftCta } from "./caption-polish.js";
+import { giftCtaForTopic } from "./gift-materials.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -1048,7 +1049,8 @@ async function runCreator(env,client,strategy,options) {
     let hook=String(campaignItem?.hook||aiCreative?.hook||(brandHooks.length
       ? brandHooks[([...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17))%brandHooks.length]
       : pickUniqueHook(index,day,strategy?.radarTerms||[],recentCaptions))).trim();
-    const giftCta=clientBrand(client).giftCta;
+    // Palavra do brinde conforme o assunto do post: site → SITE, vídeo → REELS, o resto → QUERO.
+    const giftCta=giftCtaForTopic(theme+" "+hook,clientBrand(client).giftCta);
     // Com brinde configurado, a única chamada do post é o QUERO (é ele que dispara o direct).
     const cta=String(giftCta||campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,MAX_HASHTAGS).join(" ");

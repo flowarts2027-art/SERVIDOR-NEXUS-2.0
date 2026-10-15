@@ -54,11 +54,14 @@ export const QUERO_PATTERN = /coment[ae]\s+["“']?quero/i;
 export const OTHER_ASK_LINE = /^\s*(responda nos coment[áa]rios|salve (?:para|este post)|envie para|siga (?:a|o) |comente ["“']?exemplo|marque quem|compartilhe com)[^\n]{0,140}$/i;
 
 // Garante a chamada "Comente QUERO" (brinde), única, antes das hashtags do fim.
+// Qualquer chamada de brinde (QUERO, SITE ou REELS) já conta.
+const ANY_GIFT_CTA = /coment[ae]\s+["“']?(quero|site|reels)\b/i;
+
 export function ensureGiftCta(text = "", cta = "") {
   let value = String(text || "").trim();
   if (!cta) return value;
   value = value.split("\n").filter(line => !OTHER_ASK_LINE.test(line)).join("\n").replace(/\n{3,}/g, "\n\n").trim();
-  if (QUERO_PATTERN.test(value)) return value;
+  if (ANY_GIFT_CTA.test(value)) return value;
   const lines = value.split("\n");
   let i = lines.length;
   while (i > 0 && (/^\s*(#[\p{L}\p{N}_]+\s*)+$/u.test(lines[i - 1]) || !lines[i - 1].trim())) i -= 1;

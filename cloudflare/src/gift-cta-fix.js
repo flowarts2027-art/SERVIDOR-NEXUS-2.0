@@ -2,6 +2,7 @@
 // Roda no cron de 15 minutos; só mexe em post não publicado de cliente com brinde configurado.
 import { clientBrand } from "./client-brand.js";
 import { ensureGiftCta } from "./caption-polish.js";
+import { giftCtaForTopic } from "./gift-materials.js";
 
 const OPEN_STATUSES = ["ready", "scheduled", "failed"];
 
@@ -20,7 +21,7 @@ export async function fixGiftCtaInOpenPosts(env, { limit = 40 } = {}) {
     for (const post of posts?.results || []) {
       const caption = String(post.caption || "");
       if (!caption.trim()) continue;
-      const next = ensureGiftCta(caption, cta);
+      const next = ensureGiftCta(caption, giftCtaForTopic(caption, cta));
       if (next === caption) continue;
       await env.DB.prepare("UPDATE post_ledger SET caption = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2 AND COALESCE(media_id,'') = ''")
         .bind(next, String(post.id)).run().catch(() => null);
