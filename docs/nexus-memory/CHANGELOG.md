@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 16h44–17h05 BRT — Instagram da Flow Arts conectado no Café Brisa por engano (branch fix/desconectar-instagram, não publicada)
+- Rodrigo conectou a conta @flowarts2026 no cliente Café Brisa (demo-cafe) pelo Master.
+- Riscos conferidos no código: demo-cafe está em BLOCKED_PUBLISH_CLIENTS (nunca publica); webhook de comentários pula clientes travados (clientForInstagramUser); painel público /api/demo/panel não usa a conexão. A conexão da Flow Arts (primeiro-teste) é outra linha da tabela connections e não muda.
+- Sem acesso direto ao D1 daqui. Correção: demo-client.js ensureDemoClient (cron 15 min) apaga connections de demo-cafe (meta/instagram); instagram.js recusa conectar Instagram em clientes travados (OAuth start, callback e token manual) com mensagem clara. 378 testes ok.
+- Depois de publicar: a conexão some em até 15 min. Conferir no Master que a Flow Arts continua conectada.
+
 ## 2026-10-15 09h34–09h45 BRT — Carrossel aprovado antes de ficar completo (publicado 06d1b95 às 09h37 com OK do Rodrigo; deploy e CI ok; carrossel das 19h ganhou as imagens — confirmado pelo Rodrigo às 09h37)
 - Rodrigo aprovou o carrossel corrigido (capa nova com agenda aberta, ok) e o painel só mostrava a capa. Causa: o ajuste zera os cartões (de propósito) e eles são refeitos no próximo ciclo dos agentes (~15 min); o botão Aprovar já liberava só com a capa. O agendador só publica carrossel com 2+ cartões (formatBuilder aprovado), então não sai incompleto.
 - client-lite: aviso "As outras imagens do carrossel estão sendo criadas" e Aprovar travado enquanto o carrossel tem menos de 2 imagens. 377 testes ok.

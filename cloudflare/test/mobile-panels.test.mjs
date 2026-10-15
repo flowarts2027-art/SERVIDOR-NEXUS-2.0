@@ -53,3 +53,16 @@ test("Notificações: filtros funcionam, chamado 'open' vira novo e Resolver sal
   const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
   assert.ok(master.indexOf("supportTicketMatch") > master.indexOf('if (!await requireMaster(request, env)) return json({ error: "unauthorized" }, 401);'), "só com login do Master");
 });
+
+test("Café Brisa (demo) não fica com Instagram: bloqueia conectar e remove a conexão a cada ciclo", async () => {
+  const src = fs.readFileSync(new URL("../src/instagram.js", import.meta.url), "utf8");
+  assert.equal((src.match(/assertInstagramAllowed\(client\.id\);/g) || []).length, 3);
+  const { ensureDemoClient } = await import("../src/demo-client.js");
+  const ran = [];
+  const env = { DB: { prepare: sql => ({ bind: (...a) => ({ run: async () => { ran.push([sql, a]); return {}; }, first: async () => null }) }) } };
+  await ensureDemoClient(env).catch(() => {});
+  assert.ok(ran.some(([sql, a]) => /DELETE FROM connections WHERE client_id = \?1/.test(sql) && a[0] === "demo-cafe"));
+  const { connectInstagramWithToken } = await import("../src/instagram.js");
+  const env2 = { DB: { prepare: () => ({ bind: () => ({ first: async () => ({ id: "demo-cafe", name: "Café Brisa", config_json: "{}" }) }) }) } };
+  await assert.rejects(connectInstagramWithToken(env2, "demo-cafe", "token"), /instagram_blocked_client/);
+});

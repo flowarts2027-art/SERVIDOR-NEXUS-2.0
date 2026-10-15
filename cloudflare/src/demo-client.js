@@ -31,6 +31,10 @@ export function demoClientRecord() {
 }
 
 export async function ensureDemoClient(env) {
+  // A demonstração nunca fica ligada a um Instagram de verdade (15/10: a conta da
+  // Flow Arts foi conectada nela por engano pelo Master). Remove a cada ciclo.
+  await env.DB.prepare("DELETE FROM connections WHERE client_id = ?1 AND provider IN ('meta','instagram')")
+    .bind(DEMO_CLIENT_ID).run().catch(() => null);
   const existing = await getClient(env, DEMO_CLIENT_ID).catch(() => null);
   if (!existing) {
     await upsertClient(env, demoClientRecord());

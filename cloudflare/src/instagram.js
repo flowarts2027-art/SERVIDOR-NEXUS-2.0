@@ -1,6 +1,12 @@
 import { sha256Hex } from "./auth.js";
 import { getClient, upsertClient } from "./clients.js";
 import { encryptSecret, decryptSecret } from "./secrets.js";
+import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
+
+// Contas travadas (demonstração e arquivadas) nunca recebem um Instagram de verdade.
+function assertInstagramAllowed(clientId) {
+  if (BLOCKED_PUBLISH_CLIENTS.has(String(clientId || ""))) throw new Error("instagram_blocked_client");
+}
 
 export const INSTAGRAM_SCOPES = [
   "instagram_business_basic",
@@ -101,6 +107,7 @@ export async function masterInstagramCredentials(env) {
 export async function startInstagramOAuth(env, request, clientId, returnTo = "") {
   const client = await getClient(env, clientId);
   if (!client) throw new Error("client_not_found");
+  assertInstagramAllowed(client.id);
 
   const { appId, appSecret } = await masterInstagramCredentials(env);
   if (!appId || !appSecret) throw new Error("instagram_nexus_not_configured");
@@ -215,6 +222,7 @@ export async function handleInstagramOAuthCallback(env, request, url) {
 
     const client = await getClient(env, saved.client_id);
     if (!client) throw new Error("client_not_found");
+    assertInstagramAllowed(client.id);
 
     const username = String(profile.username || "").replace(/^@/, "");
     const expectedUsername = String(client.instagram || "").replace(/^@/, "").trim();
@@ -289,7 +297,9 @@ export async function handleInstagramOAuthCallback(env, request, url) {
         }
       });
     }
-    return oauthHtml(false, error?.message === "oauth_account_mismatch" ? "Você autorizou uma conta diferente da conta cadastrada neste cliente." : "Não foi possível concluir a autorização do Instagram.");
+    return oauthHtml(false, error?.message === "oauth_account_mismatch" ? "Você autorizou uma conta diferente da conta cadastrada neste cliente."
+      : error?.message === "instagram_blocked_client" ? "Esta conta é de demonstração (ou arquivada) e não pode receber um Instagram."
+      : "Não foi possível concluir a autorização do Instagram.");
   }
 }
 
@@ -316,6 +326,7 @@ export async function instagramMasterConfigStatus(env) {
 export async function connectInstagramWithToken(env, clientId, suppliedToken) {
   const client = await getClient(env, clientId);
   if (!client) throw new Error("client_not_found");
+  assertInstagramAllowed(client.id);
 
   let accessToken = String(suppliedToken || "").trim();
   if (accessToken.length < 20) throw new Error("instagram_token_required");
