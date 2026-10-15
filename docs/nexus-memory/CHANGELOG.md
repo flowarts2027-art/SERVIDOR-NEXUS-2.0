@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 08h55–09h15 BRT — Carrossel com setas no painel do cliente (branch feat/carrossel-painel, não publicada)
+## 2026-10-15 08h55–09h15 BRT — Carrossel com setas no painel do cliente (publicado bd595bd às 09h01 com OK do Rodrigo; deploy e CI ok; conferir o próximo carrossel no painel)
 - Rodrigo: no carrossel não dá para ver as outras imagens no painel do cliente.
 - client-lite (v117/css v114): carrossel com todas as imagens (formatBuild.carouselUrls), setas ‹ › de 44px, contador "1 / 4", passa também com o dedo. Testado no navegador simulado (celular). 372 testes ok.
 - Limite: os cartões 2 a 4 do carrossel só são criados DEPOIS da aprovação (format-builder pega só approval_status='approved'). Antes de aprovar, o cliente vê só a capa. Perguntado ao Rodrigo se quer criar todos antes da aprovação (custo extra só quando o cliente recusa).
