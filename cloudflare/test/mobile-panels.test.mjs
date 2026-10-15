@@ -36,3 +36,20 @@ test("Master em preto e branco: sem verde no estilo; vermelho de erro mantido", 
   assert.match(css, /--silver:linear-gradient/);
   assert.match(css, /--danger:#ff5d67/);
 });
+
+test("Notificações: filtros funcionam, chamado 'open' vira novo e Resolver salva sem janela do navegador", async () => {
+  const app = read("app.js");
+  assert.match(app, /\$\$\("\[data-support-filter\]"\)\.forEach/);
+  assert.doesNotMatch(app, /alert\("Não foi possível atualizar o chamado\."\)/);
+  const { updateSupportTicketStatus } = await import("../src/master.js");
+  const { DatabaseSync } = await import("node:sqlite");
+  const db = new DatabaseSync(":memory:");
+  db.exec("CREATE TABLE support_tickets(id TEXT PRIMARY KEY, client_id TEXT, status TEXT, subject TEXT, payload_json TEXT, created_at TEXT, updated_at TEXT); INSERT INTO support_tickets(id,client_id,status) VALUES('t1','c1','open');");
+  const DB = { prepare: sql => ({ bind: (...a) => ({ run: async () => ({ meta: { changes: Number(db.prepare(sql).run(...a).changes) } }) }) }) };
+  assert.deepEqual(await updateSupportTicketStatus({ DB }, "t1", "resolved"), { ok: true, id: "t1", status: "resolved" });
+  assert.equal(db.prepare("SELECT status FROM support_tickets").get().status, "resolved");
+  await assert.rejects(updateSupportTicketStatus({ DB }, "t1", "apagado"), /status_invalid/);
+  await assert.rejects(updateSupportTicketStatus({ DB }, "nao", "read"), /ticket_not_found/);
+  const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
+  assert.ok(master.indexOf("supportTicketMatch") > master.indexOf('if (!await requireMaster(request, env)) return json({ error: "unauthorized" }, 401);'), "só com login do Master");
+});

@@ -192,14 +192,26 @@ async function allSupportTickets(env) {
     .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))
     .slice(0, 200)
     .map(row => ({
+      ...parseJson(row.payload_json, {}),
       id: row.id,
       clientId: row.client_id,
-      status: row.status || "open",
+      clientName: String(clients.find(client => client.id === row.client_id)?.name || row.client_id),
+      // "open" (gravado pelos pedidos de correção) é um chamado novo para a tela.
+      status: ["new", "read", "resolved"].includes(row.status) ? row.status : "new",
       subject: row.subject || "",
-      ...parseJson(row.payload_json, {}),
       createdAt: row.created_at || null,
       updatedAt: row.updated_at || null
     }));
+}
+
+// Marcar chamado como lido ou resolvido (botões da tela Notificações).
+export async function updateSupportTicketStatus(env, ticketId, status) {
+  if (!["new", "read", "resolved"].includes(String(status))) throw new Error("status_invalid");
+  const result = await env.DB.prepare(
+    "UPDATE support_tickets SET status = ?2, updated_at = CURRENT_TIMESTAMP WHERE id = ?1"
+  ).bind(String(ticketId || ""), String(status)).run();
+  if (!Number(result?.meta?.changes || 0)) throw new Error("ticket_not_found");
+  return { ok: true, id: String(ticketId), status: String(status) };
 }
 
 async function allPosts(env) {
@@ -783,6 +795,17 @@ export async function handleMaster(request, env, url) {
 
   if (url.pathname === "/api/master/support" && request.method === "GET") {
     return json({ ok: true, tickets: await allSupportTickets(env) });
+  }
+
+  const supportTicketMatch = url.pathname.match(/^\/api\/master\/support\/([^/]+)$/);
+  if (supportTicketMatch && request.method === "PATCH") {
+    const body = await request.json().catch(() => ({}));
+    try {
+      return json(await updateSupportTicketStatus(env, decodeURIComponent(supportTicketMatch[1]), body.status));
+    } catch (error) {
+      const code = String(error?.message || error);
+      return json({ error: code }, code === "ticket_not_found" ? 404 : 400);
+    }
   }
 
   const agentConfigMatch = url.pathname.match(/^\/api\/master\/agent-config\/([^/]+)$/);

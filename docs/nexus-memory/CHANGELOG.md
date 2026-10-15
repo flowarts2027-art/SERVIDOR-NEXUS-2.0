@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 09h27–09h45 BRT — Notificações do Master consertadas (branch fix/notificacoes-master, não publicada)
+- Rodrigo: filtros (Todos/Novos/Lidos/Resolvidos) não funcionam, "4 abertos" com lista vazia, e "Resolver" abre uma pergunta no navegador.
+- Causas: (1) app.js usava $() (um elemento) com .forEach no filtro → erro; o filtro mudava mas a tela não, e a lista ficava presa num filtro vazio. (2) Não existia rota PATCH /api/master/support/:id → "Resolver" falhava e mostrava alert de erro (a "pergunta"). (3) Chamados de correção são gravados com status "open", que a tela mostrava como RESOLVIDO; sem nome do cliente.
+- Correções: $$ no filtro; rota PATCH (só Master; new/read/resolved); "open" aparece como novo; nome do cliente no chamado; erro aparece no botão, sem janela do navegador. app.js v50. 376 testes ok.
+
 ## 2026-10-15 09h13–09h35 BRT — Master em preto e branco (publicado 0e8f487 às 09h20 com OK do Rodrigo; deploy e CI ok)
 - Pedido: "muda a cor do painel nexus para preto e branco, dá um upgrade". Entendido como o Master.
 - styles.css: todas as cores convertidas para cinza (luminância), exceto vermelho de erro e âmbar de alerta; camada nova no fim: fundo preto, cartões #0b0b0b com borda fina e raio 18, botão principal branco com letra preta, menu ativo com barra branca, foco visível branco, badges neutras. nexus-ai-mark.svg em cinza. Login do Master (master.js) em cinza com botão branco. app.js: cor padrão de cliente #e5e5e5 (as cores da marca do cliente não mudam). theme-color preto. styles v33, app v48. 375 testes ok. Conferido em print (computador e celular).

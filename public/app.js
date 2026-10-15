@@ -1002,7 +1002,11 @@ document.addEventListener("click", async event => {
   if (ticketButton) {
     ticketButton.disabled = true;
     try { await updateSupportTicket(ticketButton.dataset.ticketId, ticketButton.dataset.ticketStatus); }
-    catch { alert("Não foi possível atualizar o chamado."); }
+    catch {
+      // Sem janela do navegador: o aviso aparece no próprio botão.
+      ticketButton.disabled = false;
+      ticketButton.textContent = "Erro, tente de novo";
+    }
     return;
   }
 
@@ -1034,7 +1038,7 @@ document.addEventListener("click", async event => {
   const filterButton = event.target.closest("[data-support-filter]");
   if (filterButton) {
     state.supportFilter = filterButton.dataset.supportFilter || "all";
-    $("[data-support-filter]").forEach(btn => btn.classList.toggle("active", btn === filterButton));
+    $$("[data-support-filter]").forEach(btn => btn.classList.toggle("active", btn === filterButton));
     renderSupportNotifications();
   }
 });
