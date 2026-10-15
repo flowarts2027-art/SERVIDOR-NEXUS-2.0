@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 09h34–09h45 BRT — Carrossel aprovado antes de ficar completo (branch fix/carrossel-aprovar-completo, não publicada)
+## 2026-10-15 09h34–09h45 BRT — Carrossel aprovado antes de ficar completo (publicado 06d1b95 às 09h37 com OK do Rodrigo; deploy e CI ok; conferir se o carrossel das 19h ganhou as imagens)
 - Rodrigo aprovou o carrossel corrigido (capa nova com agenda aberta, ok) e o painel só mostrava a capa. Causa: o ajuste zera os cartões (de propósito) e eles são refeitos no próximo ciclo dos agentes (~15 min); o botão Aprovar já liberava só com a capa. O agendador só publica carrossel com 2+ cartões (formatBuilder aprovado), então não sai incompleto.
 - client-lite: aviso "As outras imagens do carrossel estão sendo criadas" e Aprovar travado enquanto o carrossel tem menos de 2 imagens. 377 testes ok.
 
