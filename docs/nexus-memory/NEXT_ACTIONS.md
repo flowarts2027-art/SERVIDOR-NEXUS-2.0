@@ -1,5 +1,10 @@
 # Próximas ações
 
+## Amanhã (combinado em 2026-10-15 19h01) — Reels animados feitos aqui
+- Rodrigo vai pegar no Pinterest um Reel animado que goste e mandar aqui (vídeo ou print + link). Eu recrio o ESTILO (ritmo, tipo de animação, texto em movimento) com conteúdo e marca da Flow Arts, sem copiar a obra.
+- Ferramentas conferidas: FFmpeg 6.1 (drawtext, subtitles, xfade, zoompan), Chromium + Playwright (animação em HTML gravada como vídeo), Pillow, OpenCV e ImageMagick. Não deu para instalar Remotion ou Whisper: npm e pypi estavam inacessíveis nesta sessão. Legenda da fala só com o texto mandado pelo Rodrigo. O Everygen é pago (créditos).
+- Flow fica só para as cenas com pessoas. Edição e Reels só de animação são feitos aqui.
+
 ## Caçador de leads (2026-10-14) — código pronto na branch feat/cacador-leads, não publicado
 - Pedido do Rodrigo: repetir um projeto antigo do n8n. Buscar empresas no Google Maps, montar uma lista de leads, a IA conversa, oferece os planos, marca reunião e passa para o WhatsApp dele. De preferência grátis.
 - Resposta dada: dá para fazer dentro do próprio Nexus, sem n8n. A busca usa a API oficial do Google (tem cota grátis), não raspagem. O primeiro contato frio pelo WhatsApp Cloud API vai contra a regra da Meta (exige opt-in e modelo pago) e pode bloquear o número. Proposta: o Nexus monta a lista e o rascunho; o Rodrigo manda a primeira mensagem; quando o lead responde, a atendente IA continua, oferece plano, marca reunião e avisa o Rodrigo.
