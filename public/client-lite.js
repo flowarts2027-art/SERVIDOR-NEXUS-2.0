@@ -98,6 +98,11 @@ function formatName(post) {
 
 function mediaHtml(post, cls) {
   const image = postImage(post);
+  // Reel pronto (feito no Flow): o cliente assiste antes de aprovar.
+  const video = String(post.creativeFeatures?.requestedFormat || "") === "reel" ? safeUrl(post.formatBuild?.videoUrl) : "";
+  if (video) {
+    return `<div class="${cls} is-video"><video src="${escapeHtml(video)}" ${image ? `poster="${escapeHtml(image)}"` : ""} controls playsinline preload="none" aria-label="Vídeo do Reel"></video></div>`;
+  }
   return `<div class="${cls}${image ? "" : " is-waiting"}">${image
     ? `<img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy">`
     : `<div class="media-wait">A imagem deste post está sendo criada.<br>Volte daqui a pouco.</div>`}</div>`;

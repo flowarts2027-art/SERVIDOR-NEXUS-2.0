@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 22h11–22h55 BRT — Plano com vídeo: Reel feito no Flow enviado pelo Master (branch feat/reel-manual-master, não publicada)
+- Rodrigo mandou um "parecer" do ChatGPT (reforma grande do site) e 2 vídeos de cafeteria feitos no Flow (10 s, 9:16; 720×1280 e 360×640). Analisado: bons pontos (honestidade, CTA certo, legenda limpa, preço de uma fonte só); problemas: manda publicar sozinho (contra a regra), grande demais (fazer em 3 blocos), plano promete 4 Reels/mês mas o Nexus não faz Reel, não fala de manutenção/domínio.
+- Manutenção: site mostra só R$ 497 + "domínio por sua conta (~R$ 40/ano)"; contrato/robô já têm R$ 29/mês ou R$ 297/ano. Proposta (aguardando OK): R$ 497 inclui 1º ano com domínio; depois R$ 297/ano (ou R$ 29/mês) com renovação do domínio.
+- Gemini Pro/Flow: assinatura só vale nos apps (Flow); API do Veo é cobrança separada (~US$ 0,10/s Fast, ~US$ 0,40/s normal). Decisão do Rodrigo: plano básico sem vídeo; plano com vídeo = preço do site, ele faz os vídeos à mão no Flow e envia pelo Master para o cliente aprovar.
+- manual-reel.js + POST /api/master/manual-reel (só Master): cliente, vídeo MP4/MOV até 95 MB, capa (tirada do vídeo no navegador; se não der, capa reserva com a legenda), legenda, dia e hora (Brasília, ≥ 10 min à frente). Salva em posts/<cliente>/manual-reel-*/ (público) e cria o post Reel com aprovação "pending"; gates aprovados (Rodrigo conferiu). Clientes travados (Ragnar/Global/demo) recusados. Depois que o cliente aprova, o agendador publica como Reel (publishInstagramVideo).
+- Master → Postagens: quadro "Enviar Reel pronto" (manual-reel.js v1, styles v32). Painel do cliente: Reel mostra o vídeo com play (client-lite v115/css v112).
+- 365 testes ok. Teste no navegador simulado: formulário envia o vídeo inteiro (3,27 MB) + capa. Não publicado nem testado com Instagram real.
+- Pendente do Rodrigo: preço/conteúdo do plano básico; OK da renovação R$ 297/ano com domínio.
+
 ## 2026-10-14 20h36–21h10 BRT — Painéis no celular e "app" na tela inicial (publicado 0466da7 às 20h45 com OK do Rodrigo; deploy e CI ok; manifest não lido daqui — leitura externa bloqueada)
 - Rodrigo (print do login vazando para a direita): Master e painel do cliente ruins no telefone; sem conta de desenvolvedor para app.
 - Diagnóstico com navegador simulado (360px e letra grande, como acessibilidade do Android): login vazava (inputs cresciam com a letra); menu do cliente tinha 8 abas para 6 colunas (Campanha sumia, Meu negócio/Conta quebravam linha); Master tinha 9 itens com letra de 8px; tabela de Clientes com min-width 760 (arrastar para o lado).

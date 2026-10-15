@@ -28,6 +28,7 @@ import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
+import { handleManualReelMaster } from "./manual-reel.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -635,6 +636,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleCaptadorMaster(request, env, url, listClients);
+      if (response) return response;
+    }
+
+    // Reel feito à mão (Flow) enviado pelo Rodrigo; o cliente aprova no painel. Só com login do Master.
+    if (url.pathname === "/api/master/manual-reel") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleManualReelMaster(request, env, url);
       if (response) return response;
     }
 

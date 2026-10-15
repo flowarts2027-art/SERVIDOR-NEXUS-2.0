@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=31">
+  <link rel="stylesheet" href="/styles.css?v=32">
 </head>
 <body>
   <div class="shell">
@@ -148,6 +148,19 @@
       </section>
 
       <section id="posts" class="view">
+        <div class="panel manual-reel-panel" id="manual-reel">
+          <div class="panel-head"><div><p class="eyebrow">PLANO COM VÍDEO</p><h2>Enviar Reel pronto</h2><p class="muted">Faça o vídeo no Flow e envie aqui. Ele vai para o painel do cliente, que aprova. Depois de aprovado, sai no dia e hora escolhidos.</p></div></div>
+          <form id="manual-reel-form" class="manual-reel-form">
+            <label>Cliente<select name="clientId" id="manual-reel-client" required><option value="">Carregando…</option></select></label>
+            <label>Vídeo (MP4, vertical 9:16)<input type="file" name="video" id="manual-reel-video" accept="video/mp4,video/quicktime" required></label>
+            <video id="manual-reel-preview" class="manual-reel-preview" controls playsinline muted hidden></video>
+            <label class="wide">Legenda<textarea name="caption" rows="4" maxlength="2200" required placeholder="Ex.: Café passado na hora e bolo caseiro. Qual combina com a sua pausa de hoje?"></textarea></label>
+            <label>Dia<input type="date" name="date" required></label>
+            <label>Hora<input type="time" name="time" value="12:00" required></label>
+            <button type="submit" class="primary">Enviar para o cliente aprovar</button>
+            <p class="muted wide" id="manual-reel-status" role="status"></p>
+          </form>
+        </div>
         <div class="post-cost-metrics">
           <article><span>Gasto nas postagens</span><strong id="posts-total-cost">US$ 0,00</strong><small>mês atual · custo OpenAI calculado</small></article>
           <article><span>Postagens registradas</span><strong id="posts-total-count">0</strong><small>tentativas no mês</small></article>
@@ -460,6 +473,7 @@
     </form>
   </dialog>
   <script src="/app.js?v=46" defer></script>
+  <script src="/manual-reel.js?v=1" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

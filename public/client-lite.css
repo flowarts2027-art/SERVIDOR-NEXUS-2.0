@@ -366,3 +366,6 @@ h1, h2 { line-height: 1.2; margin: 0; }
 /* Celular com letra grande: nada passa da largura da tela. */
 .content, .block, .empty { min-width: 0; overflow-wrap: anywhere; }
 input, select, textarea, button { max-width: 100%; }
+
+/* Reel pronto: vídeo que toca no cartão do post */
+.is-video video { display: block; width: 100%; aspect-ratio: 9 / 16; max-height: 70vh; object-fit: contain; background: #000; border-radius: inherit; }
