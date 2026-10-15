@@ -20,6 +20,7 @@ import { upsertPostFeatures, recordMetricCheckpoints, recentPublishedPostFeature
 import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } from "./scene-grammar.js";
 import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS, ensureGiftCta } from "./caption-polish.js";
 import { giftCtaForTopic } from "./gift-materials.js";
+import { plannedFormat } from "./format-builder.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -835,7 +836,7 @@ async function runCreator(env,client,strategy,options) {
       &&!payload.blockedDesignerRecoveryAttemptedAt;
     const mediaInfo=safeRecheck
       ?{url:blocked,source:"blocked-media-recheck",sourceInstagramMediaId:""}
-      :await nextMedia(pending.id,String(payload.visualBrief||""),payload.creativeFeatures?.requestedFormat,String(payload.creativeFeatures?.hook||payload.title||""));
+      :await nextMedia(pending.id,String(payload.visualBrief||""),plannedFormat(payload.creativeFeatures?.requestedFormat),String(payload.creativeFeatures?.hook||payload.title||""));
     if(!mediaInfo.url){
       payload.mediaGeneration={status:"requested",attempts:generationAttempts+(isBudgetError(mediaInfo.error)?0:1),lastError:String(mediaInfo.error||"media_generation_failed").slice(0,120),updatedAt:new Date().toISOString()};
       const exhausted=payload.mediaGeneration.attempts>=3;
@@ -942,7 +943,7 @@ async function runCreator(env,client,strategy,options) {
         existingPayload.visualBrief=String(aiCreative.visualBrief||"").slice(0,1200);
         existingPayload.creativeFeatures={
           format:"image",
-          requestedFormat:String(aiCreative.format||existingPayload.creativeFeatures?.requestedFormat||"image"),
+          requestedFormat:plannedFormat(aiCreative.format||existingPayload.creativeFeatures?.requestedFormat||"image"),
           theme:String(aiCreative.theme||""),
           hook:String(aiCreative.hook||""),
           scene:String(aiCreative.scene||""),
@@ -1100,7 +1101,7 @@ async function runCreator(env,client,strategy,options) {
 
     let creativeFeatures={
       format:"image",
-      requestedFormat:String(campaignItem?.format||aiCreative?.format||"image"),
+      requestedFormat:plannedFormat(campaignItem?.format||aiCreative?.format||"image"),
       theme,hook,
       scene:String(campaignItem?.angle||aiCreative?.scene||""),
       composition:String(aiCreative?.composition||""),

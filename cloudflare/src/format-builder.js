@@ -19,6 +19,18 @@ function compact(value, max = 160) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
+// Reel "parado" (foto com zoom) está proibido desde 14/10: "se não der para fazer vídeo, não faça".
+// Reel só sai quando já tem vídeo de verdade (ex.: enviado pelo Rodrigo no Master).
+// Pedido de Reel sem vídeo vira post 4:5.
+export function plannedFormat(value = "") {
+  const format = String(value || "").toLowerCase();
+  return format === "reel" ? "post" : format || "image";
+}
+
+function hasRealVideo(payload = {}) {
+  return /^https:\/\//i.test(String(payload?.formatBuild?.videoUrl || ""));
+}
+
 function requestedFormat(payload = {}) {
   const value = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
   if (value === "carousel") return "carousel";
@@ -286,6 +298,30 @@ export async function runFormatBuilder(env, client, options = {}) {
     const format=requestedFormat(payload);
     payload.qualityGates=payload.qualityGates&&typeof payload.qualityGates==="object"?payload.qualityGates:{};
     if (payload.qualityGates.copyChief!=="approved" || payload.qualityGates.designer!=="approved") continue;
+
+    if (format==="reel"&&!hasRealVideo(payload)) {
+      payload.creativeFeatures={...(payload.creativeFeatures||{}),requestedFormat:"post",plannedFormat:"reel"};
+      if (String(payload.mediaGeneration?.contentFormat||"")==="reel") {
+        // A imagem foi feita em pé (9:16) para o Reel: no feed ela sai cortada. Gera de novo em 4:5.
+        payload.imageUrl="";
+        payload.publicImageUrl="";
+        payload.visualReview=null;
+        payload.formatBuild={status:"pending",kind:"post",fallbackFrom:"reel",fallbackReason:"static_reel_blocked"};
+        payload.mediaGeneration={...(payload.mediaGeneration||{}),status:"requested",contentFormat:"post",updatedAt:new Date().toISOString()};
+        payload.qualityGates.designer="pending";
+        payload.qualityGates.formatBuilder="pending";
+        await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='media_generation_required',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
+        pending++;
+        items.push({id:row.id,format:"post",status:"media_regeneration",fallbackFrom:"reel"});
+        continue;
+      }
+      payload.formatBuild={status:"approved",kind:"post",fallbackFrom:"reel",fallbackReason:"static_reel_blocked",imageUrl:String(payload.imageUrl||payload.publicImageUrl||""),builtAt:new Date().toISOString()};
+      payload.qualityGates.formatBuilder="approved";
+      await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
+      built++;
+      items.push({id:row.id,format:"post",status:"approved",fallbackFrom:"reel"});
+      continue;
+    }
 
     if (format==="post") {
       payload.formatBuild={status:"approved",kind:"post",imageUrl:String(payload.imageUrl||payload.publicImageUrl||""),builtAt:new Date().toISOString()};

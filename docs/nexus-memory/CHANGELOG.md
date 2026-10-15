@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 20h56–21h20 BRT — Reel parado publicado de novo na Flow Arts (branch fix/sem-reel-parado, não publicada)
+
+- Rodrigo mandou um print às 20h56: post da Flow Arts saiu como vídeo, com a frase cortada ("Se isso acontec…") e sem sentido.
+- Prova: o GitHub Actions "social-format-render" rodou hoje às 18:45 e às 23:16 UTC (15h45 e 20h16 BRT). É o Reel de foto com zoom, que estava proibido desde 14/10.
+- Causa: só a campanha fixa trocava Reel por post. A IA (`aiCreative.format`) e posts antigos ainda pediam "reel", e o format-builder mandava renderizar. A imagem saía em 9:16 e o vídeo cortava o texto.
+- Correção: `plannedFormat()` em format-builder.js transforma "reel" em "post" ao criar, ao atualizar e ao gerar a mídia do post. No format-builder, um Reel sem vídeo de verdade nunca é renderizado. Se a imagem já era 9:16, é apagada e gerada de novo em 4:5. Se já era 4:5, sai como post. Um Reel com vídeo enviado pelo Master continua Reel.
+- 384 testes passando (novo static-reel-block.test.mjs).
+- O post que já saiu não pode ser apagado pelo Nexus. Se quiser, o Rodrigo apaga no Instagram. O selo "Perfil gerado por IA" é do próprio Instagram, que detecta imagem feita por IA.
+
 ## 2026-10-15 18h47–19h20 BRT — Uma palavra para cada conteúdo (publicado 4baa302 às 18h52 com OK do Rodrigo; deploy e CI ok; falta teste real com um comentário SITE ou REELS)
 
 - Pedido do Rodrigo (passo B): cada Reel com a sua palavra e o seu conteúdo.
