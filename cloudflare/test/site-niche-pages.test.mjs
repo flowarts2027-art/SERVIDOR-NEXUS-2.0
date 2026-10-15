@@ -43,3 +43,11 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   assert.match(prompt, /já com a renovação do domínio/);
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);
 });
+
+test("site tem vídeo de fundo leve, sem som, e para com menos movimento", () => {
+  const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
+  assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/);
+  assert.match(home, /prefers-reduced-motion: reduce/);
+  const size = fs.statSync(new URL("../../public/video/fundo-cafe.mp4", import.meta.url)).size;
+  assert.ok(size > 10000 && size < 1_000_000, "vídeo leve: " + size);
+});
