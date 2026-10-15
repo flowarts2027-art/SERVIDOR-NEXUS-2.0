@@ -126,3 +126,6 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 
 ## 2026-10-14 — Imagem por IA para clientes
 - Só depois que o Rodrigo liga (Master → Clientes → coluna IA do cliente). Limite = total da campanha do cliente (dias x posts), no máximo 60 por mês. Custo na OpenAI da Flow Arts.
+
+## 2026-10-15 — Como achar clientes
+- Rodrigo perguntou se dá para achar clientes pelas redes sociais. Explicado: hashtag do Instagram exige aprovação da Meta e só 30 hashtags/7 dias, sem telefone; copiar páginas da Meta é contra as regras (risco de bloqueio); mapa grátis é fraco. Decisão dele: "não faça isso, quero praticidade". Caminho: Google Maps (falta ativar o crédito). Não fazer conferidor de Instagram nem busca por rede social.
