@@ -142,3 +142,12 @@ test("acesso do cliente novo sai com o domínio painel.flowarts.com.br", () => {
   assert.match(app, /CLIENT_PANEL_URL = "https:\/\/painel\.flowarts\.com\.br\/"/);
   assert.doesNotMatch(app, /Acesso: " \+ location\.origin/);
 });
+
+test("Assumir painel funciona no domínio novo e no antigo (sem endereço fixo)", () => {
+  const app = fs.readFileSync(new URL("../../public/app.js", import.meta.url), "utf8");
+  assert.doesNotMatch(app, /diamantehinode2015\.workers\.dev\/api\/clients/);
+  assert.match(app, /"\/api\/clients\/" ?\+ ?encodeURIComponent|`\/api\/clients\/\$\{encodeURIComponent/);
+  const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
+  assert.match(master, /return redirect\("\/portal\?auth=1"/);
+  assert.match(master, /entryPath: "\/portal\?auth=1"/);
+});

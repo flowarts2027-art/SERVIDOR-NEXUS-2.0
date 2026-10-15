@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-14 23h03–23h10 BRT — "Assumir painel" dava erro (branch fix/assumir-painel-dominio, não publicada)
+- Rodrigo: no Master, "Assumir painel" dá erro. Causa provável: os links (app.js, 3 lugares) apontavam fixo para servidor-nexus.diamantehinode2015.workers.dev; com o Master aberto em painel.flowarts.com.br (sugerido hoje), o login do Master não vale no endereço antigo. E o assume-open redirecionava para PUBLIC_BASE_URL (outro endereço que o do cookie).
+- Correção: links relativos (/api/clients/<id>/assume-open) e redirect/entryPath relativos (/portal?auth=1) em master.js. Funciona no endereço em que o Master estiver. app.js v47. 369 testes ok. Não testado com login real.
+- Link do painel do cliente enviado: https://painel.flowarts.com.br/
+
 ## 2026-10-14 22h44–23h05 BRT — Vídeo de fundo no site (publicado 0d9142d às 22h54 com OK do Rodrigo; deploy ok; conferido no ar em flowarts.com.br/site.html: seção do Reel, aviso de demonstração e cafe.brisa)
 - Rodrigo mandou 2 cenas novas: "dona sorri servindo" (8 s, 720p) ficou boa (tela virada para ela, história clara) — sugerida como Reel da Flow Arts com legenda; "mulher segurando o celular" (4 s) boa, mas é outra mulher (não juntar).
 - Pedido: o vídeo de 4 s no fundo da página, misturado ("marca d'água"). Feito: public/video/fundo-cafe.mp4 (540×960, sem som, 186 KB) + capa .jpg; .bg-video fixo atrás de tudo, opacidade 0,18 (0,14 e leve desfoque no computador) e camada escura por cima; para (fica a capa) com "menos movimento" ou economia de dados. site.html + scripts/site (body e css). 367 testes ok. Conferido em print (celular e computador).

@@ -86,7 +86,7 @@ function render() {
     const remove = (!ragnar && !client.ownerAccount)
       ? `<button type="button" class="small-danger" data-delete-client="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Excluir</button>`
       : "";
-    const action = `<div class="client-action-stack"><a class="small-primary" href="https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/${encodeURIComponent(client.id)}/assume-open" target="_blank" rel="noopener">Assumir painel</a><button type="button" class="small-primary" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Definir acesso</button>${remove}${protect}</div>`;
+    const action = `<div class="client-action-stack"><a class="small-primary" href="/api/clients/${encodeURIComponent(client.id)}/assume-open" target="_blank" rel="noopener">Assumir painel</a><button type="button" class="small-primary" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Definir acesso</button>${remove}${protect}</div>`;
     return `<tr><td><strong>${escapeHtml(client.name)}</strong><br><small>${escapeHtml(client.niche || "Outro")}</small></td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td><strong>Automático</strong><br><small>horário definido pelos agentes</small></td><td><strong>${mode}</strong>${extra}</td><td>${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
@@ -184,7 +184,7 @@ function renderPortalSelector() {
   if (!state.portalClientId || !clients.some(client => client.id === state.portalClientId)) state.portalClientId = clients[0].id;
   select.innerHTML = clients.map(client => `<option value="${escapeHtml(client.id)}" ${client.id === state.portalClientId ? "selected" : ""}>${escapeHtml(client.name)}</option>`).join("");
   const assumeLink = $("#assume-selected-client");
-  if (assumeLink) assumeLink.href = "https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/" + encodeURIComponent(state.portalClientId) + "/assume-open";
+  if (assumeLink) assumeLink.href = "/api/clients/" + encodeURIComponent(state.portalClientId) + "/assume-open";
   renderClientPortal(clients.find(client => client.id === state.portalClientId));
 }
 
@@ -844,7 +844,7 @@ $$('[data-go]').forEach(button => button.addEventListener("click", () => showVie
 $("#refresh").addEventListener("click", load);
 $("#portal-client").addEventListener("change", event => { state.portalClientId = event.target.value; renderPortalSelector(); });
 const masterLeadFilter=$("#master-lead-client-filter");if(masterLeadFilter)masterLeadFilter.addEventListener("change",event=>{state.leadClientFilter=event.target.value||"";renderMasterLeads();});
-const assumeSelected=$("#assume-selected-client");if(assumeSelected&&state.portalClientId)assumeSelected.href="https://servidor-nexus.diamantehinode2015.workers.dev/api/clients/"+encodeURIComponent(state.portalClientId)+"/assume-open";
+const assumeSelected=$("#assume-selected-client");if(assumeSelected&&state.portalClientId)assumeSelected.href="/api/clients/"+encodeURIComponent(state.portalClientId)+"/assume-open";
 const portalAccessDialog=$("#portal-access-dialog");
 const portalAccessForm=$("#portal-access-form");
 const closePortalAccess=()=>{if(portalAccessDialog?.open)portalAccessDialog.close();};

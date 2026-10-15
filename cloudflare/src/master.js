@@ -580,7 +580,8 @@ export async function handleMaster(request, env, url) {
     const clientId = decodeURIComponent(assumeOpenMatch[1]);
     if (!await getClient(env, clientId)) return json({ error: "client_not_found" }, 404);
     const session = await createPortalSession(env, clientId, { source: "master-assume-open" });
-    return redirect(String(env.PUBLIC_BASE_URL || "https://servidor-nexus.diamantehinode2015.workers.dev").replace(/\/$/, "") + "/portal?auth=1", { "set-cookie": portalSessionCookie(session.token) });
+    // Mesmo endereço em que o Master está (domínio novo ou antigo): o login do cliente fica nesse endereço.
+    return redirect("/portal?auth=1", { "set-cookie": portalSessionCookie(session.token) });
   }
 
   const assumeMatch = url.pathname.match(/^\/api\/clients\/([^/]+)\/assume$/);
@@ -588,7 +589,7 @@ export async function handleMaster(request, env, url) {
     const clientId = decodeURIComponent(assumeMatch[1]);
     if (!await getClient(env, clientId)) return json({ error: "client_not_found" }, 404);
     const session = await createPortalSession(env, clientId, { source: "master-assume" });
-    return json({ ok: true, entryPath: String(env.PUBLIC_BASE_URL || "https://servidor-nexus.diamantehinode2015.workers.dev").replace(/\/$/, "") + "/portal?auth=1" }, 200, {
+    return json({ ok: true, entryPath: "/portal?auth=1" }, 200, {
       "set-cookie": portalSessionCookie(session.token)
     });
   }
