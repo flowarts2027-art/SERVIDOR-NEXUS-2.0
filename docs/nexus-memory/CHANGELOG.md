@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-14 22h35–23h00 BRT — Planos Básico e com Vídeo; site com domínio no 1º ano
+## 2026-10-14 22h35–23h00 BRT — Planos Básico e com Vídeo; site com domínio no 1º ano (publicado d269ab7; deploy ok; conferido no ar em flowarts.com.br)
 - Aprovado pelo Rodrigo (22h35): Básico R$ 397/mês + R$ 197 de entrada (8 posts + 4 carrosséis, sem vídeo); com Vídeo R$ 697/mês + R$ 297 (4 Reels em vídeo feitos por ele no Flow, 4 carrosséis, 4 posts; fundador mantido); site R$ 497 inclui 1º ano com domínio, hospedagem e ajustes; depois R$ 297/ano ou R$ 29/mês com renovação do domínio.
 - site.html (cartões + JSON-LD) e scripts/site/site-visual.body.html; whatsapp-knowledge.js; contrato-site.html (domínio em nome do cliente, 1º ano incluso, Flow Arts renova com a manutenção em dia, aviso 30 dias antes de 1 ano). Doc "Contrato" no Claude Docs NÃO foi atualizado. Páginas de nicho não mudaram (usam os pacotes avulsos). 366 testes ok. Conferido em print (celular e computador).
 - Vídeos novos dele: café 1080p ótimo (pode usar); mulher com a tela do celular virada para a câmera fica falso. Novo prompt: câmera por cima do ombro vendo a tela, depois gira para o rosto.
