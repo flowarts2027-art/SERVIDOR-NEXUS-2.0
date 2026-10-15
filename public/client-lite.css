@@ -383,3 +383,6 @@ input, select, textarea, button { max-width: 100%; }
 .car-prev { left: 8px; }
 .car-next { right: 8px; }
 .car-count { position: absolute; top: 10px; right: 10px; background: rgba(15, 30, 61, .72); color: #fff; font-size: .85rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+
+/* Carrossel ainda montando */
+.car-building { margin: 0; padding: 10px 14px; background: var(--blue-soft); color: var(--ink); font-size: .92rem; font-weight: 700; }

@@ -91,6 +91,12 @@ function postImage(post) {
   return safeUrl(post.imageUrl || post.publicImageUrl || post.formatBuild?.imageUrl || (post.formatBuild?.carouselUrls || [])[0]);
 }
 
+// Carrossel ainda sem todas as imagens (os agentes criam a cada ~15 minutos).
+function carouselIncomplete(post) {
+  if (String(post.creativeFeatures?.requestedFormat || "") !== "carousel") return false;
+  return (post.formatBuild?.carouselUrls || []).map(safeUrl).filter(Boolean).length < 2;
+}
+
 function formatName(post) {
   const format = String(post.creativeFeatures?.requestedFormat || post.formatBuild?.kind || "post");
   return format === "reel" ? "Reels" : format === "carousel" ? "Carrossel" : "Post";
@@ -114,7 +120,9 @@ function mediaHtml(post, cls) {
   if (video) {
     return `<div class="${cls} is-video"><video src="${escapeHtml(video)}" ${image ? `poster="${escapeHtml(image)}"` : ""} controls playsinline preload="none" aria-label="Vídeo do Reel"></video></div>`;
   }
-  return `<div class="${cls}${image ? "" : " is-waiting"}">${image
+  const building = image && carouselIncomplete(post) && !["published", "cancelled", "expired"].includes(String(post.status))
+    ? `<p class="car-building">As outras imagens do carrossel estão sendo criadas. Volte em alguns minutos.</p>` : "";
+  return building + `<div class="${cls}${image ? "" : " is-waiting"}">${image
     ? `<img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy">`
     : `<div class="media-wait">A imagem deste post está sendo criada.<br>Volte daqui a pouco.</div>`}</div>`;
 }
@@ -136,9 +144,9 @@ function actionsHtml(post) {
   }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
-  const ready = Boolean(postImage(post));
+  const ready = Boolean(postImage(post)) && !carouselIncomplete(post);
   return `<div class="actions">
-      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : "disabled title=\"Espere a imagem ficar pronta\""}>Aprovar</button>
+      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : "disabled title=\"Espere todas as imagens ficarem prontas\""}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>

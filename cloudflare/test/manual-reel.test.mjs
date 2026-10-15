@@ -105,3 +105,10 @@ test("pedir ajuste em post aprovado: volta para aprovação; publicado não pode
   const fb = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
   assert.match(fb, /Client requested this correction, follow it/);
 });
+
+test("carrossel incompleto: aviso e Aprovar travado até as imagens ficarem prontas", () => {
+  const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(js, /function carouselIncomplete/);
+  assert.match(js, /As outras imagens do carrossel estão sendo criadas/);
+  assert.match(js, /const ready = Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\);/);
+});
