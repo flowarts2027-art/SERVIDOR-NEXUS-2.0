@@ -23,6 +23,12 @@
 - 09h21–09h22 (14/10): FUNCIONOU. Rodrigo gerou o token na tela 'Enviar mensagem' (Etapa 2) da Meta e o teste 'Integration Test' chegou no WhatsApp dele. Às 09h22 ele mandou 'OI, bom dia' e o Nexus respondeu sozinho ('Sou a assistente virtual da Flow Arts...'), registrado como sent_auto no D1. A versão v26.0 continua e funciona: a branch fix/whatsapp-versao-graph (v25.0) NÃO foi publicada por não ser necessária. Causa provável do erro antigo: faltava concluir esse passo de token/autorização do app na conta do WhatsApp. A verificação da empresa não foi necessária para o robô responder.
 - Caminho sugerido: tirar o Cartão CNPJ na Receita, ver qual telefone aparece nele e usar exatamente esse telefone e esse documento na Meta. Alternativa: conta de telefone/luz no nome que bate com a razão social e com o número.
 
+## Anúncio da Flow Arts para o WhatsApp (15/10, pronto, não subido)
+- Rodrigo: 1 semana sem seguidores; decidiu anunciar levando para o WhatsApp (exemplo grátis). Ele vai subir quando organizar os posts e pediu ajuda na hora.
+- Configuração sugerida: objetivo Engajamento → Mensagens → WhatsApp; R$ 20/dia por 7 dias; Rio de Janeiro raio 25 km; 28–55 anos; interesses "Pequenos empresários", "Administradores de página de negócios", "Empreendedorismo", "Pequenas e médias empresas" (sem "Marketing digital"); Reels, Stories e Feed.
+- Criativos prontos (com ele): vídeo 9:16 1080p 6,4 s do salão (começo cortado, textos "Sem tempo para postar?" / "A gente cria. Você só aprova." / "Peça um exemplo grátis no WhatsApp"); imagem 4:5 da padaria com os textos. Texto principal, título "Seu Instagram em dia, sem perder tempo", botão "Enviar mensagem", mensagem pronta "Olá! Vi o anúncio e quero um exemplo grátis para o meu negócio."
+- Medir após 7 dias: conversas e pedidos de exemplo.
+
 ## Plano com vídeo (14/10)
 - Publicado "Enviar Reel pronto" (Master → Postagens). Primeiro teste real: Rodrigo envia um Reel do Flow para um cliente, cliente aprova, conferir publicação no Instagram.
 - Falta decidir: preço/conteúdo do plano básico (sem vídeo) e renovação do site R$ 297/ano com domínio. Depois: atualizar site, robô e contrato; e o parecer do ChatGPT em 3 blocos.
