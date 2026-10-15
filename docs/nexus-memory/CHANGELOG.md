@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 09h27–09h45 BRT — Notificações do Master consertadas (branch fix/notificacoes-master, não publicada)
+## 2026-10-15 09h27–09h45 BRT — Notificações do Master consertadas (publicado 89219f7 às 09h32 com OK do Rodrigo; deploy e CI ok)
 - Rodrigo: filtros (Todos/Novos/Lidos/Resolvidos) não funcionam, "4 abertos" com lista vazia, e "Resolver" abre uma pergunta no navegador.
 - Causas: (1) app.js usava $() (um elemento) com .forEach no filtro → erro; o filtro mudava mas a tela não, e a lista ficava presa num filtro vazio. (2) Não existia rota PATCH /api/master/support/:id → "Resolver" falhava e mostrava alert de erro (a "pergunta"). (3) Chamados de correção são gravados com status "open", que a tela mostrava como RESOLVIDO; sem nome do cliente.
 - Correções: $$ no filtro; rota PATCH (só Master; new/read/resolved); "open" aparece como novo; nome do cliente no chamado; erro aparece no botão, sem janela do navegador. app.js v49. 376 testes ok.
