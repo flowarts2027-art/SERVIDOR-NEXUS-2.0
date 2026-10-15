@@ -1,7 +1,16 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 18h47–19h20 BRT — Uma palavra para cada conteúdo (branch feat/brinde-por-palavra, não publicada)
 
-## 2026-10-15 18h40–19h05 BRT — Página do brinde com visual novo (branch feat/guia-visual, não publicada)
+- Pedido do Rodrigo (passo B): cada Reel com a sua palavra e o seu conteúdo.
+- Novo `cloudflare/src/gift-materials.js`. QUERO e as palavras antigas abrem o guia "10 ideias". SITE abre o checklist "O site que traz clientes" (7 passos, com o site por R$ 497 no fim). REELS ou ROTEIRO abre "5 roteiros de Reels" (cena por cena).
+- A palavra vai junto pelo caminho todo: comentário → direct → "Já segui" → link /b/ → formulário → guia. O contato no painel mostra qual conteúdo a pessoa pegou.
+- Legendas: a chamada segue o assunto do post. Post de site pede SITE, post de vídeo pede REELS, o resto pede QUERO. Na campanha de outubro ficam 58 QUERO, 2 SITE e 2 REELS. Não duplica se já houver uma chamada.
+- O PDF existe só para o guia. Os outros dois não têm o botão de PDF.
+- 382 testes passando (4 novos em gift-materials.test.mjs). Prévia no celular conferida.
+
+
+## 2026-10-15 18h40–19h05 BRT — Página do brinde com visual novo (publicado a5e3f48 com OK do Rodrigo; deploy e CI ok)
 
 - Rodrigo mostrou a página do Manual de Donos (Reel → comentário → ManyChat → link) e pediu o mesmo para a Flow Arts sem custo. O funil já existe no Nexus desde 12/10 (QUERO → direct → seguir → formulário → guia). Ele escolheu a opção A: deixar a página com cara de designer.
 - `cloudflare/src/gift.js`: cores e fontes do site (azul-noite, prata, Unbounded). O formulário ganhou logo, uma capa 3D do guia e 3 benefícios. O guia ganhou topo fixo com progresso e PDF, sumário clicável, cartões numerados (01–10) com formato e tempo, a legenda num cartão estilo Instagram, um bônus de WhatsApp no meio e outro no fim. A lógica não mudou.
