@@ -33,8 +33,8 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
       <figure class="phone phone-hero" aria-label="Exemplo de perfil do Instagram com posts feitos pela Flow Arts">
         <div class="screen">
           <div class="profile">
-            <img src="/brand/flowarts-symbol.webp" alt="" width="58" height="58">
-            <div><p class="profile-name">seu.negocio</p><p class="profile-note">Post novo toda semana</p></div>
+            <img src="/brand/cafe-brisa.svg" alt="" width="58" height="58">
+            <div><p class="profile-name">cafe.brisa</p><p class="profile-note">Post novo toda semana · exemplo</p></div>
           </div>
           <div class="grid" data-posts="9"></div>
         </div>
@@ -42,28 +42,28 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
     </div>
   </section>
 
-  <!-- 2. Antes e depois: a diferença em uma olhada -->
-  <section class="section before-after" aria-labelledby="ba-title">
-    <div class="wrap">
-      <h2 id="ba-title">A diferença que o cliente vê</h2>
-      <div class="ba">
-        <figure class="phone phone-small is-before">
-          <div class="screen">
-            <p class="when">Último post há 23 dias</p>
-            <div class="grid grid-empty"><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
-          </div>
-          <figcaption>Antes</figcaption>
-        </figure>
-        <figure class="phone phone-small is-after">
-          <div class="screen">
-            <p class="when">Post novo hoje</p>
-            <div class="grid" data-posts="9" data-start="3"></div>
-          </div>
-          <figcaption>Com a Flow Arts</figcaption>
-        </figure>
+  <!-- 2. Exemplo de Reel em vídeo (plano com vídeo) -->
+  <section class="section reel-demo" aria-labelledby="reel-title">
+    <div class="wrap reel-wrap">
+      <div class="reel-text">
+        <h2 id="reel-title">Reels com vídeo de verdade</h2>
+        <p class="intro">No plano com vídeo, seu Instagram recebe Reels com movimento, feitos com IA no estilo do seu negócio. Você assiste e aprova pelo celular antes de sair.</p>
+        <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20plano%20Instagram%20no%20Autom%C3%A1tico%20com%20V%C3%ADdeo." target="_blank" rel="noopener">Quero com vídeo</a>
       </div>
+      <figure class="phone reel-phone">
+        <div class="screen">
+          <video id="reel-demo" src="/video/reel-cafeteria.mp4" poster="/video/reel-cafeteria.jpg" muted loop playsinline controls preload="none" aria-label="Reel de exemplo: dona de cafeteria vê as curtidas no celular e volta a atender">Seu navegador não toca vídeo. <a href="/video/reel-cafeteria.mp4">Abrir o vídeo</a>.</video>
+        </div>
+        <figcaption>Demonstração para cafeteria, criada com IA</figcaption>
+      </figure>
     </div>
   </section>
+<script>
+/* Toca sem som só quando aparece na tela; para fora dela. Quem pediu menos movimento aperta o play. */
+(function(){var v=document.getElementById("reel-demo");if(!v||!("IntersectionObserver" in window))return;
+if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){v.play().catch(function(){});}else{v.pause();}});},{threshold:.5}).observe(v);})();
+</script>
 
   <!-- 3. Galeria de posts reais: arrastar para o lado -->
   <section class="section gallery" id="posts" aria-labelledby="posts-title">
@@ -91,8 +91,8 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
       <figure class="phone phone-chat" aria-label="Exemplo: uma cliente comenta QUERO e recebe a resposta no direct">
         <div class="screen" id="screen">
           <div class="screen-head">
-            <img src="/brand/flowarts-symbol.webp" alt="">
-            <div><b>seu.negocio</b><small>Responde na hora</small></div>
+            <img src="/brand/cafe-brisa.svg" alt="">
+            <div><b>cafe.brisa</b><small>Responde na hora</small></div>
           </div>
           <div class="chat">
             <div class="comment step s1"><b>ana.doces</b> comentou: QUERO</div>

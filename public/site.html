@@ -85,7 +85,7 @@ figure{margin:0}
 .actions{display:flex;flex-wrap:wrap;gap:12px}
 .phone-hero{justify-self:center;width:min(340px,86vw);transform:rotate(-2.5deg)}
 .profile{display:flex;align-items:center;gap:14px;padding:18px 16px 14px}
-.profile img{width:58px;height:58px;border-radius:50%;background:var(--ink);padding:8px;border:2px solid var(--blue)}
+.profile img{width:58px;height:58px;border-radius:50%;background:var(--ink);padding:0;border:2px solid #C8A27A}
 .profile-name{color:#fff;font-weight:700}
 .profile-note{color:#7DDBA3;font-size:.85rem}
 
@@ -116,7 +116,7 @@ figure{margin:0}
 .phone-chat{justify-self:center;width:min(320px,84vw)}
 .phone-chat .screen{min-height:420px;display:flex;flex-direction:column}
 .screen-head{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid #1E2740}
-.screen-head img{width:34px;height:34px;border-radius:50%;background:var(--ink);object-fit:contain;padding:4px}
+.screen-head img{width:34px;height:34px;border-radius:50%;background:var(--ink);object-fit:contain;padding:0}
 .screen-head b{color:#fff;font-size:.95rem;display:block}
 .screen-head small{color:#8C96AD;font-size:.78rem}
 .chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:16px}
@@ -202,6 +202,15 @@ footer a:hover{color:var(--bright)}
 .phone-small{border-radius:36px;padding:4px}
 .phone-small .screen{border-radius:32px;padding-top:24px}
 .phone-small::after{top:11px;height:16px}
+/* Exemplo de Reel em vídeo */
+.reel-wrap{display:grid;gap:28px;align-items:center}
+.reel-phone{justify-self:center;width:min(300px,78vw);margin:0}
+.reel-phone .screen{padding-top:0;aspect-ratio:9/16}
+.reel-phone video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.reel-phone::after{top:12px}
+.reel-phone figcaption{position:absolute;left:-20px;right:-20px;bottom:-36px;text-align:center;font-size:.88rem;color:var(--muted)}
+.reel-demo{padding-bottom:90px}
+@media (min-width:860px){.reel-wrap{grid-template-columns:1.1fr .9fr}}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Agência de marketing digital com IA para pequenos negócios: sites, posts para Instagram, Reels, resposta automática no direct e logos.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Instagram no Automático · Básico", "price": "397", "priceCurrency": "BRL", "description": "12 conteúdos por mês com IA (8 posts e 4 carrosséis) e postagem automática com aprovação. Entrada de R$ 197.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "397", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Instagram no Automático · com Vídeo", "price": "697", "priceCurrency": "BRL", "description": "12 conteúdos por mês (4 Reels em vídeo, 4 carrosséis e 4 posts) e postagem automática com aprovação. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site do seu negócio", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Instagram que responde sozinho", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Funciona para o meu tipo de negócio?", "acceptedAnswer": {"@type": "Answer", "text": "Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
 </head>
@@ -240,8 +249,8 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
       <figure class="phone phone-hero" aria-label="Exemplo de perfil do Instagram com posts feitos pela Flow Arts">
         <div class="screen">
           <div class="profile">
-            <img src="/brand/flowarts-symbol.webp" alt="" width="58" height="58">
-            <div><p class="profile-name">seu.negocio</p><p class="profile-note">Post novo toda semana</p></div>
+            <img src="/brand/cafe-brisa.svg" alt="" width="58" height="58">
+            <div><p class="profile-name">cafe.brisa</p><p class="profile-note">Post novo toda semana · exemplo</p></div>
           </div>
           <div class="grid" data-posts="9"></div>
         </div>
@@ -249,28 +258,28 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
     </div>
   </section>
 
-  <!-- 2. Antes e depois: a diferença em uma olhada -->
-  <section class="section before-after" aria-labelledby="ba-title">
-    <div class="wrap">
-      <h2 id="ba-title">A diferença que o cliente vê</h2>
-      <div class="ba">
-        <figure class="phone phone-small is-before">
-          <div class="screen">
-            <p class="when">Último post há 23 dias</p>
-            <div class="grid grid-empty"><i></i><i></i><i></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
-          </div>
-          <figcaption>Antes</figcaption>
-        </figure>
-        <figure class="phone phone-small is-after">
-          <div class="screen">
-            <p class="when">Post novo hoje</p>
-            <div class="grid" data-posts="9" data-start="3"></div>
-          </div>
-          <figcaption>Com a Flow Arts</figcaption>
-        </figure>
+  <!-- 2. Exemplo de Reel em vídeo (plano com vídeo) -->
+  <section class="section reel-demo" aria-labelledby="reel-title">
+    <div class="wrap reel-wrap">
+      <div class="reel-text">
+        <h2 id="reel-title">Reels com vídeo de verdade</h2>
+        <p class="intro">No plano com vídeo, seu Instagram recebe Reels com movimento, feitos com IA no estilo do seu negócio. Você assiste e aprova pelo celular antes de sair.</p>
+        <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20plano%20Instagram%20no%20Autom%C3%A1tico%20com%20V%C3%ADdeo." target="_blank" rel="noopener">Quero com vídeo</a>
       </div>
+      <figure class="phone reel-phone">
+        <div class="screen">
+          <video id="reel-demo" src="/video/reel-cafeteria.mp4" poster="/video/reel-cafeteria.jpg" muted loop playsinline controls preload="none" aria-label="Reel de exemplo: dona de cafeteria vê as curtidas no celular e volta a atender">Seu navegador não toca vídeo. <a href="/video/reel-cafeteria.mp4">Abrir o vídeo</a>.</video>
+        </div>
+        <figcaption>Demonstração para cafeteria, criada com IA</figcaption>
+      </figure>
     </div>
   </section>
+<script>
+/* Toca sem som só quando aparece na tela; para fora dela. Quem pediu menos movimento aperta o play. */
+(function(){var v=document.getElementById("reel-demo");if(!v||!("IntersectionObserver" in window))return;
+if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){v.play().catch(function(){});}else{v.pause();}});},{threshold:.5}).observe(v);})();
+</script>
 
   <!-- 3. Galeria de posts reais: arrastar para o lado -->
   <section class="section gallery" id="posts" aria-labelledby="posts-title">
@@ -298,8 +307,8 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
       <figure class="phone phone-chat" aria-label="Exemplo: uma cliente comenta QUERO e recebe a resposta no direct">
         <div class="screen" id="screen">
           <div class="screen-head">
-            <img src="/brand/flowarts-symbol.webp" alt="">
-            <div><b>seu.negocio</b><small>Responde na hora</small></div>
+            <img src="/brand/cafe-brisa.svg" alt="">
+            <div><b>cafe.brisa</b><small>Responde na hora</small></div>
           </div>
           <div class="chat">
             <div class="comment step s1"><b>ana.doces</b> comentou: QUERO</div>

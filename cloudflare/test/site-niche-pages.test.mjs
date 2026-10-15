@@ -51,3 +51,12 @@ test("site tem vídeo de fundo leve, sem som, e para com menos movimento", () =>
   const size = fs.statSync(new URL("../../public/video/fundo-cafe.mp4", import.meta.url)).size;
   assert.ok(size > 10000 && size < 1_000_000, "vídeo leve: " + size);
 });
+
+test("site: Reel de exemplo no lugar do antes/depois e perfil de exemplo com logo de cafeteria", () => {
+  const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
+  assert.doesNotMatch(home, /is-before|grid-empty/);
+  assert.match(home, /<video id="reel-demo" src="\/video\/reel-cafeteria\.mp4" poster="\/video\/reel-cafeteria\.jpg" muted loop playsinline controls preload="none"/);
+  assert.match(home, /Demonstração para cafeteria, criada com IA/);
+  assert.match(home, /src="\/brand\/cafe-brisa\.svg"[\s\S]{0,120}cafe\.brisa/);
+  assert.ok(fs.statSync(new URL("../../public/video/reel-cafeteria.mp4", import.meta.url)).size < 3_000_000);
+});
