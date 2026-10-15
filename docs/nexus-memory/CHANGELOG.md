@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+
+## 2026-10-15 16h53–17h08 BRT — Análise do awesome-seedance e prompts de Reels (sem mudança no código)
+
+- Rodrigo pediu para analisar o repositório LearnPrompt/awesome-seedance. Conclusão: é uma biblioteca de prompts para o Seedance. Os prompts são grátis, mas gerar vídeo pela API é pago. O grátis do Dreamina é só manual, sem API. Não roda grátis no Nexus.
+- Montei o documento "Prompts de Reels para o Flow" (Claude Docs) com 4 prompts: review, comida, antes e depois, ração. Ajustes feitos: no salão a cliente fica sem capa (a IA duplicava a capa) e no café ficou sem nenhuma voz.
+- Rodrigo testou os 4 no Flow e decidiu: "não achei nada demais nos vídeos, cancela". Nada será feito com esses vídeos.
+
 ## 2026-10-15 16h44–17h05 BRT — Instagram da Flow Arts conectado no Café Brisa por engano (publicado em main 87af94e; deploy Cloudflare ok)
 
 - Publicado com OK do Rodrigo ("pode"). 378 testes passando. Deploy NEXUS Cloudflare: success no 87af94e.
