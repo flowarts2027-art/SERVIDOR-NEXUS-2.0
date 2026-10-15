@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 09h13–09h35 BRT — Master em preto e branco (branch feat/master-preto-branco, não publicada)
+- Pedido: "muda a cor do painel nexus para preto e branco, dá um upgrade". Entendido como o Master.
+- styles.css: todas as cores convertidas para cinza (luminância), exceto vermelho de erro e âmbar de alerta; camada nova no fim: fundo preto, cartões #0b0b0b com borda fina e raio 18, botão principal branco com letra preta, menu ativo com barra branca, foco visível branco, badges neutras. nexus-ai-mark.svg em cinza. Login do Master (master.js) em cinza com botão branco. app.js: cor padrão de cliente #e5e5e5 (as cores da marca do cliente não mudam). theme-color preto. styles v33, app v48. 375 testes ok. Conferido em print (computador e celular).
+
 ## 2026-10-15 09h07–09h20 BRT — Pedir ajuste depois de aprovado (publicado b24b2a7 às 09h11 com OK do Rodrigo; deploy e CI ok; falta ele pedir o ajuste do carrossel das 19h)
 - Rodrigo: carrossel aprovado (hoje 19h, Flow Arts), imagem 2 "1. Comece por aqui" com a pessoa escrevendo na agenda fechada. Pediu botão de correção mesmo depois de aprovado e corrigir esse.
 - client-lite (v118): post aprovado e não publicado mostra "Pedir ajuste" (com o mesmo formulário) e "Cancelar". posts.js: ajuste bloqueado em publicado/publicando (antes não tinha trava). portal.js: mensagens.

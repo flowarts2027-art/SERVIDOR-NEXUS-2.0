@@ -56,7 +56,7 @@ function render() {
   $("#funnel-warm").textContent = totals.warm;
   $("#funnel-hot").textContent = totals.hot;
 
-  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#22c55e"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : client.status === "paused" ? "PAUSADO" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
+  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#e5e5e5"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : client.status === "paused" ? "PAUSADO" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
 
   const managedUsageClients = clients.filter(client => client.id !== "ragnar-one");
   $("#usage-list").innerHTML = managedUsageClients.length ? managedUsageClients.map(client => {
@@ -132,7 +132,7 @@ function renderAgentProfiles() {
     if (!p.submittedAt) {
       return `<article class="master-profile-card waiting"><div class="master-profile-head"><div class="master-profile-logo fallback">${initials(client.name)}</div><div><span class="profile-kicker">AGUARDANDO CLIENTE</span><h3>${escapeHtml(client.name)}</h3><small>O perfil do agente ainda não foi enviado.</small></div></div></article>`;
     }
-    const logo = `<div class="master-profile-logo fallback" style="--profile-color:${escapeHtml(p.primaryColor||client.primaryColor||"#22c55e")}">${initials(p.brandName||client.name)}</div>`;
+    const logo = `<div class="master-profile-logo fallback" style="--profile-color:${escapeHtml(p.primaryColor||client.primaryColor||"#e5e5e5")}">${initials(p.brandName||client.name)}</div>`;
     const status = p.status === "configured" ? "CONFIGURADO" : "NOVO PERFIL";
     const post = client.postingProfile || {};
     return `<article class="master-profile-card" data-master-profile="${escapeHtml(client.id)}">
@@ -141,7 +141,7 @@ function renderAgentProfiles() {
         <div class="master-profile-title"><span class="profile-kicker">${escapeHtml(p.agentName||"AGENTE NEXUS")}</span><h3>${escapeHtml(p.brandName||client.name)}</h3><small>${escapeHtml(p.niche||client.niche||"Outro")} · enviado ${formatSupportDate(p.submittedAt)}</small></div>
         ${badge(status,p.status==="configured")}
       </div>
-      <div class="master-profile-colorline"><i style="background:${escapeHtml(p.primaryColor||client.primaryColor||"#22c55e")}"></i><i style="background:${escapeHtml(p.secondaryColor||client.secondaryColor||"#050807")}"></i><span>Identidade enviada pelo cliente</span></div>
+      <div class="master-profile-colorline"><i style="background:${escapeHtml(p.primaryColor||client.primaryColor||"#e5e5e5")}"></i><i style="background:${escapeHtml(p.secondaryColor||client.secondaryColor||"#050807")}"></i><span>Identidade enviada pelo cliente</span></div>
       <div class="master-profile-facts">
         <div><span>Público</span><strong>${escapeHtml(p.audience||"—")}</strong></div>
         <div><span>Objetivo</span><strong>${escapeHtml(p.goal||"—")}</strong></div>
@@ -193,7 +193,7 @@ function renderClientPortal(client) {
   $("#portal-empty").hidden = true;
   $("#client-portal").hidden = false;
   const online = client.status === "online";
-  const accent = client.primaryColor || "#24e27a";
+  const accent = client.primaryColor || "#e5e5e5";
   $("#client-portal").style.setProperty("--client-accent", accent);
   $("#portal-avatar").textContent = initials(client.name);
   $("#portal-name").textContent = client.name;

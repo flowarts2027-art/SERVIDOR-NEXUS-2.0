@@ -114,14 +114,14 @@ export function masterLoginPage(error = false, action = "/master-login") {
 <meta name="theme-color" content="#020508">
 <title>NEXUS AI · Master</title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#0a2233,#020508 45%,#010203);font-family:Inter,system-ui,Arial;color:#edfaff}
-.card{width:min(430px,92vw);padding:34px;border:1px solid rgba(93,211,255,.16);border-radius:22px;background:linear-gradient(180deg,rgba(8,20,30,.96),rgba(3,8,13,.98));box-shadow:0 30px 100px #0009,inset 0 1px #ffffff08}
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:28px}.brand img{width:56px;height:56px}.brand strong{display:block;font-size:21px;letter-spacing:.08em}.brand small{color:#68899b;letter-spacing:.14em}
-h1{font-size:30px;margin:0 0 8px}.muted{color:#7893a4;margin:0 0 24px;font-size:14px}
-label{display:grid;gap:7px;margin:13px 0;color:#9bb5c5;font-size:12px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1px solid #163244;background:#03090e;color:#fff;outline:none}
-button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:linear-gradient(135deg,#c8f3ff,#59d0ff 55%,#168ee8);color:#02101a;font-weight:900;cursor:pointer}
-.check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:400;color:#c4d6e1}.check input{width:20px;height:20px;padding:0}
-.error{min-height:18px;margin-top:12px;color:#ff8690;font-size:12px}.secure{margin-top:20px;padding-top:15px;border-top:1px solid #5dd3ff12;color:#557182;font-size:11px;text-align:center}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#1e1e1e,#050505 45%,#020202);font-family:Inter,system-ui,Arial;color:#f8f8f8}
+.card{width:min(430px,92vw);padding:34px;border:1px solid rgba(189,189,189,.16);border-radius:22px;background:linear-gradient(180deg,rgba(18,18,18,.96),rgba(7,7,7,.98));box-shadow:0 30px 100px #00000099,inset 0 1px #ffffff08}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:28px}.brand img{width:56px;height:56px}.brand strong{display:block;font-size:21px;letter-spacing:.08em}.brand small{color:#838383;letter-spacing:.14em}
+h1{font-size:30px;margin:0 0 8px}.muted{color:#8e8e8e;margin:0 0 24px;font-size:14px}
+label{display:grid;gap:7px;margin:13px 0;color:#b1b1b1;font-size:12px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1px solid #2d2d2d;background:#080808;color:#ffffff;outline:none}
+button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:#fff;color:#000;font-weight:900;cursor:pointer}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:400;color:#d3d3d3}.check input{width:20px;height:20px;padding:0}
+.error{min-height:18px;margin-top:12px;color:#ff8690;font-size:12px}.secure{margin-top:20px;padding-top:15px;border-top:1px solid #bdbdbd12;color:#6c6c6c;font-size:11px;text-align:center}
 </style>
 </head>
 <body><main class="card">
