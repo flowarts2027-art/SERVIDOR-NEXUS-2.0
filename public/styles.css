@@ -304,3 +304,13 @@ input:focus,select:focus,textarea:focus{border-color:#8a8a8a;outline:none}
 .brand img{box-shadow:none}
 .core-card{border-color:#2a2a2a;background:#0e0e0e}
 .master-more-sheet{background:#0b0b0b}
+/* Detalhes prateados (15/10) */
+:root{--silver:linear-gradient(135deg,#f4f4f4 0%,#a9a9a9 38%,#ececec 55%,#8a8a8a 100%);--silver-line:#b9b9b9}
+.primary,.small-primary,.master-chip{background:var(--silver);border-color:#d6d6d6;color:#0a0a0a;text-shadow:0 1px 0 #ffffff80}
+.primary:hover,.small-primary:hover{background:var(--silver);filter:brightness(1.08)}
+.nav-item.active{box-shadow:inset 3px 0 var(--silver-line)}
+.eyebrow,.brand small{background:var(--silver);-webkit-background-clip:text;background-clip:text;color:transparent}
+.metrics strong,.portal-metrics strong,.brand strong{background:linear-gradient(180deg,#ffffff,#a8a8a8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.metrics article,.panel{border-top-color:#3a3a3a}
+.pulse,.live i{background:#d9d9d9}
+.core-card{border-color:#3a3a3a}

@@ -119,7 +119,7 @@ export function masterLoginPage(error = false, action = "/master-login") {
 .brand{display:flex;align-items:center;gap:14px;margin-bottom:28px}.brand img{width:56px;height:56px}.brand strong{display:block;font-size:21px;letter-spacing:.08em}.brand small{color:#838383;letter-spacing:.14em}
 h1{font-size:30px;margin:0 0 8px}.muted{color:#8e8e8e;margin:0 0 24px;font-size:14px}
 label{display:grid;gap:7px;margin:13px 0;color:#b1b1b1;font-size:12px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1px solid #2d2d2d;background:#080808;color:#ffffff;outline:none}
-button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:#fff;color:#000;font-weight:900;cursor:pointer}
+button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:linear-gradient(135deg,#f4f4f4 0%,#a9a9a9 38%,#ececec 55%,#8a8a8a 100%);color:#0a0a0a;font-weight:900;cursor:pointer}
 .check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:400;color:#d3d3d3}.check input{width:20px;height:20px;padding:0}
 .error{min-height:18px;margin-top:12px;color:#ff8690;font-size:12px}.secure{margin-top:20px;padding-top:15px;border-top:1px solid #bdbdbd12;color:#6c6c6c;font-size:11px;text-align:center}
 </style>

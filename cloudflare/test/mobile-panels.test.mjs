@@ -33,6 +33,6 @@ test("Master em preto e branco: sem verde no estilo; vermelho de erro mantido", 
   const css = read("styles.css");
   assert.doesNotMatch(css, /#22c55e|#24e27a|#7bf3a5|#31e676/i);
   assert.match(css, /--green:#fff/);
-  assert.match(css, /\.primary,\.small-primary\{background:#fff;border:1px solid #fff;color:#000/);
+  assert.match(css, /--silver:linear-gradient/);
   assert.match(css, /--danger:#ff5d67/);
 });
