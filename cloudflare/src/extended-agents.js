@@ -108,6 +108,13 @@ async function runHookLab(env,client,options){
     const payload=row.payload&&typeof row.payload==="object"?row.payload:{};
     const lines=String(row.caption||"").split("\n");
     const current=String(lines.find(x=>x.trim())||"").trim();
+    // Marcas com perfil próprio (Flow Arts): o gancho vem da campanha ou da IA e combina com o texto.
+    // Trocar por uma frase genérica do banco deixava a 1ª linha sem relação com o resto.
+    if(brandProfileVersion(client.id)&&current&&!STREAMING_HOOKS.includes(current)){
+      payload.hookLab={status:"brand-managed",hook:current,checkedAt:new Date().toISOString()};
+      reviews.push({id:row.id,hook:current,words:current.split(/\s+/).filter(Boolean).length,status:"brand-managed"});
+      continue;
+    }
     const words=current.split(/\s+/).filter(Boolean).length;
     const hasLoop=/\b(você|isso|problema|erro|ninguém|antes|depois|qual|pior|melhor|acontece)\b/i.test(current);
     let hook=current;

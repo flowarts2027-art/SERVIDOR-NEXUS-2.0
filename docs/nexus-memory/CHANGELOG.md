@@ -701,3 +701,8 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Hipótese: qualidade "high" (que eu tinha ligado por padrão hoje) estoura o timeout de 90 s da imagem. Ajuste: qualidade padrão volta a "medium" (provada em 11–13/10) e timeout de 150 s. `NEXUS_IMAGE_QUALITY` ainda sobrescreve.
 - Observação de conteúdo: o Hook Lab troca a 1ª linha por ganchos genéricos (ex.: "Antes de postar, responda esta pergunta." no post sobre gravar vídeos); o gancho não combina com o corpo. Revisar.
 - Próximo: confirmar no Master (erro em payload.mediaGeneration.lastError) se as imagens passaram a ser geradas.
+
+## 2026-10-16 — Legendas fracas da Flow Arts
+- Achado: já existe redator de IA (campaign-copy.js, writeCampaignCaption) para posts da campanha, mas o Hook Lab (regras fixas) trocava a 1ª linha por frases genéricas do BUSINESS_HOOKS, sem relação com o texto.
+- Correção: Hook Lab não troca o gancho de marcas com perfil próprio (só corrige frase de filme). Redator ganhou 1 nova tentativa, prompt mais específico (cenas reais de pequeno comércio, sem frases genéricas) e `payload.captionSource` ("ai" | "template" | "ai-growth") para diagnóstico.
+- Posts já criados continuam com o gancho antigo; o Rodrigo pode usar "Pedir ajuste" ou cancelar. Sem acesso ao Master: não confirmado em produção se o redator de IA falhou (captionSource dirá).

@@ -22,7 +22,8 @@ export function campaignCopyPrompt(client, item = {}) {
     "Você escreve legendas de Instagram para " + brand.brandName + " (" + (brand.niche || "marketing") + ").",
     "Público: " + (brand.audience || "donos de pequenos negócios no Brasil") + ".",
     "Escreva em português do Brasil, frases curtas, tom humano e direto, como um especialista que ajuda de graça.",
-    "Estrutura: 1ª linha = gancho curto (até 90 caracteres) que gera curiosidade ou nomeia uma dor real.",
+    "Estrutura: 1ª linha = gancho curto (até 90 caracteres) sobre ESTE tema, que nomeia uma dor real ou cria curiosidade. O gancho tem que combinar com as dicas que vêm depois.",
+    "Seja específico: cite situações reais de pequeno comércio (padaria, salão, loja de roupa, barbearia, lanchonete), números e exemplos concretos. Nada de frases genéricas como 'você está perdendo cliente' ou 'o segredo que ninguém conta'.",
     "Depois: 3 dicas práticas e específicas sobre o tema, numeradas (1., 2., 3.), cada uma com uma ação que o dono do negócio consegue fazer hoje.",
     "Feche com uma frase curta que conecta a dica ao resultado (mais clientes, menos tempo), sem vender diretamente.",
     "Não escreva chamada para ação nem hashtags (elas são adicionadas depois). Não use travessão (—).",
@@ -37,7 +38,13 @@ export function campaignCopyPrompt(client, item = {}) {
 }
 
 // Retorna { hook, body } ou null (aí o Nexus usa o texto de reserva).
-export async function writeCampaignCaption(env, client, item = {}, { request = openAIResponses } = {}) {
+export async function writeCampaignCaption(env, client, item = {}, options = {}) {
+  const first = await writeCampaignCaptionOnce(env, client, item, options);
+  if (first) return first;
+  return writeCampaignCaptionOnce(env, client, item, options);
+}
+
+async function writeCampaignCaptionOnce(env, client, item = {}, { request = openAIResponses } = {}) {
   try {
     const response = await request(env, client.id, {
       nexusPurpose: "caption",

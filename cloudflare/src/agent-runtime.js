@@ -1059,10 +1059,12 @@ async function runCreator(env,client,strategy,options) {
     const cta=String(giftCta||campaignItem?.cta||aiCreative?.cta||ctas[index%ctas.length]||strategy?.cta||'Comente "QUERO" para saber mais').trim();
     let tags=String(aiCreative?.hashtags||strategy?.hashtags||"").trim().split(/\s+/).filter(Boolean).slice(0,MAX_HASHTAGS).join(" ");
     let caption=campaignItem?"":String(aiCreative?.caption||"").trim();
+    let captionSource=caption?"ai-growth":"template";
     // Post da campanha de marca: a IA escreve dicas reais sobre o tema (antes era sempre texto fixo).
     if(!caption&&campaignItem&&brandProfileVersion(client.id)){
       const written=await writeCampaignCaption(env,client,{...campaignItem,theme,hook});
       if(written){
+        captionSource="ai";
         hook=written.hook;
         caption=[written.hook,"",written.body,"",cta,tags?"":null,tags||null].filter(x=>x!==null).join("\n");
       }
@@ -1203,6 +1205,7 @@ async function runCreator(env,client,strategy,options) {
         }
       },
       qualityGates:{copyChief:"pending",designer:"pending"},
+      captionSource,
       brandProfileVersion:brandProfileVersion(client.id)
     };
     await env.DB.prepare(
