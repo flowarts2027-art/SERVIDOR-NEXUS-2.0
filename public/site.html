@@ -211,6 +211,57 @@ footer a:hover{color:var(--bright)}
 .reel-phone figcaption{position:absolute;left:-20px;right:-20px;bottom:-36px;text-align:center;font-size:.88rem;color:var(--muted)}
 .reel-demo{padding-bottom:90px}
 @media (min-width:860px){.reel-wrap{grid-template-columns:1.1fr .9fr}}
+/* ===== Movimento (só com JS e sem "reduzir movimento"): .fx é ligada pelo script ===== */
+.progress{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--blue),var(--glow),#fff);z-index:20;pointer-events:none}
+.chip{position:absolute;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:rgba(14,20,36,.88);border:1px solid #2A3E77;color:var(--bright);font-size:.85rem;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.45);backdrop-filter:blur(6px);white-space:nowrap;pointer-events:none;z-index:4}
+.chip i{font-style:normal}
+.chip-a{left:-6%;top:14%}.chip-b{right:-4%;top:46%}.chip-c{left:-2%;bottom:10%}
+.hero-visual{position:relative;justify-self:center;perspective:900px}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--glow),#fff 50%,var(--glow));background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.sticky-cta{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9;display:none;transform:translateY(140%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.sticky-cta.on{transform:none}
+.sticky-cta .btn{width:100%;box-shadow:0 14px 40px rgba(0,0,0,.55)}
+.replay{margin-top:14px;background:none;border:1.5px solid #34508F;color:var(--bright);border-radius:999px;min-height:42px;padding:0 18px;font:700 .9rem "Atkinson Hyperlegible",sans-serif;cursor:pointer}
+.replay:hover{border-color:var(--glow)}
+.typing{align-self:flex-start;display:none;gap:4px;padding:12px 14px;border-radius:20px;background:#262B3B;border-bottom-left-radius:6px}
+.typing b{width:7px;height:7px;border-radius:50%;background:#8C96AD;display:block}
+@media (max-width:879px){.sticky-cta{display:block}.chip-a{display:none}.chip-b{right:0}.chip-c{left:0}body.fx{padding-bottom:84px}}
+@media (prefers-reduced-motion:no-preference){
+  .fx .word{display:inline-block;opacity:0;transform:translateY(.7em) rotate(2deg);transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i)*70ms)}
+  .fx.go .word{opacity:1;transform:none}
+  .fx.go .hero h1 em{animation:shine 4s linear infinite}
+  @keyframes shine{to{background-position:-220% 0}}
+  .fx .hero .lead,.fx .hero .actions{opacity:0;transform:translateY(16px);transition:opacity .7s .55s,transform .7s .55s}
+  .fx.go .hero .lead,.fx.go .hero .actions{opacity:1;transform:none}
+  .fx .hero .grid .post{opacity:0;transform:scale(.6);transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1);transition-delay:calc(.5s + var(--i)*90ms)}
+  .fx.go .hero .grid .post{opacity:1;transform:none}
+  .fx .phone-hero{transform:none;animation:float 6s ease-in-out infinite}
+  @keyframes float{50%{transform:translateY(-12px) rotate(-1.5deg)}}
+  .fx .chip{opacity:0;transform:scale(.7) translateY(10px);transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
+  .fx.go .chip{opacity:1;transform:none;animation:bob 5s ease-in-out infinite}
+  .fx.go .chip-a{transition-delay:1.3s;animation-delay:1.9s}.fx.go .chip-b{transition-delay:1.8s;animation-delay:2.4s}.fx.go .chip-c{transition-delay:2.3s;animation-delay:2.9s}
+  @keyframes bob{50%{translate:0 -8px}}
+  .fx .rv{opacity:0;transform:translateY(34px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d,0)*110ms)}
+  .fx .rv.in{opacity:1;transform:none}
+  .fx .post-big{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+  .fx .post-big:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 26px 50px rgba(31,107,255,.35)}
+  .fx .door .post img{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+  .fx .door:hover .post img{transform:scale(1.12)}
+  .fx .door{transition:transform .25s ease-out;transform-style:preserve-3d;will-change:transform}
+  .fx .feature{position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
+  .fx .feature::after{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(73,163,255,.22),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+  .fx .feature:hover{transform:translateY(-4px);border-color:var(--glow)}
+  .fx .feature:hover::after{opacity:1}
+  .fx .btn-whats{animation:pulse 2.8s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,175,95,.55)}70%,100%{box-shadow:0 0 0 18px rgba(31,175,95,0)}}
+  .fx .steps li{opacity:.45;transition:opacity .5s}
+  .fx .steps li.in{opacity:1}
+  .fx .steps li::before{transition:background .4s,transform .4s,border-color .4s}
+  .fx .steps li.in::before{background:var(--blue);border-color:var(--glow);transform:scale(1.08)}
+  .fx .typing.show{display:flex}
+  .fx .typing.show b{animation:dot 1s infinite}.fx .typing.show b:nth-child(2){animation-delay:.15s}.fx .typing.show b:nth-child(3){animation-delay:.3s}
+  @keyframes dot{40%{transform:translateY(-5px);background:#fff}}
+}
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Agência de marketing digital com IA para pequenos negócios: sites, posts para Instagram, Reels, resposta automática no direct e logos.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Instagram no Automático · Básico", "price": "397", "priceCurrency": "BRL", "description": "12 conteúdos por mês com IA (8 posts e 4 carrosséis) e postagem automática com aprovação. Entrada de R$ 197.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "397", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Instagram no Automático · com Vídeo", "price": "697", "priceCurrency": "BRL", "description": "12 conteúdos por mês (4 Reels em vídeo, 4 carrosséis e 4 posts) e postagem automática com aprovação. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site do seu negócio", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Instagram que responde sozinho", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Funciona para o meu tipo de negócio?", "acceptedAnswer": {"@type": "Answer", "text": "Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
 </head>
@@ -476,6 +527,121 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
     entries.forEach(function (e) { if (e.isIntersecting) { screen.classList.add("play"); io.disconnect(); } });
   }, { threshold: 0.35 });
   io.observe(screen);
+})();
+</script>
+<script>
+/* Movimento da página. Sem JS ou com "reduzir movimento" ligado, tudo aparece parado e normal. */
+(function () {
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var c = navigator.connection, lite = !!(c && c.saveData);
+  var body = document.body, root = document.documentElement;
+
+  // Botão fixo do WhatsApp no celular (aparece depois do topo). Útil mesmo sem animação.
+  var wa = document.querySelector(".top .btn-whats");
+  if (wa) {
+    var bar = document.createElement("div"); bar.className = "sticky-cta";
+    var a = wa.cloneNode(true); a.querySelector("span") && (a.querySelector("span").style.display = "inline");
+    a.href = a.href.replace(/text=[^&]*/, "text=" + encodeURIComponent("Olá! Quero um exemplo grátis para o meu negócio."));
+    bar.appendChild(a); body.appendChild(bar);
+    var tick = false;
+    addEventListener("scroll", function () { if (tick) return; tick = true; requestAnimationFrame(function () { tick = false; bar.classList.toggle("on", scrollY > 520); }); }, { passive: true });
+  }
+  if (calm || lite) return;
+  body.classList.add("fx");
+
+  // Barra de progresso de rolagem
+  var pb = document.createElement("div"); pb.className = "progress"; pb.setAttribute("aria-hidden", "true"); body.appendChild(pb);
+  function prog() { var h = root.scrollHeight - innerHeight; pb.style.transform = "scaleX(" + (h > 0 ? Math.min(1, scrollY / h) : 0) + ")"; }
+  addEventListener("scroll", function () { requestAnimationFrame(prog); }, { passive: true }); prog();
+
+  // Título: palavra por palavra, com a palavra-chave brilhando
+  var h1 = document.querySelector(".hero h1");
+  if (h1) {
+    var txt = h1.textContent.trim(); h1.setAttribute("aria-label", txt); h1.textContent = "";
+    txt.split(" ").forEach(function (w, i) {
+      var s = document.createElement("span"); s.className = "word"; s.style.setProperty("--i", i); s.setAttribute("aria-hidden", "true");
+      if (/^bonito/i.test(w)) { var em = document.createElement("em"); em.textContent = w; s.appendChild(em); } else s.textContent = w;
+      h1.appendChild(s); h1.appendChild(document.createTextNode(" "));
+    });
+  }
+
+  // Celular do topo: etiquetas flutuantes + inclinação que acompanha o dedo/mouse
+  var ph = document.querySelector(".phone-hero");
+  if (ph) {
+    var vis = document.createElement("div"); vis.className = "hero-visual"; ph.parentNode.insertBefore(vis, ph); vis.appendChild(ph);
+    [["chip-a", "✅", "Post aprovado"], ["chip-b", "💬", "Novo contato no WhatsApp"], ["chip-c", "📈", "Feed sempre em dia"]].forEach(function (d) {
+      var el = document.createElement("div"); el.className = "chip " + d[0]; el.setAttribute("aria-hidden", "true");
+      el.innerHTML = "<i>" + d[1] + "</i>" + d[2]; vis.appendChild(el);
+    });
+    vis.addEventListener("pointermove", function (e) {
+      var r = vis.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      ph.style.animation = "none"; ph.style.transform = "rotateY(" + (x * 16) + "deg) rotateX(" + (-y * 12) + "deg)";
+    });
+    vis.addEventListener("pointerleave", function () { ph.style.transform = ""; ph.style.animation = ""; });
+  }
+  document.querySelectorAll(".hero .grid .post").forEach(function (p, i) { p.style.setProperty("--i", i); });
+
+  // Entrada do topo (espera as fontes para não pular)
+  function go() { body.classList.add("go"); }
+  (document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 900); })]) : Promise.resolve()).then(function () { requestAnimationFrame(go); });
+
+  // Aparecer ao rolar
+  var targets = document.querySelectorAll(".section h2,.section .intro,.section .hint,.reel-wrap>*,.door,.feature,.more li,.faq details,.final img,.final h2,.final .btn,.steps li,.gallery .strip");
+  targets.forEach(function (el) {
+    el.classList.add("rv");
+    var sib = Array.prototype.indexOf.call(el.parentNode.children, el);
+    el.style.setProperty("--d", Math.min(sib, 4));
+  });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: .15, rootMargin: "0px 0px -6% 0px" });
+  targets.forEach(function (el) { io.observe(el); });
+
+  // Inclinação 3D nas portas e brilho que segue o mouse nos pacotes
+  if (matchMedia("(hover:hover)").matches) {
+    document.querySelectorAll(".door").forEach(function (d) {
+      d.addEventListener("pointermove", function (e) {
+        var r = d.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        d.style.transform = "perspective(700px) rotateY(" + (x * 10) + "deg) rotateX(" + (-y * 8) + "deg) scale(1.02)";
+      });
+      d.addEventListener("pointerleave", function () { d.style.transform = ""; });
+    });
+    document.querySelectorAll(".feature").forEach(function (f) {
+      f.addEventListener("pointermove", function (e) {
+        var r = f.getBoundingClientRect(); f.style.setProperty("--mx", (e.clientX - r.left) + "px"); f.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+    });
+  }
+
+  // Conversa: digitando..., botão "Ver de novo"
+  var scr = document.getElementById("screen"), chat = scr && scr.querySelector(".chat");
+  if (chat) {
+    var ty = document.createElement("div"); ty.className = "typing"; ty.setAttribute("aria-hidden", "true"); ty.innerHTML = "<b></b><b></b><b></b>";
+    chat.insertBefore(ty, chat.querySelector(".s3"));
+    var rb = document.createElement("button"); rb.type = "button"; rb.className = "replay"; rb.textContent = "↻ Ver a conversa de novo";
+    scr.closest("figure").appendChild(rb);
+    var timers = [];
+    function run() {
+      timers.forEach(clearTimeout); timers = [];
+      scr.classList.remove("play"); ty.classList.remove("show"); void scr.offsetWidth; scr.classList.add("play");
+      timers.push(setTimeout(function () { ty.classList.add("show"); }, 1700));
+      timers.push(setTimeout(function () { ty.classList.remove("show"); }, 2300));
+    }
+    rb.addEventListener("click", run);
+    new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { run(); o.disconnect(); } }, { threshold: .5 }).observe(scr);
+  }
+
+  // Passos de "Como funciona" acendem em sequência
+  var steps = document.querySelectorAll(".steps li");
+  if (steps.length) new IntersectionObserver(function (es, o) {
+    if (es[0].isIntersecting) { o.disconnect(); steps.forEach(function (s, i) { setTimeout(function () { s.classList.add("in"); }, 500 + i * 700); }); }
+  }, { threshold: .4 }).observe(steps[0].parentNode);
+
+  // Galeria: uma dica de que dá para arrastar
+  var strip = document.querySelector(".strip");
+  if (strip) new IntersectionObserver(function (es, o) {
+    if (es[0].isIntersecting) { o.disconnect(); strip.scrollTo({ left: 90, behavior: "smooth" }); setTimeout(function () { strip.scrollTo({ left: 0, behavior: "smooth" }); }, 900); }
+  }, { threshold: .6 }).observe(strip);
 })();
 </script>
 <script>/* Contador de visitas da Flow Arts: só a página e de onde veio, sem dados pessoais. */try{navigator.sendBeacon&&navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify({p:location.pathname,r:document.referrer})],{type:"text/plain"}))}catch(e){}</script>
