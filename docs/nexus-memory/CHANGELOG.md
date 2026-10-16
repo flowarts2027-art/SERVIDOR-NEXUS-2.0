@@ -718,3 +718,7 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Correção (commit local, SEM push ainda, aguardando OK do Rodrigo): o aviso expira em 15 min e deixa uma chamada de teste passar. Teste novo em openai-budget.test.mjs. 398 testes passando.
 - Causa 2 (só o Rodrigo resolve): o saldo da OpenAI está quase zerado. Sem recarga, a imagem continua falhando. Não afirmado como 100% (o saldo é estimativa).
 - PRÓXIMO: Rodrigo recarrega crédito em platform.openai.com; depois do deploy, conferir se os 2 posts ganham imagem (ou pedir ajuste de novo).
+- 2026-10-16 (tarde, 2ª correção): deploy da 1ª correção (0909b5c) feito e conferido (Deploy success 15:57 UTC). Os 2 posts continuaram sem imagem. Leitura do Master: Creator sem recuperação ("nenhuma recuperação necessária"); post das 12:00 teve só a legenda atualizada às 16:00:55 UTC e nenhuma chamada de imagem. Hipótese (não comprovada, payload não aparece no Master): mediaGeneration.attempts >= 3, e o código do Creator (agent-runtime.js, ramo de post existente) não tenta de novo nem expira nesse caso.
+- Correção (branch fix/post-sem-imagem-retoma, SEM push ainda): post não aprovado, sem imagem e com 3 tentativas gastas ganha mais 1 tentativa após 20 min, no máximo 2 vezes (campo mediaGeneration.resets). Reparo de post existente agora também passa o nicheId. 398 testes passando; sem teste novo para este trecho.
+- Observação: a rodada */15 do cron não apareceu no Master entre 16:15 e 16:26 UTC (execução manual "creator" enfileirada 16:03 não registrada). Causa não investigada.
+

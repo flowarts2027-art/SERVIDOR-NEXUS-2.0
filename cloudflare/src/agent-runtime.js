@@ -989,7 +989,17 @@ async function runCreator(env,client,strategy,options) {
         &&/^https:\/\//i.test(blockedMedia);
       const safeRecheck=client.id!=="ragnar-one"&&canRecheckBlocked
         &&!/\/assets\/ragnar\/nordic-cinema-0[123]\.png(?:[?#]|$)/i.test(blockedMedia);
-      const existingGenerationAttempts=Math.max(0,Number(existingPayload.mediaGeneration?.attempts||0));
+      let existingGenerationAttempts=Math.max(0,Number(existingPayload.mediaGeneration?.attempts||0));
+      // Post sem imagem que gastou as 3 tentativas ficava parado para sempre. Depois de 20 min
+      // (e antes de aprovado) damos mais UMA tentativa, no máximo 2 vezes, para não gastar saldo à toa.
+      let mediaResets=Math.max(0,Number(existingPayload.mediaGeneration?.resets||0));
+      const lastMediaTry=Date.parse(String(existingPayload.mediaGeneration?.updatedAt||""));
+      if(!existingMedia&&existingGenerationAttempts>=3&&mediaResets<2
+        &&String(exists.approval_status||"")!=="approved"
+        &&(!Number.isFinite(lastMediaTry)||Date.now()-lastMediaTry>20*60*1000)){
+        existingGenerationAttempts=2;
+        mediaResets+=1;
+      }
       const duplicateBlocked=["duplicate_media_blocked","duplicate_media_content_blocked","media_generation_required"].includes(String(exists.error||""));
       const allowBlockedRecheck=safeRecheck&&!duplicateBlocked;
       const replacementInfo=existingMedia||existingGenerationAttempts>=3
@@ -1005,7 +1015,8 @@ async function runCreator(env,client,strategy,options) {
                 : ""
             ].filter(Boolean).join(" | "),
             existingPayload.creativeFeatures?.requestedFormat,
-            String(existingPayload.creativeFeatures?.hook||existingPayload.title||"")
+            String(existingPayload.creativeFeatures?.hook||existingPayload.title||""),
+            existingPayload.nicheId||nicheChoice?.id||""
           );
       const replacement=String(replacementInfo.url||"");
       if(replacement){
@@ -1013,7 +1024,7 @@ async function runCreator(env,client,strategy,options) {
         existingPayload.sourceInstagramMediaId=replacementInfo.sourceInstagramMediaId||"";
         if(replacementInfo.fingerprint)existingPayload.mediaFingerprint=String(replacementInfo.fingerprint);
         existingPayload.retryCount=0;
-        existingPayload.mediaGeneration={status:"generated",attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,styleId:String(replacementInfo.styleId||""),brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
+        existingPayload.mediaGeneration={status:"generated",resets:mediaResets,attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,styleId:String(replacementInfo.styleId||""),brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
         existingPayload.recoveredAt=new Date().toISOString();
         existingPayload.recoveryReason="missing_media_repaired_by_creator";
         if(safeRecheck)existingPayload.blockedDesignerRecoveryAttemptedAt=new Date().toISOString();
@@ -1034,7 +1045,7 @@ async function runCreator(env,client,strategy,options) {
         repaired.push({id,scheduledFor,scheduledHour:time,imageUrl:replacement});
         usedPublishedMedia.add(mediaKey(replacement));
       }else if(!existingMedia&&existingGenerationAttempts<3&&replacementInfo.error){
-        existingPayload.mediaGeneration={status:"requested",attempts:existingGenerationAttempts+(isBudgetError(replacementInfo.error)?0:1),lastError:String(replacementInfo.error).slice(0,120),updatedAt:new Date().toISOString()};
+        existingPayload.mediaGeneration={status:"requested",resets:mediaResets,attempts:existingGenerationAttempts+(isBudgetError(replacementInfo.error)?0:1),lastError:String(replacementInfo.error).slice(0,120),updatedAt:new Date().toISOString()};
         const exhausted=existingPayload.mediaGeneration.attempts>=3;
         existingPayload.qualityGates={...(existingPayload.qualityGates||{}),designer:"pending"};
         existingPayload.visualReview=null;
