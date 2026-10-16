@@ -695,3 +695,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 ## 2026-10-16 — 9 páginas de nicho publicadas
 - Merge de feat/paginas-nicho-novas (barbearia, academia, confeitaria, floricultura, loja de roupas, oficina, padaria, pet shop, restaurante) com o nome "Instagram com resposta automática". Sitemap e rodapé atualizados. 395 testes ok. Publicado com OK do Rodrigo.
 - Próximo: Google Meu Negócio e Search Console (guiar o Rodrigo), lista de negócios para o Captador.
+
+## 2026-10-16 (tarde) — Posts sem imagem no painel
+- Rodrigo viu 2 posts "Esperando sua aprovação" com "A imagem está sendo criada" (Post 09:17 e Carrossel 19:00 de hoje). Sem acesso ao Master/D1 nesta sessão, a causa NÃO foi confirmada em produção.
+- Hipótese: qualidade "high" (que eu tinha ligado por padrão hoje) estoura o timeout de 90 s da imagem. Ajuste: qualidade padrão volta a "medium" (provada em 11–13/10) e timeout de 150 s. `NEXUS_IMAGE_QUALITY` ainda sobrescreve.
+- Observação de conteúdo: o Hook Lab troca a 1ª linha por ganchos genéricos (ex.: "Antes de postar, responda esta pergunta." no post sobre gravar vídeos); o gancho não combina com o corpo. Revisar.
+- Próximo: confirmar no Master (erro em payload.mediaGeneration.lastError) se as imagens passaram a ser geradas.

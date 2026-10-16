@@ -156,13 +156,13 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
   const response=await request(env,client.id,{
     nexusPurpose:options.nexusPurpose||"media-generation",
     nexusBypassDailyBudget:options.bypassDailyBudget===true,
-    nexusTimeoutMs:options.timeoutMs||90000,
+    nexusTimeoutMs:options.timeoutMs||150000,
     model:env.NEXUS_MEDIA_PLANNER_MODEL||"gpt-5.6-luna",
     input:[{role:"user",content:[{type:"input_text",text:prompt},...references]}],
     tools:[{
       type:"image_generation",
       model:env.NEXUS_IMAGE_MODEL||"gpt-image-2",
-      quality:String(env.NEXUS_IMAGE_QUALITY||(brandProfileVersion(client?.id)?"high":"medium")),
+      quality:String(env.NEXUS_IMAGE_QUALITY||"medium"),
       // Já no formato final (sem corte depois): 4:5 no feed/carrossel, 9:16 no Reel.
       // gpt-image-2 aceita tamanho livre (lados múltiplos de 16).
       size:imageSizeFor(options.contentFormat),
