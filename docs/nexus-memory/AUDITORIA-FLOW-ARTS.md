@@ -20,7 +20,20 @@
 5. **Tráfego pago:** rodar o anúncio de WhatsApp já pronto (R$ 10–20 por dia, 7 dias) assim que o Rodrigo liberar. Sem isso, o crescimento será muito lento.
 6. **Perfil (o Rodrigo faz, 5 minutos):** link da bio = flowarts.com.br. Decidir nome e foto: logo da Flow Arts ou foto real, no lugar da persona de IA.
 
+## Estudo do algoritmo (15/10, fontes: posteverywhere.ai, socialync.io, blckalpaca.at, publer.com)
+- Reels é onde quem NÃO segue descobre a conta. O que mais pesa é o tempo assistido (primeiros 3 s) e depois os envios por direct ("sends per reach"), que valem de 3 a 5 vezes mais que curtidas para alcançar quem não segue. Duração ideal de 15 a 60 s, em 1080x1920.
+- No feed, o que conta é o relacionamento (quem já segue). Carrossel tem mais recomendação e mais salvamentos que foto única.
+- Originalidade: conteúdo repetido ou de agregador perde alcance. De 3 a 5 hashtags (servem para categorizar, não para crescer). Palavras-chave na legenda ajudam a busca.
+- Stories: relacionamento; de 5 a 7 por dia é o teto útil.
+- Trial Reels (mostrar só para quem não segue) exige mais de 1.000 seguidores. Ainda não serve para nós.
+- Rodrigo (21h14): vai trocar o perfil para Flow Arts, tirar a Marina e o rótulo de IA do perfil. Observação: imagens realistas de IA podem continuar recebendo o "Info de IA" automático do Instagram nos posts. Isso é normal.
+
 ## Mudanças no Nexus propostas (ainda não feitas; precisam de OK)
+- **Reels de animação de verdade, automáticos** (texto em movimento + telas do produto, 8–15 s, gancho no 1º segundo, feitos com Chromium/FFmpeg no GitHub Actions), 3–4 por semana. Substituem o Reel de foto com zoom (proibido).
+- Carrosséis feitos para salvar e enviar (checklists, "mande para quem tem um negócio").
+- Legenda com palavras-chave de busca (marketing para pequenos negócios, automação de Instagram, Rio).
+- 1 post por dia de mais qualidade, em vez de 2.
+- Stories automáticos (repostar o post do dia).
 - Campanha da Flow Arts com 50% de posts de prova e demonstração em vez de dicas.
 - Limite de tamanho do gancho na arte, para a frase nunca ser cortada.
 - Sugestão diária de Stories no painel (o Rodrigo posta com um toque).
