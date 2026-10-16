@@ -685,3 +685,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Respeita prefers-reduced-motion e saveData (site parado). Preços, links, JSON-LD e beacon intactos.
 - Testado em Playwright (desktop e celular), sem erros de console. Publicado com o OK do Rodrigo. Verificar no ar após o deploy.
 - Pendente: decidir manter/tirar "Instagram que responde sozinho (R$ 197)"; 9 páginas de nicho aguardam OK na branch feat/paginas-nicho-novas.
+
+## 2026-10-16 — Texto "resposta automática" + vídeo de demonstração
+- Pacote renomeado de "Instagram que responde sozinho" para "Instagram com resposta automática" (site, 3 páginas de nicho, metadados, gerador, whatsapp-knowledge). Descrição: resposta no direct quando alguém comenta a palavra combinada (ex.: QUERO). Decisão do Rodrigo: manter o pacote (R$ 197) como autoresponder.
+- Novo vídeo public/video/instagram-responde.mp4 (+ .jpg), seção "Comentou? A resposta chega sozinha." no site, marcado "Demonstração ilustrativa".
+- Ainda NÃO provado em produção: leitura de comentários + envio de DM. Não prometer prazo/garantia a clientes antes de testar.
+- Pendente: 9 páginas de nicho (branch feat/paginas-nicho-novas) precisam da mesma troca de nome antes de publicar.
