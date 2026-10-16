@@ -100,7 +100,12 @@ export async function tokenUsageToday(env, clientId) {
   const remainingTokens = Math.max(0, limitTokens - usedTokens);
   const percent = limitTokens > 0 ? Math.min(100, Math.round((usedTokens / limitTokens) * 100)) : 0;
   const key = openAIKeyStatus(env, clientId);
-  const quotaExhausted = status.status === "quota_exhausted";
+  // "Sem saldo" não pode ficar travado para sempre: enquanto estiver bloqueado, nenhuma chamada
+  // chega na OpenAI e o aviso nunca limpa, mesmo depois de recarregar o crédito.
+  // Depois de 15 minutos deixamos uma chamada passar para testar; se ainda faltar saldo, o aviso volta.
+  const statusAgeMs = Date.now() - Date.parse(String(status.updatedAt || "").replace(" ", "T") + "Z");
+  const quotaExpired = Number.isFinite(statusAgeMs) && statusAgeMs > 15 * 60 * 1000;
+  const quotaExhausted = status.status === "quota_exhausted" && !quotaExpired;
 
   return {
     clientId: String(clientId),

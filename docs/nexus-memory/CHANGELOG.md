@@ -711,3 +711,10 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Pedido do Rodrigo: posts só com padaria/café. Novo `flowarts-niches.js` (14 tipos: barbearia, salão, academia, pet shop, loja de roupas, oficina, restaurante, floricultura, confeitaria, clínica, lanchonete, loja de celular, papelaria, cafeteria). Cada post sorteia um tipo evitando os 5 últimos (`payload.nicheId`).
 - O tipo entra no prompt da imagem ("Business setting ... mandatory", café/padaria só se for o sorteado) e no redator da legenda (exemplo principal). Carrossel e Reel herdam o mesmo `nicheId`. 397 testes.
 - Posts já criados mantêm o tipo antigo. Verificar nos próximos posts se a variedade aparece.
+
+## 2026-10-16 (tarde) — Posts sem imagem: causa achada (OpenAI sem saldo + aviso travado)
+- Rodrigo: posts das 09:17 e 19:00 continuam sem arte ("sendo criada"). Lido no Master (agent-core): aiGrowth.error = openai_quota_exhausted às 15:46 UTC; /api/master/openai: saldo estimado ~US$ 0,47 (baseline 5,53; custo do mês 8,57). Posts com error=media_generation_required.
+- Causa 1 (comprovada no código): o aviso "quota_exhausted" em openai_runtime_status só limpava com uma chamada bem-sucedida, mas com o aviso ligado nenhuma chamada saía (openai.js bloqueava antes). Travava para sempre, mesmo após recarga.
+- Correção (commit local, SEM push ainda, aguardando OK do Rodrigo): o aviso expira em 15 min e deixa uma chamada de teste passar. Teste novo em openai-budget.test.mjs. 398 testes passando.
+- Causa 2 (só o Rodrigo resolve): o saldo da OpenAI está quase zerado. Sem recarga, a imagem continua falhando. Não afirmado como 100% (o saldo é estimativa).
+- PRÓXIMO: Rodrigo recarrega crédito em platform.openai.com; depois do deploy, conferir se os 2 posts ganham imagem (ou pedir ajuste de novo).

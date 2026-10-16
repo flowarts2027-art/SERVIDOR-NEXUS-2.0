@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { openAIResponses, tokenUsageToday } from "../src/openai.js";
 
-function envAtUsage(usedTokens){
+function envAtUsage(usedTokens,runtime={status:"ok",detail:"",updated_at:""}){
   return {
     OPENAI_API_KEY_SHARED:"test-key",
     NEXUS_OPENAI_DAILY_TOKEN_LIMIT:"30000",
@@ -23,7 +23,7 @@ function envAtUsage(usedTokens){
                   id:"globalplay-streaming",name:"Global Play",niche:"streaming",instagram:"@globalplay_streaming",
                   status:"online",config_json:"{}",created_at:"",updated_at:""
                 };
-                if(sql.includes("openai_runtime_status")) return {status:"ok",detail:"",updated_at:""};
+                if(sql.includes("openai_runtime_status")) return runtime;
                 return null;
               },
               async run(){return {meta:{changes:0}};}
@@ -78,4 +78,14 @@ test("emergency publisher can bypass the local daily token gate only for urgent 
     }),
     error=>error?.message==="openai_daily_budget_reached"
   );
+});
+
+test("aviso de sem saldo recente bloqueia, mas expira e deixa testar de novo",async()=>{
+  const fmt=ms=>new Date(Date.now()-ms).toISOString().replace("T"," ").slice(0,19);
+  const recent=await tokenUsageToday(envAtUsage(100,{status:"quota_exhausted",detail:"insufficient_quota",updated_at:fmt(2*60*1000)}),"globalplay-streaming");
+  assert.equal(recent.quotaExhausted,true);
+  assert.equal(recent.blocked,true);
+  const old=await tokenUsageToday(envAtUsage(100,{status:"quota_exhausted",detail:"insufficient_quota",updated_at:fmt(30*60*1000)}),"globalplay-streaming");
+  assert.equal(old.quotaExhausted,false);
+  assert.equal(old.blocked,false);
 });
