@@ -161,6 +161,17 @@
             <p class="muted wide" id="manual-reel-status" role="status"></p>
           </form>
         </div>
+        <div class="panel manual-reel-panel" id="manual-carousel">
+          <div class="panel-head"><div><p class="eyebrow">CARROSSEL PRONTO</p><h2>Enviar carrossel pronto</h2><p class="muted">Escolha as imagens NA ORDEM (1, 2, 3…). O post vai para o painel do cliente sem data: ele escolhe o dia e aprova. Sem data, nada é publicado.</p></div></div>
+          <form id="manual-carousel-form" class="manual-reel-form">
+            <label>Cliente<select name="clientId" id="manual-carousel-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
+            <label class="wide">Imagens (2 a 10, na ordem)<input type="file" name="images" id="manual-carousel-images" accept="image/jpeg,image/png,image/webp" multiple required></label>
+            <div class="wide" id="manual-carousel-preview" style="display:flex;gap:8px;overflow-x:auto"></div>
+            <label class="wide">Legenda<textarea name="caption" rows="6" maxlength="2200" required></textarea></label>
+            <button type="submit" class="primary">Enviar para o painel</button>
+            <p class="muted wide" id="manual-carousel-status" role="status"></p>
+          </form>
+        </div>
         <div class="panel manual-reel-panel" id="carousel-test">
           <div class="panel-head"><div><p class="eyebrow">AGENTE DE MARKETING</p><h2>Testar carrossel</h2><p class="muted">Monta 1 carrossel de 5 cartões da Flow Arts com o agente novo (fotos sem texto + títulos escritos pelo sistema). Não publica e não aparece no painel do cliente. Custo estimado: 5 fotos (≈ US$ 0,30) + revisões. Leva uns 10 minutos; deixe esta página aberta.</p></div></div>
           <form id="carousel-test-form" class="manual-reel-form">
@@ -489,6 +500,7 @@
   <script src="/app.js?v=49" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
+  <script src="/manual-carousel.js?v=1" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

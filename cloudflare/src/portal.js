@@ -1,4 +1,5 @@
 import { handleCaptadorPortal } from "./captador.js";
+import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
 import { handleClientCampaignPortal } from "./client-campaign.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
@@ -1774,7 +1775,19 @@ export async function handlePortalApi(request, env, url, ctx) {
       return json(await decidePost(env, client, decodeURIComponent(postDecisionMatch[1]), body.decision));
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
-      return json({ error: code }, code === "not_found" ? 404 : 400);
+      return json({ error: code, message: MANUAL_CAROUSEL_MESSAGES[code] }, code === "not_found" ? 404 : 400);
+    }
+  }
+
+  // Cliente escolhe (ou troca) o dia e a hora de um post ainda não publicado.
+  const postScheduleMatch = url.pathname.match(/^\/api\/portal\/posts\/([^/]+)\/schedule$/);
+  if (postScheduleMatch && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    try {
+      return json(await schedulePost(env, client, decodeURIComponent(postScheduleMatch[1]), body.date, body.time));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      return json({ error: code, message: MANUAL_CAROUSEL_MESSAGES[code] || "Não foi possível salvar a data." }, code === "not_found" ? 404 : 400);
     }
   }
 

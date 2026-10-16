@@ -91,6 +91,8 @@ export async function decidePost(env, client, postId, decision) {
   const row = await postRow(env, client.id, postId);
   if (!row) throw new Error("not_found");
   const payload = parseJson(row.payload_json, {});
+  // Post em que o cliente escolhe a data (carrossel pronto do Master): sem data, não aprova.
+  if (clean === "approved" && payload.dateChoice === "client" && !row.scheduled_for) throw new Error("schedule_required");
   const nextStatus = clean === "approved" && row.status === "failed" ? "ready" : row.status;
   const updated = await updateRow(env, row, {
     approvalStatus: clean,

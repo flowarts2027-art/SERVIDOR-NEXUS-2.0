@@ -134,7 +134,36 @@ function mediaHtml(post, cls) {
     : `<div class="media-wait">A imagem deste post está sendo criada.<br>Volte daqui a pouco.</div>`}</div>`;
 }
 
+// Post em que o cliente escolhe o dia (carrossel pronto enviado pela Flow Arts).
+function needsDate(post) {
+  return post.dateChoice === "client" && !["published", "publishing", "cancelled", "expired"].includes(String(post.status));
+}
+
+function saoPauloParts(iso) {
+  const date = new Date(String(iso || ""));
+  if (!Number.isFinite(date.getTime())) return { day: "", hour: "19:00" };
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(date);
+  const hour = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit", hour12: false }).format(date);
+  return { day, hour };
+}
+
+function scheduleFormHtml(post) {
+  if (!needsDate(post)) return "";
+  const id = escapeHtml(post.id);
+  const { day, hour } = saoPauloParts(post.scheduledFor);
+  return `<form class="schedule-form" data-schedule-form="${id}">
+      <p class="muted">${post.scheduledFor ? "Quer mudar o dia? Escolha outro e salve." : "Escolha o dia e a hora em que este post vai sair."}</p>
+      <label>Dia <input type="date" name="date" value="${escapeHtml(day)}" required></label>
+      <label>Hora <input type="time" name="time" value="${escapeHtml(hour)}" required></label>
+      <button type="submit" class="btn btn-soft">Salvar dia</button>
+    </form>`;
+}
+
 function actionsHtml(post) {
+  return scheduleFormHtml(post) + actionsButtonsHtml(post);
+}
+
+function actionsButtonsHtml(post) {
   // Aprovado e ainda não publicado: dá para cancelar antes do horário.
   if (postGroup(post) === "agendados" && !["published", "publishing"].includes(String(post.status))) {
     const id = escapeHtml(post.id);
@@ -152,8 +181,9 @@ function actionsHtml(post) {
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
   const reviewed = autoReviewed(post);
-  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed;
-  const waitMsg = reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
+  const dateMissing = post.dateChoice === "client" && !post.scheduledFor;
+  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing;
+  const waitMsg = dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
       <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
@@ -677,6 +707,24 @@ async function cancelPost(id, button) {
   }
 }
 
+async function saveSchedule(form) {
+  const id = form.dataset.scheduleForm;
+  const data = new FormData(form);
+  const button = form.querySelector("button");
+  button.disabled = true;
+  try {
+    await api("/api/portal/posts/" + encodeURIComponent(id) + "/schedule", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ date: String(data.get("date") || ""), time: String(data.get("time") || "") })
+    });
+    toast("Dia salvo. Agora é só aprovar.");
+    await loadAll();
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
+}
+
 async function sendRevision(form) {
   const id = form.dataset.revisionForm;
   const text = String(new FormData(form).get("instructions") || "").trim();
@@ -770,6 +818,10 @@ document.addEventListener("submit", event => {
   if (form instanceof HTMLFormElement && form.dataset.revisionForm) {
     event.preventDefault();
     sendRevision(form);
+  }
+  if (form instanceof HTMLFormElement && form.dataset.scheduleForm) {
+    event.preventDefault();
+    saveSchedule(form);
   }
 });
 

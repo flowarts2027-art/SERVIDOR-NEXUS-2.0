@@ -29,6 +29,7 @@ import { handleProspectsRoute } from "./prospects.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
+import { handleManualCarouselMaster } from "./manual-carousel.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -644,6 +645,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleManualReelMaster(request, env, url);
+      if (response) return response;
+    }
+
+    // Carrossel pronto enviado pelo Rodrigo; o cliente escolhe o dia e aprova no painel. Só com login do Master.
+    if (url.pathname === "/api/master/manual-carousel") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleManualCarouselMaster(request, env, url);
       if (response) return response;
     }
 

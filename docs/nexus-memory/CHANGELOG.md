@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 ~21h BRT — Carrossel pronto: cliente escolhe o dia no painel
+- Pedido do Rodrigo: subir um carrossel pronto (pizzaria, 5 imagens feitas no ChatGPT) para o painel, sem publicar, e ele escolhe o dia.
+- Master › Postagens › "Enviar carrossel pronto" (POST /api/master/manual-carousel, `src/manual-carousel.js`): 2 a 10 imagens na ordem + legenda; convertidas para JPEG 1080x1350 (Images binding); post `ready`/`pending` com `scheduled_for` NULL e `dateChoice: "client"`.
+- Painel do cliente: formulário "Dia e Hora" + "Salvar dia" (POST /api/portal/posts/:id/schedule, mínimo 10 min à frente). "Aprovar" travado até ter data. Travas no servidor: decidePost recusa (`schedule_required`); runPublisher não pega post sem data com dateChoice=client (o executor já exigia data).
+- 422 testes passando.
+
 ## 2026-10-16 ~18h45 BRT — Teste do carrossel: 3 de 5 fotos aprovadas; parou no limite diário da OpenAI
 - O cron chegou a gerar 3 fotos do cartão 1 (todas boas, sem texto), mas o revisor reprovou por "rosto não está de frente" e depois por "ação diferente da cena". Corrigido (photo-review-v3: rosto de lado é normal; julga a ideia do título, não a cena ao pé da letra) e as fotos já pagas são revisadas de novo sem gerar outra.
 - Novo: POST /api/master/carousel-test/:cliente/:id/step faz 1 passo por chamada (plano, 1 foto revisada ou envio ao GitHub); o botão do Master chama até terminar. Não depende do cron. Format Builder DESLIGADO de novo (para não rodar junto com o botão).

@@ -386,3 +386,9 @@ input, select, textarea, button { max-width: 100%; }
 
 /* Carrossel ainda montando */
 .car-building { margin: 0; padding: 10px 14px; background: var(--blue-soft); color: var(--ink); font-size: .92rem; font-weight: 700; }
+
+/* Escolher o dia do post (carrossel pronto) */
+.schedule-form{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;margin:10px 0 4px}
+.schedule-form p{flex-basis:100%;margin:0}
+.schedule-form label{display:flex;flex-direction:column;gap:4px;font-size:14px}
+.schedule-form input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid rgba(127,127,127,.4);min-height:44px}
