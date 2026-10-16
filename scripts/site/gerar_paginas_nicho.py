@@ -16,7 +16,7 @@ SITE = "https://flowarts.com.br"
 
 PRECOS = [
     ("Site do seu negócio", "R$ 497, pagamento único. Site de 1 página com fotos, serviços, mapa e botão para o seu WhatsApp, feito para aparecer no Google. Pronto em até 5 dias."),
-    ("Instagram que responde sozinho", "R$ 197, pagamento único. Resposta automática no direct para quem comenta, a pessoa segue o seu perfil e vai direto para o seu WhatsApp, 10 posts prontos com imagens e legendas. Tudo funcionando em até 2 dias."),
+    ("Instagram com resposta automática", "R$ 197, pagamento único. Resposta automática no direct quando alguém comenta a palavra combinada (ex.: QUERO), a pessoa segue o seu perfil e vai direto para o seu WhatsApp, 10 posts prontos com imagens e legendas. Tudo funcionando em até 2 dias."),
     ("Captador de clientes", "R$ 97 por mês. No seu painel, você escolhe o tipo de negócio e a cidade e recebe uma lista de empresas com telefone e uma mensagem pronta para mandar pelo seu WhatsApp."),
     ("5 Reels com IA", "R$ 147. Vídeos curtos para o seu negócio aparecer para quem ainda não te segue."),
     ("10 posts prontos", "R$ 97. Imagens e legendas no estilo da sua marca, entregues em 24h."),
