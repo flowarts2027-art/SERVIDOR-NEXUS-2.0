@@ -67,6 +67,11 @@ export function brandHeadline(client,title=""){
   if(!clean||/^(portrait|vertical|create|scene)\b/i.test(clean))return "";
   const words=clean.split(" ");
   if(words.length<=9&&clean.length<=70)return clean;
+  // Hook longo: prefere uma frase COMPLETA e curta (de preferência pergunta). Cortar no meio
+  // deixava "Se alguém abrir seu perfil por 3 segundos" sem fim, e o revisor reprovava a arte.
+  const sentences=clean.split(/(?<=[.!?])\s+/).map(part=>part.trim()).filter(Boolean);
+  const whole=sentences.filter(part=>{const n=part.split(" ").length;return n>=3&&n<=9&&part.length<=70;});
+  if(whole.length)return whole.find(part=>/\?$/.test(part))||whole[0];
   // Longo demais: corta numa pausa natural (vírgula, ponto, travessão, dois-pontos),
   // para a frase nunca aparecer cortada no meio.
   const parts=clean.split(/(?<=[,.;:!?])\s+|\s+[—–-]\s+/).map(part=>part.replace(/[,;:\s]+$/,"").trim()).filter(Boolean);

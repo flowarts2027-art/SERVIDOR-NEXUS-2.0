@@ -63,3 +63,10 @@ test("story automático usa media_type STORIES e publica", async () => {
   const env = { DB: { prepare: () => ({ bind: () => ({ first: async () => ({ provider: "meta", payload_json: "{}" }) }) }) }, INSTAGRAM_ACCESS_TOKEN_X: "" };
   await assert.rejects(() => publishInstagramStory(env, "demo-cafe", "https://x/y.jpg", request), /instagram_client_disabled/);
 });
+
+test("hook longo vira frase completa, nunca cortada no meio", () => {
+  const flow = { id: "primeiro-teste" };
+  const h = brandHeadline(flow, "Se alguém abrir seu perfil por 3 segundos, vai entender o que você vende? Faça este teste agora.");
+  assert.equal(h, "Faça este teste agora.");
+  assert.equal(brandHeadline(flow, "Seu perfil explica o negócio? Faça este teste agora com um amigo que não conhece sua loja."), "Seu perfil explica o negócio?");
+});

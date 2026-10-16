@@ -369,6 +369,9 @@ async function runDesigner(env,client,options){
       payload.blockedDesignerReviewStatus=payload.visualReview?.status||"rejected";
       payload.blockedDesignerReviewChecks=payload.visualReview?.checks||null;
       payload.blockedDesignerQualityScore=Number(payload.visualReview?.qualityScore||0);
+      payload.blockedDesignerReviewReason=String(payload.visualReview?.reason||"").slice(0,300);
+      payload.blockedDesignerReviewScores={scrollStopPower:Number(payload.visualReview?.scrollStopPower||0),brandFit:Number(payload.visualReview?.brandFit||0),freshness:Number(payload.visualReview?.freshness||0)};
+      payload.designerRejections=Math.max(0,Number(payload.designerRejections||0))+1;
       payload.imageUrl="";
       payload.publicImageUrl="";
       payload.visualReview=null;
@@ -377,9 +380,11 @@ async function runDesigner(env,client,options){
       payload.mediaGeneration={...(payload.mediaGeneration||{}),status:"requested",updatedAt:new Date().toISOString()};
       payload.intelligence={...(payload.intelligence||{}),mediaSource:"awaiting-designer-replacement"};
       payload.qualityGates={...(payload.qualityGates||{}),designer:"pending",designerAt:new Date().toISOString()};
+      // Para o gasto: depois de 3 reprovações do revisor o post para de gerar imagem nova.
+      const rejectedOut=payload.designerRejections>=3;
       await env.DB.prepare(
-        "UPDATE post_ledger SET status='ready',payload_json=?2,error='media_generation_required',updated_at=CURRENT_TIMESTAMP WHERE id=?1"
-      ).bind(row.id,JSON.stringify(payload)).run();
+        "UPDATE post_ledger SET status=?3,payload_json=?2,error=?4,updated_at=CURRENT_TIMESTAMP WHERE id=?1"
+      ).bind(row.id,JSON.stringify(payload),rejectedOut?"expired":"ready",rejectedOut?"designer_rejected_exhausted":"media_generation_required").run();
     }
 
     checks.push({
