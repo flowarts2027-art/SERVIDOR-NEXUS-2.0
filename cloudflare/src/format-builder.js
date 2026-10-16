@@ -5,7 +5,7 @@ import { clientBrand, brandProfileVersion, GENERATION_PAUSED_CLIENTS } from "./c
 import { recordAgentExecution, patchAgentCoreState } from "./agent-core.js";
 import { openAIResponses } from "./openai.js";
 import {
-  CAROUSEL_AGENT_VERSION, CAROUSEL_CARD_COUNT, MAX_PHOTO_ATTEMPTS,
+  CAROUSEL_AGENT_VERSION, CAROUSEL_CARD_COUNT, MAX_PHOTO_ATTEMPTS, PHOTO_REVIEW_VERSION,
   planMarketingCarousel, photoBrief, reviewCarouselPhoto, renderCards
 } from "./carousel-agent.js";
 
@@ -258,8 +258,10 @@ export async function buildAgentCarousel(env, client, row, payload, deps = {}) {
     const photo = photos[index] || { attempts:0 };
     photos[index] = photo;
     if (photo.status === "approved" && /^https:\/\//i.test(String(photo.url || ""))) continue;
-    // Foto já paga, revisão ficou pendente (sem saldo/sem resposta): só revisa de novo.
-    if (!(photo.status === "unavailable" && /^https:\/\//i.test(String(photo.url || "")))) {
+    // Foto já paga, revisão ficou pendente (sem saldo/sem resposta) ou reprovada por regra antiga do revisor: só revisa de novo.
+    const hasUrl = /^https:\/\//i.test(String(photo.url || ""));
+    const reReview = hasUrl && (photo.status === "unavailable" || (photo.status === "rejected" && photo.review?.reviewVersion !== PHOTO_REVIEW_VERSION));
+    if (!reReview) {
       if (steps <= 0) return { ...build, status:"building", waiting:"next_step" };
       steps--;
       if (Number(photo.attempts || 0) >= MAX_PHOTO_ATTEMPTS) {

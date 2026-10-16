@@ -278,3 +278,21 @@ test("modo passo a passo: cada chamada faz só o plano ou 1 foto (cabe numa cham
   assert.deepEqual(statuses, ["building:0", "building:1", "building:2", "building:3", "building:4", "rendering:5"]);
   assert.equal(dispatched, 1);
 });
+
+test("revisor novo revisa de novo a foto já paga que a regra antiga reprovou (sem gerar outra)", async () => {
+  const { PHOTO_REVIEW_VERSION } = await import("../src/carousel-agent.js");
+  const { db, DB } = sqliteDB();
+  const plan = { ...validateCarouselPlan(goodPlan()).plan, version: CAROUSEL_AGENT_VERSION };
+  const payload = { creativeFeatures: { requestedFormat: "carousel" }, formatBuild: { status: "failed", attempts: 1, carouselTemplateVersion: CAROUSEL_AGENT_VERSION,
+    agent: { plan, photos: [{ url: "https://n/media/posts/velha.jpg", attempts: 3, status: "rejected", review: { reason: "rosto de lado" } }] } } };
+  db.prepare("INSERT INTO post_ledger(id,client_id,status,payload_json) VALUES('r1','primeiro-teste','carousel_test',?)").run(JSON.stringify(payload));
+  const reviewed = [];
+  const request = async (env, clientId, body) => { reviewed.push(body.input[0].content[0].image_url); return { output_text: JSON.stringify({ semTexto: true, combinaComTitulo: true, combinaComNicho: true, anatomiaOk: true, pessoaInteira: true, qualityScore: 85, motivo: "ok" }) }; };
+  let generated = 0;
+  const generate = async () => { generated++; return { url: "https://n/media/posts/nova" + generated + ".jpg" }; };
+  const b = await buildAgentCarousel({ DB, PUBLIC_BASE_URL: "https://n" }, { id: "primeiro-teste" }, { id: "r1" }, payload, { request, generate, stepLimit: 1 });
+  assert.equal(reviewed[0], "https://n/media/posts/velha.jpg");
+  assert.equal(b.agent.photos[0].status, "approved");
+  assert.equal(b.agent.photos[0].review.reviewVersion, PHOTO_REVIEW_VERSION);
+  assert.equal(generated, 1, "só o cartão 2 gerou foto nova");
+});

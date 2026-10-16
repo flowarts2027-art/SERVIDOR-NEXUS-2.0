@@ -13,6 +13,8 @@ export const TITLE_LINE2_MAX = 30;
 export const FOOTER_MAX = 40;
 export const MAX_PHOTO_ATTEMPTS = 3;
 const MIN_PHOTO_SCORE = 65;
+// Muda quando as regras do revisor mudam: fotos já pagas e reprovadas pela regra antiga são revisadas de novo.
+export const PHOTO_REVIEW_VERSION = "photo-review-v2";
 
 // Promessas e números que o agente não pode inventar.
 const FORBIDDEN = [
@@ -184,7 +186,7 @@ export function photoBrief(plan, index) {
 // Revisor que olha a foto de verdade (não aceita "aprovado" escrito pela IA que planejou).
 export async function reviewCarouselPhoto(env, client, imageUrl, plan, index, { request = openAIResponses } = {}) {
   const card = plan.cartoes[index];
-  const base = { version: CAROUSEL_AGENT_VERSION, media: imageUrl, reviewedAt: new Date().toISOString() };
+  const base = { version: CAROUSEL_AGENT_VERSION, reviewVersion: PHOTO_REVIEW_VERSION, media: imageUrl, reviewedAt: new Date().toISOString() };
   try {
     const response = await request(env, client.id, {
       nexusPurpose: "visual-review",
@@ -196,7 +198,7 @@ export async function reviewCarouselPhoto(env, client, imageUrl, plan, index, { 
         "Título do cartão: \"" + card.titulo_linha1 + " " + card.titulo_linha2 + "\" (papel: " + card.papel + ").",
         "Cena pedida: " + card.cena,
         "Ficha de continuidade: " + plan.ficha_continuidade,
-        "Avalie: semTexto (nenhuma letra/número/logo visível, telas só com fotos); combinaComTitulo (a ação mostra a ideia do título); combinaComNicho (ambiente e objetos do negócio certo); anatomiaOk (mãos, dedos, rostos e objetos plausíveis, sem fusões); pessoaInteira (rosto e mãos dentro do quadro, sem corte); qualityScore 0-100 como foto publicitária.",
+        "Avalie: semTexto (nenhuma letra/número/logo visível, telas só com fotos); combinaComTitulo (a ação mostra a ideia do título); combinaComNicho (ambiente e objetos do negócio certo); anatomiaOk (mãos, dedos, rostos e objetos plausíveis, sem fusões); pessoaInteira (true se a cabeça e as mãos da pessoa principal não estão cortadas pela borda da foto; rosto de lado, de perfil, olhando para baixo ou para o trabalho é NORMAL e conta como true; só é false se a borda corta a cabeça ou as mãos); qualityScore 0-100 como foto publicitária.",
         "Motivo curto em português."
       ].join(" "),
       input: [{ role: "user", content: [{ type: "input_image", image_url: imageUrl, detail: "high" }] }],
