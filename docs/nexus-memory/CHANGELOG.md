@@ -1,5 +1,16 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 manhã BRT — Melhoria das imagens da Flow Arts + geração religada (pedido do Rodrigo)
+
+- Pedido: melhorar as imagens sem depender de prints do Pinterest; ao terminar, religar a geração; se ficar ruim, parar de novo.
+- `cloudflare/src/flowarts-styles.js`: biblioteca com 8 estilos (dica editorial, produto herói, fachada dourada, dono em ação, mesa vista de cima, tipográfico minimalista, pergunta no holofote, contraste de luz). Escolha por tema do título, sem repetir os 3 últimos (`mediaGeneration.styleId`).
+- `media-generation.js`: o prompt leva a direção de arte do estilo; qualidade da imagem sobe para "high" nas marcas com perfil (env `NEXUS_IMAGE_QUALITY` continua mandando; custo maior por imagem, o relatório de custo ainda não mostra imagem).
+- Fiscal visual agora vale para a Flow Arts (`REVIEWED_CLIENTS` em visual-review.js; Designer em extended-agents.js). Regra nova: título em português mal escrito ou cortado reprova; `screenContentCoherent` vale true sem tela.
+- `GENERATION_PAUSED_CLIENTS` esvaziado: criação religada. `profileVersion` 2026-10-16-estilos: rascunhos não aprovados antigos são refeitos. Posts continuam só saindo após aprovação do Rodrigo no painel.
+- NÃO feito: camada de design em modelos HTML renderizados (precisa de render no GitHub Actions). O título continua escrito pela própria IA na imagem. Efeito real das imagens novas em produção ainda não verificado.
+- Para parar de novo: pôr "primeiro-teste" em GENERATION_PAUSED_CLIENTS (client-brand.js) e publicar.
+- 392 testes passando (5 novos).
+
 ## 2026-10-16 manhã BRT — Auditoria do fluxo de publicação e duas correções (pedido do Rodrigo)
 
 - Auditoria só de leitura do código de publicação (executor, scheduler, publisher, credenciais). Nenhuma publicação foi ativada ou testada.

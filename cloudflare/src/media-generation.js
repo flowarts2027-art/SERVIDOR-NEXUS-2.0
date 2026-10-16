@@ -3,6 +3,7 @@ import { commercialPromptGuard } from "./content-policy.js";
 import { GLOBAL_PLAY_REFERENCE_VERSION, globalPlayReferenceDirection } from "./media-references.js";
 import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-overlays.js";
 import { clientBrand, brandProfileVersion } from "./client-brand.js";
+import { pickFlowArtsStyle } from "./flowarts-styles.js";
 
 function bytesFromBase64(value){
   const raw=atob(String(value||""));
@@ -71,15 +72,28 @@ export function imageSizeFor(contentFormat){
   return contentFormat==="reel"?"1008x1792":"1024x1280";
 }
 
+// Estilo visual do post (só marcas com perfil próprio, ex.: Flow Arts).
+export function styleForPost(client, visualBrief="", variationSeed="", options={}){
+  if(!brandProfileVersion(client?.id))return null;
+  return pickFlowArtsStyle({
+    headline:brandHeadline(client,options.title),
+    brief:visualBrief,
+    seed:variationSeed,
+    avoid:options.avoidStyles
+  });
+}
+
 export function buildVisualPrompt(client, visualBrief="", variationSeed="", options={}){
   const id=String(client?.id||"");
   const headline=brandHeadline(client,options.title);
+  const style=styleForPost(client,visualBrief,variationSeed,options);
   const common=[
     options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork in 4:5 format.":options.contentFormat==="reel"?"Create one premium vertical social-media advertising artwork in 9:16 format.":"Create one premium portrait Instagram feed artwork in 4:5 format.",
     headline
       ? "Write exactly this headline in Brazilian Portuguese, spelled exactly as given, with all accents: \""+headline+"\". Large bold clean sans-serif, white or very light text with strong contrast, placed in the upper half of the image, starting about 12% below the top edge, max 3 lines, every letter fully visible and at least 10% away from the left and right edges (Instagram shows a narrower preview in the profile grid). Never put any letter in the bottom 20% of the image, where Instagram shows buttons and captions. Add a small discreet wordmark \"FLOW ARTS\" above the bottom 20%. No other words, no other logos, no watermarks, no split screen, no collage."
       : "No text, no words, no logos, no watermarks, no split screen, no collage.",
-    "One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
+    style?("Art direction ("+style.name+"): "+style.direction):"One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
+    "Mobile-feed readability: strong focal point, expressive lighting, high contrast between headline and background.",
     "Make the composition noticeably different from generic stock imagery.",
     "Variation seed: "+String(variationSeed||"new")
   ];
@@ -126,6 +140,7 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
   if(!origin)throw new Error("public_base_url_missing");
   const request=options.request||openAIResponses;
   const references=[]; // Only the user-approved textual art direction is sent; private R2 references stay local.
+  const style=styleForPost(client,visualBrief,options.variationSeed||postId,options);
   const prompt=buildVisualPrompt(client,visualBrief,options.variationSeed||postId,options);
   const response=await request(env,client.id,{
     nexusPurpose:options.nexusPurpose||"media-generation",
@@ -136,7 +151,7 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
     tools:[{
       type:"image_generation",
       model:env.NEXUS_IMAGE_MODEL||"gpt-image-2",
-      quality:String(env.NEXUS_IMAGE_QUALITY||"medium"),
+      quality:String(env.NEXUS_IMAGE_QUALITY||(brandProfileVersion(client?.id)?"high":"medium")),
       // Já no formato final (sem corte depois): 4:5 no feed/carrossel, 9:16 no Reel.
       // gpt-image-2 aceita tamanho livre (lados múltiplos de 16).
       size:imageSizeFor(options.contentFormat),
@@ -157,5 +172,5 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
     httpMetadata:{contentType:"image/jpeg",cacheControl:"public, max-age=31536000, immutable"},
     customMetadata:{clientId:String(client.id),postId:String(postId),kind:"openai-original-media"}
   });
-  return {url:origin+"/media/"+key,key,fingerprint,brandingApplied:composed.applied,brandingError:composed.reason,promptVersion:client.id==="globalplay-streaming"&&["carousel","reel"].includes(options.contentFormat)?GLOBAL_PLAY_REFERENCE_VERSION:"scene-grammar-v1",referenceMode:references.length?"image":"text-direction",referenceCount:references.length,contentFormat:options.contentFormat||"image"};
+  return {url:origin+"/media/"+key,key,fingerprint,brandingApplied:composed.applied,brandingError:composed.reason,promptVersion:client.id==="globalplay-streaming"&&["carousel","reel"].includes(options.contentFormat)?GLOBAL_PLAY_REFERENCE_VERSION:"scene-grammar-v1",styleId:style?style.id:"",referenceMode:references.length?"image":"text-direction",referenceCount:references.length,contentFormat:options.contentFormat||"image"};
 }

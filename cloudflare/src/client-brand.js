@@ -49,7 +49,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     // Ao mudar o perfil, aumente a versão: rascunhos não aprovados da versão
     // anterior são refeitos pelo Creator no próximo ciclo.
     // 2026-10-14: imagens já nascem em 4:5 e Reel virou post; refaz rascunhos antigos.
-    profileVersion: "2026-10-14-45",
+    profileVersion: "2026-10-16-estilos",
     // Auditoria do Instagram @flowarts2026 em 2026-10-10 (ver docs/nexus-memory/AUDITORIA-FLOW-ARTS.md).
     brandName: "Flow Arts",
     niche: "Agência de marketing e automação com IA",
@@ -187,4 +187,4 @@ export function whatsappLink(client = {}, message = "") {
 // Pausa na criação de posts (pedido do Rodrigo em 15/10 21h20: reavaliar antes de voltar).
 // Só para a criação de posts novos e as imagens. Publicação de aprovados, direct do QUERO e brindes continuam.
 // Para voltar, tire o cliente daqui.
-export const GENERATION_PAUSED_CLIENTS = Object.freeze(new Set(["primeiro-teste"]));
+export const GENERATION_PAUSED_CLIENTS = Object.freeze(new Set([]));

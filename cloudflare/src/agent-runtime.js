@@ -784,6 +784,8 @@ async function runCreator(env,client,strategy,options) {
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
           contentFormat,
           variationSeed:String(postId)+"|"+String(Date.now()),
+          // Estilos dos últimos posts: o próximo evita repetir a mesma direção de arte.
+          avoidStyles:recent.map(row=>row.payload?.mediaGeneration?.styleId).filter(Boolean).slice(0,3),
           // Gancho do post: vai escrito na imagem das marcas com perfil próprio.
           title:String(headline||"").slice(0,90)
         });
@@ -792,7 +794,7 @@ async function runCreator(env,client,strategy,options) {
           fingerprint:String(generated.fingerprint||""),
           brandingApplied:generated.brandingApplied===true,
           brandingError:String(generated.brandingError||""),
-          referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:generated.contentFormat
+          referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:generated.contentFormat,styleId:String(generated.styleId||"")
         };
       }catch(error){
         return {url:"",source:"media-generation-failed",sourceInstagramMediaId:"",error:String(error?.message||error)};
@@ -849,7 +851,7 @@ async function runCreator(env,client,strategy,options) {
     payload.imageUrl=mediaInfo.url;
     payload.sourceInstagramMediaId=mediaInfo.sourceInstagramMediaId||"";
     if(mediaInfo.fingerprint)payload.mediaFingerprint=String(mediaInfo.fingerprint);
-    payload.mediaGeneration={status:"generated",attempts:generationAttempts+(safeRecheck?0:1),lastError:"",referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||""),updatedAt:new Date().toISOString()};
+    payload.mediaGeneration={status:"generated",attempts:generationAttempts+(safeRecheck?0:1),lastError:"",referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||""),updatedAt:new Date().toISOString()};
     payload.intelligence={...(payload.intelligence||{}),mediaSource:mediaInfo.source};
     if(safeRecheck)payload.blockedDesignerRecoveryAttemptedAt=new Date().toISOString();
     payload.qualityGates={copyChief:"pending",designer:"pending"};
@@ -1005,7 +1007,7 @@ async function runCreator(env,client,strategy,options) {
         existingPayload.sourceInstagramMediaId=replacementInfo.sourceInstagramMediaId||"";
         if(replacementInfo.fingerprint)existingPayload.mediaFingerprint=String(replacementInfo.fingerprint);
         existingPayload.retryCount=0;
-        existingPayload.mediaGeneration={status:"generated",attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
+        existingPayload.mediaGeneration={status:"generated",attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,styleId:String(replacementInfo.styleId||""),brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
         existingPayload.recoveredAt=new Date().toISOString();
         existingPayload.recoveryReason="missing_media_repaired_by_creator";
         if(safeRecheck)existingPayload.blockedDesignerRecoveryAttemptedAt=new Date().toISOString();
@@ -1162,7 +1164,7 @@ async function runCreator(env,client,strategy,options) {
       imageUrl,
       sourceInstagramMediaId:String(mediaInfo.sourceInstagramMediaId||""),
       mediaFingerprint:String(mediaInfo.fingerprint||""),
-      mediaGeneration:{status:imageUrl?"generated":"requested",attempts:imageUrl||!isBudgetError(mediaInfo.error)?1:0,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
+      mediaGeneration:{status:imageUrl?"generated":"requested",attempts:imageUrl||!isBudgetError(mediaInfo.error)?1:0,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
       title:theme.slice(0,160),
       visualBrief:structuredVisualBrief.slice(0,1600),
       creativeFeatures,

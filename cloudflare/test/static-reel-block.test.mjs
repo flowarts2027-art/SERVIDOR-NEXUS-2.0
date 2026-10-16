@@ -41,8 +41,7 @@ test("Reel sem vídeo de verdade não é renderizado com zoom", async () => {
   assert.equal(saved.c.payload.formatBuild.videoUrl, "https://x/c.mp4");
 });
 
-test("criação pausada para a Flow Arts (15/10)", async () => {
-  const env = { DB: { prepare: () => { throw new Error("não devia ler o banco"); } } };
-  const out = await runFormatBuilder(env, { id: "primeiro-teste" }, {});
-  assert.equal(out.reason, "generation_paused");
+test("criação de posts da Flow Arts religada em 16/10 (pausa vazia)", async () => {
+  const { GENERATION_PAUSED_CLIENTS } = await import("../src/client-brand.js");
+  assert.equal(GENERATION_PAUSED_CLIENTS.has("primeiro-teste"), false);
 });

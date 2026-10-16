@@ -1,5 +1,5 @@
 import { getClient } from "./clients.js";
-import { reviewImage, visualApproval } from "./visual-review.js";
+import { reviewImage, visualApproval, REVIEWED_CLIENTS } from "./visual-review.js";
 import { agentCoreState, patchAgentCoreState, recordAgentExecution, normalizeAgentCoreConfig } from "./agent-core.js";
 import { commercialCopyAllowed } from "./content-policy.js";
 import { runMediaIngestAgent, runQaRecoveryAgent } from "./video-ops-agents.js";
@@ -322,7 +322,7 @@ async function runDesigner(env,client,options){
       continue;
     }
 
-    if(["globalplay-streaming","ragnar-one"].includes(client.id)){
+    if(REVIEWED_CLIENTS.has(String(client.id))){
       const prior=payload.visualReview;
       const cached=prior?.version==="visual-review-v3"&&prior.media===media;
       const settled=cached&&(
