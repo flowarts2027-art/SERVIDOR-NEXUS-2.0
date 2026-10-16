@@ -113,6 +113,11 @@ NICHOS = [
     },
 ]
 
+sys.path.insert(0, str(Path(__file__).parent))
+from nichos_extra import NICHOS_EXTRA  # noqa: E402
+
+NICHOS += NICHOS_EXTRA
+
 CSS = """
 :root{--navy:#0F1E3D;--blue:#2B63F0;--bg:#F4F6FA;--card:#FFFFFF;--ink:#16233F;--muted:#5B6680;--line:#D5DCE8;--whats:#128C4B;--soft:#E6EDFF}
 @media (prefers-color-scheme:dark){:root{--bg:#0B1426;--card:#111D35;--ink:#E7ECF7;--muted:#A3AFC7;--line:#24345A;--soft:#1C2D57;color-scheme:dark}}
