@@ -496,7 +496,12 @@ async function listPosts(env, clientId) {
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null,
     // Revisor automático: avisos sobre a legenda (não bloqueia nada).
-    reviewWarnings: reviewCopy({ id: row.client_id }, row.caption || "")
+    reviewWarnings: [
+      ...reviewCopy({ id: row.client_id }, row.caption || ""),
+      ...(parseJson(row.payload_json, {})?.visualReview?.warning === "text_margin"
+        ? [{ label: "Arte", trecho: "confira se o texto da imagem está longe das bordas" }]
+        : [])
+    ]
   }));
 }
 

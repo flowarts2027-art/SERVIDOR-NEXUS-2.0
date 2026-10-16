@@ -69,3 +69,15 @@ test('visual approval requires matching v3 review and minimum score',async()=>{
   assert.equal(visualApproval(client.id,{imageUrl:url+'new',visualReview:review}),false);
   assert.equal(visualApproval(client.id,{imageUrl:url,visualReview:{...review,qualityScore:50}}),false);
 });
+
+test('Flow Arts: só a margem do texto falhou e as notas passam, vai para aprovação com aviso',async()=>{
+  const flow={id:'primeiro-teste',name:'Flow Arts'};
+  const edge={...verdict,legibleText:false,qualityScore:75,scrollStopPower:60,brandFit:70,freshness:60};
+  const r=await reviewImage({},flow,url+'?edge',null,async()=>response(edge));
+  assert.equal(r.status,'approved');
+  assert.equal(r.warning,'text_margin');
+  const other=await reviewImage({},client,url+'?edge2',null,async()=>response(edge));
+  assert.equal(other.status,'rejected');
+  const bad=await reviewImage({},flow,url+'?edge3',null,async()=>response({...edge,singleScene:false}));
+  assert.equal(bad.status,'rejected');
+});

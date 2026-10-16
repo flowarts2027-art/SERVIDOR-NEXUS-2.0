@@ -78,9 +78,14 @@ export async function reviewImage(env, client, media, previous, request = openAI
     const scores=Object.fromEntries(scoreFields.map(k=>[k,boundedScore(result[k])]));
     const hardPass=requiredChecks.every(k=>result[k]===true)&&result.legibleText===true&&result.screenContentCoherent===true;
     const scorePass=scores.qualityScore>=MIN_QUALITY_SCORE&&scores.scrollStopPower>=60&&scores.brandFit>=70&&scores.freshness>=60;
+    // Marca com perfil próprio (Flow Arts): se as notas passam e só a margem do texto falhou,
+    // não gera outra imagem (cada troca custa saldo). Vai para o Rodrigo aprovar, com aviso.
+    const textMarginOnly=Boolean(brandProfileVersion(client?.id))&&result.legibleText===false
+      &&requiredChecks.every(k=>result[k]===true)&&result.screenContentCoherent===true&&scorePass;
     return {
       ...base,
-      status: hardPass&&scorePass ? 'approved' : 'rejected',
+      status: (hardPass&&scorePass)||textMarginOnly ? 'approved' : 'rejected',
+      ...(textMarginOnly?{warning:'text_margin'}:{}),
       checks:{
         singleScene:result.singleScene,
         noCollage:result.noCollage,
