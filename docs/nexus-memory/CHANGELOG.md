@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 ~18h45 BRT — Teste do carrossel: 3 de 5 fotos aprovadas; parou no limite diário da OpenAI
+- O cron chegou a gerar 3 fotos do cartão 1 (todas boas, sem texto), mas o revisor reprovou por "rosto não está de frente" e depois por "ação diferente da cena". Corrigido (photo-review-v3: rosto de lado é normal; julga a ideia do título, não a cena ao pé da letra) e as fotos já pagas são revisadas de novo sem gerar outra.
+- Novo: POST /api/master/carousel-test/:cliente/:id/step faz 1 passo por chamada (plano, 1 foto revisada ou envio ao GitHub); o botão do Master chama até terminar. Não depende do cron. Format Builder DESLIGADO de novo (para não rodar junto com o botão).
+- Cartões 1, 2 e 3 aprovados. Cartão 4: revisão parada em `openai_visual_budget_reserved` (limite diário de tokens NEXUS_OPENAI_DAILY_TOKEN_LIMIT=30000; a revisão visual não usa os últimos 25%). Fotos geradas no teste até agora: 3 (cartão 1) + 1 + 2 + 2 = 8.
+- PRÓXIMO: decisão do Rodrigo — subir o limite diário ou esperar o limite zerar amanhã; depois clicar de novo no teste (Master › Postagens › Testar carrossel) para terminar os cartões 4 e 5 e a montagem no GitHub.
+
 ## 2026-10-16 ~18h BRT — Teste do carrossel: plano ok, fotos paradas pelo relógio do servidor
 - Deploy d99757b (botão "Testar carrossel") success. Módulo Format Builder LIGADO em primeiro-teste (PATCH modules; Creator e Designer continuam desligados). Teste criado: carousel-test:d701dce8-312a-43d5-94eb-49736afd52cb (pet shop).
 - Plano gerado às 20:37:56 UTC e aprovado na conferência: "Sua rotina não para / E o Instagram fica?", "Você atende os pets / Quem cuida do perfil?", "Conteúdo com sua cara / A Flow Arts cria os posts", "Você aprova primeiro / Depois, a Flow publica", "Dê o primeiro passo / Fale com a Flow Arts".
