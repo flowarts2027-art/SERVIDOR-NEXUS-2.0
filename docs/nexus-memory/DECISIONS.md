@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-16 — Carrossel: IA faz a foto, código escreve o texto
+- Rodrigo não aceita texto errado na arte. No carrossel da Flow Arts a IA não escreve mais letras: o título, o rodapé, o logo e o botão "Comente QUERO" são colocados por código (fonte Inter). A IA só planeja (títulos conferidos no código) e gera fotos sem texto, revisadas por um revisor que olha a imagem.
+- Padrão visual: carrossel de pet shop aprovado pelo Rodrigo (5 cartões: gancho, dor, solução, como funciona, chamada).
+- O agente só fala com donos de pequenos negócios (público da Flow Arts). Para clientes futuros falarem com o público deles, precisa de outra versão.
+
 ## 2026-10-12 — WhatsApp com IA respondendo sozinha
 - Rodrigo pediu um agente de IA respondendo no WhatsApp e autorizou falar preços. Isto substitui a regra antiga "IA só gera rascunho": a resposta automática existe, mas começa **desligada** e só liga pelo painel Master.
 - Regra da Meta (desde 15/01/2026): proibido robô de conversa livre; permitido atendente de negócio com passagem para humano. O prompt limita a IA aos fatos da Flow Arts e manda chamar o Rodrigo para fechar/pagar, desconto, reclamação ou dúvida fora do roteiro.

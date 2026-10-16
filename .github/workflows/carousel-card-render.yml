@@ -1,0 +1,89 @@
+name: Carousel Card Render
+
+# Agente de marketing da Flow Arts: o Worker manda as 5 fotos (sem texto) e os títulos;
+# aqui o texto é escrito por código (scripts/social/render_carousel.py) e cada cartão volta para o Nexus.
+on:
+  repository_dispatch:
+    types: [carousel-card-render]
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event.client_payload.client_id != ''
+    steps:
+      - name: Validate payload
+        shell: bash
+        env:
+          POST_ID: ${{ github.event.client_payload.post_id }}
+          CLIENT_ID: ${{ github.event.client_payload.client_id }}
+          CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+          CALLBACK_URL: ${{ github.event.client_payload.callback_url }}
+          CARDS: ${{ github.event.client_payload.cards }}
+        run: |
+          set -euo pipefail
+          test -n "$POST_ID"
+          test -n "$CLIENT_ID"
+          test -n "$CALLBACK_TOKEN"
+          case "$CALLBACK_URL" in https://servidor-nexus.diamantehinode2015.workers.dev/api/internal/carousel-render/upload) ;; *) exit 1 ;; esac
+          printf '%s' "$CARDS" > /tmp/cards-input.json
+          jq -e 'type=="array" and length>=2 and length<=10' /tmp/cards-input.json >/dev/null
+          # Fotos só podem vir do próprio Nexus.
+          jq -r '.[].photo' /tmp/cards-input.json | while read -r photo; do
+            case "$photo" in https://servidor-nexus.diamantehinode2015.workers.dev/media/posts/*) ;; *) echo "foto fora do Nexus"; exit 1 ;; esac
+          done
+
+      - name: Checkout render script, fonts and brand symbol
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/social
+            public/brand
+          sparse-checkout-cone-mode: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download photos
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/photos
+          count=$(jq 'length' /tmp/cards-input.json)
+          for i in $(seq 0 $((count-1))); do
+            url=$(jq -r ".[$i].photo" /tmp/cards-input.json)
+            curl --fail --silent --show-error --location --max-time 60 "$url" -o "/tmp/photos/$i.jpg"
+          done
+          jq '[to_entries[] | .value + {photo: ("/tmp/photos/" + (.key|tostring) + ".jpg")}]' /tmp/cards-input.json > /tmp/cards.json
+
+      - name: Render cards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet "pillow==12.3.0"
+          python scripts/social/render_carousel.py /tmp/cards.json /tmp/out
+          ls -la /tmp/out
+
+      - name: Upload cards to NEXUS
+        shell: bash
+        env:
+          POST_ID: ${{ github.event.client_payload.post_id }}
+          CLIENT_ID: ${{ github.event.client_payload.client_id }}
+          CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+          CALLBACK_URL: ${{ github.event.client_payload.callback_url }}
+        run: |
+          set -euo pipefail
+          count=$(jq 'length' /tmp/cards.json)
+          for n in $(seq 1 "$count"); do
+            curl --fail --silent --show-error --max-time 120 \
+              -X PUT \
+              -H "content-type: image/jpeg" \
+              -H "x-nexus-post-id: $POST_ID" \
+              -H "x-nexus-client-id: $CLIENT_ID" \
+              -H "x-nexus-callback-token: $CALLBACK_TOKEN" \
+              -H "x-nexus-card-index: $n" \
+              --data-binary @"/tmp/out/$n.jpg" \
+              "$CALLBACK_URL" | jq .
+          done

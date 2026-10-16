@@ -1,5 +1,9 @@
 # Estado do Nexus 2.0
 
+## 2026-10-16 ~17h BRT — agente de marketing do carrossel pronto em branch
+- Branch `feat/agente-marketing-carrossel` (commit local, sem push): plano de 5 cartões conferido no código, fotos sem texto com revisor visual, títulos escritos por código no GitHub Actions. Detalhes em CHANGELOG.md e docs/agente-marketing-carrossel.md.
+- Produção não mudou. Imagens seguem pausadas no Master.
+
 ## 2026-10-12 ~17h BRT — verificação da empresa enviada à Meta
 - Criado e-mail contato@flowarts.com.br (Cloudflare Email Routing → flowarts2027@gmail.com, destino verificado, regra ativa). Usado para confirmar a empresa na Meta.
 - Verificação do portfólio "Rodrigo Carvalho" enviada: status "Em análise", previsão ~2 dias úteis.

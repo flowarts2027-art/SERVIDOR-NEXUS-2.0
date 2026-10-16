@@ -3,6 +3,11 @@ import { globalPlayCarouselPlan, GLOBAL_PLAY_REFERENCE_VERSION } from "./media-r
 import { generateOriginalMedia } from "./media-generation.js";
 import { clientBrand, brandProfileVersion, GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { recordAgentExecution, patchAgentCoreState } from "./agent-core.js";
+import { openAIResponses } from "./openai.js";
+import {
+  CAROUSEL_AGENT_VERSION, CAROUSEL_CARD_COUNT, MAX_PHOTO_ATTEMPTS,
+  planMarketingCarousel, photoBrief, reviewCarouselPhoto, renderCards
+} from "./carousel-agent.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -199,6 +204,129 @@ async function buildCarousel(env, client, row, payload) {
   return { status:"approved", kind:"carousel", carouselUrls:cards, cardCount:cards.length, carouselTemplateVersion:CAROUSEL_STORY_VERSION, referenceVersion:client.id === "globalplay-streaming" ? GLOBAL_PLAY_REFERENCE_VERSION : "" };
 }
 
+// Agente de marketing (Flow Arts): plano de 5 cartões → 5 fotos sem texto revisadas → GitHub escreve os títulos.
+// Desligar: variável NEXUS_CAROUSEL_AGENT=false (volta ao carrossel antigo).
+export function usesMarketingAgent(env, client) {
+  return Boolean(brandProfileVersion(client?.id)) && String(env?.NEXUS_CAROUSEL_AGENT || "true").toLowerCase() !== "false";
+}
+
+const CAROUSEL_RENDER_PATH = "/api/internal/carousel-render/upload";
+const RENDER_STALE_MS = 20 * 60 * 1000;
+const MAX_RENDER_DISPATCHES = 3;
+
+async function saveFormatBuild(env, rowId, payload) {
+  await env.DB.prepare(
+    "UPDATE post_ledger SET payload_json=?2,error='format_build_pending',updated_at=CURRENT_TIMESTAMP WHERE id=?1"
+  ).bind(rowId, JSON.stringify(payload)).run();
+}
+
+export async function buildAgentCarousel(env, client, row, payload, deps = {}) {
+  const request = deps.request || openAIResponses;
+  const generate = deps.generate || generateOriginalMedia;
+  const fetchImpl = deps.fetch || fetch;
+  const current = payload?.formatBuild && typeof payload.formatBuild === "object" ? payload.formatBuild : {};
+  const sameVersion = String(current.carouselTemplateVersion || "") === CAROUSEL_AGENT_VERSION;
+
+  if (sameVersion && current.status === "approved" && Array.isArray(current.carouselUrls) && current.carouselUrls.length === CAROUSEL_CARD_COUNT) {
+    return { ...current, status:"approved", reused:true };
+  }
+  if (sameVersion && current.status === "rendering" && current.callbackToken) {
+    const dispatchedAt = Date.parse(String(current.dispatchedAt || ""));
+    if (Number.isFinite(dispatchedAt) && Date.now() - dispatchedAt < RENDER_STALE_MS) return current;
+  }
+
+  const agent = sameVersion && current.agent && typeof current.agent === "object" ? { ...current.agent } : {};
+  const build = { ...current, kind:"carousel", carouselTemplateVersion:CAROUSEL_AGENT_VERSION, agent };
+  delete build.carouselUrls;
+
+  // 1) Estrategista + redator + diretor de arte.
+  if (!agent.plan) {
+    agent.plan = await planMarketingCarousel(env, client, payload, { request, caption: String(row.caption || "") });
+    agent.photos = [];
+    payload.formatBuild = { ...build, status:"planning" };
+    await saveFormatBuild(env, row.id, payload);
+  }
+
+  // 2) Uma foto por cartão, sem texto, conferida pelo revisor que olha a imagem.
+  const photos = Array.isArray(agent.photos) ? agent.photos.map(item => ({ ...(item || {}) })) : [];
+  agent.photos = photos;
+  for (let index = 0; index < CAROUSEL_CARD_COUNT; index++) {
+    const photo = photos[index] || { attempts:0 };
+    photos[index] = photo;
+    if (photo.status === "approved" && /^https:\/\//i.test(String(photo.url || ""))) continue;
+    // Foto já paga, revisão ficou pendente (sem saldo/sem resposta): só revisa de novo.
+    if (!(photo.status === "unavailable" && /^https:\/\//i.test(String(photo.url || "")))) {
+      if (Number(photo.attempts || 0) >= MAX_PHOTO_ATTEMPTS) {
+        throw new Error("carousel_photo_rejected_card_" + (index + 1) + ":" + String(photo.review?.reason || "").slice(0, 100));
+      }
+      const media = await generate(env, client, row.id + "-agent-card-" + (index + 1), photoBrief(agent.plan, index), {
+        contentFormat:"carousel",
+        photoOnly:true,
+        carouselIndex:index,
+        nicheId:String(payload?.nicheId || ""),
+        variationSeed:row.id + "|agent|" + index + "|" + Number(photo.attempts || 0)
+      });
+      if (!/^https:\/\//i.test(String(media?.url || ""))) throw new Error("carousel_card_generation_failed");
+      photo.url = String(media.url);
+      photo.attempts = Number(photo.attempts || 0) + 1;
+      photo.costUsd = Number(photo.costUsd || 0) + Number(media.costUsd || 0);
+      photo.status = "generated";
+    }
+    const review = await reviewCarouselPhoto(env, client, photo.url, agent.plan, index, { request });
+    photo.review = review;
+    photo.status = review.status;
+    payload.formatBuild = { ...build, status:"building" };
+    await saveFormatBuild(env, row.id, payload);
+    if (review.status === "unavailable") {
+      return { ...build, status:"building", waiting:"photo_review_unavailable" };
+    }
+    if (review.status !== "approved") index--; // gera outra foto para o mesmo cartão (até MAX_PHOTO_ATTEMPTS)
+  }
+
+  // 3) GitHub Actions escreve título, logo, rodapé e numeração por código.
+  const dispatches = Number(current.renderDispatches || 0);
+  if (dispatches >= MAX_RENDER_DISPATCHES) throw new Error("carousel_render_timeout");
+  const ghToken = String(env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || "").trim();
+  if (!ghToken) throw new Error("github_actions_token_missing");
+  const base = publicBase(env);
+  if (!base) throw new Error("public_base_url_missing");
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0").trim();
+  const [owner, name] = repo.split("/");
+  const callbackToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+  const response = await fetchImpl(`https://api.github.com/repos/${owner}/${name}/dispatches`, {
+    method:"POST",
+    headers:{
+      authorization:`Bearer ${ghToken}`,
+      accept:"application/vnd.github+json",
+      "content-type":"application/json",
+      "user-agent":"NEXUS-Format-Builder"
+    },
+    body:JSON.stringify({
+      event_type:"carousel-card-render",
+      client_payload:{
+        post_id:String(row.id),
+        client_id:String(client.id),
+        callback_token:callbackToken,
+        callback_url:base + CAROUSEL_RENDER_PATH,
+        cards:JSON.stringify(renderCards(agent.plan, photos.map(item => item.url)))
+      }
+    }),
+    signal:AbortSignal.timeout(15000)
+  });
+  if (response.status !== 204) {
+    const detail = (await response.text().catch(() => "")).slice(0, 180);
+    throw new Error("carousel_render_dispatch_failed_" + response.status + (detail ? ":" + detail : ""));
+  }
+  return {
+    ...build,
+    status:"rendering",
+    callbackToken,
+    dispatchedAt:new Date().toISOString(),
+    renderDispatches:dispatches + 1,
+    renderedCards:[]
+  };
+}
+
 async function dispatchReel(env, client, row, payload) {
   const current = payload?.formatBuild && typeof payload.formatBuild === "object" ? payload.formatBuild : {};
   if (/^https:\/\//i.test(String(current.videoUrl || ""))) {
@@ -360,7 +488,7 @@ export async function runFormatBuilder(env, client, options = {}) {
 
     try {
       const build = format==="carousel"
-        ? await buildCarousel(env,client,row,payload)
+        ? (usesMarketingAgent(env,client) ? await buildAgentCarousel(env,client,row,payload) : await buildCarousel(env,client,row,payload))
         : await dispatchReel(env,client,row,payload);
       payload.formatBuild={...(payload.formatBuild||{}),...build,builtAt:build.status==="approved"?new Date().toISOString():(payload.formatBuild?.builtAt||null)};
       payload.qualityGates.formatBuilder=build.status==="approved"?"approved":"pending";
@@ -399,6 +527,47 @@ export async function runFormatBuilder(env, client, options = {}) {
   });
   await patchAgentCoreState(env,client.id,{formatBuilder:output});
   return output;
+}
+
+// GitHub Actions devolve cada cartão pronto (1 a 5). Com os 5, o carrossel fica aprovado pelo Format Builder.
+export async function handleCarouselRenderCallback(request, env, url) {
+  if (url.pathname !== CAROUSEL_RENDER_PATH) return null;
+  const reply=(body,status)=>new Response(JSON.stringify(body),{status,headers:{"content-type":"application/json"}});
+  if (request.method !== "PUT") return reply({error:"method_not_allowed"},405);
+  const postId=String(request.headers.get("x-nexus-post-id")||"").trim();
+  const clientId=String(request.headers.get("x-nexus-client-id")||"").trim();
+  const token=String(request.headers.get("x-nexus-callback-token")||"").trim();
+  const index=Number(request.headers.get("x-nexus-card-index")||0);
+  if(!postId||!clientId||!token)return reply({error:"unauthorized"},401);
+  if(!Number.isInteger(index)||index<1||index>CAROUSEL_CARD_COUNT)return reply({error:"invalid_card_index"},400);
+  const row=await env.DB.prepare("SELECT payload_json FROM post_ledger WHERE id=?1 AND client_id=?2 LIMIT 1").bind(postId,clientId).first();
+  if(!row)return reply({error:"post_not_found"},404);
+  const payload=parseJson(row.payload_json,{});
+  const build=payload?.formatBuild&&typeof payload.formatBuild==="object"?payload.formatBuild:{};
+  if(!build.callbackToken||String(build.callbackToken)!==token)return reply({error:"unauthorized"},401);
+  if(String(request.headers.get("content-type")||"").split(";")[0].trim()!=="image/jpeg")return reply({error:"invalid_content_type"},415);
+  if(!env.MEDIA||!request.body)return reply({error:"r2_unavailable"},503);
+  const declared=Number(request.headers.get("content-length")||0);
+  if(!declared||declared>8*1024*1024)return reply({error:"invalid_image_size"},400);
+
+  const key="posts/"+clientId+"/"+postId+"/carousel-card-"+index+"-"+crypto.randomUUID()+".jpg";
+  await env.MEDIA.put(key,request.body,{
+    httpMetadata:{contentType:"image/jpeg",cacheControl:"public, max-age=31536000, immutable"},
+    customMetadata:{clientId,postId,kind:"carousel-agent-card",card:String(index)}
+  });
+  const cards=Array.isArray(build.renderedCards)?[...build.renderedCards]:[];
+  cards[index-1]=publicBase(env)+"/media/"+key;
+  const done=cards.length===CAROUSEL_CARD_COUNT&&cards.every(item=>/^https:\/\//i.test(String(item||"")));
+  const next={...build,renderedCards:cards};
+  if(done){
+    delete next.callbackToken;
+    Object.assign(next,{status:"approved",kind:"carousel",carouselUrls:cards,cardCount:cards.length,builtAt:new Date().toISOString()});
+    payload.qualityGates={...(payload.qualityGates||{}),formatBuilder:"approved",formatBuilderAt:new Date().toISOString()};
+  }
+  payload.formatBuild=next;
+  await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
+    .bind(postId,JSON.stringify(payload),done?"":"format_build_pending").run();
+  return reply({ok:true,postId,card:index,complete:done},201);
 }
 
 export async function handleSocialFormatRenderCallback(request, env, url) {

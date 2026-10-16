@@ -18,7 +18,7 @@ import { autonomyOverallHealthy } from "./health-policy.js";
 import { buildAutonomyHealthSummary } from "./autonomy-health-summary.js";
 import { emergencyPublisherStatus, isD1Emergency, runEmergencyPublisher } from "./emergency-publisher.js";
 import { emergencyPublisherDiagnostic } from "./emergency-publisher-diagnostic.js";
-import { handleSocialFormatRenderCallback } from "./format-builder.js";
+import { handleSocialFormatRenderCallback, handleCarouselRenderCallback } from "./format-builder.js";
 import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autoreply.js";
 import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
@@ -675,6 +675,8 @@ export default {
 
     const socialFormatResponse = await handleSocialFormatRenderCallback(request, env, url);
     if (socialFormatResponse) return socialFormatResponse;
+    const carouselRenderResponse = await handleCarouselRenderCallback(request, env, url);
+    if (carouselRenderResponse) return carouselRenderResponse;
 
 
     if (["GET", "HEAD"].includes(request.method) && ["/login", "/portal", "/portal.html"].includes(url.pathname)) {

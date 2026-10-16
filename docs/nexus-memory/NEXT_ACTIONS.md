@@ -1,5 +1,11 @@
 # Próximas ações
 
+## Agente de marketing do carrossel (16/10 ~17h)
+1. OK do Rodrigo para publicar a branch `feat/agente-marketing-carrossel` em main (o workflow `carousel-card-render` só funciona depois de estar na main).
+2. Religar só Format Builder + Designer no Master e deixar 1 carrossel ser montado (custo estimado: 5 fotos ≈ US$ 0,30 + revisões; mais se alguma foto for refeita).
+3. Conferir no Actions o run "Carousel Card Render" e no painel os 5 cartões. Se algo falhar: `NEXUS_CAROUSEL_AGENT=false` volta ao carrossel antigo.
+4. Depois: versão do agente para clientes falarem com o público deles (hoje ele só vende a Flow Arts para donos de negócio).
+
 ## Amanhã (16/10) — primeiro item
 - Criação de posts da Flow Arts PAUSADA desde 15/10 21h30 (GENERATION_PAUSED_CLIENTS). Reavaliar com o Rodrigo: skills de edição (Reels animados com Chromium + FFmpeg), campanha com 50% de prova, 1 post por dia, Stories. Só tirar a pausa com o OK dele.
 - Conferir se o social-format-render parou de rodar depois de 9ab49a4.

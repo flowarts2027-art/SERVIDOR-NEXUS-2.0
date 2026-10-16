@@ -1,5 +1,15 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 ~17h BRT — Agente de marketing do carrossel (branch feat/agente-marketing-carrossel, SEM push)
+- Pedido do Rodrigo: imagens sem sentido e texto errado na arte. Ele trouxe do ChatGPT um agente em 4 etapas (estrategista, redator, diretor de arte, revisor) testado no nicho "salão de beleza"; o carrossel de pet shop dele (5 cartões, título preto/azul, logo no topo, "Comente QUERO") virou o padrão visual.
+- `src/carousel-agent.js`: plano de 5 cartões (gancho, dor, solucao, como_funciona, chamada) a partir de nicho + tema + legenda do post. O código confere tudo (5 cartões, ordem, linha 1 ≤ 24 e linha 2 ≤ 30 caracteres, sem números, preço, %, "garantido", "dobre", "lucro", "viral"; cartão 5 não repete "Comente QUERO") e pede correção 1 vez; se falhar de novo, não gera imagem.
+- `media-generation.js` opção `photoOnly`: a IA faz só a FOTO (sem título, sem estilo sorteado, sem "F", telas só com fotos). O comportamento antigo continua para posts simples.
+- Revisor que olha a foto de verdade (`reviewCarouselPhoto`): sem texto, combina com o título e com o nicho, mãos/rostos ok, pessoa inteira, nota ≥ 65. Reprovou: refaz a foto daquele cartão (máx. 3 por cartão, depois o build falha e para de gastar). Revisão sem resposta/sem saldo: espera a próxima rodada sem pagar outra foto.
+- `format-builder.js` `buildAgentCarousel` (só marca com perfil, ex.: Flow Arts; desligar com `NEXUS_CAROUSEL_AGENT=false`): progresso salvo a cada foto; com as 5 aprovadas despacha `carousel-card-render` no GitHub.
+- `.github/workflows/carousel-card-render.yml` + `scripts/social/render_carousel.py`: escreve título, logo (símbolo + FLOW ARTS), rodapé com seta, numeração e botão "Comente QUERO" por código com a fonte Inter (OFL, em scripts/social/fonts). Devolve cada cartão em `PUT /api/internal/carousel-render/upload` (token por post); com os 5 o Format Builder fica aprovado e `carouselUrls` tem 5 cartões.
+- Testes: 12 novos (416 passando). Renderizador conferido aqui com as 5 fotos do salão vindas do ChatGPT. NÃO testado: chamada real à OpenAI, o workflow no GitHub e o retorno real ao Worker. `wrangler deploy --dry-run` não rodou aqui (npm sem rede nesta sessão).
+- Geração de imagens continua PAUSADA no Master (Creator/Designer/Format Builder desligados desde 16/10 17:44 UTC).
+
 ## 2026-10-16 09h BRT — Story automático e título sem corte (pedido do Rodrigo: tudo automático)
 
 - Rodrigo não quer ações manuais: o produto dele é automação.

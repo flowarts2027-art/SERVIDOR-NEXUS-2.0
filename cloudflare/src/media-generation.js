@@ -97,6 +97,8 @@ export function imageSizeFor(contentFormat){
 // Estilo visual do post (só marcas com perfil próprio, ex.: Flow Arts).
 export function styleForPost(client, visualBrief="", variationSeed="", options={}){
   if(!brandProfileVersion(client?.id))return null;
+  // Foto do carrossel do agente de marketing: sem estilo sorteado (os 5 cartões precisam da mesma cena).
+  if(options.photoOnly===true)return null;
   return pickFlowArtsStyle({
     headline:brandHeadline(client,options.title),
     brief:visualBrief,
@@ -107,15 +109,19 @@ export function styleForPost(client, visualBrief="", variationSeed="", options={
 
 export function buildVisualPrompt(client, visualBrief="", variationSeed="", options={}){
   const id=String(client?.id||"");
-  const headline=brandHeadline(client,options.title);
+  const photoOnly=options.photoOnly===true;
+  // photoOnly: a IA faz só a foto; o título é escrito depois por código (render_carousel.py).
+  const headline=photoOnly?"":brandHeadline(client,options.title);
   const style=styleForPost(client,visualBrief,variationSeed,options);
   const common=[
     options.contentFormat==="carousel"?"Create one separate premium portrait carousel advertising artwork in 4:5 format.":options.contentFormat==="reel"?"Create one premium vertical social-media advertising artwork in 9:16 format.":"Create one premium portrait Instagram feed artwork in 4:5 format.",
     headline
       ? "Write exactly this headline in Brazilian Portuguese, spelled exactly as given, with all accents: \""+headline+"\". Large bold clean sans-serif, white or very light text with strong contrast, placed in the upper half of the image, starting about 12% below the top edge, max 3 lines, every letter fully visible and at least 10% away from the left and right edges (Instagram shows a narrower preview in the profile grid). Never put any letter in the bottom 20% of the image, where Instagram shows buttons and captions. Add a small discreet wordmark \"FLOW ARTS\" above the bottom 20%. No other words, no other logos, no watermarks, no split screen, no collage."
       : "No text, no words, no logos, no watermarks, no split screen, no collage.",
-    style?("Art direction ("+style.name+"): "+style.direction):"One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
-    "Mobile-feed readability: strong focal point, expressive lighting, high contrast between headline and background.",
+    photoOnly
+      ? "PHOTO ONLY: absolutely no text, letters, numbers, logos, signage, labels, price tags, watermarks or written interface anywhere in the image. Composition: the top 22% of the frame is a calm plain light background (wall) with nothing important; the main person, the face, the hands and the action sit in the middle of the frame, fully visible and never cut by the edges; the bottom 8% is a plain surface. Real, natural photograph with true-to-life colors."
+      : style?("Art direction ("+style.name+"): "+style.direction):"One coherent scene, strong focal point, expressive lighting, mobile-feed readability.",
+    photoOnly?"Strong focal point and natural light.":"Mobile-feed readability: strong focal point, expressive lighting, high contrast between headline and background.",
     "Make the composition noticeably different from generic stock imagery.",
     "Variation seed: "+String(variationSeed||"new")
   ];
@@ -139,7 +145,9 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
     common.push(
       "Brand context: "+brand.brandName+(brand.niche?", "+brand.niche:"")+".",
       // "Sem texto" fazia a IA desenhar telas e papéis vazios, só com blocos de cor.
-      "Screens and objects must show real, meaningful content: a phone or laptop shows a real-looking Instagram feed full of product photos, or an analytics dashboard with real-looking charts and photo thumbnails. Any text on screens or paper appears only as tiny, blurred interface lines.",
+      photoOnly
+        ? "Screens (phone, tablet) show only real photos of this business (products, hairstyles, dishes, the shop), with no letters, numbers, icons or buttons."
+        : "Screens and objects must show real, meaningful content: a phone or laptop shows a real-looking Instagram feed full of product photos, or an analytics dashboard with real-looking charts and photo thumbnails. Any text on screens or paper appears only as tiny, blurred interface lines.",
       "Never show blank screens, empty colored rectangles, plain color swatches, blank cards or meaningless decorative shapes. Every object must be a real item a small business uses.",
       // Pedido do Rodrigo (15/10): celular virado para a câmera parece falso.
       "When a person holds a phone, the screen faces the person holding it, never the viewer. To show the screen, use an over-the-shoulder view from behind the person.",
@@ -187,7 +195,8 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
   if(!item?.result)throw new Error("image_generation_missing_result");
   const rawBytes=bytesFromBase64(item.result);
   if(!rawBytes.byteLength||rawBytes.byteLength>12*1024*1024)throw new Error("image_generation_invalid_bytes");
-  const composed=await composeBrandOverlay(env,rawBytes,client,options.title||"",options);
+  // photoOnly: sem o símbolo "F" (o logo completo entra no cartão montado depois).
+  const composed=await composeBrandOverlay(env,rawBytes,client,options.title||"",options.photoOnly===true?{...options,cleanImage:true}:options);
   const bytes=composed.bytes;
   const fingerprint=[...new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))]
     .map(byte=>byte.toString(16).padStart(2,"0")).join("");
