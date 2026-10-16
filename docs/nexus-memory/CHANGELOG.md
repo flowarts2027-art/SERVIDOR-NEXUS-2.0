@@ -1,6 +1,6 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-15 20h56–21h20 BRT — Reel parado publicado de novo na Flow Arts (branch fix/sem-reel-parado, não publicada)
+## 2026-10-15 20h56–21h20 BRT — Reel parado publicado de novo na Flow Arts (publicado 9ab49a4 às 21h03 com OK do Rodrigo; deploy e CI ok; conferir amanhã que o social-format-render não roda mais)
 
 - Rodrigo mandou um print às 20h56: post da Flow Arts saiu como vídeo, com a frase cortada ("Se isso acontec…") e sem sentido.
 - Prova: o GitHub Actions "social-format-render" rodou hoje às 18:45 e às 23:16 UTC (15h45 e 20h16 BRT). É o Reel de foto com zoom, que estava proibido desde 14/10.
