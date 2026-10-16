@@ -254,3 +254,27 @@ test("botão de teste: cria carrossel que o Format Builder monta, mas ninguém p
   const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
   assert.match(master, /\/api\/master\/carousel-test/);
 });
+
+test("modo passo a passo: cada chamada faz só o plano ou 1 foto (cabe numa chamada curta)", async () => {
+  const { db, DB } = sqliteDB();
+  const payload = { creativeFeatures: { requestedFormat: "carousel" } };
+  db.prepare("INSERT INTO post_ledger(id,client_id,status,payload_json) VALUES('s1','primeiro-teste','carousel_test',?)").run(JSON.stringify(payload));
+  const request = async (env, clientId, body) => body.nexusPurpose === "carousel-plan"
+    ? { output_text: JSON.stringify(goodPlan()) }
+    : { output_text: JSON.stringify({ semTexto: true, combinaComTitulo: true, combinaComNicho: true, anatomiaOk: true, pessoaInteira: true, qualityScore: 80, motivo: "ok" }) };
+  let generated = 0;
+  const generate = async () => { generated++; return { url: "https://n/media/posts/" + generated + ".jpg" }; };
+  let dispatched = 0;
+  const fetchMock = async () => { dispatched++; return new Response(null, { status: 204 }); };
+  const env = { DB, GITHUB_ACTIONS_TOKEN: "t", PUBLIC_BASE_URL: "https://n" };
+  let p = payload;
+  const statuses = [];
+  for (let i = 0; i < 7; i++) {
+    const b = await buildAgentCarousel(env, { id: "primeiro-teste" }, { id: "s1" }, p, { request, generate, fetch: fetchMock, stepLimit: 1 });
+    p = { ...p, formatBuild: { ...(p.formatBuild || {}), ...b } };
+    statuses.push(b.status + ":" + generated);
+    if (b.status === "rendering") break;
+  }
+  assert.deepEqual(statuses, ["building:0", "building:1", "building:2", "building:3", "building:4", "rendering:5"]);
+  assert.equal(dispatched, 1);
+});

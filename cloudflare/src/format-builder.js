@@ -239,12 +239,16 @@ export async function buildAgentCarousel(env, client, row, payload, deps = {}) {
   const build = { ...current, kind:"carousel", carouselTemplateVersion:CAROUSEL_AGENT_VERSION, agent };
   delete build.carouselUrls;
 
+  // stepLimit: quantos passos caros (plano ou foto) fazer nesta chamada. Sem limite no cron.
+  let steps = Number(deps.stepLimit || 0) > 0 ? Number(deps.stepLimit) : Infinity;
+
   // 1) Estrategista + redator + diretor de arte.
   if (!agent.plan) {
     agent.plan = await planMarketingCarousel(env, client, payload, { request, caption: String(row.caption || "") });
     agent.photos = [];
     payload.formatBuild = { ...build, status:"planning" };
     await saveFormatBuild(env, row.id, payload);
+    steps--;
   }
 
   // 2) Uma foto por cartão, sem texto, conferida pelo revisor que olha a imagem.
@@ -256,6 +260,8 @@ export async function buildAgentCarousel(env, client, row, payload, deps = {}) {
     if (photo.status === "approved" && /^https:\/\//i.test(String(photo.url || ""))) continue;
     // Foto já paga, revisão ficou pendente (sem saldo/sem resposta): só revisa de novo.
     if (!(photo.status === "unavailable" && /^https:\/\//i.test(String(photo.url || "")))) {
+      if (steps <= 0) return { ...build, status:"building", waiting:"next_step" };
+      steps--;
       if (Number(photo.attempts || 0) >= MAX_PHOTO_ATTEMPTS) {
         throw new Error("carousel_photo_rejected_card_" + (index + 1) + ":" + String(photo.review?.reason || "").slice(0, 100));
       }
@@ -636,4 +642,27 @@ export async function carouselTestStatus(env, clientId, id) {
     photos: (build.agent?.photos || []).map(photo => ({ status: photo.status, attempts: photo.attempts, reason: photo.review?.reason || "", url: photo.url || "" })),
     carouselUrls: Array.isArray(build.carouselUrls) ? build.carouselUrls : []
   };
+}
+
+// Um passo do carrossel de teste por chamada (o botão do Master chama até terminar).
+// Não depende do cron: cada chamada faz o plano OU uma foto revisada OU manda para o GitHub.
+export async function stepCarouselTest(env, client, id, deps = {}) {
+  const row = await env.DB.prepare("SELECT id,caption,payload_json FROM post_ledger WHERE id=?1 AND client_id=?2 AND status='carousel_test' LIMIT 1").bind(String(id), String(client.id)).first();
+  if (!row) return null;
+  const payload = parseJson(row.payload_json, {});
+  const current = payload.formatBuild || {};
+  if (["approved"].includes(current.status) || (current.status === "failed" && Number(current.attempts || 0) >= 3)) {
+    return carouselTestStatus(env, client.id, id);
+  }
+  try {
+    const build = await buildAgentCarousel(env, client, row, payload, { ...deps, stepLimit: 1 });
+    payload.formatBuild = { ...(payload.formatBuild || {}), ...build };
+    await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
+      .bind(row.id, JSON.stringify(payload), build.status === "approved" ? "" : "format_build_pending").run();
+  } catch (error) {
+    payload.formatBuild = { ...(payload.formatBuild || {}), status:"failed", attempts:Number(payload.formatBuild?.attempts || 0) + 1, error:String(error?.message || error).slice(0, 180) };
+    await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='format_build_failed',updated_at=CURRENT_TIMESTAMP WHERE id=?1")
+      .bind(row.id, JSON.stringify(payload)).run();
+  }
+  return carouselTestStatus(env, client.id, id);
 }

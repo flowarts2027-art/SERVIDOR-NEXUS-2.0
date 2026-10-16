@@ -9,7 +9,7 @@
   let timer = null;
 
   const PHOTO = { approved: "aprovada", rejected: "reprovada (refazendo)", generated: "gerada", unavailable: "esperando revisão" };
-  const STATUS = { waiting: "Na fila. O próximo ciclo dos agentes (a cada 15 min) começa o trabalho.", planning: "Agente escrevendo os 5 cartões…", building: "Gerando e revisando as fotos…", rendering: "Fotos aprovadas. O GitHub está escrevendo os títulos…", approved: "Pronto!", failed: "Falhou." };
+  const STATUS = { waiting: "Começando…", planning: "Agente escrevendo os 5 cartões…", building: "Gerando e revisando as fotos…", rendering: "Fotos aprovadas. O GitHub está escrevendo os títulos…", approved: "Pronto!", failed: "Falhou." };
 
   function render(test) {
     const box = $("#carousel-test-status");
@@ -21,6 +21,24 @@
     box.innerHTML = "<p><strong>" + esc(STATUS[test.status] || test.status) + "</strong></p>" + fail + titles + photos + cards;
   }
 
+  // Faz o trabalho passo a passo pelo próprio navegador (não depende do relógio do servidor).
+  let stepping = false;
+  async function drive(id) {
+    if (stepping) return;
+    stepping = true;
+    try {
+      for (let i = 0; i < 25; i++) {
+        const response = await fetch("/api/master/carousel-test/" + CLIENT + "/" + encodeURIComponent(id) + "/step", { method: "POST", credentials: "same-origin" });
+        if (!response.ok) break;
+        const data = await response.json();
+        if (data?.test) render(data.test);
+        if (!data?.test || ["rendering", "approved", "failed"].includes(data.test.status)) break;
+      }
+    } catch {}
+    stepping = false;
+    poll(id);
+  }
+
   async function poll(id) {
     clearTimeout(timer);
     try {
@@ -29,6 +47,7 @@
       const data = await response.json();
       if (data?.test) render(data.test);
       if (data?.test && ["approved", "failed"].includes(data.test.status)) return;
+      if (data?.test && !["rendering"].includes(data.test.status) && !stepping) return drive(id);
     } catch {}
     timer = setTimeout(() => poll(id), 20000);
   }
@@ -46,9 +65,7 @@
       const out = await response.json();
       if (!response.ok || !out?.test?.id) throw new Error(out?.error || "erro " + response.status);
       try { localStorage.setItem(KEY, out.test.id); } catch {}
-      // Pede ao Format Builder para rodar no próximo ciclo.
-      fetch("/api/master/agent-core/" + CLIENT + "/run", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ agent: "format-builder" }) }).catch(() => {});
-      poll(out.test.id);
+      drive(out.test.id);
     } catch (error) {
       $("#carousel-test-status").textContent = "Não consegui criar o teste: " + error.message;
     } finally {
@@ -59,6 +76,6 @@
   document.addEventListener("DOMContentLoaded", () => {
     let id = "";
     try { id = localStorage.getItem(KEY) || ""; } catch {}
-    if (id) poll(id);
+    if (id) drive(id);
   });
 })();
