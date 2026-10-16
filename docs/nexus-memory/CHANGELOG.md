@@ -691,3 +691,7 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Novo vídeo public/video/instagram-responde.mp4 (+ .jpg), seção "Comentou? A resposta chega sozinha." no site, marcado "Demonstração ilustrativa".
 - Ainda NÃO provado em produção: leitura de comentários + envio de DM. Não prometer prazo/garantia a clientes antes de testar.
 - Pendente: 9 páginas de nicho (branch feat/paginas-nicho-novas) precisam da mesma troca de nome antes de publicar.
+
+## 2026-10-16 — 9 páginas de nicho publicadas
+- Merge de feat/paginas-nicho-novas (barbearia, academia, confeitaria, floricultura, loja de roupas, oficina, padaria, pet shop, restaurante) com o nome "Instagram com resposta automática". Sitemap e rodapé atualizados. 395 testes ok. Publicado com OK do Rodrigo.
+- Próximo: Google Meu Negócio e Search Console (guiar o Rodrigo), lista de negócios para o Captador.
