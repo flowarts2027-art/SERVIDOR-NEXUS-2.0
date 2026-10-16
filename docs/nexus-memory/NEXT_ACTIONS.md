@@ -400,3 +400,6 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Creator, Designer e Format Builder estão DESLIGADOS em primeiro-teste e demo-cafe. Religar só com OK do Rodrigo (ver AUDITORIA-NEXUS-2026-10-16.md).
 - Antes de religar: corrigir legenda que fala em vídeo quando o post é imagem; mostrar custo real por imagem; publicar a branch fix/painel-so-aprova-revisado se aprovada.
 
+## 2026-10-16 — Depois do deploy
+- Religar SÓ o Designer (com OK do Rodrigo), gerar 1 imagem e mostrar a ele; conferir símbolo em foto escura e custo no Master. Só então religar Creator e Format Builder.
+

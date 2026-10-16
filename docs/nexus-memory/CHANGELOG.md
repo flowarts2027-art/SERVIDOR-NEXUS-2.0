@@ -735,3 +735,11 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Branch fix/painel-so-aprova-revisado (SEM push em main): painel do cliente só libera Aprovar quando copyChief e designer estão "approved". 401 testes passando.
 - PRÓXIMO: OK do Rodrigo para publicar a branch; decidir quando religar Creator/Designer/Format Builder.
 
+## 2026-10-16 (tarde) — Publicado: estilo natural, legenda, custo, trava do painel
+- Pedido do Rodrigo: imagens muito azuladas/artificiais. Agora foto realista com cores naturais; símbolo "F" pequeno embaixo, colocado por código (src/flow-mark.js). Testado só em fundo claro.
+- Copy Chief reprova legenda com "vídeo/reel/assista" em post de imagem (erro copy_mentions_video_on_image).
+- Custo ESTIMADO por imagem (NEXUS_IMAGE_COST_USD, padrão 0,06 — valor não confirmado) somado em mediaGeneration.costUsd e mostrado no Master.
+- Painel do cliente: Aprovar só depois de copyChief e designer aprovados.
+- 404 testes passando. Geração de imagens segue PAUSADA.
+- PRÓXIMO: conferir o deploy; com OK do Rodrigo religar só o Designer e gerar 1 imagem de teste.
+
