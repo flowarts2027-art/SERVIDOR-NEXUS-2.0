@@ -679,3 +679,9 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - 00h13 (14/10): forma de pagamento adicionada na conta do WhatsApp; verificação da empresa enviada de novo ("Em processamento"). Teste 5 às 03:13 UTC: chegou, IA respondeu, envio ainda recusado `OAuthException | code=100 | Authorization Error`. Descartados: token (depurador ok, all objects), número (CONNECTED/CLOUD_API/LIVE), pagamento. Suspeita restante: app "Atendente Flow Arts" em modo desenvolvimento bloqueando envio a números fora da lista de teste, ou formato do destinatário. Próximo: testar envio pela tela "Enviar mensagem" da Meta (mostra o motivo) e checar o `to` enviado pelo Nexus.
 - 06h47 (14/10): verificação da empresa pelo domínio. Metatag facebook-domain-verification adicionada em public/site.html (o e-mail "pla...@gmail.com" vem do registro da Receita e o Rodrigo não lembra; dados da empresa corrigidos conforme o CCMEI: nome empresarial, bairro, CNPJ, site).
 - 06h53 (14/10): domínio flowarts.com.br VERIFICADO na Meta (metatag). Verificação da empresa reenviada por domínio + CCMEI: "Em análise", ~2 dias úteis. Ao aprovar: publicar o app Atendente Flow Arts e testar o robô (envio hoje falha com OAuthException code 100).
+
+## 2026-10-16 — Site interativo (public/site.html)
+- Pedido do Rodrigo: site "muito estático". Adicionadas animações em JS/CSS puros (sem biblioteca): título palavra a palavra, celular 3D com etiquetas, entrada ao rolar, barra de progresso, conversa com "digitando…" e botão de repetir, tilt nas portas, brilho nos pacotes, botão fixo de WhatsApp no celular.
+- Respeita prefers-reduced-motion e saveData (site parado). Preços, links, JSON-LD e beacon intactos.
+- Testado em Playwright (desktop e celular), sem erros de console. Publicado com o OK do Rodrigo. Verificar no ar após o deploy.
+- Pendente: decidir manter/tirar "Instagram que responde sozinho (R$ 197)"; 9 páginas de nicho aguardam OK na branch feat/paginas-nicho-novas.
