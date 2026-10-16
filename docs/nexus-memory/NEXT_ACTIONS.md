@@ -395,3 +395,8 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 2. Conferir o número `to` usado pelo Nexus (wa_id do webhook) e testar envio manual pela aba WhatsApp do Master.
 3. Se for o modo desenvolvimento: aguardar a verificação da empresa (em processamento) e publicar o app.
 4. Conferir a demo do Café Brisa (legendas sem frases de filme após o Hook Lab).
+
+## 2026-10-16 — Pausa de imagens (pedido do Rodrigo)
+- Creator, Designer e Format Builder estão DESLIGADOS em primeiro-teste e demo-cafe. Religar só com OK do Rodrigo (ver AUDITORIA-NEXUS-2026-10-16.md).
+- Antes de religar: corrigir legenda que fala em vídeo quando o post é imagem; mostrar custo real por imagem; publicar a branch fix/painel-so-aprova-revisado se aprovada.
+

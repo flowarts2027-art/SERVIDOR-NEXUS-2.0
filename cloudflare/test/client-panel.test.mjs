@@ -34,3 +34,10 @@ test("textos vindos do servidor são escapados", () => {
   assert.match(js, /function escapeHtml/);
   assert.match(js, /function safeUrl/);
 });
+
+test("painel do cliente só libera Aprovar depois da revisão automática de texto e arte", () => {
+  assert.match(js, /function autoReviewed\(post\)/);
+  assert.match(js, /g\.copyChief === "approved" && g\.designer === "approved"/);
+  assert.match(js, /Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\) && reviewed/);
+  assert.match(js, /Em revisão automática/);
+});

@@ -91,6 +91,13 @@ function postImage(post) {
   return safeUrl(post.imageUrl || post.publicImageUrl || post.formatBuild?.imageUrl || (post.formatBuild?.carouselUrls || [])[0]);
 }
 
+// Texto e arte precisam ter passado na revisão automática antes de o cliente poder aprovar.
+function autoReviewed(post) {
+  const g = post.qualityGates;
+  if (!g || typeof g !== "object") return true; // post antigo, sem revisão registrada
+  return g.copyChief === "approved" && g.designer === "approved";
+}
+
 // Carrossel ainda sem todas as imagens (os agentes criam a cada ~15 minutos).
 function carouselIncomplete(post) {
   if (String(post.creativeFeatures?.requestedFormat || "") !== "carousel") return false;
@@ -144,9 +151,11 @@ function actionsHtml(post) {
   }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
-  const ready = Boolean(postImage(post)) && !carouselIncomplete(post);
+  const reviewed = autoReviewed(post);
+  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed;
+  const waitMsg = reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
-      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : "disabled title=\"Espere todas as imagens ficarem prontas\""}>Aprovar</button>
+      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
@@ -159,6 +168,7 @@ function actionsHtml(post) {
 function tagHtml(post) {
   const group = postGroup(post);
   if (String(post.approvalStatus) === "correction_requested") return `<span class="tag tag-blue">Ajuste pedido · sendo refeito</span>`;
+  if (group === "aprovar" && !autoReviewed(post)) return `<span class="tag tag-blue">Em revisão automática</span>`;
   if (group === "aprovar") return `<span class="tag tag-wait">Esperando sua aprovação</span>`;
   if (group === "agendados") return `<span class="tag tag-blue">Aprovado · será publicado</span>`;
   return `<span class="tag tag-ok">Publicado</span>`;
@@ -340,7 +350,7 @@ function renderPosts() {
       : `<div class="empty"><strong>${empty[0]}</strong>${empty[1]}</div>`;
   }
   $$(".segmented [data-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.filter === state.filter));
-  const pending = state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested").length;
+  const pending = state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested" && autoReviewed(post)).length;
   const badge = $("#badge-posts");
   badge.textContent = String(pending);
   badge.hidden = pending === 0;
@@ -363,7 +373,7 @@ function renderHome() {
     return;
   }
 
-  const waiting = sortPosts(state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested"), "aprovar");
+  const waiting = sortPosts(state.posts.filter(post => postGroup(post) === "aprovar" && String(post.approvalStatus) !== "correction_requested" && autoReviewed(post)), "aprovar");
   const next = waiting.find(postImage) || waiting[0];
   const scheduled = sortPosts(state.posts.filter(post => postGroup(post) === "agendados"), "agendados")[0];
   if (next) {

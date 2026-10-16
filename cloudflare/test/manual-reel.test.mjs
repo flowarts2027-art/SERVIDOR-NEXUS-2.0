@@ -110,5 +110,5 @@ test("carrossel incompleto: aviso e Aprovar travado até as imagens ficarem pron
   const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
   assert.match(js, /function carouselIncomplete/);
   assert.match(js, /As outras imagens do carrossel estão sendo criadas/);
-  assert.match(js, /const ready = Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\);/);
+  assert.match(js, /const ready = Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\) && reviewed;/);
 });

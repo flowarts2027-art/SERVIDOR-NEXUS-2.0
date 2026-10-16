@@ -730,3 +730,8 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - PRÓXIMO: OK do Rodrigo para publicar a branch; depois conferir se o post das 12:00 ganha imagem aprovada pelo revisor.
 - 2026-10-16 (tarde, 3ª correção, OK do Rodrigo "pode"): deploy da 2e1ae22 conferido (success). Post das 12:00: nova imagem (mesa de floricultura, headline "Faça este teste") reprovada só por margem do texto (notas 75/60/70/60 passam; legibleText=false); reprovação 1 de 3. Mudança: para marca com perfil próprio, se só a margem do texto falha e as notas passam, o revisor aprova com aviso (visualReview.warning=text_margin) e o painel do cliente mostra "Arte: confira se o texto da imagem está longe das bordas". Teste novo; 400 testes passando. Dúvida aberta: o modelo gerou "Faça este teste" sem o "agora" do prompt (texto da imagem diferente do pedido).
 
+## 2026-10-16 (tarde) — Pausa de imagens + auditoria
+- Rodrigo pediu pausa nas gerações de imagem até ajustar o problema e uma auditoria completa. Feito: Creator/Designer/Format Builder desligados em primeiro-teste e demo-cafe (17:44 UTC). Auditoria em AUDITORIA-NEXUS-2026-10-16.md.
+- Branch fix/painel-so-aprova-revisado (SEM push em main): painel do cliente só libera Aprovar quando copyChief e designer estão "approved". 401 testes passando.
+- PRÓXIMO: OK do Rodrigo para publicar a branch; decidir quando religar Creator/Designer/Format Builder.
+
