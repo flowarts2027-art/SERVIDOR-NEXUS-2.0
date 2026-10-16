@@ -1,3 +1,32 @@
+# Auditoria do Instagram @flowarts2026 — 2026-10-15 (prints do Rodrigo às 21h07–21h08)
+
+## Números reais (Insights, 30 dias)
+- 9 posts, 3 seguidores, segue 12. 59 visualizações no total e 14 contas alcançadas. 64% das visualizações são de seguidores, ou seja, das contas de teste do Rodrigo.
+- Por post: de 1 a 14 visualizações. Curtidas entre 0 e 1. Os comentários (8, 12, 2) são testes do QUERO.
+- Stories: 0. Ao vivo: 0. Seguidores ganhos: nenhum.
+
+## Diagnóstico (sem rodeio)
+1. **O Nexus posta, mas postar não traz público.** Uma conta com 3 seguidores quase não é mostrada pelo Instagram. O problema não é a automação, é a distribuição: ninguém está levando gente para o perfil.
+2. **Perfil passa pouca confiança para quem vende marketing:** nome "Marina" (persona de IA), selo "Perfil gerado por IA", link da bio ainda servidor-nexus.diamantehinode2015.workers.dev (deveria ser flowarts.com.br), sem destaques.
+3. **Conteúdo genérico e voltado para si.** São dicas soltas ("Hashtags locais", "Tráfego pago") e imagens de IA de padaria e escritório. Nada mostra o produto funcionando: o direct automático, o painel aprovando, o antes e depois de um cliente.
+4. **Erros técnicos que derrubaram a qualidade:** Reels de foto com zoom e frases cortadas ("azem um estranho para de rolar…"). Corrigido em 9ab49a4 (15/10 21h03); conferir nos próximos posts.
+5. Zero Stories. O Stories é onde quem já segue vê a marca todo dia.
+
+## Ordens para os agentes (CEO, Marketing, Vendas; o Revisor confere)
+1. **CEO:** prioridade nº 1 da semana = trazer as primeiras 100 pessoas reais ao perfil, não produzir mais posts. Medida: seguidores reais por dia.
+2. **Marketing:** trocar metade dos posts de dica por **prova**: (a) o QUERO → direct → guia funcionando (gravação de tela); (b) o painel aprovando um post; (c) o Café Brisa antes e depois; (d) os 3 brindes (QUERO, SITE, REELS). Ganchos curtos que caibam inteiros na arte.
+3. **Marketing:** Stories todo dia, 3 por dia, e repostar cada post novo no Stories. Criar os destaques "Como funciona", "Exemplos" e "Preços".
+4. **Vendas:** 20 minutos por dia comentando de verdade em perfis de negócios locais (cafés, salões, pet shops) e convidando para o brinde. Mandar o perfil para os contatos do WhatsApp do Rodrigo.
+5. **Tráfego pago:** rodar o anúncio de WhatsApp já pronto (R$ 10–20 por dia, 7 dias) assim que o Rodrigo liberar. Sem isso, o crescimento será muito lento.
+6. **Perfil (o Rodrigo faz, 5 minutos):** link da bio = flowarts.com.br. Decidir nome e foto: logo da Flow Arts ou foto real, no lugar da persona de IA.
+
+## Mudanças no Nexus propostas (ainda não feitas; precisam de OK)
+- Campanha da Flow Arts com 50% de posts de prova e demonstração em vez de dicas.
+- Limite de tamanho do gancho na arte, para a frase nunca ser cortada.
+- Sugestão diária de Stories no painel (o Rodrigo posta com um toque).
+
+---
+
 # Auditoria do Instagram @flowarts2026 — 2026-10-10
 
 Feita olhando o perfil no navegador (somente leitura). Sem métricas internas: a conta é nova.
