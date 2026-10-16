@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
-const pages = ["marketing-para-cafeteria", "marketing-para-salao-de-beleza", "marketing-para-lanchonete"];
+const pages = ["marketing-para-cafeteria", "marketing-para-salao-de-beleza", "marketing-para-lanchonete", ...["barbearia", "pet-shop", "restaurante", "academia", "loja-de-roupas", "padaria", "confeitaria", "oficina-mecanica", "floricultura"].map(n => "marketing-para-" + n)];
 
 test("páginas de nicho existem, estão no sitemap e no rodapé do site", () => {
   const sitemap = read("sitemap.xml");
@@ -59,4 +59,16 @@ test("site: Reel de exemplo no lugar do antes/depois e perfil de exemplo com log
   assert.match(home, /Demonstração para cafeteria, criada com IA/);
   assert.match(home, /src="\/brand\/cafe-brisa\.svg"[\s\S]{0,120}cafe\.brisa/);
   assert.ok(fs.statSync(new URL("../../public/video/reel-cafeteria.mp4", import.meta.url)).size < 3_000_000);
+});
+
+test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e não prometem resultado", () => {
+  const seen = new Set();
+  for (const slug of pages) {
+    const html = read(slug + ".html");
+    const h1 = html.match(/<h1>([^<]+)<\/h1>/)[1];
+    assert.ok(!seen.has(h1), "h1 repetido: " + slug);
+    seen.add(h1);
+    assert.doesNotMatch(html, /garant|resultado garantido|seguidores em \d+ dias/i);
+  }
+  assert.equal(seen.size, pages.length);
 });
