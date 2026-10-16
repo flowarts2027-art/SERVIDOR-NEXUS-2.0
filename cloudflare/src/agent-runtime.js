@@ -23,6 +23,7 @@ import { giftCtaForTopic } from "./gift-materials.js";
 import { plannedFormat } from "./format-builder.js";
 import { GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
+import { pickNiche } from "./flowarts-niches.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
 import { globalPlayCampaignForDay, ragnarCampaignForDay, globalPlayCampaignStrategy } from "./globalplay-campaign.js";
@@ -756,7 +757,7 @@ async function runCreator(env,client,strategy,options) {
     plannedByDay.set(day,(plannedByDay.get(day)||0)+1);
   }
 
-  async function nextMedia(postId,visualBrief="",contentFormat="image",headline="") {
+  async function nextMedia(postId,visualBrief="",contentFormat="image",headline="",nicheId="") {
     const guidedVisualBrief=String(visualBrief||"").trim().slice(0,1800);
     // Campanha escolhida pelo cliente no painel: artes dele ou imagem por IA (se liberada no Master).
     const clientCampaign=IMAGE_GENERATION_CLIENTS.has(client.id)?null:campaignSettings(client);
@@ -784,6 +785,7 @@ async function runCreator(env,client,strategy,options) {
         const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
           contentFormat,
           variationSeed:String(postId)+"|"+String(Date.now()),
+          nicheId,
           // Estilos dos últimos posts: o próximo evita repetir a mesma direção de arte.
           avoidStyles:recent.map(row=>row.payload?.mediaGeneration?.styleId).filter(Boolean).slice(0,3),
           // Gancho do post: vai escrito na imagem das marcas com perfil próprio.
@@ -938,6 +940,10 @@ async function runCreator(env,client,strategy,options) {
     if(exists){
       const existingPayload=parseJson(exists.payload_json,{});
       const aiCreative=aiBatch[index]||null;
+    // Tipo de negócio do post (barbearia, salão, academia...): evita só café e padaria.
+    const nicheChoice=brandProfileVersion(client.id)
+      ?pickNiche({seed:id+"|"+index,avoid:recent.map(row=>row.payload?.nicheId).filter(Boolean).slice(0,5)})
+      :null;
       const aiCaption=String(aiCreative?.caption||"").trim();
       const shouldRefreshCopy=Boolean(aiCreative&&aiCaption&&exists.status!=="published"
         &&existingPayload.aiCreativeVersion!==String(state?.aiGrowth?.generatedAt||""));
@@ -1062,7 +1068,7 @@ async function runCreator(env,client,strategy,options) {
     let captionSource=caption?"ai-growth":"template";
     // Post da campanha de marca: a IA escreve dicas reais sobre o tema (antes era sempre texto fixo).
     if(!caption&&campaignItem&&brandProfileVersion(client.id)){
-      const written=await writeCampaignCaption(env,client,{...campaignItem,theme,hook});
+      const written=await writeCampaignCaption(env,client,{...campaignItem,theme,hook,niche:nicheChoice?.pt||""});
       if(written){
         captionSource="ai";
         hook=written.hook;
@@ -1158,7 +1164,7 @@ async function runCreator(env,client,strategy,options) {
       creativeFeatures.action?"Action: "+creativeFeatures.action:"",
       creativeFeatures.prop?"Prop: "+creativeFeatures.prop:""
     ].filter(Boolean).join(". ");
-    const mediaInfo=await nextMedia(id,structuredVisualBrief,creativeFeatures.requestedFormat,hook);
+    const mediaInfo=await nextMedia(id,structuredVisualBrief,creativeFeatures.requestedFormat,hook,nicheChoice?.id||"");
     const imageUrl=String(mediaInfo.url||"");
     const payload={
       clientName:client.name||client.id,
@@ -1206,6 +1212,7 @@ async function runCreator(env,client,strategy,options) {
       },
       qualityGates:{copyChief:"pending",designer:"pending"},
       captionSource,
+      nicheId:nicheChoice?.id||"",
       brandProfileVersion:brandProfileVersion(client.id)
     };
     await env.DB.prepare(

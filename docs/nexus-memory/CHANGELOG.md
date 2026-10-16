@@ -706,3 +706,8 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Achado: já existe redator de IA (campaign-copy.js, writeCampaignCaption) para posts da campanha, mas o Hook Lab (regras fixas) trocava a 1ª linha por frases genéricas do BUSINESS_HOOKS, sem relação com o texto.
 - Correção: Hook Lab não troca o gancho de marcas com perfil próprio (só corrige frase de filme). Redator ganhou 1 nova tentativa, prompt mais específico (cenas reais de pequeno comércio, sem frases genéricas) e `payload.captionSource` ("ai" | "template" | "ai-growth") para diagnóstico.
 - Posts já criados continuam com o gancho antigo; o Rodrigo pode usar "Pedir ajuste" ou cancelar. Sem acesso ao Master: não confirmado em produção se o redator de IA falhou (captionSource dirá).
+
+## 2026-10-16 — Variedade de nichos nos posts da Flow Arts
+- Pedido do Rodrigo: posts só com padaria/café. Novo `flowarts-niches.js` (14 tipos: barbearia, salão, academia, pet shop, loja de roupas, oficina, restaurante, floricultura, confeitaria, clínica, lanchonete, loja de celular, papelaria, cafeteria). Cada post sorteia um tipo evitando os 5 últimos (`payload.nicheId`).
+- O tipo entra no prompt da imagem ("Business setting ... mandatory", café/padaria só se for o sorteado) e no redator da legenda (exemplo principal). Carrossel e Reel herdam o mesmo `nicheId`. 397 testes.
+- Posts já criados mantêm o tipo antigo. Verificar nos próximos posts se a variedade aparece.

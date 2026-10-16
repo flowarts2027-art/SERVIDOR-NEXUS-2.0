@@ -168,6 +168,7 @@ async function buildCarousel(env, client, row, payload) {
       title: card.overlay,
       contentFormat:"carousel",
       carouselIndex:index,
+      nicheId: String(row.payload?.nicheId || payload?.nicheId || ""),
       variationSeed: row.id + "|carousel|" + index
     });
     if (client.id === "globalplay-streaming" && !media.brandingApplied) throw new Error("brand_overlay_required");
@@ -214,7 +215,7 @@ async function dispatchReel(env, client, row, payload) {
   if (!ghToken) throw new Error("github_actions_token_missing");
   let sourceImage = String(payload.imageUrl || payload.publicImageUrl || "").trim();
   if (client.id === "globalplay-streaming" && current.referenceVersion !== GLOBAL_PLAY_REFERENCE_VERSION && !(payload.mediaGeneration?.referenceVersion === GLOBAL_PLAY_REFERENCE_VERSION && payload.mediaGeneration?.contentFormat === "reel")) {
-    const media = await generateOriginalMedia(env,client,row.id+"-reel-reference",payload.visualBrief || "",{contentFormat:"reel",variationSeed:row.id+"|reel-reference"});
+    const media = await generateOriginalMedia(env,client,row.id+"-reel-reference",payload.visualBrief || "",{contentFormat:"reel",nicheId:String(payload.nicheId||""),variationSeed:row.id+"|reel-reference"});
     if (!media.brandingApplied) throw new Error("brand_overlay_required");
     const review=await reviewImage(env,client,media.url,null);
     if(review.status!=="approved")throw new Error("reel_visual_review_"+review.status+":"+String(review.reason || ""));

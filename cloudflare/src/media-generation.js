@@ -3,6 +3,7 @@ import { commercialPromptGuard } from "./content-policy.js";
 import { GLOBAL_PLAY_REFERENCE_VERSION, globalPlayReferenceDirection } from "./media-references.js";
 import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-overlays.js";
 import { clientBrand, brandProfileVersion } from "./client-brand.js";
+import { nicheById } from "./flowarts-niches.js";
 import { pickFlowArtsStyle } from "./flowarts-styles.js";
 
 function bytesFromBase64(value){
@@ -138,6 +139,8 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
       "No copyrighted characters, movie frames, sports-team marks, third-party brands or logos."
     );
   }
+  const niche=brandProfileVersion(client?.id)?nicheById(options.nicheId):null;
+  if(niche)common.push("Business setting for this post (mandatory): "+niche.en+". If the creative direction mentions a café, bakery, pastry or coffee scene, set it in this business instead. Do not show a café or bakery unless this setting is a café.");
   const commercialGuard=commercialPromptGuard(client);
   if(commercialGuard)common.push(commercialGuard);
   if(String(visualBrief||"").trim())common.push("Creative direction: "+String(visualBrief).slice(0,1200));

@@ -31,6 +31,7 @@ export function campaignCopyPrompt(client, item = {}) {
     reachRulesText(),
     "Regras da marca: " + (brand.avoidRules || ""),
     "Nunca use estas frases de robô: " + ROBOT_PHRASES.join(", ") + ".",
+    item.niche ? "Exemplo principal deste post: um(a) " + item.niche + " (use nas dicas quando o tema permitir; nunca padaria ou café, a menos que seja este o exemplo)." : "Varie o tipo de negócio nos exemplos; evite repetir padaria e café.",
     "Tema do post: " + String(item.theme || ""),
     "Ângulo: " + String(item.angle || ""),
     "Gancho sugerido (pode melhorar): " + String(item.hook || item.theme || "")
