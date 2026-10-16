@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 manhã BRT — Auditoria do fluxo de publicação e duas correções (pedido do Rodrigo)
+
+- Auditoria só de leitura do código de publicação (executor, scheduler, publisher, credenciais). Nenhuma publicação foi ativada ou testada.
+- Correção 1: um post só expira (`expireStalePosts`) quando o horário agendado passou há mais de 24 h (antes contava a data de criação, o que expirava post criado cedo na primeira falha).
+- Correção 2: renovação automática do token de login do Instagram (`refreshInstagramTokenIfNeeded`, 1 checagem por dia por cliente; renova quando faltam menos de 10 dias). Antes não havia renovação: a Flow Arts pararia em ~60 dias com "Instagram não conectado". Resultado real em produção ainda não verificado.
+- Pendente: o fiscal visual só vale para Global Play/Ragnar (desligados); a Flow Arts não tem fiscal de imagem. Ligar o revisor ao fluxo junto com a melhoria das imagens (criação de posts está pausada). Leitura de produção (posts com falha, data de vencimento do token) ainda não feita.
+- 387 testes passando (2 novos).
+
 ## 2026-10-15 21h20–21h35 BRT — Pausa na criação de posts da Flow Arts (pedido do Rodrigo)
 
 - Pedido: "Dê uma pausa nas gerações de postagens, amanhã vamos reavaliar e implementar skills para ajudar nas edições."

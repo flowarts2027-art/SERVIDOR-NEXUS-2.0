@@ -1,6 +1,7 @@
 import { leadHunterConfig } from "./lead-hunter.js";
 import { ensureLeadSchema } from "./leads.js";
 import { isPublishingWindow, saoPauloDay } from "./publishing-policy.js";
+import { refreshInstagramTokenIfNeeded } from "./instagram-credentials.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -159,7 +160,7 @@ export async function expireStalePosts(env, clientId, now = new Date()) {
          AND status IN ('ready','scheduled','failed')
          AND scheduled_for IS NOT NULL
          AND scheduled_for<=?2
-         AND created_at<datetime(?2,'-24 hours')`;
+         AND scheduled_for<datetime(?2,'-24 hours')`;
   const at = now.toISOString();
   const approved = await env.DB.prepare(
     `UPDATE post_ledger
@@ -211,6 +212,13 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
     const expired = await expireStalePosts(env, client.id, now);
     next.expiredStaleDrafts = expired.drafts;
     next.missedApprovedPosts = expired.approvedMissed;
+
+    // Renovação do token do Instagram: verifica no máximo uma vez por dia.
+    if (due(state.lastTokenCheckAt, 24 * 60, nowMs)) {
+      const tokenResult = await refreshInstagramTokenIfNeeded(env, client.id, now).catch(() => ({ refreshed: false, reason: "error" }));
+      next.lastTokenCheckAt = now.toISOString();
+      next.lastTokenCheckResult = tokenResult.reason;
+    }
 
     let cycleIsDue = due(state.lastCycleQueuedAt, config.cycleMinutes, nowMs);
 

@@ -1,4 +1,4 @@
-import { decryptSecret } from "./secrets.js";
+import { decryptSecret, encryptSecret } from "./secrets.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -151,5 +151,49 @@ export async function instagramCredentialStatus(env, clientId) {
     };
   } catch {
     return { ...status, validation: "transport_error" };
+  }
+}
+
+
+// Renova o token de login do Instagram (válido por ~60 dias) quando faltam
+// menos de 10 dias para vencer. Uma única chamada externa, só quando necessário.
+export async function refreshInstagramTokenIfNeeded(env, clientId, now = new Date(), request = fetch) {
+  const row = await env.DB.prepare(
+    `SELECT provider, payload_json FROM connections
+     WHERE client_id = ?1 AND provider IN ('meta','instagram')
+     ORDER BY CASE provider WHEN 'meta' THEN 0 ELSE 1 END LIMIT 1`
+  ).bind(String(clientId)).first();
+  if (!row) return { refreshed: false, reason: "no_connection" };
+  const payload = parseJson(row.payload_json, {});
+  const expiresMs = payload?.expiresAt ? new Date(payload.expiresAt).getTime() : 0;
+  if (!payload?.accessToken || !Number.isFinite(expiresMs) || !expiresMs) {
+    return { refreshed: false, reason: "no_expiry" };
+  }
+  const left = expiresMs - now.getTime();
+  if (left <= 0) return { refreshed: false, reason: "already_expired" };
+  if (left > 10 * 24 * 3600 * 1000) return { refreshed: false, reason: "not_due" };
+  const token = await decryptSecret(env, payload.accessToken).catch(() => "");
+  if (!token) return { refreshed: false, reason: "decrypt_failed" };
+  const url = new URL("https://graph.instagram.com/refresh_access_token");
+  url.searchParams.set("grant_type", "ig_refresh_token");
+  url.searchParams.set("access_token", token);
+  try {
+    const response = await request(url, { signal: AbortSignal.timeout(10000) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.access_token) {
+      return { refreshed: false, reason: "http_" + response.status };
+    }
+    const next = {
+      ...payload,
+      accessToken: await encryptSecret(env, String(data.access_token)),
+      expiresAt: new Date(now.getTime() + Math.max(3600, Number(data.expires_in || 0)) * 1000).toISOString(),
+      refreshedAt: now.toISOString()
+    };
+    await env.DB.prepare(
+      "UPDATE connections SET payload_json = ?3, updated_at = CURRENT_TIMESTAMP WHERE client_id = ?1 AND provider = ?2"
+    ).bind(String(clientId), String(row.provider), JSON.stringify(next)).run();
+    return { refreshed: true, reason: "ok", expiresAt: next.expiresAt };
+  } catch {
+    return { refreshed: false, reason: "transport_error" };
   }
 }
