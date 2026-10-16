@@ -653,7 +653,8 @@ export async function stepCarouselTest(env, client, id, deps = {}) {
   if (!row) return null;
   const payload = parseJson(row.payload_json, {});
   const current = payload.formatBuild || {};
-  if (["approved"].includes(current.status) || (current.status === "failed" && Number(current.attempts || 0) >= 3)) {
+  // Teste manual: o limite de gasto vem do máximo de fotos por cartão, não do contador de falhas.
+  if (current.status === "approved") {
     return carouselTestStatus(env, client.id, id);
   }
   try {
