@@ -1,3 +1,31 @@
+# Auditoria do Instagram @flowarts2026 — 2026-10-16 (feita direto no Chrome do Rodrigo, só leitura)
+
+## Números (Insights, 30 dias)
+- 9 posts, 3 seguidores, segue 12. 66 visualizações, 14 visualizadores; 68% das visualizações são de seguidores (as contas de teste), 32% de não seguidores. Reels 60% das visualizações, posts 40%.
+- 33 interações, vindas de 3 contas. Quase tudo é teste do próprio Rodrigo.
+- Mais vistos: Reel de 13/10 "Em 3 segundos…" (14), foto da persona no escritório de 11/10 (10), persona com logo de 28/09 (10). Mais interações: persona no escritório (13), dupla no escritório com o Pão de Açúcar ao fundo (8), persona com logo (6). Os cartões com título de 15/10 tiveram 2.
+- Amostra minúscula: a conta não tem público real ainda, então isto indica tendência, não regra.
+
+## O que já melhorou desde 15/10
+- Nome "Flow Arts - Marketing Digital", avatar com o logo, bio com a oferta e link flowarts.com.br.
+
+## Problemas vistos no perfil
+1. Grade sem identidade: mistura de fotos da persona, cartões com título em fontes e posições diferentes e imagens de padaria. Quem entra não entende em 3 segundos o que é a Flow Arts.
+2. Títulos cortados na grade: "O post que vende começa pelo problema, não pelo…" e "Todo mundo reclama disso…" aparecem cortados no topo do cartão na grade.
+3. Pouca prova: nada mostra resultado, cliente, antes/depois ou o produto funcionando.
+4. Sem Stories, sem destaques, sem pin.
+5. O problema principal continua sendo distribuição, não a imagem: 3 seguidores quase não recebem alcance.
+
+## Plano (por ordem de impacto)
+1. Ação manual diária de 30 min: comentar de verdade em 10 perfis de pequenos negócios do Rio; responder tudo; mandar o Reel por direct para contatos.
+2. Parceria: oferecer um exemplo grátis a 5 negócios locais em troca de post em colaboração (aparece para os seguidores deles).
+3. Stories 3x/dia com enquete/caixa de pergunta (o Nexus pode sugerir, o Rodrigo posta).
+4. Reels de prova (tela do QUERO→direct→guia, painel aprovando, antes/depois do Café Brisa).
+5. Grade consistente: estilos novos (flowarts-styles.js) com título dentro da área segura; fixar (pin) os 3 melhores.
+6. Anúncio de WhatsApp R$ 10–20/dia por 7 dias (só com OK do Rodrigo).
+
+---
+
 # Auditoria do Instagram @flowarts2026 — 2026-10-15 (prints do Rodrigo às 21h07–21h08)
 
 ## Números reais (Insights, 30 dias)
