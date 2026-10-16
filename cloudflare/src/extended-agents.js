@@ -253,11 +253,13 @@ async function runCopyChief(env,client,options){
         ?/ragnar\s*one|n[oó]rdic|saga|aventura|cinema|streaming|sof[aá]/i.test(c)
         :true;
     const commercialSafe=commercialCopyAllowed(client,c);
-    const ok=hasCta&&hookStrong&&c.length<=2200&&!genericFiller&&brandSpecific&&commercialSafe;
+    const isImagePost=!/video|reel/i.test(String(row.payload?.mediaGeneration?.contentFormat||row.payload?.format||""))&&!/^https:\/\//i.test(String(row.payload?.formatBuild?.videoUrl||""));
+    const videoMismatch=isImagePost&&/\b(v[ií]deo|reel|reels|assista|assistir)\b/i.test(c);
+    const ok=hasCta&&hookStrong&&c.length<=2200&&!genericFiller&&brandSpecific&&commercialSafe&&!videoMismatch;
     ok?strong++:needsWork++;
     const payload=row.payload&&typeof row.payload==="object"?row.payload:{}; payload.qualityGates={...(payload.qualityGates||{}),copyChief:ok?"approved":"rejected",copyChiefAt:new Date().toISOString()};
-    await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload),ok?"":"copy_quality_rejected").run();
-    reviews.push({id:row.id,ok,hasCta,hookStrong,genericFiller,brandSpecific,commercialSafe,length:c.length});
+    await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload),ok?"":(videoMismatch?"copy_mentions_video_on_image":"copy_quality_rejected")).run();
+    reviews.push({id:row.id,ok,hasCta,hookStrong,genericFiller,brandSpecific,commercialSafe,videoMismatch,length:c.length});
   }
   const output={reviewed:rows.length,strong,needsWork,reviews,skills:["hook-review","cta-review","caption-quality"]};
   await recordAgentExecution(env,client,"COPY CHIEF",{function:"caption-quality-gate",trigger:options.trigger,startedAt,status:needsWork?"warning":"success",model:"copy-quality-rules",quantity:rows.length,message:strong+" copy(s) fortes; "+needsWork+" precisam ajuste."});

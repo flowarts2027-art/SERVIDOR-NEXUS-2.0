@@ -105,7 +105,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
       "Vou perder o controle do meu Instagram? Nada é publicado sem a aprovação do cliente no painel.",
       "Deve ser caro. A IA reduz o custo de estúdio e produção; peça o exemplo grátis primeiro."
     ]),
-    visualDirection: "Photorealistic premium scenes for small local businesses in Brazilian cities (cafés, salons, shops, restaurants, service providers). Follow the scene given in the brief; vary subjects between posts (products, storefronts, phones, desks, business owners). The persona Marina (curly dark hair, navy blazer) appears only when the brief asks for her. Palette: deep navy, electric blue and silver accents with clean white light. One clear scene, no text."
+    visualDirection: "Photorealistic premium scenes for small local businesses in Brazilian cities (cafés, salons, shops, restaurants, service providers). Follow the scene given in the brief; vary subjects between posts (products, storefronts, phones, desks, business owners). The persona Marina (curly dark hair, navy blazer) appears only when the brief asks for her. Look: a real, natural photograph with true-to-life colors and natural light, never a blue tint, blue color grading or blue filter, and no neon glow. Blue appears only if it naturally exists in the scene. Do not draw any logo or brand mark (it is added later). One clear scene."
   })
 });
 

@@ -757,6 +757,7 @@ async function runCreator(env,client,strategy,options) {
     plannedByDay.set(day,(plannedByDay.get(day)||0)+1);
   }
 
+  function addCost(prev,info){return Math.round((Number(prev?.costUsd||0)+Number(info?.costUsd||0))*1000)/1000;}
   async function nextMedia(postId,visualBrief="",contentFormat="image",headline="",nicheId="") {
     const guidedVisualBrief=String(visualBrief||"").trim().slice(0,1800);
     // Campanha escolhida pelo cliente no painel: artes dele ou imagem por IA (se liberada no Master).
@@ -796,7 +797,7 @@ async function runCreator(env,client,strategy,options) {
           fingerprint:String(generated.fingerprint||""),
           brandingApplied:generated.brandingApplied===true,
           brandingError:String(generated.brandingError||""),
-          referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:generated.contentFormat,styleId:String(generated.styleId||"")
+          referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:generated.contentFormat,styleId:String(generated.styleId||""),costUsd:Number(generated.costUsd||0)
         };
       }catch(error){
         return {url:"",source:"media-generation-failed",sourceInstagramMediaId:"",error:String(error?.message||error)};
@@ -853,7 +854,7 @@ async function runCreator(env,client,strategy,options) {
     payload.imageUrl=mediaInfo.url;
     payload.sourceInstagramMediaId=mediaInfo.sourceInstagramMediaId||"";
     if(mediaInfo.fingerprint)payload.mediaFingerprint=String(mediaInfo.fingerprint);
-    payload.mediaGeneration={status:"generated",attempts:generationAttempts+(safeRecheck?0:1),lastError:"",referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||""),updatedAt:new Date().toISOString()};
+    payload.mediaGeneration={status:"generated",costUsd:addCost(payload.mediaGeneration,mediaInfo),attempts:generationAttempts+(safeRecheck?0:1),lastError:"",referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||""),updatedAt:new Date().toISOString()};
     payload.intelligence={...(payload.intelligence||{}),mediaSource:mediaInfo.source};
     if(safeRecheck)payload.blockedDesignerRecoveryAttemptedAt=new Date().toISOString();
     payload.qualityGates={copyChief:"pending",designer:"pending"};
@@ -1024,7 +1025,7 @@ async function runCreator(env,client,strategy,options) {
         existingPayload.sourceInstagramMediaId=replacementInfo.sourceInstagramMediaId||"";
         if(replacementInfo.fingerprint)existingPayload.mediaFingerprint=String(replacementInfo.fingerprint);
         existingPayload.retryCount=0;
-        existingPayload.mediaGeneration={status:"generated",resets:mediaResets,attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,styleId:String(replacementInfo.styleId||""),brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
+        existingPayload.mediaGeneration={status:"generated",costUsd:addCost(existingPayload.mediaGeneration,replacementInfo),resets:mediaResets,attempts:existingGenerationAttempts+(allowBlockedRecheck?0:1),lastError:"",referenceVersion:replacementInfo.referenceVersion,referenceMode:replacementInfo.referenceMode,contentFormat:replacementInfo.contentFormat,styleId:String(replacementInfo.styleId||""),brandingApplied:replacementInfo.brandingApplied===true,brandingError:String(replacementInfo.brandingError||""),updatedAt:new Date().toISOString()};
         existingPayload.recoveredAt=new Date().toISOString();
         existingPayload.recoveryReason="missing_media_repaired_by_creator";
         if(safeRecheck)existingPayload.blockedDesignerRecoveryAttemptedAt=new Date().toISOString();
@@ -1183,7 +1184,7 @@ async function runCreator(env,client,strategy,options) {
       imageUrl,
       sourceInstagramMediaId:String(mediaInfo.sourceInstagramMediaId||""),
       mediaFingerprint:String(mediaInfo.fingerprint||""),
-      mediaGeneration:{status:imageUrl?"generated":"requested",attempts:imageUrl||!isBudgetError(mediaInfo.error)?1:0,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
+      mediaGeneration:{status:imageUrl?"generated":"requested",costUsd:addCost(null,mediaInfo),attempts:imageUrl||!isBudgetError(mediaInfo.error)?1:0,lastError:String(mediaInfo.error||"").slice(0,120),referenceVersion:mediaInfo.referenceVersion,referenceMode:mediaInfo.referenceMode,contentFormat:mediaInfo.contentFormat,styleId:String(mediaInfo.styleId||""),brandingApplied:mediaInfo.brandingApplied===true,brandingError:String(mediaInfo.brandingError||"").slice(0,120),updatedAt:new Date().toISOString()},
       title:theme.slice(0,160),
       visualBrief:structuredVisualBrief.slice(0,1600),
       creativeFeatures,

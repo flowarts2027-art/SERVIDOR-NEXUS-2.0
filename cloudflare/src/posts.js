@@ -48,6 +48,7 @@ function view(row) {
     error: row.error || "",
     costUsd: Number(row.cost_usd || 0),
     ...parseJson(row.payload_json, {}),
+    costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null
   };
@@ -56,6 +57,7 @@ function view(row) {
 async function updateRow(env, row, patch = {}) {
   const payload = {
     ...parseJson(row.payload_json, {}),
+    costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
     ...(patch.payload && typeof patch.payload === "object" ? patch.payload : {})
   };
   await env.DB.prepare(
@@ -182,6 +184,7 @@ export async function cancelPost(env, client, postId) {
 
   const payload = {
     ...parseJson(row.payload_json, {}),
+    costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
     cancelledAt: new Date().toISOString(),
     cancelledBy: "client"
   };
@@ -241,6 +244,7 @@ export async function saveOwnPostContent(env, client, postId, body = {}, publicO
   const previousObjectKey = String(row.image_object_key || "");
   const payload = {
     ...parseJson(row.payload_json, {}),
+    costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
     imageUrl: origin + "/media/" + objectKey,
     source: "client_manual",
     revisionRequest: ""
@@ -318,6 +322,7 @@ export async function useLibraryImageForPost(env, client, postId, libraryKey, pu
   const previousObjectKey = String(row.image_object_key || "");
   const payload = {
     ...parseJson(row.payload_json, {}),
+    costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
     imageUrl: origin + "/media/" + objectKey,
     publicImageUrl: "",
     source: "client_library",

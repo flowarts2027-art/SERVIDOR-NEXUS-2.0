@@ -1,6 +1,7 @@
 import { openAIResponses } from "./openai.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { GLOBAL_PLAY_REFERENCE_VERSION, globalPlayReferenceDirection } from "./media-references.js";
+import { FLOW_MARK_PNG, FLOW_MARK_WIDTH } from "./flow-mark.js";
 import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-overlays.js";
 import { clientBrand, brandProfileVersion } from "./client-brand.js";
 import { nicheById } from "./flowarts-niches.js";
@@ -29,6 +30,10 @@ async function composeBrandOverlay(env,bytes,client,title="",options={}){
     // Marcas com perfil próprio (gancho já escrito pela IA) e campanhas de clientes (imagem limpa):
     // aqui só ajusta para 4:5 (feed) ou 9:16 (reel), sem escrever nada por cima.
     if(brandProfileVersion(client?.id)||options.cleanImage===true){
+      // Flow Arts: foto limpa + só o símbolo pequeno embaixo, no centro (sem destaque de marca).
+      if(brandProfileVersion(client?.id)&&options.cleanImage!==true){
+        canvas=canvas.draw(env.IMAGES.input(new Blob([bytesFromBase64(FLOW_MARK_PNG)]).stream()),{left:Math.round((1080-FLOW_MARK_WIDTH)/2),bottom:56});
+      }
       const response=await (await canvas.output({format:"image/jpeg",quality:90})).response();
       if(!response.ok)throw new Error("images_resize_http_"+response.status);
       const out=new Uint8Array(await response.arrayBuffer());
@@ -191,5 +196,5 @@ export async function generateOriginalMedia(env,client,postId,visualBrief="",opt
     httpMetadata:{contentType:"image/jpeg",cacheControl:"public, max-age=31536000, immutable"},
     customMetadata:{clientId:String(client.id),postId:String(postId),kind:"openai-original-media"}
   });
-  return {url:origin+"/media/"+key,key,fingerprint,brandingApplied:composed.applied,brandingError:composed.reason,promptVersion:client.id==="globalplay-streaming"&&["carousel","reel"].includes(options.contentFormat)?GLOBAL_PLAY_REFERENCE_VERSION:"scene-grammar-v1",styleId:style?style.id:"",referenceMode:references.length?"image":"text-direction",referenceCount:references.length,contentFormat:options.contentFormat||"image"};
+  return {url:origin+"/media/"+key,key,fingerprint,brandingApplied:composed.applied,brandingError:composed.reason,promptVersion:client.id==="globalplay-streaming"&&["carousel","reel"].includes(options.contentFormat)?GLOBAL_PLAY_REFERENCE_VERSION:"scene-grammar-v1",styleId:style?style.id:"",referenceMode:references.length?"image":"text-direction",referenceCount:references.length,contentFormat:options.contentFormat||"image",costUsd:Math.max(0,Number(env.NEXUS_IMAGE_COST_USD||0.06))};
 }

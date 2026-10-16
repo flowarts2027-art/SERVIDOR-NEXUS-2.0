@@ -193,6 +193,7 @@ async function allSupportTickets(env) {
     .slice(0, 200)
     .map(row => ({
       ...parseJson(row.payload_json, {}),
+      costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
       id: row.id,
       clientId: row.client_id,
       clientName: String(clients.find(client => client.id === row.client_id)?.name || row.client_id),
@@ -243,6 +244,7 @@ async function allPosts(env) {
       error: row.error || "",
       costUsd: Number(row.cost_usd || 0),
       ...parseJson(row.payload_json, {}),
+      costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
       createdAt: row.created_at || null,
       updatedAt: row.updated_at || null
     }));
