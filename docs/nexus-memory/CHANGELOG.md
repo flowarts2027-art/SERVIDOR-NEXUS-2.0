@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-15 21h20–21h35 BRT — Pausa na criação de posts da Flow Arts (pedido do Rodrigo)
+
+- Pedido: "Dê uma pausa nas gerações de postagens, amanhã vamos reavaliar e implementar skills para ajudar nas edições."
+- `GENERATION_PAUSED_CLIENTS = {primeiro-teste}` em client-brand.js. Com a pausa, o Criador não roda (nem post novo, nem imagem, nem atualização de rascunho) e o format-builder também não (nem carrossel, nem a conversão de Reel).
+- Continua funcionando: a publicação de posts já aprovados (post simples), o direct do QUERO, SITE e REELS, os brindes, o painel e o WhatsApp. Reel ou carrossel aprovado e ainda não montado fica parado.
+- Para voltar: tirar "primeiro-teste" do conjunto e publicar.
+- 385 testes passando.
+
 ## 2026-10-15 20h56–21h20 BRT — Reel parado publicado de novo na Flow Arts (publicado 9ab49a4 às 21h03 com OK do Rodrigo; deploy e CI ok; conferir amanhã que o social-format-render não roda mais)
 
 - Rodrigo mandou um print às 20h56: post da Flow Arts saiu como vídeo, com a frase cortada ("Se isso acontec…") e sem sentido.

@@ -1,5 +1,9 @@
 # Próximas ações
 
+## Amanhã (16/10) — primeiro item
+- Criação de posts da Flow Arts PAUSADA desde 15/10 21h30 (GENERATION_PAUSED_CLIENTS). Reavaliar com o Rodrigo: skills de edição (Reels animados com Chromium + FFmpeg), campanha com 50% de prova, 1 post por dia, Stories. Só tirar a pausa com o OK dele.
+- Conferir se o social-format-render parou de rodar depois de 9ab49a4.
+
 ## Amanhã (combinado em 2026-10-15 19h01) — Reels animados feitos aqui
 - Rodrigo vai pegar no Pinterest um Reel animado que goste e mandar aqui (vídeo ou print + link). Eu recrio o ESTILO (ritmo, tipo de animação, texto em movimento) com conteúdo e marca da Flow Arts, sem copiar a obra.
 - Ferramentas conferidas: FFmpeg 6.1 (drawtext, subtitles, xfade, zoompan), Chromium + Playwright (animação em HTML gravada como vídeo), Pillow, OpenCV e ImageMagick. Não deu para instalar Remotion ou Whisper: npm e pypi estavam inacessíveis nesta sessão. Legenda da fala só com o texto mandado pelo Rodrigo. O Everygen é pago (créditos).

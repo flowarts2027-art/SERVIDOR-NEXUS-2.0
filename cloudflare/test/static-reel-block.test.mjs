@@ -29,7 +29,7 @@ test("Reel sem vídeo de verdade não é renderizado com zoom", async () => {
   let dispatched = 0;
   globalThis.fetch = async () => { dispatched++; return new Response("", { status: 204 }); };
   try {
-    await runFormatBuilder(env, { id: "primeiro-teste" }, { trigger: "test" });
+    await runFormatBuilder(env, { id: "cliente-teste" }, { trigger: "test" });
   } finally { globalThis.fetch = realFetch; }
   assert.equal(dispatched, 0);
   assert.equal(saved.a.payload.imageUrl, "");
@@ -39,4 +39,10 @@ test("Reel sem vídeo de verdade não é renderizado com zoom", async () => {
   assert.equal(saved.b.payload.qualityGates.formatBuilder, "approved");
   assert.equal(saved.c.payload.formatBuild.kind, "reel");
   assert.equal(saved.c.payload.formatBuild.videoUrl, "https://x/c.mp4");
+});
+
+test("criação pausada para a Flow Arts (15/10)", async () => {
+  const env = { DB: { prepare: () => { throw new Error("não devia ler o banco"); } } };
+  const out = await runFormatBuilder(env, { id: "primeiro-teste" }, {});
+  assert.equal(out.reason, "generation_paused");
 });

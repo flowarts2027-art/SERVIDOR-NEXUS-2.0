@@ -18,7 +18,7 @@ test("Reel aprovado vira post de imagem quando o GitHub recusa (conta suspensa)"
   const original = globalThis.fetch;
   globalThis.fetch = async () => new Response('{"message":"Sorry. Your account was suspended"}', { status: 403 });
   try {
-    const out = await runFormatBuilder(env, { id: "primeiro-teste" }, {});
+    const out = await runFormatBuilder(env, { id: "cliente-teste" }, {});
     assert.equal(out.built, 1);
     assert.equal(out.failed, 0);
     const saved = JSON.parse(updates.find(args => args[0] === "r1")[1]);

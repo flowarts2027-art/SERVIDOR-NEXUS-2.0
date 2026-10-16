@@ -183,3 +183,8 @@ export function whatsappLink(client = {}, message = "") {
   const text = message || ("Olá! Vim pelo Instagram da " + clientBrand(client).brandName + " e quero saber mais.");
   return "https://wa.me/" + full + "?text=" + encodeURIComponent(text);
 }
+
+// Pausa na criação de posts (pedido do Rodrigo em 15/10 21h20: reavaliar antes de voltar).
+// Só para a criação de posts novos e as imagens. Publicação de aprovados, direct do QUERO e brindes continuam.
+// Para voltar, tire o cliente daqui.
+export const GENERATION_PAUSED_CLIENTS = Object.freeze(new Set(["primeiro-teste"]));

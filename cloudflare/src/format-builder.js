@@ -1,7 +1,7 @@
 import { reviewImage } from "./visual-review.js";
 import { globalPlayCarouselPlan, GLOBAL_PLAY_REFERENCE_VERSION } from "./media-references.js";
 import { generateOriginalMedia } from "./media-generation.js";
-import { clientBrand, brandProfileVersion } from "./client-brand.js";
+import { clientBrand, brandProfileVersion, GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { recordAgentExecution, patchAgentCoreState } from "./agent-core.js";
 
 function parseJson(raw, fallback = {}) {
@@ -273,6 +273,10 @@ export async function runFormatBuilder(env, client, options = {}) {
     const output={skipped:true,reason:"client_id_missing",built:0,pending:0,failed:0};
     await recordAgentExecution(env,client,"FORMAT BUILDER",{function:"social-format-build",trigger:options.trigger,startedAt,status:"warning",quantity:0,message:"FORMAT BUILDER sem client_id válido."});
     return output;
+  }
+
+  if (GENERATION_PAUSED_CLIENTS.has(String(client.id))) {
+    return {skipped:true,reason:"generation_paused",built:0,pending:0,failed:0};
   }
 
   const result = await env.DB.prepare(

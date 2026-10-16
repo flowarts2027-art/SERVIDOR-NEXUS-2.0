@@ -21,6 +21,7 @@ import { diversifyScene, diversifyHook, diversifyHashtags, repetitionReasons } f
 import { polishCaption, ROBOT_PHRASES, MAX_HASHTAGS, ensureGiftCta } from "./caption-polish.js";
 import { giftCtaForTopic } from "./gift-materials.js";
 import { plannedFormat } from "./format-builder.js";
+import { GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -1746,7 +1747,9 @@ export async function runAgentCoreCycle(env, clientId, options = {}) {
       Object.assign(result.agents,await runExtendedAgents(env,client.id,{...options,agent:"analista",phase:"pre-creation"}));
     }
 
-    if(run("creator")&&config.modules.creator){
+    if(run("creator")&&config.modules.creator&&GENERATION_PAUSED_CLIENTS.has(String(client.id))){
+      result.agents.creator={skipped:true,reason:"generation_paused"};
+    }else if(run("creator")&&config.modules.creator){
       cycleStage="creator";
       result.agents.creator=await runCreator(env,client,strategy,options);
     }
