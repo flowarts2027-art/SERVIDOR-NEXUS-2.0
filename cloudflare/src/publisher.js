@@ -1,4 +1,5 @@
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
+import { brandProfileVersion } from "./client-brand.js";
 
 // Contas antigas de streaming desligadas em 2026-10-10 a pedido do proprietário.
 // Nenhuma publicação no Instagram pode sair para elas, por nenhum caminho.
@@ -212,17 +213,49 @@ export function instagramPublishTarget(payload = {}) {
     : { ok:false, kind:"post", error:"instagram_public_image_url_required" };
 }
 
+// Story automático: repete a arte do post nos Stories (onde quem já segue vê a marca todo dia).
+// Melhor esforço: nunca derruba nem repete a publicação do feed.
+export async function publishInstagramStory(env, clientId, imageUrl, request = graphRequest) {
+  assertClientMayPublish(clientId);
+  const connection = await resolveInstagramCredentials(env, clientId);
+  const accessToken = String(connection?.accessToken || "");
+  const igUserId = String(connection?.igUserId || "").trim();
+  if (!accessToken || !igUserId) throw new Error("instagram_not_connected");
+  if (!/^https:\/\//i.test(String(imageUrl || ""))) throw new Error("instagram_public_image_url_required");
+  const created = await request(accessToken, igUserId + "/media", "POST", {
+    media_type: "STORIES",
+    image_url: String(imageUrl)
+  });
+  const containerId = String(created?.id || "");
+  if (!containerId) throw new Error("instagram_container_missing");
+  await waitInstagramContainer(accessToken, containerId, "story", 40000, { request });
+  const published = await request(accessToken, igUserId + "/media_publish", "POST", { creation_id: containerId });
+  return { storyMediaId: String(published?.id || ""), containerId };
+}
+
+async function withAutoStory(env, clientId, target, result) {
+  if (!brandProfileVersion(clientId) || env?.NEXUS_AUTO_STORY === "false") return result;
+  const art = target.kind === "post" ? target.imageUrl : target.kind === "carousel" ? target.carouselUrls?.[0] : "";
+  if (!art) return result;
+  try {
+    const story = await publishInstagramStory(env, clientId, art);
+    return { ...result, storyMediaId: story.storyMediaId };
+  } catch (error) {
+    return { ...result, storyError: String(error?.message || error).slice(0, 120) };
+  }
+}
+
 export async function publishInstagramPost(env, clientId, payload = {}, caption = "") {
   const target = instagramPublishTarget(payload);
   if (!target.ok) throw new Error(target.error);
 
   if (target.kind === "carousel") {
-    return publishInstagramCarousel(env, clientId, target.carouselUrls, String(caption || ""));
+    return withAutoStory(env, clientId, target, await publishInstagramCarousel(env, clientId, target.carouselUrls, String(caption || "")));
   }
   if (target.kind === "reel") {
     return publishInstagramVideo(env, clientId, target.videoUrl, String(caption || ""));
   }
-  return publishInstagramImage(env, clientId, target.imageUrl, String(caption || ""));
+  return withAutoStory(env, clientId, target, await publishInstagramImage(env, clientId, target.imageUrl, String(caption || "")));
 }
 
 

@@ -65,7 +65,18 @@ export function brandHeadline(client,title=""){
   const clean=String(title||"").replace(/["“”]/g,"").replace(/\s+/g," ").trim();
   if(!clean||/^(portrait|vertical|create|scene)\b/i.test(clean))return "";
   const words=clean.split(" ");
-  return (words.length>9?words.slice(0,9).join(" ")+"…":clean).slice(0,70);
+  if(words.length<=9&&clean.length<=70)return clean;
+  // Longo demais: corta numa pausa natural (vírgula, ponto, travessão, dois-pontos),
+  // para a frase nunca aparecer cortada no meio.
+  const parts=clean.split(/(?<=[,.;:!?])\s+|\s+[—–-]\s+/).map(part=>part.replace(/[,;:\s]+$/,"").trim()).filter(Boolean);
+  let out="";
+  for(const part of parts){
+    const next=out?out+" "+part:part;
+    if(next.split(" ").length>9||next.length>70)break;
+    out=next;
+  }
+  if(out.split(" ").length>=3)return out;
+  return words.slice(0,7).join(" ").replace(/[,;:\s]+$/,"");
 }
 
 export function imageSizeFor(contentFormat){

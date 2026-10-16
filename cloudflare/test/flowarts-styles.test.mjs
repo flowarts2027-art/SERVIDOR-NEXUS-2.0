@@ -40,3 +40,26 @@ test("fiscal visual agora vale para a Flow Arts", () => {
   assert.equal(visualApproval("primeiro-teste", { imageUrl: "https://x/y.jpg", visualReview: { version: "visual-review-v3", media: "https://x/y.jpg", status: "approved", qualityScore: 80 } }), true);
   assert.equal(visualApproval("outro-cliente", { imageUrl: "https://x/y.jpg" }), true);
 });
+
+import { brandHeadline } from "../src/media-generation.js";
+import { publishInstagramStory } from "../src/publisher.js";
+
+test("título longo é cortado numa pausa natural, sem reticências", () => {
+  const h = brandHeadline(flow, "O post que vende começa pelo problema, não pelo produto que você quer mostrar ao cliente");
+  assert.equal(h, "O post que vende começa pelo problema");
+  assert.ok(!h.includes("…"));
+  assert.equal(brandHeadline(flow, "Seu perfil afasta clientes?"), "Seu perfil afasta clientes?");
+});
+
+test("story automático usa media_type STORIES e publica", async () => {
+  const calls = [];
+  const request = async (token, path, method, form) => {
+    calls.push({ path, method, form });
+    if (path.endsWith("/media")) return { id: "c1" };
+    if (path.startsWith("c1?")) return { status_code: "FINISHED" };
+    if (path.endsWith("/media_publish")) return { id: "s1" };
+    return {};
+  };
+  const env = { DB: { prepare: () => ({ bind: () => ({ first: async () => ({ provider: "meta", payload_json: "{}" }) }) }) }, INSTAGRAM_ACCESS_TOKEN_X: "" };
+  await assert.rejects(() => publishInstagramStory(env, "demo-cafe", "https://x/y.jpg", request), /instagram_client_disabled/);
+});

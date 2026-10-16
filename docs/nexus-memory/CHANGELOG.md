@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 09h BRT — Story automático e título sem corte (pedido do Rodrigo: tudo automático)
+
+- Rodrigo não quer ações manuais: o produto dele é automação.
+- `publisher.js`: depois de publicar um post (imagem ou 1ª arte do carrossel) em cliente com perfil de marca (Flow Arts), o Nexus publica a mesma arte nos Stories (`publishInstagramStory`, media_type STORIES). Melhor esforço: erro vira `storyError` no resultado e nunca afeta o post. Desligar: variável `NEXUS_AUTO_STORY=false`. NÃO testado contra a API real do Instagram; conferir no primeiro post (permissão instagram_business_content_publish já existe).
+- `media-generation.js` `brandHeadline`: título longo agora é cortado numa pausa natural (vírgula, ponto, travessão), sem "…" no meio da frase (era a causa dos títulos cortados "…não pelo…" na grade).
+- Não automatizável com segurança: comentar/seguir em perfis de outros e mandar direct frio (a API não permite e o Instagram bane). Alternativas automáticas: Stories, Reels, resposta a comentários/direct, anúncios (precisa de orçamento e OK).
+- 394 testes passando.
+
 ## 2026-10-16 manhã BRT — Melhoria das imagens da Flow Arts + geração religada (pedido do Rodrigo)
 
 - Pedido: melhorar as imagens sem depender de prints do Pinterest; ao terminar, religar a geração; se ficar ruim, parar de novo.
