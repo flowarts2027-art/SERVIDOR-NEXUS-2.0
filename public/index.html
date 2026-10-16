@@ -161,6 +161,20 @@
             <p class="muted wide" id="manual-reel-status" role="status"></p>
           </form>
         </div>
+        <div class="panel manual-reel-panel" id="carousel-test">
+          <div class="panel-head"><div><p class="eyebrow">AGENTE DE MARKETING</p><h2>Testar carrossel</h2><p class="muted">Monta 1 carrossel de 5 cartões da Flow Arts com o agente novo (fotos sem texto + títulos escritos pelo sistema). Não publica e não aparece no painel do cliente. Custo estimado: 5 fotos (≈ US$ 0,30) + revisões. Leva de 15 a 30 minutos.</p></div></div>
+          <form id="carousel-test-form" class="manual-reel-form">
+            <label>Nicho<select name="nicheId">
+              <option value="salao">Salão de beleza</option><option value="pet-shop">Pet shop</option><option value="barbearia">Barbearia</option>
+              <option value="academia">Academia</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option>
+              <option value="loja-de-roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="floricultura">Floricultura</option>
+              <option value="confeitaria">Confeitaria</option><option value="clinica">Clínica</option><option value="cafeteria">Cafeteria</option>
+            </select></label>
+            <label class="wide">Tema<input name="theme" maxlength="140" value="Instagram no automático para o seu negócio"></label>
+            <button type="submit" class="primary">Gerar carrossel de teste</button>
+            <div class="wide" id="carousel-test-status" role="status"></div>
+          </form>
+        </div>
         <div class="post-cost-metrics">
           <article><span>Gasto nas postagens</span><strong id="posts-total-cost">US$ 0,00</strong><small>mês atual · custo OpenAI calculado</small></article>
           <article><span>Postagens registradas</span><strong id="posts-total-count">0</strong><small>tentativas no mês</small></article>
@@ -474,6 +488,7 @@
   </dialog>
   <script src="/app.js?v=49" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
+  <script src="/carousel-test.js?v=1" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

@@ -412,14 +412,16 @@ export async function runFormatBuilder(env, client, options = {}) {
     `SELECT id,status,approval_status,payload_json,caption,scheduled_for,created_at
      FROM post_ledger
      WHERE client_id=?1
-       AND status IN ('ready','scheduled','failed')
+       AND ((status IN ('ready','scheduled','failed')
        AND (
          approval_status='approved'
          -- Carrossel esperando aprovação: monta todas as imagens antes, para o cliente ver
          -- tudo no painel (pedido do Rodrigo em 15/10). Não publica: o agendador exige aprovação.
          OR (approval_status='pending'
              AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.creativeFeatures.requestedFormat')='carousel')
-       )
+       ))
+         -- Carrossel de teste criado pelo botão do Master: monta, mas nunca publica.
+         OR status='carousel_test')
      ORDER BY COALESCE(scheduled_for,created_at) ASC
      LIMIT 12`
   ).bind(client.id).all();
@@ -597,4 +599,41 @@ export async function handleSocialFormatRenderCallback(request, env, url) {
   payload.qualityGates={...(payload.qualityGates||{}),formatBuilder:"approved",formatBuilderAt:new Date().toISOString()};
   await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(postId,JSON.stringify(payload)).run();
   return new Response(JSON.stringify({ok:true,postId,videoUrl}),{status:201,headers:{"content-type":"application/json"}});
+}
+
+// Botão "Testar carrossel" do Master (pedido do Rodrigo em 16/10): cria um carrossel só de teste.
+// Status 'carousel_test': o Format Builder monta, o agendador e o publicador ignoram, o painel do cliente não mostra.
+export async function createCarouselTest(env, client, input = {}) {
+  if (!usesMarketingAgent(env, client)) throw new Error("carousel_agent_not_enabled_for_client");
+  const id = "carousel-test:" + crypto.randomUUID();
+  const theme = compact(input.theme || "Instagram no automático para o seu negócio", 140);
+  const nicheId = compact(input.nicheId || "", 40);
+  const payload = {
+    title: theme,
+    nicheId,
+    carouselTest: true,
+    creativeFeatures: { requestedFormat:"carousel", theme },
+    qualityGates: { copyChief:"approved", designer:"approved" }
+  };
+  await env.DB.prepare(
+    "INSERT INTO post_ledger(id,client_id,status,approval_status,caption,error,payload_json,created_at,updated_at) VALUES(?1,?2,'carousel_test','pending',?3,'format_build_pending',?4,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
+  ).bind(id, String(client.id), "Teste do carrossel: " + theme, JSON.stringify(payload)).run();
+  return { id, theme, nicheId };
+}
+
+export async function carouselTestStatus(env, clientId, id) {
+  const row = await env.DB.prepare("SELECT id,status,error,payload_json,updated_at FROM post_ledger WHERE id=?1 AND client_id=?2 AND status='carousel_test' LIMIT 1").bind(String(id), String(clientId)).first();
+  if (!row) return null;
+  const build = parseJson(row.payload_json, {})?.formatBuild || {};
+  const plan = build.agent?.plan;
+  return {
+    id: row.id,
+    error: row.error || "",
+    updatedAt: row.updated_at,
+    status: build.status || "waiting",
+    failure: build.error || "",
+    titles: plan ? plan.cartoes.map(card => card.titulo_linha1 + " / " + card.titulo_linha2) : [],
+    photos: (build.agent?.photos || []).map(photo => ({ status: photo.status, attempts: photo.attempts, reason: photo.review?.reason || "", url: photo.url || "" })),
+    carouselUrls: Array.isArray(build.carouselUrls) ? build.carouselUrls : []
+  };
 }

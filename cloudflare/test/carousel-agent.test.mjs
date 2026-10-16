@@ -228,3 +228,29 @@ test("worker liga o retorno do carrossel e o workflow só aceita fotos do Nexus"
   assert.ok(fs.existsSync(new URL("../../public/brand/flowarts-symbol.webp", import.meta.url)));
   assert.deepEqual(renderCards(validateCarouselPlan(goodPlan()).plan, ["a", "b", "c", "d", "e"]).map(c => c.photo), ["a", "b", "c", "d", "e"]);
 });
+
+test("botão de teste: cria carrossel que o Format Builder monta, mas ninguém publica nem o cliente vê", async () => {
+  const { createCarouselTest, carouselTestStatus } = await import("../src/format-builder.js");
+  const { db, DB } = sqliteDB();
+  db.exec("ALTER TABLE post_ledger ADD COLUMN created_at TEXT; ALTER TABLE post_ledger ADD COLUMN scheduled_for TEXT;");
+  const out = await createCarouselTest({ DB }, { id: "primeiro-teste" }, { nicheId: "pet-shop", theme: "Teste" });
+  assert.match(out.id, /^carousel-test:/);
+  const row = db.prepare("SELECT status, approval_status, payload_json FROM post_ledger WHERE id=?").get(out.id);
+  assert.equal(row.status, "carousel_test");
+  const payload = JSON.parse(row.payload_json);
+  assert.equal(payload.creativeFeatures.requestedFormat, "carousel");
+  assert.equal(payload.qualityGates.designer, "approved");
+  const status = await carouselTestStatus({ DB }, "primeiro-teste", out.id);
+  assert.equal(status.status, "waiting");
+  await assert.rejects(createCarouselTest({ DB }, { id: "cliente-sem-perfil" }, {}), /carousel_agent_not_enabled/);
+
+  const fb = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
+  assert.match(fb, /OR status='carousel_test'\)/);
+  const portal = fs.readFileSync(new URL("../src/portal.js", import.meta.url), "utf8");
+  assert.match(portal, /COALESCE\(status,''\) <> 'carousel_test'/);
+  for (const file of ["../src/executor.js", "../src/scheduler.js", "../src/posts.js"]) {
+    assert.doesNotMatch(fs.readFileSync(new URL(file, import.meta.url), "utf8"), /carousel_test/, file + " não pode publicar teste");
+  }
+  const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
+  assert.match(master, /\/api\/master\/carousel-test/);
+});

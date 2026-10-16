@@ -20,6 +20,7 @@ import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { addDirective, createCampaign, masterWorkspace, updateCampaign } from "./master-workspace.js";
 import { handleMasterOpenAI } from "./master-openai.js";
 import { decidePost } from "./posts.js";
+import { createCarouselTest, carouselTestStatus } from "./format-builder.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { runGiftInboxForClient } from "./gift-dm.js";
 
@@ -837,6 +838,23 @@ export async function handleMaster(request, env, url) {
     });
 
     return json({ ok: true, client: masterClientView(updated) });
+  }
+
+  // Carrossel de teste do agente de marketing (não publica).
+  if (url.pathname === "/api/master/carousel-test" && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    const client = await getClient(env, String(body?.clientId || "").trim());
+    if (!client) return json({ error: "client_not_found" }, 404);
+    try {
+      return json({ ok: true, test: await createCarouselTest(env, client, body) }, 201);
+    } catch (error) {
+      return json({ error: String(error?.message || error) }, 400);
+    }
+  }
+  const carouselTestMatch = url.pathname.match(/^\/api\/master\/carousel-test\/([^/]+)\/(.+)$/);
+  if (carouselTestMatch && request.method === "GET") {
+    const status = await carouselTestStatus(env, decodeURIComponent(carouselTestMatch[1]), decodeURIComponent(carouselTestMatch[2]));
+    return status ? json({ ok: true, test: status }) : json({ error: "not_found" }, 404);
   }
 
   if (url.pathname === "/api/master/posts" && request.method === "GET") {

@@ -477,7 +477,7 @@ async function listPosts(env, clientId) {
     `SELECT id, client_id, scheduled_for, scheduled_hour, status, approval_status,
             media_id, caption, image_object_key, error, cost_usd, payload_json,
             created_at, updated_at
-     FROM post_ledger WHERE client_id = ?1
+     FROM post_ledger WHERE client_id = ?1 AND COALESCE(status,'') <> 'carousel_test'
      ORDER BY updated_at DESC LIMIT 100`
   ).bind(String(clientId)).all();
   return (result?.results || []).map(row => ({
