@@ -309,6 +309,28 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
     </div>
   </section>
 
+  <!-- 1b. Vídeo: comentário vira resposta no direct e contato no WhatsApp -->
+  <section class="section reel-demo" id="resposta-automatica" aria-labelledby="auto-title">
+    <div class="wrap reel-wrap">
+      <div>
+        <h2 id="auto-title">Comentou? A resposta chega sozinha.</h2>
+        <p class="lead">Você combina uma palavra, como QUERO. Quando alguém comenta, recebe a mensagem no direct e vai direto para o seu WhatsApp.</p>
+        <div class="actions" style="margin-top:24px"><a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20Instagram%20com%20resposta%20autom%C3%A1tica." target="_blank" rel="noopener">Quero este</a></div>
+      </div>
+      <figure class="phone reel-phone">
+        <div class="screen">
+          <video id="auto-demo" src="/video/instagram-responde.mp4" poster="/video/instagram-responde.jpg" muted loop playsinline controls preload="none" aria-label="Demonstração: uma pessoa comenta QUERO, recebe a resposta no direct e chama no WhatsApp"></video>
+        </div>
+        <figcaption>Demonstração ilustrativa</figcaption>
+      </figure>
+    </div>
+  </section>
+<script>
+(function(){var v=document.getElementById("auto-demo");if(!v||!("IntersectionObserver" in window))return;var c=navigator.connection;
+if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||(c&&c.saveData))return;
+new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){v.play&&v.play().catch(function(){});}else v.pause();});},{threshold:.5}).observe(v);})();
+</script>
+
   <!-- 2. Exemplo de Reel em vídeo (plano com vídeo) -->
   <section class="section reel-demo" aria-labelledby="reel-title">
     <div class="wrap reel-wrap">
