@@ -1,5 +1,8 @@
 # Próximas ações
 
+## Agente de marketing do carrossel (16/10 ~18h) — teste em andamento
+- Format Builder LIGADO em primeiro-teste (para o teste). Conferir o teste carousel-test:d701dce8-312a-43d5-94eb-49736afd52cb no Master. Watchdog do autonomy-health mata a geração de foto (30 s): ver CHANGELOG 16/10 ~18h.
+
 ## Agente de marketing do carrossel (16/10 ~17h)
 1. OK do Rodrigo para publicar a branch `feat/agente-marketing-carrossel` em main (o workflow `carousel-card-render` só funciona depois de estar na main).
 2. Religar só Format Builder + Designer no Master e deixar 1 carrossel ser montado (custo estimado: 5 fotos ≈ US$ 0,30 + revisões; mais se alguma foto for refeita).

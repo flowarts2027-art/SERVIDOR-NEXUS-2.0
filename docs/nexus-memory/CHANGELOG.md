@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 ~18h BRT — Teste do carrossel: plano ok, fotos paradas pelo relógio do servidor
+- Deploy d99757b (botão "Testar carrossel") success. Módulo Format Builder LIGADO em primeiro-teste (PATCH modules; Creator e Designer continuam desligados). Teste criado: carousel-test:d701dce8-312a-43d5-94eb-49736afd52cb (pet shop).
+- Plano gerado às 20:37:56 UTC e aprovado na conferência: "Sua rotina não para / E o Instagram fica?", "Você atende os pets / Quem cuida do perfil?", "Conteúdo com sua cara / A Flow Arts cria os posts", "Você aprova primeiro / Depois, a Flow publica", "Dê o primeiro passo / Fale com a Flow Arts".
+- Nenhuma foto salva. Causa (logs da Cloudflare): o job manual foi drenado pelo watchdog de GET /api/autonomy-health (ctx.waitUntil, ~30 s), que roda quando o cron */15 está atrasado; a 1ª foto (~1 min) não cabe. O cron */15 dispara irregular (10 eventos em 3 h; 17:30:57 local, ~2,8 s quando não há trabalho). Isso também explica posts "sem imagem".
+- Job manual de novo às ~20:58 UTC. Resultado não conferido: o Chrome do Rodrigo desconectou.
+- PRÓXIMO: conferir o teste (Master › Postagens › Testar carrossel). Se continuar parado: o watchdog não deve drenar ciclos com geração de imagem (ou a montagem deve fazer 1 foto por rodada e reagendar).
+
 ## 2026-10-16 ~17h40 BRT — Publicado o agente + botão "Testar carrossel" no Master
 - Rodrigo deu OK ("sim pode fazer"). Commit e6a4645 em main; Deploy NEXUS Cloudflare run 38962098563 success; rota nova conferida no navegador (GET /api/internal/carousel-render/upload → method_not_allowed). "NEXUS Overnight Regression" falha desde antes desta mudança (passo "Client workspace end-to-end regression"), não investigado.
 - Não havia carrossel esperando (os 2 posts de 16/10 são imagem). Rodrigo escolheu um botão de teste: Master › Postagens › "Testar carrossel" cria post com status `carousel_test` (Format Builder monta; agendador/publicador só pegam ready/scheduled/failed; painel do cliente esconde). Acompanhamento em GET /api/master/carousel-test/:cliente/:id.
