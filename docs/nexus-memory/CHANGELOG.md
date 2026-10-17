@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~10h45 BRT — Caçador de leads: Google opcional, mapa grátis como reserva
+- Rodrigo perguntou se o caçador depende dos R$ 120 do Google. Diagnóstico no código: com a chave do Google salva (14/10), `runProspectSearch` usava só o Google; com a conta de faturamento inativa a busca falhava, e a tela dizia "Falta ativar o Google Maps".
+- Com OK do Rodrigo: se o Google recusar, a busca passa sozinha para o OpenStreetMap (Overpass) no resto da rodada (`fallbackFrom: "google"`). Resultados do mapa grátis são guardados (como antes) e agora também aparecem na lista "Novos". `listProspects` devolve `configured: true` sempre e `googleKey`. Tela: botão de busca sempre liberado; mostra a fonte e avisa quando usou o mapa grátis.
+- Ainda vale: OSM tem menos empresas e às vezes sem telefone; Overpass deu 504 em 14/10. Pagar o Google continua opcional.
+- MailerFind (analisado a pedido): pago (a partir de € 97/mês), pega dados de seguidores do Instagram (contra os termos do Instagram, risco LGPD). Recomendado não usar.
+- 438 testes (1 novo).
+
 ## 2026-10-17 ~10h30 BRT — Reel automático (desligado por padrão)
 - Pedido do Rodrigo: "todo o processo automatizado no Nexus, sem enviar pelo painel nem colocar texto; deixar o manual em aberto".
 - `cloudflare/src/auto-reel.js`: no cron de 15 min (`runAutoReels`), para clientes com perfil da marca e não travados (hoje só Flow Arts). A cada X dias (padrão 7): escolhe um nicho (sem repetir os últimos), o agente de marketing do carrossel (`planMarketingCarousel`, 1 chamada OpenAI) escreve as 5 cenas, o código confere (`validateReelScenes`), a legenda segue a legenda modelo ("Você cuida da/do [nicho]…"), e `startAnimatedReel` grava no GitHub. O post nasce `reel_rendering` com dia sugerido (padrão: daqui a 2 dias às 18h) e aprovação pendente: o cliente só aprova ou troca o dia.

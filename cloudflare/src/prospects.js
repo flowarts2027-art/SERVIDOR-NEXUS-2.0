@@ -317,7 +317,10 @@ export async function importBrowserResults(env, { niche, cityIndex, elements } =
 export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fetcher = fetch) {
   await ensureProspectSchema(env);
   const key = await placesKey(env);
-  const provider = key ? "google" : "osm";
+  // Com chave do Google, tenta o Google. Se o Google recusar (conta sem crédito, chave errada),
+  // passa para o mapa grátis (OpenStreetMap) no resto da busca. Pedido do Rodrigo em 17/10.
+  let provider = key ? "google" : "osm";
+  let googleError = "";
   const usage = await readState(env, "usage", { day: "", count: 0 });
   const used = usage.day === today() ? Number(usage.count || 0) : 0;
   const allowed = Math.max(0, Math.min(Number(calls) || 3, 5, DAILY_SEARCH_LIMIT - used));
@@ -339,8 +342,8 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
     const city = CITIES[cityIndex];
     position++;
     let items;
-    try {
-      if (provider === "google") {
+    if (provider === "google") {
+      try {
         const places = await searchPlaces(key, `${NICHES[nicheKey].query} em ${city}`, fetcher);
         found += places.length;
         // Regra do Google: não guardar os dados dos lugares. A lista vai direto para a tela;
@@ -351,24 +354,33 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
         }
         searched.push(`${NICHES[nicheKey].query} em ${city}`);
         continue;
-      } else {
-        const elements = await searchOSM(nicheKey, cityIndex, fetcher);
-        found += elements.length;
-        items = elements.map(element => osmToProspect(element, nicheKey, city));
+      } catch (e) {
+        googleError = String(e?.message || e).slice(0, 120);
+        provider = "osm";
       }
+    }
+    try {
+      const elements = await searchOSM(nicheKey, cityIndex, fetcher);
+      found += elements.length;
+      items = elements.map(element => osmToProspect(element, nicheKey, city)).filter(Boolean);
     } catch (e) {
       error = String(e?.message || e);
       done++;
       break;
     }
-    added += await saveProspects(env, items);
+    const fresh = [];
+    for (const item of items) if (!(await alreadyKnown(env, item.id))) fresh.push(item);
+    added += await saveProspects(env, fresh);
+    // Mostra na tela os novos desta busca (o mapa grátis pode ser guardado; o Google não).
+    for (const item of fresh) live.push({ ...item, status: "novo", message: firstMessage(item), whatsapp: whatsappLink(item) });
     searched.push(`${NICHES[nicheKey].query} em ${city}`);
   }
 
   await writeState(env, "usage", { day: today(), count: used + done });
   if (!NICHES[niche]) await writeState(env, "cursor", { n: position });
   return { ok: !error || live.length > 0, error: error || undefined, provider, searched, found,
-    added: provider === "google" ? live.length : added, items: provider === "google" ? live : undefined,
+    added: provider === "google" ? live.length : added, items: live,
+    ...(googleError ? { fallbackFrom: "google", googleError } : {}),
     usedToday: used + done, dailyLimit: DAILY_SEARCH_LIMIT };
 }
 
@@ -426,7 +438,9 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
   const hasKey = Boolean(await placesKey(env));
   return {
     ok: true,
-    configured: hasKey,
+    // O mapa grátis está sempre disponível; a chave do Google é opcional.
+    configured: true,
+    googleKey: hasKey,
     provider: hasKey ? "google" : "osm",
     usedToday: usage.day === today() ? Number(usage.count || 0) : 0,
     dailyLimit: DAILY_SEARCH_LIMIT,

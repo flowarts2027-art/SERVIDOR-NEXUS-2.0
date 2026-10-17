@@ -97,11 +97,12 @@ test("Google: a busca mostra na hora e não guarda; só quem foi chamado fica gu
 test("chave do Google salva com criptografia e o painel sabe se falta", async () => {
   const { db, env } = fakeEnv();
   delete env.GOOGLE_PLACES_API_KEY;
-  assert.equal((await listProspects(env)).configured, false);
+  assert.equal((await listProspects(env)).googleKey, false);
+  assert.equal((await listProspects(env)).configured, true, "o mapa grátis está sempre disponível");
   await savePlacesKey(env, "AIzaSyD_chave_do_rodrigo_000000000000");
   const stored = db.prepare("SELECT value_json FROM nexus_state WHERE item_key='google-key'").get().value_json;
   assert.doesNotMatch(stored, /chave_do_rodrigo/);
-  assert.equal((await listProspects(env)).configured, true);
+  assert.equal((await listProspects(env)).googleKey, true);
   await assert.rejects(savePlacesKey(env, "curta"), /google_key_invalid/);
   await assert.rejects(setProspectStatus(env, "ChIJ_place_0001", "apagar"), /status_invalid/);
 });
@@ -177,4 +178,22 @@ test("busca pelo navegador: o servidor planeja, o navegador busca e o servidor g
   assert.equal(db.prepare("SELECT city FROM prospects").get().city, "São Paulo SP");
   await assert.rejects(importBrowserResults(env, { niche: "x", cityIndex: 0, elements: [] }), /niche_invalid/);
   await assert.rejects(importBrowserResults(env, { niche: "cafeteria", cityIndex: 999, elements: [] }), /city_invalid/);
+});
+
+test("Google recusou (sem crédito): a busca passa para o mapa grátis sozinha", async () => {
+  const { env } = fakeEnv();
+  await savePlacesKey(env, "AIzaSyD_chave_do_rodrigo_000000000000");
+  const urls = [];
+  const result = await runProspectSearch(env, { calls: 1, niche: "salao" }, async u => {
+    urls.push(String(u));
+    if (String(u).includes("places.googleapis.com")) return new Response(JSON.stringify({ error: { status: "PERMISSION_DENIED", message: "billing" } }), { status: 403 });
+    return new Response(JSON.stringify({ elements: [{ type: "node", id: 7, tags: { name: "Salão Ana", shop: "hairdresser", phone: "+55 81 98888-3333" } }] }), { status: 200 });
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.provider, "osm");
+  assert.equal(result.fallbackFrom, "google");
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].name, "Salão Ana");
+  assert.match(result.items[0].whatsapp, /wa\.me/);
+  assert.ok(urls.some(u => u.includes("overpass")));
 });

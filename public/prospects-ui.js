@@ -1,4 +1,4 @@
-// Caçador de clientes no painel Master (aba Contatos). Fonte: Google Maps.
+// Caçador de clientes no painel Master (aba Contatos). Fonte: Google Maps ou, sem ele, o mapa grátis (OpenStreetMap).
 // Regra do Google: a busca aparece na hora e não é guardada. Só fica guardado
 // quem o Rodrigo chamar no WhatsApp. Nada é enviado sozinho.
 (() => {
@@ -60,13 +60,11 @@
       const data = await call("/api/master/prospects?status=" + encodeURIComponent(status === "novo" ? "enviado" : status) + "&limit=60");
       items = status === "novo" ? found : (data.items || []);
       provider = data.provider || "osm";
-      const ready = Boolean(data.configured);
-      const google = $(".prospect-google");
-      if (google && !ready) google.open = true;
-      $("#prospect-search").disabled = !ready;
-      $("#prospect-usage").textContent = ready
-        ? `Fonte: Google Maps. Buscas hoje: ${data.usedToday || 0} de ${data.dailyLimit || 30}`
-        : "Falta ativar o Google Maps para buscar.";
+      // O mapa grátis está sempre disponível; o Google é opcional (precisa de crédito).
+      $("#prospect-search").disabled = false;
+      $("#prospect-usage").textContent = (data.googleKey
+        ? "Fonte: Google Maps (se o Google recusar, uso o mapa grátis)."
+        : "Fonte: mapa grátis (OpenStreetMap).") + ` Buscas hoje: ${data.usedToday || 0} de ${data.dailyLimit || 30}`;
       const counts = { ...(data.counts || {}), novo: found.length };
       $("#prospect-tabs").innerHTML = TABS.map(([key, label]) =>
         `<button type="button" role="tab" data-tab="${key}" class="${key === status ? "active" : ""}" aria-selected="${key === status}">${label} (${Number(counts[key] || 0)})</button>`).join("");
@@ -140,7 +138,9 @@
         result.found = undefined;
         status = "novo";
         await load();
-        usage.textContent = `${result.added || 0} empresas sem site na lista. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.` + (result.error ? " Uma busca falhou." : "");
+        usage.textContent = `${result.added || 0} empresas sem site na lista. Buscas hoje: ${result.usedToday} de ${result.dailyLimit}.`
+          + (result.fallbackFrom === "google" ? " O Google recusou; usei o mapa grátis." : "")
+          + (result.error ? " Uma busca falhou." : "");
       } catch (error) {
         usage.textContent = error.message;
       } finally {
