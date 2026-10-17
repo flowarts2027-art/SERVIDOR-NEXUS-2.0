@@ -1,6 +1,7 @@
 # Próximas ações
 
-## Reel automático (17/10) — publicado DESLIGADO
+## Reel automático (17/10) — LIGADO às 10h27 (a cada 7 dias)
+- FEITO: passos 1 e 2. Conferir em ~24/10 se o próximo foi criado sozinho (Master › caixa AUTOMÁTICO mostra o último).
 1. OK do Rodrigo para ligar: Master › Postagens › Reel animado › AUTOMÁTICO › marcar "Ligar" › Salvar.
 2. Teste: "Criar um agora" (1 chamada OpenAI, centavos). Conferir as cenas e o vídeo no painel.
 3. Depois: fotos (do cliente pelo painel, ou por IA quando houver cliente pagante e o relógio do servidor estiver corrigido).
