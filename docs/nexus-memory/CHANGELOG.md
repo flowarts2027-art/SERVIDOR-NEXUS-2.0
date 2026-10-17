@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~21h BRT — Apps Android (Master e Cliente) — APK gerado; branch app-android (fora da main)
+- Pedido do Rodrigo: APK Android do Nexus, do painel Master e do cliente.
+- `android/`: projeto Trusted Web Activity (androidbrowserhelper 2.5.0), dois sabores: `br.com.flowarts.nexus.master` ("Nexus Master", abre https://painel.flowarts.com.br/api/master/console) e `br.com.flowarts.nexus.cliente` ("Flow Arts", abre /portal). Ícones dos manifests PWA, tela de abertura com a cor de cada painel, notificações do painel com o nome do app. Precisa do Chrome no celular (sem Chrome, cai para WebView).
+- `.github/workflows/android-apps.yml`: gera os 2 APKs e publica numa Release. Chave de assinatura criada sozinha e guardada no R2 em `private/android-signing/` (pasta que o site não serve); assim as próximas versões instalam por cima.
+- Prova: run 39080200815 success; Release app-v1.0.1 com nexus-master.apk (536 KB), flowarts-cliente.apk (535 KB) e assetlinks.json (SHA-256 D6:5C:…:9B:7F); prerelease=false (chave ficou no R2).
+- Pendente: `public/.well-known/assetlinks.json` está pronto na branch, mas só vale depois de ir para a main (deploy). Sem ele o app mostra uma barrinha com o endereço no topo. Precisa do OK do Rodrigo.
+
 ## 2026-10-17 ~16h30 BRT — Caçador diário + aviso no celular (publicado 15h28 com OK do Rodrigo; deploy success 6a9ffce)
 - Pedido: busca todo dia e envio para no mínimo 3 contatos, nichos diferentes em rodízio, pelo número da Flow. Expliquei o risco (Meta exige que a pessoa tenha aceitado; contato frio pode derrubar a nota e bloquear o +55 21 99855-9965). Rodrigo escolheu a opção 2: o Nexus separa e avisa; ele envia pelo WhatsApp pessoal. E pediu notificação no celular que abre o painel.
 - `daily-prospects.js`: no cron de 15 min, a partir das 9h (Brasília), procura no mapa grátis (OSM; o Google não permite guardar dados) 1 empresa por nicho, nichos diferentes, primeiro os que têm exemplo, em rodízio de nicho e cidade. Só celular, sem site, que ainda não está no CRM (por número ou código do mapa, inclusive arquivados). Entra no CRM na etapa nova "Para chamar", com a primeira mensagem pronta (com o link do exemplo) e retorno hoje. Meta padrão 3/dia (dá para mudar de 1 a 10 e desligar no CRM). Até 12 tentativas/dia, 3 buscas por tentativa. Nada é enviado.

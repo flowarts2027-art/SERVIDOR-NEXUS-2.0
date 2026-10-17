@@ -1,5 +1,10 @@
 # Próximas ações
 
+## Apps Android (17/10) — APK pronto na Release app-v1.0.1; branch app-android
+1. Rodrigo instala no celular: releases/latest/download/nexus-master.apk e flowarts-cliente.apk (permitir "instalar apps desconhecidos").
+2. Com OK do Rodrigo: levar a branch app-android para a main (deploy publica /.well-known/assetlinks.json e tira a barra de endereço).
+3. Conferir https://painel.flowarts.com.br/.well-known/assetlinks.json depois do deploy e abrir o app de novo.
+
 ## Caçador diário + aviso no celular (17/10) — NO AR (deploy 6a9ffce, 15h28)
 1. FEITO: publicado.
 2. Rodrigo abre o Master no celular › CRM › "Busca diária e aviso no celular" › Ativar aviso › Testar aviso.
