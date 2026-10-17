@@ -9,7 +9,7 @@
 - Painel do cliente esconde `reel_rendering` e `reel_render_failed`.
 - 432 testes (6 novos). `wrangler --dry-run` não rodou aqui (npm sem rede); o deploy do GitHub roda antes de publicar.
 - Publicado com o OK do Rodrigo ("pode subir ajustado"): commit d407395; NEXUS CI success; Deploy NEXUS Cloudflare run 39033174596 success. Rota no ar não conferida desta sessão (proxy sem acesso ao workers.dev). Overnight Regression continua falhando (antigo).
-- NÃO testado: o workflow no GitHub de verdade, o retorno ao Worker e a publicação real de Reels.
+- 17/10 09h55: 1º teste real com OK do Rodrigo (pizzaria, só texto, pelo Master no Chrome dele). Run "NEXUS Animated Reel Render" 39034373256 success; capa e vídeo voltaram ao Worker; post animated-reel-5aae4011-f921-4db1-8e7e-0c37ff72d24d ficou pronto e o vídeo toca no Master. Falta: cliente escolher o dia e aprovar; publicação real do Reel ainda não testada.
 
 ## 2026-10-16 ~22h BRT — Painel do cliente: enviar feed, carrossel, reels e stories prontos
 - Pedido do Rodrigo: pausar a geração de imagens (economizar saldo; religar quando houver cliente) e fazer conteúdo manual. Criador, Designer e Format Builder já estão DESLIGADOS no Master (conferido 16/10 ~18h35).

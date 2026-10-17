@@ -1,6 +1,7 @@
 # Próximas ações
 
-## Reel animado por modelo (17/10) — publicado, falta o 1º teste real
+## Reel animado por modelo (17/10) — gravação testada OK (09h55); falta publicar
+- FEITO: passos 1 e 2 (post animated-reel-5aae4011…, pizzaria).
 1. Rodrigo: Master › Postagens › "Criar Reel animado". Preencher as 5 cenas da pizzaria (exemplo nos campos) + legenda. Fotos são opcionais.
 2. Esperar ~5 min na tela. Conferir no Actions o run "NEXUS Animated Reel Render" e o vídeo que aparece no Master.
 3. No painel do cliente: escolher o dia e aprovar. Primeira publicação real de Reel do Nexus: acompanhar.
