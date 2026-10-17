@@ -8,6 +8,7 @@
 - Master › Postagens › "Criar Reel animado": caixa AUTOMÁTICO (ligar, a cada X dias, hora, dias até a data, Salvar, "Criar um agora"). GET/POST /api/master/animated-reel/auto. O manual continua igual.
 - `animated-reel.js` refeito: `startAnimatedReel` serve ao manual e ao automático.
 - 437 testes (5 novos). DESLIGADO até o Rodrigo ligar no Master.
+- Deploy c2e70a7 success. 17/10 ~10h25: "Criar um agora" com OK do Rodrigo: IA escreveu as 5 cenas (loja: "Você cuida da loja. / E o Instagram fica?" … "Quer ver como funciona? / Fale com a Flow por aqui"), render 39036272357 success, post animated-reel-auto-3fdf5317-3328-4a66-b3ca-34785c901798 pronto com dia sugerido. Automático continua DESLIGADO (só o teste).
 
 ## 2026-10-17 ~09h40 BRT — Reel animado por modelo (sem IA, sem custo)
 - Pedido do Rodrigo: analisar o repositório yihui-dev/awesome-opus5-5-videos (vídeos feitos em código: HTML/Canvas/GSAP) e "subir ajustado" no Nexus.
