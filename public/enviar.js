@@ -27,7 +27,14 @@
     render();
   }
 
+  function updateCount() {
+    const help = $("#upload-order-help");
+    if (!help || type() !== "carousel") return;
+    help.textContent = (images.length ? images.length + " de 10 imagens escolhidas. " : "") + "Pode escolher uma por vez ou várias juntas. A ordem segue o número no nome do arquivo (1, 2, 3…); use as setas para trocar.";
+  }
+
   function render() {
+    updateCount();
     const box = $("#upload-preview");
     box.innerHTML = "";
     if (video) {
@@ -41,6 +48,12 @@
       img.src = URL.createObjectURL(file); img.alt = "Imagem " + (index + 1);
       const cap = document.createElement("figcaption"); cap.textContent = String(index + 1);
       fig.append(img, cap);
+      if (type() === "carousel") {
+        const remove = document.createElement("button");
+        remove.type = "button"; remove.className = "remove"; remove.dataset.remove = String(index);
+        remove.setAttribute("aria-label", "Tirar a imagem " + (index + 1)); remove.textContent = "✕ Tirar";
+        fig.append(remove);
+      }
       if (type() === "carousel" && images.length > 1) {
         const order = document.createElement("div"); order.className = "order";
         order.innerHTML = `<button type="button" data-move="-1" data-i="${index}" aria-label="Mover para a esquerda" ${index === 0 ? "disabled" : ""}>←</button><button type="button" data-move="1" data-i="${index}" aria-label="Mover para a direita" ${index === images.length - 1 ? "disabled" : ""}>→</button>`;
@@ -73,9 +86,20 @@
     const target = event.target;
     if (target?.name === "type" && target.closest("#upload-form")) setupFields();
     if (target?.id === "upload-images") {
-      images = [...target.files];
-      if (type() === "carousel") images.sort((a, b) => numberIn(a.name) - numberIn(b.name) || a.name.localeCompare(b.name));
+      const picked = [...target.files];
+      if (type() === "carousel") {
+        // Soma às já escolhidas (dá para escolher uma por vez); ignora a mesma imagem repetida; máximo 10.
+        const key = file => file.name + "|" + file.size;
+        const have = new Set(images.map(key));
+        images = images.concat(picked.filter(file => !have.has(key(file)))).slice(0, 10);
+        images.sort((a, b) => numberIn(a.name) - numberIn(b.name));
+        target.value = "";
+      } else {
+        images = picked.slice(0, 1);
+      }
       if (type() === "story" && images.length) { video = null; $("#upload-video").value = ""; }
+      if (type() === "carousel" && images.length < 2) $("#upload-status").textContent = "Escolha mais imagens (mínimo 2).";
+      else $("#upload-status").textContent = "";
       render();
     }
     if (target?.id === "upload-video") {
@@ -86,6 +110,8 @@
   });
 
   document.addEventListener("click", event => {
+    const del = event.target.closest?.("#upload-preview [data-remove]");
+    if (del) { images.splice(Number(del.dataset.remove), 1); render(); updateCount(); return; }
     const btn = event.target.closest?.("#upload-preview [data-move]");
     if (!btn) return;
     const i = Number(btn.dataset.i), j = i + Number(btn.dataset.move);
@@ -107,6 +133,7 @@
     data.set("caption", form.caption.value);
     data.set("date", form.date.value);
     data.set("time", form.time.value);
+    if (t === "carousel" && images.length < 2) { status.textContent = "Escolha pelo menos 2 imagens para o carrossel."; return; }
     button.disabled = true;
     status.textContent = "Enviando… não feche a página.";
     try {

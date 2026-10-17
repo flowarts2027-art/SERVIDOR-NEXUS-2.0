@@ -409,3 +409,4 @@ input, select, textarea, button { max-width: 100%; }
 .upload-preview img,.upload-preview video{width:110px;border-radius:10px;display:block}
 .upload-preview .order{display:flex;justify-content:center;gap:6px;margin-top:4px}
 .upload-preview .order button{min-width:44px;min-height:36px;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:transparent;font:inherit;cursor:pointer}
+.upload-preview .remove{margin-top:4px;min-height:36px;width:100%;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:transparent;font:inherit;cursor:pointer}
