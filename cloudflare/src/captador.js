@@ -7,6 +7,7 @@
 // Nada é enviado pelo servidor: o cliente manda pelo próprio WhatsApp.
 
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
+import { SHOWCASE_CLIENT, readShowcase, showcaseLine } from "./showcase-store.js";
 
 // Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
 export const CAPTADOR_MONTHLY_LIMIT = 100;
@@ -154,18 +155,21 @@ export async function saveCaptadorConfig(env, client, body = {}) {
 }
 
 // A mensagem é do cliente. A frase de "não quero receber" é obrigatória.
-export function captadorMessage(config, lead) {
+export function captadorMessage(config, lead, showcase = null) {
   const name = config.myName || "a equipe";
   const lines = [`Oi, tudo bem? Aqui é ${name}${config.business ? ", da " + config.business : ""}.`];
   lines.push(`Encontrei a ${lead.name} aqui em ${lead.city}.`);
   if (config.offer) lines.push(config.offer);
+  // Vitrine do nicho (só Flow Arts): vídeo de exemplo para o tipo de negócio buscado.
+  const example = showcase ? showcaseLine(showcase, lead.niche, CAPTADOR_NICHES[lead.niche]?.label) : "";
+  if (example) lines.push(example);
   lines.push("Posso te contar mais?");
   lines.push("Se preferir não receber mensagens, é só me avisar.");
   return lines.join("\n\n");
 }
 
-const withMessage = (config, lead) => {
-  const message = captadorMessage(config, lead);
+const withMessage = (config, lead, showcase = null) => {
+  const message = captadorMessage(config, lead, showcase);
   return { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
     whatsapp: `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` };
 };
@@ -301,12 +305,13 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
       throw new Error("search_failed");
     }
   }
+  const showcase = client.id === SHOWCASE_CLIENT ? await readShowcase(env) : null;
   const items = [];
   const seen = new Set();
   for (const lead of leads) {
     if (!lead || seen.has(lead.id) || await alreadyKnown(env, client.id, lead.id)) continue;
     seen.add(lead.id);
-    items.push(withMessage(config, { ...lead, status: "novo" }));
+    items.push(withMessage(config, { ...lead, status: "novo" }, showcase));
   }
   items.sort((a, b) => b.score - a.score);
   return { ok: true, found, items, source, usedMonth: used + 1, monthlyLimit };
@@ -356,11 +361,12 @@ export async function captadorView(env, client, status = "enviado") {
   }
   counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM captador_skips WHERE client_id=?1").bind(client.id).first())?.n || 0);
   counts.novo = 0; // a lista de novos fica só na tela
+  const showcase = client.id === SHOWCASE_CLIENT ? await readShowcase(env) : null;
   return {
     ok: true, enabled: true, ready: true, config, counts,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
-    items: rows.map(row => withMessage(config, row))
+    items: rows.map(row => withMessage(config, row, showcase))
   };
 }
 

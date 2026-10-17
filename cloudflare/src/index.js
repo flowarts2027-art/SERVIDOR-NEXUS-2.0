@@ -32,6 +32,7 @@ import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
 import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
 import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
+import { handleShowcasePage, handleShowcaseMaster } from "./showcase.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -662,6 +663,14 @@ export default {
       if (response) return response;
     }
 
+    // Vitrine por nicho (só Flow Arts): qual Reel é o exemplo de cada tipo de negócio. Só com login do Master.
+    if (url.pathname === "/api/master/showcase") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleShowcaseMaster(request, env, url);
+      if (response) return response;
+    }
+
     // Reel automático: configuração e "criar um agora". Só com login do Master.
     if (url.pathname === "/api/master/animated-reel/auto") {
       const master = await resolveMasterSession(env, request).catch(() => null);
@@ -710,6 +719,9 @@ export default {
     if (carouselRenderResponse) return carouselRenderResponse;
     const animatedReelResponse = await handleAnimatedReelCallback(request, env, url);
     if (animatedReelResponse) return animatedReelResponse;
+    // Página pública da vitrine: /exemplo/<nicho> (link que vai na mensagem do caçador).
+    const showcasePageResponse = await handleShowcasePage(request, env, url);
+    if (showcasePageResponse) return showcasePageResponse;
 
 
     if (["GET", "HEAD"].includes(request.method) && ["/login", "/portal", "/portal.html"].includes(url.pathname)) {

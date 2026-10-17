@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~11h15 BRT — Vitrine por nicho (só Flow Arts)
+- Pedido do Rodrigo: incluir um Reel de exemplo do nicho buscado na primeira mensagem (ex.: buscou pet shop → manda o Reel de pet). Só Flow Arts; NÃO ativar para outros clientes.
+- `src/showcase-store.js` (ler/gravar em nexus_state 'showcase', cliente primeiro-teste) e `src/showcase.js`: página pública `https://flowarts.com.br/exemplo/<nicho>` (vídeo, capa no og:image/og:video para a prévia do WhatsApp, botão "Quero um para o meu negócio" para o WhatsApp da Flow Arts; 404 se o nicho não tem vitrine). Master: GET/POST /api/master/showcase (lista Reels gravados da Flow Arts; escolher/tirar por nicho).
+- Mensagem: Captador (só quando o cliente é primeiro-teste) e caçador do Master ganham "Veja um vídeo que fizemos para <nicho>: <link>" quando o nicho tem vitrine. Caçador do Master agora diz "no mapa" para contato do mapa grátis (antes dizia "no Google").
+- Master › Postagens › Reel animado: caixa "VITRINE POR NICHO".
+- Nichos usam as chaves do Captador (pet, restaurante, salao, cafeteria…). Ainda não existe Reel de pet shop.
+- 444 testes (4 novos).
+
 ## 2026-10-17 ~10h45 BRT — Caçador de leads: Google opcional, mapa grátis como reserva
 - Rodrigo perguntou se o caçador depende dos R$ 120 do Google. Diagnóstico no código: com a chave do Google salva (14/10), `runProspectSearch` usava só o Google; com a conta de faturamento inativa a busca falhava, e a tela dizia "Falta ativar o Google Maps".
 - Com OK do Rodrigo: se o Google recusar, a busca passa sozinha para o OpenStreetMap (Overpass) no resto da rodada (`fallbackFrom: "google"`). Resultados do mapa grátis são guardados (como antes) e agora também aparecem na lista "Novos". `listProspects` devolve `configured: true` sempre e `googleKey`. Tela: botão de busca sempre liberado; mostra a fonte e avisa quando usou o mapa grátis.

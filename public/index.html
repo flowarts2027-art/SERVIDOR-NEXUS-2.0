@@ -184,6 +184,16 @@
             <button type="button" id="auto-reel-now">Criar um agora</button>
             <p class="muted wide" id="auto-reel-status" role="status"></p>
           </form>
+          <form id="showcase-form" class="manual-reel-form">
+            <p class="eyebrow wide">VITRINE POR NICHO (SÓ FLOW ARTS)</p>
+            <p class="muted wide">Escolha um Reel de exemplo para cada tipo de negócio. O link entra sozinho na primeira mensagem do Caçador e do Captador quando você buscar esse tipo.</p>
+            <label>Tipo de negócio<select name="niche" id="showcase-niche"></select></label>
+            <label>Reel de exemplo<select name="postId" id="showcase-reel"><option value="">Carregando…</option></select></label>
+            <button type="submit" class="primary">Salvar vitrine</button>
+            <button type="button" id="showcase-remove">Tirar a vitrine deste tipo</button>
+            <p class="muted wide" id="showcase-status" role="status"></p>
+            <ul class="wide" id="showcase-list"></ul>
+          </form>
           <p class="eyebrow">MANUAL</p>
           <form id="animated-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" required><option value="primeiro-teste">Flow Arts</option></select></label>
@@ -547,7 +557,7 @@
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
-  <script src="/animated-reel.js?v=2" defer></script>
+  <script src="/animated-reel.js?v=3" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=10" defer></script>

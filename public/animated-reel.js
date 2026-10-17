@@ -109,4 +109,52 @@
   });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => carregar().catch(() => {}));
   else carregar().catch(() => {});
+
+  // Vitrine por nicho (só Flow Arts): qual Reel vai como exemplo na mensagem do Caçador/Captador.
+  let vitrine = { map: {}, reels: [], niches: [] };
+  const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  function mostrarVitrine() {
+    const nicheSel = $("#showcase-niche");
+    const reelSel = $("#showcase-reel");
+    if (!nicheSel || !reelSel) return;
+    const atual = nicheSel.value;
+    nicheSel.innerHTML = vitrine.niches.map(n => `<option value="${esc(n.key)}">${esc(n.label)}${vitrine.map[n.key] ? " ✓" : ""}</option>`).join("");
+    if (atual) nicheSel.value = atual;
+    const escolhido = vitrine.map[nicheSel.value]?.postId || "";
+    reelSel.innerHTML = vitrine.reels.length
+      ? vitrine.reels.map(r => `<option value="${esc(r.id)}">${esc(r.title)} · ${esc(String(r.createdAt || "").slice(0, 10))}</option>`).join("")
+      : '<option value="">Nenhum Reel gravado ainda</option>';
+    if (escolhido) reelSel.value = escolhido;
+    const itens = vitrine.niches.filter(n => vitrine.map[n.key]);
+    $("#showcase-list").innerHTML = itens.length
+      ? itens.map(n => `<li>${esc(n.label)}: <a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.url)}</a></li>`).join("")
+      : "<li>Nenhuma vitrine ainda.</li>";
+  }
+  async function carregarVitrine() {
+    if (!$("#showcase-form")) return;
+    const response = await fetch("/api/master/showcase", { credentials: "same-origin" });
+    const data = await response.json().catch(() => ({}));
+    if (data.ok) { vitrine = data; mostrarVitrine(); }
+  }
+  async function salvarVitrine(postId) {
+    const status = $("#showcase-status");
+    status.textContent = "Salvando…";
+    const response = await fetch("/api/master/showcase", {
+      method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ niche: $("#showcase-niche").value, postId })
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) { status.textContent = data.message || "Não deu certo."; return; }
+    status.textContent = postId ? "Vitrine salva. Link: " + data.url : "Vitrine tirada.";
+    await carregarVitrine();
+  }
+  document.addEventListener("change", event => { if (event.target?.id === "showcase-niche") mostrarVitrine(); });
+  document.addEventListener("submit", event => {
+    if (event.target?.id !== "showcase-form") return;
+    event.preventDefault();
+    salvarVitrine($("#showcase-reel").value);
+  });
+  document.addEventListener("click", event => { if (event.target?.id === "showcase-remove") salvarVitrine(""); });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => carregarVitrine().catch(() => {}));
+  else carregarVitrine().catch(() => {});
 })();

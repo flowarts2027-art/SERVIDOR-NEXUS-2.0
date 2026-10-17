@@ -6,6 +6,7 @@
 // Nada é enviado sozinho daqui.
 
 import { encryptSecret, decryptSecret } from "./secrets.js";
+import { readShowcase, showcaseLine } from "./showcase-store.js";
 
 export const DAILY_SEARCH_LIMIT = 30; // Google: ~900/mês, dentro da cota grátis. OSM: uso educado do servidor público.
 const OVERPASS = "https://overpass-api.de/api/interpreter";
@@ -267,14 +268,14 @@ export function placeToProspect(place, nicheKey, city) {
   return item;
 }
 
-export function firstMessage(p) {
+export function firstMessage(p, showcase = null) {
   const niche = NICHES[p.niche] || NICHES.cafeteria;
   const cityName = String(p.city || "").replace(/\s[A-Z]{2}$/, "");
   const lines = ["Oi, tudo bem? Aqui é o Rodrigo, da Flow Arts."];
   if (Number(p.reviews) >= 20 && Number(p.rating) >= 4) {
     lines.push(`Vi a ${p.name} no Google: ${p.reviews} avaliações e nota ${String(Number(p.rating).toFixed(1)).replace(".", ",")}. Os clientes gostam de vocês!`);
   } else {
-    lines.push(`Encontrei a ${p.name} no Google, aqui em ${cityName}.`);
+    lines.push(`Encontrei a ${p.name} ${String(p.id || "").startsWith("osm:") ? "no mapa" : "no Google"}, aqui em ${cityName}.`);
   }
   lines.push(p.instagram
     ? "Notei que o Instagram é o principal canal de vocês na internet, e não encontrei um site."
@@ -282,13 +283,16 @@ export function firstMessage(p) {
   lines.push(p.instagram
     ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${niche.page}`
     : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${niche.page}`);
+  // Vitrine do nicho: vídeo de exemplo que a Flow Arts fez para esse tipo de negócio.
+  const example = showcase ? showcaseLine(showcase, p.niche, niche.plural) : "";
+  if (example) lines.push(example);
   lines.push(`Posso te mostrar como ficaria para a ${p.name}?`);
   lines.push("Se preferir não receber mensagens, é só me avisar.");
   return lines.join("\n\n");
 }
 
-export function whatsappLink(p) {
-  return `https://wa.me/55${p.phone}?text=${encodeURIComponent(firstMessage(p))}`;
+export function whatsappLink(p, showcase = null) {
+  return `https://wa.me/55${p.phone}?text=${encodeURIComponent(firstMessage(p, showcase))}`;
 }
 
 const FIELD_MASK = [
@@ -367,6 +371,7 @@ export async function importBrowserResults(env, { niche, cityIndex, elements } =
 
 export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fetcher = fetch) {
   await ensureProspectSchema(env);
+  const showcase = await readShowcase(env); // o caçador do Master é só da Flow Arts
   const key = await placesKey(env);
   // Com chave do Google, tenta o Google. Se o Google recusar (conta sem crédito, chave errada),
   // passa para o mapa grátis (OpenStreetMap) no resto da busca. Pedido do Rodrigo em 17/10.
@@ -401,7 +406,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
         // só fica guardado quem o Rodrigo chamar (saveContacted) ou marcar "não serve" (só o código).
         for (const item of places.map(place => placeToProspect(place, nicheKey, city))) {
           if (!item || await alreadyKnown(env, item.id)) continue;
-          live.push({ ...item, status: "novo", message: firstMessage(item), whatsapp: whatsappLink(item) });
+          live.push({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) });
         }
         searched.push(`${NICHES[nicheKey].query} em ${city}`);
         continue;
@@ -423,7 +428,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
     for (const item of items) if (!(await alreadyKnown(env, item.id))) fresh.push(item);
     added += await saveProspects(env, fresh);
     // Mostra na tela os novos desta busca (o mapa grátis pode ser guardado; o Google não).
-    for (const item of fresh) live.push({ ...item, status: "novo", message: firstMessage(item), whatsapp: whatsappLink(item) });
+    for (const item of fresh) live.push({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) });
     searched.push(`${NICHES[nicheKey].query} em ${city}`);
   }
 
@@ -485,6 +490,7 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
     counts[row.status] = Number(row.n || 0);
   }
   counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM prospect_skips").first())?.n || 0);
+  const showcase = await readShowcase(env);
   const usage = await readState(env, "usage", { day: "", count: 0 });
   const hasKey = Boolean(await placesKey(env));
   return {
@@ -499,8 +505,8 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
     items: rows.map(row => ({
       ...row,
       mobile: Boolean(row.mobile),
-      message: firstMessage(row),
-      whatsapp: whatsappLink(row)
+      message: firstMessage(row, showcase),
+      whatsapp: whatsappLink(row, showcase)
     }))
   };
 }
