@@ -137,3 +137,6 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 
 ## 2026-10-17 — Reels animados por modelo, não por prompt
 - Vídeos "feitos em código" (repositório awesome-opus5-5-videos) entram no Nexus como modelos fixos preenchidos pelo sistema, gravados no GitHub Actions. Não pedir à IA um código novo por vídeo. Sem custo de OpenAI. Os vídeos do repositório são só inspiração: não copiar obras dos criadores.
+
+## 2026-10-17 — Flow Arts: conteúdo manual
+- Campanhas da Flow Arts são subidas à mão pelo Rodrigo. O Reel automático fica desligado para a Flow Arts; usar só para clientes (pagantes).
