@@ -55,9 +55,29 @@ export async function searchNominatim(tags, cityName, fetcher = fetch, wait = ms
 const SITE = "https://flowarts.com.br";
 
 export const NICHES = {
+  // Mesmas chaves do Captador (pedido de 17/10): assim o exemplo do nicho vai junto na mensagem.
   cafeteria: { query: "cafeteria", plural: "cafeterias", page: "/marketing-para-cafeteria", osm: [["amenity", "cafe"]] },
   salao: { query: "salão de beleza", plural: "salões de beleza", page: "/marketing-para-salao-de-beleza", osm: [["shop", "hairdresser"], ["shop", "beauty"]] },
-  lanchonete: { query: "lanchonete", plural: "lanchonetes", page: "/marketing-para-lanchonete", osm: [["amenity", "fast_food"]] }
+  lanchonete: { query: "lanchonete", plural: "lanchonetes", page: "/marketing-para-lanchonete", osm: [["amenity", "fast_food"]] },
+  restaurante: { query: "restaurante", plural: "restaurantes", page: "/marketing-para-restaurante", osm: [["amenity", "restaurant"]] },
+  padaria: { query: "padaria", plural: "padarias", page: "/marketing-para-padaria", osm: [["shop", "bakery"]] },
+  bar: { query: "bar", plural: "bares", page: "/", osm: [["amenity", "bar"], ["amenity", "pub"]] },
+  academia: { query: "academia", plural: "academias", page: "/marketing-para-academia", osm: [["leisure", "fitness_centre"]] },
+  pet: { query: "pet shop", plural: "pet shops", page: "/marketing-para-pet-shop", osm: [["shop", "pet"]] },
+  racao: { query: "loja de ração", plural: "lojas de ração", page: "/", osm: [["shop", "pet"], ["shop", "agrarian"]] },
+  casa_racao: { query: "casa de ração", plural: "casas de ração", page: "/", osm: [["shop", "pet"], ["shop", "agrarian"]] },
+  agropecuaria: { query: "agropecuária", plural: "agropecuárias", page: "/", osm: [["shop", "agrarian"], ["shop", "farm"]] },
+  veterinario: { query: "clínica veterinária", plural: "clínicas veterinárias", page: "/", osm: [["amenity", "veterinary"]] },
+  dentista: { query: "dentista", plural: "consultórios de dentista", page: "/", osm: [["amenity", "dentist"]] },
+  clinica: { query: "clínica médica", plural: "clínicas e consultórios", page: "/", osm: [["amenity", "clinic"], ["amenity", "doctors"]] },
+  farmacia: { query: "farmácia", plural: "farmácias", page: "/", osm: [["amenity", "pharmacy"]] },
+  mercado: { query: "mercado", plural: "mercados", page: "/", osm: [["shop", "supermarket"], ["shop", "convenience"]] },
+  roupas: { query: "loja de roupas", plural: "lojas de roupas", page: "/marketing-para-loja-de-roupas", osm: [["shop", "clothes"]] },
+  oficina: { query: "oficina mecânica", plural: "oficinas mecânicas", page: "/marketing-para-oficina-mecanica", osm: [["shop", "car_repair"]] },
+  hotel: { query: "pousada", plural: "hotéis e pousadas", page: "/", osm: [["tourism", "guest_house"], ["tourism", "hotel"]] },
+  imobiliaria: { query: "imobiliária", plural: "imobiliárias", page: "/", osm: [["office", "estate_agent"]] },
+  contabilidade: { query: "escritório de contabilidade", plural: "escritórios de contabilidade", page: "/", osm: [["office", "accountant"]] },
+  material: { query: "loja de material de construção", plural: "lojas de material de construção", page: "/", osm: [["shop", "hardware"], ["shop", "doityourself"]] }
 };
 
 // Cidades grandes do Brasil, em rodízio (centro aproximado para a busca no OpenStreetMap).
@@ -278,16 +298,21 @@ export function firstMessage(p, showcase = null) {
   } else {
     lines.push(`Encontrei a ${p.name} ${String(p.id || "").startsWith("osm:") ? "no mapa" : "no Google"}, aqui em ${cityName}.`);
   }
-  lines.push(p.instagram
-    ? "Notei que o Instagram é o principal canal de vocês na internet, e não encontrei um site."
-    : "Procurei vocês na internet e não encontrei um site.");
-  lines.push(p.instagram
-    ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${niche.page}`
-    : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${niche.page}`);
-  // Vitrine do nicho: vídeo de exemplo que a Flow Arts fez para esse tipo de negócio.
+  // Exemplo do nicho (pedido de 17/10): a pessoa quer VER o resultado, então ele vem primeiro e o texto fica curto.
   const example = showcase ? showcaseLine(showcase, p.niche, niche.plural) : "";
-  if (example) lines.push(example);
-  lines.push(`Posso te mostrar como ficaria para a ${p.name}?`);
+  if (example) {
+    lines.push(`Eu cuido do Instagram de ${niche.plural}. ${example}`);
+    lines.push(`Posso fazer um assim para a ${p.name}?`);
+  } else {
+    const page = niche.page && niche.page !== "/" ? niche.page : "";
+    lines.push(p.instagram
+      ? "Notei que o Instagram é o principal canal de vocês na internet, e não encontrei um site."
+      : "Procurei vocês na internet e não encontrei um site.");
+    lines.push(p.instagram
+      ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${page}`
+      : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${page}`);
+    lines.push(`Posso te mostrar como ficaria para a ${p.name}?`);
+  }
   lines.push("Se preferir não receber mensagens, é só me avisar.");
   return lines.join("\n\n");
 }
@@ -468,7 +493,7 @@ export async function saveContacted(env, body = {}) {
      ON CONFLICT(id) DO UPDATE SET status='enviado',updated_at=CURRENT_TIMESTAMP`
   ).bind(id, name, body.niche, body.city, phone, mobile ? 1 : 0, instagram, mapsUrl, score).run();
   // Também entra no CRM, com volta marcada para 7 dias. Se falhar, o Caçador segue normal.
-  const crm = mobile ? await addFromProspect(env, { id, name, phone, city: body.city }).catch(() => null) : null;
+  const crm = mobile ? await addFromProspect(env, { id, name, phone, city: body.city, niche: body.niche }).catch(() => null) : null;
   return { ok: true, id, crmId: crm?.id || null };
 }
 

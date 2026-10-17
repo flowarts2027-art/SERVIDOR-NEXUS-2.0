@@ -1,5 +1,11 @@
 # Próximas ações
 
+## Exemplos por nicho (17/10) — pronto no ramo painel-master-crm junto com o CRM pelo número da Flow; falta OK
+1. OK do Rodrigo → juntar na main e conferir o deploy.
+2. Rodrigo sobe os exemplos (começar por cafeteria) em Master › Mais › Caçador › Exemplos por nicho.
+3. Tirar do painel o Reel de restaurante e o de pet, se ainda estiverem esperando lá.
+4. Conferir no celular a página flowarts.com.br/exemplo/<nicho> e a prévia no WhatsApp.
+
 ## CRM pelo número da Flow (17/10) — pronto no ramo painel-master-crm; falta OK para publicar
 1. OK do Rodrigo → juntar na main e conferir o deploy.
 2. Rodrigo cria o modelo na Meta (texto em CHANGELOG 17/10 15h30) e, aprovado, salva o nome em CRM › Mensagem modelo da Meta.

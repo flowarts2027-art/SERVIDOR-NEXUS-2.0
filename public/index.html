@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>Nexus Master · Flow Arts</title>
-  <link rel="stylesheet" href="/styles.css?v=36">
+  <link rel="stylesheet" href="/styles.css?v=37">
 </head>
 <body>
   <div class="shell">
@@ -203,16 +203,7 @@
             <button type="button" id="auto-reel-now">Criar um agora</button>
             <p class="muted wide" id="auto-reel-status" role="status"></p>
           </form>
-          <form id="showcase-form" class="manual-reel-form">
-            <p class="eyebrow wide">VITRINE POR NICHO (SÓ FLOW ARTS)</p>
-            <p class="muted wide">Escolha um Reel de exemplo para cada tipo de negócio. O link entra sozinho na primeira mensagem do Caçador e do Captador quando você buscar esse tipo.</p>
-            <label>Tipo de negócio<select name="niche" id="showcase-niche"></select></label>
-            <label>Reel de exemplo<select name="postId" id="showcase-reel"><option value="">Carregando…</option></select></label>
-            <button type="submit" class="primary">Salvar vitrine</button>
-            <button type="button" id="showcase-remove">Tirar a vitrine deste tipo</button>
-            <p class="muted wide" id="showcase-status" role="status"></p>
-            <ul class="wide" id="showcase-list"></ul>
-          </form>
+          <p class="muted wide">O exemplo de cada nicho agora fica em <b>Caçador › Exemplos por nicho</b>.</p>
           <p class="eyebrow">MANUAL</p>
           <form id="animated-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" required><option value="primeiro-teste">Flow Arts</option></select></label>
@@ -344,6 +335,10 @@
       </section>
 
       <section id="odin" class="view">
+        <section class="panel examples-panel" id="examples-panel">
+          <div class="panel-head"><div><h2>Exemplos por nicho</h2><p class="muted">Um carrossel ou vídeo para cada tipo de negócio. Vai junto na mensagem do Caçador, como link com a foto. Só para vendas: não vai para o Instagram nem para o painel.</p></div></div>
+          <div id="examples-list" class="examples-list"><p class="muted">Carregando…</p></div>
+        </section>
         <div class="panel prospect-panel" id="prospect-panel">
           <div class="panel-head">
             <div><p class="eyebrow">CAÇADOR DE CLIENTES</p><h2>Empresas sem site</h2><p class="muted">Resultados do Google Maps, com nota de 0 a 10. A lista não fica guardada: só quem você chamar no WhatsApp fica salvo. A mensagem já vem pronta. Você toca em "Abrir no WhatsApp" e envia do seu celular.</p></div>
@@ -358,7 +353,7 @@
             </form>
           </details>
           <div class="prospect-actions">
-            <label>Tipo de negócio<select id="prospect-niche"><option value="">Todos, em rodízio</option><option value="cafeteria">Cafeteria</option><option value="salao">Salão de beleza</option><option value="lanchonete">Lanchonete</option></select></label>
+            <label>Tipo de negócio<select id="prospect-niche"><option value="">Todos, em rodízio</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="casa_racao">Casa de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
             <button class="primary" id="prospect-search" type="button">Buscar empresas</button>
             <span id="prospect-usage" class="muted"></span>
           </div>
@@ -443,6 +438,7 @@
             <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: João"></label>
             <label>Negócio<input name="business" maxlength="80" placeholder="Ex.: Pizzaria do João"></label>
             <label>WhatsApp (com DDD)<input name="phone" inputmode="tel" maxlength="20" required placeholder="22 99999-9999"></label>
+            <label>Tipo de negócio<select name="niche"><option value="">Não sei / outro</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="casa_racao">Casa de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
             <label>Interesse<select name="interest"><option value="">Ainda não sei</option><option value="pacote">Pacote de Instagram</option><option value="site">Site</option><option value="pacote-site">Pacote + site</option><option value="outro">Outro</option></select></label>
             <label>Etapa<select name="stage"><option value="contato">Mandei mensagem</option><option value="conversando">Conversando</option><option value="proposta">Proposta enviada</option><option value="cliente">Virou cliente</option><option value="nao-quer">Não quer agora</option></select></label>
             <label>Voltar a falar em<select name="followDays"><option value="7" selected>7 dias</option><option value="3">3 dias</option><option value="1">Amanhã</option><option value="15">15 dias</option><option value="30">30 dias</option><option value="0">Não marcar</option></select></label>
@@ -607,10 +603,11 @@
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
-  <script src="/animated-reel.js?v=3" defer></script>
+  <script src="/animated-reel.js?v=4" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
-  <script src="/prospects-ui.js?v=10" defer></script>
-  <script src="/crm.js?v=2" defer></script>
+  <script src="/prospects-ui.js?v=11" defer></script>
+  <script src="/crm.js?v=3" defer></script>
+  <script src="/examples.js?v=1" defer></script>
 </body>
 </html>

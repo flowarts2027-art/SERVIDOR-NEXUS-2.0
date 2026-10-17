@@ -34,7 +34,7 @@ import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
 import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
 import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
-import { handleShowcasePage, handleShowcaseMaster } from "./showcase.js";
+import { handleShowcasePage, handleShowcaseMaster, handleShowcaseExtras } from "./showcase.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -666,10 +666,10 @@ export default {
     }
 
     // Vitrine por nicho (só Flow Arts): qual Reel é o exemplo de cada tipo de negócio. Só com login do Master.
-    if (url.pathname === "/api/master/showcase") {
+    if (url.pathname === "/api/master/showcase" || url.pathname.startsWith("/api/master/showcase/")) {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
-      const response = await handleShowcaseMaster(request, env, url);
+      const response = (await handleShowcaseExtras(request, env, url)) || (await handleShowcaseMaster(request, env, url));
       if (response) return response;
     }
 

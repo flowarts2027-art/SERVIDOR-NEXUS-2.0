@@ -170,3 +170,13 @@ test("quem responde no WhatsApp da Flow entra no CRM ou passa para 'conversando'
   assert.equal(novo.source, "whatsapp-flow");
   assert.equal(novo.nextFollowAt, "2026-10-24");
 });
+
+test("contato do Caçador com nicho leva o link do exemplo no retorno", async () => {
+  const { db, env } = fakeEnv();
+  db.exec("CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT, PRIMARY KEY(namespace,item_key,client_id))");
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ cafeteria: { kind: "carousel", images: ["https://x/1.jpg", "https://x/2.jpg"] } }));
+  const r = await addFromProspect(env, { id: "osm:node/9", name: "Café Bom", phone: "81988881111", city: "Recife", niche: "cafeteria" }, NOW);
+  const c = await getContact(env, r.id, NOW);
+  assert.equal(c.niche, "cafeteria");
+  assert.match(c.message, /Veja um carrossel que fizemos para cafeterias: https:\/\/flowarts\.com\.br\/exemplo\/cafeteria/);
+});

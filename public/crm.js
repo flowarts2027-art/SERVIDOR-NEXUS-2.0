@@ -12,6 +12,8 @@
   const STAGE_NAME = Object.fromEntries(STAGES.filter(s => s[0]));
   STAGE_NAME.cliente = "Virou cliente";
   const INTEREST = { "": "", pacote: "Pacote de Instagram", site: "Site", "pacote-site": "Pacote + site", outro: "Outro" };
+  const NICHES = [["cafeteria","Cafeteria"],["restaurante","Restaurante"],["lanchonete","Lanchonete"],["padaria","Padaria"],["bar","Bar"],["salao","Salão de beleza e barbearia"],["academia","Academia"],["pet","Pet shop"],["racao","Loja de ração"],["casa_racao","Casa de ração"],["agropecuaria","Agropecuária"],["veterinario","Veterinário"],["dentista","Dentista"],["clinica","Clínica e consultório"],["farmacia","Farmácia"],["mercado","Mercado"],["roupas","Loja de roupas"],["oficina","Oficina mecânica"],["hotel","Hotel e pousada"],["imobiliaria","Imobiliária"],["contabilidade","Contabilidade"],["material","Material de construção"]];
+  const NICHE_NAME = Object.fromEntries(NICHES);
   const FOLLOW = [["7", "7 dias"], ["3", "3 dias"], ["1", "Amanhã"], ["15", "15 dias"], ["30", "30 dias"], ["0", "Não marcar"]];
 
   let state = { stage: "", q: "", data: null, open: new Set(), settings: { via: "pessoal", templateName: "", templateUsesName: true }, sendMsg: "" };
@@ -54,7 +56,7 @@
     const open = state.open.has(c.id);
     const when = dayLabel(c.nextFollowAt, today);
     const tone = c.late ? "late" : c.due ? "due" : "";
-    const sub = [c.business && c.business !== c.name ? c.business : "", INTEREST[c.interest] || "", prettyPhone(c.phone)].filter(Boolean).join(" · ");
+    const sub = [c.business && c.business !== c.name ? c.business : "", NICHE_NAME[c.niche] || "", INTEREST[c.interest] || "", prettyPhone(c.phone)].filter(Boolean).join(" · ");
     const history = (c.history || []).map(h => {
       const d = new Date(h.at);
       const label = h.type === "etapa" ? "Etapa: " + (STAGE_NAME[h.text] || h.text) : h.text;
@@ -84,6 +86,7 @@
         <label>Nome<input name="name" maxlength="80" value="${esc(c.name)}" required></label>
         <label>Negócio<input name="business" maxlength="80" value="${esc(c.business)}"></label>
         <label>WhatsApp<input name="phone" inputmode="tel" maxlength="20" value="${esc(prettyPhone(c.phone))}" required></label>
+        <label>Tipo de negócio<select name="niche">${options([["", "Não sei / outro"], ...NICHES], c.niche || "")}</select></label>
         <label>Interesse<select name="interest">${options(Object.entries(INTEREST).map(([v, l]) => [v, l || "Ainda não sei"]), c.interest)}</select></label>
         <label>Etapa<select name="stage">${options(STAGES.filter(s => s[0]).map(([v]) => [v, STAGE_NAME[v]]), c.stage)}</select></label>
         <label>Voltar a falar em<input type="date" name="nextFollowAt" value="${esc(c.nextFollowAt || "")}"></label>

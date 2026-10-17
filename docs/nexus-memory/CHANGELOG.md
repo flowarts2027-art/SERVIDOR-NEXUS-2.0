@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~16h BRT — Exemplos por nicho só para vendas (ramo painel-master-crm, aguardando OK)
+- Rodrigo: pediu exemplo (vídeo ou carrossel) por nicho para mandar ao cliente na prospecção ("ninguém quer ler mensagem, quer ver o resultado"). O que foi feito de manhã não atendia: a vitrine só aceitava Reel que vira post (o Reel ficava no painel da Flow Arts para postar) e o Caçador do Master só tinha cafeteria, salão e lanchonete, enquanto só restaurante e pet tinham exemplo.
+- Novo: Master › Caçador › "Exemplos por nicho". Para cada um dos 22 nichos, subir carrossel (2 a 10 imagens, ordem pelo número do arquivo) ou vídeo MP4 (capa tirada do vídeo), ou usar um Reel já gravado. Arquivos em R2 `examples/<nicho>/`. NÃO cria post_ledger: não vai para painel nem Instagram. Botão "Tirar do painel" para o Reel de exemplo que ficou esperando no painel (status cancelled, error used_as_sales_example; nada publicado é mexido).
+- Página pública /exemplo/<nicho> agora mostra carrossel (arrastar para o lado) ou vídeo; og:image = primeira imagem/capa, para a foto aparecer no WhatsApp.
+- Caçador do Master: 22 nichos (mesmas chaves do Captador, com etiquetas do mapa grátis). Mensagem curta quando o nicho tem exemplo: "Eu cuido do Instagram de <nicho>. Veja um carrossel/vídeo que fizemos para <nicho>: <link>. Posso fazer um assim para a <empresa>?". Sem exemplo, continua a mensagem do site.
+- CRM: campo "Tipo de negócio"; contato vindo do Caçador já leva o nicho; o retorno de 7 dias inclui o link do exemplo.
+- A vitrine antiga (Postagens › Reel animado) saiu; ficou um aviso apontando para o Caçador.
+- 462 testes passando. Testado no navegador sem rede (celular): subir carrossel chama /api/master/showcase/upload; seletor do Caçador com 22 nichos; sem erro de página.
+
 ## 2026-10-17 ~15h30 BRT — CRM: escolher o número que envia (ramo painel-master-crm, aguardando OK para publicar)
 - Correção minha: eu tinha dito que o número da Meta era só de teste. Errado: o número na Cloud API é o chip Vivo do Rodrigo, +55 21 99855-9965 (CONNECTED, LIVE, desde 13/10). O +1 555 foi só o teste do começo.
 - Pedido do Rodrigo: opção no CRM para escolher por qual número sai a mensagem; mandar para vários clientes pelo número da Flow, sem atender pelo celular.

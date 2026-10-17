@@ -31,6 +31,9 @@ export async function writeShowcase(env, map) {
 
 // Linha que entra na mensagem quando o nicho tem vitrine. Vazia quando não tem.
 export function showcaseLine(map, niche, label) {
-  if (!map?.[niche]?.videoUrl) return "";
-  return `Veja um vídeo que fizemos para ${String(label || "o seu tipo de negócio").toLowerCase()}: ${showcaseUrl(niche)}`;
+  const entry = map?.[niche];
+  const carousel = entry?.kind === "carousel" && Array.isArray(entry?.images) && entry.images.length > 0;
+  if (!carousel && !entry?.videoUrl) return "";
+  const what = carousel ? "um carrossel" : "um vídeo";
+  return `Veja ${what} que fizemos para ${String(label || "o seu tipo de negócio").toLowerCase()}: ${showcaseUrl(niche)}`;
 }

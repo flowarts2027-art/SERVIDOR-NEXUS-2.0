@@ -2,6 +2,8 @@
 // etapa da conversa e data para voltar a falar (padrão: 7 dias).
 // Nada é enviado sozinho: o painel só lembra e abre o WhatsApp com a mensagem pronta.
 
+import { readShowcase, showcaseLine } from "./showcase-store.js";
+
 export const CRM_STAGES = ["contato", "conversando", "proposta", "cliente", "nao-quer"];
 export const CRM_INTERESTS = ["", "pacote", "site", "pacote-site", "outro"];
 const FOLLOW_DAYS = [0, 1, 3, 7, 15, 30];
@@ -51,6 +53,7 @@ export async function ensureCrmSchema(env) {
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS crm_contacts_follow ON crm_contacts(archived, next_follow_at)").run();
+  try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN niche TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
 }
 
 function parseHistory(raw) {
@@ -64,7 +67,22 @@ function addHistory(raw, entry) {
 const firstName = name => String(name || "").trim().split(/\s+/)[0] || "";
 
 // Mensagem de retorno: curta, sem promessa e sem número inventado.
-export function followMessage(c) {
+const NICHE_PLURAL = {
+  cafeteria: "cafeterias", restaurante: "restaurantes", lanchonete: "lanchonetes", padaria: "padarias", bar: "bares",
+  salao: "salões de beleza", academia: "academias", pet: "pet shops", racao: "lojas de ração", casa_racao: "casas de ração",
+  agropecuaria: "agropecuárias", veterinario: "clínicas veterinárias", dentista: "dentistas", clinica: "clínicas",
+  farmacia: "farmácias", mercado: "mercados", roupas: "lojas de roupas", oficina: "oficinas mecânicas",
+  hotel: "hotéis e pousadas", imobiliaria: "imobiliárias", contabilidade: "escritórios de contabilidade", material: "lojas de material de construção"
+};
+export const CRM_NICHES = Object.keys(NICHE_PLURAL);
+
+export function followMessage(c, showcase = null) {
+  const base = followText(c);
+  const example = showcase && c.niche && c.stage !== "cliente" ? showcaseLine(showcase, c.niche, NICHE_PLURAL[c.niche]) : "";
+  return example ? base + "\n\n" + example : base;
+}
+
+function followText(c) {
   const name = firstName(c.name);
   const biz = c.business && c.business !== c.name ? ` da ${c.business}` : "";
   const what = { pacote: "o pacote de Instagram", site: "o site", "pacote-site": "o pacote de Instagram e o site" }[c.interest] || "o Instagram do seu negócio";
@@ -82,9 +100,9 @@ export function phoneVariants(phone) {
   return [...out].filter(Boolean);
 }
 
-function view(row, today) {
+function view(row, today, showcase = null) {
   const out = {
-    id: row.id, name: row.name, business: row.business, phone: row.phone,
+    id: row.id, name: row.name, business: row.business, phone: row.phone, niche: row.niche || "",
     interest: row.interest, stage: row.stage, notes: row.notes, source: row.source,
     lastContactAt: row.last_contact_at || null, nextFollowAt: row.next_follow_at || null,
     followCount: Number(row.follow_count || 0),
@@ -93,7 +111,7 @@ function view(row, today) {
     history: parseHistory(row.history_json).slice(-10).reverse(),
     createdAt: row.created_at, updatedAt: row.updated_at
   };
-  out.message = followMessage(out);
+  out.message = followMessage(out, showcase);
   return out;
 }
 
@@ -117,6 +135,7 @@ function readFields(body, { partial = false } = {}) {
     out.stage = stage;
   }
   if (!partial || "notes" in body) out.notes = cleanNotes(body.notes);
+  if (!partial || "niche" in body) out.niche = CRM_NICHES.includes(String(body.niche || "")) ? String(body.niche) : "";
   return out;
 }
 
@@ -135,17 +154,17 @@ export async function createContact(env, body = {}, now = new Date()) {
   const iso = now.toISOString();
   const history = JSON.stringify([{ at: iso, type: "criado", text: "Contato salvo" }]);
   await env.DB.prepare(
-    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at)
-     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13)`
+    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche)
+     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14)`
   ).bind(id, fields.name, fields.business, fields.phone, fields.interest, fields.stage, fields.notes,
-    clean(body.source || "manual", 20), clean(body.sourceId || "", 300), iso, next, history, iso).run();
+    clean(body.source || "manual", 20), clean(body.sourceId || "", 300), iso, next, history, iso, fields.niche).run();
   return { ok: true, contact: await getContact(env, id, now) };
 }
 
 export async function getContact(env, id, now = new Date()) {
   await ensureCrmSchema(env);
   const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 LIMIT 1").bind(String(id || "")).first();
-  return row ? view(row, brasiliaDay(now)) : null;
+  return row ? view(row, brasiliaDay(now), row.niche ? await readShowcase(env) : null) : null;
 }
 
 export async function updateContact(env, id, body = {}, now = new Date()) {
@@ -169,8 +188,8 @@ export async function updateContact(env, id, body = {}, now = new Date()) {
     history = addHistory(history, { at: now.toISOString(), type: "etapa", text: fields.stage });
   }
   await env.DB.prepare(
-    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10 WHERE id=?1`
-  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString()).run();
+    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10,niche=?11 WHERE id=?1`
+  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString(), merged.niche || "").run();
   return { ok: true, contact: await getContact(env, row.id, now) };
 }
 
@@ -204,7 +223,8 @@ export async function listContacts(env, { stage = "", q = "" } = {}, now = new D
   const rows = (await env.DB.prepare(
     "SELECT * FROM crm_contacts WHERE archived=0 ORDER BY CASE WHEN next_follow_at IS NULL THEN 1 ELSE 0 END, next_follow_at ASC, updated_at DESC LIMIT 500"
   ).all())?.results || [];
-  const all = rows.map(row => view(row, today));
+  const showcase = rows.some(row => row.niche) ? await readShowcase(env) : null;
+  const all = rows.map(row => view(row, today, showcase));
   const counts = Object.fromEntries(CRM_STAGES.map(s => [s, 0]));
   for (const c of all) counts[c.stage] = (counts[c.stage] || 0) + 1;
   const term = clean(q, 60).toLowerCase();
@@ -283,7 +303,7 @@ export async function addFromProspect(env, prospect = {}, now = new Date()) {
   const created = await createContact(env, {
     name: prospect.name, business: prospect.name, phone, stage: "contato", interest: "",
     notes: prospect.city ? "Achado pelo Caçador · " + clean(prospect.city, 60) : "Achado pelo Caçador",
-    source: "cacador", sourceId: prospect.id || "", followDays: 7
+    source: "cacador", sourceId: prospect.id || "", followDays: 7, niche: prospect.niche || ""
   }, now);
   return { ok: true, id: created.contact.id };
 }
