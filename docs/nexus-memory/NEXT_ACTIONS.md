@@ -1,7 +1,7 @@
 # Próximas ações
 
-## Caçador diário + aviso no celular (17/10) — pronto no ramo; falta OK para publicar
-1. OK do Rodrigo → juntar na main e conferir o deploy.
+## Caçador diário + aviso no celular (17/10) — NO AR (deploy 6a9ffce, 15h28)
+1. FEITO: publicado.
 2. Rodrigo abre o Master no celular › CRM › "Busca diária e aviso no celular" › Ativar aviso › Testar aviso.
 3. Tocar "Buscar agora" para ver se o mapa grátis responde do servidor.
 4. Amanhã (18/10) depois das 9h: conferir se chegaram 3 empresas e o aviso.
