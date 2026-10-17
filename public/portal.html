@@ -13,11 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=116">
-  <script src="/client-lite.js?v=120" defer></script>
+  <link rel="stylesheet" href="/client-lite.css?v=117">
+  <script src="/client-lite.js?v=121" defer></script>
   <script src="/captador.js?v=4" defer></script>
   <script src="/negocio.js?v=2" defer></script>
   <script src="/campanha.js?v=2" defer></script>
+  <script src="/enviar.js?v=1" defer></script>
 </head>
 <body>
   <main id="login" class="login" hidden>
@@ -80,6 +81,30 @@
 
       <section id="tab-posts" class="tab" hidden>
         <h1 class="page-title">Seus posts</h1>
+        <details class="upload-box" id="upload-box">
+          <summary class="btn btn-primary">＋ Enviar conteúdo pronto</summary>
+          <form id="upload-form" class="upload-form">
+            <fieldset class="upload-types">
+              <legend>O que você vai enviar?</legend>
+              <label><input type="radio" name="type" value="feed" checked> Feed (1 imagem)</label>
+              <label><input type="radio" name="type" value="carousel"> Carrossel</label>
+              <label><input type="radio" name="type" value="reel"> Reels</label>
+              <label><input type="radio" name="type" value="story"> Stories</label>
+            </fieldset>
+            <label id="upload-images-label">Imagem<input type="file" id="upload-images" accept="image/jpeg,image/png,image/webp"></label>
+            <label id="upload-video-label" hidden>Vídeo (MP4, em pé)<input type="file" id="upload-video" accept="video/mp4,video/quicktime"></label>
+            <p class="muted" id="upload-order-help" hidden>As imagens ficam na ordem do número no nome do arquivo (1, 2, 3…). Use as setas para trocar.</p>
+            <div id="upload-preview" class="upload-preview"></div>
+            <label id="upload-caption-label">Legenda<textarea name="caption" rows="5" maxlength="2200"></textarea></label>
+            <div class="upload-when">
+              <label>Dia<input type="date" name="date" required></label>
+              <label>Hora<input type="time" name="time" value="19:00" required></label>
+            </div>
+            <p class="muted">Você já está aprovando: o post sai no dia e hora escolhidos. Dá para trocar o dia ou cancelar depois, em "Agendados".</p>
+            <button type="submit" class="btn btn-primary">Enviar e agendar</button>
+            <p class="muted" id="upload-status" role="status"></p>
+          </form>
+        </details>
         <div class="segmented" role="tablist" aria-label="Filtrar posts">
           <button type="button" data-filter="aprovar" class="active">Aprovar</button>
           <button type="button" data-filter="agendados">Agendados</button>

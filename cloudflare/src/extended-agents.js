@@ -95,8 +95,9 @@ function compactWords(text,max=10){
 
 async function runHookLab(env,client,options){
   const startedAt=new Date().toISOString();
+  // Conteúdo pronto (feito pelo Rodrigo ou pelo cliente, payload.manual): os agentes não mexem na legenda.
   const rows=(await ledgerRows(env,client.id,120))
-    .filter(x=>["ready","scheduled"].includes(String(x.status||"")))
+    .filter(x=>["ready","scheduled"].includes(String(x.status||""))&&x.payload?.manual!==true)
     .slice(0,20);
   // Frases de filme/streaming são só para a Global Play (arquivada). Para os outros
   // clientes (Flow Arts, Café Brisa da demo) usamos ganchos de pequeno negócio.
@@ -149,7 +150,7 @@ async function runStory(env,client,options){
   const startedAt=new Date().toISOString();
   const protectedStoryClient=["globalplay-streaming","ragnar-one"].includes(String(client.id||""));
   const rows=(await ledgerRows(env,client.id,120))
-    .filter(x=>["ready","scheduled"].includes(String(x.status||""))
+    .filter(x=>["ready","scheduled"].includes(String(x.status||""))&&x.payload?.manual!==true
       &&(x.payload?.creativeFeatures?.storytelling===true||protectedStoryClient))
     .slice(0,20);
   let rewritten=0;
@@ -200,8 +201,9 @@ async function runStory(env,client,options){
 
 async function runViral(env,client,options){
   const startedAt=new Date().toISOString();
+  // Conteúdo pronto (feito pelo Rodrigo ou pelo cliente, payload.manual): os agentes não mexem na legenda.
   const rows=(await ledgerRows(env,client.id,120))
-    .filter(x=>["ready","scheduled"].includes(String(x.status||"")))
+    .filter(x=>["ready","scheduled"].includes(String(x.status||""))&&x.payload?.manual!==true)
     .slice(0,20);
   let optimized=0;
   const reviews=[];
@@ -238,7 +240,8 @@ async function runViral(env,client,options){
 
 async function runCopyChief(env,client,options){
   const startedAt=new Date().toISOString();
-  const rows=(await ledgerRows(env,client.id,120)).filter(x=>["ready","scheduled"].includes(String(x.status||""))).slice(0,20);
+  // Conteúdo pronto (payload.manual) já foi aprovado por quem fez: o Copy Chief não reprova.
+  const rows=(await ledgerRows(env,client.id,120)).filter(x=>["ready","scheduled"].includes(String(x.status||""))&&x.payload?.manual!==true).slice(0,20);
   let strong=0,needsWork=0;
   const reviews=[];
   for(const row of rows){

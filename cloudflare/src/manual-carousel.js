@@ -16,13 +16,13 @@ const send = (data, status = 200) => new Response(JSON.stringify(data), {
 });
 
 // O Instagram só aceita JPEG no carrossel: converte e deixa em 1080x1350 (4:5).
-async function toInstagramJpeg(env, file) {
+export async function toInstagramJpeg(env, file, size = { width: 1080, height: 1350 }) {
   const type = String(file.type || "").toLowerCase();
   if (!env.IMAGES) {
     if (type !== "image/jpeg") throw new Error("image_convert_unavailable");
     return file.stream();
   }
-  const out = await env.IMAGES.input(file.stream()).transform({ width: 1080, height: 1350, fit: "cover" }).output({ format: "image/jpeg", quality: 92 });
+  const out = await env.IMAGES.input(file.stream()).transform({ width: size.width, height: size.height, fit: "cover" }).output({ format: "image/jpeg", quality: 92 });
   const response = await out.response();
   if (!response.ok) throw new Error("image_convert_failed");
   return new Uint8Array(await response.arrayBuffer());

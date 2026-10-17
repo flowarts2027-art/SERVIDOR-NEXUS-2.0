@@ -1,5 +1,6 @@
 import { handleCaptadorPortal } from "./captador.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
+import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
 import { handleClientCampaignPortal } from "./client-campaign.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
@@ -1776,6 +1777,18 @@ export async function handlePortalApi(request, env, url, ctx) {
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       return json({ error: code, message: MANUAL_CAROUSEL_MESSAGES[code] }, code === "not_found" ? 404 : 400);
+    }
+  }
+
+  // Cliente envia conteúdo pronto (feed, carrossel, reels ou stories), já com dia e hora.
+  if (url.pathname === "/api/portal/uploads" && request.method === "POST") {
+    try {
+      const form = await request.formData().catch(() => null);
+      if (!form) throw new Error("type_invalid");
+      return json(await createClientUpload(env, client, form), 201);
+    } catch (error) {
+      const code = String(error?.message || error).slice(0, 60);
+      return json({ error: code, message: CLIENT_UPLOAD_MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
     }
   }
 

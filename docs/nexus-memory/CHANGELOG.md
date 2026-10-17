@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-16 ~22h BRT — Painel do cliente: enviar feed, carrossel, reels e stories prontos
+- Pedido do Rodrigo: pausar a geração de imagens (economizar saldo; religar quando houver cliente) e fazer conteúdo manual. Criador, Designer e Format Builder já estão DESLIGADOS no Master (conferido 16/10 ~18h35).
+- Painel › Posts › "Enviar conteúdo pronto" (`public/enviar.js`, POST /api/portal/uploads, `src/client-uploads.js`): feed (1 imagem), carrossel (2 a 10, ordem pelo número do arquivo + setas ← →), reels (vídeo + capa tirada do vídeo) e stories (imagem ou vídeo). Já nasce aprovado e agendado no dia/hora escolhidos (quem envia é o cliente); dá para trocar o dia ou cancelar em "Agendados". Sem IA, sem custo OpenAI.
+- Publicador: formato `story` (imagem ou vídeo, media_type STORIES).
+- Proteção: Hook Lab, Story, Viral, Copy Chief e a correção do CTA do brinde não mexem em conteúdo com `payload.manual` (Rodrigo ou cliente). Antes o Copy Chief podia reprovar e o Story reescrever a legenda pronta.
+- 426 testes. NÃO testado: publicação real de Stories/Reels enviados pelo painel.
+
 ## 2026-10-16 ~21h BRT — Carrossel pronto: cliente escolhe o dia no painel
 - Pedido do Rodrigo: subir um carrossel pronto (pizzaria, 5 imagens feitas no ChatGPT) para o painel, sem publicar, e ele escolhe o dia.
 - Master › Postagens › "Enviar carrossel pronto" (POST /api/master/manual-carousel, `src/manual-carousel.js`): 2 a 10 imagens na ordem + legenda; convertidas para JPEG 1080x1350 (Images binding); post `ready`/`pending` com `scheduled_for` NULL e `dateChoice: "client"`.

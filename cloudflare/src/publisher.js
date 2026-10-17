@@ -188,6 +188,15 @@ export function instagramPublishTarget(payload = {}) {
     ? payload.qualityGates
     : {};
 
+  // Story enviado pronto pelo cliente (imagem ou vídeo).
+  if (requestedFormat === "story") {
+    const videoUrl = String(formatBuild.videoUrl || "").trim();
+    const imageUrl = String(formatBuild.imageUrl || payload?.imageUrl || "").trim();
+    if (/^https:\/\//i.test(videoUrl)) return { ok:true, kind:"story", videoUrl };
+    return /^https:\/\//i.test(imageUrl)
+      ? { ok:true, kind:"story", imageUrl }
+      : { ok:false, kind:"story", error:"story_asset_not_ready" };
+  }
   if (["reel","carousel"].includes(requestedFormat) && quality.formatBuilder !== "approved") {
     return { ok:false, kind:requestedFormat, error:"format_build_pending" };
   }
@@ -215,20 +224,20 @@ export function instagramPublishTarget(payload = {}) {
 
 // Story automático: repete a arte do post nos Stories (onde quem já segue vê a marca todo dia).
 // Melhor esforço: nunca derruba nem repete a publicação do feed.
-export async function publishInstagramStory(env, clientId, imageUrl, request = graphRequest) {
+export async function publishInstagramStory(env, clientId, imageUrl, request = graphRequest, videoUrl = "") {
   assertClientMayPublish(clientId);
   const connection = await resolveInstagramCredentials(env, clientId);
   const accessToken = String(connection?.accessToken || "");
   const igUserId = String(connection?.igUserId || "").trim();
   if (!accessToken || !igUserId) throw new Error("instagram_not_connected");
-  if (!/^https:\/\//i.test(String(imageUrl || ""))) throw new Error("instagram_public_image_url_required");
-  const created = await request(accessToken, igUserId + "/media", "POST", {
-    media_type: "STORIES",
-    image_url: String(imageUrl)
-  });
+  const isVideo = /^https:\/\//i.test(String(videoUrl || ""));
+  if (!isVideo && !/^https:\/\//i.test(String(imageUrl || ""))) throw new Error("instagram_public_image_url_required");
+  const created = await request(accessToken, igUserId + "/media", "POST", isVideo
+    ? { media_type: "STORIES", video_url: String(videoUrl) }
+    : { media_type: "STORIES", image_url: String(imageUrl) });
   const containerId = String(created?.id || "");
   if (!containerId) throw new Error("instagram_container_missing");
-  await waitInstagramContainer(accessToken, containerId, "story", 40000, { request });
+  await waitInstagramContainer(accessToken, containerId, "story", isVideo ? 120000 : 40000, { request });
   const published = await request(accessToken, igUserId + "/media_publish", "POST", { creation_id: containerId });
   return { storyMediaId: String(published?.id || ""), containerId };
 }
@@ -254,6 +263,10 @@ export async function publishInstagramPost(env, clientId, payload = {}, caption 
   }
   if (target.kind === "reel") {
     return publishInstagramVideo(env, clientId, target.videoUrl, String(caption || ""));
+  }
+  if (target.kind === "story") {
+    const story = await publishInstagramStory(env, clientId, target.imageUrl || "", graphRequest, target.videoUrl || "");
+    return { mediaId: story.storyMediaId, kind: "story" };
   }
   return withAutoStory(env, clientId, target, await publishInstagramImage(env, clientId, target.imageUrl, String(caption || "")));
 }

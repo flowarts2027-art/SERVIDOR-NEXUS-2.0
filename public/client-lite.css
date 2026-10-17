@@ -392,3 +392,20 @@ input, select, textarea, button { max-width: 100%; }
 .schedule-form p{flex-basis:100%;margin:0}
 .schedule-form label{display:flex;flex-direction:column;gap:4px;font-size:14px}
 .schedule-form input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid rgba(127,127,127,.4);min-height:44px}
+
+/* Enviar conteúdo pronto (feed, carrossel, reels, stories) */
+.upload-box{margin:0 0 16px}
+.upload-box>summary{list-style:none;display:inline-flex;cursor:pointer}
+.upload-box>summary::-webkit-details-marker{display:none}
+.upload-form{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding:16px;border-radius:16px;border:1px solid rgba(127,127,127,.3)}
+.upload-form label{display:flex;flex-direction:column;gap:6px}
+.upload-form textarea,.upload-form input[type=date],.upload-form input[type=time]{font:inherit;padding:10px;border-radius:10px;border:1px solid rgba(127,127,127,.4);min-height:44px}
+.upload-types{display:flex;flex-wrap:wrap;gap:8px 16px;border:0;padding:0;margin:0}
+.upload-types legend{font-weight:700;margin-bottom:6px}
+.upload-types label{flex-direction:row;align-items:center;gap:6px;min-height:44px}
+.upload-when{display:flex;gap:12px;flex-wrap:wrap}
+.upload-preview{display:flex;gap:10px;overflow-x:auto}
+.upload-preview figure{margin:0;flex:0 0 auto;width:110px;text-align:center}
+.upload-preview img,.upload-preview video{width:110px;border-radius:10px;display:block}
+.upload-preview .order{display:flex;justify-content:center;gap:6px;margin-top:4px}
+.upload-preview .order button{min-width:44px;min-height:36px;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:transparent;font:inherit;cursor:pointer}

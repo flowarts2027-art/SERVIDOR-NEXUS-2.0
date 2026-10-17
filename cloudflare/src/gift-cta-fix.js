@@ -16,6 +16,8 @@ export async function fixGiftCtaInOpenPosts(env, { limit = 40 } = {}) {
       `SELECT id, caption FROM post_ledger
        WHERE client_id = ?1 AND status IN ('ready','scheduled','failed')
          AND COALESCE(media_id,'') = '' AND COALESCE(approval_status,'') <> 'rejected'
+         -- Conteúdo pronto (Rodrigo ou cliente): a legenda fica como foi escrita.
+         AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.manual'),0) <> 1
        ORDER BY scheduled_for ASC LIMIT ?2`
     ).bind(String(row.id), limit).all().catch(() => ({ results: [] }));
     for (const post of posts?.results || []) {

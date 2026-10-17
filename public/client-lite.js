@@ -106,7 +106,7 @@ function carouselIncomplete(post) {
 
 function formatName(post) {
   const format = String(post.creativeFeatures?.requestedFormat || post.formatBuild?.kind || "post");
-  return format === "reel" ? "Reels" : format === "carousel" ? "Carrossel" : "Post";
+  return format === "reel" ? "Reels" : format === "carousel" ? "Carrossel" : format === "story" ? "Stories" : "Post";
 }
 
 function mediaHtml(post, cls) {
@@ -239,7 +239,7 @@ function sortPosts(list, group) {
 
 const SP_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" });
 const MONTH_NAMES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-const FORMAT_LABEL = { reel: "Reels", carousel: "Carrossel", post: "Post" };
+const FORMAT_LABEL = { reel: "Reels", carousel: "Carrossel", post: "Post", story: "Stories" };
 
 function capitalize(text) {
   const value = String(text || "");
