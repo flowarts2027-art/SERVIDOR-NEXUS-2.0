@@ -111,23 +111,54 @@ test("busca do cliente no Google: lista na hora, guarda só quem ele chamou, sep
   assert.equal(await captadorEnabled(env, ana.id), true, "mudar o limite não desliga");
 });
 
-test("sem chave do Google a busca avisa e não gasta", async () => {
+const OSM_ELEMENTS = { elements: [
+  { type: "node", id: 11, tags: { name: "Pet Amigo", shop: "pet", phone: "+55 31 98888-1111" } },
+  { type: "node", id: 12, tags: { name: "Sem Telefone", shop: "pet" } },
+  { type: "node", id: 13, tags: { name: "Petz", shop: "pet", phone: "+55 31 3333-4444", brand: "Petz" } }
+] };
+const searchReq = body => new Request("https://painel.flowarts.com.br/api/portal/captador/search", { method: "POST", body: JSON.stringify(body) });
+
+test("sem chave do Google a busca usa o mapa grátis", async () => {
   const { env } = fakeEnv(false);
   await setCaptadorAccess(env, ana.id, true);
-  const result = await call(env, ana, "/api/portal/captador/search", { niche: "pet", city: "Belo Horizonte MG" });
-  assert.equal(result.data.error, "google_unavailable");
-  assert.match(result.data.message, /Flow Arts/);
+  let body = "";
+  const osm = async (url, init) => { body = decodeURIComponent(String(init.body)); return new Response(JSON.stringify(OSM_ELEMENTS), { status: 200 }); };
+  const response = await handleCaptadorPortal(searchReq({ niche: "pet", city: "Belo Horizonte MG" }), env, new URL("https://painel.flowarts.com.br/api/portal/captador/search"), ana, osm);
+  const data = await response.json();
+  assert.equal(data.ok, true);
+  assert.equal(data.source, "osm");
+  assert.deepEqual(data.items.map(i => i.name), ["Pet Amigo"]);
+  assert.match(data.items[0].id, /^osm:node\/11$/);
+  assert.match(body, /"name"="Belo Horizonte"/);
+  assert.match(body, /"shop"="pet"/);
+  // Quem ele chamou no WhatsApp (contato do mapa grátis) fica salvo.
+  const saved = await call(env, ana, "/api/portal/captador/contacted", data.items[0]);
+  assert.equal(saved.data.ok, true);
 });
 
-test("busca que o Google recusa não conta no limite", async () => {
+test("Google recusa: usa o mapa grátis; os dois falham: avisa e não conta no limite", async () => {
   const { env } = fakeEnv();
   await setCaptadorAccess(env, ana.id, true);
-  const request = new Request("https://painel.flowarts.com.br/api/portal/captador/search", { method: "POST", body: JSON.stringify({ niche: "pet", city: "Belo Horizonte MG" }) });
-  const refused = async () => new Response(JSON.stringify({ error: { status: "PERMISSION_DENIED" } }), { status: 403 });
-  const response = await handleCaptadorPortal(request, env, new URL(request.url), ana, refused);
-  assert.equal((await response.json()).error, "google_failed");
+  const url = new URL("https://painel.flowarts.com.br/api/portal/captador/search");
+  const googleNo = async u => String(u).includes("googleapis")
+    ? new Response(JSON.stringify({ error: { status: "PERMISSION_DENIED" } }), { status: 403 })
+    : new Response(JSON.stringify(OSM_ELEMENTS), { status: 200 });
+  const ok = await (await handleCaptadorPortal(searchReq({ niche: "pet", city: "Belo Horizonte MG" }), env, url, ana, googleNo)).json();
+  assert.equal(ok.source, "osm");
+  assert.equal(ok.items.length, 1);
+  const allNo = async () => new Response("", { status: 504 });
+  const fail = await (await handleCaptadorPortal(searchReq({ niche: "pet", city: "Belo Horizonte MG" }), env, url, ana, allNo)).json();
+  assert.equal(fail.error, "search_failed");
   const view = await call(env, ana, "/api/portal/captador?status=enviado");
-  assert.equal(view.data.usedMonth, 0);
+  assert.equal(view.data.usedMonth, 1, "só a busca que deu certo conta");
+});
+
+test("cidade para o mapa grátis: tira o estado", async () => {
+  const { cityName } = await import("../src/captador.js");
+  assert.equal(cityName("Nova Friburgo, RJ"), "Nova Friburgo");
+  assert.equal(cityName("Curitiba PR"), "Curitiba");
+  assert.equal(cityName("Rio de Janeiro"), "Rio de Janeiro");
+  assert.equal(cityName("Niterói - RJ"), "Niterói");
 });
 
 test("filtro só sem site e mensagem sem dados vazios", () => {

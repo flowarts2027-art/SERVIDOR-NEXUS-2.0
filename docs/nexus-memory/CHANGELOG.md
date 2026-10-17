@@ -6,6 +6,7 @@
 - Ainda vale: OSM tem menos empresas e às vezes sem telefone; Overpass deu 504 em 14/10. Pagar o Google continua opcional.
 - MailerFind (analisado a pedido): pago (a partir de € 97/mês), pega dados de seguidores do Instagram (contra os termos do Instagram, risco LGPD). Recomendado não usar.
 - 438 testes (1 novo).
+- 17/10 ~10h50: Rodrigo testou o Captador do PAINEL DO CLIENTE (pet shop, Rio de Janeiro) e deu "O Google Maps não respondeu" — é outro código (`captador.js`), só Google. Mesma reserva aplicada: sem chave ou Google recusando → OpenStreetMap (Overpass por área do município, admin_level 8, nome da cidade sem o estado; tipos em CAPTADOR_OSM_TAGS). Contatos do mapa grátis (id osm:…) podem ser salvos e marcados "não serve". Busca que falha nos dois não conta no limite. `ready` sempre true. Testes do Captador atualizados (440 no total).
 
 ## 2026-10-17 ~10h30 BRT — Reel automático (desligado por padrão)
 - Pedido do Rodrigo: "todo o processo automatizado no Nexus, sem enviar pelo painel nem colocar texto; deixar o manual em aberto".

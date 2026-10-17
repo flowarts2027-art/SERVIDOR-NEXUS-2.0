@@ -6,7 +6,7 @@
 // de quem ele marcar "não serve". Tudo separado por cliente.
 // Nada é enviado pelo servidor: o cliente manda pelo próprio WhatsApp.
 
-import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces } from "./prospects.js";
+import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS } from "./prospects.js";
 
 // Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
 export const CAPTADOR_MONTHLY_LIMIT = 100;
@@ -40,9 +40,23 @@ export const CAPTADOR_NICHES = {
   material: { label: "Material de construção", query: "loja de material de construção" }
 };
 
+// Mesmos tipos no mapa grátis (OpenStreetMap), usado quando o Google não responde (17/10).
+export const CAPTADOR_OSM_TAGS = {
+  restaurante: [["amenity", "restaurant"]], cafeteria: [["amenity", "cafe"]], lanchonete: [["amenity", "fast_food"]],
+  padaria: [["shop", "bakery"]], bar: [["amenity", "bar"], ["amenity", "pub"]], salao: [["shop", "hairdresser"], ["shop", "beauty"]],
+  academia: [["leisure", "fitness_centre"]], pet: [["shop", "pet"]], racao: [["shop", "pet"], ["shop", "agrarian"]],
+  casa_racao: [["shop", "pet"], ["shop", "agrarian"]], agropecuaria: [["shop", "agrarian"]], veterinario: [["amenity", "veterinary"]],
+  dentista: [["amenity", "dentist"]], clinica: [["amenity", "clinic"], ["amenity", "doctors"]], farmacia: [["amenity", "pharmacy"]],
+  mercado: [["shop", "supermarket"], ["shop", "convenience"]], roupas: [["shop", "clothes"]], oficina: [["shop", "car_repair"]],
+  hotel: [["tourism", "hotel"], ["tourism", "guest_house"]], imobiliaria: [["office", "estate_agent"]],
+  contabilidade: [["office", "accountant"]], material: [["shop", "hardware"], ["shop", "doityourself"]]
+};
+const OSM_ID = /^osm:(node|way|relation)\/\d+$/;
+
 const thisMonth = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()).slice(0, 7);
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 const GOOGLE_ID = /^[A-Za-z0-9_-]{10,300}$/;
+const validLeadId = id => GOOGLE_ID.test(id) || OSM_ID.test(id);
 
 export async function ensureCaptadorSchema(env) {
   await env.DB.prepare(`
@@ -192,7 +206,61 @@ async function alreadyKnown(env, clientId, id) {
   return Boolean(await env.DB.prepare("SELECT 1 AS x FROM captador_skips WHERE client_id=?1 AND id=?2").bind(clientId, id).first());
 }
 
-// Busca no Google Maps. A lista vai direto para a tela do cliente, sem guardar.
+// "Curitiba PR", "Nova Friburgo, RJ", "Niterói - RJ" → só o nome da cidade, para o mapa grátis.
+export function cityName(city) {
+  return clean(city, 60).replace(/\s*[,\-/]?\s*\b[A-Za-z]{2}$/u, "").replace(/["\\]/g, "").trim();
+}
+
+export function captadorOverpassQuery(niche, city) {
+  const name = cityName(city);
+  const parts = (CAPTADOR_OSM_TAGS[niche] || []).map(([k, v]) => `nwr["${k}"="${v}"]["name"](area.c);`).join("");
+  return `[out:json][timeout:25];area["boundary"="administrative"]["admin_level"="8"]["name"="${name}"]->.c;(${parts});out tags center 400;`;
+}
+
+async function searchCaptadorOSM(niche, city, fetcher) {
+  let last = "osm_failed";
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    try {
+      const response = await fetcher(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "FlowArtsNexus/1.0 (+https://flowarts.com.br)" },
+        body: "data=" + encodeURIComponent(captadorOverpassQuery(niche, city)),
+        signal: AbortSignal.timeout(30000)
+      });
+      if (!response.ok) { last = "osm_" + response.status; continue; }
+      const data = await response.json().catch(() => ({}));
+      return Array.isArray(data.elements) ? data.elements : [];
+    } catch (error) {
+      last = String(error?.message || error).slice(0, 60);
+    }
+  }
+  throw new Error(last);
+}
+
+// Um ponto do mapa grátis vira um contato (ou null se não servir).
+export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
+  const tags = element?.tags || {};
+  const id = "osm:" + element?.type + "/" + element?.id;
+  if (!OSM_ID.test(id)) return null;
+  const name = clean(tags.name, 120);
+  if (!name || tags.disused || tags.brand || tags["brand:wikidata"]) return null;
+  const { phone, mobile } = phoneInfo(String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0]);
+  if (!phone) return null;
+  const website = String(tags.website || tags["contact:website"] || tags.url || "").trim();
+  const site = siteInfo(website && !/^https?:/i.test(website) ? "https://" + website : website);
+  if (onlyNoSite && site.hasOwnSite) return null;
+  const igTag = String(tags["contact:instagram"] || "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?]/)[0];
+  const address = clean([tags["addr:street"], tags["addr:housenumber"], tags["addr:suburb"]].filter(Boolean).join(", "), 200);
+  return {
+    id, name, niche: nicheKey, city, address, phone, mobile,
+    has_site: site.hasOwnSite, instagram: site.instagram || (/^[a-z0-9._]{1,30}$/i.test(igTag) ? igTag : ""),
+    rating: 0, reviews: 0, maps_url: mapsSearchLink(name, city),
+    score: captadorScore({ reviews: 0, rating: 0, mobile, hasSite: site.hasOwnSite })
+  };
+}
+
+// Busca no Google Maps; se o Google não responder (ou não houver chave), usa o mapa grátis.
+// A lista vai direto para a tela do cliente, sem guardar.
 export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch) {
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
@@ -201,35 +269,49 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   const city = clean(body.city, 60);
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
   const key = await placesKey(env);
-  if (!key) throw new Error("google_unavailable");
   const { monthlyLimit } = await readAccess(env, client.id);
   const used = await captadorUsage(env, client.id);
   if (used >= monthlyLimit) throw new Error("monthly_limit");
   await writeState(env, client.id, "usage", { month: thisMonth(), count: used + 1 });
-  let places;
-  try {
-    places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
-  } catch {
-    // Busca que falhou não conta no limite do mês.
-    await writeState(env, client.id, "usage", { month: thisMonth(), count: used });
-    throw new Error("google_failed");
-  }
   const config = await captadorConfig(env, client);
+  let leads = null;
+  let found = 0;
+  let source = "google";
+  if (key) {
+    try {
+      const places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
+      found = places.length;
+      leads = places.map(place => captadorLead(place, niche, city, config.onlyNoSite));
+    } catch { leads = null; }
+  }
+  if (!leads) {
+    source = "osm";
+    try {
+      const elements = await searchCaptadorOSM(niche, city, fetcher);
+      found = elements.length;
+      leads = elements.map(element => captadorLeadOSM(element, niche, city, config.onlyNoSite));
+    } catch {
+      // Busca que falhou não conta no limite do mês.
+      await writeState(env, client.id, "usage", { month: thisMonth(), count: used });
+      throw new Error("search_failed");
+    }
+  }
   const items = [];
-  for (const place of places) {
-    const lead = captadorLead(place, niche, city, config.onlyNoSite);
-    if (!lead || await alreadyKnown(env, client.id, lead.id)) continue;
+  const seen = new Set();
+  for (const lead of leads) {
+    if (!lead || seen.has(lead.id) || await alreadyKnown(env, client.id, lead.id)) continue;
+    seen.add(lead.id);
     items.push(withMessage(config, { ...lead, status: "novo" }));
   }
   items.sort((a, b) => b.score - a.score);
-  return { ok: true, found: places.length, items, usedMonth: used + 1, monthlyLimit };
+  return { ok: true, found, items, source, usedMonth: used + 1, monthlyLimit };
 }
 
 // Quem o cliente chamou no WhatsApp vira contato dele (nome, telefone, cidade).
 export async function saveCaptadorContacted(env, client, body = {}) {
   await ensureCaptadorSchema(env);
   const id = String(body.id || "");
-  if (!GOOGLE_ID.test(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
+  if (!validLeadId(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
   const city = clean(body.city, 60);
   const name = clean(body.name, 120);
   const { phone, mobile } = phoneInfo(body.phone);
@@ -249,7 +331,7 @@ export async function saveCaptadorContacted(env, client, body = {}) {
 export async function skipCaptadorLead(env, client, id) {
   await ensureCaptadorSchema(env);
   const value = String(id || "");
-  if (!GOOGLE_ID.test(value)) throw new Error("lead_invalid");
+  if (!validLeadId(value)) throw new Error("lead_invalid");
   await env.DB.prepare("INSERT OR IGNORE INTO captador_skips(client_id,id) VALUES(?1,?2)").bind(client.id, value).run();
   return { ok: true };
 }
@@ -270,7 +352,7 @@ export async function captadorView(env, client, status = "enviado") {
   counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM captador_skips WHERE client_id=?1").bind(client.id).first())?.n || 0);
   counts.novo = 0; // a lista de novos fica só na tela
   return {
-    ok: true, enabled: true, ready: Boolean(await placesKey(env)), config, counts,
+    ok: true, enabled: true, ready: true, config, counts,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
     items: rows.map(row => withMessage(config, row))
@@ -303,6 +385,7 @@ const MESSAGES = {
   niche_invalid: "Escolha um tipo de negócio da lista.",
   google_unavailable: "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.",
   google_failed: "O Google Maps não respondeu agora. Tente de novo daqui a pouco.",
+  search_failed: "A busca não respondeu agora. Confira a cidade (ex.: Niterói RJ) e tente de novo daqui a pouco.",
   lead_invalid: "Não deu para salvar esse contato.",
   status_invalid: "Não deu para mudar a etapa.",
   lead_not_found: "Esse contato não foi encontrado."
