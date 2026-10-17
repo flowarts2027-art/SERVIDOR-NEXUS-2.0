@@ -1,0 +1,44 @@
+name: Auditoria de posts Flow Arts (somente leitura)
+on:
+  push:
+    branches: [auditoria-posts-flowarts]
+    paths: [.github/workflows/audit-posts-flowarts.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ler post_ledger (SELECT) e salvar resumo sem legendas/links
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: d9ecb78dbc0c1b0b61f8caae501f59df
+          DB: 3d440c4a-8925-4526-8d29-03f9eb227d60
+        run: |
+          set -euo pipefail
+          SQL="SELECT id,status,approval_status,scheduled_for,created_at,updated_at,(media_id<>'' AND media_id IS NOT NULL) AS has_media,error,payload_json FROM post_ledger WHERE client_id='primeiro-teste' ORDER BY COALESCE(scheduled_for,created_at) DESC LIMIT 60"
+          jq -n --arg sql "$SQL" '{sql:$sql}' > q.json
+          curl -sS --fail-with-body -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/d1/database/$DB/query" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" --data @q.json > raw.json
+          mkdir -p docs/nexus-memory/auditoria
+          jq '[.result[0].results[] | (.payload_json|fromjson? // {}) as $p | {
+            id, status, approval: .approval_status, scheduledFor: .scheduled_for, createdAt: .created_at, updatedAt: .updated_at,
+            hasMediaId: (.has_media==1),
+            error: ((.error // "") | if test("^[a-z_]+$") then . elif .=="" then "" else "erro_externo: " + (.[0:120] | gsub("https?://\\S+";"[link]") | gsub("[A-Za-z0-9_-]{30,}";"[x]")) end),
+            format: ($p.creativeFeatures.requestedFormat // $p.formatBuild.kind // $p.intelligence.format // "post"),
+            source: ($p.source // null), manual: ($p.manual // false),
+            retries: ($p.retryCount // 0), publishedAt: ($p.publishedAt // null),
+            hasPermalink: (($p.permalink // "") != ""), recoveredFromStuck: ($p.recoveredFromStuckPublishing // false),
+            storyMediaId: (($p.storyMediaId // "") != ""), storyError: ($p.storyError // null),
+            gates: $p.qualityGates, lastAttemptAt: ($p.lastPublishAttemptAt // null)
+          }]' raw.json > docs/nexus-memory/auditoria/posts-flowarts.json
+          rm -f raw.json q.json
+          jq length docs/nexus-memory/auditoria/posts-flowarts.json
+      - name: Gravar resumo no ramo
+        run: |
+          git config user.name "nexus-audit"; git config user.email "nexus-audit@users.noreply.github.com"
+          git add docs/nexus-memory/auditoria/posts-flowarts.json
+          git commit -m "auditoria: posts Flow Arts $(date -u +%FT%TZ)" || true
+          git push origin HEAD:auditoria-posts-flowarts
