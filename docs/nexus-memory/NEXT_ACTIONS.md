@@ -1,8 +1,8 @@
 # Próximas ações
 
-## Master novo + CRM (17/10) — pronto no ramo painel-master-crm; falta OK do Rodrigo para publicar
-1. Rodrigo olha as fotos e dá OK.
-2. Juntar o ramo na main (publica sozinho) e conferir o Master no ar pelo celular.
+## Master novo + CRM (17/10) — NO AR (deploy 39055580627, 14h51)
+1. FEITO: OK do Rodrigo e publicação.
+2. Rodrigo abre o Master no celular (pode precisar puxar para atualizar) e diz o que quer mudar.
 3. Cadastrar os primeiros contatos no CRM (ou pelo Caçador).
 4. Depois, com cliente pagante e chip novo: retorno automático pela API com mensagem modelo aprovada.
 

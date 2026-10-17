@@ -1,12 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-17 ~15h BRT — Master novo (azul) + CRM com retorno de 7 dias (ramo painel-master-crm, NÃO publicado)
+## 2026-10-17 ~15h BRT — Master novo (azul) + CRM com retorno de 7 dias (publicado 14h51 com OK do Rodrigo)
 - Pedido do Rodrigo: enxugar o Master, letras maiores, sair do preto e branco (azul, branco e cinza) e criar um CRM com follow-up de 7 dias.
 - Tema: `public/styles.css` convertido para claro (fundo #eef3f9, cartões brancos, azul #1f66d6, barra lateral #0f2747), letras de 13 a 30 px (antes 8 a 12 px). theme-color e manifesto atualizados.
 - Enxugado: menu = Início, Postagens, CRM, WhatsApp; Clientes, Caçador (antigo Contatos/Odin), Agentes, Site e Integrações em "Mais". Início mostra "Para fazer hoje" (CRM) e clientes; números e custos ficam fechados em "Números do sistema". Postagens: histórico primeiro; Reel pronto, carrossel pronto, Reel animado, testar carrossel e custos viraram blocos que abrem e fecham. Agentes: os 13 cartões e a auditoria fechados. Caçador: acessos de clientes e leads do Odin fechados. Nenhum id usado pelo app.js foi removido.
 - CRM: `cloudflare/src/crm.js` (tabela crm_contacts criada sozinha; etapas contato/conversando/proposta/cliente/nao-quer; retorno padrão 7 dias no horário de Brasília; "Já falei" marca a próxima volta e grava histórico; arquivar em vez de apagar; número duplicado bloqueado). Rotas /api/master/crm (só login do Master). Tela `public/crm.js`: resumo, "Falar hoje", novo contato, busca, abas por etapa, botão "Abrir WhatsApp" com mensagem pronta (sem promessa nem número inventado). Nada é enviado sozinho: abre o WhatsApp pessoal do Rodrigo.
 - Caçador: quem o Rodrigo marca como "chamei no WhatsApp" (celular) entra no CRM com volta em 7 dias.
 - Testes: 453 passando (9 novos do CRM; 2 testes de visual antigo atualizados para a decisão nova). Conferido no navegador sem rede (celular e computador): cliques de Detalhes, Já falei e Novo contato chamam as rotas certas, sem erro de página.
+- 17/10 14h51: OK do Rodrigo ("ficou muito bom"). Commit 6c488cd na main; Deploy NEXUS Cloudflare 39055580627 success (todos os passos, inclusive "Confirm live portal responds"). Falta o Rodrigo abrir o Master no celular e cadastrar os primeiros contatos.
 
 ## 2026-10-17 ~14h30 BRT — Revisão dos posts da Flow Arts (só código; sem dados de produção)
 - Rodrigo: posts agendados que não saíram e posts que constam publicados mas não estão no Instagram.
