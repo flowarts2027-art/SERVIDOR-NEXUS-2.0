@@ -1,7 +1,7 @@
 # Próximas ações
 
 ## Combo de carrosséis prontos (combinado em 16/10 21h)
-- Rodrigo vai mandar mais carrosséis prontos (feitos no ChatGPT). Já recebido: pizzaria (5 cartões: "O forno não para", "Mão na massa", "Sua pizza merece aparecer", "Você aprova", "Capriche na pizza / Comente QUERO") + legenda; arquivos entregues no chat de 16/10.
+- Rodrigo vai mandar mais carrosséis prontos (feitos no ChatGPT). Já recebido: pizzaria (5 cartões: "O forno não para", "Mão na massa", "Sua pizza merece aparecer", "Você aprova", "Capriche na pizza / Comente QUERO") + legenda; estética automotiva (5 cartões: "Você faz o carro brilhar", "Mão na massa. Tempo curto.", "Seu trabalho vira conteúdo", "Você aprova. A Flow publica.", "Capriche no brilho / Mande QUERO no direct") + legenda. Arquivos entregues no chat de 16/10.
 - Amanhã: montar o combo, subir cada um em Master › Postagens › "Enviar carrossel pronto" (sem data) e o Rodrigo escolhe os dias no painel.
 - Ainda pendente: terminar o teste do agente (cartões 4 e 5 do pet shop) quando o limite diário da OpenAI zerar.
 
