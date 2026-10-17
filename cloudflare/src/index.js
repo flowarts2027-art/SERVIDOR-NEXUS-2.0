@@ -31,6 +31,7 @@ import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
 import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
+import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -553,6 +554,10 @@ export default {
     ctx.waitUntil(fixGiftCtaInOpenPosts(env).catch(error =>
       console.warn("gift_cta_fix_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Reel automático (desligado por padrão; liga no Master). Só cria rascunho: o cliente aprova.
+    ctx.waitUntil(runAutoReels(env, at).catch(error =>
+      console.warn("auto_reel_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
       console.warn("comment_autoreply_failed", String(error?.message || error).slice(0, 140))
@@ -654,6 +659,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleManualCarouselMaster(request, env, url);
+      if (response) return response;
+    }
+
+    // Reel automático: configuração e "criar um agora". Só com login do Master.
+    if (url.pathname === "/api/master/animated-reel/auto") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleAutoReelMaster(request, env, url);
       if (response) return response;
     }
 

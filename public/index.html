@@ -174,6 +174,17 @@
         </div>
         <div class="panel manual-reel-panel" id="animated-reel">
           <div class="panel-head"><div><p class="eyebrow">REEL ANIMADO · SEM IA</p><h2>Criar Reel animado</h2><p class="muted">Escreva as 5 cenas. O sistema anima o texto (e as fotos, se mandar) e grava um vídeo de 16 segundos, em pé. Não usa IA e não tem custo. Leva uns 5 minutos. Depois o Reel aparece no painel do cliente sem data: ele escolhe o dia e aprova.</p></div></div>
+          <form id="auto-reel-form" class="manual-reel-form">
+            <p class="eyebrow wide">AUTOMÁTICO</p>
+            <label class="wide"><input type="checkbox" name="enabled"> Ligar o Reel automático (Flow Arts). A IA escreve as 5 cenas, o sistema grava e o Reel vai para o painel com dia sugerido. O cliente só aprova. Sem foto por enquanto. Custo: menos de 1 centavo de dólar por Reel.</label>
+            <label>Um Reel a cada (dias)<input type="number" name="everyDays" min="1" max="30" value="7"></label>
+            <label>Hora sugerida<input type="time" name="hour" value="18:00"></label>
+            <label>Dias até a data sugerida<input type="number" name="daysAhead" min="1" max="14" value="2"></label>
+            <button type="submit" class="primary">Salvar</button>
+            <button type="button" id="auto-reel-now">Criar um agora</button>
+            <p class="muted wide" id="auto-reel-status" role="status"></p>
+          </form>
+          <p class="eyebrow">MANUAL</p>
           <form id="animated-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" required><option value="primeiro-teste">Flow Arts</option></select></label>
             <fieldset class="wide reel-cena"><legend>Cena 1 · Gancho</legend>
@@ -536,7 +547,7 @@
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
-  <script src="/animated-reel.js?v=1" defer></script>
+  <script src="/animated-reel.js?v=2" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

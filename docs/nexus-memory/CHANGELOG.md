@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~10h30 BRT — Reel automático (desligado por padrão)
+- Pedido do Rodrigo: "todo o processo automatizado no Nexus, sem enviar pelo painel nem colocar texto; deixar o manual em aberto".
+- `cloudflare/src/auto-reel.js`: no cron de 15 min (`runAutoReels`), para clientes com perfil da marca e não travados (hoje só Flow Arts). A cada X dias (padrão 7): escolhe um nicho (sem repetir os últimos), o agente de marketing do carrossel (`planMarketingCarousel`, 1 chamada OpenAI) escreve as 5 cenas, o código confere (`validateReelScenes`), a legenda segue a legenda modelo ("Você cuida da/do [nicho]…"), e `startAnimatedReel` grava no GitHub. O post nasce `reel_rendering` com dia sugerido (padrão: daqui a 2 dias às 18h) e aprovação pendente: o cliente só aprova ou troca o dia.
+- Sem foto (fase 1). Custo: só o texto (menos de 1 centavo de dólar por Reel). Fotos por IA ficam para quando a geração for religada (o relógio do servidor ainda mata gerações longas).
+- Tentativa marcada antes de gastar; depois de uma tentativa espera 6 h (não repete erro a cada 15 min).
+- Master › Postagens › "Criar Reel animado": caixa AUTOMÁTICO (ligar, a cada X dias, hora, dias até a data, Salvar, "Criar um agora"). GET/POST /api/master/animated-reel/auto. O manual continua igual.
+- `animated-reel.js` refeito: `startAnimatedReel` serve ao manual e ao automático.
+- 437 testes (5 novos). DESLIGADO até o Rodrigo ligar no Master.
+
 ## 2026-10-17 ~09h40 BRT — Reel animado por modelo (sem IA, sem custo)
 - Pedido do Rodrigo: analisar o repositório yihui-dev/awesome-opus5-5-videos (vídeos feitos em código: HTML/Canvas/GSAP) e "subir ajustado" no Nexus.
 - Ajuste escolhido: em vez de pedir um código novo à IA para cada vídeo (custo e resultado imprevisível), um MODELO fixo animado que o sistema preenche. Mesma regra do carrossel: texto escrito por código (Inter), sem rosto, 5 cenas (gancho, dor, solução, como funciona, chamada) + botão "Comente QUERO".

@@ -1,5 +1,10 @@
 # Próximas ações
 
+## Reel automático (17/10) — publicado DESLIGADO
+1. OK do Rodrigo para ligar: Master › Postagens › Reel animado › AUTOMÁTICO › marcar "Ligar" › Salvar.
+2. Teste: "Criar um agora" (1 chamada OpenAI, centavos). Conferir as cenas e o vídeo no painel.
+3. Depois: fotos (do cliente pelo painel, ou por IA quando houver cliente pagante e o relógio do servidor estiver corrigido).
+
 ## Reel animado por modelo (17/10) — gravação testada OK (09h55); falta publicar
 - FEITO: passos 1 e 2 (post animated-reel-5aae4011…, pizzaria).
 1. Rodrigo: Master › Postagens › "Criar Reel animado". Preencher as 5 cenas da pizzaria (exemplo nos campos) + legenda. Fotos são opcionais.

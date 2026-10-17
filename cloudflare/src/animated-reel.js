@@ -103,6 +103,17 @@ export async function createAnimatedReel(env, form, fetchImpl = fetch) {
     renderScenes.push({ l1: scene.l1, l2: scene.l2, photo });
   }
 
+  return startAnimatedReel(env, client, {
+    id, scenes: renderScenes, caption, scheduledFor: null, source: "master:animated-reel"
+  }, fetchImpl);
+}
+
+// Grava o post e pede a gravação ao GitHub. Usado pelo botão do Master e pelo Reel automático.
+// scheduledFor null = o cliente escolhe o dia no painel; com data = o cliente só aprova (pode trocar o dia).
+export async function startAnimatedReel(env, client, { id, scenes, caption, scheduledFor = null, scheduledHour = "", source, extra = {} }, fetchImpl = fetch) {
+  const clientId = String(client.id);
+  const ghToken = String(env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || "").trim();
+  if (!ghToken) throw new Error("github_actions_token_missing");
   const callbackToken = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
   const hook = scenes[0].l1 + " " + scenes[0].l2;
   const payload = {
@@ -113,21 +124,23 @@ export async function createAnimatedReel(env, form, fetchImpl = fetch) {
     creativeFeatures: { requestedFormat: "reel", hook: hook.slice(0, 160) },
     formatBuild: {
       status: "rendering", kind: "reel", source: "animated-template", template: ANIMATED_REEL_TEMPLATE,
-      scenes: renderScenes, callbackToken, dispatchedAt: new Date().toISOString()
+      scenes, callbackToken, dispatchedAt: new Date().toISOString()
     },
     qualityGates: { copyChief: "approved", designer: "approved", formatBuilder: "pending" },
-    visualReview: { status: "approved", reviewer: "rodrigo", reason: "Textos escritos pelo Rodrigo; animação por modelo" },
+    visualReview: { status: "approved", reviewer: source.startsWith("auto:") ? "nexus" : "rodrigo", reason: "Textos conferidos pelo código; animação por modelo" },
     intelligence: { format: "reel", plannedFormat: "reel", mediaSource: "animated-template" },
-    dateChoice: "client",
-    source: "master:animated-reel",
+    ...(scheduledFor ? {} : { dateChoice: "client" }),
+    source,
+    // manual: os agentes de legenda (Hook Lab, Story, Copy Chief, correção do CTA) não reescrevem este post.
     manual: true,
     retryCount: 0,
     brandProfileVersion: brandProfileVersion(clientId),
-    createdBy: "master"
+    createdBy: source.startsWith("auto:") ? "nexus" : "master",
+    ...extra
   };
   await env.DB.prepare(
-    "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,NULL,'','reel_rendering','pending','',?3,'','format_build_pending',0,?4,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
-  ).bind(id, clientId, caption, JSON.stringify(payload)).run();
+    "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,?4,'reel_rendering','pending','',?5,'','format_build_pending',0,?6,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
+  ).bind(id, clientId, scheduledFor, scheduledHour, caption, JSON.stringify(payload)).run();
 
   const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0").trim();
   const [owner, name] = repo.split("/");
@@ -147,7 +160,7 @@ export async function createAnimatedReel(env, form, fetchImpl = fetch) {
           post_id: id,
           client_id: clientId,
           callback_token: callbackToken,
-          reel: JSON.stringify({ template: ANIMATED_REEL_TEMPLATE, scenes: renderScenes, cta: "Comente QUERO", sub: "Ou chama no WhatsApp: link na bio" })
+          reel: JSON.stringify({ template: ANIMATED_REEL_TEMPLATE, scenes, cta: "Comente QUERO", sub: "Ou chama no WhatsApp: link na bio" })
         }
       }),
       signal: AbortSignal.timeout(15000)
@@ -159,7 +172,7 @@ export async function createAnimatedReel(env, form, fetchImpl = fetch) {
     await env.DB.prepare("DELETE FROM post_ledger WHERE id=?1 AND client_id=?2").bind(id, clientId).run();
     throw new Error("github_dispatch_failed");
   }
-  return { ok: true, id, clientId, clientName: client.name || clientId, status: "reel_rendering" };
+  return { ok: true, id, clientId, clientName: client.name || clientId, status: "reel_rendering", scheduledFor };
 }
 
 // Situação do Reel para o Master acompanhar.
