@@ -20,8 +20,12 @@ jobs:
           set -euo pipefail
           SQL="SELECT id,status,approval_status,scheduled_for,created_at,updated_at,(media_id<>'' AND media_id IS NOT NULL) AS has_media,error,payload_json FROM post_ledger WHERE client_id='primeiro-teste' ORDER BY COALESCE(scheduled_for,created_at) DESC LIMIT 60"
           jq -n --arg sql "$SQL" '{sql:$sql}' > q.json
-          curl -sS --fail-with-body -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/d1/database/$DB/query" \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" --data @q.json > raw.json
+          CODE=$(curl -sS -o raw.json -w '%{http_code}' -X POST "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/d1/database/$DB/query" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "content-type: application/json" --data @q.json)
+          if [ "$CODE" != "200" ]; then
+            echo "::error::HTTP $CODE $(jq -c '[.errors[]? | {code,message}]' raw.json 2>/dev/null | head -c 400)"
+            exit 1
+          fi
           mkdir -p docs/nexus-memory/auditoria
           jq '[.result[0].results[] | (.payload_json|fromjson? // {}) as $p | {
             id, status, approval: .approval_status, scheduledFor: .scheduled_for, createdAt: .created_at, updatedAt: .updated_at,
