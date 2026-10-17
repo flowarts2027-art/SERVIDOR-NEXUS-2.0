@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Ler post_ledger (SELECT) e salvar resumo sem legendas/links
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_READ_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT: d9ecb78dbc0c1b0b61f8caae501f59df
           DB: 3d440c4a-8925-4526-8d29-03f9eb227d60
         run: |
