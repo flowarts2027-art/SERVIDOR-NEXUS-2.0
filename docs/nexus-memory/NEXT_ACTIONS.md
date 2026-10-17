@@ -1,5 +1,12 @@
 # Próximas ações
 
+## Reel animado por modelo (17/10) — publicado, falta o 1º teste real
+1. Rodrigo: Master › Postagens › "Criar Reel animado". Preencher as 5 cenas da pizzaria (exemplo nos campos) + legenda. Fotos são opcionais.
+2. Esperar ~5 min na tela. Conferir no Actions o run "NEXUS Animated Reel Render" e o vídeo que aparece no Master.
+3. No painel do cliente: escolher o dia e aprovar. Primeira publicação real de Reel do Nexus: acompanhar.
+4. Se falhar: ver o erro no Master; desligar com NEXUS_ANIMATED_REEL=false.
+5. Depois: mais modelos (ex.: cartões deslizando, contagem) e, quando houver cliente pagante, o Nexus escrever as cenas sozinho.
+
 ## Combo de carrosséis prontos (combinado em 16/10 21h)
 - Rodrigo vai mandar mais carrosséis prontos (feitos no ChatGPT). Já recebido: pizzaria (5 cartões: "O forno não para", "Mão na massa", "Sua pizza merece aparecer", "Você aprova", "Capriche na pizza / Comente QUERO") + legenda; estética automotiva (5 cartões: "Você faz o carro brilhar", "Mão na massa. Tempo curto.", "Seu trabalho vira conteúdo", "Você aprova. A Flow publica.", "Capriche no brilho / Mande QUERO no direct") + legenda. Arquivos entregues no chat de 16/10.
 - Amanhã: montar o combo, subir cada um em Master › Postagens › "Enviar carrossel pronto" (sem data) e o Rodrigo escolhe os dias no painel.

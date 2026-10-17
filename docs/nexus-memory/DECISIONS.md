@@ -134,3 +134,6 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 
 ## 2026-10-15 — Como achar clientes
 - Rodrigo perguntou se dá para achar clientes pelas redes sociais. Explicado: hashtag do Instagram exige aprovação da Meta e só 30 hashtags/7 dias, sem telefone; copiar páginas da Meta é contra as regras (risco de bloqueio); mapa grátis é fraco. Decisão dele: "não faça isso, quero praticidade". Caminho: Google Maps (falta ativar o crédito). Não fazer conferidor de Instagram nem busca por rede social.
+
+## 2026-10-17 — Reels animados por modelo, não por prompt
+- Vídeos "feitos em código" (repositório awesome-opus5-5-videos) entram no Nexus como modelos fixos preenchidos pelo sistema, gravados no GitHub Actions. Não pedir à IA um código novo por vídeo. Sem custo de OpenAI. Os vídeos do repositório são só inspiração: não copiar obras dos criadores.

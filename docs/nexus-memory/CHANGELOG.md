@@ -1,5 +1,15 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~09h40 BRT — Reel animado por modelo (sem IA, sem custo)
+- Pedido do Rodrigo: analisar o repositório yihui-dev/awesome-opus5-5-videos (vídeos feitos em código: HTML/Canvas/GSAP) e "subir ajustado" no Nexus.
+- Ajuste escolhido: em vez de pedir um código novo à IA para cada vídeo (custo e resultado imprevisível), um MODELO fixo animado que o sistema preenche. Mesma regra do carrossel: texto escrito por código (Inter), sem rosto, 5 cenas (gancho, dor, solução, como funciona, chamada) + botão "Comente QUERO".
+- `scripts/reel/template.html` (animação determinística: window.renderAt(t)) + `scripts/reel/render_reel.py` (Playwright/Chromium tira foto de cada quadro, FFmpeg junta): MP4 1080x1920, 30 fps, 16 s, trilha muda, + capa JPG. Gravado aqui com sucesso (pizzaria, ~1,5 min).
+- `.github/workflows/reel-template-render.yml` (repository_dispatch `reel-template-render`): baixa só fotos do próprio /media, grava e devolve capa e vídeo em PUT /api/internal/animated-reel/upload (token por post); falha em POST /api/internal/animated-reel/fail.
+- `cloudflare/src/animated-reel.js`: Master › Postagens › "Criar Reel animado" (POST /api/master/animated-reel; GET para acompanhar). Confere as linhas (24/30 letras, sem números/promessas, cena 5 sem "Comente QUERO"). Post nasce `reel_rendering` (escondido do cliente, não aprova: formatBuilder pending). Com o vídeo vira `ready` sem data (dateChoice client). Falha: `reel_render_failed`. Desligar: NEXUS_ANIMATED_REEL=false.
+- Painel do cliente esconde `reel_rendering` e `reel_render_failed`.
+- 432 testes (6 novos). `wrangler --dry-run` não rodou aqui (npm sem rede); o deploy do GitHub roda antes de publicar.
+- NÃO testado: o workflow no GitHub de verdade, o retorno ao Worker e a publicação real de Reels.
+
 ## 2026-10-16 ~22h BRT — Painel do cliente: enviar feed, carrossel, reels e stories prontos
 - Pedido do Rodrigo: pausar a geração de imagens (economizar saldo; religar quando houver cliente) e fazer conteúdo manual. Criador, Designer e Format Builder já estão DESLIGADOS no Master (conferido 16/10 ~18h35).
 - Painel › Posts › "Enviar conteúdo pronto" (`public/enviar.js`, POST /api/portal/uploads, `src/client-uploads.js`): feed (1 imagem), carrossel (2 a 10, ordem pelo número do arquivo + setas ← →), reels (vídeo + capa tirada do vídeo) e stories (imagem ou vídeo). Já nasce aprovado e agendado no dia/hora escolhidos (quem envia é o cliente); dá para trocar o dia ou cancelar em "Agendados". Sem IA, sem custo OpenAI.

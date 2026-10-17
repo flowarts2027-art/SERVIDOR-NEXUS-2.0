@@ -172,6 +172,41 @@
             <p class="muted wide" id="manual-carousel-status" role="status"></p>
           </form>
         </div>
+        <div class="panel manual-reel-panel" id="animated-reel">
+          <div class="panel-head"><div><p class="eyebrow">REEL ANIMADO · SEM IA</p><h2>Criar Reel animado</h2><p class="muted">Escreva as 5 cenas. O sistema anima o texto (e as fotos, se mandar) e grava um vídeo de 16 segundos, em pé. Não usa IA e não tem custo. Leva uns 5 minutos. Depois o Reel aparece no painel do cliente sem data: ele escolhe o dia e aprova.</p></div></div>
+          <form id="animated-reel-form" class="manual-reel-form">
+            <label>Cliente<select name="clientId" required><option value="primeiro-teste">Flow Arts</option></select></label>
+            <fieldset class="wide reel-cena"><legend>Cena 1 · Gancho</legend>
+              <label>Linha 1 (até 24)<input name="l1_1" maxlength="24" required placeholder="O forno não para"></label>
+              <label>Linha 2 (até 30)<input name="l2_1" maxlength="30" required placeholder="E o Instagram fica parado?"></label>
+              <label>Foto (opcional)<input type="file" name="photo_1" accept="image/jpeg,image/png,image/webp"></label>
+            </fieldset>
+            <fieldset class="wide reel-cena"><legend>Cena 2 · Dor</legend>
+              <label>Linha 1 (até 24)<input name="l1_2" maxlength="24" required placeholder="Mão na massa"></label>
+              <label>Linha 2 (até 30)<input name="l2_2" maxlength="30" required placeholder="Sem tempo para postar"></label>
+              <label>Foto (opcional)<input type="file" name="photo_2" accept="image/jpeg,image/png,image/webp"></label>
+            </fieldset>
+            <fieldset class="wide reel-cena"><legend>Cena 3 · Solução</legend>
+              <label>Linha 1 (até 24)<input name="l1_3" maxlength="24" required placeholder="Sua pizza merece"></label>
+              <label>Linha 2 (até 30)<input name="l2_3" maxlength="30" required placeholder="aparecer todo dia"></label>
+              <label>Foto (opcional)<input type="file" name="photo_3" accept="image/jpeg,image/png,image/webp"></label>
+            </fieldset>
+            <fieldset class="wide reel-cena"><legend>Cena 4 · Como funciona</legend>
+              <label>Linha 1 (até 24)<input name="l1_4" maxlength="24" required placeholder="Você aprova"></label>
+              <label>Linha 2 (até 30)<input name="l2_4" maxlength="30" required placeholder="A Flow publica no dia certo"></label>
+              <label>Foto (opcional)<input type="file" name="photo_4" accept="image/jpeg,image/png,image/webp"></label>
+            </fieldset>
+            <fieldset class="wide reel-cena"><legend>Cena 5 · Chamada (o botão "Comente QUERO" entra sozinho)</legend>
+              <label>Linha 1 (até 24)<input name="l1_5" maxlength="24" required placeholder="Capriche na pizza"></label>
+              <label>Linha 2 (até 30)<input name="l2_5" maxlength="30" required placeholder="A gente cuida do resto"></label>
+              <label>Foto (opcional)<input type="file" name="photo_5" accept="image/jpeg,image/png,image/webp"></label>
+            </fieldset>
+            <label class="wide">Legenda<textarea name="caption" rows="6" maxlength="2200" required></textarea></label>
+            <button type="submit" class="primary">Criar Reel</button>
+            <p class="muted wide" id="animated-reel-status" role="status"></p>
+            <video id="animated-reel-preview" class="manual-reel-preview wide" controls playsinline muted hidden></video>
+          </form>
+        </div>
         <div class="panel manual-reel-panel" id="carousel-test">
           <div class="panel-head"><div><p class="eyebrow">AGENTE DE MARKETING</p><h2>Testar carrossel</h2><p class="muted">Monta 1 carrossel de 5 cartões da Flow Arts com o agente novo (fotos sem texto + títulos escritos pelo sistema). Não publica e não aparece no painel do cliente. Custo estimado: 5 fotos (≈ US$ 0,30) + revisões. Leva uns 10 minutos; deixe esta página aberta.</p></div></div>
           <form id="carousel-test-form" class="manual-reel-form">
@@ -501,6 +536,7 @@
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
+  <script src="/animated-reel.js?v=1" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=9" defer></script>

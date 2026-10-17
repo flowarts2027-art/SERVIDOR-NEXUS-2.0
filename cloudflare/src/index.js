@@ -30,6 +30,7 @@ import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
+import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
 import { listClients } from "./clients.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
@@ -656,6 +657,14 @@ export default {
       if (response) return response;
     }
 
+    // Reel animado por modelo (sem IA): o Rodrigo escreve as 5 cenas; o GitHub grava. Só com login do Master.
+    if (url.pathname === "/api/master/animated-reel") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleAnimatedReelMaster(request, env, url);
+      if (response) return response;
+    }
+
     // Imagem por IA para clientes: liberação e limite por mês. Só com login do Master.
     if (url.pathname === "/api/master/ai-images/access") {
       const master = await resolveMasterSession(env, request).catch(() => null);
@@ -686,6 +695,8 @@ export default {
     if (socialFormatResponse) return socialFormatResponse;
     const carouselRenderResponse = await handleCarouselRenderCallback(request, env, url);
     if (carouselRenderResponse) return carouselRenderResponse;
+    const animatedReelResponse = await handleAnimatedReelCallback(request, env, url);
+    if (animatedReelResponse) return animatedReelResponse;
 
 
     if (["GET", "HEAD"].includes(request.method) && ["/login", "/portal", "/portal.html"].includes(url.pathname)) {

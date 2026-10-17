@@ -1,0 +1,144 @@
+<!doctype html>
+<!--
+  Reel animado da Flow Arts (modelo "flow-5-cenas").
+  Animação feita só com código: sem IA, sem custo. O texto é escrito pelo sistema (fonte Inter).
+  É determinística: render_reel.py chama window.renderAt(t) para cada quadro e tira a foto da tela.
+  Dados em window.REEL = { scenes:[{l1,l2,photo}], cta, sub, brand }.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Inter Display"; font-weight: 800; src: url("../social/fonts/InterDisplay-ExtraBold.otf"); }
+  @font-face { font-family: "Inter Display"; font-weight: 700; src: url("../social/fonts/InterDisplay-Bold.otf"); }
+  @font-face { font-family: "Inter Display"; font-weight: 500; src: url("../social/fonts/InterDisplay-Medium.otf"); }
+  :root { --preto:#0c0c10; --azul:#1648eb; --fundo:#fdfdfb; --pilula:#e2eafc; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--fundo); }
+  body { font-family: "Inter Display", sans-serif; color: var(--preto); position: relative; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55; will-change: transform; }
+  #b1 { width: 760px; height: 760px; background: #c9d6fb; left: -260px; top: 120px; }
+  #b2 { width: 640px; height: 640px; background: #dfe7fd; right: -220px; bottom: 160px; }
+  header { position: absolute; left: 72px; right: 72px; top: 96px; }
+  .bars { display: flex; gap: 12px; }
+  .bar { flex: 1; height: 8px; border-radius: 8px; background: #d9dce6; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--azul); }
+  .marca { display: flex; align-items: center; gap: 18px; margin-top: 44px; }
+  .marca img { width: 64px; height: 64px; object-fit: contain; }
+  .marca b { font-weight: 800; font-size: 36px; letter-spacing: .14em; }
+  .cena { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+  .foto { position: absolute; left: 72px; right: 72px; top: 330px; height: 760px; border-radius: 44px; overflow: hidden;
+          box-shadow: 0 30px 80px rgba(12,12,16,.18); background: #e9ecf3; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 40%; }
+  .texto { position: absolute; left: 72px; right: 72px; }
+  .com-foto .texto { top: 1150px; }
+  .sem-foto .texto { top: 760px; }
+  .linha { display: block; overflow: hidden; padding-bottom: 10px; }
+  .linha span { display: inline-block; will-change: transform; }
+  .l1 { font-weight: 800; font-size: 104px; line-height: 1.04; letter-spacing: -.02em; }
+  .l2 { font-weight: 800; font-size: 88px; line-height: 1.06; letter-spacing: -.02em; color: var(--azul); margin-top: 6px; }
+  /* Última cena: sobe tudo para caber o botão "Comente QUERO". */
+  .final .foto { height: 560px; }
+  .final.com-foto .texto { top: 950px; }
+  .final.sem-foto .texto { top: 480px; }
+  .sem-foto .l1 { font-size: 128px; }
+  .sem-foto .l2 { font-size: 104px; }
+  .traco { height: 14px; width: 220px; background: var(--azul); border-radius: 14px; margin-top: 44px; transform-origin: 0 50%; }
+  .botao { position: absolute; left: 50%; bottom: 300px; transform: translateX(-50%); background: var(--azul); color: #fff;
+           font-weight: 800; font-size: 64px; padding: 40px 72px; border-radius: 999px; white-space: nowrap;
+           box-shadow: 0 24px 60px rgba(22,72,235,.35); }
+  .sub { position: absolute; left: 0; right: 0; bottom: 200px; text-align: center; font-weight: 500; font-size: 40px; color: #4a4f60; }
+</style>
+</head>
+<body>
+  <div class="blob" id="b1"></div>
+  <div class="blob" id="b2"></div>
+  <header>
+    <div class="bars" id="bars"></div>
+    <div class="marca"><img id="simbolo" alt=""><b id="nome">FLOW ARTS</b></div>
+  </header>
+  <div id="cenas"></div>
+  <div class="botao" id="botao"></div>
+  <div class="sub" id="sub"></div>
+<script>
+(() => {
+  const DATA = window.REEL || {};
+  const scenes = (DATA.scenes || []).slice(0, 5);
+  // Duração de cada cena em segundos. A última fica mais tempo para o "Comente QUERO".
+  const DUR = scenes.map((_, i) => i === scenes.length - 1 ? 4 : 3);
+  const START = DUR.map((_, i) => DUR.slice(0, i).reduce((a, b) => a + b, 0));
+  window.REEL_DURATION = DUR.reduce((a, b) => a + b, 0);
+
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const ease = x => 1 - Math.pow(1 - clamp(x), 3);           // desacelera
+  const easeIn = x => Math.pow(clamp(x), 3);                 // acelera
+  const back = x => { x = clamp(x); const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+  const esc = s => String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  document.getElementById("nome").textContent = DATA.brand?.name || "FLOW ARTS";
+  const simbolo = document.getElementById("simbolo");
+  if (DATA.brand?.symbol) simbolo.src = DATA.brand.symbol; else simbolo.remove();
+  document.getElementById("botao").textContent = DATA.cta || "Comente QUERO";
+  document.getElementById("sub").textContent = DATA.sub || "";
+
+  const bars = document.getElementById("bars");
+  scenes.forEach(() => { const b = document.createElement("div"); b.className = "bar"; b.innerHTML = "<i></i>"; bars.append(b); });
+
+  // Cada palavra vira um <span> para entrar uma de cada vez.
+  const words = text => String(text || "").split(/\s+/).filter(Boolean).map(w => "<span>" + esc(w) + "&nbsp;</span>").join("");
+  const host = document.getElementById("cenas");
+  const els = scenes.map((scene, i) => {
+    const el = document.createElement("div");
+    el.className = "cena " + (scene.photo ? "com-foto" : "sem-foto") + (i === scenes.length - 1 ? " final" : "");
+    el.innerHTML = (scene.photo ? '<div class="foto"><img src="' + esc(scene.photo) + '" alt=""></div>' : "")
+      + '<div class="texto"><span class="linha l1">' + words(scene.l1) + '</span><span class="linha l2">' + words(scene.l2) + '</span><div class="traco"></div></div>';
+    host.append(el);
+    return el;
+  });
+
+  window.renderAt = t => {
+    document.getElementById("b1").style.transform = `translate(${Math.sin(t * .5) * 90}px, ${Math.cos(t * .4) * 70}px)`;
+    document.getElementById("b2").style.transform = `translate(${Math.cos(t * .45) * 80}px, ${Math.sin(t * .35) * 90}px)`;
+    [...bars.children].forEach((b, i) => { b.firstChild.style.width = (clamp((t - START[i]) / DUR[i]) * 100) + "%"; });
+
+    els.forEach((el, i) => {
+      const local = t - START[i];
+      const last = i === els.length - 1;
+      const visible = local >= 0 && (local < DUR[i] || last);
+      el.style.display = visible ? "block" : "none";
+      if (!visible) return;
+      // Saída: sobe e some nos últimos 0,35 s (menos na última cena).
+      const out = last ? 0 : easeIn((local - (DUR[i] - .35)) / .35);
+      el.style.opacity = String(1 - out);
+      el.style.transform = `translateY(${-90 * out}px)`;
+
+      const foto = el.querySelector(".foto");
+      if (foto) {
+        const a = ease(local / .6);
+        foto.style.opacity = String(a);
+        foto.style.transform = `translateY(${(1 - a) * 60}px) scale(${.94 + .06 * a})`;
+        foto.querySelector("img").style.transform = `scale(${1.04 + .1 * clamp(local / DUR[i])})`;
+      }
+      el.querySelectorAll(".linha span").forEach((span, k) => {
+        const p = ease((local - .12 - k * .07) / .5);
+        span.style.transform = `translateY(${(1 - p) * 120}%)`;
+        span.style.opacity = String(p);
+      });
+      el.querySelector(".traco").style.transform = `scaleX(${ease((local - .55) / .5)})`;
+    });
+
+    // "Comente QUERO": entra com pulo na última cena e pulsa.
+    const local5 = t - START[START.length - 1];
+    const botao = document.getElementById("botao");
+    const sub = document.getElementById("sub");
+    const pop = back((local5 - .8) / .55);
+    const pulse = local5 > 1.4 ? 1 + .04 * Math.sin((local5 - 1.4) * Math.PI * 2 / .9) : 1;
+    botao.style.opacity = String(clamp((local5 - .8) / .2));
+    botao.style.transform = `translateX(-50%) scale(${Math.max(0, pop) * pulse})`;
+    sub.style.opacity = String(ease((local5 - 1.3) / .4));
+  };
+  window.renderAt(0);
+})();
+</script>
+</body>
+</html>

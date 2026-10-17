@@ -1,0 +1,95 @@
+name: NEXUS Animated Reel Render
+
+# Reel animado por modelo (17/10): o Worker manda os 5 textos (e fotos opcionais),
+# o navegador desenha cada quadro e o FFmpeg junta. Sem IA, sem custo de OpenAI.
+on:
+  repository_dispatch:
+    types: [reel-template-render]
+
+concurrency:
+  group: nexus-animated-reel-${{ github.event.client_payload.post_id }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      POST_ID: ${{ github.event.client_payload.post_id }}
+      CLIENT_ID: ${{ github.event.client_payload.client_id }}
+      CALLBACK_TOKEN: ${{ github.event.client_payload.callback_token }}
+      REEL_JSON: ${{ github.event.client_payload.reel }}
+      NEXUS_BASE_URL: https://servidor-nexus.diamantehinode2015.workers.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install browser and FFmpeg
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo reel_setup_failed > /tmp/reel-error.txt
+          command -v ffmpeg >/dev/null 2>&1 || { sudo apt-get update -qq; sudo apt-get install -y -qq ffmpeg; }
+          python3 -m pip install --quiet "playwright==1.47.0"
+          python3 -m playwright install --with-deps chromium
+
+      - name: Prepare scenes
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo reel_scenes_invalid > /tmp/reel-error.txt
+          mkdir -p /tmp/reel
+          python3 - <<'PY'
+          import json, os, urllib.request
+          base = os.environ["NEXUS_BASE_URL"].rstrip("/") + "/media/"
+          data = json.loads(os.environ.get("REEL_JSON") or "{}")
+          scenes = []
+          for i, scene in enumerate((data.get("scenes") or [])[:5]):
+              photo = ""
+              url = str(scene.get("photo") or "")
+              # Só baixa fotos guardadas no próprio Nexus.
+              if url.startswith(base):
+                  photo = f"/tmp/reel/foto-{i + 1}"
+                  with urllib.request.urlopen(url, timeout=30) as r, open(photo, "wb") as f:
+                      f.write(r.read())
+              scenes.append({"l1": scene.get("l1", ""), "l2": scene.get("l2", ""), "photo": photo})
+          if len(scenes) != 5:
+              raise SystemExit("reel_scenes_required")
+          json.dump({"scenes": scenes, "cta": data.get("cta") or "Comente QUERO", "sub": data.get("sub") or "Link na bio"},
+                    open("/tmp/reel/reel.json", "w"), ensure_ascii=False)
+          PY
+
+      - name: Render video
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo reel_render_failed > /tmp/reel-error.txt
+          python3 scripts/reel/render_reel.py --data /tmp/reel/reel.json --out /tmp/reel/reel.mp4 --cover /tmp/reel/capa.jpg
+          test -s /tmp/reel/reel.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 /tmp/reel/reel.mp4)" = "1080,1920"
+
+      - name: Upload cover and video to NEXUS
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo reel_upload_failed > /tmp/reel-error.txt
+          for part in cover video; do
+            if [ "$part" = cover ]; then FILE=/tmp/reel/capa.jpg; TYPE=image/jpeg; else FILE=/tmp/reel/reel.mp4; TYPE=video/mp4; fi
+            curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors \
+              -A "NEXUS-GitHub-Renderer/1.0" -X PUT "$NEXUS_BASE_URL/api/internal/animated-reel/upload" \
+              -H "x-nexus-post-id: $POST_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+              -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H "x-nexus-part: $part" \
+              -H "content-type: $TYPE" -H "content-length: $(stat -c%s "$FILE")" \
+              --data-binary @"$FILE"
+            echo
+          done
+
+      - name: Report failure
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        run: |
+          ERROR="$(cat /tmp/reel-error.txt 2>/dev/null || echo reel_render_failed)"
+          curl --silent --show-error -X POST "$NEXUS_BASE_URL/api/internal/animated-reel/fail" \
+            -H "x-nexus-post-id: $POST_ID" -H "x-nexus-client-id: $CLIENT_ID" \
+            -H "x-nexus-callback-token: $CALLBACK_TOKEN" -H "content-type: application/json" \
+            --data "{\"error\":\"$ERROR\"}"

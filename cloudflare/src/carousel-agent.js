@@ -27,6 +27,11 @@ const FORBIDDEN = [
   { re: /milh(ão|ões)|mil seguidores/i, why: "não invente números de seguidores" }
 ];
 
+// Mesmas regras para textos escritos à mão (Reel animado). Devolve os motivos.
+export function forbiddenReasons(text) {
+  return FORBIDDEN.filter(rule => rule.re.test(String(text || ""))).map(rule => rule.why);
+}
+
 export const MARKETING_AGENT_INSTRUCTIONS = [
   "Você é o agente de marketing da Flow Arts no Nexus. Crie um carrossel de Instagram de 5 cartões para oferecer a automação do Instagram da Flow Arts a donos de pequenos negócios no Brasil.",
   "O nicho recebido é o PÚBLICO que compra da Flow Arts (ex.: dono de salão de beleza). Não faça propaganda dos serviços desse negócio; mostre a rotina dele e como a Flow Arts ajuda.",

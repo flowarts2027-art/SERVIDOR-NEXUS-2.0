@@ -247,7 +247,7 @@ test("botão de teste: cria carrossel que o Format Builder monta, mas ninguém p
   const fb = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
   assert.match(fb, /OR status='carousel_test'\)/);
   const portal = fs.readFileSync(new URL("../src/portal.js", import.meta.url), "utf8");
-  assert.match(portal, /COALESCE\(status,''\) <> 'carousel_test'/);
+  assert.match(portal, /COALESCE\(status,''\) NOT IN \('carousel_test'/);
   for (const file of ["../src/executor.js", "../src/scheduler.js", "../src/posts.js"]) {
     assert.doesNotMatch(fs.readFileSync(new URL(file, import.meta.url), "utf8"), /carousel_test/, file + " não pode publicar teste");
   }
