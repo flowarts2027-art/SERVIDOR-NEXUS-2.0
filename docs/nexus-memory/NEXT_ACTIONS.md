@@ -1,5 +1,11 @@
 # Próximas ações
 
+## Caçador diário + aviso no celular (17/10) — pronto no ramo; falta OK para publicar
+1. OK do Rodrigo → juntar na main e conferir o deploy.
+2. Rodrigo abre o Master no celular › CRM › "Busca diária e aviso no celular" › Ativar aviso › Testar aviso.
+3. Tocar "Buscar agora" para ver se o mapa grátis responde do servidor.
+4. Amanhã (18/10) depois das 9h: conferir se chegaram 3 empresas e o aviso.
+
 ## Exemplos por nicho (17/10) — pronto no ramo painel-master-crm junto com o CRM pelo número da Flow; falta OK
 1. OK do Rodrigo → juntar na main e conferir o deploy.
 2. Rodrigo sobe os exemplos (começar por cafeteria) em Master › Mais › Caçador › Exemplos por nicho.

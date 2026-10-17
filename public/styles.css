@@ -497,3 +497,8 @@ details.fold>.fold-body .panel-head{display:none}
 @media(max-width:700px){.example-main{flex-wrap:wrap}.example-buttons{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr))}.example-buttons>*{justify-content:center;text-align:center}}
 input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0 6px 0 0;padding:0;accent-color:var(--blue);vertical-align:middle}
 .example-kind label{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+/* Busca diária e aviso */
+.crm-daily-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:12px 0}
+.crm-daily-row label:not(.crm-check){display:grid;gap:6px;min-width:150px}
+.crm-push-help{font-size:14px}
+.crm-stage.s-chamar{background:var(--blue);color:#fff;border-color:var(--blue)}

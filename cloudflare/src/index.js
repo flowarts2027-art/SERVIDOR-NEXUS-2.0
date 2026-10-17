@@ -28,6 +28,8 @@ import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
 import { handleCrmSendRoute } from "./crm-send.js";
+import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
+import { handlePushRoute } from "./push.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
@@ -561,6 +563,10 @@ export default {
     ctx.waitUntil(runAutoReels(env, at).catch(error =>
       console.warn("auto_reel_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Caçador diário (a partir das 9h): separa empresas para o Rodrigo chamar e avisa o celular. Não envia nada.
+    ctx.waitUntil(runDailyProspects(env, at).catch(error =>
+      console.warn("daily_prospects_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
       console.warn("comment_autoreply_failed", String(error?.message || error).slice(0, 140))
@@ -697,12 +703,22 @@ export default {
       if (response) return response;
     }
 
+    // Aviso no celular (notificação do painel). Só com login do Master.
+    if (url.pathname.startsWith("/api/master/push/")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handlePushRoute(request, env, url);
+      if (response) return response;
+    }
+
     // CRM: contatos do WhatsApp pessoal do Rodrigo e retorno em 7 dias. Só com login do Master.
     if (url.pathname === "/api/master/crm" || url.pathname.startsWith("/api/master/crm/")) {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const sent = await handleCrmSendRoute(request, env, url);
       if (sent) return sent;
+      const daily = await handleDailyRoute(request, env, url);
+      if (daily) return daily;
       const response = await handleCrmRoute(request, env, url);
       if (response) return response;
     }

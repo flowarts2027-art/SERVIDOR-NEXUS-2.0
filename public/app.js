@@ -1141,3 +1141,14 @@ $("#directive-form")?.addEventListener("submit",async event=>{
   }catch(error){if(message)message.textContent="Não foi possível enviar o comando.";}
 });
 setInterval(()=>{if(document.getElementById("campaigns")?.classList.contains("active"))loadWorkspace();},15000);
+
+// Abrir uma tela direto (ex.: toque no aviso do celular → ?view=crm).
+(() => {
+  const open = view => {
+    const button = document.querySelector(`.nav-item[data-view="${view}"]`);
+    if (button) button.click();
+  };
+  const view = new URLSearchParams(location.search).get("view");
+  if (view) setTimeout(() => open(view), 300);
+  navigator.serviceWorker?.addEventListener("message", event => { if (event.data?.type === "open-view") open(event.data.view); });
+})();

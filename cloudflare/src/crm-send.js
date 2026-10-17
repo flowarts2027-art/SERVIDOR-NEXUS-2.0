@@ -23,6 +23,8 @@ export async function sendCrmBatch(env, ids = [], { followDays = 7 } = {}, now =
     if (stopped) { results.push({ id, ok: false, reason: stopped }); continue; }
     const contact = await getContact(env, id, now);
     if (!contact) { results.push({ id, ok: false, reason: "not_found" }); continue; }
+    // Empresa nova (nunca falou com a Flow): vai pelo WhatsApp pessoal, para proteger o número da Flow.
+    if (contact.stage === "chamar") { results.push({ id, name: contact.name, ok: false, reason: "new_contact_personal" }); continue; }
     const last = await lastInboundAt(env, clientId, phoneVariants(contact.phone));
     const lastMs = last ? Date.parse(String(last.at)) : NaN;
     const open = Number.isFinite(lastMs) && now.getTime() - lastMs < WINDOW_MS;

@@ -240,7 +240,7 @@ export function overpassQuery(nicheKey, cityIndex, radius = 12000) {
 }
 
 // Mapa grátis: tenta os servidores do Overpass; se todos estiverem fora, usa o Nominatim.
-async function searchOSM(nicheKey, cityIndex, fetcher) {
+export async function searchOSM(nicheKey, cityIndex, fetcher) {
   let error = "osm_busy";
   for (const endpoint of OVERPASS_ENDPOINTS) {
     try {

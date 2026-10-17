@@ -6,7 +6,7 @@
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const STAGES = [
-    ["", "Todos"], ["contato", "Mandei mensagem"], ["conversando", "Conversando"],
+    ["", "Todos"], ["chamar", "Para chamar"], ["contato", "Mandei mensagem"], ["conversando", "Conversando"],
     ["proposta", "Proposta enviada"], ["cliente", "Clientes"], ["nao-quer", "Não querem agora"]
   ];
   const STAGE_NAME = Object.fromEntries(STAGES.filter(s => s[0]));
@@ -70,10 +70,11 @@
           <p class="crm-meta"><span class="crm-stage s-${esc(c.stage)}">${esc(STAGE_NAME[c.stage] || c.stage)}</span><span class="crm-when ${tone}">${esc(when)}</span></p>
         </div>
         <div class="crm-actions">
-          ${state.settings.via === "flow"
+          ${state.settings.via === "flow" && c.stage !== "chamar"
             ? `<button type="button" class="primary crm-wa" data-send="${esc(c.id)}">Enviar pela Flow</button>`
             : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
           <button type="button" class="ghost" data-done="${esc(c.id)}">Já falei</button>
+          ${c.stage === "chamar" ? `<button type="button" class="ghost danger-text" data-archive="${esc(c.id)}">Não serve</button>` : ""}
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
         </div>
       </div>
@@ -128,21 +129,22 @@
     sub.textContent = n ? (n === 1 ? "1 pessoa para chamar no WhatsApp." : `${n} pessoas para chamar no WhatsApp.`) : "Ninguém para chamar hoje. Tudo em dia.";
     list.innerHTML = d.due.slice(0, 5).map(c => `<div class="today-item">
         <div><strong>${esc(c.name)}</strong><small>${esc(c.business && c.business !== c.name ? c.business : INTEREST[c.interest] || prettyPhone(c.phone))} · ${esc(dayLabel(c.nextFollowAt, d.today))}</small></div>
-        ${state.settings.via === "flow" ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
+        ${state.settings.via === "flow" && c.stage !== "chamar" ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
       </div>`).join("") + (n > 5 ? `<p class="muted">E mais ${n - 5}. Abra o CRM para ver todos.</p>` : "");
   }
 
   const REASONS = {
     needs_template: "precisa da mensagem modelo (passou de 24 h)",
     hourly_limit: "limite de envios por hora; tente daqui a pouco",
-    not_found: "contato não encontrado"
+    not_found: "contato não encontrado",
+    new_contact_personal: "empresa nova: envie pelo seu WhatsApp"
   };
 
   function renderVia(d) {
     const box = $("#crm-via");
     if (!box) return;
     const flow = state.settings.via === "flow";
-    const n = d.due.length;
+    const n = d.due.filter(c => c.stage !== "chamar").length;
     box.innerHTML = `<div class="crm-via-row">
         <span class="crm-via-label">Enviar por</span>
         <div class="crm-switch" role="radiogroup">
@@ -153,7 +155,8 @@
       <p class="muted crm-via-help">${flow
         ? "Sai pelo (21) 99855-9965, direto daqui. As respostas chegam na aba WhatsApp." + (state.settings.templateName ? "" : " Para quem não falou com a Flow nas últimas 24 h, falta cadastrar a mensagem modelo (abaixo).")
         : "Abre o WhatsApp do seu celular com a mensagem pronta. Você confere e envia."}</p>
-      ${flow && n ? `<button type="button" class="primary crm-send-all" data-send-all>Enviar para todos de hoje (${n})</button>` : ""}
+      ${flow && n ? `<button type="button" class="primary crm-send-all" data-send-all>Enviar retornos de hoje (${n})</button>` : ""}
+      ${flow && d.due.some(c => c.stage === "chamar") ? `<p class="muted crm-via-help">Empresas novas (Para chamar) vão pelo seu WhatsApp, para proteger o número da Flow.</p>` : ""}
       ${state.sendMsg ? `<div class="crm-send-msg">${state.sendMsg}</div>` : ""}`;
     const tpl = $("#crm-template-form");
     if (tpl && !tpl.dataset.filled) {
@@ -278,7 +281,7 @@
       return;
     }
     if (t.matches("[data-send-all]")) {
-      const ids = (state.data?.due || []).map(c => c.id);
+      const ids = (state.data?.due || []).filter(c => c.stage !== "chamar").map(c => c.id);
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = `Confirmar: enviar para ${ids.length}`; return; }
       t.disabled = true;
       await sendFlow(ids.slice(0, 25));

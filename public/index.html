@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>Nexus Master · Flow Arts</title>
-  <link rel="stylesheet" href="/styles.css?v=37">
+  <link rel="stylesheet" href="/styles.css?v=38">
 </head>
 <body>
   <div class="shell">
@@ -429,6 +429,20 @@
       <section id="crm" class="view">
         <div class="crm-summary" id="crm-summary"></div>
         <section class="panel crm-via" id="crm-via"></section>
+        <details class="fold" id="crm-daily-fold"><summary><span class="fold-icon">⏰</span><span><strong>Busca diária e aviso no celular</strong><small id="crm-daily-sub">Todo dia às 9h o Nexus separa empresas para você chamar</small></span></summary><div class="fold-body">
+          <p class="muted">Todo dia, a partir das 9h, o Nexus procura empresas sem site no mapa, uma de cada nicho (em rodízio, primeiro os que têm exemplo). Elas entram em <b>Para chamar</b>, com a mensagem e o exemplo prontos. Nada é enviado sozinho: você toca em Abrir WhatsApp e envia.</p>
+          <div class="crm-daily-row">
+            <label class="crm-check"><input type="checkbox" id="crm-daily-on" checked> Busca diária ligada</label>
+            <label>Empresas por dia<select id="crm-daily-target"><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></label>
+            <button type="button" class="ghost" id="crm-daily-run">Buscar agora</button>
+          </div>
+          <div class="crm-daily-row">
+            <button type="button" class="primary" id="push-enable">Ativar aviso neste celular</button>
+            <button type="button" class="ghost" id="push-test" hidden>Testar aviso</button>
+          </div>
+          <p class="muted" id="crm-daily-msg" role="status"></p>
+          <p class="muted crm-push-help">No iPhone, o aviso só funciona com o painel adicionado à Tela de Início (Compartilhar › Adicionar à Tela de Início) e aberto por lá.</p>
+        </div></details>
         <section class="panel crm-today" id="crm-today">
           <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
           <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
@@ -599,7 +613,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=50" defer></script>
+  <script src="/app.js?v=51" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
@@ -607,7 +621,8 @@
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=11" defer></script>
-  <script src="/crm.js?v=3" defer></script>
+  <script src="/crm.js?v=4" defer></script>
   <script src="/examples.js?v=1" defer></script>
+  <script src="/master-push.js?v=1" defer></script>
 </body>
 </html>

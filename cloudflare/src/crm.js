@@ -4,7 +4,7 @@
 
 import { readShowcase, showcaseLine } from "./showcase-store.js";
 
-export const CRM_STAGES = ["contato", "conversando", "proposta", "cliente", "nao-quer"];
+export const CRM_STAGES = ["chamar", "contato", "conversando", "proposta", "cliente", "nao-quer"];
 export const CRM_INTERESTS = ["", "pacote", "site", "pacote-site", "outro"];
 const FOLLOW_DAYS = [0, 1, 3, 7, 15, 30];
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -54,6 +54,8 @@ export async function ensureCrmSchema(env) {
     )`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS crm_contacts_follow ON crm_contacts(archived, next_follow_at)").run();
   try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN niche TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
+  // Primeira mensagem pronta (empresa achada pelo Nexus, etapa "chamar").
+  try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN draft TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
 }
 
 function parseHistory(raw) {
@@ -111,7 +113,7 @@ function view(row, today, showcase = null) {
     history: parseHistory(row.history_json).slice(-10).reverse(),
     createdAt: row.created_at, updatedAt: row.updated_at
   };
-  out.message = followMessage(out, showcase);
+  out.message = out.stage === "chamar" && row.draft ? row.draft : followMessage(out, showcase);
   return out;
 }
 
@@ -154,10 +156,11 @@ export async function createContact(env, body = {}, now = new Date()) {
   const iso = now.toISOString();
   const history = JSON.stringify([{ at: iso, type: "criado", text: "Contato salvo" }]);
   await env.DB.prepare(
-    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche)
-     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14)`
+    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche,draft)
+     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14,?15)`
   ).bind(id, fields.name, fields.business, fields.phone, fields.interest, fields.stage, fields.notes,
-    clean(body.source || "manual", 20), clean(body.sourceId || "", 300), iso, next, history, iso, fields.niche).run();
+    clean(body.source || "manual", 20), clean(body.sourceId || "", 300), fields.stage === "chamar" ? null : iso,
+    "followAt" in body ? body.followAt : next, history, iso, fields.niche, String(body.draft || "").slice(0, 2000)).run();
   return { ok: true, contact: await getContact(env, id, now) };
 }
 
@@ -203,7 +206,8 @@ export async function markContacted(env, id, body = {}, now = new Date()) {
   const note = cleanNotes(body.note || "").slice(0, 300);
   const history = addHistory(row.history_json, { at: now.toISOString(), type: "falei", text: note || "Mensagem enviada" });
   await env.DB.prepare(
-    `UPDATE crm_contacts SET last_contact_at=?2,next_follow_at=?3,follow_count=follow_count+1,history_json=?4,updated_at=?2 WHERE id=?1`
+    `UPDATE crm_contacts SET last_contact_at=?2,next_follow_at=?3,follow_count=follow_count+CASE WHEN stage='chamar' THEN 0 ELSE 1 END,
+       stage=CASE WHEN stage='chamar' THEN 'contato' ELSE stage END,history_json=?4,updated_at=?2 WHERE id=?1`
   ).bind(row.id, now.toISOString(), next, history).run();
   return { ok: true, contact: await getContact(env, row.id, now) };
 }
@@ -246,6 +250,20 @@ async function findByPhone(env, phone) {
 }
 
 // Quem escreve para o número da Flow (Meta): entra no CRM; se já estava em "mandei mensagem", vira "conversando".
+// Já está no CRM (pelo número ou pelo código do mapa)?
+export async function crmKnows(env, { phone = "", sourceId = "" } = {}) {
+  await ensureCrmSchema(env);
+  if (sourceId) {
+    const bySource = await env.DB.prepare("SELECT id FROM crm_contacts WHERE source_id=?1 LIMIT 1").bind(String(sourceId)).first();
+    if (bySource) return true;
+  }
+  const normalized = normalizePhone(phone);
+  if (!normalized) return false;
+  const list = phoneVariants(normalized);
+  const marks = list.map((_, i) => "?" + (i + 1)).join(",");
+  return Boolean(await env.DB.prepare(`SELECT id FROM crm_contacts WHERE phone IN (${marks}) LIMIT 1`).bind(...list).first());
+}
+
 export async function addFromWhatsApp(env, { phone, name } = {}, now = new Date()) {
   const normalized = normalizePhone(phone);
   if (!normalized) return { ok: false, skipped: "phone_invalid" };
