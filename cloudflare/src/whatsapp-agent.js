@@ -1,5 +1,6 @@
 import { openAIResponses } from "./openai.js";
 import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
+import { addFromWhatsApp } from "./crm.js";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -307,6 +308,9 @@ async function storeInbound(env, clientId, value) {
         updated_at=CURRENT_TIMESTAMP`
     ).bind(`wa-contact-${clientId}-${waId}`, clientId, waId, displayName, createdAt).run();
 
+    // Quem escreve para o número da Flow entra no CRM (ou passa para "conversando").
+    await addFromWhatsApp(env, { phone: waId, name: displayName }).catch(() => null);
+
     const draft = text
       ? await buildDraft(env, clientId, waId, displayName, text)
       : { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
@@ -412,13 +416,24 @@ export async function handleWhatsAppWebhook(request, env, url, ctx) {
   return json({ ok: true });
 }
 
-async function sendText(env, to, text) {
+// Mensagem modelo aprovada pela Meta (obrigatória fora da janela de 24 h).
+function templatePayload(template) {
+  const params = (Array.isArray(template?.params) ? template.params : []).map(text => ({ type: "text", text: String(text || "").slice(0, 60) || "-" }));
+  return {
+    name: String(template?.name || ""),
+    language: { code: String(template?.lang || "pt_BR") },
+    ...(params.length ? { components: [{ type: "body", parameters: params }] } : {})
+  };
+}
+
+async function sendText(env, to, text, template = null) {
   const version = String(env.WHATSAPP_GRAPH_VERSION || "").trim();
   const phoneNumberId = String(env.WHATSAPP_PHONE_NUMBER_ID || "").trim();
   const token = String(env.WHATSAPP_ACCESS_TOKEN || "").trim();
   if (!version || !phoneNumberId || !token) throw new Error("whatsapp_send_not_configured");
+  const fetcher = env.__whatsappFetch || fetch;
 
-  const response = await fetch(
+  const response = await fetcher(
     `https://graph.facebook.com/${encodeURIComponent(version)}/${encodeURIComponent(phoneNumberId)}/messages`,
     {
       method: "POST",
@@ -426,7 +441,13 @@ async function sendText(env, to, text) {
         authorization: `Bearer ${token}`,
         "content-type": "application/json"
       },
-      body: JSON.stringify({
+      body: JSON.stringify(template ? {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to,
+        type: "template",
+        template: templatePayload(template)
+      } : {
         messaging_product: "whatsapp",
         recipient_type: "individual",
         to,
@@ -456,7 +477,7 @@ async function sendText(env, to, text) {
 }
 
 // Envia (manual ou automático) respeitando o limite por hora e registra tudo no D1.
-async function sendAndRecord(env, clientId, to, text, { draftId = "", auto = false } = {}) {
+export async function sendAndRecord(env, clientId, to, text, { draftId = "", auto = false, template = null, source = "" } = {}) {
   const limit = configStatus(env).sendLimitPerHour;
   const row = await env.DB.prepare(
     "SELECT COUNT(*) AS total FROM whatsapp_send_log WHERE client_id=?1 AND created_at>=datetime('now','-1 hour')"
@@ -468,15 +489,23 @@ async function sendAndRecord(env, clientId, to, text, { draftId = "", auto = fal
     throw error;
   }
 
-  const result = await sendText(env, to, text);
+  const result = await sendText(env, to, text, template);
   const providerId = String(result?.messages?.[0]?.id || "");
   const id = providerId || `wa-out-${clientId}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
   await env.DB.prepare(
     `INSERT OR IGNORE INTO whatsapp_messages(
       id,client_id,wa_id,provider_message_id,direction,message_type,text,status,payload_json,created_at
-    ) VALUES(?1,?2,?3,?4,'outbound','text',?5,?6,?7,?8)`
-  ).bind(id, clientId, to, providerId || null, text, auto ? "sent_auto" : "sent", JSON.stringify(result), nowIso()).run();
+    ) VALUES(?1,?2,?3,?4,'outbound',?9,?5,?6,?7,?8)`
+  ).bind(id, clientId, to, providerId || null, text, auto ? "sent_auto" : source === "crm" ? "sent_crm" : "sent", JSON.stringify(result), nowIso(), template ? "template" : "text").run();
+  // Quem recebeu do CRM aparece na aba WhatsApp, para a resposta cair na conversa certa.
+  if (source === "crm") {
+    await env.DB.prepare(
+      `INSERT INTO whatsapp_contacts(id,client_id,wa_id,display_name,unread_count,last_message_at,created_at,updated_at)
+       VALUES(?1,?2,?3,'',0,?4,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+       ON CONFLICT(client_id,wa_id) DO UPDATE SET updated_at=CURRENT_TIMESTAMP`
+    ).bind(`wa-contact-${clientId}-${to}`, clientId, to, nowIso()).run();
+  }
 
   await env.DB.prepare(
     `INSERT INTO whatsapp_send_log(id,client_id,wa_id,message_id,text_preview,created_at)
@@ -489,6 +518,18 @@ async function sendAndRecord(env, clientId, to, text, { draftId = "", auto = fal
     ).bind(String(draftId), clientId, auto ? "auto_sent" : "sent").run();
   }
   return { providerMessageId: providerId || null };
+}
+
+// Última mensagem que a pessoa mandou para o número da Flow (qualquer variante do número).
+export async function lastInboundAt(env, clientId, phones = []) {
+  const list = [...new Set(phones.map(cleanPhone).filter(Boolean))].slice(0, 4);
+  if (!list.length) return null;
+  await ensureWhatsAppSchema(env);
+  const marks = list.map((_, i) => "?" + (i + 2)).join(",");
+  const row = await env.DB.prepare(
+    `SELECT wa_id, MAX(created_at) AS at FROM whatsapp_messages WHERE client_id=?1 AND direction='inbound' AND wa_id IN (${marks}) GROUP BY wa_id ORDER BY at DESC LIMIT 1`
+  ).bind(clientId, ...list).first();
+  return row?.at ? { waId: row.wa_id, at: row.at } : null;
 }
 
 export async function handleWhatsAppProtected(request, env, url) {

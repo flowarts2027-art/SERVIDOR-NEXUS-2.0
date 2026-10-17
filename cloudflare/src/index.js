@@ -27,6 +27,7 @@ import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
+import { handleCrmSendRoute } from "./crm-send.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
@@ -700,6 +701,8 @@ export default {
     if (url.pathname === "/api/master/crm" || url.pathname.startsWith("/api/master/crm/")) {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
+      const sent = await handleCrmSendRoute(request, env, url);
+      if (sent) return sent;
       const response = await handleCrmRoute(request, env, url);
       if (response) return response;
     }

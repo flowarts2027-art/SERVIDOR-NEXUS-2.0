@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>Nexus Master · Flow Arts</title>
-  <link rel="stylesheet" href="/styles.css?v=35">
+  <link rel="stylesheet" href="/styles.css?v=36">
 </head>
 <body>
   <div class="shell">
@@ -433,6 +433,7 @@
 
       <section id="crm" class="view">
         <div class="crm-summary" id="crm-summary"></div>
+        <section class="panel crm-via" id="crm-via"></section>
         <section class="panel crm-today" id="crm-today">
           <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
           <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
@@ -448,6 +449,19 @@
             <label class="wide">Anotação<textarea name="notes" rows="3" maxlength="1000" placeholder="Ex.: Gostou do pacote, pediu para falar depois do dia 20."></textarea></label>
             <button type="submit" class="primary">Salvar contato</button>
             <p class="muted wide" id="crm-form-msg" role="status"></p>
+          </form>
+        </div></details>
+        <details class="fold" id="crm-template-fold"><summary><span class="fold-icon">✉</span><span><strong>Mensagem modelo da Meta</strong><small>Para mandar pelo número da Flow depois de 24 h</small></span></summary><div class="fold-body">
+          <p class="muted">A Meta só deixa o número da Flow mandar mensagem livre até 24 h depois que a pessoa falou com ele. Depois disso, vai uma mensagem modelo que a Meta aprova antes. Cada envio de modelo é cobrado pela Meta.</p>
+          <p class="crm-step"><b>1.</b> No Gerenciador do WhatsApp da Meta, crie um modelo: categoria <b>Marketing</b>, idioma <b>Português (BR)</b>.</p>
+          <p class="crm-step"><b>2.</b> Use este texto (o {{1}} vira o nome da pessoa):</p>
+          <pre class="crm-template-text">Olá, {{1}}! Aqui é o Rodrigo, da Flow Arts. Passando para saber se você ainda tem interesse em deixar o Instagram do seu negócio em dia. Posso te mostrar como funciona?</pre>
+          <p class="crm-step"><b>3.</b> Quando a Meta aprovar, escreva aqui o nome do modelo, igual aparece lá.</p>
+          <form id="crm-template-form" class="crm-form">
+            <label>Nome do modelo<input name="templateName" maxlength="512" placeholder="ex.: retorno_flow" autocomplete="off"></label>
+            <label class="crm-check"><input type="checkbox" name="templateUsesName" checked> O modelo tem o {{1}} com o nome</label>
+            <button type="submit" class="primary">Salvar modelo</button>
+            <p class="muted wide" id="crm-template-msg" role="status"></p>
           </form>
         </div></details>
         <section class="panel">
@@ -597,6 +611,6 @@
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=10" defer></script>
-  <script src="/crm.js?v=1" defer></script>
+  <script src="/crm.js?v=2" defer></script>
 </body>
 </html>

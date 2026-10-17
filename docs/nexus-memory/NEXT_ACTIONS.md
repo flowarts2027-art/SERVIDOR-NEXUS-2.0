@@ -1,5 +1,10 @@
 # Próximas ações
 
+## CRM pelo número da Flow (17/10) — pronto no ramo painel-master-crm; falta OK para publicar
+1. OK do Rodrigo → juntar na main e conferir o deploy.
+2. Rodrigo cria o modelo na Meta (texto em CHANGELOG 17/10 15h30) e, aprovado, salva o nome em CRM › Mensagem modelo da Meta.
+3. Primeiro envio real: um contato só, com o Rodrigo olhando a aba WhatsApp.
+
 ## Master novo + CRM (17/10) — NO AR (deploy 39055580627, 14h51)
 1. FEITO: OK do Rodrigo e publicação.
 2. Rodrigo abre o Master no celular (pode precisar puxar para atualizar) e diz o que quer mudar.

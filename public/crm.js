@@ -14,7 +14,7 @@
   const INTEREST = { "": "", pacote: "Pacote de Instagram", site: "Site", "pacote-site": "Pacote + site", outro: "Outro" };
   const FOLLOW = [["7", "7 dias"], ["3", "3 dias"], ["1", "Amanhã"], ["15", "15 dias"], ["30", "30 dias"], ["0", "Não marcar"]];
 
-  let state = { stage: "", q: "", data: null, open: new Set() };
+  let state = { stage: "", q: "", data: null, open: new Set(), settings: { via: "pessoal", templateName: "", templateUsesName: true }, sendMsg: "" };
 
   async function call(path, options = {}) {
     const response = await fetch(path, { credentials: "same-origin", headers: { "content-type": "application/json" }, ...options });
@@ -24,19 +24,7 @@
     return data;
   }
 
-  const firstName = name => String(name || "").trim().split(/\s+/)[0] || "";
-
-  // Mensagem de retorno: curta, sem promessa e sem número inventado.
-  function followMessage(c) {
-    const name = firstName(c.name);
-    const biz = c.business && c.business !== c.name ? ` da ${c.business}` : "";
-    const what = { pacote: "o pacote de Instagram", site: "o site", "pacote-site": "o pacote de Instagram e o site" }[c.interest] || "o Instagram do seu negócio";
-    if (c.stage === "cliente") return `Oi, ${name}! Tudo bem? Aqui é o Rodrigo, da Flow Arts. Passando para saber se está tudo certo com o Instagram${biz}. Precisa de alguma coisa?`;
-    if (c.followCount >= 1) return `Oi, ${name}! Rodrigo da Flow Arts de novo. Ainda faz sentido a gente conversar sobre ${what}? Se agora não for o momento, sem problema, é só me avisar.`;
-    return `Oi, ${name}! Tudo bem? Aqui é o Rodrigo, da Flow Arts. Passando para saber se você pensou sobre ${what}. Quer que eu te mostre um exemplo de como ficaria${biz}?`;
-  }
-
-  const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(followMessage(c));
+  const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(c.message || "");
 
   function prettyPhone(p) {
     const d = String(p || "").replace(/^55/, "");
@@ -80,7 +68,9 @@
           <p class="crm-meta"><span class="crm-stage s-${esc(c.stage)}">${esc(STAGE_NAME[c.stage] || c.stage)}</span><span class="crm-when ${tone}">${esc(when)}</span></p>
         </div>
         <div class="crm-actions">
-          <a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>
+          ${state.settings.via === "flow"
+            ? `<button type="button" class="primary crm-wa" data-send="${esc(c.id)}">Enviar pela Flow</button>`
+            : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
           <button type="button" class="ghost" data-done="${esc(c.id)}">Já falei</button>
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
         </div>
@@ -135,13 +125,59 @@
     sub.textContent = n ? (n === 1 ? "1 pessoa para chamar no WhatsApp." : `${n} pessoas para chamar no WhatsApp.`) : "Ninguém para chamar hoje. Tudo em dia.";
     list.innerHTML = d.due.slice(0, 5).map(c => `<div class="today-item">
         <div><strong>${esc(c.name)}</strong><small>${esc(c.business && c.business !== c.name ? c.business : INTEREST[c.interest] || prettyPhone(c.phone))} · ${esc(dayLabel(c.nextFollowAt, d.today))}</small></div>
-        <a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>
+        ${state.settings.via === "flow" ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
       </div>`).join("") + (n > 5 ? `<p class="muted">E mais ${n - 5}. Abra o CRM para ver todos.</p>` : "");
+  }
+
+  const REASONS = {
+    needs_template: "precisa da mensagem modelo (passou de 24 h)",
+    hourly_limit: "limite de envios por hora; tente daqui a pouco",
+    not_found: "contato não encontrado"
+  };
+
+  function renderVia(d) {
+    const box = $("#crm-via");
+    if (!box) return;
+    const flow = state.settings.via === "flow";
+    const n = d.due.length;
+    box.innerHTML = `<div class="crm-via-row">
+        <span class="crm-via-label">Enviar por</span>
+        <div class="crm-switch" role="radiogroup">
+          <button type="button" role="radio" aria-checked="${!flow}" class="${!flow ? "active" : ""}" data-via="pessoal">Seu WhatsApp</button>
+          <button type="button" role="radio" aria-checked="${flow}" class="${flow ? "active" : ""}" data-via="flow">Número da Flow</button>
+        </div>
+      </div>
+      <p class="muted crm-via-help">${flow
+        ? "Sai pelo (21) 99855-9965, direto daqui. As respostas chegam na aba WhatsApp." + (state.settings.templateName ? "" : " Para quem não falou com a Flow nas últimas 24 h, falta cadastrar a mensagem modelo (abaixo).")
+        : "Abre o WhatsApp do seu celular com a mensagem pronta. Você confere e envia."}</p>
+      ${flow && n ? `<button type="button" class="primary crm-send-all" data-send-all>Enviar para todos de hoje (${n})</button>` : ""}
+      ${state.sendMsg ? `<div class="crm-send-msg">${state.sendMsg}</div>` : ""}`;
+    const tpl = $("#crm-template-form");
+    if (tpl && !tpl.dataset.filled) {
+      tpl.templateName.value = state.settings.templateName || "";
+      tpl.templateUsesName.checked = state.settings.templateUsesName !== false;
+      tpl.dataset.filled = "1";
+    }
+  }
+
+  async function sendFlow(ids) {
+    state.sendMsg = "Enviando…";
+    render();
+    try {
+      const out = await call("/api/master/crm/send", { method: "POST", body: JSON.stringify({ ids, confirmed: true, followDays: 7 }) });
+      const fails = out.results.filter(r => !r.ok);
+      state.sendMsg = `<strong>${out.sent} enviada(s).</strong>` + (fails.length
+        ? `<ul>${fails.map(r => `<li>${esc(r.name || "Contato")}: ${esc(REASONS[r.reason] || r.reason)}</li>`).join("")}</ul>` : "");
+    } catch (error) {
+      state.sendMsg = esc(error.message);
+    }
+    await load();
   }
 
   function render() {
     const d = state.data;
     if (!d) return;
+    renderVia(d);
     renderSummary(d);
     renderTabs(d);
     renderToday(d);
@@ -159,7 +195,12 @@
       const qs = new URLSearchParams();
       if (state.stage) qs.set("stage", state.stage);
       if (state.q) qs.set("q", state.q);
-      state.data = await call("/api/master/crm" + (qs.toString() ? "?" + qs : ""));
+      const [data, cfg] = await Promise.all([
+        call("/api/master/crm" + (qs.toString() ? "?" + qs : "")),
+        call("/api/master/crm/settings").catch(() => null)
+      ]);
+      state.data = data;
+      if (cfg?.settings) state.settings = cfg.settings;
       render();
     } catch (error) {
       const list = $("#crm-list");
@@ -190,6 +231,18 @@
       } catch (error) { msg.textContent = error.message; }
       return;
     }
+    if (form.id === "crm-template-form") {
+      event.preventDefault();
+      const msg = $("#crm-template-msg");
+      msg.textContent = "Salvando…";
+      try {
+        const out = await call("/api/master/crm/settings", { method: "POST", body: JSON.stringify({ templateName: form.templateName.value, templateUsesName: form.templateUsesName.checked }) });
+        state.settings = out.settings;
+        msg.textContent = "Salvo. ✔";
+        render();
+      } catch (error) { msg.textContent = error.message; }
+      return;
+    }
     if (form.matches?.("[data-edit]")) {
       event.preventDefault();
       const msg = form.querySelector("[data-edit-msg]");
@@ -203,8 +256,31 @@
   });
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa]");
+    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm]");
     if (!t) return;
+    if (t.matches("[data-go-crm]")) { document.querySelector('.nav-item[data-view="crm"]')?.click(); return; }
+    if (t.matches("[data-via]")) {
+      const via = t.dataset.via;
+      state.settings.via = via;
+      state.sendMsg = "";
+      render();
+      call("/api/master/crm/settings", { method: "POST", body: JSON.stringify({ via }) }).catch(() => {});
+      return;
+    }
+    if (t.matches("[data-send]")) {
+      // Segundo toque confirma (sem janela do navegador).
+      if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Toque de novo para enviar"; return; }
+      t.disabled = true;
+      await sendFlow([t.dataset.send]);
+      return;
+    }
+    if (t.matches("[data-send-all]")) {
+      const ids = (state.data?.due || []).map(c => c.id);
+      if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = `Confirmar: enviar para ${ids.length}`; return; }
+      t.disabled = true;
+      await sendFlow(ids.slice(0, 25));
+      return;
+    }
     if (t.matches("[data-stage]")) { state.stage = t.dataset.stage; await load(); return; }
     if (t.matches("[data-toggle]")) {
       const id = t.dataset.toggle;

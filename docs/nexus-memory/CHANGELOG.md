@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-17 ~15h30 BRT — CRM: escolher o número que envia (ramo painel-master-crm, aguardando OK para publicar)
+- Correção minha: eu tinha dito que o número da Meta era só de teste. Errado: o número na Cloud API é o chip Vivo do Rodrigo, +55 21 99855-9965 (CONNECTED, LIVE, desde 13/10). O +1 555 foi só o teste do começo.
+- Pedido do Rodrigo: opção no CRM para escolher por qual número sai a mensagem; mandar para vários clientes pelo número da Flow, sem atender pelo celular.
+- CRM › "Enviar por": Seu WhatsApp (abre o celular com a mensagem) ou Número da Flow (envia pela Meta, direto do painel). "Enviar para todos de hoje" (até 25 por vez) e "Enviar pela Flow" por contato, os dois com segundo toque para confirmar. Resultado mostra quem foi e quem ficou de fora e por quê.
+- Regra das 24 h: `crm-send.js` olha a última mensagem recebida da pessoa (com e sem o 9). Dentro de 24 h vai texto normal; fora, vai a mensagem modelo aprovada (nome salvo no CRM, {{1}} = primeiro nome); sem modelo, o contato é pulado com aviso. Respeita o limite por hora já existente (WHATSAPP_SEND_LIMIT_PER_HOUR, padrão 30). Depois de enviar, marca "já falei" e a próxima volta em 7 dias.
+- `whatsapp-agent.js`: envio de modelo (type template), sendAndRecord exportado com status sent_crm, contato criado na aba WhatsApp para a resposta cair na conversa; quem escreve para o número da Flow entra no CRM (ou passa de "mandei mensagem" para "conversando").
+- Texto sugerido para o modelo (Marketing, pt_BR): "Olá, {{1}}! Aqui é o Rodrigo, da Flow Arts. Passando para saber se você ainda tem interesse em deixar o Instagram do seu negócio em dia. Posso te mostrar como funciona?" Ainda NÃO criado na Meta.
+- 458 testes passando (5 novos). Testado no navegador sem rede: troca de número e envio para todos chamam /api/master/crm/send com confirmed:true; sem erro de página. Nenhum envio real feito.
+
 ## 2026-10-17 ~15h BRT — Master novo (azul) + CRM com retorno de 7 dias (publicado 14h51 com OK do Rodrigo)
 - Pedido do Rodrigo: enxugar o Master, letras maiores, sair do preto e branco (azul, branco e cinza) e criar um CRM com follow-up de 7 dias.
 - Tema: `public/styles.css` convertido para claro (fundo #eef3f9, cartões brancos, azul #1f66d6, barra lateral #0f2747), letras de 13 a 30 px (antes 8 a 12 px). theme-color e manifesto atualizados.

@@ -61,8 +61,29 @@ function addHistory(raw, entry) {
   return JSON.stringify([...parseHistory(raw), entry].slice(-30));
 }
 
+const firstName = name => String(name || "").trim().split(/\s+/)[0] || "";
+
+// Mensagem de retorno: curta, sem promessa e sem número inventado.
+export function followMessage(c) {
+  const name = firstName(c.name);
+  const biz = c.business && c.business !== c.name ? ` da ${c.business}` : "";
+  const what = { pacote: "o pacote de Instagram", site: "o site", "pacote-site": "o pacote de Instagram e o site" }[c.interest] || "o Instagram do seu negócio";
+  if (c.stage === "cliente") return `Oi, ${name}! Tudo bem? Aqui é o Rodrigo, da Flow Arts. Passando para saber se está tudo certo com o Instagram${biz}. Precisa de alguma coisa?`;
+  if (Number(c.followCount || c.follow_count || 0) >= 1) return `Oi, ${name}! Rodrigo da Flow Arts de novo. Ainda faz sentido a gente conversar sobre ${what}? Se agora não for o momento, sem problema, é só me avisar.`;
+  return `Oi, ${name}! Tudo bem? Aqui é o Rodrigo, da Flow Arts. Passando para saber se você pensou sobre ${what}. Quer que eu te mostre um exemplo de como ficaria${biz}?`;
+}
+
+// Celular brasileiro aparece com e sem o 9 na Meta: devolve as duas formas.
+export function phoneVariants(phone) {
+  const p = normalizePhone(phone) || String(phone || "").replace(/\D/g, "");
+  const out = new Set([p]);
+  if (/^55\d{2}9\d{8}$/.test(p)) out.add(p.slice(0, 4) + p.slice(5));
+  if (/^55\d{2}[6-9]\d{7}$/.test(p)) out.add(p.slice(0, 4) + "9" + p.slice(4));
+  return [...out].filter(Boolean);
+}
+
 function view(row, today) {
-  return {
+  const out = {
     id: row.id, name: row.name, business: row.business, phone: row.phone,
     interest: row.interest, stage: row.stage, notes: row.notes, source: row.source,
     lastContactAt: row.last_contact_at || null, nextFollowAt: row.next_follow_at || null,
@@ -72,6 +93,8 @@ function view(row, today) {
     history: parseHistory(row.history_json).slice(-10).reverse(),
     createdAt: row.created_at, updatedAt: row.updated_at
   };
+  out.message = followMessage(out);
+  return out;
 }
 
 function readFields(body, { partial = false } = {}) {
@@ -100,7 +123,7 @@ function readFields(body, { partial = false } = {}) {
 export async function createContact(env, body = {}, now = new Date()) {
   await ensureCrmSchema(env);
   const fields = readFields(body);
-  const existing = await env.DB.prepare("SELECT id FROM crm_contacts WHERE phone=?1 AND archived=0 LIMIT 1").bind(fields.phone).first();
+  const existing = await findByPhone(env, fields.phone);
   if (existing) {
     const error = new Error("phone_exists");
     error.id = existing.id;
@@ -196,12 +219,66 @@ export async function listContacts(env, { stage = "", q = "" } = {}, now = new D
   };
 }
 
+async function findByPhone(env, phone) {
+  const list = phoneVariants(phone);
+  const marks = list.map((_, i) => "?" + (i + 1)).join(",");
+  return env.DB.prepare(`SELECT * FROM crm_contacts WHERE archived=0 AND phone IN (${marks}) LIMIT 1`).bind(...list).first();
+}
+
+// Quem escreve para o número da Flow (Meta): entra no CRM; se já estava em "mandei mensagem", vira "conversando".
+export async function addFromWhatsApp(env, { phone, name } = {}, now = new Date()) {
+  const normalized = normalizePhone(phone);
+  if (!normalized) return { ok: false, skipped: "phone_invalid" };
+  await ensureCrmSchema(env);
+  const row = await findByPhone(env, normalized);
+  if (row) {
+    if (row.stage === "contato") {
+      const history = addHistory(row.history_json, { at: now.toISOString(), type: "respondeu", text: "Respondeu no WhatsApp da Flow" });
+      await env.DB.prepare("UPDATE crm_contacts SET stage='conversando',history_json=?2,updated_at=?3 WHERE id=?1").bind(row.id, history, now.toISOString()).run();
+    }
+    return { ok: true, id: row.id, existed: true };
+  }
+  const created = await createContact(env, {
+    name: clean(name, 80) || "Contato do WhatsApp", phone: normalized, stage: "conversando",
+    notes: "Chamou no WhatsApp da Flow", source: "whatsapp-flow", followDays: 7
+  }, now);
+  return { ok: true, id: created.contact.id };
+}
+
+// Configuração do CRM: por qual número mandar e a mensagem modelo da Meta.
+const SETTINGS_DEFAULT = { via: "pessoal", templateName: "", templateLang: "pt_BR", templateUsesName: true };
+export async function getCrmSettings(env) {
+  await ensureCrmSchema(env);
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS crm_settings (id TEXT PRIMARY KEY, value_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
+  const row = await env.DB.prepare("SELECT value_json FROM crm_settings WHERE id='main'").first();
+  let saved = {};
+  try { saved = JSON.parse(row?.value_json || "{}"); } catch {}
+  return { ...SETTINGS_DEFAULT, ...saved };
+}
+
+export async function saveCrmSettings(env, body = {}) {
+  const current = await getCrmSettings(env);
+  const next = { ...current };
+  if ("via" in body) next.via = body.via === "flow" ? "flow" : "pessoal";
+  if ("templateName" in body) {
+    const name = String(body.templateName || "").trim().toLowerCase();
+    if (name && !/^[a-z0-9_]{1,512}$/.test(name)) throw new Error("template_name_invalid");
+    next.templateName = name;
+  }
+  if ("templateLang" in body) next.templateLang = /^[a-z]{2}(_[A-Z]{2})?$/.test(String(body.templateLang || "")) ? String(body.templateLang) : "pt_BR";
+  if ("templateUsesName" in body) next.templateUsesName = Boolean(body.templateUsesName);
+  await env.DB.prepare(
+    "INSERT INTO crm_settings(id,value_json,updated_at) VALUES('main',?1,CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET value_json=excluded.value_json,updated_at=CURRENT_TIMESTAMP"
+  ).bind(JSON.stringify(next)).run();
+  return { ok: true, settings: next };
+}
+
 // Quem o Rodrigo chamou pelo Caçador entra no CRM sozinho, com volta em 7 dias.
 export async function addFromProspect(env, prospect = {}, now = new Date()) {
   const phone = normalizePhone(prospect.phone);
   if (!phone) return { ok: false, skipped: "phone_invalid" };
   await ensureCrmSchema(env);
-  const existing = await env.DB.prepare("SELECT id FROM crm_contacts WHERE phone=?1 AND archived=0 LIMIT 1").bind(phone).first();
+  const existing = await findByPhone(env, phone);
   if (existing) return { ok: true, id: existing.id, existed: true };
   const created = await createContact(env, {
     name: prospect.name, business: prospect.name, phone, stage: "contato", interest: "",
@@ -216,7 +293,8 @@ export const CRM_MESSAGES = {
   phone_invalid: "Confira o número do WhatsApp (com DDD).",
   phone_exists: "Esse número já está no CRM.",
   stage_invalid: "Escolha a etapa.",
-  not_found: "Contato não encontrado. Atualize a página."
+  not_found: "Contato não encontrado. Atualize a página.",
+  template_name_invalid: "O nome do modelo só pode ter letras minúsculas, números e _ (igual aparece na Meta)."
 };
 
 // Rotas do Master. Quem chama já conferiu o login do Master.
@@ -230,6 +308,10 @@ export async function handleCrmRoute(request, env, url) {
     }
     if (url.pathname === "/api/master/crm" && request.method === "POST") {
       return send(await createContact(env, await request.json().catch(() => ({}))));
+    }
+    if (url.pathname === "/api/master/crm/settings") {
+      if (request.method === "GET") return send({ ok: true, settings: await getCrmSettings(env) });
+      if (request.method === "POST") return send(await saveCrmSettings(env, await request.json().catch(() => ({}))));
     }
     const match = url.pathname.match(/^\/api\/master\/crm\/([^/]+)(?:\/(contacted|archive))?$/);
     if (match && request.method === "POST") {
