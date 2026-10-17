@@ -9,7 +9,47 @@ import { encryptSecret, decryptSecret } from "./secrets.js";
 
 export const DAILY_SEARCH_LIMIT = 30; // Google: ~900/mês, dentro da cota grátis. OSM: uso educado do servidor público.
 const OVERPASS = "https://overpass-api.de/api/interpreter";
-export const OVERPASS_ENDPOINTS = [OVERPASS, "https://overpass.private.coffee/api/interpreter"];
+export const OVERPASS_ENDPOINTS = [OVERPASS, "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"];
+const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+const OSM_UA = "FlowArtsNexus/1.0 (+https://flowarts.com.br; contato@flowarts.com.br)";
+
+// Terceira reserva (17/10): Nominatim, o buscador do mesmo mapa. Usa as "frases" em inglês
+// ("pet shop in Rio de Janeiro"), que ele entende melhor. Traz menos telefones que o Overpass.
+// Regra de uso do Nominatim: no máximo 1 pedido por segundo e identificação no User-Agent.
+export const OSM_PHRASES = {
+  "amenity=cafe": "cafe", "shop=hairdresser": "hairdresser", "shop=beauty": "beauty shop", "amenity=fast_food": "fast food",
+  "amenity=restaurant": "restaurant", "shop=bakery": "bakery", "amenity=bar": "bar", "amenity=pub": "pub",
+  "leisure=fitness_centre": "gym", "shop=pet": "pet shop", "shop=agrarian": "agricultural shop", "amenity=veterinary": "veterinary",
+  "amenity=dentist": "dentist", "amenity=clinic": "clinic", "amenity=doctors": "doctors", "amenity=pharmacy": "pharmacy",
+  "shop=supermarket": "supermarket", "shop=convenience": "convenience store", "shop=clothes": "clothes shop",
+  "shop=car_repair": "car repair", "tourism=hotel": "hotel", "tourism=guest_house": "guest house",
+  "office=estate_agent": "estate agent", "office=accountant": "accountant", "shop=hardware": "hardware store", "shop=doityourself": "DIY store"
+};
+
+// Devolve pontos no mesmo formato do Overpass ({type,id,tags}), para reaproveitar os filtros.
+export async function searchNominatim(tags, cityName, fetcher = fetch, wait = ms => new Promise(r => setTimeout(r, ms))) {
+  const wanted = new Set(tags.map(([k, v]) => k + "=" + v));
+  const out = new Map();
+  const phrases = tags.slice(0, 2).map(([k, v]) => OSM_PHRASES[k + "=" + v]).filter(Boolean);
+  for (let i = 0; i < phrases.length; i++) {
+    if (i) await wait(1100);
+    const url = NOMINATIM + "?format=jsonv2&extratags=1&addressdetails=1&limit=50&countrycodes=br&q=" + encodeURIComponent(phrases[i] + " in " + cityName);
+    const response = await fetcher(url, { headers: { "user-agent": OSM_UA, referer: "https://flowarts.com.br/" }, signal: AbortSignal.timeout(20000) });
+    if (!response.ok) throw new Error("nominatim_" + response.status);
+    const list = await response.json().catch(() => []);
+    for (const item of Array.isArray(list) ? list : []) {
+      if (!wanted.has(String(item?.category) + "=" + String(item?.type))) continue;
+      const type = String(item.osm_type || ""), id = Number(item.osm_id);
+      if (!["node", "way", "relation"].includes(type) || !Number.isFinite(id)) continue;
+      const a = item.address || {};
+      out.set(type + "/" + id, { type, id, tags: {
+        ...(item.extratags || {}), name: String(item.name || ""),
+        "addr:street": a.road || "", "addr:housenumber": a.house_number || "", "addr:suburb": a.suburb || a.neighbourhood || ""
+      } });
+    }
+  }
+  return [...out.values()];
+}
 const SITE = "https://flowarts.com.br";
 
 export const NICHES = {
@@ -177,16 +217,27 @@ export function overpassQuery(nicheKey, cityIndex, radius = 12000) {
   return `[out:json][timeout:25];(${parts.join("")});out tags center 800;`;
 }
 
+// Mapa grátis: tenta os servidores do Overpass; se todos estiverem fora, usa o Nominatim.
 async function searchOSM(nicheKey, cityIndex, fetcher) {
-  const response = await fetcher(OVERPASS, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "FlowArtsNexus/1.0 (+https://flowarts.com.br)" },
-    body: "data=" + encodeURIComponent(overpassQuery(nicheKey, cityIndex)),
-    signal: AbortSignal.timeout(30000)
-  });
-  if (!response.ok) throw new Error(response.status === 429 || response.status >= 500 ? "osm_busy" : "osm_" + response.status);
-  const data = await response.json().catch(() => ({}));
-  return Array.isArray(data.elements) ? data.elements : [];
+  let error = "osm_busy";
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    try {
+      const response = await fetcher(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": OSM_UA },
+        body: "data=" + encodeURIComponent(overpassQuery(nicheKey, cityIndex)),
+        signal: AbortSignal.timeout(20000)
+      });
+      if (!response.ok) { error = response.status === 429 || response.status >= 500 ? "osm_busy" : "osm_" + response.status; continue; }
+      const data = await response.json().catch(() => ({}));
+      return Array.isArray(data.elements) ? data.elements : [];
+    } catch { error = "osm_busy"; }
+  }
+  try {
+    return await searchNominatim(NICHES[nicheKey].osm, CITIES[cityIndex].replace(/\s+[A-Z]{2}$/, ""), fetcher);
+  } catch {
+    throw new Error(error);
+  }
 }
 
 export function placeToProspect(place, nicheKey, city) {

@@ -6,7 +6,7 @@
 // de quem ele marcar "não serve". Tudo separado por cliente.
 // Nada é enviado pelo servidor: o cliente manda pelo próprio WhatsApp.
 
-import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS } from "./prospects.js";
+import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
 
 // Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
 export const CAPTADOR_MONTHLY_LIMIT = 100;
@@ -225,7 +225,7 @@ async function searchCaptadorOSM(niche, city, fetcher) {
         method: "POST",
         headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "FlowArtsNexus/1.0 (+https://flowarts.com.br)" },
         body: "data=" + encodeURIComponent(captadorOverpassQuery(niche, city)),
-        signal: AbortSignal.timeout(30000)
+        signal: AbortSignal.timeout(20000)
       });
       if (!response.ok) { last = "osm_" + response.status; continue; }
       const data = await response.json().catch(() => ({}));
@@ -234,7 +234,12 @@ async function searchCaptadorOSM(niche, city, fetcher) {
       last = String(error?.message || error).slice(0, 60);
     }
   }
-  throw new Error(last);
+  // Terceira reserva: Nominatim (mesmo mapa, menos telefones).
+  try {
+    return await searchNominatim(CAPTADOR_OSM_TAGS[niche] || [], cityName(city), fetcher);
+  } catch {
+    throw new Error(last);
+  }
 }
 
 // Um ponto do mapa grátis vira um contato (ou null se não servir).

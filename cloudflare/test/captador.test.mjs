@@ -223,3 +223,25 @@ test("Captador tem ração, casa de ração, agropecuária e pet shop", () => {
   assert.equal(CAPTADOR_NICHES.agropecuaria.query, "agropecuária");
   assert.equal(CAPTADOR_NICHES.pet.query, "pet shop");
 });
+
+test("mapa grátis fora do ar: usa o Nominatim (terceira reserva)", async () => {
+  const { env } = fakeEnv(false);
+  await setCaptadorAccess(env, ana.id, true);
+  const urls = [];
+  const fetcher = async u => {
+    urls.push(String(u));
+    if (String(u).includes("nominatim")) return new Response(JSON.stringify([
+      { osm_type: "node", osm_id: 21, category: "shop", type: "pet", name: "Pet Lu", extratags: { phone: "+55 21 98888-7777" }, address: { road: "Rua A" } },
+      { osm_type: "node", osm_id: 22, category: "building", type: "commercial", name: "Pet Shop", extratags: { phone: "+55 21 98888-6666" } },
+      { osm_type: "node", osm_id: 23, category: "shop", type: "pet", name: "Sem Tel", extratags: {} }
+    ]), { status: 200 });
+    return new Response("", { status: 504 });
+  };
+  const req = new Request("https://painel.flowarts.com.br/api/portal/captador/search", { method: "POST", body: JSON.stringify({ niche: "pet", city: "Rio de Janeiro RJ" }) });
+  const data = await (await handleCaptadorPortal(req, env, new URL(req.url), ana, fetcher)).json();
+  assert.equal(data.ok, true);
+  assert.deepEqual(data.items.map(i => i.name), ["Pet Lu"]);
+  const nom = urls.find(u => u.includes("nominatim"));
+  assert.match(decodeURIComponent(nom), /q=pet shop in Rio de Janeiro/);
+  assert.ok(urls.filter(u => u.includes("interpreter")).length >= 3, "tentou os servidores do Overpass antes");
+});
