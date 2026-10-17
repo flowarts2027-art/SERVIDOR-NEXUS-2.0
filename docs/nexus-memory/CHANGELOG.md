@@ -8,6 +8,7 @@
 - `cloudflare/src/animated-reel.js`: Master › Postagens › "Criar Reel animado" (POST /api/master/animated-reel; GET para acompanhar). Confere as linhas (24/30 letras, sem números/promessas, cena 5 sem "Comente QUERO"). Post nasce `reel_rendering` (escondido do cliente, não aprova: formatBuilder pending). Com o vídeo vira `ready` sem data (dateChoice client). Falha: `reel_render_failed`. Desligar: NEXUS_ANIMATED_REEL=false.
 - Painel do cliente esconde `reel_rendering` e `reel_render_failed`.
 - 432 testes (6 novos). `wrangler --dry-run` não rodou aqui (npm sem rede); o deploy do GitHub roda antes de publicar.
+- Publicado com o OK do Rodrigo ("pode subir ajustado"): commit d407395; NEXUS CI success; Deploy NEXUS Cloudflare run 39033174596 success. Rota no ar não conferida desta sessão (proxy sem acesso ao workers.dev). Overnight Regression continua falhando (antigo).
 - NÃO testado: o workflow no GitHub de verdade, o retorno ao Worker e a publicação real de Reels.
 
 ## 2026-10-16 ~22h BRT — Painel do cliente: enviar feed, carrossel, reels e stories prontos
