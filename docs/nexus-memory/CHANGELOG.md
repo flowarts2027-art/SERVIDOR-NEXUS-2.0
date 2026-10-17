@@ -8,6 +8,7 @@
 - Nichos usam as chaves do Captador (pet, restaurante, salao, cafeteria…). Ainda não existe Reel de pet shop.
 - 444 testes (4 novos).
 - Deploy 8509265 success. 17/10 11h08, com OK do Rodrigo: vitrine de Restaurante = Reel da pizzaria com fotos (animated-reel-da3449d4…). Conferido no ar: https://flowarts.com.br/exemplo/restaurante abre com o vídeo (200, og:image). Falta: Reel de pet shop (prompt das 5 fotos entregue ao Rodrigo).
+- 17/10 ~11h25: Reel do pet shop com as 5 fotos do ChatGPT (render 39040036947 success, post animated-reel-a46e4041-b106-443f-977a-4d730a4e3f18). Textos: "Banho, tosa e carinho / E o Instagram, quem cuida?", "O balcão não para / Sem tempo para postar", "Seu trabalho é lindo / Merece aparecer todo dia", "Você aprova / A Flow publica no dia certo", "Cuide dos pets / A gente cuida do resto". Vitrine de Pet shop salva; https://flowarts.com.br/exemplo/pet conferida no ar com o vídeo. O Reel também ficou no painel da Flow Arts sem data (pendente).
 
 ## 2026-10-17 ~10h45 BRT — Caçador de leads: Google opcional, mapa grátis como reserva
 - Rodrigo perguntou se o caçador depende dos R$ 120 do Google. Diagnóstico no código: com a chave do Google salva (14/10), `runProspectSearch` usava só o Google; com a conta de faturamento inativa a busca falhava, e a tela dizia "Falta ativar o Google Maps".
