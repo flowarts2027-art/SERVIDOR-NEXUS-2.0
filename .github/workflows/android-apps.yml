@@ -1,0 +1,136 @@
+name: Apps Android (Master e Cliente)
+
+# Gera os dois APKs do Nexus e publica numa "Release" do GitHub.
+# Links fixos (sempre a última versão):
+#   https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/releases/latest/download/nexus-master.apk
+#   https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/releases/latest/download/flowarts-cliente.apk
+# Não publica nada na Cloudflare e não mexe no painel.
+#
+# Assinatura: a chave do app fica guardada no R2 (pasta privada, que o site
+# não serve). Na primeira vez ela é criada sozinha; depois é sempre a mesma,
+# para o celular aceitar as atualizações por cima.
+
+on:
+  push:
+    branches: [app-android, main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apps.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apps
+  cancel-in-progress: false
+
+env:
+  CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+  R2_KEY_PREFIX: servidor-nexus-media/private/android-signing
+
+jobs:
+  apks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Chave de assinatura (R2)
+        id: chave
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/assinatura"
+          KS="$RUNNER_TEMP/assinatura/nexus.jks"
+          PW="$RUNNER_TEMP/assinatura/senha.txt"
+          W="npx --yes wrangler@4"
+          origem="r2"
+          if $W r2 object get "$R2_KEY_PREFIX/nexus.jks" --file "$KS" --remote >/dev/null 2>&1 \
+             && $W r2 object get "$R2_KEY_PREFIX/senha.txt" --file "$PW" --remote >/dev/null 2>&1 \
+             && [ -s "$KS" ] && [ -s "$PW" ]; then
+            echo "Chave existente encontrada no R2."
+          else
+            echo "Nenhuma chave no R2. Criando uma nova."
+            rm -f "$KS" "$PW"
+            openssl rand -hex 24 > "$PW"
+            keytool -genkeypair -v -keystore "$KS" -alias nexus -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$(cat "$PW")" -keypass "$(cat "$PW")" \
+              -dname "CN=Flow Arts, O=Flow Arts, L=Nova Friburgo, ST=RJ, C=BR" >/dev/null 2>&1
+            if $W r2 object put "$R2_KEY_PREFIX/nexus.jks" --file "$KS" --remote >/dev/null 2>&1 \
+               && $W r2 object put "$R2_KEY_PREFIX/senha.txt" --file "$PW" --remote >/dev/null 2>&1; then
+              echo "Chave nova guardada no R2."
+            else
+              origem="temporaria"
+              echo "::warning::Não deu para guardar a chave no R2. Este APK usa uma chave temporária: a próxima versão vai pedir para desinstalar antes."
+            fi
+          fi
+          echo "::add-mask::$(cat "$PW")"
+          echo "ANDROID_KEYSTORE_FILE=$KS" >> "$GITHUB_ENV"
+          echo "ANDROID_KEYSTORE_PASSWORD=$(cat "$PW")" >> "$GITHUB_ENV"
+          SHA=$(keytool -list -v -keystore "$KS" -alias nexus -storepass "$(cat "$PW")" | sed -n 's/.*SHA256: *//p' | head -1)
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+          echo "origem=$origem" >> "$GITHUB_OUTPUT"
+          echo "Impressão digital SHA-256: $SHA"
+
+      - name: Gerar APKs
+        working-directory: android
+        env:
+          APP_BUILD_NUMBER: ${{ github.run_number }}
+        run: gradle --no-daemon assembleRelease
+
+      - name: Preparar arquivos
+        id: arquivos
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p saida
+          cp android/app/build/outputs/apk/master/release/app-master-release.apk saida/nexus-master.apk
+          cp android/app/build/outputs/apk/cliente/release/app-cliente-release.apk saida/flowarts-cliente.apk
+          SHA="${{ steps.chave.outputs.sha256 }}"
+          cat > saida/assetlinks.json <<EOF
+          [
+            {
+              "relation": ["delegate_permission/common.handle_all_urls"],
+              "target": { "namespace": "android_app", "package_name": "br.com.flowarts.nexus.master", "sha256_cert_fingerprints": ["$SHA"] }
+            },
+            {
+              "relation": ["delegate_permission/common.handle_all_urls"],
+              "target": { "namespace": "android_app", "package_name": "br.com.flowarts.nexus.cliente", "sha256_cert_fingerprints": ["$SHA"] }
+            }
+          ]
+          EOF
+          ls -la saida
+
+      - name: Publicar na Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-v1.0.${{ github.run_number }}
+          name: Apps Android 1.0.${{ github.run_number }}
+          make_latest: true
+          prerelease: ${{ steps.chave.outputs.origem == 'temporaria' }}
+          body: |
+            Apps Android do Nexus.
+            - **nexus-master.apk** — Painel Master (só para o Rodrigo).
+            - **flowarts-cliente.apk** — Painel do cliente.
+
+            Abrem https://painel.flowarts.com.br em tela cheia (precisa do Google Chrome no celular).
+            Impressão digital da assinatura (SHA-256): `${{ steps.chave.outputs.sha256 }}`
+          files: |
+            saida/nexus-master.apk
+            saida/flowarts-cliente.apk
+            saida/assetlinks.json
