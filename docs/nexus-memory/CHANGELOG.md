@@ -11,6 +11,7 @@
 - Deploy c2e70a7 success. 17/10 ~10h25: "Criar um agora" com OK do Rodrigo: IA escreveu as 5 cenas (loja: "Você cuida da loja. / E o Instagram fica?" … "Quer ver como funciona? / Fale com a Flow por aqui"), render 39036272357 success, post animated-reel-auto-3fdf5317-3328-4a66-b3ca-34785c901798 pronto com dia sugerido. Automático continua DESLIGADO (só o teste).
 - 17/10 10h27: Rodrigo pediu "ligue". Reel automático LIGADO no Master (conferido: enabled true, a cada 7 dias, 18:00, 2 dias à frente). Próximo automático: ~24/10 (7 dias depois do teste das 10h21).
 - 17/10 10h31: Rodrigo aprovou um dos Reels no painel (teste de publicação). Decidiu: campanhas da Flow Arts ele sobe MANUAL; Reel automático DESLIGADO só para a Flow Arts (conferido: enabled false) para não gastar créditos. O automático fica pronto para clientes futuros (hoje só libera cliente com perfil de marca em client-brand.js).
+- 17/10 10h33: com OK do Rodrigo, cancelados no painel os 2 Reels sem foto (animated-reel-5aae4011… e animated-reel-auto-3fdf5317…). Fica só o Reel com fotos animated-reel-da3449d4…, APROVADO para 17/10 10h45 BRT (13:45 UTC): 1ª publicação real de Reel — conferir.
 
 ## 2026-10-17 ~09h40 BRT — Reel animado por modelo (sem IA, sem custo)
 - Pedido do Rodrigo: analisar o repositório yihui-dev/awesome-opus5-5-videos (vídeos feitos em código: HTML/Canvas/GSAP) e "subir ajustado" no Nexus.
