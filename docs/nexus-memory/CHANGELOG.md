@@ -7,6 +7,7 @@
 - Master › Postagens › Reel animado: caixa "VITRINE POR NICHO".
 - Nichos usam as chaves do Captador (pet, restaurante, salao, cafeteria…). Ainda não existe Reel de pet shop.
 - 444 testes (4 novos).
+- Deploy 8509265 success. 17/10 11h08, com OK do Rodrigo: vitrine de Restaurante = Reel da pizzaria com fotos (animated-reel-da3449d4…). Conferido no ar: https://flowarts.com.br/exemplo/restaurante abre com o vídeo (200, og:image). Falta: Reel de pet shop (prompt das 5 fotos entregue ao Rodrigo).
 
 ## 2026-10-17 ~10h45 BRT — Caçador de leads: Google opcional, mapa grátis como reserva
 - Rodrigo perguntou se o caçador depende dos R$ 120 do Google. Diagnóstico no código: com a chave do Google salva (14/10), `runProspectSearch` usava só o Google; com a conta de faturamento inativa a busca falhava, e a tela dizia "Falta ativar o Google Maps".
