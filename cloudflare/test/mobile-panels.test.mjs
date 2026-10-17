@@ -29,12 +29,13 @@ test("Master no celular: 4 telas + Mais, tabelas em cartões, vira app", () => {
   }
 });
 
-test("Master em preto e branco: sem verde no estilo; vermelho de erro mantido", () => {
+test("Master em azul, branco e cinza (pedido de 2026-10-17): sem verde neon; vermelho de erro mantido", () => {
   const css = read("styles.css");
   assert.doesNotMatch(css, /#22c55e|#24e27a|#7bf3a5|#31e676/i);
-  assert.match(css, /--green:#fff/);
-  assert.match(css, /--silver:linear-gradient/);
-  assert.match(css, /--danger:#ff5d67/);
+  assert.match(css, /--blue:#1f66d6/);
+  assert.match(css, /--bg:#eef3f9/);
+  assert.match(css, /--danger:#d3344b/);
+  assert.match(css, /html\{font-size:16px\}/);
 });
 
 test("Notificações: filtros funcionam, chamado 'open' vira novo e Resolver salva sem janela do navegador", async () => {

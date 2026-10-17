@@ -1,5 +1,16 @@
 # Próximas ações
 
+## Master novo + CRM (17/10) — pronto no ramo painel-master-crm; falta OK do Rodrigo para publicar
+1. Rodrigo olha as fotos e dá OK.
+2. Juntar o ramo na main (publica sozinho) e conferir o Master no ar pelo celular.
+3. Cadastrar os primeiros contatos no CRM (ou pelo Caçador).
+4. Depois, com cliente pagante e chip novo: retorno automático pela API com mensagem modelo aprovada.
+
+## Posts da Flow Arts que não saíram (17/10) — esperando a chave de leitura
+1. Rodrigo: na Cloudflare, editar a chave do GitHub e acrescentar "Conta · D1 · Ler" (ou criar CLOUDFLARE_D1_READ_TOKEN no GitHub).
+2. Rodar o workflow "Auditoria de posts Flow Arts (somente leitura)" no ramo auditoria-posts-flowarts e ler docs/nexus-memory/auditoria/posts-flowarts.json.
+3. Corrigir com OK: conteúdo pronto (manual=true) fora do bloqueio de legenda parecida; recuperação de "publicando" conferir também a data.
+
 ## Reel automático (17/10) — DESLIGADO para a Flow Arts (10h31, decisão do Rodrigo: Flow Arts é manual)
 - Conferir a publicação do Reel que o Rodrigo aprovou em 17/10 (1ª publicação real de Reel). Ligar o automático só para cliente pagante (precisa de perfil de marca em client-brand.js).
 1. OK do Rodrigo para ligar: Master › Postagens › Reel animado › AUTOMÁTICO › marcar "Ligar" › Salvar.

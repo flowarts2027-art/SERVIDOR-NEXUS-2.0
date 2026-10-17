@@ -610,11 +610,12 @@ async function loadWorkspace(){
 function showView(id) {
   $$(".view").forEach(view => view.classList.toggle("active", view.id === id));
   $$(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === id));
-  const titles = { dashboard: "Visão geral", clients: "Clientes", agents: "Agent Core", posts: "Postagens & custos", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Odin & Leads", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
+  const titles = { dashboard: "Início", crm: "CRM", whatsapp: "WhatsApp", clients: "Clientes", agents: "Agentes", posts: "Postagens", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Caçador de clientes", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
   $("#page-title").textContent = titles[id] || "NEXUS AI";
   // Celular: "Mais" fica marcado quando a tela aberta está dentro dele.
-  $("#master-more-btn")?.classList.toggle("active", ["agents", "odin", "site", "settings"].includes(id));
+  $("#master-more-btn")?.classList.toggle("active", ["clients", "agents", "odin", "site", "settings"].includes(id));
   toggleMasterMore(false);
+  document.dispatchEvent(new CustomEvent("nexus:view", { detail: id }));
 }
 
 function toggleMasterMore(open) {

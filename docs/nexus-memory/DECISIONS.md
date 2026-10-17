@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-17 — CRM no WhatsApp pessoal; Master em azul
+- O CRM usa o número pessoal do Rodrigo (22 96481-6185). O número virtual da Meta é de teste (+1 555…) e só fala com até 5 números cadastrados; não serve para clientes. Retorno automático pela API fica para quando houver chip novo e cliente pagante (fora das 24 h a Meta exige mensagem modelo paga).
+- O CRM não envia nada sozinho: lembra no dia certo e abre o WhatsApp com a mensagem pronta.
+- O Master sai do preto e branco: azul, branco e cinza, letras maiores, menos informação solta (o resto fica em blocos fechados).
+
 ## 2026-10-16 — Carrossel: IA faz a foto, código escreve o texto
 - Rodrigo não aceita texto errado na arte. No carrossel da Flow Arts a IA não escreve mais letras: o título, o rodapé, o logo e o botão "Comente QUERO" são colocados por código (fonte Inter). A IA só planeja (títulos conferidos no código) e gera fotos sem texto, revisadas por um revisor que olha a imagem.
 - Padrão visual: carrossel de pet shop aprovado pelo Rodrigo (5 cartões: gancho, dor, solução, como funciona, chamada).

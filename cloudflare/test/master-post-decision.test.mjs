@@ -17,11 +17,11 @@ test("painel mostra botões Aprovar e Recusar com confirmação", () => {
   assert.match(app, /window\.confirm\(question\)/);
 });
 
-test("menu do Master tem só os 8 itens combinados (WhatsApp em 2026-10-12, Site em 2026-10-14)", () => {
+test("menu do Master: Início, Postagens, CRM e WhatsApp na frente; o resto em Mais (pedido de 2026-10-17)", () => {
   const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
   const nav = html.slice(html.indexOf("<nav>"), html.indexOf("</nav>"));
   const views = [...nav.matchAll(/data-view="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(views, ["dashboard", "clients", "posts", "agents", "odin", "whatsapp", "site", "settings"]);
+  assert.deepEqual(views, ["dashboard", "posts", "crm", "whatsapp", "clients", "odin", "agents", "site", "settings"]);
 });
 
 test("clientes arquivados não aparecem na lista do painel", () => {

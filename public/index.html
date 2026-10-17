@@ -3,26 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0f2747">
   <link rel="manifest" href="/master.webmanifest">
   <link rel="apple-touch-icon" href="/assets/app-master-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
-  <title>NEXUS AI · Agent Control Center</title>
-  <link rel="stylesheet" href="/styles.css?v=34">
+  <title>Nexus Master · Flow Arts</title>
+  <link rel="stylesheet" href="/styles.css?v=35">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <div class="brand"><img src="/assets/nexus-ai-mark.svg" alt="NEXUS AI"><div><strong>NEXUS AI</strong><small>AGENT CONTROL CENTER</small></div></div>
+      <div class="brand"><img src="/assets/nexus-ai-mark.svg" alt="NEXUS AI"><div><strong>Nexus</strong><small>Flow Arts · Master</small></div></div>
       <nav>
-        <button class="nav-item active" data-view="dashboard">▦ <span>Visão geral</span></button>
-        <button class="nav-item" data-view="clients">◉ <span>Clientes</span></button>
+        <button class="nav-item active" data-view="dashboard">⌂ <span>Início</span></button>
         <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
-        <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
-        <button class="nav-item more-tab" data-view="odin">◆ <span>Contatos</span></button>
+        <button class="nav-item" data-view="crm">☺ <span>CRM</span> <b id="crm-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
+        <button class="nav-item more-tab" data-view="clients">◉ <span>Clientes</span></button>
+        <button class="nav-item more-tab" data-view="odin">◆ <span>Caçador</span></button>
+        <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
         <button class="nav-item more-tab" data-view="site">◍ <span>Site</span></button>
         <button class="nav-item more-tab" data-view="settings">⚙ <span>Integrações</span></button>
         <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet">☰ <span>Mais</span></button>
@@ -30,8 +31,9 @@
       <div id="master-more-sheet" class="master-more-sheet" hidden>
         <p class="master-more-title">Mais opções</p>
         <div class="master-more-grid">
+          <button class="nav-item" type="button" data-view="clients">◉ <span>Clientes</span></button>
+          <button class="nav-item" type="button" data-view="odin">◆ <span>Caçador</span></button>
           <button class="nav-item" type="button" data-view="agents">⬡ <span>Agentes</span></button>
-          <button class="nav-item" type="button" data-view="odin">◆ <span>Contatos</span></button>
           <button class="nav-item" type="button" data-view="site">◍ <span>Site</span></button>
           <button class="nav-item" type="button" data-view="settings">⚙ <span>Integrações</span></button>
         </div>
@@ -41,21 +43,25 @@
 
     <main>
       <header>
-        <div><p class="eyebrow">PAINEL MASTER</p><h1 id="page-title">Visão geral</h1></div>
+        <div><p class="eyebrow">PAINEL MASTER</p><h1 id="page-title">Início</h1></div>
         <div class="header-actions"><span class="master-chip">MASTER</span><span class="live"><i></i> Sistema online</span><button id="refresh" class="icon-btn" title="Atualizar">↻</button></div>
       </header>
 
       <section id="dashboard" class="view active">
-        <div class="metrics">
+        <section class="panel today-panel" id="today-panel">
+          <div class="panel-head"><div><h2>Para fazer hoje</h2><p class="muted" id="today-sub">Carregando…</p></div><button class="primary" data-go="crm">Abrir CRM</button></div>
+          <div id="today-list" class="today-list"></div>
+        </section>
+        <div>
+          <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
+          
+        </div>
+        <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Números do sistema</strong><small>Agentes, alertas e custo da IA</small></span></summary><div class="fold-body"><div class="metrics">
           <article><span>Clientes</span><strong id="metric-clients">—</strong><small>gerenciados na Central</small></article>
           <article><span>Agentes online</span><strong id="metric-online">—</strong><small>em produção</small></article>
           <article><span>Leads no Odin</span><strong id="metric-leads">—</strong><small id="metric-hot">— quentes</small></article>
           <article><span>Alertas</span><strong id="metric-alerts">—</strong><small>consumo e operação</small></article>
-        </div>
-        <div class="grid-main">
-          <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
-          <section class="panel consumption"><div class="panel-head"><div><p class="eyebrow">CONSUMO</p><h2>Custo da IA por cliente</h2></div></div><div id="cost-report"><p class="muted">Calculando…</p></div><h3 class="usage-title">Limite diário de cada cliente</h3><div id="usage-list"></div></section>
-        </div>
+        </div><section class="panel consumption"><div class="panel-head"><div><p class="eyebrow">CONSUMO</p><h2>Custo da IA por cliente</h2></div></div><div id="cost-report"><p class="muted">Calculando…</p></div><h3 class="usage-title">Limite diário de cada cliente</h3><div id="usage-list"></div></section></div></details>
       </section>
 
       <section id="clients" class="view">
@@ -67,14 +73,14 @@
       </section>
 
       <section id="agents" class="view">
-        <div class="agent-core-metrics">
+        <details class="fold"><summary><span class="fold-icon">$</span><span><strong>Execuções e custo de hoje</strong><small>Números dos agentes</small></span></summary><div class="fold-body"><div class="agent-core-metrics">
           <article><span>Execuções hoje</span><strong id="agent-core-executions">0</strong><small>tarefas registradas pelos agentes</small></article>
           <article><span>Custo hoje</span><strong id="agent-core-cost-today">US$ 0,0000</strong><small>somente custos realmente informados</small></article>
           <article><span>Custo no mês</span><strong id="agent-core-cost-month">US$ 0,0000</strong><small>somatório das execuções</small></article>
           <article><span>Clientes ativos</span><strong id="agent-core-active-clients">0</strong><small>Agent Core habilitado</small></article>
-        </div>
+        </div></div></details>
 
-        <div class="agent-core-grid" id="agent-core-modules">
+        <details class="fold"><summary><span class="fold-icon">⬡</span><span><strong>Os 13 agentes</strong><small>O que cada um faz</small></span></summary><div class="fold-body"><div class="agent-core-grid" id="agent-core-modules">
           <article><span>01</span><strong>RADAR</strong><small>Sinais, tendências e histórico real do Instagram.</small></article>
           <article><span>02</span><strong>ESTRATEGISTA</strong><small>Nicho, público, Radar, leads e feedback do Auditor.</small></article>
           <article><span>03</span><strong>CREATOR</strong><small>Pautas, ganchos, legendas, CTA e hashtags da marca.</small></article>
@@ -88,7 +94,7 @@
           <article><span>11</span><strong>VIDEO</strong><small>Planeja adaptação para conteúdo vertical curto.</small></article>
           <article><span>12</span><strong>SUPORTE</strong><small>Detecta falhas reais e pendências operacionais.</small></article>
           <article><span>13</span><strong>GROWTH</strong><small>Executa testes de crescimento e escala vencedores.</small></article>
-        </div>
+        </div></div></details>
 
         <div class="agent-core-layout">
           <section class="panel agent-core-control">
@@ -136,7 +142,7 @@
           </section>
         </div>
 
-        <section class="panel agent-core-log-panel">
+        <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Execuções e custos</strong><small>Histórico de cada execução dos agentes</small></span></summary><div class="fold-body"><section class="panel agent-core-log-panel">
           <div class="panel-head"><div><p class="eyebrow">AUDITORIA</p><h2>Execuções e custos</h2><p class="muted">Cliente, agente, função, modelo, quantidade, custo e horário de cada execução.</p></div><button type="button" id="agent-core-refresh" class="ghost">Atualizar</button></div>
           <div class="table-wrap">
             <table class="agent-core-log-table">
@@ -144,11 +150,24 @@
               <tbody id="agent-core-log-body"><tr><td colspan="9">Nenhuma execução registrada.</td></tr></tbody>
             </table>
           </div>
-        </section>
+        </section></div></details>
       </section>
 
       <section id="posts" class="view">
-        <div class="panel manual-reel-panel" id="manual-reel">
+        <section class="panel master-post-ledger">
+          <div class="panel-head">
+            <div><p class="eyebrow">HISTÓRICO DETALHADO</p><h2>Postagens por cliente</h2><p class="muted">Veja a prévia, aprove ou recuse cada post antes da publicação.</p></div>
+            <label class="post-client-filter">Cliente<select id="post-client-filter"><option value="">Todos</option></select></label>
+          </div>
+          <div class="table-wrap">
+            <table class="post-ledger-table">
+              <thead><tr><th>Prévia</th><th>Cliente</th><th>Instagram</th><th>Programada</th><th>Publicada / tentativa</th><th>Status</th><th>Custo</th><th>Modelo</th><th>Detalhe</th></tr></thead>
+              <tbody id="post-ledger-body"><tr><td colspan="9">Nenhuma postagem registrada ainda.</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+        <p class="section-title">Enviar ou criar conteúdo</p>
+        <details class="fold"><summary><span class="fold-icon">▶</span><span><strong>Enviar Reel pronto</strong><small>Vídeo feito no Flow. O cliente aprova.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="manual-reel">
           <div class="panel-head"><div><p class="eyebrow">PLANO COM VÍDEO</p><h2>Enviar Reel pronto</h2><p class="muted">Faça o vídeo no Flow e envie aqui. Ele vai para o painel do cliente, que aprova. Depois de aprovado, sai no dia e hora escolhidos.</p></div></div>
           <form id="manual-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="manual-reel-client" required><option value="">Carregando…</option></select></label>
@@ -160,8 +179,8 @@
             <button type="submit" class="primary">Enviar para o cliente aprovar</button>
             <p class="muted wide" id="manual-reel-status" role="status"></p>
           </form>
-        </div>
-        <div class="panel manual-reel-panel" id="manual-carousel">
+        </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">▦</span><span><strong>Enviar carrossel pronto</strong><small>Imagens na ordem. O cliente escolhe o dia.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="manual-carousel">
           <div class="panel-head"><div><p class="eyebrow">CARROSSEL PRONTO</p><h2>Enviar carrossel pronto</h2><p class="muted">Escolha as imagens NA ORDEM (1, 2, 3…). O post vai para o painel do cliente sem data: ele escolhe o dia e aprova. Sem data, nada é publicado.</p></div></div>
           <form id="manual-carousel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="manual-carousel-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
@@ -171,8 +190,8 @@
             <button type="submit" class="primary">Enviar para o painel</button>
             <p class="muted wide" id="manual-carousel-status" role="status"></p>
           </form>
-        </div>
-        <div class="panel manual-reel-panel" id="animated-reel">
+        </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">✦</span><span><strong>Criar Reel animado</strong><small>5 cenas de texto. Sem IA, sem custo.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="animated-reel">
           <div class="panel-head"><div><p class="eyebrow">REEL ANIMADO · SEM IA</p><h2>Criar Reel animado</h2><p class="muted">Escreva as 5 cenas. O sistema anima o texto (e as fotos, se mandar) e grava um vídeo de 16 segundos, em pé. Não usa IA e não tem custo. Leva uns 5 minutos. Depois o Reel aparece no painel do cliente sem data: ele escolhe o dia e aprova.</p></div></div>
           <form id="auto-reel-form" class="manual-reel-form">
             <p class="eyebrow wide">AUTOMÁTICO</p>
@@ -227,8 +246,8 @@
             <p class="muted wide" id="animated-reel-status" role="status"></p>
             <video id="animated-reel-preview" class="manual-reel-preview wide" controls playsinline muted hidden></video>
           </form>
-        </div>
-        <div class="panel manual-reel-panel" id="carousel-test">
+        </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">⚗</span><span><strong>Testar carrossel com IA</strong><small>Gasta saldo da OpenAI. Não publica.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="carousel-test">
           <div class="panel-head"><div><p class="eyebrow">AGENTE DE MARKETING</p><h2>Testar carrossel</h2><p class="muted">Monta 1 carrossel de 5 cartões da Flow Arts com o agente novo (fotos sem texto + títulos escritos pelo sistema). Não publica e não aparece no painel do cliente. Custo estimado: 5 fotos (≈ US$ 0,30) + revisões. Leva uns 10 minutos; deixe esta página aberta.</p></div></div>
           <form id="carousel-test-form" class="manual-reel-form">
             <label>Nicho<select name="nicheId">
@@ -241,15 +260,18 @@
             <button type="submit" class="primary">Gerar carrossel de teste</button>
             <div class="wide" id="carousel-test-status" role="status"></div>
           </form>
-        </div>
-        <div class="post-cost-metrics">
+        </div></div></details>
+        
+
+        
+
+        
+      <details class="fold"><summary><span class="fold-icon">$</span><span><strong>Custos da IA</strong><small>Gasto do mês e ranking por cliente</small></span></summary><div class="fold-body"><div class="post-cost-metrics">
           <article><span>Gasto nas postagens</span><strong id="posts-total-cost">US$ 0,00</strong><small>mês atual · custo OpenAI calculado</small></article>
           <article><span>Postagens registradas</span><strong id="posts-total-count">0</strong><small>tentativas no mês</small></article>
           <article><span>Publicadas</span><strong id="posts-published-count">0</strong><small>concluídas no Instagram</small></article>
           <article><span>Não publicadas</span><strong id="posts-failed-count">0</strong><small>falhas que exigem atenção</small></article>
-        </div>
-
-        <div class="post-cost-grid">
+        </div><div class="post-cost-grid">
           <section class="panel">
             <div class="panel-head"><div><p class="eyebrow">CUSTO POR CLIENTE</p><h2>Quem está gastando mais</h2><p class="muted">Ranking mensal pelo custo de IA atribuído a cada postagem.</p></div></div>
             <div id="post-cost-ranking" class="post-cost-ranking"></div>
@@ -258,20 +280,7 @@
             <div class="panel-head"><div><p class="eyebrow">STATUS</p><h2>Saúde das postagens</h2><p class="muted">Acompanhe horário programado, horário real, falhas e custo individual.</p></div></div>
             <div class="post-status-legend"><span class="post-dot published"></span> Publicada <span class="post-dot failed"></span> Falhou <span class="post-dot running"></span> Em andamento</div>
           </section>
-        </div>
-
-        <section class="panel master-post-ledger">
-          <div class="panel-head">
-            <div><p class="eyebrow">HISTÓRICO DETALHADO</p><h2>Postagens por cliente</h2><p class="muted">Veja a prévia, aprove ou recuse cada post antes da publicação.</p></div>
-            <label class="post-client-filter">Cliente<select id="post-client-filter"><option value="">Todos</option></select></label>
-          </div>
-          <div class="table-wrap">
-            <table class="post-ledger-table">
-              <thead><tr><th>Prévia</th><th>Cliente</th><th>Instagram</th><th>Programada</th><th>Publicada / tentativa</th><th>Status</th><th>Custo</th><th>Modelo</th><th>Detalhe</th></tr></thead>
-              <tbody id="post-ledger-body"><tr><td colspan="9">Nenhuma postagem registrada ainda.</td></tr></tbody>
-            </table>
-          </div>
-        </section>
+        </div></div></details>
       </section>
 
       <section id="campaigns" class="view">
@@ -356,19 +365,19 @@
           <div class="prospect-tabs" id="prospect-tabs" role="tablist"></div>
           <div id="prospect-list" class="prospect-list"><p class="muted">Carregando…</p></div>
         </div>
-        <div class="panel prospect-panel" id="captador-access">
+        <details class="fold"><summary><span class="fold-icon">⌕</span><span><strong>Captador para clientes</strong><small>Quem pode usar (R$ 97/mês)</small></span></summary><div class="fold-body"><div class="panel prospect-panel" id="captador-access">
           <div class="panel-head">
             <div><p class="eyebrow">CAPTADOR PARA CLIENTES · R$ 97/MÊS</p><h2>Quem pode usar</h2><p class="muted">Ligue para o cliente que pagou. Aí a aba "Buscar" do painel dele passa a funcionar.</p></div>
           </div>
           <div id="captador-access-list"><p class="muted">Carregando…</p></div>
-        </div>
-        <div class="panel prospect-panel" id="ai-images-access">
+        </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">✎</span><span><strong>Imagem por IA para clientes</strong><small>Quem pode criar por IA</small></span></summary><div class="fold-body"><div class="panel prospect-panel" id="ai-images-access">
           <div class="panel-head">
             <div><p class="eyebrow">IMAGEM POR IA PARA CLIENTES · GASTA NA SUA OPENAI</p><h2>Quem pode criar por IA</h2><p class="muted">Ligue para o cliente poder escolher "Criar com IA" na aba Campanha. Ele pode criar o total da campanha dele (dias x posts), no máximo 60 por mês.</p></div>
           </div>
           <div id="ai-images-access-list"><p class="muted">Carregando…</p></div>
-        </div>
-        <div class="odin-master-metrics">
+        </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">◎</span><span><strong>Leads do Instagram (Odin)</strong><small>Comentários com interesse</small></span></summary><div class="fold-body"><div class="odin-master-metrics">
           <article><span>Total</span><strong id="funnel-total">0</strong><small>leads captados</small></article>
           <article><span>Quentes</span><strong id="funnel-hot">0</strong><small>alta intenção</small></article>
           <article><span>Mornos</span><strong id="funnel-warm">0</strong><small>em qualificação</small></article>
@@ -387,7 +396,7 @@
               <tbody id="master-leads-body"><tr><td colspan="8">Sincronizando agentes…</td></tr></tbody>
             </table>
           </div>
-        </div>
+        </div></div></details>
       </section>
 
       <section id="onboarding" class="view">
@@ -420,6 +429,33 @@
             <div class="access-actions"><button id="copy-client-access" class="ghost" type="button">Copiar acesso</button><a id="open-client-login" class="primary link-button" href="/login" target="_blank" rel="noopener">Abrir login do cliente</a></div>
           </div>
         </div>
+      </section>
+
+      <section id="crm" class="view">
+        <div class="crm-summary" id="crm-summary"></div>
+        <section class="panel crm-today" id="crm-today">
+          <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
+          <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
+        </section>
+        <details class="fold" id="crm-add-fold"><summary><span class="fold-icon">＋</span><span><strong>Novo contato</strong><small>Quem você chamou no WhatsApp</small></span></summary><div class="fold-body">
+          <form id="crm-form" class="crm-form">
+            <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: João"></label>
+            <label>Negócio<input name="business" maxlength="80" placeholder="Ex.: Pizzaria do João"></label>
+            <label>WhatsApp (com DDD)<input name="phone" inputmode="tel" maxlength="20" required placeholder="22 99999-9999"></label>
+            <label>Interesse<select name="interest"><option value="">Ainda não sei</option><option value="pacote">Pacote de Instagram</option><option value="site">Site</option><option value="pacote-site">Pacote + site</option><option value="outro">Outro</option></select></label>
+            <label>Etapa<select name="stage"><option value="contato">Mandei mensagem</option><option value="conversando">Conversando</option><option value="proposta">Proposta enviada</option><option value="cliente">Virou cliente</option><option value="nao-quer">Não quer agora</option></select></label>
+            <label>Voltar a falar em<select name="followDays"><option value="7" selected>7 dias</option><option value="3">3 dias</option><option value="1">Amanhã</option><option value="15">15 dias</option><option value="30">30 dias</option><option value="0">Não marcar</option></select></label>
+            <label class="wide">Anotação<textarea name="notes" rows="3" maxlength="1000" placeholder="Ex.: Gostou do pacote, pediu para falar depois do dia 20."></textarea></label>
+            <button type="submit" class="primary">Salvar contato</button>
+            <p class="muted wide" id="crm-form-msg" role="status"></p>
+          </form>
+        </div></details>
+        <section class="panel">
+          <div class="panel-head crm-head"><div><h2>Todos os contatos</h2></div>
+            <label class="crm-search">Buscar<input id="crm-search" type="search" placeholder="Nome, negócio ou número"></label></div>
+          <div class="crm-tabs" id="crm-tabs" role="tablist"></div>
+          <div id="crm-list" class="crm-list"><p class="muted">Carregando…</p></div>
+        </section>
       </section>
 
       <section id="whatsapp" class="view">
@@ -553,7 +589,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=49" defer></script>
+  <script src="/app.js?v=50" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=1" defer></script>
@@ -561,5 +597,6 @@
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=10" defer></script>
+  <script src="/crm.js?v=1" defer></script>
 </body>
 </html>

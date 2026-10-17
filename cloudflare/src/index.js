@@ -26,6 +26,7 @@ import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
+import { handleCrmRoute } from "./crm.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
@@ -692,6 +693,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleClientCampaignMaster(request, env, url, listClients);
+      if (response) return response;
+    }
+
+    // CRM: contatos do WhatsApp pessoal do Rodrigo e retorno em 7 dias. Só com login do Master.
+    if (url.pathname === "/api/master/crm" || url.pathname.startsWith("/api/master/crm/")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleCrmRoute(request, env, url);
       if (response) return response;
     }
 

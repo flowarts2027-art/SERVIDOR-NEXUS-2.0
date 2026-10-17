@@ -1,0 +1,247 @@
+// CRM do Rodrigo (pedido de 17/10/2026): contatos que ele chamou no WhatsApp pessoal,
+// etapa da conversa e data para voltar a falar (padrão: 7 dias).
+// Nada é enviado sozinho: o painel só lembra e abre o WhatsApp com a mensagem pronta.
+
+export const CRM_STAGES = ["contato", "conversando", "proposta", "cliente", "nao-quer"];
+export const CRM_INTERESTS = ["", "pacote", "site", "pacote-site", "outro"];
+const FOLLOW_DAYS = [0, 1, 3, 7, 15, 30];
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const clean = (value, max) => String(value ?? "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+const cleanNotes = value => String(value ?? "").replace(/[\u0000-\u0009\u000b-\u001f<>]/g, " ").trim().slice(0, 1000);
+
+// Dia de hoje no horário de Brasília (UTC-3), no formato AAAA-MM-DD.
+export function brasiliaDay(now = new Date(), plusDays = 0) {
+  return new Date(now.getTime() - 3 * 60 * 60 * 1000 + plusDays * DAY_MS).toISOString().slice(0, 10);
+}
+
+// Celular brasileiro → só números com 55 na frente (ex.: 5522999998888).
+export function normalizePhone(value) {
+  let digits = String(value ?? "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.length === 10 || digits.length === 11) digits = "55" + digits;
+  if (!/^55\d{10,11}$/.test(digits)) return "";
+  return digits;
+}
+
+function followDate(days, now) {
+  const n = Number(days);
+  if (!FOLLOW_DAYS.includes(n) || n === 0) return null;
+  return brasiliaDay(now, n);
+}
+
+export async function ensureCrmSchema(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS crm_contacts (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      business TEXT NOT NULL DEFAULT '',
+      phone TEXT NOT NULL,
+      interest TEXT NOT NULL DEFAULT '',
+      stage TEXT NOT NULL DEFAULT 'contato',
+      notes TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT 'manual',
+      source_id TEXT NOT NULL DEFAULT '',
+      last_contact_at TEXT,
+      next_follow_at TEXT,
+      follow_count INTEGER NOT NULL DEFAULT 0,
+      history_json TEXT NOT NULL DEFAULT '[]',
+      archived INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`).run();
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS crm_contacts_follow ON crm_contacts(archived, next_follow_at)").run();
+}
+
+function parseHistory(raw) {
+  try { const list = JSON.parse(raw || "[]"); return Array.isArray(list) ? list : []; } catch { return []; }
+}
+
+function addHistory(raw, entry) {
+  return JSON.stringify([...parseHistory(raw), entry].slice(-30));
+}
+
+function view(row, today) {
+  return {
+    id: row.id, name: row.name, business: row.business, phone: row.phone,
+    interest: row.interest, stage: row.stage, notes: row.notes, source: row.source,
+    lastContactAt: row.last_contact_at || null, nextFollowAt: row.next_follow_at || null,
+    followCount: Number(row.follow_count || 0),
+    due: Boolean(row.next_follow_at && row.next_follow_at <= today),
+    late: Boolean(row.next_follow_at && row.next_follow_at < today),
+    history: parseHistory(row.history_json).slice(-10).reverse(),
+    createdAt: row.created_at, updatedAt: row.updated_at
+  };
+}
+
+function readFields(body, { partial = false } = {}) {
+  const out = {};
+  if (!partial || "name" in body) {
+    out.name = clean(body.name, 80);
+    if (!out.name) throw new Error("name_required");
+  }
+  if (!partial || "phone" in body) {
+    out.phone = normalizePhone(body.phone);
+    if (!out.phone) throw new Error("phone_invalid");
+  }
+  if (!partial || "business" in body) out.business = clean(body.business, 80);
+  if (!partial || "interest" in body) {
+    out.interest = CRM_INTERESTS.includes(String(body.interest ?? "")) ? String(body.interest ?? "") : "";
+  }
+  if (!partial || "stage" in body) {
+    const stage = String(body.stage || "contato");
+    if (!CRM_STAGES.includes(stage)) throw new Error("stage_invalid");
+    out.stage = stage;
+  }
+  if (!partial || "notes" in body) out.notes = cleanNotes(body.notes);
+  return out;
+}
+
+export async function createContact(env, body = {}, now = new Date()) {
+  await ensureCrmSchema(env);
+  const fields = readFields(body);
+  const existing = await env.DB.prepare("SELECT id FROM crm_contacts WHERE phone=?1 AND archived=0 LIMIT 1").bind(fields.phone).first();
+  if (existing) {
+    const error = new Error("phone_exists");
+    error.id = existing.id;
+    throw error;
+  }
+  const id = "crm-" + crypto.randomUUID();
+  const days = "followDays" in body ? body.followDays : 7;
+  const next = followDate(days, now);
+  const iso = now.toISOString();
+  const history = JSON.stringify([{ at: iso, type: "criado", text: "Contato salvo" }]);
+  await env.DB.prepare(
+    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at)
+     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13)`
+  ).bind(id, fields.name, fields.business, fields.phone, fields.interest, fields.stage, fields.notes,
+    clean(body.source || "manual", 20), clean(body.sourceId || "", 300), iso, next, history, iso).run();
+  return { ok: true, contact: await getContact(env, id, now) };
+}
+
+export async function getContact(env, id, now = new Date()) {
+  await ensureCrmSchema(env);
+  const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 LIMIT 1").bind(String(id || "")).first();
+  return row ? view(row, brasiliaDay(now)) : null;
+}
+
+export async function updateContact(env, id, body = {}, now = new Date()) {
+  await ensureCrmSchema(env);
+  const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 AND archived=0 LIMIT 1").bind(String(id || "")).first();
+  if (!row) throw new Error("not_found");
+  const fields = readFields(body, { partial: true });
+  if (fields.phone && fields.phone !== row.phone) {
+    const other = await env.DB.prepare("SELECT id FROM crm_contacts WHERE phone=?1 AND archived=0 AND id<>?2 LIMIT 1").bind(fields.phone, row.id).first();
+    if (other) throw new Error("phone_exists");
+  }
+  const merged = { ...row, ...fields };
+  let next = row.next_follow_at;
+  if ("followDays" in body) next = followDate(body.followDays, now);
+  if ("nextFollowAt" in body) {
+    const value = String(body.nextFollowAt || "");
+    next = /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+  }
+  let history = row.history_json;
+  if (fields.stage && fields.stage !== row.stage) {
+    history = addHistory(history, { at: now.toISOString(), type: "etapa", text: fields.stage });
+  }
+  await env.DB.prepare(
+    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10 WHERE id=?1`
+  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString()).run();
+  return { ok: true, contact: await getContact(env, row.id, now) };
+}
+
+// "Já falei": registra o contato de hoje e marca a próxima volta.
+export async function markContacted(env, id, body = {}, now = new Date()) {
+  await ensureCrmSchema(env);
+  const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 AND archived=0 LIMIT 1").bind(String(id || "")).first();
+  if (!row) throw new Error("not_found");
+  const days = "followDays" in body ? body.followDays : 7;
+  const next = followDate(days, now);
+  const note = cleanNotes(body.note || "").slice(0, 300);
+  const history = addHistory(row.history_json, { at: now.toISOString(), type: "falei", text: note || "Mensagem enviada" });
+  await env.DB.prepare(
+    `UPDATE crm_contacts SET last_contact_at=?2,next_follow_at=?3,follow_count=follow_count+1,history_json=?4,updated_at=?2 WHERE id=?1`
+  ).bind(row.id, now.toISOString(), next, history).run();
+  return { ok: true, contact: await getContact(env, row.id, now) };
+}
+
+// Arquivar (não apaga de vez): some da lista, mas o histórico fica guardado.
+export async function archiveContact(env, id, now = new Date()) {
+  await ensureCrmSchema(env);
+  const result = await env.DB.prepare("UPDATE crm_contacts SET archived=1,updated_at=?2 WHERE id=?1 AND archived=0")
+    .bind(String(id || ""), now.toISOString()).run();
+  if (!Number(result?.meta?.changes || 0)) throw new Error("not_found");
+  return { ok: true, id: String(id) };
+}
+
+export async function listContacts(env, { stage = "", q = "" } = {}, now = new Date()) {
+  await ensureCrmSchema(env);
+  const today = brasiliaDay(now);
+  const rows = (await env.DB.prepare(
+    "SELECT * FROM crm_contacts WHERE archived=0 ORDER BY CASE WHEN next_follow_at IS NULL THEN 1 ELSE 0 END, next_follow_at ASC, updated_at DESC LIMIT 500"
+  ).all())?.results || [];
+  const all = rows.map(row => view(row, today));
+  const counts = Object.fromEntries(CRM_STAGES.map(s => [s, 0]));
+  for (const c of all) counts[c.stage] = (counts[c.stage] || 0) + 1;
+  const term = clean(q, 60).toLowerCase();
+  const digits = term.replace(/\D/g, "");
+  const filtered = all.filter(c => (!stage || c.stage === stage) && (!term ||
+    c.name.toLowerCase().includes(term) || c.business.toLowerCase().includes(term) || (digits.length >= 4 && c.phone.includes(digits))));
+  return {
+    ok: true, today, total: all.length, counts,
+    due: all.filter(c => c.due),
+    week: all.filter(c => c.nextFollowAt && !c.due && c.nextFollowAt <= brasiliaDay(now, 7)).length,
+    contacts: filtered
+  };
+}
+
+// Quem o Rodrigo chamou pelo Caçador entra no CRM sozinho, com volta em 7 dias.
+export async function addFromProspect(env, prospect = {}, now = new Date()) {
+  const phone = normalizePhone(prospect.phone);
+  if (!phone) return { ok: false, skipped: "phone_invalid" };
+  await ensureCrmSchema(env);
+  const existing = await env.DB.prepare("SELECT id FROM crm_contacts WHERE phone=?1 AND archived=0 LIMIT 1").bind(phone).first();
+  if (existing) return { ok: true, id: existing.id, existed: true };
+  const created = await createContact(env, {
+    name: prospect.name, business: prospect.name, phone, stage: "contato", interest: "",
+    notes: prospect.city ? "Achado pelo Caçador · " + clean(prospect.city, 60) : "Achado pelo Caçador",
+    source: "cacador", sourceId: prospect.id || "", followDays: 7
+  }, now);
+  return { ok: true, id: created.contact.id };
+}
+
+export const CRM_MESSAGES = {
+  name_required: "Escreva o nome.",
+  phone_invalid: "Confira o número do WhatsApp (com DDD).",
+  phone_exists: "Esse número já está no CRM.",
+  stage_invalid: "Escolha a etapa.",
+  not_found: "Contato não encontrado. Atualize a página."
+};
+
+// Rotas do Master. Quem chama já conferiu o login do Master.
+export async function handleCrmRoute(request, env, url) {
+  const send = (data, status = 200) => new Response(JSON.stringify(data), {
+    status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
+  });
+  try {
+    if (url.pathname === "/api/master/crm" && request.method === "GET") {
+      return send(await listContacts(env, { stage: url.searchParams.get("stage") || "", q: url.searchParams.get("q") || "" }));
+    }
+    if (url.pathname === "/api/master/crm" && request.method === "POST") {
+      return send(await createContact(env, await request.json().catch(() => ({}))));
+    }
+    const match = url.pathname.match(/^\/api\/master\/crm\/([^/]+)(?:\/(contacted|archive))?$/);
+    if (match && request.method === "POST") {
+      const id = decodeURIComponent(match[1]);
+      const body = await request.json().catch(() => ({}));
+      if (match[2] === "contacted") return send(await markContacted(env, id, body));
+      if (match[2] === "archive") return send(await archiveContact(env, id));
+      return send(await updateContact(env, id, body));
+    }
+  } catch (error) {
+    const code = String(error?.message || error).slice(0, 60);
+    return send({ ok: false, error: code, id: error?.id, message: CRM_MESSAGES[code] || "Não deu certo. Tente de novo." }, code === "not_found" ? 404 : 400);
+  }
+  return null;
+}

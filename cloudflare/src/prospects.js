@@ -1,4 +1,5 @@
 // Caçador de clientes da Flow Arts.
+import { addFromProspect } from "./crm.js";
 // Busca empresas no OpenStreetMap (grátis, sem chave) ou, se houver chave,
 // no Google Maps (API oficial do Google Places). Guarda só
 // as que não têm site próprio, dá uma nota de 0 a 10 e prepara a primeira
@@ -466,7 +467,9 @@ export async function saveContacted(env, body = {}) {
      VALUES(?1,?2,?3,?4,'',?5,?6,'',?7,0,0,0,?8,?9,'enviado')
      ON CONFLICT(id) DO UPDATE SET status='enviado',updated_at=CURRENT_TIMESTAMP`
   ).bind(id, name, body.niche, body.city, phone, mobile ? 1 : 0, instagram, mapsUrl, score).run();
-  return { ok: true, id };
+  // Também entra no CRM, com volta marcada para 7 dias. Se falhar, o Caçador segue normal.
+  const crm = mobile ? await addFromProspect(env, { id, name, phone, city: body.city }).catch(() => null) : null;
+  return { ok: true, id, crmId: crm?.id || null };
 }
 
 export async function skipProspect(env, id) {
