@@ -21,7 +21,8 @@ def main():
     if nicho not in titulos or nicho.startswith("_"):
         sys.exit("Nicho desconhecido: " + nicho)
     cards = [
-        {"n": i + 1, "l1": l1, "l2": l2, "rodape": rodape, "photo": os.path.abspath(foto)}
+        # Fotos do ChatGPT: a cabeça fica perto do topo; corta de 8% para baixo e ancora em cima.
+        {"n": i + 1, "l1": l1, "l2": l2, "rodape": rodape, "photo": os.path.abspath(foto), "faixa": [0.08, 1.0], "ancora": 0.0}
         for i, ((l1, l2, rodape), foto) in enumerate(zip(titulos[nicho], fotos))
     ]
     os.makedirs(saida, exist_ok=True)

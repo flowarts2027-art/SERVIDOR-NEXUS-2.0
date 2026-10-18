@@ -44,10 +44,10 @@ def fonte_que_cabe(texto, caminho, maximo, largura):
     return fonte(caminho, 40)
 
 
-def colar_foto(img, caminho, topo, base, ancora=0.3, suave=80):
+def colar_foto(img, caminho, topo, base, ancora=0.3, suave=80, faixa=FAIXA_FOTO):
     alt = base - topo
     foto = Image.open(caminho).convert("RGB")
-    y0, y1 = int(foto.height * FAIXA_FOTO[0]), int(foto.height * FAIXA_FOTO[1])
+    y0, y1 = int(foto.height * faixa[0]), int(foto.height * faixa[1])
     foto = foto.crop((0, y0, foto.width, y1))
     r = max(W / foto.width, alt / foto.height)
     foto = foto.resize((round(foto.width * r), round(foto.height * r)), Image.LANCZOS)
@@ -104,7 +104,10 @@ def montar(card, total):
     f1 = fonte_que_cabe(l1, F_TITULO, 104, 990)
     f2 = fonte_que_cabe(l2, F_TITULO, min(f1.size, 96), 1010)
     fim_titulo = 140 + int(f1.size * 1.08) + int(f2.size * 1.15)
-    colar_foto(img, card["photo"], fim_titulo - 30, BASE_FOTO)
+    # Opcional por cartão: fotos com a pessoa mais alta (ex.: exemplos do ChatGPT) pedem outro corte.
+    faixa = tuple(card.get("faixa") or FAIXA_FOTO)
+    ancora = float(card.get("ancora", 0.3))
+    colar_foto(img, card["photo"], fim_titulo - 30, BASE_FOTO, ancora=ancora, faixa=faixa)
     cabecalho(img)
     y = 140
     for txt, f, cor in ((l1, f1, PRETO), (l2, f2, AZUL)):
