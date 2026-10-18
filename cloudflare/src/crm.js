@@ -114,7 +114,34 @@ function view(row, today, showcase = null) {
     createdAt: row.created_at, updatedAt: row.updated_at
   };
   out.message = out.stage === "chamar" && row.draft ? row.draft : followMessage(out, showcase);
+  const example = out.stage !== "cliente" ? exampleMedia(showcase?.[out.niche]) : null;
+  if (example) {
+    out.example = example;
+    out.messageWithMedia = mediaMessage(out.message, example.kind);
+  }
   return out;
+}
+
+// Pedido de 18/10: a pessoa não abre link, quer ver o resultado. Quando o nicho tem exemplo,
+// o painel manda o carrossel ou o vídeo de verdade no WhatsApp, e o texto vai sem o link.
+export function exampleMedia(entry) {
+  const ok = u => /^https:\/\//i.test(String(u || ""));
+  if (entry?.kind === "carousel" && Array.isArray(entry.images)) {
+    const files = entry.images.filter(ok).slice(0, 10);
+    if (files.length) return { kind: "carousel", files };
+  }
+  if (ok(entry?.videoUrl)) return { kind: "video", files: [entry.videoUrl] };
+  return null;
+}
+
+export function mediaMessage(message, kind) {
+  const what = kind === "carousel" ? "um carrossel" : "um vídeo";
+  const text = String(message || "");
+  const replaced = text.replace(/Veja (um carrossel|um vídeo) que fizemos para ([^:\n]+):\s*https?:\/\/\S+/i,
+    (_, item, who) => `Vou te mandar aqui embaixo ${item} que fizemos para ${who}.`);
+  if (replaced !== text) return replaced;
+  const clean = text.replace(/\s*https?:\/\/flowarts\.com\.br\/exemplo\/\S+/gi, "").trim();
+  return clean + `\n\nVou te mandar aqui embaixo ${what} que fizemos, para você ver como fica.`;
 }
 
 function readFields(body, { partial = false } = {}) {

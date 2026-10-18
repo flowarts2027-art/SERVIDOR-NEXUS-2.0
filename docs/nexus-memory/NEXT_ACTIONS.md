@@ -1,5 +1,10 @@
 # Próximas ações
 
+## CRM com mídia (18/10) — ramo feat/crm-exemplo-midia; falta OK
+1. OK do Rodrigo → juntar na main.
+2. Teste no celular com o número do próprio Rodrigo: passo 1, enviar; passo 2, escolher a conversa no topo.
+3. Subir exemplos dos nichos que faltam (Master › Caçador › Exemplos por nicho).
+
 ## Reagendar para hoje (18/10)
 1. Depois do deploy: Rodrigo abre o app Master › Postagens › "Reagendar para hoje" e confirma.
 2. Conferir no Master se o primeiro post saiu (Publisher roda a cada minuto; janela 8h–22h, 90 min entre posts).

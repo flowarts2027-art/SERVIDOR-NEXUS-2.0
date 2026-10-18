@@ -26,7 +26,11 @@
     return data;
   }
 
-  const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(c.message || "");
+  const canShareFiles = () => typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function";
+  // Com exemplo e celular que compartilha arquivo: texto sem o link (a mídia vai no passo 2).
+  const withMedia = c => Boolean(c.example && c.messageWithMedia && canShareFiles());
+  const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(withMedia(c) ? c.messageWithMedia : c.message || "");
+  const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
   function prettyPhone(p) {
     const d = String(p || "").replace(/^55/, "");
@@ -72,7 +76,10 @@
         <div class="crm-actions">
           ${state.settings.via === "flow" && c.stage !== "chamar"
             ? `<button type="button" class="primary crm-wa" data-send="${esc(c.id)}">Enviar pela Flow</button>`
-            : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
+            : withMedia(c)
+              ? `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">1. Abrir conversa</a>
+                 <button type="button" class="primary crm-wa" data-share-example="${esc(c.id)}">2. Mandar o ${esc(exampleWord(c))}</button>`
+              : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
           <button type="button" class="ghost" data-done="${esc(c.id)}">Já falei</button>
           ${c.stage === "chamar" ? `<button type="button" class="ghost danger-text" data-archive="${esc(c.id)}">Não serve</button>` : ""}
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
@@ -129,7 +136,7 @@
     sub.textContent = n ? (n === 1 ? "1 pessoa para chamar no WhatsApp." : `${n} pessoas para chamar no WhatsApp.`) : "Ninguém para chamar hoje. Tudo em dia.";
     list.innerHTML = d.due.slice(0, 5).map(c => `<div class="today-item">
         <div><strong>${esc(c.name)}</strong><small>${esc(c.business && c.business !== c.name ? c.business : INTEREST[c.interest] || prettyPhone(c.phone))} · ${esc(dayLabel(c.nextFollowAt, d.today))}</small></div>
-        ${state.settings.via === "flow" && c.stage !== "chamar" ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
+        ${(state.settings.via === "flow" && c.stage !== "chamar") || withMedia(c) ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
       </div>`).join("") + (n > 5 ? `<p class="muted">E mais ${n - 5}. Abra o CRM para ver todos.</p>` : "");
   }
 
@@ -261,9 +268,49 @@
     }
   });
 
+  // Mandar o carrossel/vídeo de exemplo pelo WhatsApp (compartilhar do celular).
+  // 1º toque baixa os arquivos; 2º toque abre o compartilhar (o celular exige um toque recente).
+  // No WhatsApp, a conversa aberta no passo 1 aparece no topo da lista.
+  const shareCache = new Map();
+  async function shareExample(button) {
+    const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(x => x.id === button.dataset.shareExample);
+    if (!c?.example) return;
+    const label = "2. Mandar o " + exampleWord(c);
+    let files = shareCache.get(c.id);
+    if (!files) {
+      button.disabled = true;
+      button.textContent = "Preparando o " + exampleWord(c) + "…";
+      try {
+        files = await Promise.all(c.example.files.map(async (u, i) => {
+          const path = new URL(u, location.href).pathname;
+          const response = await fetch(path, { credentials: "same-origin" });
+          if (!response.ok) throw new Error("arquivo");
+          const blob = await response.blob();
+          const video = c.example.kind === "video";
+          return new File([blob], video ? "exemplo-flowarts.mp4" : `exemplo-flowarts-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
+        }));
+        if (!navigator.canShare({ files })) throw new Error("share");
+        shareCache.set(c.id, files);
+        button.textContent = "Pronto: toque para mandar";
+      } catch {
+        button.textContent = label;
+        window.alert("Não deu para preparar o exemplo neste celular. Use o link na mensagem.");
+      }
+      button.disabled = false;
+      return;
+    }
+    try {
+      await navigator.share({ files });
+      button.textContent = label;
+    } catch (error) {
+      if (error?.name !== "AbortError") window.alert("Não deu para abrir o compartilhar. Tente de novo.");
+    }
+  }
+
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm]");
+    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example]");
     if (!t) return;
+    if (t.matches("[data-share-example]")) { await shareExample(t); return; }
     if (t.matches("[data-go-crm]")) { document.querySelector('.nav-item[data-view="crm"]')?.click(); return; }
     if (t.matches("[data-via]")) {
       const via = t.dataset.via;

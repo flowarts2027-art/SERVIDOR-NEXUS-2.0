@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~09h50 BRT — CRM manda o exemplo como mídia (ramo feat/crm-exemplo-midia; falta OK)
+- Rodrigo: "a pessoa não lê link, quer ver resultado"; quer a primeira mensagem já com carrossel/Reel/vídeo.
+- wa.me não anexa arquivo. Solução: quando o nicho tem exemplo, o card do CRM mostra "1. Abrir conversa" (texto sem o link: "Vou te mandar aqui embaixo um carrossel/vídeo…") e "2. Mandar o carrossel/vídeo" (baixa os arquivos do exemplo e abre o compartilhar do celular; no WhatsApp a conversa do passo 1 fica no topo). 1º toque prepara, 2º toque compartilha (o celular exige toque recente).
+- Celular/PC sem compartilhar arquivo: continua o botão antigo com o link.
+- API do CRM: campos example {kind, files} e messageWithMedia (`src/crm.js`). 474 testes.
+- Decisão do Rodrigo (09h36): não precisa da página "instale o app"; APK fica só para ele.
+
 ## 2026-10-18 ~09h40 BRT — Reagendar para hoje + 2 correções de postagem (pelo celular; PC do Rodrigo inacessível)
 - Pedido do Rodrigo (09h24): colocar hoje todos os posts da Flow Arts que não saíram, o primeiro agora; e tela de abertura do app Master em azul.
 - App Master: fundo da tela de abertura e do ícone trocado de preto (#080B0A) para azul (#0F2747), no ramo app-android (commit 95e2e1c). O workflow gera nova Release do APK; instalar por cima.
