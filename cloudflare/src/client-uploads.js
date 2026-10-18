@@ -33,7 +33,8 @@ async function checkVideo(file) {
   if (!isMp4(new Uint8Array(await file.slice(0, 16).arrayBuffer()))) throw new Error("video_type");
 }
 
-export async function createClientUpload(env, client, form, now = new Date()) {
+// options (Master, 18/10): approval "pending" = o cliente aprova no painel; allowClientDate = sem data, o cliente escolhe.
+export async function createClientUpload(env, client, form, now = new Date(), options = {}) {
   if (!env.MEDIA) throw new Error("r2_unavailable");
   const origin = String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "");
   if (!origin) throw new Error("public_base_url_missing");
@@ -44,10 +45,11 @@ export async function createClientUpload(env, client, form, now = new Date()) {
   if (!UPLOAD_TYPES.includes(type)) throw new Error("type_invalid");
   const caption = type === "story" ? "" : String(form.get("caption") || "").trim().slice(0, 2200);
   if (type !== "story" && !caption) throw new Error("caption_required");
-  const time = String(form.get("time") || "");
-  const scheduledFor = brasiliaToIso(form.get("date"), time);
-  if (!scheduledFor) throw new Error("schedule_invalid");
-  if (new Date(scheduledFor).getTime() < now.getTime() + 10 * 60 * 1000) throw new Error("schedule_too_soon");
+  const clientPicksDate = options.allowClientDate === true && String(form.get("when") || "") === "client";
+  const time = clientPicksDate ? "" : String(form.get("time") || "");
+  const scheduledFor = clientPicksDate ? null : brasiliaToIso(form.get("date"), time);
+  if (!clientPicksDate && !scheduledFor) throw new Error("schedule_invalid");
+  if (!clientPicksDate && new Date(scheduledFor).getTime() < now.getTime() + 10 * 60 * 1000) throw new Error("schedule_too_soon");
 
   const id = "upload-" + type + "-" + crypto.randomUUID();
   const base = "posts/" + clientId + "/" + id + "/";
@@ -115,19 +117,20 @@ export async function createClientUpload(env, client, form, now = new Date()) {
     creativeFeatures: { requestedFormat, hook: title },
     formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString() },
     qualityGates: { copyChief: "approved", designer: "approved", formatBuilder: "approved" },
-    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: imageUrl, status: "approved", qualityScore: 100, reviewer: "client", reason: "Conteúdo enviado pronto pelo cliente" },
-    intelligence: { format: requestedFormat, plannedFormat: requestedFormat, mediaSource: "client-upload" },
+    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: imageUrl, status: "approved", qualityScore: 100, reviewer: options.reviewer || "client", reason: options.reason || "Conteúdo enviado pronto pelo cliente" },
+    intelligence: { format: requestedFormat, plannedFormat: requestedFormat, mediaSource: options.mediaSource || "client-upload" },
     dateChoice: "client",
-    source: "portal:client-upload",
+    source: options.source || "portal:client-upload",
     manual: true,
     retryCount: 0,
     brandProfileVersion: brandProfileVersion(clientId),
-    createdBy: "client"
+    createdBy: options.createdBy || "client"
   };
+  const approval = options.approval === "pending" ? "pending" : "approved";
   await env.DB.prepare(
-    "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,?4,'ready','approved','',?5,'','',0,?6,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
-  ).bind(id, clientId, scheduledFor, time, caption, JSON.stringify(payload)).run();
-  return { ok: true, id, type, scheduledFor };
+    "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,?4,'ready',?7,'',?5,'','',0,?6,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
+  ).bind(id, clientId, scheduledFor, time, caption, JSON.stringify(payload), approval).run();
+  return { ok: true, id, type, scheduledFor, approval };
 }
 
 export const CLIENT_UPLOAD_MESSAGES = {

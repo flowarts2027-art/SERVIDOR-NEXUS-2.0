@@ -34,6 +34,7 @@ import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
+import { handleMasterUpload } from "./master-upload.js";
 import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
 import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
 import { handleShowcasePage, handleShowcaseMaster, handleShowcaseExtras } from "./showcase.js";
@@ -660,6 +661,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleManualReelMaster(request, env, url);
+      if (response) return response;
+    }
+
+    // Subir conteúdo pronto do cliente (post, carrossel, Reels, Stories) com legenda pronta por nicho. Só com login do Master.
+    if (url.pathname === "/api/master/upload" || url.pathname === "/api/master/caption") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleMasterUpload(request, env, url);
       if (response) return response;
     }
 

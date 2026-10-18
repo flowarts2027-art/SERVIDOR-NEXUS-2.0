@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>Nexus Master · Flow Arts</title>
-  <link rel="stylesheet" href="/styles.css?v=39">
+  <link rel="stylesheet" href="/styles.css?v=40">
 </head>
 <body>
   <div class="shell">
@@ -167,6 +167,28 @@
           </div>
         </section>
         <p class="section-title">Enviar ou criar conteúdo</p>
+        <details class="fold" open><summary><span class="fold-icon">⇪</span><span><strong>Subir conteúdo do cliente</strong><small>Post, carrossel, Reels ou Stories. Legenda pronta.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="master-upload">
+          <div class="panel-head"><div><p class="eyebrow">CONTEÚDO PRONTO</p><h2>Subir conteúdo do cliente</h2><p class="muted">Escolha o cliente e o tipo. A legenda já vem pronta pelo nicho do cliente (sem IA, sem custo); você pode mudar. Depois marque o dia e a hora.</p></div></div>
+          <form id="master-upload-form" class="manual-reel-form">
+            <label>Cliente<select name="clientId" id="mu-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
+            <label>Tipo<select name="type" id="mu-type"><option value="post">Post (1 foto)</option><option value="carousel">Carrossel (2 a 10 fotos)</option><option value="reel">Reels (vídeo)</option><option value="story">Stories (foto ou vídeo)</option></select></label>
+            <label class="wide"><span id="mu-files-label">Fotos</span><input type="file" id="mu-files" multiple accept="image/jpeg,image/png,image/webp" required></label>
+            <p class="muted wide" id="mu-files-hint"></p>
+            <div class="wide" id="mu-list"></div>
+            <fieldset class="wide mu-when"><legend>Quando publicar</legend>
+              <label><input type="radio" name="when" value="date" checked> Eu marco o dia e a hora</label>
+              <label><input type="radio" name="when" value="client"> O cliente escolhe o dia</label>
+              <div id="mu-date-box" class="mu-date-box">
+                <label>Primeiro dia<input type="date" id="mu-date"></label>
+                <label>Horários do dia<input id="mu-times" value="12:00" placeholder="Ex.: 09:00, 18:00"></label>
+                <p class="muted wide">Mais de um item: cada um vai num horário. Acabaram os horários do dia, continua no dia seguinte.</p>
+              </div>
+            </fieldset>
+            <label class="wide"><input type="checkbox" name="approval" value="eu"> Já aprovado por mim (o cliente não precisa aprovar)</label>
+            <button type="submit" class="primary">Enviar</button>
+            <p class="muted wide" id="mu-status" role="status"></p>
+          </form>
+        </div></div></details>
         <details class="fold"><summary><span class="fold-icon">▶</span><span><strong>Enviar Reel pronto</strong><small>Vídeo feito no Flow. O cliente aprova.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="manual-reel">
           <div class="panel-head"><div><p class="eyebrow">PLANO COM VÍDEO</p><h2>Enviar Reel pronto</h2><p class="muted">Faça o vídeo no Flow e envie aqui. Ele vai para o painel do cliente, que aprova. Depois de aprovado, sai no dia e hora escolhidos.</p></div></div>
           <form id="manual-reel-form" class="manual-reel-form">
@@ -618,6 +640,7 @@
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>
+  <script src="/master-upload.js?v=1" defer></script>
   <script src="/animated-reel.js?v=4" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>

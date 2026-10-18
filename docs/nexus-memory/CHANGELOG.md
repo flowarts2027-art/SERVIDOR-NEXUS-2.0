@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~11h20 BRT — Master: "Subir conteúdo do cliente" com legenda pronta por nicho
+- Pedido do Rodrigo (11h07–11h12): ele gera as imagens no ChatGPT e sobe para o cliente; escolher tipo (post, carrossel, Reels, Stories), legenda pronta pelo nicho (sem precisar escrever), dia e hora; cada postagem com texto diferente.
+- Master › Postagens › "Subir conteúdo do cliente" (aberto no topo): cliente (todos os ativos), tipo, arquivos. Post/Reels/Stories com vários arquivos = um post por arquivo, em horários seguidos ("Horários do dia", continua no dia seguinte). "O cliente escolhe o dia" ou "Eu marco". "Já aprovado por mim" opcional (padrão: o cliente aprova).
+- `src/caption-templates.js`: legendas por código para os 21 nichos (gancho, texto, chamada, frase extra, hashtags, nome do cliente, oferta do perfil). Reels: "Dá o play…"; carrossel: "Arrasta…". Stories sem legenda. Sem IA, custo zero.
+- `src/master-upload.js`: GET /api/master/caption e POST /api/master/upload (reaproveita createClientUpload, agora com approval e "cliente escolhe o dia"). Rodízio por cliente e formato em nexus_state 'caption-rotation' (432 variações no Reels, 144 no post) e pula legenda já usada nos últimos 80 posts do cliente.
+- 497 testes. Publicado com o OK do Rodrigo nesta conversa.
+
 ## 2026-10-18 ~10h50 BRT — "Casa de ração" juntou com "Loja de ração"; Agropecuária continua separada
 - Rodrigo: casa de ração e loja de ração são a mesma coisa; deixar um nome só. Viu o carrossel da agropecuária (ferramentas, mudas, produtor rural) e manteve separada.
 - Fica a chave `racao`, nome "Loja de ração". `casa_racao` saiu de NICHES, CAPTADOR_NICHES, CRM, listas do Master/CRM e exemplos-nicho.json. Chave antiga guardada vira `racao` (`canonicalNiche` em showcase-store.js), inclusive o exemplo por nicho. 21 nichos.

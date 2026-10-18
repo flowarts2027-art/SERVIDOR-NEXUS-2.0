@@ -508,3 +508,13 @@ input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0
 .hours-closed { color: #b91c1c; }
 .hours-unknown { color: #64748b; font-weight: 500; }
 .crm-meta .hours-badge { margin-left: 8px; }
+/* Subir conteúdo do cliente (18/10) */
+.mu-when { border: 1px solid #dbe3ef; border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; }
+.mu-when legend { font-weight: 700; padding: 0 4px; }
+.mu-date-box { display: grid; gap: 8px; }
+.mu-date-box[hidden] { display: none; }
+.mu-item { border: 1px solid #dbe3ef; border-radius: 12px; padding: 10px; margin: 8px 0; display: grid; gap: 8px; }
+.mu-item header { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.mu-item header small { color: #1648eb; font-weight: 600; }
+.mu-thumbs { display: flex; gap: 6px; overflow-x: auto; }
+.mu-thumb { width: 64px; height: 80px; object-fit: cover; border-radius: 8px; flex: 0 0 auto; background: #eef3f9; display: grid; place-items: center; }
