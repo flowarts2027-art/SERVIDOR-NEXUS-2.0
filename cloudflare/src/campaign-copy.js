@@ -7,6 +7,7 @@ import { clientBrand } from "./client-brand.js";
 import { ROBOT_PHRASES } from "./caption-polish.js";
 import { reachRulesText } from "./reach-playbook.js";
 import { hookFormulasText } from "./hook-formulas.js";
+import { viralHooksText } from "./viral-radar.js";
 
 function extractText(response) {
   if (response?.output_text) return String(response.output_text);
@@ -49,11 +50,12 @@ export async function writeCampaignCaption(env, client, item = {}, options = {})
 
 async function writeCampaignCaptionOnce(env, client, item = {}, { request = openAIResponses } = {}) {
   try {
+    const viral = await viralHooksText(env, client);
     const response = await request(env, client.id, {
       nexusPurpose: "caption",
       model: env.NEXUS_COPY_MODEL || env.NEXUS_GROWTH_MODEL || "gpt-5.6-luna",
       max_output_tokens: 2500,
-      input: campaignCopyPrompt(client, item),
+      input: campaignCopyPrompt(client, item) + (viral ? "\n" + viral : ""),
       text: {
         format: {
           type: "json_schema",

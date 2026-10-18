@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~16h10 BRT — Radar de virais (código pronto, sem deploy)
+- Pedido do Rodrigo (16h01–16h05): o ig-viral do instagram-agent-skill é manual (anotar perfil por perfil). Rodrigo quer automático, sem digitar cliente por cliente e sem trabalho para o cliente ("não vai dar vazão"). Confirmou que o @flowarts2026 já está ligado a uma Página do Facebook.
+- Pesquisa na documentação da Meta: busca de hashtag (top_media) e Business Discovery só existem no login pelo Facebook (o Nexus usa login do Instagram). Hashtag: até 30 hashtags únicas por 7 dias; volta texto, curtidas, comentários, tipo e link; NÃO volta visualizações nem o @ do dono. Exige aprovação da Meta (Instagram Public Content Access + instagram_basic).
+- Feito `cloudflare/src/viral-radar.js`: conexão pelo Facebook uma vez no Master (rotas /api/master/viral-radar, /connect, /run; retorno /api/oauth/facebook/callback; token guardado criptografado em nexus_state integration/facebook-radar). Uma vez por semana (cron de 15 min, com trava de 7 dias e 1 tentativa por hora) pega o nicho de cada cliente ativo pelo cadastro, 2 hashtags por nicho (máx. 24 por semana), ranqueia curtidas + 3×comentários dos últimos 90 dias e guarda 8 ganchos por nicho.
+- Os ganchos entram no prompt da legenda da campanha e no cérebro de pautas, como pista de formato ("nunca copie a frase").
+- Master › Integrações: cartão "Radar de virais" (Conectar Facebook, Buscar agora, ganchos por nicho).
+- Precisa de 2 segredos novos na Cloudflare: META_APP_ID e META_APP_SECRET (app da Meta com login pelo Facebook). Opcional: META_GRAPH_VERSION (padrão v25.0).
+- Evidência: 518/518 testes locais (Meta simulada). Nada chamado de verdade na Meta.
+
 ## 2026-10-18 ~15h50 BRT — Fórmulas de gancho do pacote instagram-agent (branch, sem deploy)
 - Pedido do Rodrigo (15h32–15h35): analisar de novo o repositório Jakeschincariol/instagram-agent-skill e um link do Filipe Yabok; copiar e adaptar o que for bom para o Nexus.
 - Conclusão: o pacote só escreve texto (não publica, não gera imagem, feito em inglês); não substitui o Nexus. O link do Filipe Yabok é só página de captura de WhatsApp, sem ferramenta visível (não preenchido).

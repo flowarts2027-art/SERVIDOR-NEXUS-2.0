@@ -155,3 +155,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 
 ## 2026-10-17 — Flow Arts: conteúdo manual
 - Campanhas da Flow Arts são subidas à mão pelo Rodrigo. O Reel automático fica desligado para a Flow Arts; usar só para clientes (pagantes).
+
+## 2026-10-18 — Radar de virais automático, pelo caminho oficial
+- Rodrigo: nada manual, nada para o cliente digitar. Nicho vem do cadastro.
+- Só API oficial da Meta (login pelo Facebook + busca de hashtag). Proibido raspar o Instagram ou usar serviço de scraping (regras do Instagram; risco de bloqueio da conta).
+- Os ganchos achados são só referência de formato para os agentes; nunca copiar frase nem citar o outro perfil.
+

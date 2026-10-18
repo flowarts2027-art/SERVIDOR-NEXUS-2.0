@@ -1,5 +1,12 @@
 # Próximas ações
 
+## 2026-10-18 — Radar de virais
+1. Rodrigo junta o PR do Radar (deploy automático).
+2. Rodrigo coloca META_APP_ID e META_APP_SECRET na Cloudflare e cadastra https://servidor-nexus.diamantehinode2015.workers.dev/api/oauth/facebook/callback como endereço de retorno do login do Facebook no app da Meta.
+3. Master › Integrações › Radar › Conectar Facebook (marcar a Página da Flow Arts) › Buscar agora.
+4. Se a Meta responder sem permissão: pedir a análise de "Instagram Public Content Access" (precisa de vídeo de demonstração; difícil só pelo celular).
+5. Depois: usar a lista de perfis achados para o Business Discovery (visualizações e "normal do perfil").
+
 ## 2026-10-18 — Fórmulas de gancho
 1. [feito 18/10 15h47] Juntado na main (PR #278), deploy ok.
 2. Próximo: olhar no painel se aparece "⚠️ Revisor: gancho fraco" nos próximos posts da Flow Arts.
