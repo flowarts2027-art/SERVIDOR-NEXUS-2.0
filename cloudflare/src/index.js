@@ -29,6 +29,7 @@ import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
 import { handleCrmSendRoute } from "./crm-send.js";
 import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
+import { handleViralRadarRoute, handleFacebookCallback, runViralRadar } from "./viral-radar.js";
 import { handlePushRoute } from "./push.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
@@ -569,6 +570,10 @@ export default {
     ctx.waitUntil(runDailyProspects(env, at).catch(error =>
       console.warn("daily_prospects_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Radar de virais: 1 vez por semana olha as hashtags dos nichos (só se o Facebook estiver conectado).
+    ctx.waitUntil(runViralRadar(env, at).catch(error =>
+      console.warn("viral_radar_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
       console.warn("comment_autoreply_failed", String(error?.message || error).slice(0, 140))
@@ -640,6 +645,14 @@ export default {
     // Contador de visitas do site (público, sem dados pessoais).
     if (url.pathname === "/api/site/hit" && request.method === "POST") {
       return handleSiteHit(request, env).catch(() => new Response(null, { status: 204 }));
+    }
+
+    // Radar de virais (ganchos que bombam no nicho de cada cliente). Só com login do Master.
+    if (url.pathname.startsWith("/api/master/viral-radar")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleViralRadarRoute(request, env, url);
+      if (response) return response;
     }
 
     // Resumo das visitas para o painel Master (login do Master).
@@ -740,6 +753,8 @@ export default {
       if (response) return response;
     }
 
+    const facebookOAuthResponse = await handleFacebookCallback(env, request, url);
+    if (facebookOAuthResponse) return facebookOAuthResponse;
     const instagramOAuthResponse = await handleInstagramOAuthCallback(env, request, url);
     if (instagramOAuthResponse) return instagramOAuthResponse;
 

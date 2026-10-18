@@ -570,6 +570,19 @@
           <div id="integration-list" class="integration-list"></div>
         </div>
 
+        <div class="panel" id="radar-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">RADAR DE VIRAIS</p><h2>O que está bombando no nicho</h2><p class="muted">Toda semana o Nexus olha as hashtags do nicho de cada cliente e passa os melhores ganchos para os agentes. Você conecta uma vez só.</p></div>
+            <span id="radar-state" class="badge off">DESLIGADO</span>
+          </div>
+          <p class="muted" id="radar-info" role="status">Carregando…</p>
+          <div class="crm-daily-row">
+            <button type="button" class="primary" id="radar-connect">Conectar Facebook</button>
+            <button type="button" class="ghost" id="radar-run" hidden>Buscar agora</button>
+          </div>
+          <div id="radar-results"></div>
+        </div>
+
         <div class="panel master-openai-panel">
           <div class="panel-head">
             <div><p class="eyebrow">CENTRAL DE CRÉDITOS</p><h2>OpenAI NEXUS</h2><p class="muted">Uma conta central da OpenAI abastece todos os clientes.</p></div>
@@ -653,5 +666,6 @@
   <script src="/examples.js?v=1" defer></script>
   <script src="/master-push.js?v=1" defer></script>
   <script src="/signups.js?v=1" defer></script>
+  <script src="/viral-radar.js?v=1" defer></script>
 </body>
 </html>

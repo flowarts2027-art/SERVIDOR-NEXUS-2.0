@@ -115,6 +115,11 @@ export function captionNiche(client = {}) {
   return "";
 }
 
+// Hashtags do nicho (usadas também pelo Radar de virais).
+export function nicheHashtags(key = "") {
+  return (N[key] || GENERIC).t.slice();
+}
+
 // Quantas legendas diferentes existem para este cliente e formato.
 export function captionVariants(client = {}, format = "post") {
   const fmt = format === "feed" ? "post" : format;

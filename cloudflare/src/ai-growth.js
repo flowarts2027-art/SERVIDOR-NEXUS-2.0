@@ -1,6 +1,7 @@
 import { openAIResponses } from "./openai.js";
 import { reachRulesText } from "./reach-playbook.js";
 import { hookFormulasText } from "./hook-formulas.js";
+import { viralHooksText } from "./viral-radar.js";
 
 const VERSION = "openai-growth-brain-v2-memory";
 const TZ = "America/Sao_Paulo";
@@ -71,7 +72,8 @@ export async function consultGrowthAI(env, client, signals = {}, previous = null
     currentProfile: signals.profile || {},
     persistentGuidance: signals.masterGuidance || { directives: [], campaigns: [] },
     recentCreativeHistory: Array.isArray(signals.recentCreativeHistory) ? signals.recentCreativeHistory.slice(0, 20) : [],
-    brandRules: brandRules(client)
+    brandRules: brandRules(client),
+    viralHooksInNiche: await viralHooksText(env, client, 6)
   };
 
   try {
@@ -98,6 +100,7 @@ export async function consultGrowthAI(env, client, signals = {}, previous = null
         "Crie com autonomia: não copie um roteiro fixo. Varie narrativa, cenário, emoção e mecanismo, mantendo coerência de marca e objetivo.",
         reachRulesText(),
         hookFormulasText(new Date().toISOString().slice(0, 10), 5),
+        "Se viralHooksInNiche vier preenchido, use esses ganchos reais do nicho só como pista de formato e assunto; nunca copie a frase.",
         "Retorne apenas o JSON exigido pelo schema."
       ].join(" "),
       input: JSON.stringify(payload),
