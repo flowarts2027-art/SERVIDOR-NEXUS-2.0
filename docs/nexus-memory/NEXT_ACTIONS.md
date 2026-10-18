@@ -1,5 +1,13 @@
 # Próximas ações
 
+## Carrosséis de exemplo por nicho (18/10) — PAUSADO pelo Rodrigo às 11h27; continuar em 19/10
+- Prontos (montados e entregues): salão, cafeteria, academia, lanchonete, loja de roupas, padaria, loja de ração, agropecuária, veterinário. Restaurante e pet já tinham vídeo.
+- Faltam (10): bar, dentista, clínica e consultório, farmácia, mercado, oficina mecânica, hotel e pousada, imobiliária, contabilidade, material de construção.
+1. Rodrigo cola no ChatGPT o prompt dos 10 que faltam (história: 1 vazio, 2 celular, 3 mostrando a tela, 4 clientes chegando, 5 atendendo; 4:5; sem texto).
+2. Ele manda aqui o nome do nicho + 5 fotos; montar com `python3 scripts/social/montar_exemplo.py <nicho> <saida> f1..f5` (ordem que ele mandar) e devolver os 5 cartões.
+3. Ele sobe em Master › Mais › Caçador › Exemplos por nicho, selecionando os cartões de 1 a 5.
+- Conferir se ele já subiu os 9 prontos (salão, cafeteria e academia com os cartões 1 e 2 novos).
+
 ## Meu material no Captador do cliente (18/10) — publicado
 1. Master › CRM/Contatos › Captador para clientes: conferir se o Quatree Dog está ligado.
 2. Cliente abre o painel › Buscar › Meu material › escolhe fotos/vídeo/PDF › Salvar.
