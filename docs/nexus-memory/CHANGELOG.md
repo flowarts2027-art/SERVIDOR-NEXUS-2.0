@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~10h15 BRT — Captador do cliente: "Meu material" (fotos, vídeo, PDF do próprio cliente)
+- Pedido do Rodrigo (09h46): cliente de ração (Quatree Dog) quer mandar o material DELE (preço, fotos, vídeos), não feito por IA, junto com a mensagem quando busca empresas.
+- Painel do cliente › Buscar: bloco "Meu material" (até 10 arquivos: JPG/PNG/WEBP, MP4/MOV, PDF; total até 95 MB). Guardado em R2 `material/<cliente>/<data>/` (fora de library/, então nunca vira post); trocar apaga o antigo; "Tirar o material".
+- /media/material/<cliente>/… só abre com login do próprio cliente ou do Master (mesma regra de videos/ e library/).
+- Lista do Captador: com material e celular que compartilha arquivo → "1. Abrir conversa" (texto ganha "Vou te mandar aqui embaixo umas fotos/um vídeo/a nossa tabela…") e "2. Mandar meu material" (compartilhar do celular → WhatsApp → conversa no topo). Também "Mandar meu material" em quem já recebeu mensagem.
+- Rotas: POST /api/portal/captador/material (formulário) e /material/clear. 478 testes (4 novos). Publicado com o OK geral do Rodrigo nesta sessão (09h42).
+- Pendente: Captador do Quatree Dog ligado no Master e o cliente subir o material.
+
 ## 2026-10-18 ~10h BRT — Publicado: CRM com mídia + app sem barra; exemplos por nicho engatilhados
 - OK do Rodrigo (09h42: "já pode publicar"): main a65fd60 com feat/crm-exemplo-midia e app-android (assetlinks.json no ar; pasta android/ na main).
 - Exemplos por nicho: hoje só restaurante e pet (vídeo). Rodrigo vai gerar as fotos no ChatGPT (prompt com 20 nichos, 5 fotos sem texto cada) e reenviar aqui.

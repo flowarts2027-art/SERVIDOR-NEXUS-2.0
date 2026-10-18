@@ -154,6 +154,78 @@ export async function saveCaptadorConfig(env, client, body = {}) {
   return next;
 }
 
+// "Meu material" (pedido de 18/10): fotos, vídeo ou tabela de preço do PRÓPRIO cliente,
+// para mandar junto com a primeira mensagem. Não é gerado por IA e nunca vira post
+// (fica em material/<cliente>/, fora da biblioteca de posts). Só o próprio cliente e o Master abrem.
+export const MATERIAL_MAX_FILES = 10;
+export const MATERIAL_MAX_BYTES = 95 * 1024 * 1024;
+const MATERIAL_TYPES = {
+  "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+  "video/mp4": "mp4", "video/quicktime": "mov", "application/pdf": "pdf"
+};
+
+export async function captadorMaterial(env, client) {
+  const value = await readState(env, client.id, "material", {});
+  const files = Array.isArray(value?.files) ? value.files.filter(f => f && typeof f.key === "string") : [];
+  return { files, savedAt: value?.savedAt || null };
+}
+
+export function materialView(material) {
+  const files = (material?.files || []).map(f => ({ url: "/media/" + f.key.split("/").map(encodeURIComponent).join("/"), type: f.type, name: f.name, size: f.size }));
+  return { files, savedAt: material?.savedAt || null, kind: materialKind(files) };
+}
+
+function materialKind(files) {
+  if (!files.length) return "";
+  const videos = files.filter(f => String(f.type).startsWith("video/")).length;
+  const pdfs = files.filter(f => f.type === "application/pdf").length;
+  if (videos && videos === files.length) return files.length === 1 ? "um vídeo" : "uns vídeos";
+  if (pdfs && pdfs === files.length) return "a nossa tabela";
+  if (!videos && !pdfs) return files.length === 1 ? "uma foto" : "umas fotos";
+  return "o nosso material";
+}
+
+export async function saveCaptadorMaterial(env, client, form, now = new Date()) {
+  if (!env.MEDIA) throw new Error("r2_unavailable");
+  const files = (form?.getAll?.("files") || []).filter(f => f && typeof f.arrayBuffer === "function" && f.size);
+  if (!files.length) throw new Error("material_empty");
+  if (files.length > MATERIAL_MAX_FILES) throw new Error("material_count");
+  let total = 0;
+  for (const file of files) {
+    if (!MATERIAL_TYPES[String(file.type || "").toLowerCase()]) throw new Error("material_type");
+    total += Number(file.size || 0);
+  }
+  if (total > MATERIAL_MAX_BYTES) throw new Error("material_size");
+  const base = `material/${client.id}/${now.getTime()}/`;
+  const saved = [];
+  for (let i = 0; i < files.length; i++) {
+    const type = String(files[i].type).toLowerCase();
+    const key = `${base}${String(i + 1).padStart(2, "0")}.${MATERIAL_TYPES[type]}`;
+    await env.MEDIA.put(key, files[i].stream(), { httpMetadata: { contentType: type }, customMetadata: { kind: "captador-material", clientId: String(client.id) } });
+    saved.push({ key, type, name: clean(files[i].name, 80), size: Number(files[i].size || 0) });
+  }
+  const old = await captadorMaterial(env, client);
+  await writeState(env, client.id, "material", { files: saved, savedAt: now.toISOString() });
+  for (const f of old.files) await env.MEDIA.delete(f.key).catch(() => {});
+  return materialView({ files: saved, savedAt: now.toISOString() });
+}
+
+export async function clearCaptadorMaterial(env, client) {
+  const old = await captadorMaterial(env, client);
+  await writeState(env, client.id, "material", { files: [], savedAt: null });
+  for (const f of old.files) await env.MEDIA?.delete(f.key).catch(() => {});
+  return materialView({ files: [] });
+}
+
+// Com material: o texto avisa que a mídia vem logo embaixo.
+export function messageWithMaterial(message, kind) {
+  if (!kind) return "";
+  const text = String(message || "");
+  const line = `Vou te mandar aqui embaixo ${kind}, para você ver.`;
+  const ask = "Posso te contar mais?";
+  return text.includes(ask) ? text.replace(ask, line + "\n\n" + ask) : text + "\n\n" + line;
+}
+
 // A mensagem é do cliente. A frase de "não quero receber" é obrigatória.
 export function captadorMessage(config, lead, showcase = null) {
   const name = config.myName || "a equipe";
@@ -168,10 +240,15 @@ export function captadorMessage(config, lead, showcase = null) {
   return lines.join("\n\n");
 }
 
-const withMessage = (config, lead, showcase = null) => {
+const withMessage = (config, lead, showcase = null, materialKindText = "") => {
   const message = captadorMessage(config, lead, showcase);
-  return { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
+  const out = { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
     whatsapp: `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` };
+  if (materialKindText) {
+    out.messageWithMedia = messageWithMaterial(message, materialKindText);
+    out.whatsappWithMedia = `https://wa.me/55${lead.phone}?text=${encodeURIComponent(out.messageWithMedia)}`;
+  }
+  return out;
 };
 
 // Nota de 0 a 10: empresa ativa e bem avaliada, fácil de chamar no WhatsApp.
@@ -306,12 +383,13 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
     }
   }
   const showcase = client.id === SHOWCASE_CLIENT ? await readShowcase(env) : null;
+  const material = materialView(await captadorMaterial(env, client));
   const items = [];
   const seen = new Set();
   for (const lead of leads) {
     if (!lead || seen.has(lead.id) || await alreadyKnown(env, client.id, lead.id)) continue;
     seen.add(lead.id);
-    items.push(withMessage(config, { ...lead, status: "novo" }, showcase));
+    items.push(withMessage(config, { ...lead, status: "novo" }, showcase, material.kind));
   }
   items.sort((a, b) => b.score - a.score);
   return { ok: true, found, items, source, usedMonth: used + 1, monthlyLimit };
@@ -362,11 +440,12 @@ export async function captadorView(env, client, status = "enviado") {
   counts["nao-quer"] += Number((await env.DB.prepare("SELECT COUNT(*) AS n FROM captador_skips WHERE client_id=?1").bind(client.id).first())?.n || 0);
   counts.novo = 0; // a lista de novos fica só na tela
   const showcase = client.id === SHOWCASE_CLIENT ? await readShowcase(env) : null;
+  const material = materialView(await captadorMaterial(env, client));
   return {
-    ok: true, enabled: true, ready: true, config, counts,
+    ok: true, enabled: true, ready: true, config, counts, material,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
-    items: rows.map(row => withMessage(config, row, showcase))
+    items: rows.map(row => withMessage(config, row, showcase, material.kind))
   };
 }
 
@@ -399,7 +478,12 @@ const MESSAGES = {
   search_failed: "A busca não respondeu agora. Confira a cidade (ex.: Niterói RJ) e tente de novo daqui a pouco.",
   lead_invalid: "Não deu para salvar esse contato.",
   status_invalid: "Não deu para mudar a etapa.",
-  lead_not_found: "Esse contato não foi encontrado."
+  lead_not_found: "Esse contato não foi encontrado.",
+  material_empty: "Escolha pelo menos um arquivo.",
+  material_count: "Escolha no máximo 10 arquivos.",
+  material_type: "Use fotos (JPG, PNG), vídeo (MP4) ou PDF.",
+  material_size: "Os arquivos juntos passam de 95 MB. Escolha menos ou um vídeo menor.",
+  r2_unavailable: "O armazenamento está fora do ar agora. Tente daqui a pouco."
 };
 
 // Rotas do portal. Quem chama já conferiu o login do cliente.
@@ -410,6 +494,15 @@ export async function handleCaptadorPortal(request, env, url, client, fetcher = 
       return send(await captadorView(env, client, url.searchParams.get("status") || "enviado"));
     }
     if (request.method !== "POST") return send({ ok: false, error: "not_found" }, 404);
+    if (url.pathname === "/api/portal/captador/material") {
+      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+      const form = await request.formData().catch(() => null);
+      return send({ ok: true, material: await saveCaptadorMaterial(env, client, form) });
+    }
+    if (url.pathname === "/api/portal/captador/material/clear") {
+      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+      return send({ ok: true, material: await clearCaptadorMaterial(env, client) });
+    }
     const body = await request.json().catch(() => ({}));
     if (url.pathname === "/api/portal/captador/search") {
       return send(await runCaptadorSearch(env, client, body, fetcher));

@@ -124,7 +124,7 @@ async function mediaResponse(request, env, url) {
   }
 
   const publicMedia = key.startsWith("branding/") || key.startsWith("posts/");
-  const protectedMatch = key.match(/^(?:videos|library)\/([^/]+)\//);
+  const protectedMatch = key.match(/^(?:videos|library|material)\/([^/]+)\//);
   if (!publicMedia && !protectedMatch) return json({ error: "not_found" }, 404);
 
   if (protectedMatch) {

@@ -52,6 +52,29 @@
     </details>`;
   }
 
+  // "Meu material" (18/10): fotos, vídeo ou tabela de preço do próprio cliente, mandados junto com a primeira mensagem.
+  const canShareFiles = () => typeof navigator.share === "function" && typeof navigator.canShare === "function";
+  const hasMaterial = () => Boolean(data?.material?.files?.length);
+  const withMedia = lead => Boolean(hasMaterial() && lead.whatsappWithMedia && canShareFiles());
+
+  function materialBlock() {
+    const files = data?.material?.files || [];
+    const thumbs = files.map(f => String(f.type).startsWith("image/")
+      ? `<img src="${esc(f.url)}" alt="" loading="lazy">`
+      : `<span class="cap-file">${String(f.type).startsWith("video/") ? "🎬 Vídeo" : "📄 PDF"}</span>`).join("");
+    return `<details class="block cap-config" ${files.length ? "" : "open"}>
+      <summary><h2>Meu material ${files.length ? `(${files.length})` : ""}</h2></summary>
+      <p class="muted">Fotos, vídeo ou tabela de preço do seu negócio. Vão junto com a primeira mensagem, pelo seu WhatsApp. Não é feito por IA: é o seu material.</p>
+      ${files.length ? `<div class="cap-thumbs">${thumbs}</div>` : ""}
+      <form id="cap-material">
+        <label>Escolha até 10 arquivos (foto, vídeo MP4 ou PDF)<input type="file" name="files" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,application/pdf" multiple required></label>
+        <button class="btn btn-primary" type="submit">${files.length ? "Trocar meu material" : "Salvar meu material"}</button>
+        ${files.length ? `<button class="btn btn-ghost" type="button" data-cap-material-clear>Tirar o material</button>` : ""}
+        <p class="muted" id="cap-material-msg"></p>
+      </form>
+    </details>`;
+  }
+
   function usageLine() {
     if (note) return note;
     if (!data.ready) return "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.";
@@ -73,11 +96,16 @@
 
   function leadActions(lead) {
     const move = (to, label, cls = "btn-soft") => `<button type="button" class="btn ${cls}" data-cap-move="${to}" data-id="${esc(lead.id)}">${label}</button>`;
+    if (lead.status === "novo" && withMedia(lead)) return `<a class="btn btn-whats" href="${esc(lead.whatsappWithMedia)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">1. Abrir conversa</a>
+      <button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">2. Mandar meu material</button>
+      <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
     if (lead.status === "novo") return `<a class="btn btn-whats" href="${esc(lead.whatsapp)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">Abrir no WhatsApp</a>
       <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>
       <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
-    if (lead.status === "enviado") return move("respondeu", "Respondeu", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost") + move("novo", "Não cheguei a mandar", "btn-ghost");
-    if (lead.status === "respondeu") return move("reuniao", "Está fechando", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost");
+    const share = hasMaterial() && canShareFiles() && ["enviado", "respondeu"].includes(lead.status)
+      ? `<button type="button" class="btn btn-soft" data-cap-share="${esc(lead.id)}">Mandar meu material</button>` : "";
+    if (lead.status === "enviado") return share + move("respondeu", "Respondeu", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost") + move("novo", "Não cheguei a mandar", "btn-ghost");
+    if (lead.status === "respondeu") return share + move("reuniao", "Está fechando", "btn-primary") + move("nao-quer", "Não quer", "btn-ghost");
     return "";
   }
 
@@ -90,7 +118,7 @@
       <p>${esc((data.niches || []).find(n => n.key === lead.niche)?.label || lead.niche)} · ${esc(lead.city)}</p>
       ${lead.address ? `<p>${esc(lead.address)}</p>` : ""}${stars}
       <p>${bits.join(" · ")} · <a href="${esc(lead.maps_url)}" target="_blank" rel="noopener">Ver no Maps</a></p>
-      <details><summary>Ver a mensagem</summary><pre>${esc(lead.message)}</pre></details>
+      <details><summary>Ver a mensagem</summary><pre>${esc(withMedia(lead) ? lead.messageWithMedia : lead.message)}</pre></details>
       <div class="cap-actions">${leadActions(lead)}</div>
     </article>`;
   }
@@ -101,7 +129,7 @@
     if (!data?.enabled) { box.innerHTML = promo(); return; }
     const counts = { ...(data.counts || {}), novo: found.length };
     const items = status === "novo" ? found : (data.items || []);
-    box.innerHTML = configForm(data.config || {}) + searchForm() + `
+    box.innerHTML = configForm(data.config || {}) + materialBlock() + searchForm() + `
       <div class="cap-tabs" role="tablist">${TABS.map(([key, label]) =>
         `<button type="button" role="tab" data-cap-tab="${key}" class="${key === status ? "active" : ""}" aria-selected="${key === status}">${label} (${Number(counts[key] || 0)})</button>`).join("")}</div>
       <div class="cap-list">${items.length ? items.map(leadCard).join("")
@@ -127,8 +155,67 @@
     if (line) line.textContent = text;
   }
 
+  // 1º toque baixa o material; 2º toque abre o compartilhar (o celular exige toque recente).
+  // No WhatsApp, a conversa aberta no passo 1 aparece no topo da lista.
+  let shareFiles = null;
+  async function shareMaterial(button) {
+    const label = button.textContent;
+    if (!shareFiles) {
+      button.disabled = true;
+      button.textContent = "Preparando o material…";
+      try {
+        shareFiles = await Promise.all((data.material.files || []).map(async (f, i) => {
+          const response = await fetch(f.url, { credentials: "same-origin" });
+          if (!response.ok) throw new Error("arquivo");
+          const blob = await response.blob();
+          const ext = (String(f.url).split(".").pop() || "jpg").toLowerCase();
+          return new File([blob], `material-${i + 1}.${ext}`, { type: blob.type || f.type });
+        }));
+        if (!navigator.canShare({ files: shareFiles })) throw new Error("share");
+        button.textContent = "Pronto: toque para mandar";
+        button.dataset.label = label;
+      } catch {
+        shareFiles = null;
+        button.textContent = label;
+        window.alert("Não deu para preparar o material neste celular.");
+      }
+      button.disabled = false;
+      return;
+    }
+    try {
+      await navigator.share({ files: shareFiles });
+    } catch (error) {
+      if (error?.name !== "AbortError") window.alert("Não deu para abrir o compartilhar. Tente de novo.");
+    }
+    if (button.dataset.label) button.textContent = button.dataset.label;
+  }
+
   document.addEventListener("submit", async event => {
     const form = event.target;
+    if (form.id === "cap-material") {
+      event.preventDefault();
+      const msg = $("#cap-material-msg");
+      const button = form.querySelector('button[type="submit"]');
+      const files = form.querySelector('input[type="file"]').files;
+      if (!files.length) return;
+      button.disabled = true;
+      if (msg) msg.textContent = "Enviando… vídeo pode demorar um pouco.";
+      try {
+        const fd = new FormData();
+        for (const file of files) fd.append("files", file);
+        const response = await fetch("/api/portal/captador/material", { method: "POST", credentials: "same-origin", body: fd });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok || json.ok === false) throw new Error(json.message || "Não deu para salvar. Tente de novo.");
+        shareFiles = null;
+        found = found.map(item => ({ ...item, whatsappWithMedia: "" })); // busca nova já vem com o texto do material
+        note = "Material salvo. Faça uma busca para mandar com as próximas mensagens.";
+        await load();
+      } catch (error) {
+        if (msg) msg.textContent = error.message;
+        button.disabled = false;
+      }
+      return;
+    }
     if (form.id === "cap-config") {
       event.preventDefault();
       const fd = new FormData(form);
@@ -179,6 +266,13 @@
       const lead = found.find(item => item.id === sent.dataset.capSent);
       if (lead) call("/api/portal/captador/contacted", lead)
         .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
+      return;
+    }
+    const shareBtn = target.closest("[data-cap-share]");
+    if (shareBtn) { await shareMaterial(shareBtn); return; }
+    if (target.closest("[data-cap-material-clear]")) {
+      if (!window.confirm("Tirar o seu material? As mensagens voltam a ir só com texto.")) return;
+      try { await call("/api/portal/captador/material/clear", {}); shareFiles = null; note = "Material retirado."; await load(); } catch (error) { alertLine(error.message); }
       return;
     }
     const skip = target.closest("[data-cap-skip]");

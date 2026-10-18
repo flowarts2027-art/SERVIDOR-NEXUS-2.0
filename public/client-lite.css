@@ -410,3 +410,7 @@ input, select, textarea, button { max-width: 100%; }
 .upload-preview .order{display:flex;justify-content:center;gap:6px;margin-top:4px}
 .upload-preview .order button{min-width:44px;min-height:36px;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:transparent;font:inherit;cursor:pointer}
 .upload-preview .remove{margin-top:4px;min-height:36px;width:100%;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:transparent;font:inherit;cursor:pointer}
+/* Meu material (Captador, 18/10) */
+.cap-thumbs { display: flex; gap: 8px; overflow-x: auto; margin: 8px 0 12px; }
+.cap-thumbs img, .cap-thumbs .cap-file { flex: 0 0 auto; width: 72px; height: 90px; border-radius: 10px; object-fit: cover; background: #eef3f9; display: grid; place-items: center; font-size: 13px; }
+#cap-material input[type="file"] { display: block; margin-top: 6px; max-width: 100%; }

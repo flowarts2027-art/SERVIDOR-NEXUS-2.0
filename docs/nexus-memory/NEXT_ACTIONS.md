@@ -1,5 +1,10 @@
 # Próximas ações
 
+## Meu material no Captador do cliente (18/10) — publicado
+1. Master › CRM/Contatos › Captador para clientes: conferir se o Quatree Dog está ligado.
+2. Cliente abre o painel › Buscar › Meu material › escolhe fotos/vídeo/PDF › Salvar.
+3. Busca empresas e testa com o próprio número: passo 1, enviar; passo 2, mandar o material.
+
 ## CRM com mídia (18/10) — ramo feat/crm-exemplo-midia; falta OK
 1. OK do Rodrigo → juntar na main.
 2. Teste no celular com o número do próprio Rodrigo: passo 1, enviar; passo 2, escolher a conversa no topo.
