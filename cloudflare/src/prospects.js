@@ -66,7 +66,6 @@ export const NICHES = {
   academia: { query: "academia", plural: "academias", page: "/marketing-para-academia", osm: [["leisure", "fitness_centre"]] },
   pet: { query: "pet shop", plural: "pet shops", page: "/marketing-para-pet-shop", osm: [["shop", "pet"]] },
   racao: { query: "loja de ração", plural: "lojas de ração", page: "/", osm: [["shop", "pet"], ["shop", "agrarian"]] },
-  casa_racao: { query: "casa de ração", plural: "casas de ração", page: "/", osm: [["shop", "pet"], ["shop", "agrarian"]] },
   agropecuaria: { query: "agropecuária", plural: "agropecuárias", page: "/", osm: [["shop", "agrarian"], ["shop", "farm"]] },
   veterinario: { query: "clínica veterinária", plural: "clínicas veterinárias", page: "/", osm: [["amenity", "veterinary"]] },
   dentista: { query: "dentista", plural: "consultórios de dentista", page: "/", osm: [["amenity", "dentist"]] },

@@ -24,3 +24,13 @@ test("CRM do Master tem o passo 2 que manda o exemplo pelo compartilhar do celul
   assert.match(ui, /data-share-example/);
   assert.match(ui, /navigator\.share\(\{ files \}\)/);
 });
+
+test("casa de ração virou loja de ração: chave antiga cai no mesmo nicho e no mesmo exemplo", async () => {
+  const { showcaseEntry, canonicalNiche } = await import("../src/showcase-store.js");
+  const { CAPTADOR_NICHES } = await import("../src/captador.js");
+  const map = { racao: { kind: "carousel", images: ["https://a/1.jpg", "https://a/2.jpg"] } };
+  assert.equal(canonicalNiche("casa_racao"), "racao");
+  assert.equal(showcaseEntry(map, "casa_racao"), map.racao);
+  assert.equal(CAPTADOR_NICHES.racao.label, "Loja de ração");
+  assert.ok(CAPTADOR_NICHES.agropecuaria, "agropecuária continua separada");
+});

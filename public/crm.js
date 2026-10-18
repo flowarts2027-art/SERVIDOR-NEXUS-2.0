@@ -12,7 +12,7 @@
   const STAGE_NAME = Object.fromEntries(STAGES.filter(s => s[0]));
   STAGE_NAME.cliente = "Virou cliente";
   const INTEREST = { "": "", pacote: "Pacote de Instagram", site: "Site", "pacote-site": "Pacote + site", outro: "Outro" };
-  const NICHES = [["cafeteria","Cafeteria"],["restaurante","Restaurante"],["lanchonete","Lanchonete"],["padaria","Padaria"],["bar","Bar"],["salao","Salão de beleza e barbearia"],["academia","Academia"],["pet","Pet shop"],["racao","Loja de ração"],["casa_racao","Casa de ração"],["agropecuaria","Agropecuária"],["veterinario","Veterinário"],["dentista","Dentista"],["clinica","Clínica e consultório"],["farmacia","Farmácia"],["mercado","Mercado"],["roupas","Loja de roupas"],["oficina","Oficina mecânica"],["hotel","Hotel e pousada"],["imobiliaria","Imobiliária"],["contabilidade","Contabilidade"],["material","Material de construção"]];
+  const NICHES = [["cafeteria","Cafeteria"],["restaurante","Restaurante"],["lanchonete","Lanchonete"],["padaria","Padaria"],["bar","Bar"],["salao","Salão de beleza e barbearia"],["academia","Academia"],["pet","Pet shop"],["racao","Loja de ração"],["agropecuaria","Agropecuária"],["veterinario","Veterinário"],["dentista","Dentista"],["clinica","Clínica e consultório"],["farmacia","Farmácia"],["mercado","Mercado"],["roupas","Loja de roupas"],["oficina","Oficina mecânica"],["hotel","Hotel e pousada"],["imobiliaria","Imobiliária"],["contabilidade","Contabilidade"],["material","Material de construção"]];
   const NICHE_NAME = Object.fromEntries(NICHES);
   const FOLLOW = [["7", "7 dias"], ["3", "3 dias"], ["1", "Amanhã"], ["15", "15 dias"], ["30", "30 dias"], ["0", "Não marcar"]];
 

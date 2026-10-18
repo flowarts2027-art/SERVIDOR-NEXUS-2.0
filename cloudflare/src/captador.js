@@ -7,7 +7,7 @@
 // Nada é enviado pelo servidor: o cliente manda pelo próprio WhatsApp.
 
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
-import { SHOWCASE_CLIENT, readShowcase, showcaseLine } from "./showcase-store.js";
+import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./showcase-store.js";
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
@@ -29,8 +29,7 @@ export const CAPTADOR_NICHES = {
   academia: { label: "Academia", query: "academia" },
   pet: { label: "Pet shop", query: "pet shop" },
   // Lojas de ração e agro (pedido de 14/10: cliente que revende Quatree em MG).
-  racao: { label: "Ração (loja de ração)", query: "loja de ração" },
-  casa_racao: { label: "Casa de ração", query: "casa de ração" },
+  racao: { label: "Loja de ração", query: "loja de ração" },
   agropecuaria: { label: "Agropecuária", query: "agropecuária" },
   veterinario: { label: "Veterinário", query: "clínica veterinária" },
   dentista: { label: "Dentista", query: "dentista" },
@@ -50,7 +49,7 @@ export const CAPTADOR_OSM_TAGS = {
   restaurante: [["amenity", "restaurant"]], cafeteria: [["amenity", "cafe"]], lanchonete: [["amenity", "fast_food"]],
   padaria: [["shop", "bakery"]], bar: [["amenity", "bar"], ["amenity", "pub"]], salao: [["shop", "hairdresser"], ["shop", "beauty"]],
   academia: [["leisure", "fitness_centre"]], pet: [["shop", "pet"]], racao: [["shop", "pet"], ["shop", "agrarian"]],
-  casa_racao: [["shop", "pet"], ["shop", "agrarian"]], agropecuaria: [["shop", "agrarian"]], veterinario: [["amenity", "veterinary"]],
+  agropecuaria: [["shop", "agrarian"]], veterinario: [["amenity", "veterinary"]],
   dentista: [["amenity", "dentist"]], clinica: [["amenity", "clinic"], ["amenity", "doctors"]], farmacia: [["amenity", "pharmacy"]],
   mercado: [["shop", "supermarket"], ["shop", "convenience"]], roupas: [["shop", "clothes"]], oficina: [["shop", "car_repair"]],
   hotel: [["tourism", "hotel"], ["tourism", "guest_house"]], imobiliaria: [["office", "estate_agent"]],
@@ -358,7 +357,7 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
 export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch) {
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
-  const niche = String(body.niche || "");
+  const niche = canonicalNiche(body.niche);
   if (!CAPTADOR_NICHES[niche]) throw new Error("niche_invalid");
   const city = clean(body.city, 60);
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");

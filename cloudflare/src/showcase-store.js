@@ -29,9 +29,17 @@ export async function writeShowcase(env, map) {
   ).bind(SHOWCASE_CLIENT, JSON.stringify(map)).run();
 }
 
+// 18/10 (Rodrigo): "casa de ração" e "loja de ração" são a mesma coisa → fica só "racao".
+// Chave antiga que ainda esteja guardada (CRM, Captador) vira "racao".
+export const NICHE_MERGE = { casa_racao: "racao" };
+export const canonicalNiche = niche => NICHE_MERGE[String(niche || "")] || String(niche || "");
+export function showcaseEntry(map, niche) {
+  return map?.[canonicalNiche(niche)] || map?.[niche];
+}
+
 // Linha que entra na mensagem quando o nicho tem vitrine. Vazia quando não tem.
 export function showcaseLine(map, niche, label) {
-  const entry = map?.[niche];
+  const entry = showcaseEntry(map, niche);
   const carousel = entry?.kind === "carousel" && Array.isArray(entry?.images) && entry.images.length > 0;
   if (!carousel && !entry?.videoUrl) return "";
   const what = carousel ? "um carrossel" : "um vídeo";

@@ -3,7 +3,7 @@
 
 import { CAPTADOR_NICHES } from "./captador.js";
 import { whatsappLink } from "./client-brand.js";
-import { SHOWCASE_CLIENT, readShowcase, writeShowcase, showcaseUrl } from "./showcase-store.js";
+import { SHOWCASE_CLIENT, readShowcase, writeShowcase, showcaseUrl, showcaseEntry, canonicalNiche } from "./showcase-store.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
@@ -70,7 +70,7 @@ export async function handleShowcasePage(request, env, url) {
   const match = url.pathname.match(/^\/exemplo\/([a-z_]{2,30})\/?$/);
   if (!match || !["GET", "HEAD"].includes(request.method)) return null;
   const niche = match[1];
-  const entry = (await readShowcase(env))[niche];
+  const entry = showcaseEntry(await readShowcase(env), niche);
   const label = CAPTADOR_NICHES[niche]?.label || "meu negócio";
   const whatsapp = whatsappLink({ id: SHOWCASE_CLIENT, config: {} }, `Olá! Vi o exemplo para ${label.toLowerCase()} e quero um para o meu negócio.`);
   return new Response(showcasePage(niche, entry, whatsapp), {

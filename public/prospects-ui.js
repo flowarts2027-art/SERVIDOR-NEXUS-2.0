@@ -8,7 +8,7 @@
   const TABS = [
     ["novo", "Novos"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Reunião marcada"], ["nao-quer", "Não querem"]
   ];
-  const NICHE = { cafeteria: "Cafeteria", restaurante: "Restaurante", lanchonete: "Lanchonete", padaria: "Padaria", bar: "Bar", salao: "Salão de beleza e barbearia", academia: "Academia", pet: "Pet shop", racao: "Loja de ração", casa_racao: "Casa de ração", agropecuaria: "Agropecuária", veterinario: "Veterinário", dentista: "Dentista", clinica: "Clínica e consultório", farmacia: "Farmácia", mercado: "Mercado", roupas: "Loja de roupas", oficina: "Oficina mecânica", hotel: "Hotel e pousada", imobiliaria: "Imobiliária", contabilidade: "Contabilidade", material: "Material de construção" };
+  const NICHE = { cafeteria: "Cafeteria", restaurante: "Restaurante", lanchonete: "Lanchonete", padaria: "Padaria", bar: "Bar", salao: "Salão de beleza e barbearia", academia: "Academia", pet: "Pet shop", racao: "Loja de ração", agropecuaria: "Agropecuária", veterinario: "Veterinário", dentista: "Dentista", clinica: "Clínica e consultório", farmacia: "Farmácia", mercado: "Mercado", roupas: "Loja de roupas", oficina: "Oficina mecânica", hotel: "Hotel e pousada", imobiliaria: "Imobiliária", contabilidade: "Contabilidade", material: "Material de construção" };
   const ERRORS = {
     google_key_missing: "Falta ativar o Google Maps: complete o crédito no Google e salve a chave aqui em cima.",
     daily_limit: "Chegou no limite de buscas de hoje. Amanhã libera de novo.",

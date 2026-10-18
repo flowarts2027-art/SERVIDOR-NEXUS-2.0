@@ -78,7 +78,7 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
 test("ordem dos nichos: com exemplo primeiro, em rodízio", () => {
   const order = nicheOrder({ pet: { videoUrl: "x" } }, 0);
   assert.equal(order[0], "pet");
-  assert.equal(order.length, 22);
+  assert.equal(order.length, 21); // 18/10: casa de ração virou loja de ração
 });
 
 test("aviso no celular: chave criada uma vez, toque vai assinado (VAPID) e sem conteúdo", async () => {

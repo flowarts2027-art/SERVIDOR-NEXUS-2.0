@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~10h50 BRT — "Casa de ração" juntou com "Loja de ração"; Agropecuária continua separada
+- Rodrigo: casa de ração e loja de ração são a mesma coisa; deixar um nome só. Viu o carrossel da agropecuária (ferramentas, mudas, produtor rural) e manteve separada.
+- Fica a chave `racao`, nome "Loja de ração". `casa_racao` saiu de NICHES, CAPTADOR_NICHES, CRM, listas do Master/CRM e exemplos-nicho.json. Chave antiga guardada vira `racao` (`canonicalNiche` em showcase-store.js), inclusive o exemplo por nicho. 21 nichos.
+- Exemplos prontos: salão, cafeteria, academia, lanchonete, roupas, padaria, ração, agropecuária. Falta o bar (o ChatGPT pulou).
+- Ramo wip/nicho-racao-agro (juntava os três) descartado.
+
 ## 2026-10-18 ~11h BRT — Empresa aberta/fechada + "Lembrar quando abrir" (Master e cliente)
 - Pedido do Rodrigo (10h27): pizzaria apareceu fechada; mandar agora não serve e amanhã ela vira "atrasada". Mostrar se está fechada e deixar marcar para o horário de funcionamento.
 - `src/business-hours.js`: lê horário do mapa (OSM opening_hours) e do Google (regularOpeningHours, agora no FIELD_MASK); diz "Aberta agora" ou "Fechada · abre hoje/amanhã/<dia> às HH:MM". Sem horário: horário comercial (seg–sáb 9h–18h), marcado como "Horário não informado".

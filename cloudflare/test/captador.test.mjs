@@ -219,7 +219,7 @@ test("robô manda planos e o contrato só sai pelo Rodrigo", async () => {
 
 test("Captador tem ração, casa de ração, agropecuária e pet shop", () => {
   assert.equal(CAPTADOR_NICHES.racao.query, "loja de ração");
-  assert.equal(CAPTADOR_NICHES.casa_racao.query, "casa de ração");
+  assert.equal(CAPTADOR_NICHES.casa_racao, undefined); // 18/10: virou "racao"
   assert.equal(CAPTADOR_NICHES.agropecuaria.query, "agropecuária");
   assert.equal(CAPTADOR_NICHES.pet.query, "pet shop");
 });

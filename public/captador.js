@@ -31,7 +31,7 @@
     return `<section class="block cap-promo">
       <h2>Ache novos clientes perto de você</h2>
       <p>Escolha o tipo de negócio e a cidade. O Captador busca no Google Maps e mostra empresas com telefone e uma mensagem pronta para você mandar pelo seu WhatsApp.</p>
-      <ul><li>22 tipos de negócio: pet shops, lojas de ração, agropecuárias, restaurantes, salões, clínicas e mais</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
+      <ul><li>21 tipos de negócio: pet shops, lojas de ração, agropecuárias, restaurantes, salões, clínicas e mais</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
       <p class="cap-price">${esc(data?.price || "R$ 97 por mês")}</p>
       ${DEMO ? '<p class="muted">Na demonstração, a busca fica desligada.</p>' : `<a class="btn btn-whats" href="${FLOW_WHATS}" target="_blank" rel="noopener">Quero ativar</a>`}
     </section>`;
