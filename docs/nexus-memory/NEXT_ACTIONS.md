@@ -1,7 +1,7 @@
 # Próximas ações
 
-## Cadastro do cliente pelo link (18/10) — ramo feat/cadastro-cliente; falta OK
-1. OK do Rodrigo → juntar na main (deploy automático).
+## Cadastro do cliente pelo link (18/10) — NO AR (main 78346f3, 14h24)
+1. FEITO: publicado com OK do Rodrigo; Deploy NEXUS Cloudflare success; /cadastro abre em produção.
 2. Rodrigo abre painel.flowarts.com.br/cadastro no celular e faz um cadastro de teste.
 3. Master › Mais › Clientes › "Cadastros novos" › Aprovar.
 4. Entrar no painel do cliente com o usuário e a senha do teste.
