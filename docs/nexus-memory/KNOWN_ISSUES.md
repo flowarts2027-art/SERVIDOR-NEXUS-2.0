@@ -1,5 +1,8 @@
 # Problemas conhecidos
 
+## 2026-10-18 — Reels da Flow Arts barrados no fiscal visual (corrigido em PR)
+- Reel animado/pronto ficava em "Aprovado · será publicado" sem sair (quality_gate_pending por visualReview incompleto). Correção no PR de 18/10 ~17h30; confirmar em produção depois do deploy (status published e link no Instagram).
+
 ## 2026-10-12 — CI vermelho antes desta mudança
 - `ci.yml` falha no passo "Test editor overlay export pipeline" desde pelo menos 6cdf87e/53ef006 (main). Os passos seguintes (bundle Wrangler, workspace) ficam pulados no CI. O deploy segue pelo `deploy-nexus-cloudflare.yml`. Os dois scripts Python do passo passam localmente; o log do GitHub não pôde ser baixado nesta sessão (403 no blob). Investigar os testes Node `.cjs` do mesmo passo.
 

@@ -114,6 +114,10 @@ export function visualApproval(clientId, payload = {}) {
   if (!protectedClients.has(String(clientId || ''))) return true;
   const review = payload.visualReview;
   const media = String(payload.imageUrl || payload.publicImageUrl || '').trim();
+  // Conteúdo feito pelo Rodrigo ou por modelo de código (Reel animado, Reel pronto):
+  // não passa pela IA de imagem; vale a aprovação gravada junto com o post.
+  if (payload.manual === true && media && review?.status === 'approved'
+    && ['rodrigo', 'nexus', 'client'].includes(String(review.reviewer || ''))) return true;
   return Boolean(
     media &&
     review?.version === VERSION &&

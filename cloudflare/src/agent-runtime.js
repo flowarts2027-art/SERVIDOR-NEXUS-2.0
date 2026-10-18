@@ -1439,7 +1439,7 @@ async function runPublisher(env,client,options) {
     const caption=String(row.caption||"");
     // Conteúdo pronto (manual) ou reagendado pelo Master já foi aprovado pelo Rodrigo:
     // a legenda modelo só troca o nome do negócio, então só barra se for praticamente igual.
-    const captionLimit=(payload.manual===true||payload.rescheduledByMaster)?0.99:0.92;
+    const captionLimit=(payload.manual===true||payload.rescheduledByMaster||payload.publishNowByClient)?0.99:0.92;
     if(usedCaptions.some(previous=>textSimilarity(previous,caption)>=captionLimit)){
       await env.DB.prepare(
         "UPDATE post_ledger SET error='duplicate_caption_blocked',updated_at=CURRENT_TIMESTAMP WHERE id=?1"

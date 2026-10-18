@@ -1,5 +1,8 @@
 # Estado do Nexus 2.0
 
+## 2026-10-18 ~17h30 BRT — Reels da Flow Arts não publicavam (correção em PR, sem deploy)
+- Pizza (09:31) e pet shop (11:31) aprovados e não saíram. Causa no código: o fiscal visual da Flow Arts recusava todo Reel animado/pronto (visualReview sem version/media/qualityScore). Correção + botão "Publicar agora" e aviso "Não saiu no horário" no painel do cliente. Falta o Rodrigo juntar o PR. Detalhes em CHANGELOG.md.
+
 ## 2026-10-18 ~16h10 BRT — Radar de virais em branch
 - Branch `feat/radar-de-virais`: busca semanal dos ganchos que bombam nas hashtags do nicho de cada cliente, pelo login do Facebook. Falta: merge, 2 segredos META_APP_ID/META_APP_SECRET, Rodrigo conectar no Master e a Meta liberar a busca de hashtag. Detalhes em CHANGELOG.md.
 

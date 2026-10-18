@@ -28,6 +28,7 @@ import { confirmedVideoSource, isMp4Header, videoErrorMessages, videoRenderQueue
 import { youtubeUrl, searchCatalog, catalogMetadata, catalogPreviewUrl, dispatchVideoSearch, catalogIdentityConfidence, catalogUploadTitle, catalogSearchAliases, distinctRelatedTitles } from "./video-catalog.js";
 import { readVerifiedPoster, rememberVerifiedPoster } from "./video-poster-library.js";
 import { enqueue } from "./scheduler.js";
+import { publishPostNow as queuePublishNow, PUBLISH_NOW_MESSAGES, postIsStuck } from "./publish-now.js";
 import { processDueJobs } from "./executor.js";
 import { indexCatalogResults, verifyPosterLocation } from "./video-demand-catalog.js";
 import { officialMovieFromTrailer, verifyOfficialMoviePoster } from "./official-movie-poster.js";
@@ -495,6 +496,8 @@ async function listPosts(env, clientId) {
     caption: row.caption || "",
     imageObjectKey: row.image_object_key || "",
     error: row.error || "",
+    // Aprovado, mas o horário já passou e não saiu: o painel mostra o aviso e "Publicar agora".
+    stuck: postIsStuck(row),
     costUsd: Number(row.cost_usd || 0),
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null,
@@ -1790,6 +1793,17 @@ export async function handlePortalApi(request, env, url, ctx) {
     } catch (error) {
       const code = String(error?.message || error).slice(0, 60);
       return json({ error: code, message: CLIENT_UPLOAD_MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
+    }
+  }
+
+  // Cliente: "Publicar agora" num post aprovado que ainda não saiu.
+  const postNowMatch = url.pathname.match(/^\/api\/portal\/posts\/([^/]+)\/publish-now$/);
+  if (postNowMatch && request.method === "POST") {
+    try {
+      return json(await queuePublishNow(env, client, decodeURIComponent(postNowMatch[1])));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      return json({ error: code, message: PUBLISH_NOW_MESSAGES[code] || "Não deu para publicar agora. Tente de novo." }, code === "not_found" ? 404 : 400);
     }
   }
 
