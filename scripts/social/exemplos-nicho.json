@@ -1,0 +1,143 @@
+{
+  "_sobre": "Títulos dos carrosséis de exemplo por nicho (pedido do Rodrigo em 18/10). Fotos vêm do ChatGPT, sem texto. Ordem: gancho, dor, solução, como funciona, chamada. Linha 1 até 24 letras, linha 2 até 30, rodapé até 40.",
+  "salao": [
+    ["Agenda cheia", "começa no Instagram", "Arraste para o lado"],
+    ["Cadeira vazia", "no meio da semana?", "Isso tem solução"],
+    ["Mostre o seu trabalho", "antes e depois", "Quem vê, quer marcar"],
+    ["Post bonito todo dia", "sem você perder tempo", "A gente cuida de tudo"],
+    ["Quer um assim", "para o seu salão?", "Fale com a Flow Arts"]
+  ],
+  "cafeteria": [
+    ["Café bom merece", "ser visto", "Arraste para o lado"],
+    ["Mesas vazias", "à tarde?", "Isso tem solução"],
+    ["Foto que dá vontade", "de sair de casa", "Quem vê, quer provar"],
+    ["Post bonito todo dia", "sem você parar o balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua cafeteria?", "Fale com a Flow Arts"]
+  ],
+  "academia": [
+    ["Aluno novo", "começa no Instagram", "Arraste para o lado"],
+    ["Academia vazia", "fora do horário de pico?", "Isso tem solução"],
+    ["Mostre o treino", "e o resultado", "Quem vê, quer começar"],
+    ["Post bonito todo dia", "sem você largar o treino", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua academia?", "Fale com a Flow Arts"]
+  ],
+  "lanchonete": [
+    ["Lanche gostoso", "precisa aparecer", "Arraste para o lado"],
+    ["Movimento fraco", "no começo da noite?", "Isso tem solução"],
+    ["Foto que dá fome", "na hora certa", "Quem vê, quer pedir"],
+    ["Post bonito todo dia", "sem você sair da chapa", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua lanchonete?", "Fale com a Flow Arts"]
+  ],
+  "roupas": [
+    ["Peça nova", "vende no Instagram", "Arraste para o lado"],
+    ["Loja vazia", "e arara cheia?", "Isso tem solução"],
+    ["Mostre o look", "do jeito certo", "Quem vê, quer provar"],
+    ["Post bonito todo dia", "sem você largar a loja", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua loja?", "Fale com a Flow Arts"]
+  ],
+  "padaria": [
+    ["Pão quentinho", "merece ser visto", "Arraste para o lado"],
+    ["Só o cliente", "de sempre aparece?", "Isso tem solução"],
+    ["Foto que tem cheiro", "de fornada nova", "Quem vê, quer passar aí"],
+    ["Post bonito todo dia", "sem você sair do forno", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua padaria?", "Fale com a Flow Arts"]
+  ],
+  "bar": [
+    ["Mesa cheia", "começa no Instagram", "Arraste para o lado"],
+    ["Bar parado", "no meio da semana?", "Isso tem solução"],
+    ["Mostre o clima", "e o petisco", "Quem vê, quer marcar"],
+    ["Post bonito todo dia", "sem você sair do balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para o seu bar?", "Fale com a Flow Arts"]
+  ],
+  "racao": [
+    ["Cliente de ração", "volta todo mês", "Arraste para o lado"],
+    ["Só vende para", "quem passa na porta?", "Isso tem solução"],
+    ["Mostre a loja", "e os bichinhos felizes", "Quem vê, lembra de você"],
+    ["Post bonito todo dia", "sem você largar o balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua loja?", "Fale com a Flow Arts"]
+  ],
+  "casa_racao": [
+    ["Seu cliente", "está no Instagram", "Arraste para o lado"],
+    ["Prateleira cheia", "e movimento fraco?", "Isso tem solução"],
+    ["Mostre o que tem", "e quem atende", "Quem vê, confia"],
+    ["Post bonito todo dia", "sem você largar o balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua casa de ração?", "Fale com a Flow Arts"]
+  ],
+  "agropecuaria": [
+    ["O produtor também", "procura no celular", "Arraste para o lado"],
+    ["Cliente só aparece", "quando precisa?", "Isso tem solução"],
+    ["Mostre a loja", "e a sua experiência", "Quem vê, confia"],
+    ["Post bonito todo dia", "sem você largar a loja", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua agropecuária?", "Fale com a Flow Arts"]
+  ],
+  "veterinario": [
+    ["Tutor escolhe", "quem ele confia", "Arraste para o lado"],
+    ["Agenda com", "horário sobrando?", "Isso tem solução"],
+    ["Mostre o cuidado", "com cada bichinho", "Quem vê, quer marcar"],
+    ["Post bonito todo dia", "sem você sair do consultório", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua clínica?", "Fale com a Flow Arts"]
+  ],
+  "dentista": [
+    ["Paciente novo", "procura no Instagram", "Arraste para o lado"],
+    ["Cadeira vazia", "na sua agenda?", "Isso tem solução"],
+    ["Mostre o cuidado", "e o sorriso", "Quem vê, quer marcar"],
+    ["Post bonito todo dia", "sem você parar o atendimento", "A gente cuida de tudo"],
+    ["Quer um assim", "para o seu consultório?", "Fale com a Flow Arts"]
+  ],
+  "clinica": [
+    ["Confiança começa", "antes da consulta", "Arraste para o lado"],
+    ["Agenda com", "horário sobrando?", "Isso tem solução"],
+    ["Mostre o espaço", "e quem atende", "Quem vê, se sente seguro"],
+    ["Post bonito todo dia", "sem você parar o atendimento", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua clínica?", "Fale com a Flow Arts"]
+  ],
+  "farmacia": [
+    ["Farmácia do bairro", "também é escolhida", "Arraste para o lado"],
+    ["Cliente passa", "direto na rede grande?", "Isso tem solução"],
+    ["Mostre o atendimento", "de perto", "Quem vê, volta"],
+    ["Post bonito todo dia", "sem você largar o balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua farmácia?", "Fale com a Flow Arts"]
+  ],
+  "mercado": [
+    ["Mercado do bairro", "no celular do cliente", "Arraste para o lado"],
+    ["Oferta boa", "que ninguém viu?", "Isso tem solução"],
+    ["Mostre o frescor", "das prateleiras", "Quem vê, passa aí"],
+    ["Post bonito todo dia", "sem você largar o caixa", "A gente cuida de tudo"],
+    ["Quer um assim", "para o seu mercado?", "Fale com a Flow Arts"]
+  ],
+  "oficina": [
+    ["Cliente procura", "oficina de confiança", "Arraste para o lado"],
+    ["Elevador parado", "esperando carro?", "Isso tem solução"],
+    ["Mostre o serviço", "bem feito", "Quem vê, confia"],
+    ["Post bonito todo dia", "sem você largar a ferramenta", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua oficina?", "Fale com a Flow Arts"]
+  ],
+  "hotel": [
+    ["Hóspede escolhe", "pelo que vê", "Arraste para o lado"],
+    ["Quartos vazios", "fora da temporada?", "Isso tem solução"],
+    ["Mostre o conforto", "e a vista", "Quem vê, quer reservar"],
+    ["Post bonito todo dia", "sem você largar a recepção", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua pousada?", "Fale com a Flow Arts"]
+  ],
+  "imobiliaria": [
+    ["Imóvel bonito", "vende pelo celular", "Arraste para o lado"],
+    ["Anúncio parado", "há semanas?", "Isso tem solução"],
+    ["Mostre cada imóvel", "do melhor jeito", "Quem vê, quer visitar"],
+    ["Post bonito todo dia", "sem você parar as visitas", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua imobiliária?", "Fale com a Flow Arts"]
+  ],
+  "contabilidade": [
+    ["Empresário procura", "contador de confiança", "Arraste para o lado"],
+    ["Cliente novo", "só por indicação?", "Isso tem solução"],
+    ["Mostre quem cuida", "das contas", "Quem vê, confia"],
+    ["Post bonito todo dia", "sem você parar o trabalho", "A gente cuida de tudo"],
+    ["Quer um assim", "para o seu escritório?", "Fale com a Flow Arts"]
+  ],
+  "material": [
+    ["Quem vai reformar", "pesquisa no celular", "Arraste para o lado"],
+    ["Loja grande", "e balcão parado?", "Isso tem solução"],
+    ["Mostre o estoque", "e a obra pronta", "Quem vê, compra aí"],
+    ["Post bonito todo dia", "sem você largar o balcão", "A gente cuida de tudo"],
+    ["Quer um assim", "para a sua loja?", "Fale com a Flow Arts"]
+  ]
+}

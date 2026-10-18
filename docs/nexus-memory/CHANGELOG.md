@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~10h BRT — Publicado: CRM com mídia + app sem barra; exemplos por nicho engatilhados
+- OK do Rodrigo (09h42: "já pode publicar"): main a65fd60 com feat/crm-exemplo-midia e app-android (assetlinks.json no ar; pasta android/ na main).
+- Exemplos por nicho: hoje só restaurante e pet (vídeo). Rodrigo vai gerar as fotos no ChatGPT (prompt com 20 nichos, 5 fotos sem texto cada) e reenviar aqui.
+- `scripts/social/exemplos-nicho.json`: títulos dos 20 nichos (gancho, dor, solução, como funciona, chamada), conferidos (tamanho e palavras proibidas). `scripts/social/montar_exemplo.py <nicho> <saida> f1..f5` monta os 5 cartões com render_carousel.py. Testado com fotos de teste.
+
 ## 2026-10-18 ~09h50 BRT — CRM manda o exemplo como mídia (ramo feat/crm-exemplo-midia; falta OK)
 - Rodrigo: "a pessoa não lê link, quer ver resultado"; quer a primeira mensagem já com carrossel/Reel/vídeo.
 - wa.me não anexa arquivo. Solução: quando o nicho tem exemplo, o card do CRM mostra "1. Abrir conversa" (texto sem o link: "Vou te mandar aqui embaixo um carrossel/vídeo…") e "2. Mandar o carrossel/vídeo" (baixa os arquivos do exemplo e abre o compartilhar do celular; no WhatsApp a conversa do passo 1 fica no topo). 1º toque prepara, 2º toque compartilha (o celular exige toque recente).
