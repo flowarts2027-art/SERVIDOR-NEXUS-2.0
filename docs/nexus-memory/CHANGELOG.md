@@ -7,7 +7,7 @@
 - As fórmulas entram no prompt da legenda da campanha (`campaign-copy.js`, 4 por vez, variando pelo tema) e do cérebro de pautas (`ai-growth.js`). Carrossel (`carousel-agent.js`): cartão 1 usa uma fórmula sem número; cartão 2 tem que fazer sentido sozinho.
 - Revisor do painel (`brand-guard.js`): novo aviso "gancho fraco" na 1ª linha (cumprimento, "pare de rolar", "neste post vou...", hashtag, emoji, mais de 18 palavras). Não bloqueia. Sem IA, sem custo.
 - Mais 10 frases de robô em `caption-polish.js`.
-- Evidência: 511/511 testes locais. Nada publicado; aguardando OK do Rodrigo para juntar na main.
+- Evidência: 511/511 testes locais. OK do Rodrigo 15h40; push direto na main foi barrado nesta sessão, então foi aberto o PR #278 e o Rodrigo juntou pelo celular (main 940b600). Deploy NEXUS Cloudflare e NEXUS CI success; Overnight Regression falhou como nos commits anteriores.
 
 ## 2026-10-18 ~14h35 BRT — Apresentação "Como funciona o NEXUS" para clientes
 - Pedido do Rodrigo (14h32): em vez de vídeo, um arquivo curto para o cliente abrir no celular. Antes pediu um prompt de vídeo para ChatGPT/Flow (entregue no chat).
