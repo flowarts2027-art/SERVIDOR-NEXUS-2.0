@@ -166,7 +166,15 @@ export function buildVisualPrompt(client, visualBrief="", variationSeed="", opti
   return common.join(" ");
 }
 
+// Pausa das imagens por IA (decisão do Rodrigo, 18/10): ele gera no ChatGPT e sobe pelo Master
+// até ter clientes suficientes. Trava no código, além do Master: nenhuma chamada paga sai daqui.
+// Para religar: variável NEXUS_IMAGE_GENERATION=on na Cloudflare (só com o OK do Rodrigo).
+export function imageGenerationPaused(env){
+  return String(env?.NEXUS_IMAGE_GENERATION||"").trim().toLowerCase()!=="on";
+}
+
 export async function generateOriginalMedia(env,client,postId,visualBrief="",options={}){
+  if(imageGenerationPaused(env))throw new Error("image_generation_paused");
   if(!env.MEDIA)throw new Error("r2_unavailable");
   const origin=String(env.PUBLIC_BASE_URL||"").replace(/\/+$/,"");
   if(!origin)throw new Error("public_base_url_missing");

@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-18 — Imagens por IA pausadas até ter mais clientes
+- Rodrigo: assinatura do ChatGPT (~R$ 100/mês) sai mais barata agora; ele gera as imagens e sobe pelo Master. Religar a API quando houver clientes demais para fazer na mão (conta feita: empata por volta de 4–5 clientes; aí pôr o custo da imagem no preço do plano).
+- Trava no código: `generateOriginalMedia` recusa com `image_generation_paused` se a variável NEXUS_IMAGE_GENERATION não for "on". Vale para Creator, Format Builder, agente de carrossel, campanha "IA" do cliente e emergência. Religar = criar NEXUS_IMAGE_GENERATION=on na Cloudflare, só com OK do Rodrigo.
+- Master › Postagens › "Enviar carrossel pronto" agora lista todos os clientes ativos (antes só Flow Arts).
+
 ## 2026-10-18 — Padrão visual dos carrosséis (aprovado pelo Rodrigo)
 - Referência: carrosséis de exemplo de salão e cafeteria (docs/referencias/carrossel-aprovado-*.jpg). Fotos do ChatGPT sem texto; títulos, logo e botão por código.
 - Regra entrou no agente de carrossel (`carousel-agent.js`, Diretor de arte): foto aberta, corpo inteiro, luz do dia, cores vivas, negócio de bairro brasileiro, parede lisa no alto, e o roteiro das 5 cenas (celular pensativo → vazio e preocupado → sorrindo com o celular → clientes chegando → atendendo e olhando para a câmera).
