@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~12h20 BRT — Conectar Instagram: "Parâmetro inválido" (Global Play e outra conta)
+- Rodrigo (pelo celular, app Master em painel.flowarts.com.br): conectar Instagram deu "Parâmetro inválido" com duas contas, inclusive a da Global Play. Duas contas com o mesmo erro = problema do app, não da conta.
+- Causa provável: o redirect_uri era montado com o domínio de quem abriu (painel.flowarts.com.br), mas no app Meta só está cadastrado o endereço workers.dev.
+- Correção: instagram.js usa sempre INSTAGRAM_REDIRECT_BASE ou PUBLIC_BASE_URL (workers.dev) no redirect_uri; depois de autorizar, volta para o domínio onde o painel foi aberto. Teste novo; 498 testes ok.
+- Falta: OK do Rodrigo para publicar e testar de novo pelo app.
+
 ## 2026-10-18 ~11h20 BRT — Master: "Subir conteúdo do cliente" com legenda pronta por nicho
 - Pedido do Rodrigo (11h07–11h12): ele gera as imagens no ChatGPT e sobe para o cliente; escolher tipo (post, carrossel, Reels, Stories), legenda pronta pelo nicho (sem precisar escrever), dia e hora; cada postagem com texto diferente.
 - Master › Postagens › "Subir conteúdo do cliente" (aberto no topo): cliente (todos os ativos), tipo, arquivos. Post/Reels/Stories com vários arquivos = um post por arquivo, em horários seguidos ("Horários do dia", continua no dia seguinte). "O cliente escolhe o dia" ou "Eu marco". "Já aprovado por mim" opcional (padrão: o cliente aprova).

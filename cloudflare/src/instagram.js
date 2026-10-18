@@ -33,8 +33,24 @@ function randomToken(size = 24) {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
-export function instagramRedirectUri(request) {
-  return new URL("/api/oauth/instagram/callback", new URL(request.url).origin).toString();
+// O endereço de retorno precisa ser SEMPRE o mesmo cadastrado no app da Meta.
+// O painel abre em vários domínios (workers.dev e painel.flowarts.com.br);
+// usar o domínio de quem abriu fazia o Instagram responder "Parâmetro inválido".
+export function instagramRedirectUri(request, env = {}) {
+  const base = String(env?.INSTAGRAM_REDIRECT_BASE || env?.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
+  const origin = /^https:\/\//.test(base) ? base : new URL(request.url).origin;
+  return new URL("/api/oauth/instagram/callback", origin).toString();
+}
+
+// Depois da autorização, volta para o mesmo domínio em que o painel foi aberto.
+function allowedReturnOrigin(env, origin) {
+  try {
+    const host = new URL(origin).hostname.toLowerCase();
+    if (host === "flowarts.com.br" || host.endsWith(".flowarts.com.br")) return new URL(origin).origin;
+    const base = String(env?.PUBLIC_BASE_URL || "").trim();
+    if (base && new URL(base).hostname.toLowerCase() === host) return new URL(origin).origin;
+  } catch {}
+  return "";
 }
 
 async function masterInstagramRecord(env) {
@@ -56,7 +72,7 @@ export async function getMasterInstagramSummary(env, request) {
   return {
     configured: Boolean(appId && hasSecret),
     appId,
-    callbackUrl: instagramRedirectUri(request),
+    callbackUrl: instagramRedirectUri(request, env),
     scopes: INSTAGRAM_SCOPES,
     updatedAt: record.updatedAt || null
   };
@@ -123,13 +139,17 @@ export async function startInstagramOAuth(env, request, clientId, returnTo = "")
   ).bind(
     stateHash,
     client.id,
-    JSON.stringify({ redirectUri: instagramRedirectUri(request), returnTo: String(returnTo || "") }),
+    JSON.stringify({
+      redirectUri: instagramRedirectUri(request, env),
+      returnTo: String(returnTo || ""),
+      returnOrigin: new URL(request.url).origin
+    }),
     expiresAt
   ).run();
 
   const authorize = new URL("https://www.instagram.com/oauth/authorize");
   authorize.searchParams.set("client_id", appId);
-  authorize.searchParams.set("redirect_uri", instagramRedirectUri(request));
+  authorize.searchParams.set("redirect_uri", instagramRedirectUri(request, env));
   authorize.searchParams.set("response_type", "code");
   authorize.searchParams.set("scope", INSTAGRAM_SCOPES.join(","));
   authorize.searchParams.set("state", state);
@@ -176,9 +196,10 @@ export async function handleInstagramOAuthCallback(env, request, url) {
     if (!appId || !appSecret) throw new Error("instagram_nexus_not_configured");
 
     const payload = parseJson(saved.payload_json, {});
-    const redirectUri = String(payload.redirectUri || instagramRedirectUri(request));
+    const redirectUri = String(payload.redirectUri || instagramRedirectUri(request, env));
     returnTo = String(payload.returnTo || "");
     if (returnTo && !returnTo.startsWith("/master") && !returnTo.startsWith("/portal.html")) returnTo = "";
+    if (returnTo) returnTo = allowedReturnOrigin(env, String(payload.returnOrigin || "")) + returnTo;
     const tokenBody = new URLSearchParams({
       client_id: appId,
       client_secret: appSecret,
