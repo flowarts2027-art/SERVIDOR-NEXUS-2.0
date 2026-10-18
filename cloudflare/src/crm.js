@@ -3,6 +3,7 @@
 // Nada é enviado sozinho: o painel só lembra e abre o WhatsApp com a mensagem pronta.
 
 import { readShowcase, showcaseLine } from "./showcase-store.js";
+import { hoursStatus, readWeek } from "./business-hours.js";
 
 export const CRM_STAGES = ["chamar", "contato", "conversando", "proposta", "cliente", "nao-quer"];
 export const CRM_INTERESTS = ["", "pacote", "site", "pacote-site", "outro"];
@@ -56,7 +57,17 @@ export async function ensureCrmSchema(env) {
   try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN niche TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
   // Primeira mensagem pronta (empresa achada pelo Nexus, etapa "chamar").
   try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN draft TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
+  // Horário da empresa e hora para chamar (pedido de 18/10: empresa fechada → lembrar quando abrir).
+  try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN follow_time TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
+  try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN hours_json TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
 }
+
+// Minutos do dia em Brasília.
+function brasiliaClock(now = new Date()) {
+  const t = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+  return String(t.getUTCHours()).padStart(2, "0") + ":" + String(t.getUTCMinutes()).padStart(2, "0");
+}
+const validTime = value => /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || "")) ? String(value) : "";
 
 function parseHistory(raw) {
   try { const list = JSON.parse(raw || "[]"); return Array.isArray(list) ? list : []; } catch { return []; }
@@ -102,18 +113,29 @@ export function phoneVariants(phone) {
   return [...out].filter(Boolean);
 }
 
-function view(row, today, showcase = null) {
+function view(row, today, showcase = null, now = new Date()) {
   const out = {
     id: row.id, name: row.name, business: row.business, phone: row.phone, niche: row.niche || "",
     interest: row.interest, stage: row.stage, notes: row.notes, source: row.source,
     lastContactAt: row.last_contact_at || null, nextFollowAt: row.next_follow_at || null,
     followCount: Number(row.follow_count || 0),
-    due: Boolean(row.next_follow_at && row.next_follow_at <= today),
+    followTime: validTime(row.follow_time),
+    // Com hora marcada (empresa que estava fechada), hoje só conta depois dessa hora.
+    due: Boolean(row.next_follow_at && (row.next_follow_at < today
+      || (row.next_follow_at === today && (!validTime(row.follow_time) || brasiliaClock(now) >= validTime(row.follow_time))))),
     late: Boolean(row.next_follow_at && row.next_follow_at < today),
     history: parseHistory(row.history_json).slice(-10).reverse(),
     createdAt: row.created_at, updatedAt: row.updated_at
   };
   out.message = out.stage === "chamar" && row.draft ? row.draft : followMessage(out, showcase);
+  // Aberta ou fechada agora (só para quem ainda não virou cliente).
+  if (["chamar", "contato", "conversando", "proposta"].includes(out.stage)) {
+    const week = readWeek(row.hours_json);
+    if (week) {
+      const st = hoursStatus(week, now);
+      Object.assign(out, { openNow: st.openNow, hoursLabel: st.label, hoursGuessed: st.guessed, nextOpenDay: st.nextOpenDay || null, nextOpenTime: st.nextOpenTime || null });
+    }
+  }
   const example = out.stage !== "cliente" ? exampleMedia(showcase?.[out.niche]) : null;
   if (example) {
     out.example = example;
@@ -183,18 +205,19 @@ export async function createContact(env, body = {}, now = new Date()) {
   const iso = now.toISOString();
   const history = JSON.stringify([{ at: iso, type: "criado", text: "Contato salvo" }]);
   await env.DB.prepare(
-    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche,draft)
-     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14,?15)`
+    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche,draft,follow_time,hours_json)
+     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14,?15,?16,?17)`
   ).bind(id, fields.name, fields.business, fields.phone, fields.interest, fields.stage, fields.notes,
     clean(body.source || "manual", 20), clean(body.sourceId || "", 300), fields.stage === "chamar" ? null : iso,
-    "followAt" in body ? body.followAt : next, history, iso, fields.niche, String(body.draft || "").slice(0, 2000)).run();
+    "followAt" in body ? body.followAt : next, history, iso, fields.niche, String(body.draft || "").slice(0, 2000),
+    validTime(body.followTime), readWeek(body.hours) ? JSON.stringify(readWeek(body.hours)) : "").run();
   return { ok: true, contact: await getContact(env, id, now) };
 }
 
 export async function getContact(env, id, now = new Date()) {
   await ensureCrmSchema(env);
   const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 LIMIT 1").bind(String(id || "")).first();
-  return row ? view(row, brasiliaDay(now), row.niche ? await readShowcase(env) : null) : null;
+  return row ? view(row, brasiliaDay(now), row.niche ? await readShowcase(env) : null, now) : null;
 }
 
 export async function updateContact(env, id, body = {}, now = new Date()) {
@@ -217,9 +240,10 @@ export async function updateContact(env, id, body = {}, now = new Date()) {
   if (fields.stage && fields.stage !== row.stage) {
     history = addHistory(history, { at: now.toISOString(), type: "etapa", text: fields.stage });
   }
+  const time = next === row.next_follow_at ? validTime(row.follow_time) : "";
   await env.DB.prepare(
-    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10,niche=?11 WHERE id=?1`
-  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString(), merged.niche || "").run();
+    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10,niche=?11,follow_time=?12 WHERE id=?1`
+  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString(), merged.niche || "", time).run();
   return { ok: true, contact: await getContact(env, row.id, now) };
 }
 
@@ -233,10 +257,43 @@ export async function markContacted(env, id, body = {}, now = new Date()) {
   const note = cleanNotes(body.note || "").slice(0, 300);
   const history = addHistory(row.history_json, { at: now.toISOString(), type: "falei", text: note || "Mensagem enviada" });
   await env.DB.prepare(
-    `UPDATE crm_contacts SET last_contact_at=?2,next_follow_at=?3,follow_count=follow_count+CASE WHEN stage='chamar' THEN 0 ELSE 1 END,
+    `UPDATE crm_contacts SET last_contact_at=?2,next_follow_at=?3,follow_time='',follow_count=follow_count+CASE WHEN stage='chamar' THEN 0 ELSE 1 END,
        stage=CASE WHEN stage='chamar' THEN 'contato' ELSE stage END,history_json=?4,updated_at=?2 WHERE id=?1`
   ).bind(row.id, now.toISOString(), next, history).run();
   return { ok: true, contact: await getContact(env, row.id, now) };
+}
+
+// "Lembrar quando abrir": a volta fica para o próximo horário em que a empresa abre.
+export async function remindWhenOpen(env, id, now = new Date()) {
+  await ensureCrmSchema(env);
+  const row = await env.DB.prepare("SELECT * FROM crm_contacts WHERE id=?1 AND archived=0 LIMIT 1").bind(String(id || "")).first();
+  if (!row) throw new Error("not_found");
+  const st = hoursStatus(readWeek(row.hours_json), now);
+  const day = st.openNow ? brasiliaDay(now) : st.nextOpenDay;
+  const time = st.openNow ? "" : st.nextOpenTime || "";
+  const history = addHistory(row.history_json, { at: now.toISOString(), type: "lembrete", text: st.openNow ? "Aberta agora" : "Lembrar quando abrir: " + st.label.replace(/^.*· /, "") });
+  await env.DB.prepare("UPDATE crm_contacts SET next_follow_at=?2,follow_time=?3,history_json=?4,updated_at=?5 WHERE id=?1")
+    .bind(row.id, day || brasiliaDay(now, 1), time, history, now.toISOString()).run();
+  return { ok: true, contact: await getContact(env, row.id, now) };
+}
+
+// Caçador do Master: empresa fechada agora → entra no CRM em "Para chamar", na hora em que abre.
+export async function addProspectLater(env, prospect = {}, message = "", now = new Date()) {
+  const phone = normalizePhone(prospect.phone);
+  if (!phone) throw new Error("phone_invalid");
+  await ensureCrmSchema(env);
+  const existing = await findByPhone(env, phone);
+  if (existing) { await remindWhenOpen(env, existing.id, now).catch(() => null); return { ok: true, id: existing.id, existed: true }; }
+  const week = readWeek(prospect.hours);
+  const st = hoursStatus(week, now);
+  const created = await createContact(env, {
+    name: prospect.name, business: prospect.name, phone, stage: "chamar", interest: "", niche: prospect.niche || "",
+    notes: "Achado pelo Caçador" + (prospect.city ? " · " + clean(prospect.city, 60) : "") + " · estava fechada",
+    source: "cacador", sourceId: prospect.id || "", draft: message,
+    followAt: st.openNow ? brasiliaDay(now) : st.nextOpenDay || brasiliaDay(now, 1),
+    followTime: st.openNow ? "" : st.nextOpenTime || "", hours: week
+  }, now);
+  return { ok: true, id: created.contact.id, when: st.label };
 }
 
 // Arquivar (não apaga de vez): some da lista, mas o histórico fica guardado.
@@ -255,7 +312,7 @@ export async function listContacts(env, { stage = "", q = "" } = {}, now = new D
     "SELECT * FROM crm_contacts WHERE archived=0 ORDER BY CASE WHEN next_follow_at IS NULL THEN 1 ELSE 0 END, next_follow_at ASC, updated_at DESC LIMIT 500"
   ).all())?.results || [];
   const showcase = rows.some(row => row.niche) ? await readShowcase(env) : null;
-  const all = rows.map(row => view(row, today, showcase));
+  const all = rows.map(row => view(row, today, showcase, now));
   const counts = Object.fromEntries(CRM_STAGES.map(s => [s, 0]));
   for (const c of all) counts[c.stage] = (counts[c.stage] || 0) + 1;
   const term = clean(q, 60).toLowerCase();
@@ -378,12 +435,13 @@ export async function handleCrmRoute(request, env, url) {
       if (request.method === "GET") return send({ ok: true, settings: await getCrmSettings(env) });
       if (request.method === "POST") return send(await saveCrmSettings(env, await request.json().catch(() => ({}))));
     }
-    const match = url.pathname.match(/^\/api\/master\/crm\/([^/]+)(?:\/(contacted|archive))?$/);
+    const match = url.pathname.match(/^\/api\/master\/crm\/([^/]+)(?:\/(contacted|archive|when-open))?$/);
     if (match && request.method === "POST") {
       const id = decodeURIComponent(match[1]);
       const body = await request.json().catch(() => ({}));
       if (match[2] === "contacted") return send(await markContacted(env, id, body));
       if (match[2] === "archive") return send(await archiveContact(env, id));
+      if (match[2] === "when-open") return send(await remindWhenOpen(env, id));
       return send(await updateContact(env, id, body));
     }
   } catch (error) {

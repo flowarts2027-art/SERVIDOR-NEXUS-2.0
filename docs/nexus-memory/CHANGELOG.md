@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~11h BRT — Empresa aberta/fechada + "Lembrar quando abrir" (Master e cliente)
+- Pedido do Rodrigo (10h27): pizzaria apareceu fechada; mandar agora não serve e amanhã ela vira "atrasada". Mostrar se está fechada e deixar marcar para o horário de funcionamento.
+- `src/business-hours.js`: lê horário do mapa (OSM opening_hours) e do Google (regularOpeningHours, agora no FIELD_MASK); diz "Aberta agora" ou "Fechada · abre hoje/amanhã/<dia> às HH:MM". Sem horário: horário comercial (seg–sáb 9h–18h), marcado como "Horário não informado".
+- Caçador do Master: selo aberta/fechada; fechada → "Lembrar quando abrir" (POST /api/master/prospects/later) → CRM "Para chamar" com dia e hora da abertura (sai da lista do Caçador).
+- CRM: colunas follow_time e hours_json (criadas sozinhas). Com hora marcada, o contato só aparece em "Falar hoje" depois dessa hora; "atrasado" só no dia seguinte. Card mostra "Falar hoje às 18:00" e o selo; botão "Lembrar quando abrir". Data mudada à mão ou "Já falei" limpam a hora.
+- Caçador diário: empresa com horário no mapa e fechada já entra marcada para quando abrir; sem horário, continua para hoje.
+- Captador do cliente: selo; fechada → "Lembrar quando abrir" → aba nova "Mandar depois" (status depois, remind_at). Quando abre: "Já pode mandar" + "1. Abrir conversa" / "2. Mandar meu material".
+- 491 testes (11 novos). Nada é enviado sozinho.
+
 ## 2026-10-18 ~10h35 BRT — Caçador do Master: campo de cidade
 - Rodrigo pediu conferir se Master e cliente têm cidade + nicho na busca. Cliente (Captador) já tinha os dois. Master só tinha o tipo; a cidade era rodízio de uma lista fixa.
 - Novo: Master › Caçador › "Cidade e estado" (ex.: Niterói RJ). Vazio = rodízio antigo. Com cidade: Google (se a chave responder) ou mapa grátis com a mesma busca do Captador (`searchCaptadorOSM`, agora exportada); um tipo por rodada, rodízio de tipos guardado à parte (city-cursor). Contato salvo aceita cidade escrita (`cleanCity`).

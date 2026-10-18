@@ -8,6 +8,10 @@
 
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
 import { SHOWCASE_CLIENT, readShowcase, showcaseLine } from "./showcase-store.js";
+import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
+
+// "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
+const CAP_STATUSES = [...STATUSES, "depois"];
 
 // Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
 export const CAPTADOR_MONTHLY_LIMIT = 100;
@@ -79,6 +83,8 @@ export async function ensureCaptadorSchema(env) {
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (client_id, id)
     )`).run();
+  try { await env.DB.prepare("ALTER TABLE captador_leads ADD COLUMN remind_at TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
+  try { await env.DB.prepare("ALTER TABLE captador_leads ADD COLUMN hours_json TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
   // Só o código do lugar de quem o cliente marcou "não serve" (permitido pelo Google).
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS captador_skips (
@@ -278,7 +284,8 @@ export function captadorLead(place, nicheKey, city, onlyNoSite = false) {
     address: clean(place.formattedAddress, 200), phone, mobile,
     has_site: site.hasOwnSite, instagram: site.instagram, rating, reviews,
     maps_url: /^https:\/\//.test(String(place.googleMapsUri || "")) ? String(place.googleMapsUri).slice(0, 300) : mapsSearchLink(name, city),
-    score: captadorScore({ reviews, rating, mobile, hasSite: site.hasOwnSite })
+    score: captadorScore({ reviews, rating, mobile, hasSite: site.hasOwnSite }),
+    hours: googleHours(place.regularOpeningHours)
   };
 }
 
@@ -341,7 +348,8 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
     id, name, niche: nicheKey, city, address, phone, mobile,
     has_site: site.hasOwnSite, instagram: site.instagram || (/^[a-z0-9._]{1,30}$/i.test(igTag) ? igTag : ""),
     rating: 0, reviews: 0, maps_url: mapsSearchLink(name, city),
-    score: captadorScore({ reviews: 0, rating: 0, mobile, hasSite: site.hasOwnSite })
+    score: captadorScore({ reviews: 0, rating: 0, mobile, hasSite: site.hasOwnSite }),
+    hours: parseOsmHours(tags.opening_hours)
   };
 }
 
@@ -389,7 +397,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   for (const lead of leads) {
     if (!lead || seen.has(lead.id) || await alreadyKnown(env, client.id, lead.id)) continue;
     seen.add(lead.id);
-    items.push(withMessage(config, { ...lead, status: "novo" }, showcase, material.kind));
+    items.push(withHours(withMessage(config, { ...lead, status: "novo" }, showcase, material.kind), lead.hours));
   }
   items.sort((a, b) => b.score - a.score);
   return { ok: true, found, items, source, usedMonth: used + 1, monthlyLimit };
@@ -416,6 +424,30 @@ export async function saveCaptadorContacted(env, client, body = {}) {
   return { ok: true, id };
 }
 
+// Empresa fechada agora: guarda para lembrar quando abrir (aba "Mandar depois").
+export async function saveCaptadorLater(env, client, body = {}, now = new Date()) {
+  await ensureCaptadorSchema(env);
+  const id = String(body.id || "");
+  if (!validLeadId(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
+  const city = clean(body.city, 60);
+  const name = clean(body.name, 120);
+  const { phone, mobile } = phoneInfo(body.phone);
+  if (!phone || !name || !city) throw new Error("lead_invalid");
+  const week = readWeek(body.hours);
+  const st = hoursStatus(week, now);
+  const remindAt = st.openNow ? now.toISOString() : st.nextOpenAt || new Date(now.getTime() + 3600e3).toISOString();
+  const maps = String(body.maps_url || "");
+  const mapsUrl = /^https:\/\/(maps\.google\.com|www\.google\.com\/maps)\//.test(maps) ? maps.slice(0, 300) : mapsSearchLink(name, city);
+  const instagram = /^[a-z0-9._]{1,30}$/i.test(String(body.instagram || "")) ? String(body.instagram) : "";
+  const score = Math.max(0, Math.min(10, Math.round(Number(body.score) || 0)));
+  await env.DB.prepare(
+    `INSERT INTO captador_leads(client_id,id,name,niche,city,address,phone,mobile,has_site,instagram,maps_url,score,status,remind_at,hours_json)
+     VALUES(?1,?2,?3,?4,?5,'',?6,?7,?8,?9,?10,?11,'depois',?12,?13)
+     ON CONFLICT(client_id,id) DO UPDATE SET status='depois',remind_at=?12,hours_json=?13,updated_at=CURRENT_TIMESTAMP`
+  ).bind(client.id, id, name, body.niche, city, phone, mobile ? 1 : 0, body.has_site === true ? 1 : 0, instagram, mapsUrl, score, remindAt, week ? JSON.stringify(week) : "").run();
+  return { ok: true, id, remindAt, when: st.label };
+}
+
 export async function skipCaptadorLead(env, client, id) {
   await ensureCaptadorSchema(env);
   const value = String(id || "");
@@ -428,12 +460,12 @@ export async function captadorView(env, client, status = "enviado") {
   const enabled = await captadorEnabled(env, client.id);
   if (!enabled) return { ok: true, enabled: false, price: CAPTADOR_PRICE };
   await ensureCaptadorSchema(env);
-  const filter = STATUSES.includes(status) && status !== "novo" ? status : "enviado";
+  const filter = CAP_STATUSES.includes(status) && status !== "novo" ? status : "enviado";
   const config = await captadorConfig(env, client);
   const rows = (await env.DB.prepare(
     "SELECT * FROM captador_leads WHERE client_id=?1 AND status=?2 ORDER BY updated_at DESC LIMIT 100"
   ).bind(client.id, filter).all())?.results || [];
-  const counts = Object.fromEntries(STATUSES.map(s => [s, 0]));
+  const counts = Object.fromEntries(CAP_STATUSES.map(s => [s, 0]));
   for (const row of (await env.DB.prepare("SELECT status, COUNT(*) AS n FROM captador_leads WHERE client_id=?1 GROUP BY status").bind(client.id).all())?.results || []) {
     counts[row.status] = Number(row.n || 0);
   }
@@ -445,12 +477,15 @@ export async function captadorView(env, client, status = "enviado") {
     ok: true, enabled: true, ready: true, config, counts, material,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
-    items: rows.map(row => withMessage(config, row, showcase, material.kind))
+    items: rows.map(row => {
+      const item = withHours(withMessage(config, row, showcase, material.kind), readWeek(row.hours_json));
+      return row.remind_at ? { ...item, remindAt: row.remind_at, remindDue: Date.parse(row.remind_at) <= Date.now() } : item;
+    }).sort((a, b) => filter === "depois" ? String(a.remindAt || "").localeCompare(String(b.remindAt || "")) : 0)
   };
 }
 
 export async function setCaptadorStatus(env, client, id, status) {
-  if (!STATUSES.includes(status)) throw new Error("status_invalid");
+  if (!CAP_STATUSES.includes(status)) throw new Error("status_invalid");
   await ensureCaptadorSchema(env);
   if (status === "novo") {
     // "Não cheguei a mandar": apaga o contato; ele pode aparecer de novo numa busca.
@@ -513,6 +548,9 @@ export async function handleCaptadorPortal(request, env, url, client, fetcher = 
     }
     if (url.pathname === "/api/portal/captador/contacted") {
       return send(await saveCaptadorContacted(env, client, body));
+    }
+    if (url.pathname === "/api/portal/captador/later") {
+      return send(await saveCaptadorLater(env, client, body));
     }
     if (url.pathname === "/api/portal/captador/skip") {
       return send(await skipCaptadorLead(env, client, body.id));

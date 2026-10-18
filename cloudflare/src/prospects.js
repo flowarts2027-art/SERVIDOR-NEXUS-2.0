@@ -1,5 +1,6 @@
 // Caçador de clientes da Flow Arts.
-import { addFromProspect } from "./crm.js";
+import { addFromProspect, addProspectLater, crmKnows } from "./crm.js";
+import { parseOsmHours, googleHours, withHours } from "./business-hours.js";
 // Busca empresas no OpenStreetMap (grátis, sem chave) ou, se houver chave,
 // no Google Maps (API oficial do Google Places). Guarda só
 // as que não têm site próprio, dá uma nota de 0 a 10 e prepara a primeira
@@ -230,6 +231,7 @@ export function osmToProspect(element, nicheKey, city) {
     maps_url: mapsSearchLink(name, city)
   };
   item.score = prospectScore({ ...item, hours: Boolean(tags.opening_hours), source: "osm" });
+  item.hours = parseOsmHours(tags.opening_hours);
   return item;
 }
 
@@ -286,6 +288,7 @@ export function placeToProspect(place, nicheKey, city) {
   };
   if (!item.name) return null;
   item.score = prospectScore(item);
+  item.hours = googleHours(place.regularOpeningHours);
   return item;
 }
 
@@ -324,7 +327,7 @@ export function whatsappLink(p, showcase = null) {
 const FIELD_MASK = [
   "places.id", "places.displayName", "places.formattedAddress", "places.nationalPhoneNumber",
   "places.internationalPhoneNumber", "places.websiteUri", "places.rating", "places.userRatingCount",
-  "places.photos", "places.googleMapsUri", "places.businessStatus"
+  "places.photos", "places.googleMapsUri", "places.businessStatus", "places.regularOpeningHours"
 ].join(",");
 
 export async function searchPlaces(key, query, fetcher) {
@@ -442,7 +445,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "", city: type
         // só fica guardado quem o Rodrigo chamar (saveContacted) ou marcar "não serve" (só o código).
         for (const item of places.map(place => placeToProspect(place, nicheKey, city))) {
           if (!item || await alreadyKnown(env, item.id)) continue;
-          live.push({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) });
+          live.push(withHours({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) }, item.hours));
         }
         searched.push(`${NICHES[nicheKey].query} em ${city}`);
         continue;
@@ -466,7 +469,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "", city: type
     for (const item of items) if (!(await alreadyKnown(env, item.id))) fresh.push(item);
     added += await saveProspects(env, fresh);
     // Mostra na tela os novos desta busca (o mapa grátis pode ser guardado; o Google não).
-    for (const item of fresh) live.push({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) });
+    for (const item of fresh) live.push(withHours({ ...item, status: "novo", message: firstMessage(item, showcase), whatsapp: whatsappLink(item, showcase) }, item.hours));
     searched.push(`${NICHES[nicheKey].query} em ${city}`);
   }
 
@@ -481,6 +484,8 @@ export async function runProspectSearch(env, { calls = 3, niche = "", city: type
 async function alreadyKnown(env, id) {
   const a = await env.DB.prepare("SELECT 1 AS x FROM prospects WHERE id=?1").bind(id).first();
   if (a) return true;
+  // Guardado para chamar depois (empresa fechada) já está no CRM.
+  if (await crmKnows(env, { sourceId: id }).catch(() => false)) return true;
   return Boolean(await env.DB.prepare("SELECT 1 AS x FROM prospect_skips WHERE id=?1").bind(id).first());
 }
 
@@ -543,12 +548,12 @@ export async function listProspects(env, { status = "novo", limit = 50 } = {}) {
     usedToday: usage.day === today() ? Number(usage.count || 0) : 0,
     dailyLimit: DAILY_SEARCH_LIMIT,
     counts,
-    items: rows.map(row => ({
+    items: rows.map(row => withHours({
       ...row,
       mobile: Boolean(row.mobile),
       message: firstMessage(row, showcase),
       whatsapp: whatsappLink(row, showcase)
-    }))
+    }, null))
   };
 }
 
@@ -595,6 +600,16 @@ export async function handleProspectsRoute(request, env, url) {
     }
     if (url.pathname === "/api/master/prospects/contacted" && request.method === "POST") {
       return send(await saveContacted(env, await request.json().catch(() => ({}))));
+    }
+    // Empresa fechada agora: entra no CRM para chamar quando abrir.
+    if (url.pathname === "/api/master/prospects/later" && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      if (!NICHES[body.niche] || !cleanCity(body.city)) throw new Error("prospect_invalid");
+      const showcase = await readShowcase(env);
+      const saved = await addProspectLater(env, body, firstMessage(body, showcase));
+      // Sai da lista "novos" do Caçador (agora está no CRM, em "Para chamar").
+      await env.DB.prepare("DELETE FROM prospects WHERE id=?1 AND status='novo'").bind(String(body.id || "")).run().catch(() => null);
+      return send(saved);
     }
     if (url.pathname === "/api/master/prospects/skip" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));

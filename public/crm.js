@@ -56,9 +56,15 @@
 
   const options = (list, current) => list.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(current) ? " selected" : ""}>${esc(l)}</option>`).join("");
 
+  // Aberta ou fechada agora (só quando o mapa informa o horário).
+  function hoursBadge(c) {
+    if (!c.hoursLabel) return "";
+    return `<span class="hours-badge ${c.openNow ? "hours-open" : "hours-closed"}">● ${esc(c.hoursLabel)}</span>`;
+  }
+
   function card(c, today) {
     const open = state.open.has(c.id);
-    const when = dayLabel(c.nextFollowAt, today);
+    const when = dayLabel(c.nextFollowAt, today) + (c.followTime && !c.late ? " às " + c.followTime : "");
     const tone = c.late ? "late" : c.due ? "due" : "";
     const sub = [c.business && c.business !== c.name ? c.business : "", NICHE_NAME[c.niche] || "", INTEREST[c.interest] || "", prettyPhone(c.phone)].filter(Boolean).join(" · ");
     const history = (c.history || []).map(h => {
@@ -71,7 +77,7 @@
         <div class="crm-card-text">
           <h3>${esc(c.name)}</h3>
           <p>${esc(sub)}</p>
-          <p class="crm-meta"><span class="crm-stage s-${esc(c.stage)}">${esc(STAGE_NAME[c.stage] || c.stage)}</span><span class="crm-when ${tone}">${esc(when)}</span></p>
+          <p class="crm-meta"><span class="crm-stage s-${esc(c.stage)}">${esc(STAGE_NAME[c.stage] || c.stage)}</span><span class="crm-when ${tone}">${esc(when)}</span>${hoursBadge(c)}</p>
         </div>
         <div class="crm-actions">
           ${state.settings.via === "flow" && c.stage !== "chamar"
@@ -80,6 +86,8 @@
               ? `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">1. Abrir conversa</a>
                  <button type="button" class="primary crm-wa" data-share-example="${esc(c.id)}">2. Mandar o ${esc(exampleWord(c))}</button>`
               : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
+          ${c.hoursLabel && !c.openNow && c.nextOpenDay && !(c.nextFollowAt === c.nextOpenDay && c.followTime === c.nextOpenTime)
+            ? `<button type="button" class="ghost" data-when-open="${esc(c.id)}">Lembrar quando abrir</button>` : ""}
           <button type="button" class="ghost" data-done="${esc(c.id)}">Já falei</button>
           ${c.stage === "chamar" ? `<button type="button" class="ghost danger-text" data-archive="${esc(c.id)}">Não serve</button>` : ""}
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
@@ -308,8 +316,14 @@
   }
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example]");
+    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
     if (!t) return;
+    if (t.matches("[data-when-open]")) {
+      t.disabled = true;
+      try { await call("/api/master/crm/" + encodeURIComponent(t.dataset.whenOpen) + "/when-open", { method: "POST", body: "{}" }); await load(); }
+      catch (error) { t.disabled = false; t.textContent = error.message; }
+      return;
+    }
     if (t.matches("[data-share-example]")) { await shareExample(t); return; }
     if (t.matches("[data-go-crm]")) { document.querySelector('.nav-item[data-view="crm"]')?.click(); return; }
     if (t.matches("[data-via]")) {

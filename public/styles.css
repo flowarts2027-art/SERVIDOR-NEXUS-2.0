@@ -502,3 +502,9 @@ input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0
 .crm-daily-row label:not(.crm-check){display:grid;gap:6px;min-width:150px}
 .crm-push-help{font-size:14px}
 .crm-stage.s-chamar{background:var(--blue);color:#fff;border-color:var(--blue)}
+/* Aberta / fechada agora (Caçador e CRM, 18/10) */
+.hours-badge { display: inline-block; margin: 2px 0; font-size: 13px; font-weight: 600; }
+.hours-open { color: #15803d; }
+.hours-closed { color: #b91c1c; }
+.hours-unknown { color: #64748b; font-weight: 500; }
+.crm-meta .hours-badge { margin-left: 8px; }

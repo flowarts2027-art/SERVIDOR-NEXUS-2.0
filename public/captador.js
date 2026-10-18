@@ -8,7 +8,7 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const DEMO = new URLSearchParams(location.search).get("demo") === "1";
   const FLOW_WHATS = "https://wa.me/5521964816185?text=" + encodeURIComponent("Olá! Quero ativar o Captador de clientes.");
-  const TABS = [["novo", "Novos"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
+  const TABS = [["novo", "Novos"], ["depois", "Mandar depois"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
   let status = "novo";
   let data = null;
   let busy = false;
@@ -94,8 +94,30 @@
     </section>`;
   }
 
+  // Aberta ou fechada agora (18/10). Sem horário no mapa: horário comercial.
+  function hoursBadge(lead) {
+    if (!lead.hoursLabel) return "";
+    if (lead.hoursGuessed) return `<p class="hours-badge hours-unknown">🕘 Horário não informado${lead.openNow ? "" : " · fora do horário comercial"}</p>`;
+    return `<p class="hours-badge ${lead.openNow ? "hours-open" : "hours-closed"}">● ${esc(lead.hoursLabel)}</p>`;
+  }
+  const closedNow = lead => lead.hoursLabel && !lead.openNow && lead.nextOpenAt;
+  const whenText = iso => {
+    const d = new Date(iso);
+    if (!Number.isFinite(d.getTime())) return "";
+    return d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "long", hour: "2-digit", minute: "2-digit" });
+  };
+
   function leadActions(lead) {
     const move = (to, label, cls = "btn-soft") => `<button type="button" class="btn ${cls}" data-cap-move="${to}" data-id="${esc(lead.id)}">${label}</button>`;
+    if (lead.status === "novo" && closedNow(lead)) return `<button type="button" class="btn btn-primary" data-cap-later="${esc(lead.id)}">${lead.hoursGuessed ? "Lembrar no horário comercial" : "Lembrar quando abrir"}</button>
+      <a class="btn btn-soft" href="${esc(withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">Mandar mesmo assim</a>
+      <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
+    if (lead.status === "depois") {
+      const link = withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp;
+      return `<a class="btn ${lead.remindDue ? "btn-whats" : "btn-soft"}" href="${esc(link)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">${lead.remindDue ? "1. Abrir conversa" : "Mandar agora mesmo assim"}</a>
+        ${withMedia(lead) ? `<button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">2. Mandar meu material</button>` : ""}
+        ${move("nao-quer", "Não serve", "btn-ghost")}`;
+    }
     if (lead.status === "novo" && withMedia(lead)) return `<a class="btn btn-whats" href="${esc(lead.whatsappWithMedia)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">1. Abrir conversa</a>
       <button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">2. Mandar meu material</button>
       <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
@@ -116,6 +138,7 @@
     return `<article class="cap-lead">
       <header><strong>${esc(lead.name)}</strong><span class="cap-score" title="Nota de 0 a 10">${Number(lead.score || 0)}/10</span></header>
       <p>${esc((data.niches || []).find(n => n.key === lead.niche)?.label || lead.niche)} · ${esc(lead.city)}</p>
+      ${lead.status === "depois" && lead.remindAt ? `<p class="hours-badge ${lead.remindDue ? "hours-open" : "hours-closed"}">${lead.remindDue ? "● Já pode mandar: a empresa abriu" : "⏰ Lembrete: " + esc(whenText(lead.remindAt))}</p>` : (lead.status === "novo" ? hoursBadge(lead) : "")}
       ${lead.address ? `<p>${esc(lead.address)}</p>` : ""}${stars}
       <p>${bits.join(" · ")} · <a href="${esc(lead.maps_url)}" target="_blank" rel="noopener">Ver no Maps</a></p>
       <details><summary>Ver a mensagem</summary><pre>${esc(withMedia(lead) ? lead.messageWithMedia : lead.message)}</pre></details>
@@ -263,9 +286,22 @@
     const sent = target.closest("[data-cap-sent]");
     if (sent) {
       // O link abre o WhatsApp; aqui guardamos só este contato, como "mandei mensagem".
-      const lead = found.find(item => item.id === sent.dataset.capSent);
+      const lead = found.find(item => item.id === sent.dataset.capSent) || (data?.items || []).find(item => item.id === sent.dataset.capSent && item.status === "depois");
       if (lead) call("/api/portal/captador/contacted", lead)
         .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
+      return;
+    }
+    const later = target.closest("[data-cap-later]");
+    if (later) {
+      const lead = found.find(item => item.id === later.dataset.capLater);
+      if (!lead) return;
+      later.disabled = true;
+      try {
+        const out = await call("/api/portal/captador/later", lead);
+        found = found.filter(item => item.id !== lead.id);
+        note = `${lead.name} foi para "Mandar depois". ${out.when && !/Aberta/.test(out.when) ? "Lembro quando " + String(out.when).replace(/^.*· /, "") + "." : ""}`;
+        await load();
+      } catch (error) { later.disabled = false; later.textContent = error.message; }
       return;
     }
     const shareBtn = target.closest("[data-cap-share]");

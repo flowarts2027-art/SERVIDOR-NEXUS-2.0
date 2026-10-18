@@ -95,3 +95,11 @@ test("aviso no celular: chave criada uma vez, toque vai assinado (VAPID) e sem c
   assert.match(calls[0].init.headers.authorization, /^vapid t=[\w-]+\.[\w-]+\.[\w-]+, k=[\w-]+$/);
   assert.equal(calls[0].init.body, undefined);
 });
+
+test("empresa com horário no mapa e fechada agora: fica para quando abrir, sem virar atrasada", async () => {
+  const { hoursStatus, parseOsmHours } = await import("../src/business-hours.js");
+  const st = hoursStatus(parseOsmHours("Tu-Su 18:00-23:00"), new Date("2026-10-18T12:30:00Z"));
+  assert.equal(st.openNow, false);
+  assert.equal(st.nextOpenDay, "2026-10-18");
+  assert.equal(st.nextOpenTime, "18:00");
+});

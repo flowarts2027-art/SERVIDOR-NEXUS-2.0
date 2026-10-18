@@ -5,6 +5,7 @@
 // Usa só o mapa grátis (OpenStreetMap): o Google não permite guardar os dados dos lugares.
 
 import { NICHES, CITIES, searchOSM, osmToProspect, firstMessage } from "./prospects.js";
+import { hoursStatus } from "./business-hours.js";
 import { readShowcase } from "./showcase-store.js";
 import { brasiliaDay, createContact, crmKnows } from "./crm.js";
 import { sendPushToAll } from "./push.js";
@@ -70,10 +71,14 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
     for (const p of candidates) {
       if (await crmKnows(env, { phone: p.phone, sourceId: p.id })) continue;
       const draft = firstMessage(p, showcase);
+      // Fechada agora: o lembrete fica para quando ela abrir (pedido de 18/10).
+      // Sem horário no mapa: fica para hoje mesmo (não dá para saber se está fechada).
+      const st = Array.isArray(p.hours) ? hoursStatus(p.hours, now) : { openNow: true };
       await createContact(env, {
         name: p.name, business: p.name, phone: p.phone, niche, stage: "chamar", interest: "",
         notes: `Achado pelo Nexus no mapa · ${CITIES[cityIndex]}${p.instagram ? " · Instagram @" + p.instagram : ""}`,
-        source: "cacador-auto", sourceId: p.id, followAt: today, draft
+        source: "cacador-auto", sourceId: p.id, draft, hours: p.hours,
+        followAt: st.openNow ? today : st.nextOpenDay || today, followTime: st.openNow ? "" : st.nextOpenTime || ""
       }, now);
       state.picked += 1;
       state.niches.push(niche);

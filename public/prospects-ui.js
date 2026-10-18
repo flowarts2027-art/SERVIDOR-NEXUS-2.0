@@ -28,10 +28,20 @@
     return data;
   };
 
+  // Aberta ou fechada agora (pedido de 18/10). Sem horário no mapa: horário comercial.
+  function hoursBadge(p) {
+    if (!p.hoursLabel) return "";
+    if (p.hoursGuessed) return `<p class="hours-badge hours-unknown">🕘 Horário não informado${p.openNow ? "" : " · fora do horário comercial"}</p>`;
+    return `<p class="hours-badge ${p.openNow ? "hours-open" : "hours-closed"}">● ${esc(p.hoursLabel)}</p>`;
+  }
+  const closedNow = p => p.hoursLabel && !p.openNow && p.nextOpenAt;
+
   function actions(p) {
     const move = (to, label, cls = "ghost") => `<button type="button" class="${cls}" data-move="${to}" data-id="${esc(p.id)}">${label}</button>`;
     const wa = `<a class="prospect-wa" href="${esc(p.whatsapp)}" target="_blank" rel="noopener" data-sent="${esc(p.id)}">Abrir no WhatsApp</a>`;
     const copy = `<button type="button" class="ghost" data-copy="${esc(p.id)}">Copiar mensagem</button>`;
+    if (p.status === "novo" && closedNow(p)) return `<button type="button" class="primary" data-later="${esc(p.id)}">${p.hoursGuessed ? "Lembrar no horário comercial" : "Lembrar quando abrir"}</button>`
+      + wa.replace("Abrir no WhatsApp", "Mandar mesmo assim") + `<button type="button" class="ghost" data-skip="${esc(p.id)}">Não serve</button>`;
     if (p.status === "novo") return wa + copy + `<button type="button" class="ghost" data-skip="${esc(p.id)}">Não serve</button>`;
     if (p.status === "enviado") return move("respondeu", "Respondeu", "primary") + move("nao-quer", "Não quer") + move("novo", "Não cheguei a mandar");
     if (p.status === "respondeu") return move("reuniao", "Reunião marcada", "primary") + move("nao-quer", "Não quer");
@@ -45,6 +55,7 @@
     return `<article class="prospect-card">
       <header><h3>${esc(p.name)}</h3><span class="prospect-score" title="Nota de potencial">${Number(p.score || 0)}/10</span></header>
       <p>${esc(NICHE[p.niche] || p.niche)} · ${esc(p.city)}</p>
+      ${hoursBadge(p)}
       <p>${stars}</p>
       <p>${web} · ${phone}${p.maps_url ? ` · <a href="${esc(p.maps_url)}" target="_blank" rel="noopener">Ver no Maps</a>` : ""}</p>
       <details><summary>Ver a mensagem</summary><pre>${esc(p.message)}</pre></details>
@@ -92,6 +103,20 @@
         call("/api/master/prospects/contacted", { method: "POST", body: JSON.stringify(lead) })
           .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
       }
+      return;
+    }
+
+    const later = event.target.closest("[data-later]");
+    if (later) {
+      const lead = found.find(item => item.id === later.dataset.later);
+      if (!lead) return;
+      later.disabled = true;
+      try {
+        const out = await call("/api/master/prospects/later", { method: "POST", body: JSON.stringify(lead) });
+        found = found.filter(item => item.id !== lead.id);
+        await load();
+        $("#prospect-usage").textContent = `${lead.name} foi para o CRM, em "Para chamar". ${out.when ? "Lembro quando " + String(out.when).replace(/^.*· /, "") + "." : ""}`;
+      } catch { later.disabled = false; later.textContent = "Erro, tente de novo"; }
       return;
     }
 
