@@ -1,5 +1,9 @@
 # Próximas ações
 
+## Conectar Instagram — "Parâmetro inválido" (18/10) — correção NO AR (9bf2276)
+1. Rodrigo fecha e abre o app Master e tenta conectar o Instagram de novo.
+2. Se ainda der erro: conferir no app Meta "Flow Arts Nexus" se o redirect é https://servidor-nexus.diamantehinode2015.workers.dev/api/oauth/instagram/callback.
+
 ## Carrosséis de exemplo por nicho (18/10) — PAUSADO pelo Rodrigo às 11h27; continuar em 19/10
 - Prontos (montados e entregues): salão, cafeteria, academia, lanchonete, loja de roupas, padaria, loja de ração, agropecuária, veterinário. Restaurante e pet já tinham vídeo.
 - Faltam (10): bar, dentista, clínica e consultório, farmácia, mercado, oficina mecânica, hotel e pousada, imobiliária, contabilidade, material de construção.

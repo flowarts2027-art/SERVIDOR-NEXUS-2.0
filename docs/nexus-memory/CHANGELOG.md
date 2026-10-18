@@ -4,7 +4,8 @@
 - Rodrigo (pelo celular, app Master em painel.flowarts.com.br): conectar Instagram deu "Parâmetro inválido" com duas contas, inclusive a da Global Play. Duas contas com o mesmo erro = problema do app, não da conta.
 - Causa provável: o redirect_uri era montado com o domínio de quem abriu (painel.flowarts.com.br), mas no app Meta só está cadastrado o endereço workers.dev.
 - Correção: instagram.js usa sempre INSTAGRAM_REDIRECT_BASE ou PUBLIC_BASE_URL (workers.dev) no redirect_uri; depois de autorizar, volta para o domínio onde o painel foi aberto. Teste novo; 498 testes ok.
-- Falta: OK do Rodrigo para publicar e testar de novo pelo app.
+- Publicado com OK do Rodrigo (12h14): main 9bf2276; NEXUS CI e Deploy NEXUS Cloudflare success. Overnight Regression falhou no passo end-to-end, igual aos 3 commits anteriores (não causado por esta mudança).
+- Falta: Rodrigo testar a conexão do Instagram de novo pelo app (Flow Arts ou cliente novo; Global Play é arquivada/travada).
 
 ## 2026-10-18 ~11h20 BRT — Master: "Subir conteúdo do cliente" com legenda pronta por nicho
 - Pedido do Rodrigo (11h07–11h12): ele gera as imagens no ChatGPT e sobe para o cliente; escolher tipo (post, carrossel, Reels, Stories), legenda pronta pelo nicho (sem precisar escrever), dia e hora; cada postagem com texto diferente.
