@@ -367,6 +367,29 @@ export async function upsertPortalUser(env, clientId, username, password) {
   return { clientId: cleanClientId, username: cleanUsername };
 }
 
+// Cria o login do cliente com uma senha que já chegou protegida (hash).
+// Usado na aprovação do cadastro: a senha original nunca é guardada.
+export async function insertPortalUserRecord(env, clientId, username, record) {
+  await ensureAuthRuntimeSchema(env);
+  const cleanClientId = String(clientId || "").trim();
+  const cleanUsername = String(username || "").trim();
+  if (!cleanClientId || !cleanUsername) throw new Error("client_id_and_username_required");
+  if (!record?.salt || !record?.hash) throw new Error("portal_password_record_required");
+  await env.DB.prepare(
+    `INSERT INTO portal_users(client_id, username, password_algo, password_salt, password_hash, created_at, updated_at)
+     VALUES(?1, ?2, ?3, ?4, ?5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+  ).bind(cleanClientId, cleanUsername, String(record.algorithm || "hmac-sha256-v1"), record.salt, record.hash).run();
+  return { clientId: cleanClientId, username: cleanUsername };
+}
+
+export async function portalUsernameTaken(env, username) {
+  await ensureAuthRuntimeSchema(env);
+  const row = await env.DB.prepare(
+    "SELECT client_id FROM portal_users WHERE username = ?1 COLLATE NOCASE LIMIT 1"
+  ).bind(String(username || "").trim()).first();
+  return Boolean(row);
+}
+
 export async function authenticatePortalUser(env, username, password) {
   await ensureAuthRuntimeSchema(env);
   const cleanUsername = String(username || "").trim();

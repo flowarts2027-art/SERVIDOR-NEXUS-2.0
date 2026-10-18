@@ -1,5 +1,8 @@
 # Estado do Nexus 2.0
 
+## 2026-10-18 ~14h30 BRT — cadastro do cliente pelo link pronto em branch
+- Branch `feat/cadastro-cliente`: página /cadastro + aprovação em Master › Clientes. Produção não mudou até o OK do Rodrigo. Detalhes em CHANGELOG.md.
+
 ## 2026-10-16 ~17h BRT — agente de marketing do carrossel pronto em branch
 - Branch `feat/agente-marketing-carrossel` (commit local, sem push): plano de 5 cartões conferido no código, fotos sem texto com revisor visual, títulos escritos por código no GitHub Actions. Detalhes em CHANGELOG.md e docs/agente-marketing-carrossel.md.
 - Produção não mudou. Imagens seguem pausadas no Master.

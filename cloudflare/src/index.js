@@ -35,6 +35,7 @@ import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
 import { handleMasterUpload } from "./master-upload.js";
+import { handlePublicSignup } from "./signup.js";
 import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated-reel.js";
 import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
 import { handleShowcasePage, handleShowcaseMaster, handleShowcaseExtras } from "./showcase.js";
@@ -768,6 +769,9 @@ export default {
     if (["GET", "HEAD"].includes(request.method) && ["/client-lite.js", "/client-lite.css"].includes(url.pathname)) {
       return asset(env, request, url.pathname);
     }
+
+    const signupResponse = await handlePublicSignup(request, env, url);
+    if (signupResponse) return signupResponse;
 
     if (url.pathname === "/api/auth/login" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));

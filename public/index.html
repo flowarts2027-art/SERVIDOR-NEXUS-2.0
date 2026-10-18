@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Nexus Master">
   <title>Nexus Master · Flow Arts</title>
-  <link rel="stylesheet" href="/styles.css?v=40">
+  <link rel="stylesheet" href="/styles.css?v=41">
 </head>
 <body>
   <div class="shell">
@@ -21,17 +21,17 @@
         <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
         <button class="nav-item" data-view="crm">☺ <span>CRM</span> <b id="crm-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item more-tab" data-view="clients">◉ <span>Clientes</span></button>
+        <button class="nav-item more-tab" data-view="clients">◉ <span>Clientes</span> <b id="signup-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item more-tab" data-view="odin">◆ <span>Caçador</span></button>
         <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
         <button class="nav-item more-tab" data-view="site">◍ <span>Site</span></button>
         <button class="nav-item more-tab" data-view="settings">⚙ <span>Integrações</span></button>
-        <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet">☰ <span>Mais</span></button>
+        <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet">☰ <span>Mais</span> <b id="signup-more-count" class="notification-count" hidden>0</b></button>
       </nav>
       <div id="master-more-sheet" class="master-more-sheet" hidden>
         <p class="master-more-title">Mais opções</p>
         <div class="master-more-grid">
-          <button class="nav-item" type="button" data-view="clients">◉ <span>Clientes</span></button>
+          <button class="nav-item" type="button" data-view="clients">◉ <span>Clientes</span> <b id="signup-sheet-count" class="notification-count" hidden>0</b></button>
           <button class="nav-item" type="button" data-view="odin">◆ <span>Caçador</span></button>
           <button class="nav-item" type="button" data-view="agents">⬡ <span>Agentes</span></button>
           <button class="nav-item" type="button" data-view="site">◍ <span>Site</span></button>
@@ -65,6 +65,10 @@
       </section>
 
       <section id="clients" class="view">
+        <div class="panel signup-panel" id="signup-panel">
+          <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
+          <div id="signup-list"><p class="muted">Carregando…</p></div>
+        </div>
         <div class="panel"><div class="panel-head"><div><p class="eyebrow">GESTÃO</p><h2>Todos os clientes</h2></div><button class="primary" data-go="onboarding">＋ Adicionar cliente</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Status</th><th>Instagram</th><th>Odin</th><th>Agendamento</th><th>IA do cliente</th><th>Ações</th></tr></thead><tbody id="clients-table"></tbody></table></div></div>
         <div class="panel master-profiles-panel">
           <div class="panel-head"><div><p class="eyebrow">PERFIS RECEBIDOS</p><h2>Configuração dos agentes</h2><p class="muted">Revise as informações já recebidas e defina a operação dos agentes.</p></div></div>
@@ -648,5 +652,6 @@
   <script src="/crm.js?v=6" defer></script>
   <script src="/examples.js?v=1" defer></script>
   <script src="/master-push.js?v=1" defer></script>
+  <script src="/signups.js?v=1" defer></script>
 </body>
 </html>

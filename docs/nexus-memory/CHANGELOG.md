@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~14h30 BRT — Cadastro do cliente pelo link /cadastro (ramo feat/cadastro-cliente; falta OK)
+- Pedido do Rodrigo (14h12): mandar um link para o cliente escolher usuário e senha; ele aprova no Nexus, sem criar o acesso na mão. Pediu os mesmos dados do "Novo cliente" do Master (14h14).
+- Página pública `public/cadastro.html` (painel.flowarts.com.br/cadastro): nome da empresa, nicho, @ do Instagram, WhatsApp, cores do painel, usuário, senha e repetir senha.
+- `cloudflare/src/signup.js`: POST /api/signup guarda o pedido como `pending` em `signup_requests` (tabela criada na hora), com a senha só em hash (mesmo formato do portal). Limite de 5 envios por IP a cada 15 min e campo escondido contra robô. Usuário repetido é recusado.
+- Master › Clientes › "Cadastros novos": lista, Aprovar (cria o cliente em `setup` + login com a senha escolhida; o hash é apagado do pedido), Recusar, "Avisar no WhatsApp" e "Copiar link". Contador no menu Clientes/Mais.
+- Configuração do cliente novo passou para `client-create.js` (Master e cadastro usam a mesma). Instagram e WhatsApp ficam em `config.contact`.
+- Evidência: 506/506 testes locais (8 novos com SQLite real); telas conferidas em navegador de teste com dados simulados. Nada publicado.
+
 ## 2026-10-18 ~12h20 BRT — Conectar Instagram: "Parâmetro inválido" (Global Play e outra conta)
 - Rodrigo (pelo celular, app Master em painel.flowarts.com.br): conectar Instagram deu "Parâmetro inválido" com duas contas, inclusive a da Global Play. Duas contas com o mesmo erro = problema do app, não da conta.
 - Causa provável: o redirect_uri era montado com o domínio de quem abriu (painel.flowarts.com.br), mas no app Meta só está cadastrado o endereço workers.dev.

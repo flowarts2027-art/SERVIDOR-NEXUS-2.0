@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F1E3D">
+<meta name="robots" content="noindex">
+<title>Cadastro · Flow Arts</title>
+<link rel="icon" href="/brand/app-cliente-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root {
+    --navy: #0F1E3D; --blue: #2B63F0; --blue-soft: #E6EDFF; --paper: #F4F6FA; --card: #FFFFFF;
+    --ink: #16233F; --muted: #5B6680; --line: #D5DCE8; --ok: #17895E; --ok-soft: #E3F4EC;
+    --danger: #B42318; --danger-soft: #FDECEA; font-size: 17px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: "Atkinson Hyperlegible", system-ui, sans-serif; line-height: 1.45; }
+  header { background: var(--navy); color: #fff; padding: 28px 16px 56px; text-align: center; }
+  header img { width: 56px; height: 56px; border-radius: 14px; }
+  header h1 { margin: 12px 0 4px; font-size: 1.5rem; }
+  header p { margin: 0; color: #CAD3E2; }
+  main { max-width: 480px; margin: -36px auto 40px; padding: 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 16px; box-shadow: 0 8px 24px rgba(15,30,61,.08); }
+  h2 { font-size: 1.05rem; margin: 18px 0 10px; color: var(--navy); }
+  h2:first-child { margin-top: 0; }
+  label { display: block; font-weight: 700; margin: 0 0 14px; }
+  label small { display: block; font-weight: 400; color: var(--muted); font-size: .85rem; }
+  input, select { display: block; width: 100%; margin-top: 6px; padding: 13px 12px; font: inherit; color: var(--ink);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 9px; }
+  input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  .themes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 14px; }
+  .themes label { margin: 0; font-weight: 400; display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 9px; padding: 10px; cursor: pointer; }
+  .themes input { width: auto; margin: 0; }
+  .themes label:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
+  .dot { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+  .show-pass { display: flex; align-items: center; gap: 8px; font-weight: 400; margin-top: -4px; }
+  .show-pass input { width: auto; margin: 0; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  button { width: 100%; padding: 15px; font: inherit; font-weight: 700; color: #fff; background: var(--blue); border: 0; border-radius: 10px; cursor: pointer; margin-top: 6px; }
+  button:disabled { opacity: .6; }
+  .msg { margin: 12px 0 0; padding: 12px; border-radius: 9px; }
+  .msg.error { background: var(--danger-soft); color: var(--danger); }
+  .done { text-align: center; }
+  .done .check { width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; font-size: 1.8rem; }
+  .done p { color: var(--muted); }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 16px 32px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <img src="/brand/app-cliente-192.png" alt="">
+  <h1>Cadastro Flow Arts</h1>
+  <p>Crie o acesso ao seu painel. Leva 1 minuto.</p>
+</header>
+<main>
+  <div class="card">
+    <form id="signup" novalidate>
+      <h2>Sua empresa</h2>
+      <label>Nome da empresa<input name="name" required maxlength="80" autocomplete="organization" placeholder="Ex.: Pet Shop Amigo"></label>
+      <label>Nicho<small>O tipo do seu negócio.</small><input name="niche" required maxlength="80" placeholder="Ex.: pet shop, salão, restaurante"></label>
+      <label>Instagram da empresa<input name="instagram" required maxlength="60" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="@suaempresa"></label>
+      <label>WhatsApp com DDD<input name="whatsapp" required inputmode="tel" autocomplete="tel" placeholder="22 99999-8888"></label>
+
+      <h2>Cores do painel</h2>
+      <div class="themes" role="radiogroup" aria-label="Cores do painel">
+        <label><input type="radio" name="theme" value="green-black" checked><span class="dot" style="background:linear-gradient(135deg,#18c96e 50%,#07140c 50%)"></span>Preto + Verde</label>
+        <label><input type="radio" name="theme" value="red-black"><span class="dot" style="background:linear-gradient(135deg,#ff4b55 50%,#200306 50%)"></span>Preto + Vermelho</label>
+        <label><input type="radio" name="theme" value="blue-white"><span class="dot" style="background:linear-gradient(135deg,#3d9bff 50%,#10253c 50%)"></span>Azul + Branco</label>
+        <label><input type="radio" name="theme" value="gold-black"><span class="dot" style="background:linear-gradient(135deg,#e9bd52 50%,#211804 50%)"></span>Preto + Dourado</label>
+      </div>
+
+      <h2>Seu acesso</h2>
+      <label>Usuário<small>Letras e números, sem espaço e sem acento. Pode usar ponto.</small><input name="username" required minlength="3" maxlength="30" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" placeholder="ex.: petamigo"></label>
+      <label>Senha<small>Pelo menos 8 caracteres.</small><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+      <label>Repita a senha<input name="passwordConfirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+      <label class="show-pass"><input type="checkbox" id="show-pass"> Mostrar senha</label>
+      <label class="hp" aria-hidden="true">Site<input name="website" tabindex="-1" autocomplete="off"></label>
+
+      <button type="submit">Enviar cadastro</button>
+      <p id="msg" class="msg error" role="alert" hidden></p>
+    </form>
+
+    <div id="done" class="done" hidden>
+      <div class="check">✓</div>
+      <h2>Cadastro enviado!</h2>
+      <p>Vamos conferir e liberar o seu acesso. Você recebe o aviso pelo WhatsApp.</p>
+      <p>Depois é só entrar em <strong>painel.flowarts.com.br</strong> com o usuário e a senha que você escolheu.</p>
+    </div>
+  </div>
+</main>
+<footer><a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a></footer>
+<script>
+(function () {
+  var form = document.getElementById("signup");
+  var msg = document.getElementById("msg");
+  var button = form.querySelector("button");
+  document.getElementById("show-pass").addEventListener("change", function (event) {
+    form.querySelectorAll("input[name=password], input[name=passwordConfirm]").forEach(function (input) {
+      input.type = event.target.checked ? "text" : "password";
+    });
+  });
+  function show(text) { msg.textContent = text; msg.hidden = false; msg.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    msg.hidden = true;
+    var data = Object.fromEntries(new FormData(form));
+    data.username = String(data.username || "").trim().toLowerCase();
+    if (data.password !== data.passwordConfirm) { show("As duas senhas estão diferentes."); return; }
+    button.disabled = true;
+    button.textContent = "Enviando…";
+    fetch("/api/signup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) })
+      .then(function (response) { return response.json().catch(function () { return {}; }).then(function (body) { return { response: response, body: body }; }); })
+      .then(function (result) {
+        if (result.response.ok && result.body.ok) {
+          form.hidden = true;
+          document.getElementById("done").hidden = false;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+        show(result.body.message || "Não foi possível enviar agora. Tente de novo.");
+      })
+      .catch(function () { show("Sem conexão. Confira a internet e tente de novo."); })
+      .finally(function () { button.disabled = false; button.textContent = "Enviar cadastro"; });
+  });
+})();
+</script>
+</body>
+</html>

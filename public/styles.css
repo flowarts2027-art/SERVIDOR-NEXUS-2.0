@@ -518,3 +518,8 @@ input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0
 .mu-item header small { color: #1648eb; font-weight: 600; }
 .mu-thumbs { display: flex; gap: 6px; overflow-x: auto; }
 .mu-thumb { width: 64px; height: 80px; object-fit: cover; border-radius: 8px; flex: 0 0 auto; background: #eef3f9; display: grid; place-items: center; }
+/* Cadastros novos (Master › Clientes) */
+.signup-item{display:grid;grid-template-columns:1fr auto;gap:10px 14px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fcfdfe;margin-bottom:10px}
+.signup-info strong,.signup-info small{display:block}.signup-info small{color:var(--muted);font-size:14px;margin-top:4px;overflow-wrap:anywhere}
+.signup-actions{display:flex;gap:8px;flex-wrap:wrap}.signup-status{grid-column:1/-1;margin:0;font-size:15px}
+@media(max-width:700px){.signup-item{grid-template-columns:1fr}.signup-actions>*{flex:1;text-align:center}}

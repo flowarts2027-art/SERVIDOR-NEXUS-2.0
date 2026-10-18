@@ -1,5 +1,12 @@
 # Próximas ações
 
+## Cadastro do cliente pelo link (18/10) — ramo feat/cadastro-cliente; falta OK
+1. OK do Rodrigo → juntar na main (deploy automático).
+2. Rodrigo abre painel.flowarts.com.br/cadastro no celular e faz um cadastro de teste.
+3. Master › Mais › Clientes › "Cadastros novos" › Aprovar.
+4. Entrar no painel do cliente com o usuário e a senha do teste.
+5. Depois: mandar o link aos clientes (botão "Copiar link").
+
 ## Conectar Instagram — "Parâmetro inválido" (18/10) — correção NO AR (9bf2276)
 1. Rodrigo fecha e abre o app Master e tenta conectar o Instagram de novo.
 2. Se ainda der erro: conferir no app Meta "Flow Arts Nexus" se o redirect é https://servidor-nexus.diamantehinode2015.workers.dev/api/oauth/instagram/callback.

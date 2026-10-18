@@ -24,6 +24,8 @@ import { rescheduleMissedToday } from "./reschedule-today.js";
 import { createCarouselTest, carouselTestStatus, stepCarouselTest } from "./format-builder.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { runGiftInboxForClient } from "./gift-dm.js";
+import { newManagedClientConfig } from "./client-create.js";
+import { handleMasterSignups } from "./signup.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -528,6 +530,9 @@ export async function handleMaster(request, env, url) {
   if (!protectedApi) return null;
   if (!await requireMaster(request, env)) return json({ error: "unauthorized" }, 401);
 
+  const signupResponse = await handleMasterSignups(request, env, url);
+  if (signupResponse) return signupResponse;
+
   const openaiResponse = await handleMasterOpenAI(request, env, url);
   if (openaiResponse) return openaiResponse;
 
@@ -620,31 +625,7 @@ export async function handleMaster(request, env, url) {
       }, 409);
     }
 
-    const config = {
-      theme: body.theme || "green-black",
-      primaryColor: body.primaryColor || "#18c96e",
-      secondaryColor: body.secondaryColor || "#07140c",
-      odin: true,
-      postTimes: [],
-      adaptiveTiming: true,
-      leads: { total: 0, hot: 0, warm: 0, cold: 0 },
-      usage: { openaiPercent: 0 },
-      aiMode: id === "ragnar-one" ? "own-key" : "shared",
-      aiMonthlyImageLimit: 0,
-      aiImagesUsed: 0,
-      managedInfrastructure: true,
-      onboarding: {
-        github: true,
-        openai: true,
-        instagram: false,
-        facebook: true,
-        metaApp: true,
-        creativeProfile: false,
-        supportRequested: false
-      },
-      setupMode: "managed",
-      openaiKeySource: id === "ragnar-one" ? "ragnar-exclusive" : "shared"
-    };
+    const config = newManagedClientConfig(id, body);
 
     const client = await upsertClient(env, {
       id,
