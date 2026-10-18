@@ -3,6 +3,7 @@
 // Só conferência de palavras: sem IA e sem custo por post.
 
 import { clientBrand, brandProfileVersion } from "./client-brand.js";
+import { hookProblems } from "./hook-formulas.js";
 
 const RULES = [
   {
@@ -45,5 +46,8 @@ export function reviewCopy(client = {}, text = "") {
     const match = value.match(rule.test);
     if (match) out.push({ code: rule.code, label: rule.label, trecho: match[0].slice(0, 60) });
   }
+  // Gancho (1ª linha): regras do hookscore do pacote instagram-agent (MIT), em português.
+  const hook = hookProblems(value);
+  if (hook.length) out.push({ code: "gancho", label: "gancho fraco", trecho: hook.join("; ").slice(0, 60) });
   return out;
 }

@@ -10,7 +10,9 @@ export const FIRST_LINE_MAX = 125;
 export const ROBOT_PHRASES = Object.freeze([
   "no mundo de hoje", "no cenário atual", "nos dias de hoje", "vale ressaltar", "é importante destacar",
   "em suma", "em resumo", "mergulhe", "desbloqueie", "potencialize", "alavanque", "jornada",
-  "transforme sua vida", "não é apenas", "mais do que nunca", "revolucione", "eleve o seu"
+  "transforme sua vida", "não é apenas", "mais do que nunca", "revolucione", "eleve o seu",
+  "sem mais delongas", "é crucial", "fique por dentro", "descubra como", "imagine só", "não é segredo que",
+  "cada vez mais", "de forma eficiente", "um verdadeiro divisor de águas", "leve seu negócio ao próximo nível"
 ]);
 
 const INVISIBLE = /[​-‍⁠﻿­]/g;
