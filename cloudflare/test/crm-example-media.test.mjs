@@ -24,3 +24,11 @@ test("CRM do Master tem o passo 2 que manda o exemplo pelo compartilhar do celul
   assert.match(ui, /data-share-example/);
   assert.match(ui, /navigator\.share\(\{ files \}\)/);
 });
+
+test("casa de ração usa o exemplo da loja de ração quando não tem o próprio", async () => {
+  const { showcaseEntry, showcaseLine } = await import("../src/showcase-store.js");
+  const map = { racao: { kind: "carousel", images: ["https://a/1.jpg", "https://a/2.jpg"] } };
+  assert.equal(showcaseEntry(map, "casa_racao"), map.racao);
+  assert.match(showcaseLine(map, "casa_racao", "casas de ração"), /carrossel/);
+  assert.equal(showcaseEntry(map, "bar"), undefined);
+});

@@ -2,7 +2,7 @@
 // etapa da conversa e data para voltar a falar (padrão: 7 dias).
 // Nada é enviado sozinho: o painel só lembra e abre o WhatsApp com a mensagem pronta.
 
-import { readShowcase, showcaseLine } from "./showcase-store.js";
+import { readShowcase, showcaseLine, showcaseEntry } from "./showcase-store.js";
 import { hoursStatus, readWeek } from "./business-hours.js";
 
 export const CRM_STAGES = ["chamar", "contato", "conversando", "proposta", "cliente", "nao-quer"];
@@ -82,8 +82,8 @@ const firstName = name => String(name || "").trim().split(/\s+/)[0] || "";
 // Mensagem de retorno: curta, sem promessa e sem número inventado.
 const NICHE_PLURAL = {
   cafeteria: "cafeterias", restaurante: "restaurantes", lanchonete: "lanchonetes", padaria: "padarias", bar: "bares",
-  salao: "salões de beleza", academia: "academias", pet: "pet shops", racao: "lojas de ração", casa_racao: "casas de ração",
-  agropecuaria: "agropecuárias", veterinario: "clínicas veterinárias", dentista: "dentistas", clinica: "clínicas",
+  salao: "salões de beleza", academia: "academias", pet: "pet shops", racao: "lojas de ração e agropecuárias",
+  veterinario: "clínicas veterinárias", dentista: "dentistas", clinica: "clínicas",
   farmacia: "farmácias", mercado: "mercados", roupas: "lojas de roupas", oficina: "oficinas mecânicas",
   hotel: "hotéis e pousadas", imobiliaria: "imobiliárias", contabilidade: "escritórios de contabilidade", material: "lojas de material de construção"
 };
@@ -136,7 +136,7 @@ function view(row, today, showcase = null, now = new Date()) {
       Object.assign(out, { openNow: st.openNow, hoursLabel: st.label, hoursGuessed: st.guessed, nextOpenDay: st.nextOpenDay || null, nextOpenTime: st.nextOpenTime || null });
     }
   }
-  const example = out.stage !== "cliente" ? exampleMedia(showcase?.[out.niche]) : null;
+  const example = out.stage !== "cliente" ? exampleMedia(showcaseEntry(showcase, out.niche)) : null;
   if (example) {
     out.example = example;
     out.messageWithMedia = mediaMessage(out.message, example.kind);

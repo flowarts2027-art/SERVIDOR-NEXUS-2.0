@@ -29,9 +29,18 @@ export async function writeShowcase(env, map) {
   ).bind(SHOWCASE_CLIENT, JSON.stringify(map)).run();
 }
 
+// 18/10 (Rodrigo): loja de ração, casa de ração e agropecuária são um nicho só ("racao").
+// Chaves antigas que ainda estejam guardadas viram "racao".
+export const NICHE_MERGE = { casa_racao: "racao", agropecuaria: "racao" };
+export const canonicalNiche = niche => NICHE_MERGE[String(niche || "")] || String(niche || "");
+export function showcaseEntry(map, niche) {
+  const key = canonicalNiche(niche);
+  return map?.[key] || map?.[niche];
+}
+
 // Linha que entra na mensagem quando o nicho tem vitrine. Vazia quando não tem.
 export function showcaseLine(map, niche, label) {
-  const entry = map?.[niche];
+  const entry = showcaseEntry(map, niche);
   const carousel = entry?.kind === "carousel" && Array.isArray(entry?.images) && entry.images.length > 0;
   if (!carousel && !entry?.videoUrl) return "";
   const what = carousel ? "um carrossel" : "um vídeo";

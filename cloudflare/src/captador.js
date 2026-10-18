@@ -29,9 +29,8 @@ export const CAPTADOR_NICHES = {
   academia: { label: "Academia", query: "academia" },
   pet: { label: "Pet shop", query: "pet shop" },
   // Lojas de ração e agro (pedido de 14/10: cliente que revende Quatree em MG).
-  racao: { label: "Ração (loja de ração)", query: "loja de ração" },
-  casa_racao: { label: "Casa de ração", query: "casa de ração" },
-  agropecuaria: { label: "Agropecuária", query: "agropecuária" },
+  // 18/10: loja de ração, casa de ração e agropecuária viraram um nicho só.
+  racao: { label: "Ração e agropecuária", query: "loja de ração e agropecuária" },
   veterinario: { label: "Veterinário", query: "clínica veterinária" },
   dentista: { label: "Dentista", query: "dentista" },
   clinica: { label: "Clínica e consultório", query: "clínica médica" },
@@ -49,8 +48,8 @@ export const CAPTADOR_NICHES = {
 export const CAPTADOR_OSM_TAGS = {
   restaurante: [["amenity", "restaurant"]], cafeteria: [["amenity", "cafe"]], lanchonete: [["amenity", "fast_food"]],
   padaria: [["shop", "bakery"]], bar: [["amenity", "bar"], ["amenity", "pub"]], salao: [["shop", "hairdresser"], ["shop", "beauty"]],
-  academia: [["leisure", "fitness_centre"]], pet: [["shop", "pet"]], racao: [["shop", "pet"], ["shop", "agrarian"]],
-  casa_racao: [["shop", "pet"], ["shop", "agrarian"]], agropecuaria: [["shop", "agrarian"]], veterinario: [["amenity", "veterinary"]],
+  academia: [["leisure", "fitness_centre"]], pet: [["shop", "pet"]], racao: [["shop", "pet"], ["shop", "agrarian"], ["shop", "farm"]],
+  veterinario: [["amenity", "veterinary"]],
   dentista: [["amenity", "dentist"]], clinica: [["amenity", "clinic"], ["amenity", "doctors"]], farmacia: [["amenity", "pharmacy"]],
   mercado: [["shop", "supermarket"], ["shop", "convenience"]], roupas: [["shop", "clothes"]], oficina: [["shop", "car_repair"]],
   hotel: [["tourism", "hotel"], ["tourism", "guest_house"]], imobiliaria: [["office", "estate_agent"]],
