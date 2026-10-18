@@ -129,7 +129,11 @@ export async function recoverStuckPublishing(env, clientId, now = new Date(), fi
     const payload = parseJson(row.payload_json, {});
     const startedMs = Date.parse(String(payload.publishingStartedAt || ""));
     const oldEnough = Number.isFinite(startedMs) && now.getTime() - startedMs >= 15 * 60 * 1000;
-    const found = await find(env, clientId, row.caption).catch(() => null);
+    let found = await find(env, clientId, row.caption).catch(() => null);
+    // Mesma legenda de um post antigo não prova que ESTE saiu: o post do Instagram
+    // precisa ser de depois do início desta publicação.
+    const foundMs = Date.parse(String(found?.timestamp || ""));
+    if (found?.mediaId && Number.isFinite(startedMs) && (!Number.isFinite(foundMs) || foundMs < startedMs - 2 * 60 * 1000)) found = null;
     if (!found?.mediaId && !oldEnough) continue;
     if (found?.mediaId) {
       await savePostResult(env, row, {

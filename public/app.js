@@ -281,7 +281,19 @@ function renderPostLedger() {
   let posts = Array.isArray(data.posts) ? data.posts : [];
   if (state.postClientFilter) posts = posts.filter(post => post.clientId === state.postClientFilter);
   // Aviso: post aprovado que passou do horário sem sair no Instagram.
-  const missed = posts.filter(post => String(post.error || "") === "approved_post_missed");
+  // Aprovados que não saíram: vencidos, presos ou com horário já passado.
+  const nowMs = Date.now();
+  const missed = posts.filter(post => {
+    if (String(post.approvalStatus || "") !== "approved") return false;
+    const status = String(post.status || "");
+    const error = String(post.error || "");
+    if (status === "expired") return error === "approved_post_missed";
+    if (!["ready", "scheduled", "failed"].includes(status)) return false;
+    const due = !post.scheduledFor || Date.parse(post.scheduledFor) <= nowMs;
+    return due || status === "failed" || ["duplicate_caption_blocked", "publish_interrupted"].includes(error);
+  });
+  const archived = new Set(["ragnar-one", "globalplay-streaming", "global-play-streaming", "demo-cafe"]);
+  const missedClients = [...new Set(missed.map(post => post.clientId).filter(id => id && !archived.has(id)))];
   const table = body.closest("table");
   let missedBox = $("#posts-missed-warning");
   if (!missedBox && table) {
@@ -294,7 +306,8 @@ function renderPostLedger() {
   if (missedBox) {
     missedBox.style.display = missed.length ? "" : "none";
     missedBox.innerHTML = missed.length
-      ? `<strong>⚠ ${missed.length} post(s) aprovado(s) não saíram no Instagram.</strong><br><small>Passaram do horário com erro. Veja na lista abaixo, com o status VENCIDA.</small>`
+      ? `<strong>⚠ ${missed.length} post(s) aprovado(s) não saíram no Instagram.</strong><br><small>Toque no botão para colocar todos nos horários de hoje (o primeiro agora, depois de 2 em 2 horas, até 21h45).</small><br>`
+        + missedClients.map(id => `<button type="button" class="btn" data-reschedule-today="${escapeHtml(id)}" style="margin-top:8px">Reagendar para hoje${missedClients.length > 1 ? " · " + escapeHtml(id) : ""}</button>`).join(" ")
       : "";
   }
   body.innerHTML = posts.length ? posts.map(post => {
@@ -348,6 +361,30 @@ async function decideMasterPost(button) {
 document.addEventListener("click", event => {
   const button = event.target instanceof Element ? event.target.closest("[data-post-decision]") : null;
   if (button) decideMasterPost(button);
+});
+
+async function rescheduleToday(button) {
+  const clientId = button.dataset.rescheduleToday;
+  if (!window.confirm("Colocar os posts aprovados que não saíram nos horários de hoje? O primeiro sai agora.")) return;
+  button.disabled = true;
+  try {
+    const result = await api("/api/master/clients/" + encodeURIComponent(clientId) + "/reschedule-today", { method: "POST", body: "{}" });
+    const hours = (result.slots || []).map(slot => slot.hour).join(", ");
+    let msg = result.moved ? `${result.moved} post(s) reagendado(s) para hoje: ${hours}.` : "Nenhum post para reagendar.";
+    if (result.leftForTomorrow) msg += `\n${result.leftForTomorrow} não couberam hoje. Toque de novo amanhã.`;
+    if (result.notReady) msg += `\nAtenção: ${result.notReady} ainda sem revisão ou sem imagem; esses não vão sair até ficarem prontos.`;
+    window.alert(msg);
+    await loadPostLedger();
+  } catch (error) {
+    console.error(error);
+    window.alert("Não deu para reagendar. Tente de novo.");
+    button.disabled = false;
+  }
+}
+
+document.addEventListener("click", event => {
+  const button = event.target instanceof Element ? event.target.closest("[data-reschedule-today]") : null;
+  if (button) rescheduleToday(button);
 });
 
 async function loadPostLedger() {

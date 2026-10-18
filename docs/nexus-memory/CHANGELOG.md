@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~09h40 BRT — Reagendar para hoje + 2 correções de postagem (pelo celular; PC do Rodrigo inacessível)
+- Pedido do Rodrigo (09h24): colocar hoje todos os posts da Flow Arts que não saíram, o primeiro agora; e tela de abertura do app Master em azul.
+- App Master: fundo da tela de abertura e do ícone trocado de preto (#080B0A) para azul (#0F2747), no ramo app-android (commit 95e2e1c). O workflow gera nova Release do APK; instalar por cima.
+- Master › Postagens: aviso agora conta todos os aprovados que não saíram (vencidos, falha, legenda parecida, horário passado) e tem o botão "Reagendar para hoje". `src/reschedule-today.js` + POST /api/master/clients/:id/reschedule-today: primeiro horário agora, depois de 2 em 2 h até 21h45 (Brasília); zera retryCount; marca payload.rescheduledByMaster. Não mexe em publicado, recusado, futuro, rascunho vencido nem cliente arquivado. O que não couber fica para o dia seguinte (tocar de novo).
+- Correção 1: `agent-runtime.js` — conteúdo manual ou reagendado pelo Master só é barrado por legenda se for praticamente igual (≥ 0,99, antes 0,92).
+- Correção 2: `executor.js` recoverStuckPublishing — só marca "publicado" se o post do Instagram com a mesma legenda for de depois do início da publicação.
+- 471 testes passando (4 novos em reschedule-today.test.mjs). Sem acesso ao D1 nesta sessão: não vi quantos posts estão presos; quem dispara é o Rodrigo pelo botão.
+
 ## 2026-10-17 ~16h30 BRT — Caçador diário + aviso no celular (publicado 15h28 com OK do Rodrigo; deploy success 6a9ffce)
 - Pedido: busca todo dia e envio para no mínimo 3 contatos, nichos diferentes em rodízio, pelo número da Flow. Expliquei o risco (Meta exige que a pessoa tenha aceitado; contato frio pode derrubar a nota e bloquear o +55 21 99855-9965). Rodrigo escolheu a opção 2: o Nexus separa e avisa; ele envia pelo WhatsApp pessoal. E pediu notificação no celular que abre o painel.
 - `daily-prospects.js`: no cron de 15 min, a partir das 9h (Brasília), procura no mapa grátis (OSM; o Google não permite guardar dados) 1 empresa por nicho, nichos diferentes, primeiro os que têm exemplo, em rodízio de nicho e cidade. Só celular, sem site, que ainda não está no CRM (por número ou código do mapa, inclusive arquivados). Entra no CRM na etapa nova "Para chamar", com a primeira mensagem pronta (com o link do exemplo) e retorno hoje. Meta padrão 3/dia (dá para mudar de 1 a 10 e desligar no CRM). Até 12 tentativas/dia, 3 buscas por tentativa. Nada é enviado.

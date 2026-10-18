@@ -1,5 +1,11 @@
 # Próximas ações
 
+## Reagendar para hoje (18/10)
+1. Depois do deploy: Rodrigo abre o app Master › Postagens › "Reagendar para hoje" e confirma.
+2. Conferir no Master se o primeiro post saiu (Publisher roda a cada minuto; janela 8h–22h, 90 min entre posts).
+3. Posts "sem revisão ou sem imagem" não saem: ver um por um.
+4. Instalar o APK novo do Master (tela azul) por cima do atual.
+
 ## Caçador diário + aviso no celular (17/10) — NO AR (deploy 6a9ffce, 15h28)
 1. FEITO: publicado.
 2. Rodrigo abre o Master no celular › CRM › "Busca diária e aviso no celular" › Ativar aviso › Testar aviso.

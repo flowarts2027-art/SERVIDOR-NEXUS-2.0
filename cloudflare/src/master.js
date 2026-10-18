@@ -20,6 +20,7 @@ import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { addDirective, createCampaign, masterWorkspace, updateCampaign } from "./master-workspace.js";
 import { handleMasterOpenAI } from "./master-openai.js";
 import { decidePost } from "./posts.js";
+import { rescheduleMissedToday } from "./reschedule-today.js";
 import { createCarouselTest, carouselTestStatus, stepCarouselTest } from "./format-builder.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { runGiftInboxForClient } from "./gift-dm.js";
@@ -716,6 +717,14 @@ export async function handleMaster(request, env, url) {
       deletedOldDrafts: Number(oldDrafts?.meta?.changes || 0),
       deletedFeatures: Number(features?.meta?.changes || 0)
     });
+  }
+
+  // Posts aprovados que não saíram: distribui nos horários de hoje (o primeiro agora).
+  const rescheduleTodayMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/reschedule-today$/);
+  if (rescheduleTodayMatch && request.method === "POST") {
+    const clientId = decodeURIComponent(rescheduleTodayMatch[1]);
+    if (!await getClient(env, clientId)) return json({ error: "client_not_found" }, 404);
+    return json(await rescheduleMissedToday(env, clientId));
   }
 
   // Remove de vez as postagens que não foram publicadas (fila, falhas e vencidas)
