@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~17h30 BRT — Reels aprovados não saíam + "Publicar agora" no painel do cliente (PR, sem deploy)
+- Pedido do Rodrigo (16h55, pelo celular): os Reels da pizzaria (09:31) e do pet shop (11:31) de hoje não foram ao ar; corrigir e criar "Publicar agora". Prints do painel: os dois em "Aprovado · será publicado"; Instagram conectado (válido até 10/12).
+- Primeiro diagnóstico dado no chat (legenda parecida, 92,5% > 92%) estava ERRADO: Reels animados têm manual:true, limite 0,99. Corrigido no chat.
+- Causa (código, não confirmada em produção — sem acesso ao D1/logs nesta sessão): `primeiro-teste` está em REVIEWED_CLIENTS; `visualApproval` exige visualReview com version visual-review-v3, media igual à capa e qualityScore ≥ 70. `animated-reel.js` e `manual-reel.js` gravam só status/reviewer/reason → o Publisher marca quality_gate_pending e o post nunca sai. Por isso nenhum Reel animado da Flow Arts tinha saído ("publicação real do Reel ainda não testada").
+- Feito: `visual-review.js` aceita post com manual:true, capa e visualReview aprovado por rodrigo/nexus/client. `src/publish-now.js`: POST /api/portal/posts/:id/publish-now (só aprovado e não publicado; põe o horário em agora, zera tentativas, pede publisher-sweep; o Publisher continua com janela 8h–22h e 90 min entre posts; legenda só barrada se 99% igual). Painel do cliente: botão "Publicar agora" nos Agendados e etiqueta "Não saiu no horário · toque em Publicar agora" (campo `stuck` em /api/portal/posts). A rota antiga /manual (publica direto) ficou como estava.
+- Evidência: 522/522 testes locais. Nada publicado. PR aberto para o Rodrigo juntar (deploy automático ao juntar).
+- Próximo: juntar o PR; os dois Reels vencidos de hoje devem sair sozinhos na próxima rodada (o 2º 90 min depois) se ainda for antes das 22h; senão usar "Publicar agora" amanhã antes de 24h do horário (depois disso vencem como approved_post_missed e aparecem no Master em "Reagendar para hoje").
+
 ## 2026-10-18 ~16h10 BRT — Radar de virais (código pronto, sem deploy)
 - Pedido do Rodrigo (16h01–16h05): o ig-viral do instagram-agent-skill é manual (anotar perfil por perfil). Rodrigo quer automático, sem digitar cliente por cliente e sem trabalho para o cliente ("não vai dar vazão"). Confirmou que o @flowarts2026 já está ligado a uma Página do Facebook.
 - Pesquisa na documentação da Meta: busca de hashtag (top_media) e Business Discovery só existem no login pelo Facebook (o Nexus usa login do Instagram). Hashtag: até 30 hashtags únicas por 7 dias; volta texto, curtidas, comentários, tipo e link; NÃO volta visualizações nem o @ do dono. Exige aprovação da Meta (Instagram Public Content Access + instagram_basic).

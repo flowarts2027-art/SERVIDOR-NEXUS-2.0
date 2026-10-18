@@ -168,6 +168,7 @@ function actionsButtonsHtml(post) {
   if (postGroup(post) === "agendados" && !["published", "publishing"].includes(String(post.status))) {
     const id = escapeHtml(post.id);
     return `<div class="actions">
+      <button type="button" class="btn btn-ok" data-publish-now="${id}">Publicar agora</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
       <button type="button" class="btn btn-soft btn-cancel" data-cancel-post="${id}">Cancelar esta postagem</button>
     </div>
@@ -200,6 +201,7 @@ function tagHtml(post) {
   if (String(post.approvalStatus) === "correction_requested") return `<span class="tag tag-blue">Ajuste pedido · sendo refeito</span>`;
   if (group === "aprovar" && !autoReviewed(post)) return `<span class="tag tag-blue">Em revisão automática</span>`;
   if (group === "aprovar") return `<span class="tag tag-wait">Esperando sua aprovação</span>`;
+  if (group === "agendados" && post.stuck) return `<span class="tag tag-wait">Não saiu no horário · toque em Publicar agora</span>`;
   if (group === "agendados") return `<span class="tag tag-blue">Aprovado · será publicado</span>`;
   return `<span class="tag tag-ok">Publicado</span>`;
 }
@@ -694,6 +696,19 @@ async function decide(id, button) {
   }
 }
 
+async function publishNow(id, button) {
+  if (!window.confirm("Publicar este post no Instagram agora?")) return;
+  button.disabled = true;
+  try {
+    await api("/api/portal/posts/" + encodeURIComponent(id) + "/publish-now", { method: "POST" });
+    toast("Pronto. O post sai no Instagram em até 15 minutos.");
+    await loadAll();
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
+}
+
 async function cancelPost(id, button) {
   if (!window.confirm("Cancelar esta postagem? Ela não vai sair no Instagram.")) return;
   button.disabled = true;
@@ -759,7 +774,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-connect], [data-discard-lead], #logout")) {
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-publish-now], [data-connect], [data-discard-lead], #logout")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -798,6 +813,8 @@ document.addEventListener("click", event => {
     if (track) track.scrollBy({ left: Number(carBtn.dataset.car) * track.clientWidth, behavior: "smooth" });
     return;
   }
+  const publishBtn = target.closest("[data-publish-now]");
+  if (publishBtn) { publishNow(publishBtn.dataset.publishNow, publishBtn); return; }
   const cancel = target.closest("[data-cancel-post]");
   if (cancel) { cancelPost(cancel.dataset.cancelPost, cancel); return; }
   const revise = target.closest("[data-revise]");
