@@ -2,6 +2,7 @@
 
 ## 2026-10-18 ~14h35 BRT — Apresentação "Como funciona o NEXUS" para clientes
 - Pedido do Rodrigo (14h32): em vez de vídeo, um arquivo curto para o cliente abrir no celular. Antes pediu um prompt de vídeo para ChatGPT/Flow (entregue no chat).
+- 14h45: Rodrigo pediu vídeo, sem texto ("os clientes não leem"). Feito animado aqui (HTML + ffmpeg), 33 s vertical 9:16, com sons de toque: celular mostra cadastro, NEXUS criando posts (padaria, salão, pet), dedo aprovando e recusando, relógio + post entrando no perfil com curtidas, comentário → resposta → WhatsApp, mapa achando empresas, final com logo e WhatsApp. Só o número e o site aparecem escritos. Entregue no chat (Flow-Arts-NEXUS-Como-funciona.mp4).
 - Entregue no chat (não está no repositório): 7 cartões 4:5 (capa, problema, como funciona, painel aprovar/recusar, tipos de post, comentários/material/encontra clientes, exemplo grátis + WhatsApp (21) 96481-6185) e o mesmo em PDF. Sem preços e sem promessa de números.
 
 ## 2026-10-18 ~14h30 BRT — Cadastro do cliente pelo link /cadastro — PUBLICADO (main 78346f3)
