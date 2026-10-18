@@ -1,7 +1,7 @@
 # Estado do Nexus 2.0
 
-## 2026-10-18 ~16h10 BRT — Radar de virais em branch
-- Branch `feat/radar-de-virais`: busca semanal dos ganchos que bombam nas hashtags do nicho de cada cliente, pelo login do Facebook. Falta: merge, 2 segredos META_APP_ID/META_APP_SECRET, Rodrigo conectar no Master e a Meta liberar a busca de hashtag. Detalhes em CHANGELOG.md.
+## 2026-10-18 ~16h16 BRT — Radar de virais NO AR, desligado (main 7a0c443, PR #284)
+- Busca semanal dos ganchos que bombam nas hashtags do nicho de cada cliente, pelo login do Facebook. Deploy NEXUS Cloudflare success. Fica parado até: 2 segredos META_APP_ID/META_APP_SECRET, Rodrigo conectar no Master e a Meta liberar a busca de hashtag. Rodrigo (16h17): faz amanhã, depois de consertar o computador. Detalhes em CHANGELOG.md.
 
 ## 2026-10-18 ~15h47 BRT — fórmulas de gancho NO AR (main 940b600, PR #278)
 - 15 fórmulas de gancho nos agentes de legenda/pauta/carrossel + aviso "gancho fraco" no Revisor do painel. Rodrigo juntou o PR pelo celular. Deploy NEXUS Cloudflare e NEXUS CI success; Overnight Regression falhou (já falhava antes). Detalhes em CHANGELOG.md.
