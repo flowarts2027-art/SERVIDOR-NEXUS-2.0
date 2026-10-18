@@ -14,6 +14,12 @@
 - Correção 1: `agent-runtime.js` — conteúdo manual ou reagendado pelo Master só é barrado por legenda se for praticamente igual (≥ 0,99, antes 0,92).
 - Correção 2: `executor.js` recoverStuckPublishing — só marca "publicado" se o post do Instagram com a mesma legenda for de depois do início da publicação.
 - 471 testes passando (4 novos em reschedule-today.test.mjs). Sem acesso ao D1 nesta sessão: não vi quantos posts estão presos; quem dispara é o Rodrigo pelo botão.
+## 2026-10-17 ~21h BRT — Apps Android (Master e Cliente) — APK gerado; branch app-android (fora da main)
+- Pedido do Rodrigo: APK Android do Nexus, do painel Master e do cliente.
+- `android/`: projeto Trusted Web Activity (androidbrowserhelper 2.5.0), dois sabores: `br.com.flowarts.nexus.master` ("Nexus Master", abre https://painel.flowarts.com.br/api/master/console) e `br.com.flowarts.nexus.cliente` ("Flow Arts", abre /portal). Ícones dos manifests PWA, tela de abertura com a cor de cada painel, notificações do painel com o nome do app. Precisa do Chrome no celular (sem Chrome, cai para WebView).
+- `.github/workflows/android-apps.yml`: gera os 2 APKs e publica numa Release. Chave de assinatura criada sozinha e guardada no R2 em `private/android-signing/` (pasta que o site não serve); assim as próximas versões instalam por cima.
+- Prova: run 39080200815 success; Release app-v1.0.1 com nexus-master.apk (536 KB), flowarts-cliente.apk (535 KB) e assetlinks.json (SHA-256 D6:5C:…:9B:7F); prerelease=false (chave ficou no R2).
+- Pendente: `public/.well-known/assetlinks.json` está pronto na branch, mas só vale depois de ir para a main (deploy). Sem ele o app mostra uma barrinha com o endereço no topo. Precisa do OK do Rodrigo.
 
 ## 2026-10-17 ~16h30 BRT — Caçador diário + aviso no celular (publicado 15h28 com OK do Rodrigo; deploy success 6a9ffce)
 - Pedido: busca todo dia e envio para no mínimo 3 contatos, nichos diferentes em rodízio, pelo número da Flow. Expliquei o risco (Meta exige que a pessoa tenha aceitado; contato frio pode derrubar a nota e bloquear o +55 21 99855-9965). Rodrigo escolheu a opção 2: o Nexus separa e avisa; ele envia pelo WhatsApp pessoal. E pediu notificação no celular que abre o painel.

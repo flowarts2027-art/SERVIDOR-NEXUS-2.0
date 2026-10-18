@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": { "namespace": "android_app", "package_name": "br.com.flowarts.nexus.master", "sha256_cert_fingerprints": ["D6:5C:B6:7E:1C:5D:50:86:C9:37:84:AC:99:9B:D2:22:FF:95:94:3A:BE:6F:1F:89:8B:7F:E5:C2:FB:C2:9B:7F"] }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": { "namespace": "android_app", "package_name": "br.com.flowarts.nexus.cliente", "sha256_cert_fingerprints": ["D6:5C:B6:7E:1C:5D:50:86:C9:37:84:AC:99:9B:D2:22:FF:95:94:3A:BE:6F:1F:89:8B:7F:E5:C2:FB:C2:9B:7F"] }
+  }
+]

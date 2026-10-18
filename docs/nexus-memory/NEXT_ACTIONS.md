@@ -10,6 +10,10 @@
 2. Conferir no Master se o primeiro post saiu (Publisher roda a cada minuto; janela 8h–22h, 90 min entre posts).
 3. Posts "sem revisão ou sem imagem" não saem: ver um por um.
 4. Instalar o APK novo do Master (tela azul) por cima do atual.
+## Apps Android (17/10) — APK pronto na Release app-v1.0.1; branch app-android
+1. Rodrigo instala no celular: releases/latest/download/nexus-master.apk e flowarts-cliente.apk (permitir "instalar apps desconhecidos").
+2. Com OK do Rodrigo: levar a branch app-android para a main (deploy publica /.well-known/assetlinks.json e tira a barra de endereço).
+3. Conferir https://painel.flowarts.com.br/.well-known/assetlinks.json depois do deploy e abrir o app de novo.
 
 ## Caçador diário + aviso no celular (17/10) — NO AR (deploy 6a9ffce, 15h28)
 1. FEITO: publicado.

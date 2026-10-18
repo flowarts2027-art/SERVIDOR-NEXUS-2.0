@@ -1,0 +1,74 @@
+// Apps Android do Nexus: dois apps (Master e Cliente) que abrem os painéis
+// de https://painel.flowarts.com.br em tela cheia (Trusted Web Activity).
+// Os APKs são gerados pelo GitHub Actions (.github/workflows/android-apps.yml).
+plugins {
+    id "com.android.application"
+}
+
+def panelHost = "painel.flowarts.com.br"
+def buildNumber = (System.getenv("APP_BUILD_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace "br.com.flowarts.nexus"
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 35
+        versionCode buildNumber
+        versionName "1.0.${buildNumber}"
+        resValue "string", "asset_statements",
+            "[{\\\"relation\\\": [\\\"delegate_permission/common.handle_all_urls\\\"], \\\"target\\\": {\\\"namespace\\\": \\\"web\\\", \\\"site\\\": \\\"https://${panelHost}\\\"}}]"
+        manifestPlaceholders = [hostName: panelHost]
+    }
+
+    flavorDimensions = ["painel"]
+    productFlavors {
+        master {
+            dimension "painel"
+            applicationId "br.com.flowarts.nexus.master"
+            manifestPlaceholders += [
+                appName      : "Nexus Master",
+                defaultUrl   : "https://${panelHost}/api/master/console"
+            ]
+        }
+        cliente {
+            dimension "painel"
+            applicationId "br.com.flowarts.nexus.cliente"
+            manifestPlaceholders += [
+                appName      : "Flow Arts",
+                defaultUrl   : "https://${panelHost}/portal"
+            ]
+        }
+    }
+
+    signingConfigs {
+        release {
+            def ks = System.getenv("ANDROID_KEYSTORE_FILE")
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias "nexus"
+                keyPassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv("ANDROID_KEYSTORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "com.google.androidbrowserhelper:androidbrowserhelper:2.5.0"
+}

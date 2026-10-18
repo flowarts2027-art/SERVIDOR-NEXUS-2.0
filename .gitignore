@@ -12,3 +12,7 @@ NEXUS-RECUPERACAO-*/
 *.zip
 !public/nexus-baixar-no-pc.zip
 *.log
+android/.gradle/
+android/build/
+android/app/build/
+*.jks
