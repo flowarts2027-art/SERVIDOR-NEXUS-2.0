@@ -6,6 +6,7 @@ import { openAIResponses } from "./openai.js";
 import { clientBrand } from "./client-brand.js";
 import { ROBOT_PHRASES } from "./caption-polish.js";
 import { reachRulesText } from "./reach-playbook.js";
+import { hookFormulasText } from "./hook-formulas.js";
 
 function extractText(response) {
   if (response?.output_text) return String(response.output_text);
@@ -29,6 +30,7 @@ export function campaignCopyPrompt(client, item = {}) {
     "Não escreva chamada para ação nem hashtags (elas são adicionadas depois). Não use travessão (—).",
     "Máximo 600 caracteres no total.",
     reachRulesText(),
+    hookFormulasText(String(item.theme || "") + "|" + String(item.angle || "") + "|" + String(item.niche || "")),
     "Regras da marca: " + (brand.avoidRules || ""),
     "Nunca use estas frases de robô: " + ROBOT_PHRASES.join(", ") + ".",
     item.niche ? "Exemplo principal deste post: um(a) " + item.niche + " (use nas dicas quando o tema permitir; nunca padaria ou café, a menos que seja este o exemplo)." : "Varie o tipo de negócio nos exemplos; evite repetir padaria e café.",

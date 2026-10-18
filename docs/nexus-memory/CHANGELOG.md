@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~15h50 BRT — Fórmulas de gancho do pacote instagram-agent (branch, sem deploy)
+- Pedido do Rodrigo (15h32–15h35): analisar de novo o repositório Jakeschincariol/instagram-agent-skill e um link do Filipe Yabok; copiar e adaptar o que for bom para o Nexus.
+- Conclusão: o pacote só escreve texto (não publica, não gera imagem, feito em inglês); não substitui o Nexus. O link do Filipe Yabok é só página de captura de WhatsApp, sem ferramenta visível (não preenchido).
+- Feito o item pendente de 12/10: `cloudflare/src/hook-formulas.js` com 15 fórmulas de gancho em português (das 26 do hooks.json, MIT). Ficaram de fora as que dependem de número ou resultado real (o Nexus não inventa prova).
+- As fórmulas entram no prompt da legenda da campanha (`campaign-copy.js`, 4 por vez, variando pelo tema) e do cérebro de pautas (`ai-growth.js`). Carrossel (`carousel-agent.js`): cartão 1 usa uma fórmula sem número; cartão 2 tem que fazer sentido sozinho.
+- Revisor do painel (`brand-guard.js`): novo aviso "gancho fraco" na 1ª linha (cumprimento, "pare de rolar", "neste post vou...", hashtag, emoji, mais de 18 palavras). Não bloqueia. Sem IA, sem custo.
+- Mais 10 frases de robô em `caption-polish.js`.
+- Evidência: 511/511 testes locais. Nada publicado; aguardando OK do Rodrigo para juntar na main.
+
 ## 2026-10-18 ~14h35 BRT — Apresentação "Como funciona o NEXUS" para clientes
 - Pedido do Rodrigo (14h32): em vez de vídeo, um arquivo curto para o cliente abrir no celular. Antes pediu um prompt de vídeo para ChatGPT/Flow (entregue no chat).
 - 14h45: Rodrigo pediu vídeo, sem texto ("os clientes não leem"). Feito animado aqui (HTML + ffmpeg), 33 s vertical 9:16, com sons de toque: celular mostra cadastro, NEXUS criando posts (padaria, salão, pet), dedo aprovando e recusando, relógio + post entrando no perfil com curtidas, comentário → resposta → WhatsApp, mapa achando empresas, final com logo e WhatsApp. Só o número e o site aparecem escritos. Entregue no chat (Flow-Arts-NEXUS-Como-funciona.mp4).

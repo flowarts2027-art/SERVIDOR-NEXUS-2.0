@@ -1,5 +1,10 @@
 # Próximas ações
 
+## 2026-10-18 — Fórmulas de gancho
+1. Rodrigo dá OK → juntar `feat/formulas-de-gancho` na main (deploy automático).
+2. Depois: olhar no painel se aparece "⚠️ Revisor: gancho fraco" nos próximos posts da Flow Arts.
+3. Ideia não feita: usar as fórmulas também nas legendas prontas por nicho (`caption-templates.js`), que hoje têm ganchos genéricos.
+
 ## Cadastro do cliente pelo link (18/10) — NO AR (main 78346f3, 14h24)
 1. FEITO: publicado com OK do Rodrigo; Deploy NEXUS Cloudflare success; /cadastro abre em produção.
 2. Rodrigo abre painel.flowarts.com.br/cadastro no celular e faz um cadastro de teste.
@@ -451,7 +456,7 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
 
 ## 2026-10-12 — Próximos do pacote instagram-agent
-- Traduzir as 26 fórmulas de gancho (hooks.json do repositório Jakeschincariol/instagram-agent-skill, MIT) e dar ao agente que escreve os posts.
+- [feito 18/10 na branch feat/formulas-de-gancho] Traduzir as fórmulas de gancho (hooks.json, MIT) e dar ao agente que escreve os posts.
 - Rodrigo: trocar o campo Nome do perfil @flowarts2026 de "Marina" para algo pesquisável, ex.: "Marina | Marketing com IA".
 - Testar o brinde siga-para-liberar (botão "Baixar conteúdo") com um comentário novo da playprime2027.
 - Testar os 4 agentes (CEO, Marketing, Vendas, Revisor) com a bateria de 8 pedidos do guia d9tdr (prompt 4): pedidos típicos, falta de informação, restrição, fora da área, informação errada embutida.

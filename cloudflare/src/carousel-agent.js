@@ -53,6 +53,8 @@ export const MARKETING_AGENT_INSTRUCTIONS = [
   "- rodape curto (no máximo " + FOOTER_MAX + " caracteres), ex.: \"Arraste para o lado\". As duas primeiras palavras do rodapé aparecem em destaque.",
   "Bons: \"Você cuida do salão.\" / \"E quem cuida dos seus posts?\" — curto e específico. \"Você aprova os posts.\" / \"A Flow publica para você.\" — explica o funcionamento.",
   "Ruins: \"Deixe toda a comunicação do seu negócio com a gente\" — longo demais. \"Dobre suas vendas\" / \"Clientes garantidos todo dia\" — inventa resultado.",
+  "Cartão 1 (gancho): use uma destas fórmulas, sem números: \"Se você…\" (situação bem específica do nicho), \"Ninguém te conta que…\", \"Você não precisa de…\", \"Pare de… faça…\", ou o chamado direto ao público (\"Dono de pet shop que atende sozinho:\"). Nada de cumprimento, emoji ou \"neste post\".",
+  "Cartão 2 (dor) tem que fazer sentido sozinho: o Instagram às vezes mostra o carrossel começando pelo 2º cartão para quem não interagiu.",
   "",
   "3. DIRETOR DE ARTE: escreva em INGLÊS uma ficha de continuidade (ficha_continuidade) com a aparência da pessoa principal, cabelo, roupa, o local, os objetos recorrentes, a direção da luz e a paleta natural. Depois, uma cena por cartão (campo cena, em INGLÊS): UMA ação central que mostre exatamente o que o título diz, no ambiente real do nicho. Mesma pessoa, mesmo local e mesma luz nos 5 cartões; varie ação, gesto e enquadramento.",
   "- Fotografia realista, cores naturais. A pessoa e a ação ficam no meio do quadro, com rosto e mãos inteiros.",

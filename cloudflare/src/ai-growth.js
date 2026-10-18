@@ -1,5 +1,6 @@
 import { openAIResponses } from "./openai.js";
 import { reachRulesText } from "./reach-playbook.js";
+import { hookFormulasText } from "./hook-formulas.js";
 
 const VERSION = "openai-growth-brain-v2-memory";
 const TZ = "America/Sao_Paulo";
@@ -96,6 +97,7 @@ export async function consultGrowthAI(env, client, signals = {}, previous = null
         "Quando o calendário já trouxer formato fixo, sua função é criar a melhor ideia dentro desse formato, nunca trocar o formato por conta própria.",
         "Crie com autonomia: não copie um roteiro fixo. Varie narrativa, cenário, emoção e mecanismo, mantendo coerência de marca e objetivo.",
         reachRulesText(),
+        hookFormulasText(new Date().toISOString().slice(0, 10), 5),
         "Retorne apenas o JSON exigido pelo schema."
       ].join(" "),
       input: JSON.stringify(payload),
