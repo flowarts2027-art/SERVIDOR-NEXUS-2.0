@@ -395,8 +395,16 @@ export async function importBrowserResults(env, { niche, cityIndex, elements } =
   return { ok: true, found: list.length, added: await saveProspects(env, items) };
 }
 
-export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fetcher = fetch) {
+// Cidade escrita pelo Rodrigo (pedido de 18/10): "Cidade UF", como no Captador do cliente.
+export function cleanCity(value) {
+  const city = String(value || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  return city.length >= 3 && /\p{L}/u.test(city) ? city : "";
+}
+
+export async function runProspectSearch(env, { calls = 3, niche = "", city: typedCity = "" } = {}, fetcher = fetch) {
   await ensureProspectSchema(env);
+  const fixedCity = cleanCity(typedCity);
+  if (String(typedCity || "").trim() && !fixedCity) return { ok: false, error: "city_invalid", message: "Escreva a cidade e o estado, por exemplo: Niterói RJ." };
   const showcase = await readShowcase(env); // o caçador do Master é só da Flow Arts
   const key = await placesKey(env);
   // Com chave do Google, tenta o Google. Se o Google recusar (conta sem crédito, chave errada),
@@ -409,7 +417,8 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
   if (!allowed) return { ok: false, error: "daily_limit", usedToday: used, dailyLimit: DAILY_SEARCH_LIMIT, provider };
 
   const nicheKeys = NICHES[niche] ? [niche] : Object.keys(NICHES);
-  const cursor = await readState(env, "cursor", { n: 0 });
+  const cursorKey = fixedCity ? "city-cursor" : "cursor";
+  const cursor = await readState(env, cursorKey, { n: 0 });
   let position = Number(cursor.n || 0);
   const searched = [];
   const live = [];
@@ -418,10 +427,11 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
   let error = "";
   let done = 0;
 
-  for (; done < allowed; done++) {
+  const rounds = fixedCity ? Math.min(allowed, nicheKeys.length) : allowed;
+  for (; done < rounds; done++) {
     const nicheKey = nicheKeys[position % nicheKeys.length];
-    const cityIndex = Math.floor(position / nicheKeys.length) % CITIES.length;
-    const city = CITIES[cityIndex];
+    const cityIndex = fixedCity ? 0 : Math.floor(position / nicheKeys.length) % CITIES.length;
+    const city = fixedCity || CITIES[cityIndex];
     position++;
     let items;
     if (provider === "google") {
@@ -442,7 +452,9 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
       }
     }
     try {
-      const elements = await searchOSM(nicheKey, cityIndex, fetcher);
+      const elements = fixedCity
+        ? await (await import("./captador.js")).searchCaptadorOSM(nicheKey, fixedCity, fetcher)
+        : await searchOSM(nicheKey, cityIndex, fetcher);
       found += elements.length;
       items = elements.map(element => osmToProspect(element, nicheKey, city)).filter(Boolean);
     } catch (e) {
@@ -459,7 +471,7 @@ export async function runProspectSearch(env, { calls = 3, niche = "" } = {}, fet
   }
 
   await writeState(env, "usage", { day: today(), count: used + done });
-  if (!NICHES[niche]) await writeState(env, "cursor", { n: position });
+  if (!NICHES[niche]) await writeState(env, cursorKey, { n: position });
   return { ok: !error || live.length > 0, error: error || undefined, provider, searched, found,
     added: provider === "google" ? live.length : added, items: live,
     ...(googleError ? { fallbackFrom: "google", googleError } : {}),
@@ -479,7 +491,8 @@ export async function saveContacted(env, body = {}) {
   await ensureProspectSchema(env);
   const id = String(body.id || "");
   if (!GOOGLE_ID.test(id) && !/^osm:(node|way|relation)\/\d+$/.test(id)) throw new Error("prospect_invalid");
-  if (!NICHES[body.niche] || !CITIES.includes(body.city)) throw new Error("prospect_invalid");
+  if (!NICHES[body.niche] || !cleanCity(body.city)) throw new Error("prospect_invalid");
+  body = { ...body, city: cleanCity(body.city) };
   const { phone, mobile } = phoneInfo(body.phone);
   const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, " ").trim().slice(0, 120);
   if (!phone || !name) throw new Error("prospect_invalid");
@@ -565,7 +578,7 @@ export async function handleProspectsRoute(request, env, url) {
     }
     if (url.pathname === "/api/master/prospects/search" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));
-      const result = await runProspectSearch(env, { calls: body.calls, niche: body.niche });
+      const result = await runProspectSearch(env, { calls: body.calls, niche: body.niche, city: body.city });
       return send(result, result.ok || result.added ? 200 : 400);
     }
     if (url.pathname === "/api/master/prospects/plan" && request.method === "POST") {

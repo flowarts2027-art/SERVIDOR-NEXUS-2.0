@@ -130,7 +130,8 @@
       usage.textContent = "Buscando no mapa… pode levar até 1 minuto.";
       try {
         const niche = $("#prospect-niche").value;
-        const result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche }) });
+        const city = ($("#prospect-city")?.value || "").trim();
+        const result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche, city }) });
         const seen = new Set(found.map(item => item.id));
         for (const item of result.items || []) if (!seen.has(item.id)) { seen.add(item.id); found.push(item); }
         found.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));

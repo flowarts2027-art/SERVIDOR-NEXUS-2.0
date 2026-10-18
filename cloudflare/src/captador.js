@@ -298,7 +298,7 @@ export function captadorOverpassQuery(niche, city) {
   return `[out:json][timeout:25];area["boundary"="administrative"]["admin_level"="8"]["name"="${name}"]->.c;(${parts});out tags center 400;`;
 }
 
-async function searchCaptadorOSM(niche, city, fetcher) {
+export async function searchCaptadorOSM(niche, city, fetcher) {
   let last = "osm_failed";
   for (const endpoint of OVERPASS_ENDPOINTS) {
     try {

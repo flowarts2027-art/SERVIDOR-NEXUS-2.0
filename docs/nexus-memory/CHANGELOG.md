@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-18 ~10h35 BRT — Caçador do Master: campo de cidade
+- Rodrigo pediu conferir se Master e cliente têm cidade + nicho na busca. Cliente (Captador) já tinha os dois. Master só tinha o tipo; a cidade era rodízio de uma lista fixa.
+- Novo: Master › Caçador › "Cidade e estado" (ex.: Niterói RJ). Vazio = rodízio antigo. Com cidade: Google (se a chave responder) ou mapa grátis com a mesma busca do Captador (`searchCaptadorOSM`, agora exportada); um tipo por rodada, rodízio de tipos guardado à parte (city-cursor). Contato salvo aceita cidade escrita (`cleanCity`).
+- Exemplos por nicho: prontos salão, cafeteria, academia, lanchonete e loja de roupas. História dos cartões (Rodrigo): 1 lugar vazio, 2 dono no celular, 3 mostrando, 4 clientes, 5 atendendo; títulos dos cartões 1 e 2 trocados em exemplos-nicho.json.
+- 481 testes. Publicado com o OK geral da sessão.
+
 ## 2026-10-18 ~10h15 BRT — Captador do cliente: "Meu material" (fotos, vídeo, PDF do próprio cliente)
 - Pedido do Rodrigo (09h46): cliente de ração (Quatree Dog) quer mandar o material DELE (preço, fotos, vídeos), não feito por IA, junto com a mensagem quando busca empresas.
 - Painel do cliente › Buscar: bloco "Meu material" (até 10 arquivos: JPG/PNG/WEBP, MP4/MOV, PDF; total até 95 MB). Guardado em R2 `material/<cliente>/<data>/` (fora de library/, então nunca vira post); trocar apaga o antigo; "Tirar o material".
