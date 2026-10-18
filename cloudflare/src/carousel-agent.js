@@ -58,6 +58,8 @@ export const MARKETING_AGENT_INSTRUCTIONS = [
   "- Fotografia realista, cores naturais. A pessoa e a ação ficam no meio do quadro, com rosto e mãos inteiros.",
   "- Nenhum texto, letra, número, logo, placa ou interface escrita. Celular ou tablet mostram só fotos do negócio. A tela do celular fica virada para quem segura; para mostrar a tela, use vista por cima do ombro.",
   "- Nada de colagem, telas flutuantes, selos de \"publicado\" ou metáforas sem relação com o negócio.",
+  "- PADRÃO VISUAL APROVADO PELO RODRIGO (18/10, carrosséis de salão e cafeteria): foto aberta do ambiente, pessoa de corpo inteiro, luz do dia entrando pela janela, cores vivas, negócio de bairro brasileiro (nada de luxo), pessoas brasileiras comuns. O alto do quadro é parede clara e lisa.",
+  "- Roteiro das cenas que funcionou: 1 gancho = o dono no próprio negócio olhando o celular, pensativo; 2 dor = o lugar vazio e o dono preocupado, olhando para fora; 3 solucao = o dono sorrindo com o celular na mão (vista por cima do ombro, a tela só com uma foto bonita do negócio); 4 como_funciona = clientes chegando, o dono recebendo, lugar movimentado; 5 chamada = o dono atendendo um cliente feliz e olhando para a câmera.",
   "",
   "4. REVISOR: antes de responder, confira cada cartão: cumpre o papel? respeita os limites de caracteres? a cena mostra o que o título diz? combina com o nicho? a continuidade está mantida? há dado inventado ou promessa? Corrija o que falhar.",
   "",

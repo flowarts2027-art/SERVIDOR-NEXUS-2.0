@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-18 — Padrão visual dos carrosséis (aprovado pelo Rodrigo)
+- Referência: carrosséis de exemplo de salão e cafeteria (docs/referencias/carrossel-aprovado-*.jpg). Fotos do ChatGPT sem texto; títulos, logo e botão por código.
+- Regra entrou no agente de carrossel (`carousel-agent.js`, Diretor de arte): foto aberta, corpo inteiro, luz do dia, cores vivas, negócio de bairro brasileiro, parede lisa no alto, e o roteiro das 5 cenas (celular pensativo → vazio e preocupado → sorrindo com o celular → clientes chegando → atendendo e olhando para a câmera).
+- Fotos por API da OpenAI: Rodrigo NÃO quer (custa por foto). Ele gera no app do ChatGPT e manda aqui.
+
 ## 2026-10-17 — CRM no WhatsApp pessoal; Master em azul
 - O CRM usa o número pessoal do Rodrigo (22 96481-6185). O número virtual da Meta é de teste (+1 555…) e só fala com até 5 números cadastrados; não serve para clientes. Retorno automático pela API fica para quando houver chip novo e cliente pagante (fora das 24 h a Meta exige mensagem modelo paga).
 - O CRM não envia nada sozinho: lembra no dia certo e abre o WhatsApp com a mensagem pronta.
