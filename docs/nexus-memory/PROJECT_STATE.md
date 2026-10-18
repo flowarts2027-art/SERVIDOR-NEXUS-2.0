@@ -1,7 +1,7 @@
 # Estado do Nexus 2.0
 
-## 2026-10-18 ~15h50 BRT — fórmulas de gancho em branch
-- Branch `feat/formulas-de-gancho`: 15 fórmulas de gancho nos agentes de legenda/pauta/carrossel + aviso "gancho fraco" no Revisor do painel. 511 testes. Sem deploy; espera OK do Rodrigo. Detalhes em CHANGELOG.md.
+## 2026-10-18 ~15h47 BRT — fórmulas de gancho NO AR (main 940b600, PR #278)
+- 15 fórmulas de gancho nos agentes de legenda/pauta/carrossel + aviso "gancho fraco" no Revisor do painel. Rodrigo juntou o PR pelo celular. Deploy NEXUS Cloudflare e NEXUS CI success; Overnight Regression falhou (já falhava antes). Detalhes em CHANGELOG.md.
 
 ## 2026-10-18 ~14h24 BRT — cadastro do cliente pelo link publicado
 - main 78346f3 (OK do Rodrigo): painel.flowarts.com.br/cadastro no ar (conferido); aprovação em Master › Clientes › Cadastros novos. Nenhum cadastro real testado ainda. Detalhes em CHANGELOG.md.

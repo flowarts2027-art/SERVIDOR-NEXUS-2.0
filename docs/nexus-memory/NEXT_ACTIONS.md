@@ -1,8 +1,8 @@
 # Próximas ações
 
 ## 2026-10-18 — Fórmulas de gancho
-1. Rodrigo dá OK → juntar `feat/formulas-de-gancho` na main (deploy automático).
-2. Depois: olhar no painel se aparece "⚠️ Revisor: gancho fraco" nos próximos posts da Flow Arts.
+1. [feito 18/10 15h47] Juntado na main (PR #278), deploy ok.
+2. Próximo: olhar no painel se aparece "⚠️ Revisor: gancho fraco" nos próximos posts da Flow Arts.
 3. Ideia não feita: usar as fórmulas também nas legendas prontas por nicho (`caption-templates.js`), que hoje têm ganchos genéricos.
 
 ## Cadastro do cliente pelo link (18/10) — NO AR (main 78346f3, 14h24)
