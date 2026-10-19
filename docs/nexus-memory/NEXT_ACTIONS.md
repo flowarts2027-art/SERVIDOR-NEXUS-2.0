@@ -4,7 +4,7 @@
 1. FEITO: Rodrigo pediu "já publica" às 14h11; PR #303 juntado e deploy ok.
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
 3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
-4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA no ar (PR #303); MERCADO no ar 14h16; OFICINA, HOTEL/POUSADA e IMOBILIÁRIA prontos; os 8 viram VÍDEO no estilo pet/pizza (PR #313, falta o merge do Rodrigo). CONTABILIDADE 14h53. Falta 1: material de construção (fotos dele → `render_reel.py`, igual aos outros).
+4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA no ar (PR #303); MERCADO no ar 14h16; OFICINA, HOTEL/POUSADA e IMOBILIÁRIA prontos; os 8 viram VÍDEO no estilo pet/pizza (PR #313, falta o merge do Rodrigo). CONTABILIDADE 14h53, MATERIAL 14h56 (último, pedido do Rodrigo). Com pet e restaurante: 12 nichos com vídeo. Os outros 9 (salão, cafeteria, lanchonete, padaria, academia, ração, agropecuária, veterinário, roupas) NÃO têm exemplo no servidor (página /exemplo/<nicho> dá 404) e ficam fora da busca diária — Rodrigo (14h56): "se não for o último, apaga os que faltam".
 5. FEITO: PR #303 (14h1x) e #310 (botão do carrossel, 14h29) juntados.
 
 ## 2026-10-19 — Auditoria
