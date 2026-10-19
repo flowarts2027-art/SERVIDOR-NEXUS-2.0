@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - "agendamentos/2026-10-19/**"
+      - ".github/workflows/nexus-agendar-pasta.yml"
 
 jobs:
   agendar:
@@ -28,10 +29,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          q() { npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$1"; }
+          q() { local raw; raw="$(npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$1" 2>/tmp/wr.err || true)"; printf '%s' "$raw" | python3 -c 'import sys,json; t=sys.stdin.read(); i=t.find("["); print(json.dumps(json.loads(t[i:])) if i>=0 else "[]")' 2>/dev/null || { echo "::error::D1: $(printf '%s' "$raw" | tr '\n' ' ' | cut -c1-400) $(tr '\n' ' ' </tmp/wr.err | cut -c1-400)" >&2; echo "[]"; }; }
           CLIENT_ID="$(q "SELECT id FROM clients WHERE lower(id) LIKE '%flow%' OR lower(name) LIKE '%flow arts%' OR lower(COALESCE(instagram,'')) LIKE '%flowarts%' LIMIT 1" | jq -r '.[0].results[0].id // empty')"
-          [ -n "$CLIENT_ID" ] || { echo "::error::Cliente Flow Arts não encontrado"; q "SELECT id, name FROM clients" | jq '.[0].results'; exit 1; }
-          echo "Cliente: $CLIENT_ID"
+          [ -n "$CLIENT_ID" ] || { echo "::error::Cliente Flow Arts não encontrado: $(q "SELECT id, name FROM clients" | jq -c '.[0].results' | cut -c1-600)"; exit 1; }
+          echo "::notice::Cliente: $CLIENT_ID"
           token="$(openssl rand -hex 32)"
           hash="$(printf '%s' "$token" | sha256sum | cut -d' ' -f1)"
           exp="$(date -u -d '+15 minutes' +%Y-%m-%dT%H:%M:%S.000Z)"
@@ -42,7 +43,7 @@ jobs:
             local label="$1"; shift
             local out; out="$(curl -sS --max-time 300 -b "nexus_master=$token" -X POST "$BASE/api/master/upload" \
               -F "clientId=$CLIENT_ID" -F "approval=eu" -F "date=$DAY" "$@")"
-            echo "$label: $out"
+            echo "::notice::$label: $(printf '%s' "$out" | tr '\n' ' ' | cut -c1-300)"
             echo "$out" | jq -e '.ok == true' >/dev/null || { echo "::error::$label falhou"; FAIL=1; }
           }
           FAIL=0
