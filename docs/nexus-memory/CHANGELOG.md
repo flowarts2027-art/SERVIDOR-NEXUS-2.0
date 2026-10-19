@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-19 ~14h40 BRT — Exemplos por nicho viram VÍDEO (PR #313)
+- Rodrigo (14h36, prints dos cartões baixados): no painel só baixavam fotos (no computador vinham 2 de cada); o único vídeo era o da pizza. Pediu: fazer o vídeo e subir no Nexus.
+- Feito: `scripts/social/video_exemplo.py` (ffmpeg) junta os 5 cartões num MP4 1080x1350 de 13 s (3 s por cartão, zoom leve, transição suave, áudio mudo). Gerado para bar, dentista, clínica, farmácia, mercado, oficina e hotel/pousada em `public/exemplos-nicho/<nicho>/video.mp4` (2,3–3,3 MB).
+- `bundled-examples.js`: a vitrine desses nichos passa a ser vídeo (capa = cartão 1). Troca só o carrossel que nós colocamos (source "bundled"); o que ele subir pelo Master fica.
+- Mesmo PR: oficina e hotel/pousada (fotos dele de 14h31–14h32).
+- Testes: 526/526. Entra no ar quando o Rodrigo juntar o PR #313.
+
 ## 2026-10-19 ~14h30 BRT — "Mandar o carrossel" no computador (branch fix/crm-carrossel-simples; falta OK)
 - Rodrigo (14h23, print do Master no computador + WhatsApp Web): o botão "2. Mandar o carrossel" não funcionava; quer um clique que abra a conversa já com o carrossel.
 - Limite real: o WhatsApp não deixa nenhum site abrir a conversa com fotos anexadas (wa.me só leva texto). Só a API oficial manda mídia, e para primeiro contato exige modelo aprovado pela Meta.

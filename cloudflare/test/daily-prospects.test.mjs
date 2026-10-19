@@ -144,7 +144,26 @@ test("19/10: exemplos do bar e do dentista entram sozinhos, sem trocar o que ele
   assert.deepEqual(out.added, ["dentista", "clinica", "farmacia", "mercado", "oficina", "hotel"]);
   const map = await readShowcase(env);
   assert.equal(map.bar.videoUrl, "https://x/meu-bar.mp4");
-  assert.equal(map.dentista.images.length, 5);
-  assert.match(map.dentista.images[0], /^https:\/\/flowarts\.com\.br\/exemplos-nicho\/dentista\/cartao-1\.jpg$/);
+  assert.equal(map.dentista.kind, "video", "19/10 14h36: vídeo, não fotos");
+  assert.equal(map.dentista.videoUrl, "https://flowarts.com.br/exemplos-nicho/dentista/video.mp4");
+  assert.equal(map.dentista.imageUrl, "https://flowarts.com.br/exemplos-nicho/dentista/cartao-1.jpg");
+  assert.deepEqual((await seedBundledExamples(env)).added, [], "segunda vez não mexe");
+});
+
+test("19/10 14h36: o carrossel que nós colocamos vira vídeo; o que ele subiu fica", async () => {
+  const { seedBundledExamples } = await import("../src/bundled-examples.js");
+  const { readShowcase } = await import("../src/showcase-store.js");
+  const { exampleMedia } = await import("../src/crm.js");
+  const { db, env } = fakeEnv();
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({
+    bar: { kind: "carousel", images: ["https://flowarts.com.br/exemplos-nicho/bar/cartao-1.jpg"], source: "bundled" },
+    mercado: { kind: "carousel", images: ["https://x/meu-mercado.jpg"] }
+  }));
+  const out = await seedBundledExamples(env);
+  assert.ok(out.added.includes("bar"));
+  assert.ok(!out.added.includes("mercado"));
+  const map = await readShowcase(env);
+  assert.deepEqual(exampleMedia(map.bar), { kind: "video", files: ["https://flowarts.com.br/exemplos-nicho/bar/video.mp4"] });
+  assert.equal(map.mercado.images[0], "https://x/meu-mercado.jpg");
   assert.deepEqual((await seedBundledExamples(env)).added, [], "segunda vez não mexe");
 });
