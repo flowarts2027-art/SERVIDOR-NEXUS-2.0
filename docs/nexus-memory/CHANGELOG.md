@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-19 ~11h BRT — Auditoria (chat) + correção do Creator (branch, sem deploy)
+- Pedido do Rodrigo: "faça uma auditoria". Feita no código do main ab831fe e no histórico do GitHub Actions (sem acesso ao D1, logs da Cloudflare ou ao painel nesta sessão).
+- Testes: 522/522 passam. CI e deploy ok; Core Autonomy e AutoFix ok.
+- Bug comprovado: em `runCreator` (`agent-runtime.js`) a variável `nicheChoice` era criada só dentro do `if(exists)`. Post NOVO dava `ReferenceError: nicheChoice is not defined` e o Creator caía. É por isso que a "NEXUS Overnight Regression" falha toda noite (passo "Client workspace end-to-end regression"). Correção: declarar `nicheChoice` antes do `if(exists)`. Depois disso o teste de ponta a ponta passa localmente. Hoje o Creator está pausado, então o erro só aparece quando ele for religado.
+- Workflow "Agendar conteúdo pronto (pasta agendamentos)" falha: o token CLOUDFLARE_API_TOKEN do GitHub não tem acesso ao D1 (erro 7403, o mesmo de 28/09). O conteúdo de `agendamentos/2026-10-19` NÃO foi agendado por esse caminho.
+- Segurança: nenhuma chave/senha no código público; login com limite de tentativas, cookies HttpOnly/Secure, webhooks com assinatura conferida. Repositório é público: e-mails e telefone de contato aparecem (já são públicos no site).
+- Próximo: Rodrigo dá OK para juntar a branch fix/creator-nicho-choice; Rodrigo adiciona permissão D1 (Edit) ao token da Cloudflare usado no GitHub.
+
 ## 2026-10-18 ~17h30 BRT — Reels aprovados não saíam + "Publicar agora" no painel do cliente (PR, sem deploy)
 - Pedido do Rodrigo (16h55, pelo celular): os Reels da pizzaria (09:31) e do pet shop (11:31) de hoje não foram ao ar; corrigir e criar "Publicar agora". Prints do painel: os dois em "Aprovado · será publicado"; Instagram conectado (válido até 10/12).
 - Primeiro diagnóstico dado no chat (legenda parecida, 92,5% > 92%) estava ERRADO: Reels animados têm manual:true, limite 0,99. Corrigido no chat.

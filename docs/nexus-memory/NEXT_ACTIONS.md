@@ -1,5 +1,9 @@
 # Próximas ações
 
+## 2026-10-19 — Auditoria
+1. Rodrigo dá OK para juntar a branch `fix/creator-nicho-choice` (corrige a queda do Creator em post novo).
+2. Rodrigo dá ao token CLOUDFLARE_API_TOKEN (secret do GitHub) a permissão "D1: Edit" na Cloudflare; depois rodar de novo "NEXUS Agendar conteúdo pronto".
+
 ## 2026-10-18 — Radar de virais
 1. Rodrigo junta o PR do Radar (deploy automático).
 2. Rodrigo coloca META_APP_ID e META_APP_SECRET na Cloudflare e cadastra https://servidor-nexus.diamantehinode2015.workers.dev/api/oauth/facebook/callback como endereço de retorno do login do Facebook no app da Meta.
