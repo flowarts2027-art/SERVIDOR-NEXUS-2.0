@@ -1,5 +1,20 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-19 ~14h10 BRT — Exemplos do bar e do dentista vão junto com o site (branch, PR #303)
+- Rodrigo mandou as 5 fotos do bar e as 5 do dentista (ChatGPT) e pediu: "não vou salvar, você que vai subir".
+- Chrome do computador dele não respondeu (extensão desconectada), então não deu para subir pelo Master.
+- Feito: cartões montados com `montar_exemplo.py` (ordem: vazio, celular, mostrando, chegando, atendendo) e colocados em `public/exemplos-nicho/<nicho>/cartao-1..5.jpg`. Novo `bundled-examples.js`: a cada ciclo do Caçador, nicho SEM exemplo recebe esse carrossel (https://flowarts.com.br/exemplos-nicho/...). O que ele subir pelo Master nunca é trocado.
+- Caçador: um ciclo pode repetir nicho quando há poucos nichos com exemplo.
+- 14h07: clínica também; 14h09: farmácia (5 fotos dele cada). Testes: 525/525. Entra no ar quando o Rodrigo juntar o PR #303.
+
+## 2026-10-19 ~13h40 BRT — Caçador: 10 por dia, limpeza de quem não respondeu, sempre com exemplo (branch, sem deploy)
+- Pedido do Rodrigo (chat): busca de 10 empresas por dia; limpar o histórico de quem já recebeu mensagem e não respondeu; toda mensagem com pelo menos uma imagem do nicho. Ele continua fazendo as imagens dos nichos no ChatGPT.
+- Ele também pediu envio automático pelo WhatsApp dele. NÃO feito: mensagem automática para desconhecidos faz o WhatsApp banir o número (o mesmo do site). Continua: o Nexus separa e escreve, ele toca em "Enviar".
+- `daily-prospects.js`: meta padrão 10 (quem tinha 3 vira 10 uma vez; depois vale o painel); até 16 tentativas por dia; se algum nicho tem exemplo, busca SÓ nesses nichos e repete nicho se forem menos que 10. Nichos sem exemplo entram sozinhos quando o exemplo for subido.
+- Limpeza: `clearNoReply` arquiva (não apaga) etapa "mandei mensagem" e "Para chamar" de dias anteriores. Roda uma vez sozinha no primeiro ciclo depois do deploy e tem botão "Limpar quem não respondeu" em CRM › Busca diária. Arquivado continua bloqueando a mesma empresa de ser achada de novo.
+- Testes: 524/524 passam.
+- Próximo: OK do Rodrigo para juntar na main (deploy automático).
+
 ## 2026-10-19 ~11h BRT — Auditoria (chat) + correção do Creator (branch, sem deploy)
 - Pedido do Rodrigo: "faça uma auditoria". Feita no código do main ab831fe e no histórico do GitHub Actions (sem acesso ao D1, logs da Cloudflare ou ao painel nesta sessão).
 - Testes: 522/522 passam. CI e deploy ok; Core Autonomy e AutoFix ok.

@@ -1,5 +1,12 @@
 # Próximas ações
 
+## 2026-10-19 — Caçador 10 por dia (branch feat/cacador-10-por-dia; falta OK)
+1. OK do Rodrigo → juntar na main (deploy automático).
+2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
+3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
+4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA vão junto no PR #303 (entram sozinhos); faltam 6: mercado, oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
+5. Rodrigo junta o PR #303 pelo GitHub (o merge daqui foi bloqueado pedindo a confirmação dele).
+
 ## 2026-10-19 — Auditoria
 1. Rodrigo dá OK para juntar a branch `fix/creator-nicho-choice` (corrige a queda do Creator em post novo).
 2. Rodrigo dá ao token CLOUDFLARE_API_TOKEN (secret do GitHub) a permissão "D1: Edit" na Cloudflare; depois rodar de novo "NEXUS Agendar conteúdo pronto".
