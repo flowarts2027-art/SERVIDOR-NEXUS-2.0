@@ -1,7 +1,7 @@
 # Próximas ações
 
-## 2026-10-19 — Caçador 10 por dia (branch feat/cacador-10-por-dia; falta OK)
-1. OK do Rodrigo → juntar na main (deploy automático).
+## 2026-10-19 — Caçador 10 por dia — NO AR (main 975ffff, 14h1x, Deploy NEXUS Cloudflare success)
+1. FEITO: Rodrigo pediu "já publica" às 14h11; PR #303 juntado e deploy ok.
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
 3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
 4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA vão junto no PR #303 (entram sozinhos); faltam 6: mercado, oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
