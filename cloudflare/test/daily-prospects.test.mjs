@@ -47,7 +47,7 @@ test("19/10: separa 10 por dia, só nos nichos com exemplo (repete nicho se prec
   const map = fakeFetcher(calls);
   const first = await runDailyProspects(env, NINE_BRT, map);
   assert.equal(first.picked, 3);
-  const withExample = ["bar", "cafeteria", "clinica", "dentista", "farmacia", "mercado", "pet", "restaurante"]; // bar e dentista vêm junto com o site (19/10)
+  const withExample = ["bar", "cafeteria", "clinica", "dentista", "farmacia", "hotel", "mercado", "oficina", "pet", "restaurante"]; // bar e dentista vêm junto com o site (19/10)
   assert.equal(new Set(first.added.map(a => a.niche)).size, 3, "um de cada nicho com exemplo");
   assert.ok(first.added.every(a => withExample.includes(a.niche)));
   let out = first, t = NINE_BRT.getTime();
@@ -97,7 +97,7 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
   const day2 = await runDailyProspects(env, new Date(NINE_BRT.getTime() + 86400e3), map);
   const n1 = day1.added.map(a => a.niche), n2 = day2.added.map(a => a.niche);
   // 19/10: só nichos com exemplo (bar e dentista vêm junto com o site), então o nicho pode repetir; a empresa não.
-  assert.ok([...n1, ...n2].every(n => ["bar", "clinica", "dentista", "farmacia", "mercado"].includes(n)));
+  assert.ok([...n1, ...n2].every(n => ["bar", "clinica", "dentista", "farmacia", "mercado", "oficina", "hotel"].includes(n)));
   const list = await listContacts(env, {}, new Date(NINE_BRT.getTime() + 86400e3));
   assert.equal(new Set(list.contacts.map(c => c.phone)).size, 6);
   const after = await markContacted(env, list.due[0].id, { followDays: 7 }, NINE_BRT);
@@ -141,7 +141,7 @@ test("19/10: exemplos do bar e do dentista entram sozinhos, sem trocar o que ele
   const { db, env } = fakeEnv();
   db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ bar: { kind: "video", videoUrl: "https://x/meu-bar.mp4" } }));
   const out = await seedBundledExamples(env);
-  assert.deepEqual(out.added, ["dentista", "clinica", "farmacia", "mercado"]);
+  assert.deepEqual(out.added, ["dentista", "clinica", "farmacia", "mercado", "oficina", "hotel"]);
   const map = await readShowcase(env);
   assert.equal(map.bar.videoUrl, "https://x/meu-bar.mp4");
   assert.equal(map.dentista.images.length, 5);
