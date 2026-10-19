@@ -4,7 +4,7 @@
 1. FEITO: Rodrigo pediu "já publica" às 14h11; PR #303 juntado e deploy ok.
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
 3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
-4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA vão junto no PR #303 (entram sozinhos); faltam 6: mercado, oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
+4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA no ar (PR #303); MERCADO no ar 14h16 (main direto, Rodrigo pediu para publicar); faltam 5: oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
 5. Rodrigo junta o PR #303 pelo GitHub (o merge daqui foi bloqueado pedindo a confirmação dele).
 
 ## 2026-10-19 — Auditoria
