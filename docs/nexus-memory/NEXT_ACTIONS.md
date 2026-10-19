@@ -4,7 +4,8 @@
 1. OK do Rodrigo → juntar na main (deploy automático).
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
 3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
-4. Subir os exemplos dos 10 nichos que faltam (ChatGPT) para eles entrarem na busca.
+4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10 13h59: BAR montado e entregue (bar-1..5); faltam 9: dentista, clínica, farmácia, mercado, oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
+5. Rodrigo junta o PR #303 pelo GitHub (o merge daqui foi bloqueado pedindo a confirmação dele).
 
 ## 2026-10-19 — Auditoria
 1. Rodrigo dá OK para juntar a branch `fix/creator-nicho-choice` (corrige a queda do Creator em post novo).
