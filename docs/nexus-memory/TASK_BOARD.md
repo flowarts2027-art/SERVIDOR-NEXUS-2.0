@@ -4,8 +4,8 @@
 
 | ID | Objetivo | Responsável preferido | Estado em 19/10/2026 | Próximo passo |
 | --- | --- | --- | --- | --- |
-| BRIDGE-001 | Protocolo de memória entre ChatGPT e Claude | ChatGPT | Documentação em branch; aguardando revisão/integração | Validar PR e juntar à `main` somente com autorização. Depois verificar que ambos leram as instruções na sessão seguinte. |
-| FLOW-CAPTA-001 | Qualificar oportunidades locais, registrar no CRM e preparar contato manual pelo Instagram | Claude Code / Work; ChatGPT revisa marketing | Planejado; partes do Caçador/CRM já existem em código e PRs | Auditar `daily-prospects.js`, `crm.js`, PRs e limitações; conciliar 10/dia registrado no changelog com 20/dia discutido; desenhar o menor incremento. |
+| BRIDGE-001 | Protocolo de memória entre ChatGPT e Claude | ChatGPT | **Integrado à `main` no PR #316**; leitura por Claude ainda não verificada | Conferir leitura/atualização dos handoffs quando Claude Code retomar o projeto. |
+| FLOW-CAPTA-001 | Aperfeiçoar o Captador **já existente no portal de cada cliente**, por nicho, com qualificação e follow-up seletivo; simplificar o Caçador duplicado no Master sem perder administração | **Claude Code** implementa; ChatGPT define marketing | Requisitos registrados no `HANDOFF_CHATGPT.md`; implementação ainda não realizada | Auditar `captador.js`, `public/captador.js`, `daily-prospects.js` e CRM; qualificar empresas, contato inicial manual no Instagram quando aplicável, zerar listagem visual após busca sem resultados, arquivar fracos/sem interesse e acompanhar só leads pertinentes. Preservar dados, permissões e isolamento dos assinantes; propor PR com testes. |
 | FLOW-ARTES-001 | Produzir artes 4:5 por nicho, quatro fotos em 2×2, para exemplos comerciais | ChatGPT / Work; Claude integra o resultado ao painel quando autorizado | Pedido em andamento em conversa, sem conclusão documentada aqui | Retomar briefing e referências visuais aprovadas; não afirmar que as 21 artes estão prontas. |
 
 ## Convenções de estado
