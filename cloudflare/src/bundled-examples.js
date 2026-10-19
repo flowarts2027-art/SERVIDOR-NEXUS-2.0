@@ -7,7 +7,7 @@
 import { readShowcase, writeShowcase } from "./showcase-store.js";
 
 export const BUNDLED_ORIGIN = "https://flowarts.com.br";
-export const BUNDLED_EXAMPLES = ["bar", "dentista", "clinica", "farmacia", "mercado", "oficina", "hotel", "imobiliaria"];
+export const BUNDLED_EXAMPLES = ["bar", "dentista", "clinica", "farmacia", "mercado", "oficina", "hotel", "imobiliaria", "contabilidade"];
 
 const hasExample = e => Boolean(e?.videoUrl || (e?.kind === "carousel" && Array.isArray(e?.images) && e.images.length));
 const ours = e => e?.source === "bundled";

@@ -2,7 +2,7 @@
 
 ## 2026-10-19 ~14h40–14h55 BRT — Exemplos por nicho viram VÍDEO no estilo do pet shop/pizza (PR #313)
 - Rodrigo (14h36): no painel só baixavam fotos (no computador vinham 2 de cada); o único vídeo era o da pizza. Pediu vídeo. 14h43: "gostei mais do estilo do vídeo do pet shop e da pizza".
-- Feito: Reels 9:16 de 16 s com `scripts/reel/render_reel.py` (o mesmo do pet/pizza), a partir das 5 fotos dele de cada nicho e dos títulos de `exemplos-nicho.json`, gerados nesta sessão: bar, dentista, clínica, farmácia, mercado, oficina, hotel/pousada e imobiliária (fotos de 14h45). Ficam em `public/exemplos-nicho/<nicho>/video.mp4` + `capa.jpg`.
+- Feito: Reels 9:16 de 16 s com `scripts/reel/render_reel.py` (o mesmo do pet/pizza), a partir das 5 fotos dele de cada nicho e dos títulos de `exemplos-nicho.json`, gerados nesta sessão: bar, dentista, clínica, farmácia, mercado, oficina, hotel/pousada, imobiliária (14h45) e contabilidade (14h53). Ficam em `public/exemplos-nicho/<nicho>/video.mp4` + `capa.jpg`.
 - `bundled-examples.js` (version 3): a vitrine desses nichos é o vídeo. Troca só o que nós colocamos (source "bundled"); o que ele subir pelo Master fica.
 - Testes: 526/526. Entra no ar quando o Rodrigo juntar o PR #313.
 
