@@ -5,7 +5,7 @@
 - Chrome do computador dele não respondeu (extensão desconectada), então não deu para subir pelo Master.
 - Feito: cartões montados com `montar_exemplo.py` (ordem: vazio, celular, mostrando, chegando, atendendo) e colocados em `public/exemplos-nicho/<nicho>/cartao-1..5.jpg`. Novo `bundled-examples.js`: a cada ciclo do Caçador, nicho SEM exemplo recebe esse carrossel (https://flowarts.com.br/exemplos-nicho/...). O que ele subir pelo Master nunca é trocado.
 - Caçador: um ciclo pode repetir nicho quando há poucos nichos com exemplo.
-- 14h07: clínica também (5 fotos dele). Testes: 525/525. Entra no ar quando o Rodrigo juntar o PR #303.
+- 14h07: clínica também; 14h09: farmácia (5 fotos dele cada). Testes: 525/525. Entra no ar quando o Rodrigo juntar o PR #303.
 
 ## 2026-10-19 ~13h40 BRT — Caçador: 10 por dia, limpeza de quem não respondeu, sempre com exemplo (branch, sem deploy)
 - Pedido do Rodrigo (chat): busca de 10 empresas por dia; limpar o histórico de quem já recebeu mensagem e não respondeu; toda mensagem com pelo menos uma imagem do nicho. Ele continua fazendo as imagens dos nichos no ChatGPT.
