@@ -4,8 +4,8 @@
 1. FEITO: Rodrigo pediu "já publica" às 14h11; PR #303 juntado e deploy ok.
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
 3. Amanhã depois das 9h: conferir se chegaram 10 empresas em "Para chamar", todas com exemplo.
-4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA no ar (PR #303); MERCADO no ar 14h16 (main direto, Rodrigo pediu para publicar); faltam 5: oficina, hotel/pousada, imobiliária, contabilidade, material de construção.
-5. Rodrigo junta o PR #303 pelo GitHub (o merge daqui foi bloqueado pedindo a confirmação dele).
+4. Subir os exemplos dos nichos que faltam (ChatGPT) para eles entrarem na busca. 19/10: BAR, DENTISTA, CLÍNICA e FARMÁCIA no ar (PR #303); MERCADO no ar 14h16; OFICINA, HOTEL/POUSADA e IMOBILIÁRIA prontos; os 8 viram VÍDEO no estilo pet/pizza (PR #313, falta o merge do Rodrigo). Faltam 2: contabilidade e material de construção (fotos dele → `render_reel.py`, igual aos outros).
+5. FEITO: PR #303 (14h1x) e #310 (botão do carrossel, 14h29) juntados.
 
 ## 2026-10-19 — Auditoria
 1. Rodrigo dá OK para juntar a branch `fix/creator-nicho-choice` (corrige a queda do Creator em post novo).

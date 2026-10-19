@@ -1,10 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
-## 2026-10-19 ~14h40 BRT — Exemplos por nicho viram VÍDEO (PR #313)
-- Rodrigo (14h36, prints dos cartões baixados): no painel só baixavam fotos (no computador vinham 2 de cada); o único vídeo era o da pizza. Pediu: fazer o vídeo e subir no Nexus.
-- Feito: `scripts/social/video_exemplo.py` (ffmpeg) junta os 5 cartões num MP4 1080x1350 de 13 s (3 s por cartão, zoom leve, transição suave, áudio mudo). Gerado para bar, dentista, clínica, farmácia, mercado, oficina e hotel/pousada em `public/exemplos-nicho/<nicho>/video.mp4` (2,3–3,3 MB).
-- `bundled-examples.js`: a vitrine desses nichos passa a ser vídeo (capa = cartão 1). Troca só o carrossel que nós colocamos (source "bundled"); o que ele subir pelo Master fica.
-- Mesmo PR: oficina e hotel/pousada (fotos dele de 14h31–14h32).
+## 2026-10-19 ~14h40–14h55 BRT — Exemplos por nicho viram VÍDEO no estilo do pet shop/pizza (PR #313)
+- Rodrigo (14h36): no painel só baixavam fotos (no computador vinham 2 de cada); o único vídeo era o da pizza. Pediu vídeo. 14h43: "gostei mais do estilo do vídeo do pet shop e da pizza".
+- Feito: Reels 9:16 de 16 s com `scripts/reel/render_reel.py` (o mesmo do pet/pizza), a partir das 5 fotos dele de cada nicho e dos títulos de `exemplos-nicho.json`, gerados nesta sessão: bar, dentista, clínica, farmácia, mercado, oficina, hotel/pousada e imobiliária (fotos de 14h45). Ficam em `public/exemplos-nicho/<nicho>/video.mp4` + `capa.jpg`.
+- `bundled-examples.js` (version 3): a vitrine desses nichos é o vídeo. Troca só o que nós colocamos (source "bundled"); o que ele subir pelo Master fica.
 - Testes: 526/526. Entra no ar quando o Rodrigo juntar o PR #313.
 
 ## 2026-10-19 ~14h30 BRT — "Mandar o carrossel" no computador (branch fix/crm-carrossel-simples; falta OK)
