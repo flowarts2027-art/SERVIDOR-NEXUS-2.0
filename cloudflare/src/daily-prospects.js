@@ -7,6 +7,7 @@
 import { NICHES, CITIES, searchOSM, osmToProspect, firstMessage } from "./prospects.js";
 import { hoursStatus } from "./business-hours.js";
 import { readShowcase } from "./showcase-store.js";
+import { seedBundledExamples } from "./bundled-examples.js";
 import { brasiliaDay, createContact, crmKnows, ensureCrmSchema } from "./crm.js";
 import { sendPushToAll } from "./push.js";
 
@@ -65,6 +66,8 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
     state.cleaned1019 = 1 + (await clearNoReply(env, now)).archived;
     await writeState(env, state);
   }
+  // Exemplos que vieram junto com o site (bar, dentista…) entram na vitrine, se o nicho ainda não tiver.
+  await seedBundledExamples(env, now).catch(() => null);
 
   const hourBrt = new Date(now.getTime() - 3 * 3600 * 1000).getUTCHours();
   if (!state.enabled && !force) return { ok: true, skipped: "disabled" };
@@ -78,7 +81,8 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
   const showcase = await readShowcase(env);
   // Primeiro nichos que ainda não saíram hoje; se os nichos com exemplo forem menos que a meta, repete nicho.
   const all = nicheOrder(showcase, state.nicheCursor);
-  const order = [...all.filter(k => !state.niches.includes(k)), ...all.filter(k => state.niches.includes(k))];
+  let order = [...all.filter(k => !state.niches.includes(k)), ...all.filter(k => state.niches.includes(k))];
+  while (order.length && order.length < MAX_SEARCHES_PER_RUN) order.push(...all);
   const added = [];
   let searches = 0;
   let lastError = "";
