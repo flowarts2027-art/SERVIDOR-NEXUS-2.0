@@ -7,18 +7,35 @@
 import { NICHES, CITIES, searchOSM, osmToProspect, firstMessage } from "./prospects.js";
 import { hoursStatus } from "./business-hours.js";
 import { readShowcase } from "./showcase-store.js";
-import { brasiliaDay, createContact, crmKnows } from "./crm.js";
+import { brasiliaDay, createContact, crmKnows, ensureCrmSchema } from "./crm.js";
 import { sendPushToAll } from "./push.js";
 
-export const DAILY_TARGET = 3;
+// 19/10 (Rodrigo): 10 empresas por dia (antes 3).
+export const DAILY_TARGET = 10;
 const START_HOUR_BRT = 9;
-const MAX_ATTEMPTS_PER_DAY = 12;
+const MAX_ATTEMPTS_PER_DAY = 16;
 const MAX_SEARCHES_PER_RUN = 3;
 
 async function readState(env) {
   await env.DB.prepare("CREATE TABLE IF NOT EXISTS crm_settings (id TEXT PRIMARY KEY, value_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
   const row = await env.DB.prepare("SELECT value_json FROM crm_settings WHERE id='daily'").first();
-  try { return { enabled: true, target: DAILY_TARGET, nicheCursor: 0, cityCursor: {}, ...JSON.parse(row?.value_json || "{}") }; } catch { return { enabled: true, target: DAILY_TARGET, nicheCursor: 0, cityCursor: {} }; }
+  let state;
+  try { state = { enabled: true, target: DAILY_TARGET, nicheCursor: 0, cityCursor: {}, ...JSON.parse(row?.value_json || "{}") }; } catch { state = { enabled: true, target: DAILY_TARGET, nicheCursor: 0, cityCursor: {} }; }
+  // 19/10: quem estava com 3 por dia passa para 10 uma vez (depois vale o que ele escolher no painel).
+  if (!state.target10) Object.assign(state, { target: DAILY_TARGET, target10: true });
+  return state;
+}
+
+// 19/10 (Rodrigo): "limpar o histórico" de quem já recebeu mensagem e não respondeu.
+// Arquiva (não apaga): some do CRM, mas o Nexus lembra do número e não chama a mesma empresa de novo.
+// Fica: quem está conversando, com proposta, cliente ou "não quer".
+export async function clearNoReply(env, now = new Date()) {
+  const today = brasiliaDay(now);
+  await ensureCrmSchema(env);
+  const result = await env.DB.prepare(
+    "UPDATE crm_contacts SET archived=1,updated_at=?1 WHERE archived=0 AND (stage='contato' OR (stage='chamar' AND substr(created_at,1,10)<?2))"
+  ).bind(now.toISOString(), today).run();
+  return { ok: true, archived: Number(result?.meta?.changes || 0) };
 }
 
 async function writeState(env, state) {
@@ -28,11 +45,14 @@ async function writeState(env, state) {
 }
 
 // Ordem dos nichos: primeiro os que têm exemplo (o cliente vê o resultado), depois os outros; sempre em rodízio.
+// 19/10 (Rodrigo): toda mensagem tem que levar pelo menos uma imagem. Por isso, se algum nicho
+// já tem exemplo, a busca fica SÓ nos nichos com exemplo. Os outros entram sozinhos quando
+// ele subir o exemplo (as imagens que estão sendo feitas no ChatGPT).
 export function nicheOrder(showcase, cursor) {
   const keys = Object.keys(NICHES);
   const has = k => Boolean(showcase?.[k]?.videoUrl || (showcase?.[k]?.kind === "carousel" && showcase[k].images?.length));
   const withExample = keys.filter(has);
-  const pool = withExample.length >= DAILY_TARGET ? withExample : [...withExample, ...keys.filter(k => !has(k))];
+  const pool = withExample.length ? withExample : keys;
   const start = Number(cursor || 0) % pool.length;
   return [...pool.slice(start), ...pool.slice(0, start)];
 }
@@ -40,6 +60,12 @@ export function nicheOrder(showcase, cursor) {
 export async function runDailyProspects(env, now = new Date(), fetcher = fetch, { force = false } = {}) {
   const state = await readState(env);
   const today = brasiliaDay(now);
+  // Limpeza pedida em 19/10: roda uma vez só, no primeiro ciclo depois do deploy.
+  if (!state.cleaned1019) {
+    state.cleaned1019 = 1 + (await clearNoReply(env, now)).archived;
+    await writeState(env, state);
+  }
+
   const hourBrt = new Date(now.getTime() - 3 * 3600 * 1000).getUTCHours();
   if (!state.enabled && !force) return { ok: true, skipped: "disabled" };
   if (!force && hourBrt < START_HOUR_BRT) return { ok: true, skipped: "too_early" };
@@ -50,7 +76,9 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
   state.attempts += 1;
 
   const showcase = await readShowcase(env);
-  const order = nicheOrder(showcase, state.nicheCursor).filter(k => !state.niches.includes(k));
+  // Primeiro nichos que ainda não saíram hoje; se os nichos com exemplo forem menos que a meta, repete nicho.
+  const all = nicheOrder(showcase, state.nicheCursor);
+  const order = [...all.filter(k => !state.niches.includes(k)), ...all.filter(k => state.niches.includes(k))];
   const added = [];
   let searches = 0;
   let lastError = "";
@@ -118,6 +146,7 @@ export async function handleDailyRoute(request, env, url) {
     if (url.pathname === "/api/master/crm/daily" && request.method === "GET") return send({ ok: true, ...(await dailySettings(env)) });
     if (url.pathname === "/api/master/crm/daily" && request.method === "POST") return send(await saveDailySettings(env, await request.json().catch(() => ({}))));
     if (url.pathname === "/api/master/crm/daily/run" && request.method === "POST") return send(await runDailyProspects(env, new Date(), fetch, { force: true }));
+    if (url.pathname === "/api/master/crm/daily/clean" && request.method === "POST") return send(await clearNoReply(env));
   } catch (error) {
     return send({ ok: false, error: String(error?.message || error).slice(0, 80), message: "Não deu para buscar agora. Tente de novo em alguns minutos." }, 400);
   }

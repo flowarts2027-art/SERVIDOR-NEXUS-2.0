@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { runDailyProspects, nicheOrder } from "../src/daily-prospects.js";
-import { listContacts, markContacted } from "../src/crm.js";
+import { runDailyProspects, nicheOrder, saveDailySettings, dailySettings } from "../src/daily-prospects.js";
+import { listContacts, markContacted, createContact, updateContact } from "../src/crm.js";
 import { saveSubscription, pushPublicKey } from "../src/push.js";
 
 function fakeEnv() {
@@ -38,27 +38,54 @@ test("antes das 9h não busca", async () => {
   assert.equal(out.skipped, "too_early");
 });
 
-test("separa 3 empresas de nichos diferentes, em 'Para chamar', com a mensagem pronta; não envia nada", async () => {
+test("19/10: separa 10 por dia, só nos nichos com exemplo (repete nicho se precisar), em 'Para chamar'; não envia nada", async () => {
   const { db, env } = fakeEnv();
   db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({
     cafeteria: { kind: "carousel", images: ["https://x/1.jpg", "https://x/2.jpg"] }, pet: { kind: "video", videoUrl: "https://x/v.mp4" }, restaurante: { kind: "video", videoUrl: "https://x/r.mp4" }
   }));
   const calls = [];
-  const out = await runDailyProspects(env, NINE_BRT, fakeFetcher(calls));
-  assert.equal(out.picked, 3);
-  assert.equal(new Set(out.added.map(a => a.niche)).size, 3, "nichos diferentes");
-  assert.deepEqual(out.added.map(a => a.niche).sort(), ["cafeteria", "pet", "restaurante"], "primeiro os que têm exemplo");
-  const list = await listContacts(env, {}, NINE_BRT);
-  assert.equal(list.due.length, 3);
+  const map = fakeFetcher(calls);
+  const first = await runDailyProspects(env, NINE_BRT, map);
+  assert.equal(first.picked, 3);
+  assert.deepEqual(first.added.map(a => a.niche).sort(), ["cafeteria", "pet", "restaurante"], "primeiro um de cada nicho com exemplo");
+  let out = first, t = NINE_BRT.getTime();
+  for (let i = 0; i < 10 && out.skipped !== "done"; i++) { t += 900e3; out = await runDailyProspects(env, new Date(t), map); }
+  assert.equal(out.skipped, "done");
+  assert.equal(out.picked, 10);
+  const list = await listContacts(env, {}, new Date(t));
+  assert.equal(list.due.length, 10);
   for (const c of list.due) {
     assert.equal(c.stage, "chamar");
-    assert.match(c.message, /flowarts\.com\.br\/exemplo\//);
+    assert.ok(["cafeteria", "pet", "restaurante"].includes(c.niche), "só nicho com exemplo");
+    assert.ok(c.example?.files?.length, "toda mensagem leva imagem ou vídeo");
     assert.doesNotMatch(c.name, /Fixo/, "só celular");
   }
-  // Sem celular cadastrado para aviso: nenhum envio para ninguém.
-  assert.equal(calls.length, 0);
-  // Rodou de novo no mesmo dia: não separa mais.
-  assert.equal((await runDailyProspects(env, new Date(NINE_BRT.getTime() + 900e3), fakeFetcher(calls))).skipped, "done");
+  assert.equal(calls.length, 0, "nada enviado");
+});
+
+test("19/10: quem estava com 3 por dia vira 10; depois vale o que ele escolher no painel", async () => {
+  const { db, env } = fakeEnv();
+  db.exec("CREATE TABLE IF NOT EXISTS crm_settings (id TEXT PRIMARY KEY, value_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+  db.prepare("INSERT INTO crm_settings(id,value_json) VALUES('daily',?)").run(JSON.stringify({ enabled: true, target: 3 }));
+  assert.equal((await dailySettings(env)).target, 10);
+  await saveDailySettings(env, { target: 5 });
+  assert.equal((await dailySettings(env)).target, 5);
+});
+
+test("19/10: limpa uma vez quem já recebeu mensagem e não respondeu; não chama a mesma empresa de novo", async () => {
+  const { env } = fakeEnv();
+  const old = new Date("2026-10-15T15:00:00Z");
+  const sent = (await createContact(env, { name: "Já mandei", phone: "22981110001", stage: "contato", source: "cacador-auto", sourceId: "osm:node/1" }, old)).contact;
+  await createContact(env, { name: "Ficou parado", phone: "22981110002", stage: "chamar", source: "cacador-auto", sourceId: "osm:node/2" }, old);
+  const talk = (await createContact(env, { name: "Respondeu", phone: "22981110003", stage: "conversando" }, old)).contact;
+  await runDailyProspects(env, new Date("2026-10-19T10:00:00Z"), fakeFetcher([]));
+  const list = await listContacts(env, {}, NINE_BRT);
+  assert.deepEqual(list.contacts.map(c => c.name), ["Respondeu"]);
+  assert.ok(sent.id && talk.id);
+  // Segunda vez não limpa de novo (quem entrou depois fica).
+  await updateContact(env, talk.id, { stage: "contato" }, NINE_BRT);
+  await runDailyProspects(env, new Date("2026-10-19T10:15:00Z"), fakeFetcher([]));
+  assert.equal((await listContacts(env, {}, NINE_BRT)).contacts.length, 1);
 });
 
 test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já falei' passa para 'mandei mensagem'", async () => {
@@ -76,9 +103,9 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
 });
 
 test("ordem dos nichos: com exemplo primeiro, em rodízio", () => {
-  const order = nicheOrder({ pet: { videoUrl: "x" } }, 0);
-  assert.equal(order[0], "pet");
-  assert.equal(order.length, 21); // 18/10: casa de ração virou loja de ração
+  // 19/10: com algum exemplo, fica só nos nichos com exemplo (toda mensagem leva imagem).
+  assert.deepEqual(nicheOrder({ pet: { videoUrl: "x" } }, 0), ["pet"]);
+  assert.equal(nicheOrder({}, 0).length, 21); // sem nenhum exemplo: todos (18/10: casa de ração virou loja de ração)
 });
 
 test("aviso no celular: chave criada uma vez, toque vai assinado (VAPID) e sem conteúdo", async () => {
@@ -88,6 +115,7 @@ test("aviso no celular: chave criada uma vez, toque vai assinado (VAPID) e sem c
   assert.equal(Buffer.from(k1.replace(/-/g, "+").replace(/_/g, "/"), "base64").length, 65);
   await saveSubscription(env, { endpoint: "https://fcm.googleapis.com/fcm/send/abc", keys: { p256dh: "x", auth: "y" } });
   await assert.rejects(saveSubscription(env, { endpoint: "https://malicioso.com/x" }), /subscription_invalid/);
+  await saveDailySettings(env, { target: 3 });
   const calls = [];
   const out = await runDailyProspects(env, NINE_BRT, fakeFetcher(calls));
   assert.equal(out.push.sent, 1);

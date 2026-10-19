@@ -59,13 +59,25 @@
   }
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("#push-enable,#push-test,#crm-daily-run");
+    const t = event.target.closest?.("#push-enable,#push-test,#crm-daily-run,#crm-daily-clean");
     if (!t) return;
     if (t.id === "push-enable") { await enablePush(); return; }
     if (t.id === "push-test") {
       msg("Mandando o aviso…");
       try { const out = await call("/api/master/push/test", { method: "POST", body: "{}" }); msg(out.sent ? "Aviso enviado. Deve chegar em alguns segundos." : "Nenhum celular recebeu. Ative o aviso de novo."); }
       catch (error) { msg(error.message); }
+      return;
+    }
+    // 19/10: tira do CRM quem já recebeu mensagem e não respondeu (fica arquivado e não é chamado de novo).
+    if (t.id === "crm-daily-clean") {
+      if (!confirm("Tirar do CRM quem já recebeu mensagem e não respondeu? Quem está conversando, com proposta ou é cliente fica.")) return;
+      t.disabled = true;
+      try {
+        const out = await call("/api/master/crm/daily/clean", { method: "POST", body: "{}" });
+        msg(out.archived ? `Pronto: ${out.archived} contatos saíram da lista.` : "Não tinha ninguém para limpar.");
+        document.dispatchEvent(new CustomEvent("nexus:view", { detail: "crm" }));
+      } catch (error) { msg(error.message); }
+      t.disabled = false;
       return;
     }
     if (t.id === "crm-daily-run") {
