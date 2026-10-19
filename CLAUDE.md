@@ -25,3 +25,9 @@
 - `.claude/agents/ceo.md`, `marketing.md`, `vendas.md`, `revisor.md` (o Revisor critica e confere fatos antes de chegar ao Rodrigo). Contexto comum em `empresa/visao.md` e `empresa/metricas.md`.
 - Standup diário: peça "CEO, rode o standup de hoje". O arquivo fica em `empresa/standup/`.
 - Eles só rascunham e recomendam. Publicar, enviar mensagem, gastar ou prometer algo ao cliente: só com o OK do Rodrigo.
+
+## Continuidade de trabalho com ChatGPT — ponte no GitHub
+
+Na abertura de cada sessão, além das leituras exigidas por `AGENTS.md`, consulte `docs/nexus-memory/BRIDGE_PROTOCOL.md`, `TASK_BOARD.md` e **a entrada mais recente** de `HANDOFF_CHATGPT.md`. Antes de alterar arquivos, verifique se outra branch/PR já implementa o pedido; resuma para o Rodrigo o que existe e o que falta.
+
+Ao final, acrescente em `docs/nexus-memory/HANDOFF_CLAUDE.md` um resumo objetivo das decisões, alterações comprovadas, testes, estado do deploy e próximo passo, para que o ChatGPT possa retomar. Nunca informe que leu chats privados ou prompts que não foram escritos na memória. Não publicar alterações na `main`, gastar recursos ou enviar mensagens a terceiros sem as autorizações aplicáveis. Consulte também as regras de privacidade do `BRIDGE_PROTOCOL.md` porque o repositório é público.
