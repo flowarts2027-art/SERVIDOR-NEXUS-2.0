@@ -27,8 +27,9 @@
   }
 
   const canShareFiles = () => typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function";
-  // Com exemplo e celular que compartilha arquivo: texto sem o link (a mídia vai no passo 2).
-  const withMedia = c => Boolean(c.example && c.messageWithMedia && canShareFiles());
+  // Com exemplo: texto sem o link (a mídia vai no passo 2). 19/10: vale também no computador (baixa as imagens).
+  const withMedia = c => Boolean(c.example && c.messageWithMedia);
+  const isPhone = () => typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
   const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(withMedia(c) ? c.messageWithMedia : c.message || "");
   const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
@@ -276,43 +277,57 @@
     }
   });
 
-  // Mandar o carrossel/vídeo de exemplo pelo WhatsApp (compartilhar do celular).
-  // 1º toque baixa os arquivos; 2º toque abre o compartilhar (o celular exige um toque recente).
-  // No WhatsApp, a conversa aberta no passo 1 aparece no topo da lista.
+  // Mandar o carrossel/vídeo de exemplo pelo WhatsApp.
+  // 19/10 (Rodrigo): "quero que seja simples". O WhatsApp não deixa nenhum site abrir a conversa
+  // já com fotos anexadas. Então:
+  // - Celular: um toque abre o compartilhar com o carrossel (a conversa do passo 1 fica no topo).
+  // - Computador: um clique baixa o carrossel; no WhatsApp é só clicar no clipe e escolher as fotos.
   const shareCache = new Map();
+  async function exampleFiles(c) {
+    if (shareCache.has(c.id)) return shareCache.get(c.id);
+    const files = await Promise.all(c.example.files.map(async (u, i) => {
+      const path = new URL(u, location.href).pathname;
+      const response = await fetch(path, { credentials: "same-origin" });
+      if (!response.ok) throw new Error("arquivo");
+      const blob = await response.blob();
+      const video = c.example.kind === "video";
+      return new File([blob], video ? "exemplo-flowarts.mp4" : `exemplo-flowarts-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
+    }));
+    shareCache.set(c.id, files);
+    return files;
+  }
+  function downloadFiles(files) {
+    files.forEach((file, i) => setTimeout(() => {
+      const url = URL.createObjectURL(file);
+      const a = Object.assign(document.createElement("a"), { href: url, download: file.name });
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }, i * 400));
+  }
   async function shareExample(button) {
     const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(x => x.id === button.dataset.shareExample);
     if (!c?.example) return;
     const label = "2. Mandar o " + exampleWord(c);
-    let files = shareCache.get(c.id);
-    if (!files) {
-      button.disabled = true;
-      button.textContent = "Preparando o " + exampleWord(c) + "…";
-      try {
-        files = await Promise.all(c.example.files.map(async (u, i) => {
-          const path = new URL(u, location.href).pathname;
-          const response = await fetch(path, { credentials: "same-origin" });
-          if (!response.ok) throw new Error("arquivo");
-          const blob = await response.blob();
-          const video = c.example.kind === "video";
-          return new File([blob], video ? "exemplo-flowarts.mp4" : `exemplo-flowarts-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
-        }));
-        if (!navigator.canShare({ files })) throw new Error("share");
-        shareCache.set(c.id, files);
-        button.textContent = "Pronto: toque para mandar";
-      } catch {
-        button.textContent = label;
-        window.alert("Não deu para preparar o exemplo neste celular. Use o link na mensagem.");
+    const ready = shareCache.has(c.id);
+    if (!ready) { button.disabled = true; button.textContent = "Preparando…"; }
+    let files;
+    try { files = await exampleFiles(c); }
+    catch { button.disabled = false; button.textContent = "Não deu. Toque de novo"; return; }
+    button.disabled = false;
+    if (isPhone() && canShareFiles() && navigator.canShare({ files })) {
+      try { await navigator.share({ files }); button.textContent = label; }
+      catch (error) {
+        // O celular só deixa compartilhar logo depois do toque: se demorou para baixar, pede mais um.
+        if (error?.name === "NotAllowedError") button.textContent = "Pronto: toque para mandar";
+        else if (error?.name !== "AbortError") button.textContent = "Toque de novo para mandar";
       }
-      button.disabled = false;
       return;
     }
-    try {
-      await navigator.share({ files });
-      button.textContent = label;
-    } catch (error) {
-      if (error?.name !== "AbortError") window.alert("Não deu para abrir o compartilhar. Tente de novo.");
-    }
+    downloadFiles(files);
+    button.textContent = "Baixado ✔";
+    const box = button.closest(".crm-card");
+    if (box && !box.querySelector(".crm-share-help")) box.insertAdjacentHTML("beforeend",
+      `<p class="muted crm-share-help">Agora no WhatsApp: clique no clipe 📎 › <b>Fotos e vídeos</b> › escolha as ${files.length} imagens <b>exemplo-flowarts</b> (pasta Downloads) › enviar.</p>`);
   }
 
   document.addEventListener("click", async event => {

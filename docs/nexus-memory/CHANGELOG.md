@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-19 ~14h30 BRT — "Mandar o carrossel" no computador (branch fix/crm-carrossel-simples; falta OK)
+- Rodrigo (14h23, print do Master no computador + WhatsApp Web): o botão "2. Mandar o carrossel" não funcionava; quer um clique que abra a conversa já com o carrossel.
+- Limite real: o WhatsApp não deixa nenhum site abrir a conversa com fotos anexadas (wa.me só leva texto). Só a API oficial manda mídia, e para primeiro contato exige modelo aprovado pela Meta.
+- Feito em `public/crm.js` (v=7): celular = um toque abre o compartilhar com o carrossel; computador = um clique baixa as imagens "exemplo-flowarts-1..5" e mostra: clipe › Fotos e vídeos › escolher › enviar. O passo 1 leva o texto sem link também no computador.
+- Testes: 525/525.
+
 ## 2026-10-19 ~14h10 BRT — Exemplos do bar e do dentista vão junto com o site (branch, PR #303)
 - Rodrigo mandou as 5 fotos do bar e as 5 do dentista (ChatGPT) e pediu: "não vou salvar, você que vai subir".
 - Chrome do computador dele não respondeu (extensão desconectada), então não deu para subir pelo Master.
