@@ -914,6 +914,10 @@ async function runCreator(env,client,strategy,options) {
       :scheduleIso(time,index);
     const day=localDay(scheduledFor);
     const id="agentcore:"+client.id+":"+day+":"+String(time).replace(":","");
+    // Tipo de negócio do post (barbearia, salão, academia...): evita só café e padaria.
+    const nicheChoice=brandProfileVersion(client.id)
+      ?pickNiche({seed:id+"|"+index,avoid:recent.map(row=>row.payload?.nicheId).filter(Boolean).slice(0,5)})
+      :null;
     let exists=await env.DB.prepare(
       "SELECT id,status,approval_status,caption,error,payload_json FROM post_ledger WHERE id=?1 LIMIT 1"
     ).bind(id).first();
@@ -941,10 +945,6 @@ async function runCreator(env,client,strategy,options) {
     if(exists){
       const existingPayload=parseJson(exists.payload_json,{});
       const aiCreative=aiBatch[index]||null;
-    // Tipo de negócio do post (barbearia, salão, academia...): evita só café e padaria.
-    const nicheChoice=brandProfileVersion(client.id)
-      ?pickNiche({seed:id+"|"+index,avoid:recent.map(row=>row.payload?.nicheId).filter(Boolean).slice(0,5)})
-      :null;
       const aiCaption=String(aiCreative?.caption||"").trim();
       const shouldRefreshCopy=Boolean(aiCreative&&aiCaption&&exists.status!=="published"
         &&existingPayload.aiCreativeVersion!==String(state?.aiGrowth?.generatedAt||""));
