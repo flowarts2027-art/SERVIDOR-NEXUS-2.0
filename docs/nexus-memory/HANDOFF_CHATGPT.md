@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-20 — CRM: contato manual no Instagram (validado localmente, sem deploy)
+- Pedido confirmado: botão de contato deve abrir o Instagram da empresa.
+- Implementado: Abrir Instagram + Copiar mensagem; exemplos baixados para anexo manual; sem perfil, aviso e cadastro em Detalhes; início encaminha ao CRM sem abrir WhatsApp. Versão do asset crm.js atualizada.
+- Backend persiste perfil validado, preserva nas importações e recupera marcador legado nas notas; limpar o perfil impede reaparecimento. Nenhuma mensagem enviada.
+- Evidências: suíte Worker 531/531; revalidação CRM/backend/daily/UI 30/30; bundle Wrangler aprovado com avisos preexistentes de chaves duplicadas; diff sem erros. UI exercitada por DOM simulado, navegador real e produção não validados.
+- Próximo passo: revisar e publicar esta alteração; conferir em produção que o perfil correto abre e ausência de perfil mostra aviso. Sem commit, push ou deploy nesta tarefa.
+
 Este arquivo contém **resumos de projeto aprovados para o GitHub público**, não o histórico integral de conversas. O ChatGPT acrescenta novas entradas no topo. Consulte também `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
 ## 2026-10-19 — PRIORIDADE ZERO do Claude: Getify e MySQL

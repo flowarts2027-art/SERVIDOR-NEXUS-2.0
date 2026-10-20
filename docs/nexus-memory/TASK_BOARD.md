@@ -17,3 +17,5 @@
 - Cada uma registra o que foi executado, com evidência, deixando próximo passo e pendências claros.
 - Não se afirma que há sincronização automática do histórico de chat, da tela, de prompts invisíveis ou de tarefas em execução.
 - Não há secrets nem dados pessoais inseridos nos novos arquivos; a documentação continua separada do deploy e dos envios reais.
+
+| CRM-INSTAGRAM-001 | Contato do CRM pelo perfil Instagram da empresa | ChatGPT | Implementado e testado localmente; sem deploy | Revisar/publicar e conferir perfil real no Master. |

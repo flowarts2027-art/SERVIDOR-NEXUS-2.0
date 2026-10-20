@@ -1,5 +1,12 @@
 # Testes e evidências
 
+## 2026-10-20 — CRM: contato manual no Instagram (validado localmente, sem deploy)
+- Pedido confirmado: botão de contato deve abrir o Instagram da empresa.
+- Implementado: Abrir Instagram + Copiar mensagem; exemplos baixados para anexo manual; sem perfil, aviso e cadastro em Detalhes; início encaminha ao CRM sem abrir WhatsApp. Versão do asset crm.js atualizada.
+- Backend persiste perfil validado, preserva nas importações e recupera marcador legado nas notas; limpar o perfil impede reaparecimento. Nenhuma mensagem enviada.
+- Evidências: suíte Worker 531/531; revalidação CRM/backend/daily/UI 30/30; bundle Wrangler aprovado com avisos preexistentes de chaves duplicadas; diff sem erros. UI exercitada por DOM simulado, navegador real e produção não validados.
+- Próximo passo: revisar e publicar esta alteração; conferir em produção que o perfil correto abre e ausência de perfil mostra aviso. Sem commit, push ou deploy nesta tarefa.
+
 ## 2026-10-11 — preparação local no PC Windows (C:\Users\playprime\nexus)
 - Repositório clonado do GitHub. `npm install` em `cloudflare/` (34 pacotes; scripts de instalação de esbuild/workerd não aprovados pelo npm, sem efeito no bundle).
 - `node --test test/*.test.mjs`: 247/247 aprovados (Node 24.21).

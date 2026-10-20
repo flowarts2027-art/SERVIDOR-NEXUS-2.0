@@ -1,5 +1,12 @@
 # Estado do Nexus 2.0
 
+## 2026-10-20 — CRM: contato manual no Instagram (validado localmente, sem deploy)
+- Pedido confirmado: botão de contato deve abrir o Instagram da empresa.
+- Implementado: Abrir Instagram + Copiar mensagem; exemplos baixados para anexo manual; sem perfil, aviso e cadastro em Detalhes; início encaminha ao CRM sem abrir WhatsApp. Versão do asset crm.js atualizada.
+- Backend persiste perfil validado, preserva nas importações e recupera marcador legado nas notas; limpar o perfil impede reaparecimento. Nenhuma mensagem enviada.
+- Evidências: suíte Worker 531/531; revalidação CRM/backend/daily/UI 30/30; bundle Wrangler aprovado com avisos preexistentes de chaves duplicadas; diff sem erros. UI exercitada por DOM simulado, navegador real e produção não validados.
+- Próximo passo: revisar e publicar esta alteração; conferir em produção que o perfil correto abre e ausência de perfil mostra aviso. Sem commit, push ou deploy nesta tarefa.
+
 ## 2026-10-18 ~17h30 BRT — Reels da Flow Arts não publicavam (correção em PR, sem deploy)
 - Pizza (09:31) e pet shop (11:31) aprovados e não saíram. Causa no código: o fiscal visual da Flow Arts recusava todo Reel animado/pronto (visualReview sem version/media/qualityScore). Correção + botão "Publicar agora" e aviso "Não saiu no horário" no painel do cliente. Falta o Rodrigo juntar o PR. Detalhes em CHANGELOG.md.
 

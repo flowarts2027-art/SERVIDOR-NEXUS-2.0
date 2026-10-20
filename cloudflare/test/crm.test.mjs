@@ -180,3 +180,36 @@ test("contato do Caçador com nicho leva o link do exemplo no retorno", async ()
   assert.equal(c.niche, "cafeteria");
   assert.match(c.message, /Veja um carrossel que fizemos para cafeterias: https:\/\/flowarts\.com\.br\/exemplo\/cafeteria/);
 });
+
+// Instagram é o destino explícito da abordagem manual no CRM.
+import { normalizeInstagram } from "../src/crm.js";
+
+test("Instagram aceita somente um perfil e gera destino canônico", () => {
+  assert.equal(normalizeInstagram("@Cafe.Bom"), "cafe.bom");
+  assert.equal(normalizeInstagram("https://www.instagram.com/Cafe.Bom/?igsh=abc"), "cafe.bom");
+  for (const invalid of ["https://example.com/cafe", "https://instagram.com.evil.test/cafe", "https://instagram.com/p/abc", "https://instagram.com/direct/", "javascript:alert(1)", "https://instagram.com@evil.test/cafe", "https://instagram.com:444/cafe"]) assert.equal(normalizeInstagram(invalid), "", invalid);
+});
+
+test("CRM preserva Instagram ao criar, editar e importar do Caçador", async () => {
+  const { env } = fakeEnv();
+  const first = (await createContact(env, { name: "Café", phone: "22922223333", instagram: "@cafe.bom" }, NOW)).contact;
+  assert.equal(first.instagramUrl, "https://www.instagram.com/cafe.bom/");
+  const edit = await updateContact(env, first.id, { instagram: "https://instagram.com/cafe.novo/" }, NOW);
+  assert.equal(edit.contact.instagram, "cafe.novo");
+  const unchanged = await updateContact(env, first.id, { notes: "Contato manual" }, NOW);
+  assert.equal(unchanged.contact.instagram, "cafe.novo");
+  const imported = await addFromProspect(env, { name: "Loja", phone: "22922224444", instagram: "@loja.real" }, NOW);
+  assert.equal((await getContact(env, imported.id, NOW)).instagram, "loja.real");
+  await assert.rejects(updateContact(env, first.id, { instagram: "https://evil.test/cafe" }, NOW), /instagram_invalid/);
+});
+
+test("contatos legados recuperam apenas o Instagram explícito nas anotações", async () => {
+  const { db, env } = fakeEnv();
+  const legacy = (await createContact(env, { name: "Legado", phone: "22922225555", notes: "Achado pelo Nexus no mapa · Salvador · Instagram @legado.real" }, NOW)).contact;
+  db.prepare("UPDATE crm_contacts SET instagram=NULL WHERE id=?").run(legacy.id);
+  assert.equal((await getContact(env, legacy.id, NOW)).instagramUrl, "https://www.instagram.com/legado.real/");
+  assert.equal(legacy.instagramUrl, "https://www.instagram.com/legado.real/");
+  assert.equal((await updateContact(env, legacy.id, { instagram: "" }, NOW)).contact.instagramUrl, "", "limpar o campo remove o perfil mesmo com a nota antiga");
+  const missing = (await createContact(env, { name: "Sem perfil", phone: "22922226666", notes: "Buscar perfil da empresa" }, NOW)).contact;
+  assert.equal(missing.instagramUrl, "");
+});

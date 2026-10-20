@@ -8,7 +8,7 @@ import { NICHES, CITIES, searchOSM, osmToProspect, firstMessage } from "./prospe
 import { hoursStatus } from "./business-hours.js";
 import { readShowcase } from "./showcase-store.js";
 import { seedBundledExamples } from "./bundled-examples.js";
-import { brasiliaDay, createContact, crmKnows, ensureCrmSchema } from "./crm.js";
+import { brasiliaDay, createContact, crmKnows, ensureCrmSchema, normalizeInstagram } from "./crm.js";
 import { sendPushToAll } from "./push.js";
 
 // 19/10 (Rodrigo): 10 empresas por dia (antes 3).
@@ -109,7 +109,7 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
       await createContact(env, {
         name: p.name, business: p.name, phone: p.phone, niche, stage: "chamar", interest: "",
         notes: `Achado pelo Nexus no mapa · ${CITIES[cityIndex]}${p.instagram ? " · Instagram @" + p.instagram : ""}`,
-        source: "cacador-auto", sourceId: p.id, draft, hours: p.hours,
+        source: "cacador-auto", sourceId: p.id, instagram: normalizeInstagram(p.instagram), draft, hours: p.hours,
         followAt: st.openNow ? today : st.nextOpenDay || today, followTime: st.openNow ? "" : st.nextOpenTime || ""
       }, now);
       state.picked += 1;
