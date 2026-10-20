@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
+- Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
+- Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.
+- Evidências: 541/541 testes Worker; 10 testes de UI cobrem canais, preferência, ausência de contato, revisão e nenhuma chamada de envio automático. Chromium verificou links de ambos os canais, texto revisado, clipboard e preferência após reload com destinos externos simulados. Bundle Wrangler aprovado; diff sem erros. Não houve envio ou entrega real.
+- Estado: incluído na mesma branch fix/crm-direct-mensagem para revisão/publicação manual; sem merge/deploy nesta tarefa. A vitrine completa de 21 artes segue não comprovada; existem sete nichos embarcados. Próximo passo: publicar a branch e conferir canal, destinatário, texto e anexo do modelo real no painel.
+
 ## 2026-10-20 — CRM: abrir Direct e copiar mensagem por nicho
 
 - Complemento do pedido: mensagem + modelo do mesmo nicho por empresa. Botão de download identifica nicho e tipo; arquivos incluem nicho e nome do contato para evitar trocas. Há imagens embarcadas de sete nichos (bar, dentista, clínica, farmácia, mercado, oficina, hotel); coleção completa de 21 não disponível nesta sessão, vitrine remota não inspecionada. Anexo no Direct permanece manual.
