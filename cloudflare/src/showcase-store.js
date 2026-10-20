@@ -9,7 +9,7 @@ export function showcaseUrl(niche) {
   return SHOWCASE_ORIGIN + "/exemplo/" + encodeURIComponent(String(niche));
 }
 
-export async function readShowcase(env) {
+export async function readStoredShowcase(env) {
   try {
     const row = await env.DB.prepare(
       "SELECT value_json FROM nexus_state WHERE namespace='showcase' AND item_key='map' AND client_id=?1 LIMIT 1"
@@ -19,6 +19,38 @@ export async function readShowcase(env) {
   } catch {
     return {};
   }
+}
+
+// Os 35 cartões antigos foram retirados por pedido do proprietário. Apenas URLs
+// desse conjunto são removidas; uploads novos e mídias de outros domínios ficam intactos.
+export function isRetiredBundledImage(value) {
+  try {
+    const url = new URL(String(value || ""), SHOWCASE_ORIGIN);
+    return ["flowarts.com.br", "www.flowarts.com.br"].includes(url.hostname)
+      && /^\/exemplos-nicho\/(bar|dentista|clinica|farmacia|mercado|oficina|hotel)\/cartao-[1-5]\.jpg$/.test(url.pathname);
+  } catch { return false; }
+}
+
+export function retireBundledShowcase(value) {
+  const map = { ...value };
+  const removed = [];
+  for (const [niche, entry] of Object.entries(map)) {
+    if (!entry || typeof entry !== "object") continue;
+    const images = Array.isArray(entry.images) ? entry.images.filter(image => !isRetiredBundledImage(image)) : null;
+    const oldPoster = isRetiredBundledImage(entry.imageUrl);
+    if (!oldPoster && (!images || images.length === entry.images.length)) continue;
+    removed.push(niche);
+    if (!images?.length && !entry.videoUrl && (oldPoster || !entry.imageUrl)) { delete map[niche]; continue; }
+    map[niche] = { ...entry, ...(images ? { images: images.length || !entry.imageUrl || oldPoster || entry.videoUrl ? images : [entry.imageUrl] } : {}),
+      ...(oldPoster ? { imageUrl: images?.[0] || "" } : {}),
+      ...(!images?.length && entry.videoUrl ? { kind: "video" } : {}) };
+  }
+  return { map, removed };
+}
+
+// Toda leitura deixa de oferecer os cartões antigos, mesmo antes da limpeza do cron.
+export async function readShowcase(env) {
+  return retireBundledShowcase(await readStoredShowcase(env)).map;
 }
 
 export async function writeShowcase(env, map) {

@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-20 — Exclusão dos carrosséis antigos da vitrine
+- Pedido explícito: excluir os modelos antigos; referência aprovada é imagem única com quatro fotos em 2×2, coleção de 21 ainda não recebida nesta sessão.
+- Executado: removidos os 35 JPEG cartao-1..5 de sete nichos em public/exemplos-nicho. Leitura da vitrine filtra somente URLs desses arquivos antigos, preservando uploads novos, vídeos e imagens novas de entradas mistas. Antigo cadastro automático passa a limpar referências persistidas sem adicionar modelos. CRM sem modelo exibe aviso; asset v11.
+- Evidências: 545/545 testes Worker aprovados, incluindo remoção em leitura, limpeza idempotente, preservação de novos modelos e ausência de exemplo/link no CRM com mapa antigo salvo; build Wrangler aprovado; 35 exclusões verificadas e diff sem erros.
+- Estado: preparado em fix/remover-carrosseis-antigos para revisão/publicação manual. Nenhum deploy ou edição direta de banco remoto nesta tarefa. Após publicação, leituras já ocultam antigos; rotina diária limpa as referências salvas.
+- Próximo passo: publicar esta branch e receber/cadastrar as 21 artes corretas por nicho; não reutilizar os carrosséis excluídos.
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.

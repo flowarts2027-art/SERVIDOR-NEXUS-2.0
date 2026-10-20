@@ -47,7 +47,7 @@ test("19/10: separa 10 por dia, só nos nichos com exemplo (repete nicho se prec
   const map = fakeFetcher(calls);
   const first = await runDailyProspects(env, NINE_BRT, map);
   assert.equal(first.picked, 3);
-  const withExample = ["bar", "cafeteria", "clinica", "dentista", "farmacia", "hotel", "mercado", "oficina", "pet", "restaurante"]; // bar e dentista vêm junto com o site (19/10)
+  const withExample = ["cafeteria", "pet", "restaurante"]; // somente a vitrine cadastrada pelo Master
   assert.equal(new Set(first.added.map(a => a.niche)).size, 3, "um de cada nicho com exemplo");
   assert.ok(first.added.every(a => withExample.includes(a.niche)));
   let out = first, t = NINE_BRT.getTime();
@@ -96,8 +96,8 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
   const day1 = await runDailyProspects(env, NINE_BRT, map);
   const day2 = await runDailyProspects(env, new Date(NINE_BRT.getTime() + 86400e3), map);
   const n1 = day1.added.map(a => a.niche), n2 = day2.added.map(a => a.niche);
-  // 19/10: só nichos com exemplo (bar e dentista vêm junto com o site), então o nicho pode repetir; a empresa não.
-  assert.ok([...n1, ...n2].every(n => ["bar", "clinica", "dentista", "farmacia", "mercado", "oficina", "hotel"].includes(n)));
+  // Sem exemplos cadastrados, percorre os nichos sem recriar os carrosséis antigos.
+  assert.equal(new Set([...n1, ...n2]).size, 6);
   const list = await listContacts(env, {}, new Date(NINE_BRT.getTime() + 86400e3));
   assert.equal(new Set(list.contacts.map(c => c.phone)).size, 6);
   const after = await markContacted(env, list.due[0].id, { followDays: 7 }, NINE_BRT);
@@ -135,16 +135,15 @@ test("empresa com horário no mapa e fechada agora: fica para quando abrir, sem 
   assert.equal(st.nextOpenTime, "18:00");
 });
 
-test("19/10: exemplos do bar e do dentista entram sozinhos, sem trocar o que ele subiu pelo Master", async () => {
+test("carrosséis antigos não voltam e exemplo enviado pelo Master é preservado", async () => {
   const { seedBundledExamples } = await import("../src/bundled-examples.js");
   const { readShowcase } = await import("../src/showcase-store.js");
   const { db, env } = fakeEnv();
   db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ bar: { kind: "video", videoUrl: "https://x/meu-bar.mp4" } }));
   const out = await seedBundledExamples(env);
-  assert.deepEqual(out.added, ["dentista", "clinica", "farmacia", "mercado", "oficina", "hotel"]);
+  assert.deepEqual(out.added, []);
   const map = await readShowcase(env);
   assert.equal(map.bar.videoUrl, "https://x/meu-bar.mp4");
-  assert.equal(map.dentista.images.length, 5);
-  assert.match(map.dentista.images[0], /^https:\/\/flowarts\.com\.br\/exemplos-nicho\/dentista\/cartao-1\.jpg$/);
+  assert.equal(map.dentista, undefined);
   assert.deepEqual((await seedBundledExamples(env)).added, [], "segunda vez não mexe");
 });

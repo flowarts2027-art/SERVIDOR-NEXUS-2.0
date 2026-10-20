@@ -60,7 +60,7 @@
     return (url ? `${action}
       <button type="button" class="ghost" data-copy-message="${esc(c.id)}">Copiar mensagem</button>`
       : `<span class="muted">${state.channel === "whatsapp" ? "WhatsApp não cadastrado ou inválido. Confira o número em Detalhes." : "Instagram não cadastrado. Adicione o perfil em Detalhes."}</span>`)
-      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar modelo de ${esc(NICHE_NAME[c.niche] || "negócio local")} (${esc(exampleWord(c))})</button>` : "");
+      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar modelo de ${esc(NICHE_NAME[c.niche] || "negócio local")} (${esc(exampleWord(c))})</button>` : `<span class="muted">Modelo deste nicho aguardando cadastro.</span>`);
   }
   const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 

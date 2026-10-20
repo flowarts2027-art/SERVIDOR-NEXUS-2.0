@@ -66,7 +66,7 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
     state.cleaned1019 = 1 + (await clearNoReply(env, now)).archived;
     await writeState(env, state);
   }
-  // Exemplos que vieram junto com o site (bar, dentista…) entram na vitrine, se o nicho ainda não tiver.
+  // Retira referências aos cartões antigos sem cadastrar novamente os exemplos removidos.
   await seedBundledExamples(env, now).catch(() => null);
 
   const hourBrt = new Date(now.getTime() - 3 * 3600 * 1000).getUTCHours();

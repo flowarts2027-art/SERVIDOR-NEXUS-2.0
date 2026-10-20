@@ -25,3 +25,6 @@
 
 ## 2026-10-20 — Canal manual do CRM
 - Incluído na mesma branch fix/crm-direct-mensagem: seletor Instagram | WhatsApp, preferência local, texto por nicho revisável e download do modelo. 541 testes + bundle + Chromium com destinos simulados aprovados; aguardando publicação manual, sem envios reais.
+
+## 2026-10-20 — Retirar modelos antigos
+- Branch fix/remover-carrosseis-antigos remove 35 cartões antigos e suas referências da vitrine/CRM sem recriá-los. 545 testes aprovados; aguardando revisão/publicação manual. Novas 21 artes aprovadas ainda pendentes de disponibilização.
