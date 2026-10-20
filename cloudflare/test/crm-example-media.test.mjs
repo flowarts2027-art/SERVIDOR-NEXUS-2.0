@@ -19,10 +19,10 @@ test("com mídia, a mensagem vai sem o link do exemplo", () => {
   assert.ok(!follow.includes("http"));
 });
 
-test("CRM do Master tem o passo 2 que manda o exemplo pelo compartilhar do celular", () => {
+test("CRM do Master baixa o exemplo para anexar manualmente no Instagram", () => {
   const ui = fs.readFileSync(new URL("../../public/crm.js", import.meta.url), "utf8");
   assert.match(ui, /data-share-example/);
-  assert.match(ui, /navigator\.share\(\{ files \}\)/);
+  assert.match(ui, /downloadFiles\(files\)/);
 });
 
 test("casa de ração virou loja de ração: chave antiga cai no mesmo nicho e no mesmo exemplo", async () => {

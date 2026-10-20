@@ -475,10 +475,11 @@
           <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
           <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
         </section>
-        <details class="fold" id="crm-add-fold"><summary><span class="fold-icon">＋</span><span><strong>Novo contato</strong><small>Quem você chamou no WhatsApp</small></span></summary><div class="fold-body">
+        <details class="fold" id="crm-add-fold"><summary><span class="fold-icon">＋</span><span><strong>Novo contato</strong><small>Contato manual pelo Instagram</small></span></summary><div class="fold-body">
           <form id="crm-form" class="crm-form">
             <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: João"></label>
             <label>Negócio<input name="business" maxlength="80" placeholder="Ex.: Pizzaria do João"></label>
+            <label>Instagram da empresa<input name="instagram" maxlength="100" placeholder="@empresa ou link do perfil"></label>
             <label>WhatsApp (com DDD)<input name="phone" inputmode="tel" maxlength="20" required placeholder="22 99999-9999"></label>
             <label>Tipo de negócio<select name="niche"><option value="">Não sei / outro</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
             <label>Interesse<select name="interest"><option value="">Ainda não sei</option><option value="pacote">Pacote de Instagram</option><option value="site">Site</option><option value="pacote-site">Pacote + site</option><option value="outro">Outro</option></select></label>
@@ -663,7 +664,7 @@
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=2" defer></script>
   <script src="/prospects-ui.js?v=14" defer></script>
-  <script src="/crm.js?v=7" defer></script>
+  <script src="/crm.js?v=8" defer></script>
   <script src="/examples.js?v=1" defer></script>
   <script src="/master-push.js?v=1" defer></script>
   <script src="/signups.js?v=1" defer></script>

@@ -27,6 +27,26 @@ export function normalizePhone(value) {
   return digits;
 }
 
+// Perfil confirmado: nunca transforme um telefone, nome comercial ou URL externa em perfil.
+export function normalizeInstagram(value) {
+  let handle = String(value ?? "").trim();
+  if (/^(?:https?:\/\/|(?:www\.)?instagram\.com\/)/i.test(handle)) {
+    let url;
+    try { url = new URL(/^https?:\/\//i.test(handle) ? handle : "https://" + handle); } catch { return ""; }
+    if (!["instagram.com", "www.instagram.com"].includes(url.hostname.toLowerCase()) || url.username || url.password || url.port) return "";
+    const match = url.pathname.match(/^\/([a-z0-9._]{1,30})\/?$/i);
+    if (!match) return "";
+    handle = match[1];
+  } else handle = handle.replace(/^@/, "");
+  if (!/^[a-z0-9._]{1,30}$/i.test(handle) || /^(?:p|reel|reels|stories|explore|direct|accounts|about|developer|legal)$/i.test(handle)) return "";
+  return handle.toLowerCase();
+}
+
+function savedInstagram(row) {
+  // Compatibilidade com contatos importados antes da coluna dedicada.
+  return row.instagram != null ? normalizeInstagram(row.instagram) : normalizeInstagram(String(row.notes || "").match(/(?:^|[·\n])\s*Instagram\s+(@[a-z0-9._]{1,30})(?=\s|$|·)/i)?.[1]);
+}
+
 function followDate(days, now) {
   const n = Number(days);
   if (!FOLLOW_DAYS.includes(n) || n === 0) return null;
@@ -55,6 +75,7 @@ export async function ensureCrmSchema(env) {
     )`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS crm_contacts_follow ON crm_contacts(archived, next_follow_at)").run();
   try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN niche TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
+  try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN instagram TEXT DEFAULT NULL").run(); } catch { /* já existe */ }
   // Primeira mensagem pronta (empresa achada pelo Nexus, etapa "chamar").
   try { await env.DB.prepare("ALTER TABLE crm_contacts ADD COLUMN draft TEXT NOT NULL DEFAULT ''").run(); } catch { /* já existe */ }
   // Horário da empresa e hora para chamar (pedido de 18/10: empresa fechada → lembrar quando abrir).
@@ -114,9 +135,11 @@ export function phoneVariants(phone) {
 }
 
 function view(row, today, showcase = null, now = new Date()) {
+  const instagram = savedInstagram(row);
   const out = {
     id: row.id, name: row.name, business: row.business, phone: row.phone, niche: canonicalNiche(row.niche),
     interest: row.interest, stage: row.stage, notes: row.notes, source: row.source,
+    instagram, instagramUrl: instagram ? "https://www.instagram.com/" + instagram + "/" : "",
     lastContactAt: row.last_contact_at || null, nextFollowAt: row.next_follow_at || null,
     followCount: Number(row.follow_count || 0),
     followTime: validTime(row.follow_time),
@@ -185,6 +208,10 @@ function readFields(body, { partial = false } = {}) {
     if (!CRM_STAGES.includes(stage)) throw new Error("stage_invalid");
     out.stage = stage;
   }
+  if (!partial || "instagram" in body) {
+    out.instagram = normalizeInstagram(body.instagram);
+    if (String(body.instagram ?? "").trim() && !out.instagram) throw new Error("instagram_invalid");
+  }
   if (!partial || "notes" in body) out.notes = cleanNotes(body.notes);
   if (!partial || "niche" in body) { const n = canonicalNiche(body.niche); out.niche = CRM_NICHES.includes(n) ? n : ""; }
   return out;
@@ -193,6 +220,7 @@ function readFields(body, { partial = false } = {}) {
 export async function createContact(env, body = {}, now = new Date()) {
   await ensureCrmSchema(env);
   const fields = readFields(body);
+  if (!("instagram" in body)) fields.instagram = savedInstagram({ notes: fields.notes });
   const existing = await findByPhone(env, fields.phone);
   if (existing) {
     const error = new Error("phone_exists");
@@ -205,12 +233,12 @@ export async function createContact(env, body = {}, now = new Date()) {
   const iso = now.toISOString();
   const history = JSON.stringify([{ at: iso, type: "criado", text: "Contato salvo" }]);
   await env.DB.prepare(
-    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche,draft,follow_time,hours_json)
-     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14,?15,?16,?17)`
+    `INSERT INTO crm_contacts(id,name,business,phone,interest,stage,notes,source,source_id,last_contact_at,next_follow_at,history_json,created_at,updated_at,niche,draft,follow_time,hours_json,instagram)
+     VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?13,?14,?15,?16,?17,?18)`
   ).bind(id, fields.name, fields.business, fields.phone, fields.interest, fields.stage, fields.notes,
     clean(body.source || "manual", 20), clean(body.sourceId || "", 300), fields.stage === "chamar" ? null : iso,
     "followAt" in body ? body.followAt : next, history, iso, fields.niche, String(body.draft || "").slice(0, 2000),
-    validTime(body.followTime), readWeek(body.hours) ? JSON.stringify(readWeek(body.hours)) : "").run();
+    validTime(body.followTime), readWeek(body.hours) ? JSON.stringify(readWeek(body.hours)) : "", fields.instagram).run();
   return { ok: true, contact: await getContact(env, id, now) };
 }
 
@@ -242,8 +270,8 @@ export async function updateContact(env, id, body = {}, now = new Date()) {
   }
   const time = next === row.next_follow_at ? validTime(row.follow_time) : "";
   await env.DB.prepare(
-    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10,niche=?11,follow_time=?12 WHERE id=?1`
-  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString(), merged.niche || "", time).run();
+    `UPDATE crm_contacts SET name=?2,business=?3,phone=?4,interest=?5,stage=?6,notes=?7,next_follow_at=?8,history_json=?9,updated_at=?10,niche=?11,follow_time=?12,instagram=?13 WHERE id=?1`
+  ).bind(row.id, merged.name, merged.business, merged.phone, merged.interest, merged.stage, merged.notes, next, history, now.toISOString(), merged.niche || "", time, "instagram" in fields ? fields.instagram : savedInstagram(row)).run();
   return { ok: true, contact: await getContact(env, row.id, now) };
 }
 
@@ -289,7 +317,7 @@ export async function addProspectLater(env, prospect = {}, message = "", now = n
   const created = await createContact(env, {
     name: prospect.name, business: prospect.name, phone, stage: "chamar", interest: "", niche: prospect.niche || "",
     notes: "Achado pelo Caçador" + (prospect.city ? " · " + clean(prospect.city, 60) : "") + " · estava fechada",
-    source: "cacador", sourceId: prospect.id || "", draft: message,
+    source: "cacador", sourceId: prospect.id || "", instagram: normalizeInstagram(prospect.instagram), draft: message,
     followAt: st.openNow ? brasiliaDay(now) : st.nextOpenDay || brasiliaDay(now, 1),
     followTime: st.openNow ? "" : st.nextOpenTime || "", hours: week
   }, now);
@@ -405,13 +433,14 @@ export async function addFromProspect(env, prospect = {}, now = new Date()) {
   const created = await createContact(env, {
     name: prospect.name, business: prospect.name, phone, stage: "contato", interest: "",
     notes: prospect.city ? "Achado pelo Caçador · " + clean(prospect.city, 60) : "Achado pelo Caçador",
-    source: "cacador", sourceId: prospect.id || "", followDays: 7, niche: prospect.niche || ""
+    source: "cacador", sourceId: prospect.id || "", instagram: normalizeInstagram(prospect.instagram), followDays: 7, niche: prospect.niche || ""
   }, now);
   return { ok: true, id: created.contact.id };
 }
 
 export const CRM_MESSAGES = {
   name_required: "Escreva o nome.",
+  instagram_invalid: "Informe o @ ou o link do perfil da empresa no Instagram.",
   phone_invalid: "Confira o número do WhatsApp (com DDD).",
   phone_exists: "Esse número já está no CRM.",
   stage_invalid: "Escolha a etapa.",

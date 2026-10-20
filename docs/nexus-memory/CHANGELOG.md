@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-20 — CRM: contato manual no Instagram (validado localmente, sem deploy)
+- Pedido confirmado: botão de contato deve abrir o Instagram da empresa.
+- Implementado: Abrir Instagram + Copiar mensagem; exemplos baixados para anexo manual; sem perfil, aviso e cadastro em Detalhes; início encaminha ao CRM sem abrir WhatsApp. Versão do asset crm.js atualizada.
+- Backend persiste perfil validado, preserva nas importações e recupera marcador legado nas notas; limpar o perfil impede reaparecimento. Nenhuma mensagem enviada.
+- Evidências: suíte Worker 531/531; revalidação CRM/backend/daily/UI 30/30; bundle Wrangler aprovado com avisos preexistentes de chaves duplicadas; diff sem erros. UI exercitada por DOM simulado, navegador real e produção não validados.
+- Próximo passo: revisar e publicar esta alteração; conferir em produção que o perfil correto abre e ausência de perfil mostra aviso. Sem commit, push ou deploy nesta tarefa.
+
 ## 2026-10-19 ~14h30 BRT — "Mandar o carrossel" no computador (branch fix/crm-carrossel-simples; falta OK)
 - Rodrigo (14h23, print do Master no computador + WhatsApp Web): o botão "2. Mandar o carrossel" não funcionava; quer um clique que abra a conversa já com o carrossel.
 - Limite real: o WhatsApp não deixa nenhum site abrir a conversa com fotos anexadas (wa.me só leva texto). Só a API oficial manda mídia, e para primeiro contato exige modelo aprovado pela Meta.

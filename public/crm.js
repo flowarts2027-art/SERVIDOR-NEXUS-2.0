@@ -1,6 +1,5 @@
 // CRM no painel Master (pedido de 17/10/2026).
-// Contatos do WhatsApp pessoal do Rodrigo, etapa e dia de voltar a falar (padrão 7 dias).
-// Nada é enviado sozinho: o botão abre o WhatsApp com a mensagem pronta e o Rodrigo envia.
+// Contato manual pelo Instagram da empresa; nenhuma mensagem é enviada automaticamente.
 (() => {
   "use strict";
   const $ = selector => document.querySelector(selector);
@@ -26,11 +25,23 @@
     return data;
   }
 
-  const canShareFiles = () => typeof navigator !== "undefined" && typeof navigator.share === "function" && typeof navigator.canShare === "function";
+
   // Com exemplo: texto sem o link (a mídia vai no passo 2). 19/10: vale também no computador (baixa as imagens).
   const withMedia = c => Boolean(c.example && c.messageWithMedia);
-  const isPhone = () => typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
-  const waLink = c => "https://wa.me/" + encodeURIComponent(c.phone) + "?text=" + encodeURIComponent(withMedia(c) ? c.messageWithMedia : c.message || "");
+  function instagramLink(c) {
+    const value = String(c.instagram || "").trim().replace(/^@/, "");
+    const match = value.match(/^(?:https?:\/\/)?(?:www\.)?instagram\.com\/([a-zA-Z0-9._]+)\/?(?:[?#].*)?$/);
+    const user = match ? match[1] : value;
+    return /^[a-zA-Z0-9._]{1,30}$/.test(user) && !["p", "reel", "reels", "stories", "explore", "direct", "accounts", "about", "developer", "legal"].includes(user.toLowerCase())
+      ? "https://www.instagram.com/" + encodeURIComponent(user) + "/" : "";
+  }
+  function contactActions(c) {
+    const url = instagramLink(c);
+    return (url ? `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Abrir Instagram</a>
+      <button type="button" class="ghost" data-copy-message="${esc(c.id)}">Copiar mensagem</button>`
+      : `<span class="muted">Instagram não cadastrado. Adicione o perfil em Detalhes.</span>`)
+      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar ${esc(exampleWord(c))}</button>` : "");
+  }
   const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
   function prettyPhone(p) {
@@ -81,12 +92,7 @@
           <p class="crm-meta"><span class="crm-stage s-${esc(c.stage)}">${esc(STAGE_NAME[c.stage] || c.stage)}</span><span class="crm-when ${tone}">${esc(when)}</span>${hoursBadge(c)}</p>
         </div>
         <div class="crm-actions">
-          ${state.settings.via === "flow" && c.stage !== "chamar"
-            ? `<button type="button" class="primary crm-wa" data-send="${esc(c.id)}">Enviar pela Flow</button>`
-            : withMedia(c)
-              ? `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">1. Abrir conversa</a>
-                 <button type="button" class="primary crm-wa" data-share-example="${esc(c.id)}">2. Mandar o ${esc(exampleWord(c))}</button>`
-              : `<a class="primary crm-wa" href="${esc(waLink(c))}" target="_blank" rel="noopener" data-wa="${esc(c.id)}">Abrir WhatsApp</a>`}
+          ${contactActions(c)}
           ${c.hoursLabel && !c.openNow && c.nextOpenDay && !(c.nextFollowAt === c.nextOpenDay && c.followTime === c.nextOpenTime)
             ? `<button type="button" class="ghost" data-when-open="${esc(c.id)}">Lembrar quando abrir</button>` : ""}
           <button type="button" class="ghost" data-done="${esc(c.id)}">Já falei</button>
@@ -102,6 +108,7 @@
       ${open ? `<form class="crm-edit" data-edit="${esc(c.id)}">
         <label>Nome<input name="name" maxlength="80" value="${esc(c.name)}" required></label>
         <label>Negócio<input name="business" maxlength="80" value="${esc(c.business)}"></label>
+        <label>Instagram da empresa<input name="instagram" maxlength="100" placeholder="@empresa ou link do perfil" value="${esc(c.instagram || "")}"></label>
         <label>WhatsApp<input name="phone" inputmode="tel" maxlength="20" value="${esc(prettyPhone(c.phone))}" required></label>
         <label>Tipo de negócio<select name="niche">${options([["", "Não sei / outro"], ...NICHES], c.niche || "")}</select></label>
         <label>Interesse<select name="interest">${options(Object.entries(INTEREST).map(([v, l]) => [v, l || "Ainda não sei"]), c.interest)}</select></label>
@@ -142,10 +149,10 @@
     if (badge) { badge.textContent = String(n); badge.hidden = !n; }
     const sub = $("#today-sub"), list = $("#today-list");
     if (!sub || !list) return;
-    sub.textContent = n ? (n === 1 ? "1 pessoa para chamar no WhatsApp." : `${n} pessoas para chamar no WhatsApp.`) : "Ninguém para chamar hoje. Tudo em dia.";
+    sub.textContent = n ? (n === 1 ? "1 empresa para contatar no Instagram." : `${n} empresas para contatar no Instagram.`) : "Ninguém para chamar hoje. Tudo em dia.";
     list.innerHTML = d.due.slice(0, 5).map(c => `<div class="today-item">
         <div><strong>${esc(c.name)}</strong><small>${esc(c.business && c.business !== c.name ? c.business : INTEREST[c.interest] || prettyPhone(c.phone))} · ${esc(dayLabel(c.nextFollowAt, d.today))}</small></div>
-        ${(state.settings.via === "flow" && c.stage !== "chamar") || withMedia(c) ? `<button type="button" class="primary" data-go-crm>Abrir no CRM</button>` : `<a class="primary" href="${esc(waLink(c))}" target="_blank" rel="noopener">WhatsApp</a>`}
+        <button type="button" class="primary" data-go-crm>Abrir no CRM</button>
       </div>`).join("") + (n > 5 ? `<p class="muted">E mais ${n - 5}. Abra o CRM para ver todos.</p>` : "");
   }
 
@@ -159,21 +166,7 @@
   function renderVia(d) {
     const box = $("#crm-via");
     if (!box) return;
-    const flow = state.settings.via === "flow";
-    const n = d.due.filter(c => c.stage !== "chamar").length;
-    box.innerHTML = `<div class="crm-via-row">
-        <span class="crm-via-label">Enviar por</span>
-        <div class="crm-switch" role="radiogroup">
-          <button type="button" role="radio" aria-checked="${!flow}" class="${!flow ? "active" : ""}" data-via="pessoal">Seu WhatsApp</button>
-          <button type="button" role="radio" aria-checked="${flow}" class="${flow ? "active" : ""}" data-via="flow">Número da Flow</button>
-        </div>
-      </div>
-      <p class="muted crm-via-help">${flow
-        ? "Sai pelo (21) 99855-9965, direto daqui. As respostas chegam na aba WhatsApp." + (state.settings.templateName ? "" : " Para quem não falou com a Flow nas últimas 24 h, falta cadastrar a mensagem modelo (abaixo).")
-        : "Abre o WhatsApp do seu celular com a mensagem pronta. Você confere e envia."}</p>
-      ${flow && n ? `<button type="button" class="primary crm-send-all" data-send-all>Enviar retornos de hoje (${n})</button>` : ""}
-      ${flow && d.due.some(c => c.stage === "chamar") ? `<p class="muted crm-via-help">Empresas novas (Para chamar) vão pelo seu WhatsApp, para proteger o número da Flow.</p>` : ""}
-      ${state.sendMsg ? `<div class="crm-send-msg">${state.sendMsg}</div>` : ""}`;
+    box.innerHTML = `<p class="muted crm-via-help">Abra o Instagram da empresa, copie a mensagem e envie manualmente pelo Direct. Se o perfil não estiver cadastrado, adicione em Detalhes. Nenhuma mensagem é enviada automaticamente.</p>`;
     const tpl = $("#crm-template-form");
     if (tpl && !tpl.dataset.filled) {
       tpl.templateName.value = state.settings.templateName || "";
@@ -277,11 +270,7 @@
     }
   });
 
-  // Mandar o carrossel/vídeo de exemplo pelo WhatsApp.
-  // 19/10 (Rodrigo): "quero que seja simples". O WhatsApp não deixa nenhum site abrir a conversa
-  // já com fotos anexadas. Então:
-  // - Celular: um toque abre o compartilhar com o carrossel (a conversa do passo 1 fica no topo).
-  // - Computador: um clique baixa o carrossel; no WhatsApp é só clicar no clipe e escolher as fotos.
+  // Baixa os exemplos para anexar manualmente no Direct do Instagram.
   const shareCache = new Map();
   async function exampleFiles(c) {
     if (shareCache.has(c.id)) return shareCache.get(c.id);
@@ -307,32 +296,28 @@
   async function shareExample(button) {
     const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(x => x.id === button.dataset.shareExample);
     if (!c?.example) return;
-    const label = "2. Mandar o " + exampleWord(c);
     const ready = shareCache.has(c.id);
     if (!ready) { button.disabled = true; button.textContent = "Preparando…"; }
     let files;
     try { files = await exampleFiles(c); }
     catch { button.disabled = false; button.textContent = "Não deu. Toque de novo"; return; }
     button.disabled = false;
-    if (isPhone() && canShareFiles() && navigator.canShare({ files })) {
-      try { await navigator.share({ files }); button.textContent = label; }
-      catch (error) {
-        // O celular só deixa compartilhar logo depois do toque: se demorou para baixar, pede mais um.
-        if (error?.name === "NotAllowedError") button.textContent = "Pronto: toque para mandar";
-        else if (error?.name !== "AbortError") button.textContent = "Toque de novo para mandar";
-      }
-      return;
-    }
     downloadFiles(files);
     button.textContent = "Baixado ✔";
     const box = button.closest(".crm-card");
     if (box && !box.querySelector(".crm-share-help")) box.insertAdjacentHTML("beforeend",
-      `<p class="muted crm-share-help">Agora no WhatsApp: clique no clipe 📎 › <b>Fotos e vídeos</b> › escolha as ${files.length} imagens <b>exemplo-flowarts</b> (pasta Downloads) › enviar.</p>`);
+      `<p class="muted crm-share-help">Arquivos salvos em Downloads. No Direct do Instagram, anexe os arquivos <b>exemplo-flowarts</b> e confira antes de enviar.</p>`);
   }
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
+    const t = event.target.closest?.("[data-copy-message],[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
     if (!t) return;
+    if (t.matches("[data-copy-message]")) {
+      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === t.dataset.copyMessage);
+      try { await navigator.clipboard.writeText(withMedia(c) ? c.messageWithMedia : c.message || ""); t.textContent = "Mensagem copiada"; }
+      catch { t.textContent = "Não foi possível copiar. Tente novamente."; }
+      return;
+    }
     if (t.matches("[data-when-open]")) {
       t.disabled = true;
       try { await call("/api/master/crm/" + encodeURIComponent(t.dataset.whenOpen) + "/when-open", { method: "POST", body: "{}" }); await load(); }
