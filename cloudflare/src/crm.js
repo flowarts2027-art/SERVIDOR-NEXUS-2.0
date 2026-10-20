@@ -110,6 +110,36 @@ const NICHE_PLURAL = {
 };
 export const CRM_NICHES = Object.keys(NICHE_PLURAL);
 
+// Texto do Direct sempre calculado com os dados atuais, sem reaproveitar o rascunho do WhatsApp.
+const INSTAGRAM_FOCUS = {
+  cafeteria: "cafés, lanches e novidades do cardápio", restaurante: "pratos e novidades do cardápio",
+  lanchonete: "lanches e novidades do cardápio", padaria: "pães e produtos do dia", bar: "bebidas e programação",
+  salao: "serviços de beleza e cuidados pessoais", academia: "treinos e modalidades", pet: "produtos e cuidados com os pets",
+  racao: "rações e produtos para os animais", agropecuaria: "produtos e orientações para o campo",
+  veterinario: "cuidados e orientações para a saúde dos animais", dentista: "cuidados e orientações sobre saúde bucal",
+  clinica: "serviços e orientações de saúde", farmacia: "cuidados de saúde e serviços da farmácia",
+  mercado: "produtos e ofertas", roupas: "peças e sugestões de looks", oficina: "serviços e dicas de manutenção",
+  hotel: "acomodações e informações para quem planeja uma hospedagem", imobiliaria: "imóveis e informações para quem busca um novo lar",
+  contabilidade: "serviços e orientações contábeis", material: "produtos e dicas para obras e reformas"
+};
+
+export function instagramMessage(c, showcase = null) {
+  const business = clean(c.business || c.name, 80) || "sua empresa";
+  const niche = canonicalNiche(c.niche);
+  const plural = NICHE_PLURAL[niche];
+  const focus = INSTAGRAM_FOCUS[niche] || "produtos, serviços e novidades do negócio";
+  const lines = [
+    `Oi, equipe da ${business}! Tudo bem? Aqui é o Rodrigo, da Flow Arts.`,
+    `Tenho uma proposta de conteúdo para o Instagram${plural ? " de " + plural : " do seu negócio"}: posts sobre ${focus}, com textos e visual pensados para o público de vocês.`
+  ];
+  // Só apresentar exemplo se há uma vitrine real cadastrada para o nicho atual.
+  const example = plural && showcase ? showcaseLine(showcase, niche, plural) : "";
+  if (example) lines.push(example);
+  lines.push(`Posso te mostrar como ficaria para ${business}?`);
+  lines.push("Se preferir não receber mensagens, é só me avisar.");
+  return lines.join("\n\n");
+}
+
 export function followMessage(c, showcase = null) {
   const base = followText(c);
   const example = showcase && c.niche && c.stage !== "cliente" ? showcaseLine(showcase, c.niche, NICHE_PLURAL[c.niche]) : "";
@@ -150,6 +180,7 @@ function view(row, today, showcase = null, now = new Date()) {
     history: parseHistory(row.history_json).slice(-10).reverse(),
     createdAt: row.created_at, updatedAt: row.updated_at
   };
+  out.instagramMessage = instagramMessage(out, showcase);
   out.message = out.stage === "chamar" && row.draft ? row.draft : followMessage(out, showcase);
   // Aberta ou fechada agora (só para quem ainda não virou cliente).
   if (["chamar", "contato", "conversando", "proposta"].includes(out.stage)) {

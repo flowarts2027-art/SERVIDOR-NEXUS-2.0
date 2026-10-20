@@ -19,3 +19,6 @@
 - Não há secrets nem dados pessoais inseridos nos novos arquivos; a documentação continua separada do deploy e dos envios reais.
 
 | CRM-INSTAGRAM-001 | Contato do CRM pelo perfil Instagram da empresa | ChatGPT | Implementado e testado localmente; sem deploy | Revisar/publicar e conferir perfil real no Master. |
+
+## 2026-10-20 — CRM Direct
+- Branch fix/crm-direct-mensagem: link para Direct, cópia de abordagem por nicho e prévia editável. 536 testes + bundle e Chromium com Instagram simulado aprovados. Aguardando revisão/publicação manual e validação real no Instagram. Não há preenchimento automático garantido nem envio automático.

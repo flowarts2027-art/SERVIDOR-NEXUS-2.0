@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-20 — CRM: abrir Direct e copiar mensagem por nicho
+- Pedido: abrir a conversa da empresa com abordagem adequada ao nicho. Limite explicado: link do Instagram não garante preenchimento da DM; usuário ainda cola e envia.
+- Implementado: botão “Copiar mensagem e abrir Direct” usa ig.me/m/perfil, copia mensagem atual ou revisada e mantém navegação nativa. Texto editável por contato, instrução para colar e alternativa manual se clipboard falhar. Sem envio automático ou texto em query string. Asset crm.js v9.
+- Backend: instagramMessage com nome/negócio e conteúdo dos 21 nichos, recalculado após edição; exemplo somente se cadastrado; mensagem anterior preservada para fluxos existentes.
+- Validação: 536/536 testes Worker; bundle Wrangler aprovado com avisos preexistentes. Chromium confirmou clipboard com texto editado + abertura do destino Direct, usando rotas externas simuladas (sem contato real). Instagram autenticado, roteamento real e produção NÃO VALIDADOS.
+- Estado: branch fix/crm-direct-mensagem preparada para revisão/publicação manual; sem merge ou deploy nesta tarefa. Próximo passo: publicar e conferir conta destinatária, colagem e mensagem de nicho no Instagram.
+
 ## 2026-10-20 — CRM: contato manual no Instagram (validado localmente, sem deploy)
 - Pedido confirmado: botão de contato deve abrir o Instagram da empresa.
 - Implementado: Abrir Instagram + Copiar mensagem; exemplos baixados para anexo manual; sem perfil, aviso e cadastro em Detalhes; início encaminha ao CRM sem abrir WhatsApp. Versão do asset crm.js atualizada.

@@ -35,9 +35,14 @@
     return /^[a-zA-Z0-9._]{1,30}$/.test(user) && !["p", "reel", "reels", "stories", "explore", "direct", "accounts", "about", "developer", "legal"].includes(user.toLowerCase())
       ? "https://www.instagram.com/" + encodeURIComponent(user) + "/" : "";
   }
+  const directLink = c => {
+    const profile = instagramLink(c);
+    return profile ? "https://ig.me/m/" + profile.split("/")[3] : "";
+  };
+  const directMessage = c => String(c.instagramMessage || c.message || "");
   function contactActions(c) {
-    const url = instagramLink(c);
-    return (url ? `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Abrir Instagram</a>
+    const url = directLink(c);
+    return (url ? `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-open-dm="${esc(c.id)}">Copiar mensagem e abrir Direct</a>
       <button type="button" class="ghost" data-copy-message="${esc(c.id)}">Copiar mensagem</button>`
       : `<span class="muted">Instagram não cadastrado. Adicione o perfil em Detalhes.</span>`)
       + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar ${esc(exampleWord(c))}</button>` : "");
@@ -100,6 +105,11 @@
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
         </div>
       </div>
+      ${directLink(c) ? `<details class="crm-note">
+        <summary>Mensagem para o Direct · ${esc(NICHE_NAME[c.niche] || "negócio local")}</summary>
+        <label>Confira ou ajuste antes de enviar<textarea data-dm-message rows="5" aria-label="Mensagem para o Direct de ${esc(c.name)}">${esc(directMessage(c))}</textarea></label>
+        <p class="muted">O botão copia o texto e abre o Direct. Cole a mensagem (Ctrl + V no computador), confira e envie. Se o Instagram abrir o perfil, toque em “Enviar mensagem”. <a href="${esc(instagramLink(c))}" target="_blank" rel="noopener noreferrer">Ver perfil</a></p>
+      </details><p class="crm-note" role="status" data-dm-status hidden></p>` : ""}
       <div class="crm-done" data-done-box="${esc(c.id)}" hidden>
         <label>Voltar a falar em<select data-done-days>${options(FOLLOW, "7")}</select></label>
         <label class="wide">O que conversaram (opcional)<input data-done-note maxlength="300" placeholder="Ex.: Pediu para falar depois do dia 20"></label>
@@ -166,7 +176,7 @@
   function renderVia(d) {
     const box = $("#crm-via");
     if (!box) return;
-    box.innerHTML = `<p class="muted crm-via-help">Abra o Instagram da empresa, copie a mensagem e envie manualmente pelo Direct. Se o perfil não estiver cadastrado, adicione em Detalhes. Nenhuma mensagem é enviada automaticamente.</p>`;
+    box.innerHTML = `<p class="muted crm-via-help">A mensagem é preparada para o nicho da empresa. Clique em “Copiar mensagem e abrir Direct”, cole no Instagram e envie. Você pode revisar o texto antes de abrir a conversa. Nenhuma mensagem é enviada automaticamente.</p>`;
     const tpl = $("#crm-template-form");
     if (tpl && !tpl.dataset.filled) {
       tpl.templateName.value = state.settings.templateName || "";
@@ -310,12 +320,24 @@
   }
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-copy-message],[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
+    const t = event.target.closest?.("[data-open-dm],[data-copy-message],[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
     if (!t) return;
-    if (t.matches("[data-copy-message]")) {
-      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === t.dataset.copyMessage);
-      try { await navigator.clipboard.writeText(withMedia(c) ? c.messageWithMedia : c.message || ""); t.textContent = "Mensagem copiada"; }
-      catch { t.textContent = "Não foi possível copiar. Tente novamente."; }
+    if (t.matches("[data-open-dm],[data-copy-message]")) {
+      // Keep the anchor's native navigation within this click; awaiting before opening loses user activation.
+      const id = t.dataset.openDm || t.dataset.copyMessage;
+      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === id);
+      if (!c) return;
+      const card = t.closest(".crm-card");
+      const text = card?.querySelector("[data-dm-message]")?.value ?? directMessage(c);
+      const status = card?.querySelector("[data-dm-status]");
+      try {
+        await navigator.clipboard.writeText(text);
+        if (status) { status.hidden = false; status.textContent = "Mensagem copiada. No Direct, cole (Ctrl + V), confira e envie."; }
+        if (!t.dataset.openDm) t.textContent = "Mensagem copiada";
+      } catch {
+        if (status) { status.hidden = false; status.textContent = "Não foi possível copiar automaticamente. Abra “Mensagem para o Direct” e copie o texto manualmente."; }
+        if (!t.dataset.openDm) t.textContent = "Copie o texto em Mensagem para o Direct";
+      }
       return;
     }
     if (t.matches("[data-when-open]")) {

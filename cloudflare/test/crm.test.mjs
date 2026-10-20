@@ -213,3 +213,39 @@ test("contatos legados recuperam apenas o Instagram explícito nas anotações",
   const missing = (await createContact(env, { name: "Sem perfil", phone: "22922226666", notes: "Buscar perfil da empresa" }, NOW)).contact;
   assert.equal(missing.instagramUrl, "");
 });
+
+import { instagramMessage, CRM_NICHES } from "../src/crm.js";
+
+test("mensagem de Direct considera cada nicho sem inventar análise ou prometer anexos", () => {
+  const messages = CRM_NICHES.map(niche => instagramMessage({ name: "Empresa Exemplo", niche }));
+  assert.equal(new Set(messages).size, CRM_NICHES.length, "cada nicho tem uma proposta própria");
+  for (const message of messages) {
+    assert.match(message, /Empresa Exemplo/);
+    assert.match(message, /Rodrigo, da Flow Arts/);
+    assert.match(message, /Posso te mostrar/);
+    assert.doesNotMatch(message, /WhatsApp|aqui embaixo|Google|no mapa|não encontrei|avaliações|garant|aumentar.*vendas|https?:/i);
+  }
+  assert.match(instagramMessage({ name: "Hotel Exemplo", niche: "hotel" }), /acomodações/);
+  assert.match(instagramMessage({ name: "Pet Exemplo", niche: "pet" }), /pets/);
+  assert.match(instagramMessage({ name: "Dentista Exemplo", niche: "dentista" }), /saúde bucal/);
+});
+
+test("Direct usa nicho atual em vez do rascunho antigo, com exemplo somente quando cadastrado", async () => {
+  const { db, env } = fakeEnv();
+  db.exec("CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT, PRIMARY KEY(namespace,item_key,client_id))");
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ cafeteria: { kind: "carousel", images: ["https://x/cafe.jpg"] } }));
+  const c = (await createContact(env, { name: "Empresa Exemplo", phone: "22912345678", stage: "chamar", niche: "cafeteria", draft: "Texto antigo do WhatsApp" }, NOW)).contact;
+  assert.match(c.instagramMessage, /cafés, lanches/);
+  assert.match(c.instagramMessage, /https:\/\/flowarts\.com\.br\/exemplo\/cafeteria/);
+  assert.equal(c.message, "Texto antigo do WhatsApp", "fluxo anterior é preservado");
+  const changed = (await updateContact(env, c.id, { niche: "hotel" }, NOW)).contact;
+  assert.match(changed.instagramMessage, /hotéis e pousadas/);
+  assert.match(changed.instagramMessage, /acomodações/);
+  assert.doesNotMatch(changed.instagramMessage, /cafeteria|café|Texto antigo|https?:/);
+});
+
+test("Direct sem nicho usa proposta genérica, sem assumir cafeteria nem um exemplo", () => {
+  const message = instagramMessage({ name: "Empresa Exemplo", niche: "desconhecido" }, { cafeteria: { videoUrl: "https://x/cafe.mp4" } });
+  assert.match(message, /produtos, serviços e novidades do negócio/);
+  assert.doesNotMatch(message, /cafeteria|cafés|https?:/);
+});
