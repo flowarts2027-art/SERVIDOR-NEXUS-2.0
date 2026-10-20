@@ -1,6 +1,8 @@
 # Testes e evidências
 
 ## 2026-10-20 — CRM: abrir Direct e copiar mensagem por nicho
+
+- Complemento do pedido: mensagem + modelo do mesmo nicho por empresa. Botão de download identifica nicho e tipo; arquivos incluem nicho e nome do contato para evitar trocas. Há imagens embarcadas de sete nichos (bar, dentista, clínica, farmácia, mercado, oficina, hotel); coleção completa de 21 não disponível nesta sessão, vitrine remota não inspecionada. Anexo no Direct permanece manual.
 - Pedido: abrir a conversa da empresa com abordagem adequada ao nicho. Limite explicado: link do Instagram não garante preenchimento da DM; usuário ainda cola e envia.
 - Implementado: botão “Copiar mensagem e abrir Direct” usa ig.me/m/perfil, copia mensagem atual ou revisada e mantém navegação nativa. Texto editável por contato, instrução para colar e alternativa manual se clipboard falhar. Sem envio automático ou texto em query string. Asset crm.js v9.
 - Backend: instagramMessage com nome/negócio e conteúdo dos 21 nichos, recalculado após edição; exemplo somente se cadastrado; mensagem anterior preservada para fluxos existentes.

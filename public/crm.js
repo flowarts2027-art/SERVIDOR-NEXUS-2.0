@@ -45,7 +45,7 @@
     return (url ? `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-open-dm="${esc(c.id)}">Copiar mensagem e abrir Direct</a>
       <button type="button" class="ghost" data-copy-message="${esc(c.id)}">Copiar mensagem</button>`
       : `<span class="muted">Instagram não cadastrado. Adicione o perfil em Detalhes.</span>`)
-      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar ${esc(exampleWord(c))}</button>` : "");
+      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar modelo de ${esc(NICHE_NAME[c.niche] || "negócio local")} (${esc(exampleWord(c))})</button>` : "");
   }
   const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
@@ -284,13 +284,14 @@
   const shareCache = new Map();
   async function exampleFiles(c) {
     if (shareCache.has(c.id)) return shareCache.get(c.id);
+    const modelName = [c.niche || "modelo", c.business || c.name || "empresa"].join("-").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     const files = await Promise.all(c.example.files.map(async (u, i) => {
       const path = new URL(u, location.href).pathname;
       const response = await fetch(path, { credentials: "same-origin" });
       if (!response.ok) throw new Error("arquivo");
       const blob = await response.blob();
       const video = c.example.kind === "video";
-      return new File([blob], video ? "exemplo-flowarts.mp4" : `exemplo-flowarts-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
+      return new File([blob], video ? `exemplo-flowarts-${modelName}.mp4` : `exemplo-flowarts-${modelName}-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
     }));
     shareCache.set(c.id, files);
     return files;
