@@ -15,7 +15,12 @@
   const NICHE_NAME = Object.fromEntries(NICHES);
   const FOLLOW = [["7", "7 dias"], ["3", "3 dias"], ["1", "Amanhã"], ["15", "15 dias"], ["30", "30 dias"], ["0", "Não marcar"]];
 
-  let state = { stage: "", q: "", data: null, open: new Set(), settings: { via: "pessoal", templateName: "", templateUsesName: true }, sendMsg: "" };
+  function savedChannel() {
+    try { return localStorage.getItem("nexus-crm-contact-channel") === "whatsapp" ? "whatsapp" : "instagram"; }
+    catch { return "instagram"; }
+  }
+  const messageDrafts = new Map();
+  let state = { channel: savedChannel(), stage: "", q: "", data: null, open: new Set(), settings: { via: "pessoal", templateName: "", templateUsesName: true }, sendMsg: "" };
 
   async function call(path, options = {}) {
     const response = await fetch(path, { credentials: "same-origin", headers: { "content-type": "application/json" }, ...options });
@@ -35,12 +40,27 @@
     return /^[a-zA-Z0-9._]{1,30}$/.test(user) && !["p", "reel", "reels", "stories", "explore", "direct", "accounts", "about", "developer", "legal"].includes(user.toLowerCase())
       ? "https://www.instagram.com/" + encodeURIComponent(user) + "/" : "";
   }
+  const directLink = c => {
+    const profile = instagramLink(c);
+    return profile ? "https://ig.me/m/" + profile.split("/")[3] : "";
+  };
+  const directMessage = c => {
+    const base = String(c.instagramMessage || c.message || "");
+    const draft = messageDrafts.get(c.id);
+    return draft?.base === base ? draft.text : base;
+  };
+  const whatsappLink = (c, text = directMessage(c)) => /^55\d{10,11}$/.test(String(c.phone || ""))
+    ? "https://wa.me/" + c.phone + "?text=" + encodeURIComponent(text) : "";
+  const channelLink = c => state.channel === "whatsapp" ? whatsappLink(c) : directLink(c);
   function contactActions(c) {
-    const url = instagramLink(c);
-    return (url ? `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Abrir Instagram</a>
+    const url = channelLink(c);
+    const action = state.channel === "whatsapp"
+      ? `<a class="primary crm-wa" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-open-wa="${esc(c.id)}">Abrir WhatsApp com mensagem</a>`
+      : `<a class="primary crm-instagram" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-open-dm="${esc(c.id)}">Copiar mensagem e abrir Direct</a>`;
+    return (url ? `${action}
       <button type="button" class="ghost" data-copy-message="${esc(c.id)}">Copiar mensagem</button>`
-      : `<span class="muted">Instagram não cadastrado. Adicione o perfil em Detalhes.</span>`)
-      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar ${esc(exampleWord(c))}</button>` : "");
+      : `<span class="muted">${state.channel === "whatsapp" ? "WhatsApp não cadastrado ou inválido. Confira o número em Detalhes." : "Instagram não cadastrado. Adicione o perfil em Detalhes."}</span>`)
+      + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar modelo de ${esc(NICHE_NAME[c.niche] || "negócio local")} (${esc(exampleWord(c))})</button>` : "");
   }
   const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
@@ -100,6 +120,11 @@
           <button type="button" class="ghost crm-more" data-toggle="${esc(c.id)}" aria-expanded="${open}">${open ? "Fechar" : "Detalhes"}</button>
         </div>
       </div>
+      ${channelLink(c) ? `<details class="crm-note">
+        <summary>Mensagem para ${state.channel === "whatsapp" ? "WhatsApp" : "Direct"} · ${esc(NICHE_NAME[c.niche] || "negócio local")}</summary>
+        <label>Confira ou ajuste antes de enviar<textarea data-dm-message="${esc(c.id)}" rows="5" aria-label="Mensagem para ${state.channel === "whatsapp" ? "WhatsApp" : "Direct"} de ${esc(c.name)}">${esc(directMessage(c))}</textarea></label>
+        <p class="muted">${state.channel === "whatsapp" ? "O WhatsApp abre com o texto preenchido. Confira, anexe o modelo baixado e envie manualmente." : "O botão copia o texto e abre o Direct. Cole a mensagem (Ctrl + V no computador), confira e envie. Se o Instagram abrir o perfil, toque em “Enviar mensagem”."} ${instagramLink(c) ? `<a href="${esc(instagramLink(c))}" target="_blank" rel="noopener noreferrer">Ver perfil</a>` : ""}</p>
+      </details><p class="crm-note" role="status" data-dm-status hidden></p>` : ""}
       <div class="crm-done" data-done-box="${esc(c.id)}" hidden>
         <label>Voltar a falar em<select data-done-days>${options(FOLLOW, "7")}</select></label>
         <label class="wide">O que conversaram (opcional)<input data-done-note maxlength="300" placeholder="Ex.: Pediu para falar depois do dia 20"></label>
@@ -149,7 +174,7 @@
     if (badge) { badge.textContent = String(n); badge.hidden = !n; }
     const sub = $("#today-sub"), list = $("#today-list");
     if (!sub || !list) return;
-    sub.textContent = n ? (n === 1 ? "1 empresa para contatar no Instagram." : `${n} empresas para contatar no Instagram.`) : "Ninguém para chamar hoje. Tudo em dia.";
+    sub.textContent = n ? (n === 1 ? `1 empresa para contatar no ${state.channel === "whatsapp" ? "WhatsApp" : "Instagram"}.` : `${n} empresas para contatar no ${state.channel === "whatsapp" ? "WhatsApp" : "Instagram"}.`) : "Ninguém para chamar hoje. Tudo em dia.";
     list.innerHTML = d.due.slice(0, 5).map(c => `<div class="today-item">
         <div><strong>${esc(c.name)}</strong><small>${esc(c.business && c.business !== c.name ? c.business : INTEREST[c.interest] || prettyPhone(c.phone))} · ${esc(dayLabel(c.nextFollowAt, d.today))}</small></div>
         <button type="button" class="primary" data-go-crm>Abrir no CRM</button>
@@ -166,7 +191,12 @@
   function renderVia(d) {
     const box = $("#crm-via");
     if (!box) return;
-    box.innerHTML = `<p class="muted crm-via-help">Abra o Instagram da empresa, copie a mensagem e envie manualmente pelo Direct. Se o perfil não estiver cadastrado, adicione em Detalhes. Nenhuma mensagem é enviada automaticamente.</p>`;
+    box.innerHTML = `<div class="crm-via-row"><span class="crm-via-label">Contato manual por</span>
+      <div class="crm-switch" role="radiogroup" aria-label="Canal de contato">
+        <button type="button" role="radio" aria-checked="${state.channel === "instagram"}" class="${state.channel === "instagram" ? "active" : ""}" data-channel="instagram">Instagram</button>
+        <button type="button" role="radio" aria-checked="${state.channel === "whatsapp"}" class="${state.channel === "whatsapp" ? "active" : ""}" data-channel="whatsapp">WhatsApp</button>
+      </div></div>
+      <p class="muted crm-via-help">${state.channel === "whatsapp" ? "O WhatsApp abre com a mensagem do nicho preenchida. Você confere, anexa o modelo baixado e envia." : "O botão copia a mensagem do nicho e abre o Direct. Você cola o texto, anexa o modelo baixado e envia."} Nenhuma mensagem é enviada automaticamente.</p>`;
     const tpl = $("#crm-template-form");
     if (tpl && !tpl.dataset.filled) {
       tpl.templateName.value = state.settings.templateName || "";
@@ -274,13 +304,14 @@
   const shareCache = new Map();
   async function exampleFiles(c) {
     if (shareCache.has(c.id)) return shareCache.get(c.id);
+    const modelName = [c.niche || "modelo", c.business || c.name || "empresa"].join("-").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100);
     const files = await Promise.all(c.example.files.map(async (u, i) => {
       const path = new URL(u, location.href).pathname;
       const response = await fetch(path, { credentials: "same-origin" });
       if (!response.ok) throw new Error("arquivo");
       const blob = await response.blob();
       const video = c.example.kind === "video";
-      return new File([blob], video ? "exemplo-flowarts.mp4" : `exemplo-flowarts-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
+      return new File([blob], video ? `exemplo-flowarts-${modelName}.mp4` : `exemplo-flowarts-${modelName}-${i + 1}.jpg`, { type: blob.type || (video ? "video/mp4" : "image/jpeg") });
     }));
     shareCache.set(c.id, files);
     return files;
@@ -306,16 +337,44 @@
     button.textContent = "Baixado ✔";
     const box = button.closest(".crm-card");
     if (box && !box.querySelector(".crm-share-help")) box.insertAdjacentHTML("beforeend",
-      `<p class="muted crm-share-help">Arquivos salvos em Downloads. No Direct do Instagram, anexe os arquivos <b>exemplo-flowarts</b> e confira antes de enviar.</p>`);
+      `<p class="muted crm-share-help">Arquivos salvos em Downloads. No ${state.channel === "whatsapp" ? "WhatsApp" : "Direct do Instagram"}, anexe os arquivos <b>exemplo-flowarts</b> e confira antes de enviar.</p>`);
   }
 
   document.addEventListener("click", async event => {
-    const t = event.target.closest?.("[data-copy-message],[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
+    const t = event.target.closest?.("[data-channel],[data-open-wa],[data-open-dm],[data-copy-message],[data-stage],[data-toggle],[data-done],[data-done-save],[data-archive],[data-wa],[data-via],[data-send],[data-send-all],[data-go-crm],[data-share-example],[data-when-open]");
     if (!t) return;
-    if (t.matches("[data-copy-message]")) {
-      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === t.dataset.copyMessage);
-      try { await navigator.clipboard.writeText(withMedia(c) ? c.messageWithMedia : c.message || ""); t.textContent = "Mensagem copiada"; }
-      catch { t.textContent = "Não foi possível copiar. Tente novamente."; }
+    if (t.matches("[data-channel]")) {
+      if (!["instagram", "whatsapp"].includes(t.dataset.channel)) return;
+      state.channel = t.dataset.channel;
+      try { localStorage.setItem("nexus-crm-contact-channel", state.channel); } catch { /* keep current session choice */ }
+      render();
+      return;
+    }
+    if (t.matches("[data-open-wa]")) {
+      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === t.dataset.openWa);
+      if (!c) { event.preventDefault(); return; }
+      const text = t.closest(".crm-card")?.querySelector("[data-dm-message]")?.value ?? directMessage(c);
+      const url = whatsappLink(c, text);
+      if (!url) { event.preventDefault(); return; }
+      t.href = url;
+      return;
+    }
+    if (t.matches("[data-open-dm],[data-copy-message]")) {
+      // Keep the anchor's native navigation within this click; awaiting before opening loses user activation.
+      const id = t.dataset.openDm || t.dataset.copyMessage;
+      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === id);
+      if (!c) return;
+      const card = t.closest(".crm-card");
+      const text = card?.querySelector("[data-dm-message]")?.value ?? directMessage(c);
+      const status = card?.querySelector("[data-dm-status]");
+      try {
+        await navigator.clipboard.writeText(text);
+        if (status) { status.hidden = false; status.textContent = state.channel === "whatsapp" ? "Mensagem copiada. Confira no WhatsApp antes de enviar." : "Mensagem copiada. No Direct, cole (Ctrl + V), confira e envie."; }
+        if (!t.dataset.openDm) t.textContent = "Mensagem copiada";
+      } catch {
+        if (status) { status.hidden = false; status.textContent = "Não foi possível copiar automaticamente. Abra a prévia da mensagem e copie o texto manualmente."; }
+        if (!t.dataset.openDm) t.textContent = "Copie o texto na prévia da mensagem";
+      }
       return;
     }
     if (t.matches("[data-when-open]")) {
@@ -390,6 +449,19 @@
 
   let searchTimer;
   document.addEventListener("input", event => {
+    if (event.target.matches?.("[data-dm-message]")) {
+      const id = event.target.dataset.dmMessage;
+      const c = [...(state.data?.contacts || []), ...(state.data?.due || [])].find(c => c.id === id);
+      if (c) {
+        messageDrafts.set(id, {base: String(c.instagramMessage || c.message || ""), text: event.target.value});
+        document.querySelectorAll?.("[data-dm-message]").forEach(field => {
+          if (field !== event.target && field.dataset.dmMessage === id) field.value = event.target.value;
+        });
+        const link = event.target.closest(".crm-card")?.querySelector("[data-open-wa]");
+        if (link) link.href = whatsappLink(c, event.target.value);
+      }
+      return;
+    }
     if (event.target.id !== "crm-search") return;
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => { state.q = event.target.value.trim(); load(); }, 300);
