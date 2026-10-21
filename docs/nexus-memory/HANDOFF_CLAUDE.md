@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 19h30 BRT — CRM: 14 contatos parados há mais de 24 h arquivados
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Pedido do Rodrigo:** tirar do CRM do Master os contatos sem uso há 24 h. Ele escolheu arquivar os 14 parados, incluindo as 3 conversas do WhatsApp.
+- **Como:** arquivar (`archived=1`), igual ao botão do painel. Não apaga: o histórico fica no D1. Feito por um fluxo temporário do GitHub com o segredo `CLOUDFLARE_D1_TOKEN` (branch `ops/crm-contagem`), que só registrou contagens, sem nomes nem telefones.
+- **Evidência:** antes havia 25 ativos (21 "chamar" do Caçador, 1 "contato", 3 "conversando" do WhatsApp), 14 com última mudança antes de 20/10 22:24 UTC. Execução de 21/10 ~22:30 UTC: "Arquivados: 14". Depois: 11 ativos (10 "chamar", 1 "contato").
+- **Pendência:** a branch `ops/crm-contagem` ainda existe (o app bloqueou a exclusão por mim). Ela só roda com novo push; o Rodrigo pode apagá-la no GitHub.
+
 ## 2026-10-21 19h30 BRT — REGRA FIXA: ChatGPT cria 3 posts por dia e envia ao painel
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT.
 - **Decisão do Rodrigo:** o ChatGPT cria todo dia os posts das 09h, 12h e 19h da Flow Arts, no padrão de arte do Nexus, e envia pela pasta `agendamentos/`. Os posts chegam ao painel esperando aprovação; só o Rodrigo aprova.
