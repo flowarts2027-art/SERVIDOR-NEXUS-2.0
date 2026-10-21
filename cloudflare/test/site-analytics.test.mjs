@@ -45,6 +45,47 @@ test("conta visitas por dia, página e origem; robôs ficam de fora", async () =
   assert.equal(stats.pages[0].path, "/");
 });
 
+test("cliques no WhatsApp e pedidos de exemplo entram no resultado; evento desconhecido é ignorado", async () => {
+  const { db, DB } = fakeD1();
+  const env = { DB };
+  await hit(env, { p: "/", r: "https://www.google.com/" });
+  await hit(env, { p: "/", r: "" });
+  await hit(env, { p: "/", r: "https://flowarts.com.br/" }); // navegação interna não é entrada
+  await hit(env, { p: "/", e: "whatsapp" });
+  await hit(env, { p: "/marketing-para-cafeteria", e: "whatsapp" });
+  await hit(env, { p: "/", e: "qualquer" });
+  db.exec("CREATE TABLE leads (id TEXT, source TEXT, created_at TEXT)");
+  db.exec("INSERT INTO leads VALUES ('a','landing',strftime('%Y-%m-%d %H:%M:%S','now')), ('b','instagram',strftime('%Y-%m-%d %H:%M:%S','now'))");
+  const stats = await siteStats(env, 30);
+  assert.equal(stats.totals.period, 3);
+  assert.equal(stats.results.entries, 2);
+  assert.equal(stats.results.whatsapp, 2);
+  assert.equal(stats.results.whatsappWeek, 2);
+  assert.equal(stats.results.leads, 1);
+  assert.equal(stats.results.rate, 150);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM site_events_daily").get().n, 2);
+});
+
+test("sem tabela de leads o resultado não quebra", async () => {
+  const { DB } = fakeD1();
+  const stats = await siteStats({ DB }, 30);
+  assert.equal(stats.results.leads, 0);
+  assert.equal(stats.results.rate, 0);
+});
+
+test("todas as páginas com contador contam cliques no WhatsApp e respeitam o ?eu=1", () => {
+  const dir = new URL("../../public/", import.meta.url);
+  const pages = fs.readdirSync(dir).filter(name => name.endsWith(".html") && fs.readFileSync(new URL(name, dir), "utf8").includes("/api/site/hit"));
+  assert.ok(pages.length >= 14);
+  for (const page of pages) {
+    const html = fs.readFileSync(new URL(page, dir), "utf8");
+    assert.match(html, /flowarts-nao-contar/, page);
+    assert.match(html, /a\[href\*="wa\.me"\][\s\S]{0,80}e:"whatsapp"/, page);
+  }
+  const panel = fs.readFileSync(new URL("index.html", dir), "utf8");
+  assert.match(panel, /id="site-results"/);
+});
+
 test("site, páginas de nicho e exemplo enviam o aviso de visita; Master tem a aba Site", () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   for (const page of ["site.html", "exemplo.html", "marketing-para-cafeteria.html", "marketing-para-salao-de-beleza.html", "marketing-para-lanchonete.html"]) {

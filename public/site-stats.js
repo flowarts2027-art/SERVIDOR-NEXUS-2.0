@@ -10,9 +10,28 @@
   };
   const PAGES = {
     "/": "Página principal", "/exemplo": "Exemplo grátis", "/demo": "Painel de exemplo",
-    "/marketing-para-cafeteria": "Para cafeteria", "/marketing-para-salao-de-beleza": "Para salão de beleza",
-    "/marketing-para-lanchonete": "Para lanchonete", "/privacidade": "Privacidade", "/termos": "Termos"
+    "/marketing-para-salao-de-beleza": "Para salão de beleza", "/marketing-para-loja-de-roupas": "Para loja de roupas",
+    "/marketing-para-oficina-mecanica": "Para oficina mecânica", "/privacidade": "Privacidade", "/termos": "Termos"
   };
+  const pageName = path => PAGES[path] || (/^\/marketing-para-/.test(path) ? "Para " + path.slice(16).replace(/-/g, " ") : path);
+
+  // Comparação com os 30 dias anteriores, em palavras simples.
+  function compare(now, before) {
+    if (!before) return now ? "primeiro período com dados" : "sem dados antes";
+    const pct = Math.round((now - before) / before * 100);
+    return pct === 0 ? "igual aos 30 dias anteriores" : (pct > 0 ? "+" : "") + pct + "% contra os 30 dias anteriores";
+  }
+
+  // Diagnóstico curto, só com o que os números mostram.
+  function diagnosis(r, sources) {
+    const outside = sources.filter(s => s.source !== "direto").reduce((t, s) => t + s.visits, 0);
+    const notes = [];
+    if (r.entries < 100) notes.push("Pouca gente chegando: menos de 100 entradas em 30 dias.");
+    if (r.entries && outside / r.entries < 0.3) notes.push("Quase todas as entradas são diretas (link sem origem), que podem ser você mesmo testando. Google e Instagram ainda trazem pouca gente.");
+    if (r.entries >= 30 && !r.whatsapp && !r.leads) notes.push("Ninguém clicou no WhatsApp nem pediu o exemplo grátis ainda.");
+    if (r.whatsapp + r.leads > 0) notes.push(`${r.whatsapp + r.leads} contato(s) vieram do site. Responda rápido no WhatsApp.`);
+    return notes.join(" ") || "Sem alertas.";
+  }
   const dayLabel = day => {
     const [y, m, d] = String(day).split("-");
     return d && m ? `${d}/${m}` : day;
@@ -45,6 +64,17 @@
       if (!response.ok) throw new Error(response.status === 401 ? "Login do painel não aceito. Recarregue a página." : "Erro " + response.status);
       const raw = await response.json();
       const data = { totals: { today: 0, week: 0, period: 0, ...(raw.totals || {}) }, byDay: raw.byDay || [], pages: raw.pages || [], sources: raw.sources || [] };
+      const r = { entries: 0, entriesBefore: 0, whatsapp: 0, whatsappWeek: 0, leads: 0, rate: 0, ...(raw.results || {}) };
+      const results = $("#site-results");
+      if (results) {
+        results.innerHTML = [
+          ["Pessoas que entraram", r.entries, compare(r.entries, r.entriesBefore)],
+          ["Cliques no WhatsApp", r.whatsapp, r.whatsappWeek + " nos últimos 7 dias"],
+          ["Pedidos de exemplo grátis", r.leads, "formulário do site"],
+          ["Viraram contato", r.rate + "%", "cliques + pedidos ÷ entradas"]
+        ].map(([title, n, note]) => `<article><span>${title}</span><strong>${esc(n)}</strong><small>${esc(note)}</small></article>`).join("");
+        $("#site-diagnosis").textContent = diagnosis(r, data.sources);
+      }
       kpis.innerHTML = [
         ["Hoje", data.totals.today], ["Últimos 7 dias", data.totals.week], ["Últimos 30 dias", data.totals.period]
       ].map(([title, n]) => `<article><span>${title}</span><strong>${Number(n || 0)}</strong><small>páginas vistas</small></article>`).join("");
@@ -61,7 +91,7 @@
         ? bars(data.sources, row => NAMES[row.source] || row.source, row => row.visits)
         : '<p class="muted">Sem dados ainda.</p>';
       $("#site-pages").innerHTML = (data.pages || []).length
-        ? bars(data.pages, row => PAGES[row.path] || row.path, row => row.visits)
+        ? bars(data.pages, row => pageName(row.path), row => row.visits)
         : '<p class="muted">Sem dados ainda.</p>';
     } catch (error) {
       kpis.innerHTML = `<p class="muted">Não consegui ler as visitas. ${esc(error.message)}</p>`;

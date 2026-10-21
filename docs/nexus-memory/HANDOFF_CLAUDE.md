@@ -2,6 +2,14 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 21h BRT — Auditoria do site flowarts.com.br e painel "Está dando resultado?"
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Números reais (D1, contador desde 14/10, lidos por fluxo temporário `ops/site-auditoria`, só totais):** 67 páginas vistas em 8 dias (3 a 16 por dia). Origem: 58 diretas (link sem origem, provavelmente o próprio Rodrigo e testes), 3 Google, 1 Instagram, 1 Facebook, 1 WhatsApp. Páginas: 58 na principal, 8 nas de nicho, 1 no /exemplo. **0 pedidos de exemplo grátis.** Cliques no WhatsApp **não eram medidos**.
+- **Conclusão:** o site ainda não traz clientes; quase não chega gente de fora.
+- **Feito (PR):** o site passa a contar cliques nos botões do WhatsApp (só números) e ignora as visitas de quem abrir `flowarts.com.br/?eu=1`. A aba Site do Master ganhou "Está dando resultado?": entradas (com comparação), cliques no WhatsApp, pedidos de exemplo, taxa e um diagnóstico curto.
+- **Para o ChatGPT:** levar gente ao site é o gargalo. Usar o link flowarts.com.br na bio e em Stories; posts das 12h podem apontar para a página do nicho (ex.: /marketing-para-cafeteria).
+- **Pendência:** a branch `ops/site-auditoria` pode ser apagada pelo Rodrigo.
+
 ## 2026-10-21 20h30 BRT — SEO técnico do site e foto da consultora removida (PR, aguarda OK)
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Pedido do Rodrigo:** corrigir 4 falhas de SEO e tirar do site a foto da "Consultora da Flow Arts com materiais da marca" (persona de IA com tom azul).
