@@ -1,5 +1,11 @@
 # Estado do Nexus 2.0
 
+## 2026-10-21 — Correção: CRM Instagram/WhatsApp já está na `main`
+- As três entradas de 20/10 abaixo dizem "sem merge/deploy". Isso ficou desatualizado: o PR #328 (abrir Instagram) e o PR #330 (Direct + escolha Instagram | WhatsApp, branch fix/crm-direct-mensagem) foram juntados na `main`. Commit atual da `main`: f31375f (20/10 10:47 BRT).
+- Como push na `main` que muda `cloudflare/` ou `public/` publica sozinho, o recurso provavelmente está no ar. **Não verificado:** resultado do workflow de deploy de f31375f, teste no Master e contato real no Instagram/WhatsApp.
+- Testes: a memória registra 541/541 na branch; não foram reexecutados em 21/10 (Node ausente na máquina usada na auditoria).
+- Próximo passo: conferir o deploy de f31375f no GitHub Actions e testar um contato no Master sem enviar mensagem.
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.
