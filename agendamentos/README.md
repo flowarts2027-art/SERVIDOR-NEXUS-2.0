@@ -1,0 +1,31 @@
+# Pasta agendamentos — posts prontos da Flow Arts
+
+Cada post colocado aqui sobe sozinho para o painel da Flow Arts (`primeiro-teste`) **esperando a aprovação do Rodrigo**.
+Nada é publicado sem esse OK. Quem faz o envio é o fluxo `.github/workflows/nexus-agendar-pasta.yml`.
+
+## Onde salvar
+Uma pasta por post: `agendamentos/AAAA-MM-DD/HHMM/` (horário de Brasília).
+
+```
+agendamentos/2026-10-22/0900/
+agendamentos/2026-10-22/1200/
+agendamentos/2026-10-22/1900/
+```
+
+## O que vai dentro de cada pasta
+| Tipo | Arquivos |
+| --- | --- |
+| Post de 1 imagem | `imagem.jpg` + `legenda.txt` |
+| Carrossel (2 a 10 cartões) | `01.jpg`, `02.jpg`, … + `legenda.txt` |
+| Reel | `video.mp4` + `capa.jpg` + `legenda.txt` |
+| Story | `story.jpg` (ou `story.mp4` + `capa.jpg`) |
+
+- Imagens de feed: 4:5, 1080×1350, JPG, PNG ou WEBP, até 8 MB cada.
+- Reel e Story: 9:16, 1080×1920. Vídeo MP4 até 95 MB.
+- `legenda.txt`: a legenda completa, em texto puro, até 2.200 caracteres.
+
+## Regras do envio
+- Salve até umas 08h. O post precisa chegar **pelo menos 10 minutos antes** do horário; se o horário já passou, ele não é enviado.
+- Envie na branch `agendamentos` (ou na `main`). Cada push só envia as pastas que mudaram.
+- Se já existe um post para aquele dia e hora, ele **não é duplicado**. Para trocar, o Rodrigo cancela o antigo no painel e a pasta é enviada de novo.
+- Não coloque aqui dados de clientes, telefones, senhas ou chaves: o repositório é público.

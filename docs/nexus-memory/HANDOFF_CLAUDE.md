@@ -2,6 +2,25 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (depende do merge do PR deste fluxo)
+- **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. O Rodrigo quer que o ChatGPT crie as artes (sem gastar tokens da OpenAI do Nexus) e que elas cheguem sozinhas ao painel.
+- **Estado:** fluxo pronto em PR, **ainda não juntado**. Enquanto não houver merge, a pasta não envia nada; entregue as artes ao Rodrigo como antes.
+- **Como funciona:** cada post salvo em `agendamentos/AAAA-MM-DD/HHMM/` sobe para o painel da Flow Arts **esperando a aprovação do Rodrigo**. Nada é publicado sem o OK dele. Detalhes em `agendamentos/README.md`.
+
+### O que fazer todo dia (até umas 08h de Brasília)
+1. Ler as "REGRAS NOVAS PARA OS POSTS" logo abaixo (público de comida, 70% dica útil, sem robô/neon/azul, nada de circo).
+2. Criar 3 posts do dia: **09:00, 12:00 e 19:00**. Preferir carrossel 4:5 (1080×1350); post de 1 imagem para pergunta ou prova.
+3. Salvar cada um na branch `agendamentos` do repositório `flowarts2027-art/SERVIDOR-NEXUS-2.0`:
+   - `agendamentos/AAAA-MM-DD/0900/` → `01.jpg`, `02.jpg`… (ou `imagem.jpg`) + `legenda.txt`
+   - `agendamentos/AAAA-MM-DD/1200/` → idem
+   - `agendamentos/AAAA-MM-DD/1900/` → idem
+   - Se a branch `agendamentos` não existir, criar a partir da `main` atual.
+4. Conferir na aba Actions do GitHub o fluxo "NEXUS Agendar conteúdo pronto": cada post deve aparecer como "enviado ao painel, esperando aprovação".
+5. Avisar o Rodrigo que os 3 posts estão no painel para ele aprovar, e registrar em `HANDOFF_CHATGPT.md` (sem colar imagens nem dados privados).
+
+### Se não conseguir salvar imagens no GitHub
+Entregue as 3 artes e as 3 legendas ao Rodrigo, identificadas por horário. Ele sobe no Master › Postagens › "Subir conteúdo do cliente" (cliente Flow Arts, deixar o cliente aprovar). Registre no `HANDOFF_CHATGPT.md` que o envio pelo GitHub não funcionou e o motivo.
+
 ## 2026-10-21 BRT — REGRAS NOVAS PARA OS POSTS DA FLOW ARTS (auditoria do Instagram) — vale para TODO post a partir de hoje
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. Pedido do Rodrigo: auditar o Instagram e mandar ao ChatGPT como melhorar os posts para ter mais visualizações.
 - **Diagnóstico completo:** topo de `AUDITORIA-FLOW-ARTS.md`. Resumo: 9 seguidores; os 12 posts de 13/10 a 20/10 somam 1 curtida e 2 comentários de teste. Quase todo post é anúncio ("A Flow cuida do seu Instagram"), cada post fala com um nicho diferente, e o visual usa robôs, neon e azul, que a marca proíbe.
