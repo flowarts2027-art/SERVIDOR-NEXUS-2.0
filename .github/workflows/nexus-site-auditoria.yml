@@ -1,0 +1,48 @@
+name: NEXUS Site - auditoria de visitas (so leitura)
+
+# Pedido do Rodrigo (21/10): o site está tendo resultado? Só totais por dia, página e origem.
+# Nada pessoal (o log é público): sem nomes, telefones ou mensagens.
+on:
+  push:
+    branches: [ops/site-auditoria]
+    paths: [".github/workflows/nexus-site-auditoria.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  ler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ler totais
+        working-directory: cloudflare
+        shell: bash
+        run: |
+          set -uo pipefail
+          run() {
+            echo "::group::$1"
+            npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$2" > /tmp/out.txt 2>/tmp/err.txt || true
+            python3 -c '
+          import json,sys
+          t=open("/tmp/out.txt").read(); i=t.find("["); d=json.JSONDecoder()
+          while i>=0:
+              try:
+                  v,_=d.raw_decode(t[i:])
+                  if isinstance(v,list) and v and "results" in v[0]:
+                      for r in v[0]["results"]: print(json.dumps(r,ensure_ascii=False))
+                      sys.exit(0)
+              except ValueError: pass
+              i=t.find("[",i+1)
+          print("ERRO: "+open("/tmp/err.txt").read()[:300].replace("\n"," "))'
+            echo "::endgroup::"
+          }
+          run "dias" "SELECT MIN(day) AS primeiro_dia, MAX(day) AS ultimo_dia, SUM(visits) AS total FROM site_visits_daily"
+          run "por_dia" "SELECT day, SUM(visits) AS v, SUM(CASE WHEN source<>'interno' THEN visits ELSE 0 END) AS entradas FROM site_visits_daily GROUP BY day ORDER BY day"
+          run "origem" "SELECT source, SUM(visits) AS v FROM site_visits_daily GROUP BY source ORDER BY v DESC"
+          run "paginas" "SELECT path, SUM(visits) AS v FROM site_visits_daily GROUP BY path ORDER BY v DESC LIMIT 20"
+          run "pedidos_exemplo" "SELECT substr(created_at,1,10) AS dia, COUNT(*) AS pedidos FROM leads WHERE source='landing' GROUP BY dia ORDER BY dia"
