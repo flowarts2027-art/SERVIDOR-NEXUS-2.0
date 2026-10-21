@@ -40,6 +40,7 @@ image_named() {
 q() {
   local raw
   raw="$(npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$1" 2>/tmp/wr.err || true)"
+  [ "${AGENDAR_DEBUG:-0}" = 1 ] && echo "::notice::wrangler: $(printf '%s' "$raw" | tr '\n' ' ' | cut -c1-400) | stderr: $(tr '\n' ' ' </tmp/wr.err | cut -c1-300)" >&2
   printf '%s' "$raw" | python3 -c '
 import sys, json
 t = sys.stdin.read(); d = json.JSONDecoder(); i = t.find("[")
@@ -61,8 +62,10 @@ trap cleanup EXIT
 
 start_session() {
   [ "$session_ready" = 1 ] && return 0
-  CLIENT_ID="$(q "SELECT id FROM clients WHERE id='primeiro-teste' LIMIT 1" | jq -r '.[0].results[0].id // empty')"
-  [ -n "$CLIENT_ID" ] || { fail "Cliente Flow Arts (primeiro-teste) não encontrado"; return 1; }
+  local found
+  found="$(q "SELECT id FROM clients WHERE id='primeiro-teste' LIMIT 1")"
+  CLIENT_ID="$(printf '%s' "$found" | jq -r '.[0].results[0].id // empty' 2>/dev/null || true)"
+  [ -n "$CLIENT_ID" ] || { fail "Cliente Flow Arts (primeiro-teste) não encontrado. D1 respondeu: $(printf '%s' "$found" | cut -c1-300)"; return 1; }
   TOKEN="$(openssl rand -hex 32)"
   HASH="$(printf '%s' "$TOKEN" | sha256sum | cut -d' ' -f1)"
   local exp; exp="$(date -u -d '+15 minutes' +%Y-%m-%dT%H:%M:%S.000Z)"
