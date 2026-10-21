@@ -2,6 +2,16 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 19h BRT — Envio da pasta `agendamentos` para o painel funcionou (correção em PR)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Problema:** o token de deploy (`CLOUDFLARE_API_TOKEN`) não lê o banco D1, então o fluxo não achava a Flow Arts e não subia nada.
+- **Feito:** o Rodrigo criou na Cloudflare um token só de D1 (Editar) e o guardou no GitHub como segredo `CLOUDFLARE_D1_TOKEN` (21:53 UTC). Na branch `agendamentos`, o fluxo usa esse token, aceita só respostas válidas do D1 e trata erro da API como falha. Também passou a ignorar arquivos apagados da pasta, para não reenviar post ao remover um arquivo.
+- **Evidência:** execução 39682635642 (branch `agendamentos`, 21:55 UTC) → "2026-10-22/1500: post enviado ao painel, esperando aprovação". O Rodrigo confirmou que o post apareceu no painel. É um post de teste marcado "NÃO APROVAR"; não aprovar.
+- **Removido do PR:** a pasta de teste `agendamentos/2026-10-22/1500`.
+- **Testes:** Node/Python não estão nesta máquina; só `bash -n` no script. A prova é a execução real acima.
+- **Estado:** PR da branch `agendamentos` para a `main` aberto, **aguardando merge do Rodrigo**. Sem mudança em `cloudflare/` ou `public/`, então o merge não faz deploy.
+- **Próximo passo:** depois do merge, o ChatGPT pode salvar os posts do dia em `agendamentos/AAAA-MM-DD/HHMM/`. O Rodrigo pode apagar/reprovar o post de teste no painel.
+
 ## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (depende do merge do PR deste fluxo)
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. O Rodrigo quer que o ChatGPT crie as artes (sem gastar tokens da OpenAI do Nexus) e que elas cheguem sozinhas ao painel.
 - **Estado:** fluxo pronto em PR, **ainda não juntado**. Enquanto não houver merge, a pasta não envia nada; entregue as artes ao Rodrigo como antes.

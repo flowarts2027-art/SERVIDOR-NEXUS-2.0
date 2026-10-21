@@ -49,9 +49,9 @@ jobs:
             [[ "$INPUT_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::Data inválida"; exit 1; }
             files="$(git ls-files "agendamentos/$INPUT_DATE")"
           elif [ -n "${BEFORE:-}" ] && ! [[ "$BEFORE" =~ ^0+$ ]] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-            files="$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- agendamentos)"
+            files="$(git diff --name-only --diff-filter=d "$BEFORE" "$GITHUB_SHA" -- agendamentos)"
           else
-            files="$(git diff --name-only "$GITHUB_SHA~1" "$GITHUB_SHA" -- agendamentos 2>/dev/null || git ls-files agendamentos)"
+            files="$(git diff --name-only --diff-filter=d "$GITHUB_SHA~1" "$GITHUB_SHA" -- agendamentos 2>/dev/null || git ls-files agendamentos)"
           fi
           slots="$(printf '%s\n' "$files" | sed -nE 's#^agendamentos/([0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4})/.*#\1#p' | sort -u | tr '\n' ' ')"
           echo "::notice::Posts a enviar: ${slots:-nenhum}"
