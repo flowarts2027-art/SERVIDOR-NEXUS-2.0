@@ -66,6 +66,18 @@ test("cliques no WhatsApp e pedidos de exemplo entram no resultado; evento desco
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM site_events_daily").get().n, 2);
 });
 
+test("?de= no link marca a origem; valor desconhecido usa o referrer", async () => {
+  const { DB } = fakeD1();
+  const env = { DB };
+  await hit(env, { p: "/exemplo", r: "", d: "instagram" });
+  await hit(env, { p: "/exemplo", r: "", d: "stories" });
+  await hit(env, { p: "/", r: "https://www.google.com/", d: "hacker" });
+  const stats = await siteStats(env, 30);
+  assert.deepEqual(stats.sources.map(s => s.source).sort(), ["google", "instagram", "stories"]);
+  const page = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
+  assert.match(page, /d:\(location\.search\.match\(\/\[\?&\]de=/);
+});
+
 test("sem tabela de leads o resultado não quebra", async () => {
   const { DB } = fakeD1();
   const stats = await siteStats({ DB }, 30);

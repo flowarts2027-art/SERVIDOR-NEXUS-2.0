@@ -278,7 +278,7 @@ def pagina(n):
   <span>Flow Arts — CNPJ 65.299.616/0001-50 · Agência de marketing com IA, atendimento online para todo o Brasil.</span>
   <nav aria-label="Outras páginas">{outros_links(n['slug'])} · <a href="/">Início</a> · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></nav>
 </div></footer>
-<script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){{var nb=function(o){{navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{{type:"text/plain"}}))}};nb({{p:location.pathname,r:document.referrer}});document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({{p:location.pathname,e:"whatsapp"}})}},true)}}}}catch(e){{}}</script>
+<script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){{var nb=function(o){{navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{{type:"text/plain"}}))}};nb({{p:location.pathname,r:document.referrer,d:(location.search.match(/[?&]de=([a-z]+)/)||[])[1]}});document.addEventListener("click",function(e){{var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({{p:location.pathname,e:"whatsapp"}})}},true)}}}}catch(e){{}}</script>
 </body>
 </html>
 """

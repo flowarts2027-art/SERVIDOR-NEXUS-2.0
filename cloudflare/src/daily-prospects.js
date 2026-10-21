@@ -49,8 +49,13 @@ async function writeState(env, state) {
 // 19/10 (Rodrigo): toda mensagem tem que levar pelo menos uma imagem. Por isso, se algum nicho
 // já tem exemplo, a busca fica SÓ nos nichos com exemplo. Os outros entram sozinhos quando
 // ele subir o exemplo (as imagens que estão sendo feitas no ChatGPT).
-export function nicheOrder(showcase, cursor) {
-  const keys = Object.keys(NICHES);
+// 21/10 (Rodrigo aprovou o PLANO_CRESCIMENTO): por 4 semanas, só negócios de comida local.
+// Bar entra porque já tem exemplo pronto (garante imagem na mensagem).
+export const FOCUS_NICHES = ["cafeteria", "padaria", "lanchonete", "restaurante", "bar"];
+
+export function nicheOrder(showcase, cursor, focus = FOCUS_NICHES) {
+  const focused = Object.keys(NICHES).filter(k => !focus?.length || focus.includes(k));
+  const keys = focused.length ? focused : Object.keys(NICHES);
   const has = k => Boolean(showcase?.[k]?.videoUrl || (showcase?.[k]?.kind === "carousel" && showcase[k].images?.length));
   const withExample = keys.filter(has);
   const pool = withExample.length ? withExample : keys;

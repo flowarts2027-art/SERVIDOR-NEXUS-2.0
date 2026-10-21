@@ -5,7 +5,7 @@
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const NAMES = {
-    google: "Google", instagram: "Instagram", facebook: "Facebook", whatsapp: "WhatsApp",
+    google: "Google", instagram: "Instagram", stories: "Stories do Instagram", email: "E-mail", facebook: "Facebook", whatsapp: "WhatsApp",
     direto: "Direto (digitou o endereço ou link sem origem)", "outros buscadores": "Outros buscadores", "outros sites": "Outros sites"
   };
   const PAGES = {

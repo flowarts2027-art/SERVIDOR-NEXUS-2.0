@@ -25,6 +25,8 @@ export async function ensureSiteSchema(env) {
 }
 
 const SITE_EVENTS = new Set(["whatsapp"]);
+// Origens marcadas no link (PLANO_CRESCIMENTO, 21/10): bio, Stories, WhatsApp, Facebook, Google e e-mail.
+const TAGGED_SOURCES = new Set(["instagram", "stories", "whatsapp", "facebook", "google", "email"]);
 
 export function saoPauloDay(date = new Date()) {
   // en-CA formata como AAAA-MM-DD.
@@ -72,7 +74,8 @@ export async function handleSiteHit(request, env) {
     ).bind(saoPauloDay(), path, event).run();
     return new Response(null, { status: 204, headers: { "cache-control": "no-store" } });
   }
-  const source = visitSource(body.r);
+  // ?de=instagram|stories|whatsapp… no link vale mais que o referrer (o app do Instagram costuma esconder a origem).
+  const source = TAGGED_SOURCES.has(String(body.d || "")) ? String(body.d) : visitSource(body.r);
   // Navegação dentro do próprio site conta como página vista com origem "interno".
   await env.DB.prepare(
     `INSERT INTO site_visits_daily(day,path,source,visits) VALUES(?1,?2,?3,1)

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { runDailyProspects, nicheOrder, saveDailySettings, dailySettings } from "../src/daily-prospects.js";
+import { runDailyProspects, nicheOrder, saveDailySettings, dailySettings, FOCUS_NICHES } from "../src/daily-prospects.js";
 import { listContacts, markContacted, createContact, updateContact } from "../src/crm.js";
 import { saveSubscription, pushPublicKey } from "../src/push.js";
 
@@ -107,8 +107,16 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
 
 test("ordem dos nichos: com exemplo primeiro, em rodízio", () => {
   // 19/10: com algum exemplo, fica só nos nichos com exemplo (toda mensagem leva imagem).
-  assert.deepEqual(nicheOrder({ pet: { videoUrl: "x" } }, 0), ["pet"]);
-  assert.equal(nicheOrder({}, 0).length, 21); // sem nenhum exemplo: todos (18/10: casa de ração virou loja de ração)
+  assert.deepEqual(nicheOrder({ pet: { videoUrl: "x" } }, 0, []), ["pet"]);
+  assert.equal(nicheOrder({}, 0, []).length, 21); // sem foco e sem exemplo: todos (18/10: casa de ração virou loja de ração)
+});
+
+test("21/10: foco em comida — só cafeteria, padaria, lanchonete, restaurante e bar", () => {
+  assert.deepEqual(FOCUS_NICHES, ["cafeteria", "padaria", "lanchonete", "restaurante", "bar"]);
+  // Pet tem exemplo, mas está fora do foco; bar tem exemplo e está no foco.
+  assert.deepEqual(nicheOrder({ pet: { videoUrl: "x" }, bar: { videoUrl: "y" } }, 0), ["bar"]);
+  // Nenhum nicho de comida com exemplo: roda entre os 5 de comida.
+  assert.deepEqual(nicheOrder({ pet: { videoUrl: "x" } }, 0).sort(), ["bar", "cafeteria", "lanchonete", "padaria", "restaurante"]);
 });
 
 test("aviso no celular: chave criada uma vez, toque vai assinado (VAPID) e sem conteúdo", async () => {
