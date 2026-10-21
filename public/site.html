@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050B1F">
-<title>Flow Arts Marketing | IA e Instagram para pequenos negócios</title>
-<meta name="description" content="Agência de marketing com IA para pequenos negócios de todo o Brasil: posts prontos para o Instagram, Reels e resposta automática no direct que leva o cliente direto para o seu WhatsApp.">
+<title>Flow Arts Marketing | Posts com IA para cafeteria, padaria e restaurante</title>
+<meta name="description" content="Posts e fotos com IA para cafeteria, padaria, lanchonete e restaurante: transformamos as fotos do seu cardápio em posts que dão fome. Peça um exemplo grátis e aprove tudo pelo celular.">
 <link rel="canonical" href="https://flowarts.com.br/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="facebook-domain-verification" content="4y5qf57yga91suujq5cx6xody4zinn" />
@@ -13,8 +13,8 @@
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Flow Arts Marketing">
 <meta property="og:url" content="https://flowarts.com.br/">
-<meta property="og:title" content="Flow Arts Marketing | Instagram com resposta automática">
-<meta property="og:description" content="Posts com IA e resposta automática no direct, levando o cliente direto para o seu WhatsApp. Pequenos negócios de todo o Brasil.">
+<meta property="og:title" content="Flow Arts | Fotos e posts que dão fome no seu cliente">
+<meta property="og:description" content="Para cafeteria, padaria, lanchonete e restaurante. Mande 3 fotos do cardápio e receba um exemplo grátis.">
 <meta property="og:image" content="https://flowarts.com.br/brand/flowarts-share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -300,10 +300,10 @@ if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||
   <section class="hero">
     <div class="wrap">
       <div class="hero-text">
-        <h1>Seu Instagram bonito e postando, sem você parar o trabalho.</h1>
-        <p class="lead">A IA da Flow Arts faz os posts. Você só aprova pelo celular.</p>
+        <h1>Fotos e posts que dão fome no seu cliente.</h1>
+        <p class="lead">Para cafeteria, padaria, lanchonete e restaurante. A IA da Flow Arts transforma as fotos do seu cardápio em posts, e você só aprova pelo celular.</p>
         <div class="actions">
-          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20meu%20Instagram%20postando%20sozinho." target="_blank" rel="noopener">Quero um exemplo grátis</a>
+          <a class="btn btn-whats" href="/exemplo">Quero meu exemplo grátis</a>
           <a class="btn btn-line" href="#posts">Ver posts</a>
         </div>
       </div>
@@ -601,7 +601,7 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
     var txt = h1.textContent.trim(); h1.setAttribute("aria-label", txt); h1.textContent = "";
     txt.split(" ").forEach(function (w, i) {
       var s = document.createElement("span"); s.className = "word"; s.style.setProperty("--i", i); s.setAttribute("aria-hidden", "true");
-      if (/^bonito/i.test(w)) { var em = document.createElement("em"); em.textContent = w; s.appendChild(em); } else s.textContent = w;
+      if (/^fome/i.test(w)) { var em = document.createElement("em"); em.textContent = w; s.appendChild(em); } else s.textContent = w;
       h1.appendChild(s); h1.appendChild(document.createTextNode(" "));
     });
   }
@@ -686,6 +686,6 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
 })();
 </script>
 <script>document.querySelectorAll(".phone").forEach(function(p){var a=document.createElement("i");a.className="pwr";a.setAttribute("aria-hidden","true");var h=document.createElement("i");h.className="home";h.setAttribute("aria-hidden","true");p.appendChild(a);p.appendChild(h);});</script>
-<script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){var nb=function(o){navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{type:"text/plain"}))};nb({p:location.pathname,r:document.referrer});document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({p:location.pathname,e:"whatsapp"})},true)}}catch(e){}</script>
+<script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){var nb=function(o){navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{type:"text/plain"}))};nb({p:location.pathname,r:document.referrer,d:(location.search.match(/[?&]de=([a-z]+)/)||[])[1]});document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({p:location.pathname,e:"whatsapp"})},true)}}catch(e){}</script>
 </body>
 </html>
