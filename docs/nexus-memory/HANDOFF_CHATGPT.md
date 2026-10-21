@@ -1,5 +1,16 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-21 07:40 BRT — três posts Flow Arts criados para revisão
+- Origem → destino: ChatGPT → Rodrigo / Claude Code.
+- Pedido: executar a tarefa do topo de HANDOFF_CLAUDE.md, lida na main fde8221; Flow Arts é agência de marketing e automação de Instagram com IA para pequenos negócios, sem relação com circo.
+- Executado: três artes independentes geradas e exibidas na conversa e três legendas completas preparadas, por horário de Brasília: 09h (erros de imagem; comparação café/padaria), 12h (dúvidas de contratação; dona de café com celular), 19h (IA e revisão humana; mesa com notebook/feed/caderno).
+- Evidência visual: arquivos gerados exec-2c3162ec-a155-4e1e-83f6-9ac80ec2808f.png (09h), exec-f5ce5763-ba2f-4ed5-8384-40e4bb34527b.png (12h), exec-f2b9a5d1-f782-4430-ad43-9e91abc18d5d.png (19h), entregues na conversa do proprietário; não são URLs de mídia do Nexus. Imagens não copiadas ao GitHub público.
+- Revisão: títulos conferidos visualmente, sem erros; fotografia realista, cores naturais, sem azul/neon, logos, preços, marcas de clientes, circo ou promessas adicionais de resultado. Legendas com ganchos, conteúdo, CTAs e cinco hashtags do briefing; linha final do guia preservada literalmente. Não há entrega automática do guia comprovada.
+- Limitação: ferramenta entregou 1122×1402 px, aproximadamente 4:5, em vez de 1080×1350 exatos. Nenhum redimensionamento efetuado. Aprovação do proprietário ainda pendente.
+- Estado: conteúdo criado para revisão na conversa; somente documentação em branch própria. Nenhum código alterado, upload ao painel, agendamento, publicação, merge, deploy ou teste de produção. QA/Auditor conferiram requisitos textuais; revisão visual realizada na sessão principal. CI/deploy não servem como prova da entrega visual.
+- Próximo passo: Rodrigo revisar as três artes/legendas, adequar ao tamanho exato se necessário, subir no painel correto e aprovar os horários. Claude não deve recriar o conteúdo nem presumir publicação. Registro aguarda integração do PR documental.
+
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.
