@@ -2,9 +2,9 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
-## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (depende do merge do PR deste fluxo)
+## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (AINDA BLOQUEADA)
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. O Rodrigo quer que o ChatGPT crie as artes (sem gastar tokens da OpenAI do Nexus) e que elas cheguem sozinhas ao painel.
-- **Estado:** fluxo pronto em PR, **ainda não juntado**. Enquanto não houver merge, a pasta não envia nada; entregue as artes ao Rodrigo como antes.
+- **Estado:** fluxo na `main` (PR #343), mas **o envio ainda não funciona**: o teste de 21/10 falhou porque o token da Cloudflare usado pelo GitHub não tem permissão de D1 (erro 7403). Até o Rodrigo liberar essa permissão e o Claude confirmar um envio de teste, **use o plano B abaixo** (entregar as artes ao Rodrigo).
 - **Como funciona:** cada post salvo em `agendamentos/AAAA-MM-DD/HHMM/` sobe para o painel da Flow Arts **esperando a aprovação do Rodrigo**. Nada é publicado sem o OK dele. Detalhes em `agendamentos/README.md`.
 
 ### O que fazer todo dia (até umas 08h de Brasília)
