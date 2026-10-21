@@ -523,3 +523,8 @@ input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0
 .signup-info strong,.signup-info small{display:block}.signup-info small{color:var(--muted);font-size:14px;margin-top:4px;overflow-wrap:anywhere}
 .signup-actions{display:flex;gap:8px;flex-wrap:wrap}.signup-status{grid-column:1/-1;margin:0;font-size:15px}
 @media(max-width:700px){.signup-item{grid-template-columns:1fr}.signup-actions>*{flex:1;text-align:center}}
+.site-results{grid-template-columns:repeat(4,1fr)}
+.site-diagnosis{margin:14px 0 0;padding:12px 14px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;font-size:16px;line-height:1.45}
+.site-diagnosis:empty{display:none}
+.site-tip{margin:10px 0 0;font-size:14px}
+@media(max-width:700px){.site-results{grid-template-columns:1fr 1fr}}
