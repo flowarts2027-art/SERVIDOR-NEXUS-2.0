@@ -23,6 +23,13 @@ test("o Worker aplica o redirecionamento antes de qualquer rota", () => {
   assert.match(src, /async fetch\(request, env, ctx\) \{\s*const url = new URL\(request\.url\);\s*const siteRedirect = canonicalSiteRedirect\(url, request\.method\);/);
 });
 
+test("páginas públicas do site passam pelo Worker (senão o redirecionamento não vale para elas)", () => {
+  const cfg = fs.readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
+  for (const p of ["/marketing-para-*", "/exemplo*", "/privacidade*", "/termos*", "/sitemap.xml", "/robots.txt"]) {
+    assert.ok(cfg.includes(JSON.stringify(p)), p + " fora do run_worker_first");
+  }
+});
+
 test("sitemap tem data e não lista o /demo; páginas usam a imagem de compartilhamento 1200x630", () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   const sitemap = read("sitemap.xml");
