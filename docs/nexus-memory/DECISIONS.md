@@ -38,6 +38,12 @@
 - Café Brisa (demo) continua sendo um café do Rio: é só um exemplo.
 
 
+## 2026-10-21 — Mais conteúdos nos planos mensais (Flow Arts)
+- Rodrigo achou o valor alto para 12 conteúdos e mandou a arte de comparação de planos como modelo.
+- Básico: **30 conteúdos/mês** (posts e carrosséis), preço igual (R$ 197 de entrada + R$ 397/mês). Com Vídeo: **60 conteúdos/mês** (Reels, carrosséis e posts), preço igual (R$ 297 + R$ 697/mês).
+- A divisão por tipo não foi definida; o site não promete quantidades por tipo. Alterado no site, no rascunho do site e no atendente do WhatsApp.
+- Atenção ao custo: 60 conteúdos com vídeo por cliente gastam mais IA e mais tempo de revisão.
+
 ## 2026-10-11 15h — Oferta "Instagram no Automático" (Flow Arts)
 - Rodrigo pediu que Claude decidisse para começar ("depois eu modifico o valor").
 - 12 posts/mês (4 Reels, 4 carrosséis, 4 posts); entrada R$ 297 + mensalidade R$ 697; preço de fundador para os 3 primeiros clientes, travado por 6 meses; sem fidelidade (aviso de 30 dias); Pix mensal.
