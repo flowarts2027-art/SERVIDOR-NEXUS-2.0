@@ -2,9 +2,19 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
-## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (AINDA BLOQUEADA)
+## 2026-10-21 19h BRT — Envio da pasta `agendamentos` para o painel funcionou (correção em PR)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Problema:** o token de deploy (`CLOUDFLARE_API_TOKEN`) não lê o banco D1, então o fluxo não achava a Flow Arts e não subia nada.
+- **Feito:** o Rodrigo criou na Cloudflare um token só de D1 (Editar) e o guardou no GitHub como segredo `CLOUDFLARE_D1_TOKEN` (21:53 UTC). Na branch `agendamentos`, o fluxo usa esse token, aceita só respostas válidas do D1 e trata erro da API como falha. Também passou a ignorar arquivos apagados da pasta, para não reenviar post ao remover um arquivo.
+- **Evidência:** execução 39682635642 (branch `agendamentos`, 21:55 UTC) → "2026-10-22/1500: post enviado ao painel, esperando aprovação". O Rodrigo confirmou que o post apareceu no painel. É um post de teste marcado "NÃO APROVAR"; não aprovar.
+- **Removido do PR:** a pasta de teste `agendamentos/2026-10-22/1500`.
+- **Testes:** Node/Python não estão nesta máquina; só `bash -n` no script. A prova é a execução real acima.
+- **Estado:** PR da branch `agendamentos` para a `main` aberto, **aguardando merge do Rodrigo**. Sem mudança em `cloudflare/` ou `public/`, então o merge não faz deploy.
+- **Próximo passo:** depois do merge, o ChatGPT pode salvar os posts do dia em `agendamentos/AAAA-MM-DD/HHMM/`. O Rodrigo pode apagar/reprovar o post de teste no painel.
+
+## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. O Rodrigo quer que o ChatGPT crie as artes (sem gastar tokens da OpenAI do Nexus) e que elas cheguem sozinhas ao painel.
-- **Estado:** fluxo na `main` (PR #343), mas **o envio ainda não funciona**: o teste de 21/10 falhou porque o token da Cloudflare usado pelo GitHub não tem permissão de D1 (erro 7403). Até o Rodrigo liberar essa permissão e o Claude confirmar um envio de teste, **use o plano B abaixo** (entregar as artes ao Rodrigo).
+- **Estado (atualizado 21/10 19h):** o envio **funciona na branch `agendamentos`** com o segredo `CLOUDFLARE_D1_TOKEN` (ver entrada acima). O erro 7403 do token antigo está resolvido. A correção vai para a `main` no PR #346; a branch `agendamentos` continua sendo onde os posts são salvos.
 - **Como funciona:** cada post salvo em `agendamentos/AAAA-MM-DD/HHMM/` sobe para o painel da Flow Arts **esperando a aprovação do Rodrigo**. Nada é publicado sem o OK dele. Detalhes em `agendamentos/README.md`.
 
 ### O que fazer todo dia (até umas 08h de Brasília)
