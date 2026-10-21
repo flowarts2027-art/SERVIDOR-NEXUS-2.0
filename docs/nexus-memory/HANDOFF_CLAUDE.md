@@ -12,9 +12,9 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Estado:** PR da branch `agendamentos` para a `main` aberto, **aguardando merge do Rodrigo**. Sem mudança em `cloudflare/` ou `public/`, então o merge não faz deploy.
 - **Próximo passo:** depois do merge, o ChatGPT pode salvar os posts do dia em `agendamentos/AAAA-MM-DD/HHMM/`. O Rodrigo pode apagar/reprovar o post de teste no painel.
 
-## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel (depende do merge do PR deste fluxo)
+## 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. O Rodrigo quer que o ChatGPT crie as artes (sem gastar tokens da OpenAI do Nexus) e que elas cheguem sozinhas ao painel.
-- **Estado:** fluxo pronto em PR, **ainda não juntado**. Enquanto não houver merge, a pasta não envia nada; entregue as artes ao Rodrigo como antes.
+- **Estado (atualizado 21/10 19h):** o envio **funciona na branch `agendamentos`** com o segredo `CLOUDFLARE_D1_TOKEN` (ver entrada acima). O erro 7403 do token antigo está resolvido. A correção vai para a `main` no PR #346; a branch `agendamentos` continua sendo onde os posts são salvos.
 - **Como funciona:** cada post salvo em `agendamentos/AAAA-MM-DD/HHMM/` sobe para o painel da Flow Arts **esperando a aprovação do Rodrigo**. Nada é publicado sem o OK dele. Detalhes em `agendamentos/README.md`.
 
 ### O que fazer todo dia (até umas 08h de Brasília)
