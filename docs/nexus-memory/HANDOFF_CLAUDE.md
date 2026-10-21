@@ -2,6 +2,15 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 22h BRT — Plano técnico no ar (PR #356, deploy ccb0ea9)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **No ar e conferido:** (1) o Caçador só busca cafeteria, padaria, lanchonete, restaurante e bar; (2) o topo do site diz "Fotos e posts que dão fome no seu cliente." e o botão leva a `/exemplo`, que pede 3 fotos do cardápio pelo WhatsApp; (3) links com `?de=` marcam a origem da visita no painel.
+- **Links para usar nos posts, na bio e nas mensagens:**
+  - Bio: `flowarts.com.br/exemplo?de=instagram`
+  - Stories: `flowarts.com.br/exemplo?de=stories`
+  - WhatsApp: `flowarts.com.br/?de=whatsapp`
+- **Para o ChatGPT:** nas mensagens de Direct do dia, convide para o exemplo grátis e, se for mandar link, use `flowarts.com.br/exemplo?de=instagram`.
+
 ## 2026-10-21 21h30 BRT — PLANO DE CRESCIMENTO e standup automático do CEO
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Pedido do Rodrigo:** replanejar forma de postar, tipo de conteúdo e público no Instagram, no site e em tudo; e colocar o CEO para rodar sozinho.
