@@ -230,9 +230,9 @@ const BASE_STYLE = `
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:radial-gradient(900px 520px at 85% -10%,rgba(31,107,255,.22),transparent 60%),radial-gradient(700px 480px at -10% 30%,rgba(73,163,255,.10),transparent 60%),var(--bg);background-attachment:fixed;color:var(--chrome);font:400 17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:var(--accent-2)}.wrap{max-width:760px;margin:0 auto;padding:0 18px}
-h1,h2,h3,.disp{font-family:Unbounded,"Atkinson Hyperlegible",sans-serif;color:var(--ink);letter-spacing:-.015em}
+h1,h2,h3,.disp{font-family:Fraunces,Georgia,serif;color:var(--ink);letter-spacing:-.015em}
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 0 14px}
-.logo{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font:700 1rem Unbounded,sans-serif}.logo img{width:26px;height:32px}
+.logo{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font:700 1rem Fraunces,Georgia,serif}.logo img{width:26px;height:32px}
 .pill{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent-2);border:1px solid rgba(73,163,255,.28);font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
 h1{margin:16px 0 0;font-size:clamp(1.9rem,7vw,3.1rem);line-height:1.06;font-weight:700;text-wrap:balance}h1 em{font-style:normal;background:linear-gradient(90deg,#fff,var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
 h2{font-size:clamp(1.3rem,4.6vw,1.8rem);line-height:1.15;margin:0 0 8px;font-weight:700;text-wrap:balance}
@@ -253,7 +253,7 @@ footer{padding:32px 16px calc(32px + env(safe-area-inset-bottom));color:var(--mu
 const LOGO = `<a class="logo" href="https://flowarts.com.br/" target="_blank" rel="noopener"><img src="/brand/flowarts-symbol.webp" alt="" width="26" height="32">Flow Arts</a>`;
 
 function page(title, inner, extraStyle = "") {
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050B1F"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="icon" href="/brand/flowarts-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Unbounded:wght@500;700&display=swap"><style>${BASE_STYLE}${extraStyle}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050B1F"><meta name="robots" content="noindex"><title>${escapeHtml(title)}</title><link rel="icon" href="/brand/flowarts-icon.png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,600..800&display=swap"><style>${BASE_STYLE}${extraStyle}</style></head><body>${inner}<footer>Flow Arts · <a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a></footer></body></html>`;
 }
 
 function html(body, status = 200) {
@@ -265,7 +265,7 @@ const GIFT_STYLE = `
 .book{position:relative;width:min(230px,62vw);aspect-ratio:3/4;border-radius:10px 18px 18px 10px;padding:22px 18px;display:flex;flex-direction:column;gap:8px;text-align:left;background:radial-gradient(120% 80% at 100% 0%,#49A3FF 0%,transparent 55%),linear-gradient(160deg,#1F6BFF,#0A1636 70%);box-shadow:-10px 0 0 -4px #0F1E46,0 40px 70px -25px rgba(31,107,255,.75),inset 6px 0 0 rgba(255,255,255,.12);transform:rotateY(-14deg) rotateX(4deg);animation:float 6s ease-in-out infinite}
 .book-tag{font-size:.7rem;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.75)}
 .book b{font-size:1.65rem;line-height:1.02;color:#fff;margin-top:auto}.book-sub{color:rgba(255,255,255,.85);font-weight:700}
-.book-foot{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);font:700 .8rem Unbounded,sans-serif;color:#fff}
+.book-foot{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.25);font:700 .8rem Fraunces,Georgia,serif;color:#fff}
 @keyframes float{50%{transform:rotateY(-10deg) rotateX(2deg) translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){.book{animation:none}}
 .gets{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
@@ -341,11 +341,11 @@ const GUIDE_STYLE = `
 .ctas{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .toc{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:30px}
 .toc a{display:flex;gap:10px;align-items:center;text-decoration:none;color:var(--ink);font-size:.92rem;line-height:1.25;background:rgba(10,22,54,.6);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-.toc a b{flex:none;font:700 .8rem Unbounded,sans-serif;color:var(--accent-2)}
+.toc a b{flex:none;font:700 .8rem Fraunces,Georgia,serif;color:var(--accent-2)}
 .toc a.done{border-color:var(--ok)}.toc a.done b{color:var(--ok)}
 .sec-title{margin:46px 0 4px}
 .step{position:relative;margin-top:18px;padding:22px 18px 18px;border-radius:22px;background:linear-gradient(180deg,rgba(15,30,70,.75),rgba(10,22,54,.75));border:1px solid var(--line);scroll-margin-top:110px;overflow:hidden}
-.num{position:absolute;right:14px;top:4px;font:700 4.2rem/1 Unbounded,sans-serif;color:transparent;-webkit-text-stroke:1.5px rgba(73,163,255,.35);pointer-events:none}
+.num{position:absolute;right:14px;top:4px;font:700 4.2rem/1 Fraunces,Georgia,serif;color:transparent;-webkit-text-stroke:1.5px rgba(73,163,255,.35);pointer-events:none}
 .step.done{border-color:rgba(61,214,140,.55)}.step.done .num{-webkit-text-stroke-color:rgba(61,214,140,.5)}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tags span{font-size:.75rem;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-2)}
