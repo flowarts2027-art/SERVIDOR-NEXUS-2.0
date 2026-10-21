@@ -1,3 +1,18 @@
+# Auditoria do Instagram @flowarts2026 — 2026-10-21 (Claude, perfil público sem login, só leitura)
+
+## Números (perfil público, 21/10 ~07h40 BRT)
+- 9 seguidores, segue 28. Eram 3 em 16/10: +6 em 5 dias, sem saber se são clientes reais.
+- 12 posts de 13/10 a 20/10 (6 fotos e 6 vídeos/Reels). **Soma: 1 curtida e 2 comentários** (os 2 são teste do QUERO, em 15/10). 11 dos 12 posts têm 0 curtida.
+- Visualizações, alcance, % de não seguidores, envios e salvamentos **não foram lidos**: ficam nos Insights e exigem o login do Rodrigo.
+
+## Por que não cresce (diagnóstico)
+1. **Distribuição quase zero.** Com 9 seguidores, o Instagram mostra cada post para pouquíssima gente. Nenhum post teve curtida nem dos próprios seguidores, então eles provavelmente não são o público certo.
+2. **Todo post é anúncio.** Desde 16/10 quase tudo repete "Você cuida do [negócio]. A Flow cuida do seu Instagram." Quem não conhece a marca não tem motivo para curtir, salvar ou enviar um anúncio.
+3. **Público muda a cada post.** Pizzaria, pet shop, estética automotiva, confeitaria e bar em 5 dias, com hashtags de cada nicho (#EsteticaAutomotiva). O Instagram não entende para quem mostrar a conta, e quem chega por um nicho não vê o próximo post como sendo para ele.
+4. **Visual contra a regra da marca.** Robôs, neon e tom azul forte (proibidos em `client-brand.js` desde 16/10) e títulos com fontes e posições diferentes. A grade parece genérica de IA, o que tira confiança de quem vende marketing.
+5. **Nada de prova.** Nenhum post mostra o produto funcionando (painel aprovando, QUERO → direct → guia, antes/depois real).
+6. **Pouco do que o algoritmo premia:** carrossel útil para salvar, Reel de vídeo real com gancho no 1º segundo e conteúdo que dá vontade de mandar para alguém.
+
 # Auditoria do Instagram @flowarts2026 — 2026-10-16 (feita direto no Chrome do Rodrigo, só leitura)
 
 ## Números (Insights, 30 dias)
