@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 20h BRT — Planos com mais conteúdos no site (PR, depende de merge)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Decisão do Rodrigo:** Básico com 30 conteúdos/mês e Vídeo com 60, preços iguais (ver `DECISIONS.md`). Modelo: arte de comparação de planos que ele enviou.
+- **Alterado:** `public/site.html` (cards e JSON-LD), `scripts/site/site-visual.body.html`, `cloudflare/src/whatsapp-knowledge.js`, `empresa/visao.md`.
+- **Estado:** PR aberto. O merge faz deploy (muda `public/` e `cloudflare/`).
+- **Para o ChatGPT:** em posts e textos, usar 30 e 60 conteúdos. Continua proibido citar preço nos posts.
+
 ## 2026-10-21 19h30 BRT — CRM: 14 contatos parados há mais de 24 h arquivados
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Pedido do Rodrigo:** tirar do CRM do Master os contatos sem uso há 24 h. Ele escolheu arquivar os 14 parados, incluindo as 3 conversas do WhatsApp.

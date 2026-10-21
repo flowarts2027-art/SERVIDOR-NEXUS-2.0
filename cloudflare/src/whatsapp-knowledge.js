@@ -16,8 +16,8 @@ const FLOW_ARTS = Object.freeze({
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo: quando a pessoa quiser fechar, diga que o Rodrigo vai mandar o contrato e marque needsHuman=true."
   ]),
   offers: Object.freeze([
-    "Instagram no Automático · Básico: 12 conteúdos por mês feitos com IA (8 posts e 4 carrosséis, sem vídeo). R$ 197 de entrada + R$ 397 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
-    "Instagram no Automático · com Vídeo: 12 conteúdos por mês (4 Reels em vídeo de verdade, 4 carrosséis e 4 posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
+    "Instagram no Automático · Básico: 30 conteúdos por mês feitos com IA (posts e carrosséis, sem vídeo). R$ 197 de entrada + R$ 397 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
+    "Instagram no Automático · com Vídeo: 60 conteúdos por mês (Reels em vídeo de verdade, carrosséis e posts). Preço de fundador, só para os 3 primeiros clientes e travado por 6 meses: R$ 297 de entrada + R$ 697 por mês. Sem fidelidade, cancelamento com aviso de 30 dias, pagamento por Pix.",
     "Site do seu negócio: R$ 497, pagamento único. Site de 1 página com fotos, serviços, horário, mapa e botão para o WhatsApp, feito para aparecer no Google e abrir bem no celular. Pronto em até 5 dias. O primeiro ano já inclui o domínio .com.br, a hospedagem e ajustes pequenos. Depois do primeiro ano, R$ 297 por ano ou R$ 29 por mês, já com a renovação do domínio. Tem contrato.",
     "Instagram com resposta automática: R$ 197, pagamento único. Resposta automática no direct quando alguém comenta a palavra combinada (ex.: QUERO), levando a pessoa para o WhatsApp do negócio, e 10 posts prontos. Funcionando em até 2 dias.",
     "Captador de clientes: R$ 97 por mês. Ferramenta no painel do cliente: ele escolhe o tipo de negócio e a cidade e recebe empresas com telefone e uma mensagem pronta para mandar pelo próprio WhatsApp. Busca no Google Maps. Inclui 100 buscas por mês.",
