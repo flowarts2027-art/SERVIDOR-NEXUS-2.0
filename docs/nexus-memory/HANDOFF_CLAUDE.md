@@ -2,6 +2,57 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 BRT — REGRAS NOVAS PARA OS POSTS DA FLOW ARTS (auditoria do Instagram) — vale para TODO post a partir de hoje
+- **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. Pedido do Rodrigo: auditar o Instagram e mandar ao ChatGPT como melhorar os posts para ter mais visualizações.
+- **Diagnóstico completo:** topo de `AUDITORIA-FLOW-ARTS.md`. Resumo: 9 seguidores; os 12 posts de 13/10 a 20/10 somam 1 curtida e 2 comentários de teste. Quase todo post é anúncio ("A Flow cuida do seu Instagram"), cada post fala com um nicho diferente, e o visual usa robôs, neon e azul, que a marca proíbe.
+- **Estado:** regras registradas. O Nexus (código) ainda não foi alterado; os agentes de imagem continuam pausados desde 16/10.
+- **Aplicar também aos 3 posts de hoje (tarefa logo abaixo).**
+
+### Regras (siga ao criar cada post)
+```yaml
+objetivo: "mais visualizações de NÃO seguidores; medir por envios, salvamentos e visitas ao perfil"
+publico_foco_14_dias:
+  quem: "donos de negócios de comida local: pizzarias, cafés, confeitarias, lanchonetes e restaurantes pequenos"
+  por_que: "já é o tema da maioria dos posts e das cenas; um público só ajuda o Instagram a saber para quem mostrar"
+  proibido: "pular de nicho a cada post (pet shop, estética automotiva etc.) nestas 2 semanas"
+mistura_de_conteudo:
+  util_para_o_dono: 70%   # dica que ele aplica hoje sem contratar ninguém
+  prova: 20%              # produto funcionando: painel aprovando, QUERO → direct → guia, antes/depois
+  oferta: 10%             # no máximo 1 em cada 10 posts fala "a Flow Arts faz por você"
+proibido_no_texto:
+  - "abrir com 'Você cuida do X. A Flow cuida do seu Instagram' (repetido demais)"
+  - "preço, cliente inventado, número inventado, depoimento inventado, promessa de seguidores ou vendas"
+formato_preferido:
+  - "carrossel 4:5 de 5 a 7 cartões com passo a passo ou checklist (gera salvamento)"
+  - "Reel só se for vídeo real de 7 a 15 s com gancho no 1º segundo; imagem com zoom NÃO"
+  - "post de imagem única só para pergunta ou prova"
+gancho:
+  max_palavras_na_arte: 7
+  regra: "fala da dor do dono, não da Flow Arts; tem que caber inteiro na arte, sem corte"
+  exemplos:
+    - "Sua pizza é boa. A foto não."
+    - "3 fotos que todo café deveria postar"
+    - "Por que ninguém comenta seus posts"
+visual:
+  - "foto realista de negócio de comida de verdade, luz natural, cores naturais"
+  - "NADA de robô, neon, holograma, tom azul ou cara de ficção científica"
+  - "mesmo modelo em todos: mesma fonte, título sempre na mesma posição, dentro da área segura"
+  - "sem logo (é colocado depois); nada de circo, acrobacia ou malabares"
+legenda:
+  linha_1: "palavra-chave de busca + gancho (ex.: 'Marketing para pizzaria: ...')"
+  corpo: "3 a 5 frases curtas ou passos numerados"
+  cta_principal: "pedir ENVIO ou SALVAMENTO: 'Mande para um dono de pizzaria' / 'Salve para usar no próximo post'"
+  cta_final: 'Comente "QUERO" e receba grátis o guia com 10 ideias de post que trazem clientes 🎁'
+  hashtags: "3 a 5, do público foco (ex.: #MarketingParaRestaurantes #Pizzaria #Confeitaria #PequenosNegocios #FlowArts)"
+frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje seguem por pedido do Rodrigo"
+```
+
+### O que NÃO depende do ChatGPT (fica para o Rodrigo decidir)
+1. **Distribuição:** com 9 seguidores, nenhum post sozinho alcança muita gente. Precisa de ação diária: 20 a 30 min comentando de verdade em perfis de negócios de comida, Stories todo dia e posts em colaboração com negócios que receberem o exemplo grátis.
+2. **Anúncio pago** de R$ 10 a 20 por dia, por 7 dias: só com OK do Rodrigo.
+3. **Métricas:** para medir de verdade, o Rodrigo manda 1 vez por semana os Insights de 7 dias (visualizações, % de não seguidores, envios, salvamentos, visitas ao perfil, seguidores ganhos).
+4. **Nexus (código):** alinhar campanha e agentes a estas regras exige mudar o Worker (deploy). Proposto ao Rodrigo; nada alterado.
+
 ## 2026-10-21 BRT — TAREFA PARA O CHATGPT: criar os 3 posts de hoje da Flow Arts (09h, 12h e 19h)
 - **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT. Pedido explícito do Rodrigo para registrar aqui; ele vai pedir ao ChatGPT para ler e executar.
 - **Estado:** planejado. Nada criado, enviado ou agendado pelo Claude.
