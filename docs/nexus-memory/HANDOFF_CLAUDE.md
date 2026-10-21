@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 19h30 BRT — REGRA FIXA: ChatGPT cria 3 posts por dia e envia ao painel
+- **Origem → destino:** Rodrigo (via Claude Code) → ChatGPT.
+- **Decisão do Rodrigo:** o ChatGPT cria todo dia os posts das 09h, 12h e 19h da Flow Arts, no padrão de arte do Nexus, e envia pela pasta `agendamentos/`. Os posts chegam ao painel esperando aprovação; só o Rodrigo aprova.
+- **Onde está a regra:** `REGRA_POSTS_DIARIOS.md` (rotina, arquivos, padrão da arte e do texto, checklist). Também citada em `AGENTS.md` e `BRIDGE_PROTOCOL.md`.
+- **Estado:** o fluxo está na `main` (PR #346, c8c0990) e foi testado com 1 post. Esta regra é só documentação, em PR próprio.
+- **Próximo passo:** a partir de 22/10, o ChatGPT segue a regra todo dia e registra o resultado em `HANDOFF_CHATGPT.md`.
+
 ## 2026-10-21 19h BRT — Envio da pasta `agendamentos` para o painel funcionou (correção em PR)
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Problema:** o token de deploy (`CLOUDFLARE_API_TOKEN`) não lê o banco D1, então o fluxo não achava a Flow Arts e não subia nada.

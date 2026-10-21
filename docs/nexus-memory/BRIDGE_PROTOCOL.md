@@ -9,6 +9,9 @@
 3. Confirme se já há código, PR ou tarefa equivalente **antes** de implementar de novo. Diferencie pedido, hipótese, teste local, PR e funcionalidade comprovada em produção.
 4. Escolha **uma tarefa específica** do quadro. Se depender de publicação, custo, envio a terceiros ou acesso adicional, obtenha a autorização pertinente.
 
+## Regra fixa do ChatGPT: 3 posts por dia
+Todo dia, o ChatGPT cria os posts das 09h, 12h e 19h da Flow Arts e os salva em `agendamentos/` (branch `agendamentos`). Eles sobem ao painel esperando a aprovação do Rodrigo. Passo a passo e padrão da arte: `REGRA_POSTS_DIARIOS.md`.
+
 ## Fechamento: passagem de bastão
 
 - **ChatGPT** registra suas decisões e resultados em `HANDOFF_CHATGPT.md`; **Claude** faz o mesmo em `HANDOFF_CLAUDE.md`. Não sobrescreva o histórico do outro agente.
