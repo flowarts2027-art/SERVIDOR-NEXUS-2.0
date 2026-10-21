@@ -28,7 +28,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      # Token só de D1 (o de deploy não tem acesso ao banco); sem ele, tenta o de deploy.
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
       BASE: https://servidor-nexus.diamantehinode2015.workers.dev
       AGENDAMENTOS_DIR: ${{ github.workspace }}/agendamentos
@@ -55,6 +56,15 @@ jobs:
           slots="$(printf '%s\n' "$files" | sed -nE 's#^agendamentos/([0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4})/.*#\1#p' | sort -u | tr '\n' ' ')"
           echo "::notice::Posts a enviar: ${slots:-nenhum}"
           echo "list=$slots" >> "$GITHUB_OUTPUT"
+      - name: Conferir o acesso ao banco
+        if: steps.slots.outputs.list != ''
+        shell: bash
+        run: |
+          set -uo pipefail
+          src="${{ secrets.CLOUDFLARE_D1_TOKEN != '' && 'CLOUDFLARE_D1_TOKEN' || 'CLOUDFLARE_API_TOKEN (deploy)' }}"
+          code="$(curl -s -o /tmp/d1.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database?per_page=5")"
+          echo "::notice::Token usado: $src. Lista de bancos D1: HTTP $code, $(jq -c '{success, errors: [.errors[]?.code]}' /tmp/d1.json 2>/dev/null)"
       - name: Subir para o painel (esperando aprovação)
         if: steps.slots.outputs.list != ''
         working-directory: cloudflare
