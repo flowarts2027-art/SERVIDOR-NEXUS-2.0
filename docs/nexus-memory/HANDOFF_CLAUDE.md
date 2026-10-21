@@ -2,6 +2,14 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 21h30 BRT — PLANO DE CRESCIMENTO e standup automático do CEO
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Pedido do Rodrigo:** replanejar forma de postar, tipo de conteúdo e público no Instagram, no site e em tudo; e colocar o CEO para rodar sozinho.
+- **Feito:** `PLANO_CRESCIMENTO.md` (público único de comida local, oferta "exemplo grátis", função de cada horário, distribuição, site, metas de 4 semanas). `REGRA_POSTS_DIARIOS.md` passa a seguir o plano (09h útil, 12h antes e depois, 19h conversa) e pede 5 mensagens de Direct por dia para o Rodrigo. `empresa/metricas.md` atualizado.
+- **Standup automático:** tarefa agendada local "CEO da Flow Arts — standup diário", todo dia às 7h no computador do Rodrigo (roda com o app aberto). Salva em `empresa/standup/` na branch `empresa-standup`; nunca na `main`.
+- **Estado:** PR aguardando o OK do Rodrigo. Só documentação, sem deploy.
+- **Para o ChatGPT:** a partir do merge, leia o PLANO e o standup do dia antes de criar os posts.
+
 ## 2026-10-21 21h BRT — Auditoria do site flowarts.com.br e painel "Está dando resultado?"
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Números reais (D1, contador desde 14/10, lidos por fluxo temporário `ops/site-auditoria`, só totais):** 67 páginas vistas em 8 dias (3 a 16 por dia). Origem: 58 diretas (link sem origem, provavelmente o próprio Rodrigo e testes), 3 Google, 1 Instagram, 1 Facebook, 1 WhatsApp. Páginas: 58 na principal, 8 nas de nicho, 1 no /exemplo. **0 pedidos de exemplo grátis.** Cliques no WhatsApp **não eram medidos**.
