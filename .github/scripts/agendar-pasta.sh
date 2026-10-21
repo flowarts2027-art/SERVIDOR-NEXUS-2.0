@@ -36,11 +36,21 @@ image_named() {
   find "$1" -maxdepth 1 -type f -iregex ".*/$2\.\(jpg\|jpeg\|png\|webp\)" | sort | head -1
 }
 
+# Wrangler pode imprimir avisos como "[WARNING]" antes do JSON: procura o primeiro array que é JSON válido.
 q() {
   local raw
   raw="$(npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$1" 2>/tmp/wr.err || true)"
-  printf '%s' "$raw" | python3 -c 'import sys,json; t=sys.stdin.read(); i=t.find("["); print(json.dumps(json.loads(t[i:])) if i>=0 else "[]")' 2>/dev/null \
-    || { echo "::error::D1: $(tr '\n' ' ' </tmp/wr.err | cut -c1-400)" >&2; echo "[]"; }
+  printf '%s' "$raw" | python3 -c '
+import sys, json
+t = sys.stdin.read(); d = json.JSONDecoder(); i = t.find("[")
+while i >= 0:
+    try:
+        v, _ = d.raw_decode(t[i:])
+        if isinstance(v, list): print(json.dumps(v)); sys.exit(0)
+    except ValueError: pass
+    i = t.find("[", i + 1)
+sys.exit(1)' 2>/dev/null \
+    || { echo "::error::D1: $(printf '%s' "$raw" | tr '\n' ' ' | cut -c1-300) | $(tr '\n' ' ' </tmp/wr.err | cut -c1-300)" >&2; echo "[]"; }
 }
 
 session_ready=0
