@@ -59,6 +59,4 @@ jobs:
         if: steps.slots.outputs.list != ''
         working-directory: cloudflare
         shell: bash
-        env:
-          AGENDAR_DEBUG: "1"
         run: bash ../.github/scripts/agendar-pasta.sh ${{ steps.slots.outputs.list }}

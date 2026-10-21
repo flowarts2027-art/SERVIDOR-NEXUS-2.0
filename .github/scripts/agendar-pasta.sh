@@ -41,13 +41,15 @@ q() {
   local raw
   raw="$(npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$1" 2>/tmp/wr.err || true)"
   [ "${AGENDAR_DEBUG:-0}" = 1 ] && echo "::notice::wrangler: $(printf '%s' "$raw" | tr '\n' ' ' | cut -c1-400) | stderr: $(tr '\n' ' ' </tmp/wr.err | cut -c1-300)" >&2
+  # Só aceita a resposta de consulta do D1: lista de objetos com "results". Erro da API sai como falha.
   printf '%s' "$raw" | python3 -c '
 import sys, json
 t = sys.stdin.read(); d = json.JSONDecoder(); i = t.find("[")
 while i >= 0:
     try:
         v, _ = d.raw_decode(t[i:])
-        if isinstance(v, list): print(json.dumps(v)); sys.exit(0)
+        if isinstance(v, list) and v and isinstance(v[0], dict) and "results" in v[0]:
+            print(json.dumps(v)); sys.exit(0)
     except ValueError: pass
     i = t.find("[", i + 1)
 sys.exit(1)' 2>/dev/null \
