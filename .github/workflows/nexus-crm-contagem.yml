@@ -18,6 +18,17 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
     steps:
       - uses: actions/checkout@v4
+      # Rodrigo autorizou (21/10): arquivar os 14 parados há mais de 24 h na contagem das 22:24 UTC.
+      # Arquivar não apaga: archived=1 tira da lista e guarda o histórico. Corte fixo para não pegar outros.
+      - name: Arquivar os parados antes de 20/10 22:24 UTC
+        working-directory: cloudflare
+        shell: bash
+        run: |
+          set -uo pipefail
+          sql="UPDATE crm_contacts SET archived=1, updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE archived=0 AND updated_at < '2026-10-20T22:24:45.000Z'"
+          npx --yes wrangler@4 d1 execute servidor-nexus --remote --json --command "$sql" > /tmp/arq.txt 2>/tmp/arq-err.txt || true
+          changes="$(grep -o '"changes": *[0-9]*' /tmp/arq.txt | head -1 | grep -o '[0-9]*$')"
+          if [ -n "$changes" ]; then echo "::notice::Arquivados: $changes"; else echo "::error::Arquivar falhou: $(tr '\n' ' ' </tmp/arq-err.txt | cut -c1-300)"; exit 1; fi
       - name: Contar contatos ativos por etapa
         working-directory: cloudflare
         shell: bash
