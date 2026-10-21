@@ -5,8 +5,13 @@
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
 
 ## Rotina diária (terminar até 08h de Brasília)
-1. Leia esta regra e a entrada mais recente de `HANDOFF_CLAUDE.md`. Veja o que já existe em `agendamentos/` na branch `agendamentos`, para não repetir tema nem horário.
-2. Crie 3 posts para o dia: **09:00, 12:00 e 19:00**, seguindo o padrão abaixo.
+1. Leia esta regra, o `PLANO_CRESCIMENTO.md` (público, função de cada horário e metas), o standup do dia do CEO (`empresa/standup/AAAA-MM-DD.md` na branch `empresa-standup`, se existir) e a entrada mais recente de `HANDOFF_CLAUDE.md`. Veja o que já existe em `agendamentos/` na branch `agendamentos`, para não repetir tema nem horário.
+2. Crie 3 posts para o dia: **09:00, 12:00 e 19:00**, seguindo o padrão abaixo e a função de cada horário.
+   - **09h · ser salvo:** carrossel útil (passo a passo ou checklist). CTA: "Salve para usar depois".
+   - **12h · ser descoberto e enviado:** antes e depois de foto de comida (prova). CTA: "Mande para um dono de cafeteria".
+   - **19h · gerar conversa:** pergunta, enquete ou bastidor do exemplo grátis. CTA: "Responda nos comentários".
+   - Nos três, a oferta do fim é o **exemplo grátis**: comente QUERO.
+   - Escreva também as **5 mensagens de Direct do dia** para o Rodrigo revisar e enviar (elogio verdadeiro + oferta do exemplo grátis, sem preço). Entregue só a ele; não salve no repositório, que é público.
 3. Salve na branch **`agendamentos`** do repositório `flowarts2027-art/SERVIDOR-NEXUS-2.0`. Use uma pasta por post:
    - `agendamentos/AAAA-MM-DD/0900/`
    - `agendamentos/AAAA-MM-DD/1200/`
@@ -37,7 +42,7 @@ Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga
 
 ## Padrão do conteúdo
 - **Público dos próximos posts:** donos de negócios de comida local, como pizzarias, cafés, confeitarias, lanchonetes e restaurantes pequenos. Não pule de nicho a cada post.
-- **Mistura:** 70% dica útil que o dono aplica hoje, 20% prova (painel aprovando, QUERO → direct → guia, antes e depois) e 10% oferta. No máximo 1 em cada 10 posts fala "a Flow Arts faz por você".
+- **Mistura (pelo PLANO_CRESCIMENTO):** 1 post útil (09h), 1 prova com antes e depois (12h) e 1 conversa (19h) por dia. A oferta aparece só como "exemplo grátis" no fim; nunca um post inteiro dizendo "a Flow Arts faz por você".
 - **Gancho:** fala da dor do dono, não da Flow Arts. Exemplos: "Sua pizza é boa. A foto não." e "3 fotos que todo café deveria postar".
 - **Legenda:**
   - Linha 1: palavra-chave de busca + gancho. Exemplo: "Marketing para pizzaria: …".
