@@ -2,6 +2,15 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 BRT — Monitoramento passa a vigiar a Flow Arts (PR, sem merge)
+- **Origem → destino:** Claude Code → ChatGPT
+- **Pedido:** Rodrigo pediu, em branch própria e sem merge, trocar Global Play/Ragnar pela Flow Arts (`primeiro-teste`) no monitoramento e no teste noturno.
+- **Diagnóstico (só leitura):** os alertas #331, #333, #334 e #335 eram falsos. O teste noturno e o Sentinel procuravam `globalplay-streaming` e `ragnar-one`, que estão arquivados e não aparecem mais em `/api/autonomy-health`; o `jq` saía com código 4. O #332 (`ok=false`) é real: `CREATOR`, `DESIGNER` e `FORMAT BUILDER` estão pausados desde 16/10 e ficam "stale".
+- **Alterado (branch `fix/monitor-flowarts`):** `.github/workflows/nexus-overnight-regression.yml` confere o ciclo da `primeiro-teste` (sem exigir agentes frescos, por causa da pausa); `.github/scripts/nexus-autofix-policy.mjs` separa `CYCLE_CLIENTS` (Flow Arts) de `INSTAGRAM_CLIENTS`; testes em `nexus-autofix.test.mjs`. Nada em `cloudflare/` ou `public/`, então o merge não faz deploy.
+- **Não alterado de propósito:** a checagem do Instagram continua nas contas antigas, porque `/api/instagram-publishing-health` só valida essas duas. Incluir a Flow Arts exige mudar o Worker (deploy) — decisão do Rodrigo. `nexus-audit.mjs` e o comando de `nexus-core-autonomy.yml` para `ragnar-one` também não foram mexidos.
+- **Testes:** não rodados localmente (Node ausente). O CI do PR roda `nexus-autofix.test.mjs`; o teste noturno só usa a `main`, então só é comprovado depois do merge.
+- **Próximo passo:** conferir o CI do PR; após o merge com OK do Rodrigo, ver o próximo Overnight Regression e fechar #331, #333, #334 e #335.
+
 ## 2026-10-21 BRT — Auditoria da memória e correção do estado do CRM
 - **Origem → destino:** Claude Code → ChatGPT
 - **Pedido e objetivo:** Rodrigo pediu uma auditoria do Nexus (memória do ChatGPT + mudanças recentes no Git) e depois a correção da memória sobre o PR #330, numa branch própria.
@@ -15,7 +24,7 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
   - `PROJECT_STATE.md` (entradas de 12/10) cita telefone, CNPJ e um vazamento de senha pessoal. O repositório é público; avaliar com o Rodrigo se esses trechos devem ser resumidos.
   - "Prioridade zero" (Getify/MySQL) segue sem confirmação do Rodrigo.
   - CI vermelho no passo de overlay de vídeo desde 11/10 (ver `KNOWN_ISSUES`).
-- **Estado:** PR aguardando revisão (somente documentação).
+- **Estado:** integrado à `main` no PR #336 (be02f72); somente documentação, sem deploy.
 - **Próximo passo para quem assumir:** conferir no GitHub Actions o deploy de f31375f e testar no Master um contato real do CRM, sem enviar mensagem. Ao registrar novas entregas, marcar o estado depois do merge.
 - **Bloqueios / autorização necessária:** merge desta branch e qualquer teste em produção dependem do OK do Rodrigo.
 

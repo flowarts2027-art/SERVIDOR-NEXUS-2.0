@@ -2,7 +2,9 @@ const RECOVERABLE = new Set(["NEXUS CI","NEXUS Overnight Regression","Deploy NEX
 const BAD_CONCLUSIONS = new Set(["failure","timed_out"]);
 const SAFE_PATH = /^(?:cloudflare\/(?:src\/[a-z0-9-]+\.js|test\/[a-z0-9-]+\.test\.mjs)|public\/[a-z0-9-]+\.js|scripts\/test_[a-z0-9_-]+\.py)$/;
 const SENSITIVE_PATH = /(?:auth|credential|secret|publisher|payment|token|security|policy|emergency|master|instagram|meta|oauth|permission)/i;
-const SECURITY_TEXT = /(?:authorization|bearer|password|token|secret|api.?key|github|workflow|process\.env|eval\s*\(|new Function|child_process|execSync|spawnSync|fetch\s*\(|https?:\/\/|media_publish|publishingGate|approvalRequired|visualApproval|qualityGates|callbackToken|retryCount|CLIENT_SECRET|GH_TOKEN)/i;
+export const CYCLE_CLIENTS = Object.freeze(["primeiro-teste"]);
+export const INSTAGRAM_CLIENTS = Object.freeze(["globalplay-streaming","ragnar-one"]);
+const SECURITY_TEXT =/(?:authorization|bearer|password|token|secret|api.?key|github|workflow|process\.env|eval\s*\(|new Function|child_process|execSync|spawnSync|fetch\s*\(|https?:\/\/|media_publish|publishingGate|approvalRequired|visualApproval|qualityGates|callbackToken|retryCount|CLIENT_SECRET|GH_TOKEN)/i;
 
 export function recoverableRun(run, mainSha, now = Date.now()) {
   if (!run || run.head_sha !== mainSha || run.head_branch !== "main") return false;
@@ -18,12 +20,16 @@ export function healthIncidents(data = {}, instagram = {}) {
   if (data.ok !== true || data.scheduler?.healthy !== true || data.automationActive !== true) {
     issues.push({type:"worker_or_cron_unhealthy", component:"Cloudflare", details:"Worker or scheduler health not healthy"});
   }
-  const managed = ["globalplay-streaming","ragnar-one"];
-  for (const clientId of managed) {
+  // Flow Arts is the only active client; Global Play and Ragnar One are archived.
+  for (const clientId of CYCLE_CLIENTS) {
     const row = (data.clients || []).find(x => x.clientId === clientId);
     if (!row || row.cycleHealth?.cycleOverdue === true || row.cycleHealth?.status === "failed") {
       issues.push({type:"agent_cycle",clientId,details:"Managed client cycle missing, failed, or overdue"});
     }
+  }
+  // The public Instagram health endpoint still validates only these accounts.
+  // Checking Flow Arts there needs a Worker change, so it stays a separate step.
+  for (const clientId of INSTAGRAM_CLIENTS) {
     const conn = (instagram.clients || []).find(x => x.clientId === clientId);
     if (!conn || conn.connected !== true || conn.tokenValid !== true || conn.accountMatches !== true) {
       issues.push({type:"instagram_credentials",clientId,details:"Instagram connection needs human authorization or investigation"});

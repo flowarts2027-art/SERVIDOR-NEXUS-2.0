@@ -66,15 +66,17 @@ jobs:
           # The public health payload includes test clients. A delayed sandbox client
           # must not hide production regressions or make production checks fail.
           jq -e '.scheduler.healthy == true' /tmp/health.json >/dev/null
-          for client in globalplay-streaming ragnar-one; do
+          # Global Play and Ragnar One are archived; Flow Arts is the only active client.
+          # Agent freshness is not required here: modules paused by the owner in the
+          # Master go stale on purpose and are already reported by the health "ok" flag.
+          for client in primeiro-teste; do
             jq -e --arg client "$client" '
-              .clients[]
-              | select(.clientId == $client)
-              | .status == "online"
-                and .allAgentsSeen == true
-                and .allAgentsFresh == true
-                and .cycleHealth.status == "success"
-                and .cycleHealth.cycleOverdue == false
+              [.clients[] | select(.clientId == $client)]
+              | length == 1
+                and .[0].status == "online"
+                and .[0].allAgentsSeen == true
+                and .[0].cycleHealth.status == "success"
+                and .[0].cycleHealth.cycleOverdue == false
             ' /tmp/health.json >/dev/null
           done
       - name: Verify managed Instagram account readiness
