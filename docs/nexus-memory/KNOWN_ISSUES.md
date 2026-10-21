@@ -1,5 +1,9 @@
 # Problemas conhecidos
 
+## 2026-10-21 — Alertas falsos do monitoramento (correção em PR, branch fix/monitor-flowarts)
+- Overnight Regression falha desde 20/10 e o Sentinel abre "agent_cycle" para Global Play e Ragnar (#331, #333, #334, #335): ambos procuram clientes arquivados que não aparecem mais em `/api/autonomy-health`. O PR passa a vigiar a `primeiro-teste`.
+- Ainda aberto: `/api/autonomy-health` tem `ok=false` enquanto Creator, Designer e Format Builder estiverem pausados (agentes "stale"), o que gera #332 todo dia. `/api/instagram-publishing-health` só valida as contas arquivadas; incluir a Flow Arts exige mudança no Worker.
+
 ## 2026-10-18 — Reels da Flow Arts barrados no fiscal visual (corrigido em PR)
 - Reel animado/pronto ficava em "Aprovado · será publicado" sem sair (quality_gate_pending por visualReview incompleto). Correção no PR de 18/10 ~17h30; confirmar em produção depois do deploy (status published e link no Instagram).
 

@@ -16,13 +16,10 @@ test("only an old failure on the current main is auto retried once",()=>{
     {event:"workflow_dispatch"},{updated_at:"2026-10-08T02:59:00Z"}
   ]) assert.equal(recoverableRun({...sample,...change},"abc",now),false,JSON.stringify(change));
 });
-test("health distinguishes two clients and fails closed on missing production signals",()=>{
+test("health watches the active Flow Arts cycle and fails closed on missing production signals",()=>{
   const ok={
     ok:true,automationActive:true,scheduler:{healthy:true},
-    clients:[
-      {clientId:"globalplay-streaming",cycleHealth:{status:"success",cycleOverdue:false}},
-      {clientId:"ragnar-one",cycleHealth:{status:"success",cycleOverdue:false}}
-    ]
+    clients:[{clientId:"primeiro-teste",cycleHealth:{status:"success",cycleOverdue:false}}]
   };
   const instagram={
     clients:["globalplay-streaming","ragnar-one"].map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))
@@ -30,7 +27,16 @@ test("health distinguishes two clients and fails closed on missing production si
   assert.deepEqual(healthIncidents(ok,instagram),[]);
   assert.deepEqual(healthIncidents(ok,{clients:instagram.clients.slice(0,1)}).map(x=>x.type),["instagram_credentials"]);
   assert.ok(healthIncidents({...ok,scheduler:{healthy:false}},instagram).some(x=>x.type==="worker_or_cron_unhealthy"));
-  assert.ok(healthIncidents({...ok,clients:ok.clients.slice(0,1)},instagram).some(x=>x.type==="agent_cycle"));
+  assert.deepEqual(healthIncidents({...ok,clients:[]},instagram).map(x=>[x.type,x.clientId]),[["agent_cycle","primeiro-teste"]]);
+  for (const cycleHealth of [{status:"failed",cycleOverdue:false},{status:"success",cycleOverdue:true}]) {
+    assert.ok(healthIncidents({...ok,clients:[{clientId:"primeiro-teste",cycleHealth}]},instagram).some(x=>x.type==="agent_cycle"));
+  }
+});
+test("archived clients no longer raise cycle alerts",()=>{
+  const data={ok:true,automationActive:true,scheduler:{healthy:true},
+    clients:[{clientId:"primeiro-teste",cycleHealth:{status:"success",cycleOverdue:false}}]};
+  const instagram={clients:["globalplay-streaming","ragnar-one"].map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))};
+  assert.equal(healthIncidents(data,instagram).filter(x=>x.type==="agent_cycle").length,0);
 });
 test("patch safety rejects privileged areas, changes to provider access and ambiguity",()=>{
   const path="cloudflare/test/sample.test.mjs";
