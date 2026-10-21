@@ -27,6 +27,7 @@ import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
+import { canonicalSiteRedirect } from "./site-host.js";
 import { handleCrmSendRoute } from "./crm-send.js";
 import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
 import { handleViralRadarRoute, handleFacebookCallback, runViralRadar } from "./viral-radar.js";
@@ -593,6 +594,8 @@ export default {
 
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    const siteRedirect = canonicalSiteRedirect(url, request.method);
+    if (siteRedirect) return Response.redirect(siteRedirect, 301);
 
     if (url.pathname === "/" && request.method === "GET") {
       // flowarts.com.br (e www) abre o site da Flow Arts; o painel fica em painel.flowarts.com.br.

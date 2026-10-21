@@ -226,7 +226,9 @@ def pagina(n):
 <meta property="og:url" content="{url}">
 <meta property="og:title" content="{e(n['titulo'])}">
 <meta property="og:description" content="{e(n['descricao'])}">
-<meta property="og:image" content="{SITE}/brand/flowarts-logo.webp">
+<meta property="og:image" content="{SITE}/brand/flowarts-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/brand/flowarts-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
