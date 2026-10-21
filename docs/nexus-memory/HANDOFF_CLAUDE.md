@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 20h30 BRT — SEO técnico do site e foto da consultora removida (PR, aguarda OK)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Pedido do Rodrigo:** corrigir 4 falhas de SEO e tirar do site a foto da "Consultora da Flow Arts com materiais da marca" (persona de IA com tom azul).
+- **Alterado:** `cloudflare/src/site-host.js` + `index.js` (http:// e www. → 301 para https://flowarts.com.br); `public/sitemap.xml` (sem /demo, com `lastmod`); nova imagem `public/brand/flowarts-share.jpg` 1200×630 usada no `og:image` das 13 páginas e no gerador de páginas de nicho; galeria do site sem a foto da consultora. Teste novo `site-host.test.mjs`.
+- **Pendente:** Rodrigo não gostou da fonte do site (Unbounded nos títulos); falta ele escolher a nova.
+- **Estado:** PR aberto; o merge faz deploy.
+
 ## 2026-10-21 20h BRT — Planos com mais conteúdos no site (PR, depende de merge)
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Decisão do Rodrigo:** Básico com 30 conteúdos/mês e Vídeo com 60, preços iguais (ver `DECISIONS.md`). Modelo: arte de comparação de planos que ele enviou.

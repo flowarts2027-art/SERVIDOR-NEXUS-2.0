@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://flowarts.com.br/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://flowarts.com.br/exemplo</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-cafeteria</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-salao-de-beleza</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-lanchonete</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-barbearia</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-pet-shop</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-restaurante</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-academia</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-loja-de-roupas</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-padaria</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-confeitaria</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-oficina-mecanica</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/marketing-para-floricultura</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://flowarts.com.br/demo</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://flowarts.com.br/privacidade</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
-  <url><loc>https://flowarts.com.br/termos</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://flowarts.com.br/</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://flowarts.com.br/exemplo</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-cafeteria</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-salao-de-beleza</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-lanchonete</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-barbearia</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-pet-shop</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-restaurante</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-academia</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-loja-de-roupas</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-padaria</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-confeitaria</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-oficina-mecanica</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/marketing-para-floricultura</loc><lastmod>2026-10-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://flowarts.com.br/privacidade</loc><lastmod>2026-10-21</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://flowarts.com.br/termos</loc><lastmod>2026-10-21</lastmod><changefreq>yearly</changefreq><priority>0.2</priority></url>
 </urlset>
