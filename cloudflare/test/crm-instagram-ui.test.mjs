@@ -149,3 +149,11 @@ test('unrecognized persisted channel safely defaults to Instagram', async () => 
   assert.match(nodes.get('#crm-list').innerHTML, /ig\.me\/m\/empresa.teste/);
   assert.doesNotMatch(nodes.get('#crm-list').innerHTML, /wa\.me|data-send=/);
 });
+
+test('CRM mostra arte única como arte, com botão manual de baixar o modelo do nicho', async () => {
+  const {nodes, requests} = await render({...base, instagram:'empresa.teste', niche:'padaria', messageWithMedia:'Vou te mandar uma arte.', example:{kind:'image',files:['https://flowarts.com.br/exemplos-nicho/padaria/arte-2x2.jpg']}});
+  const html = nodes.get('#crm-list').innerHTML;
+  assert.match(html, /Baixar modelo de padaria \(arte\)/i);
+  assert.match(html, /data-share-example="test"/);
+  assert.ok(requests.every(r=>!r.options.method || r.options.method==='GET'), 'render não envia mensagem');
+});

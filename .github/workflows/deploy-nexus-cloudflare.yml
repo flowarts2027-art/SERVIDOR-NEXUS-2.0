@@ -74,6 +74,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
         run: npm run deploy
 
+      - name: Verify 21 niche images and public showcase pages
+        if: contains(github.event.head_commit.message, '[verify-2x2]')
+        run: python3 scripts/verify-showcase-2x2.py
+
       - name: Verify new Windows helper ZIP is served by Cloudflare
         shell: bash
         run: |

@@ -1,5 +1,26 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 18:24 BRT — FLOW-ARTES-001: integração das 21 artes ao painel
+- Pedido do Rodrigo: “Então ajuste isso”, depois de esclarecer que só enviar arquivos ao PR não os colocava no painel. Autorizada a integração efetiva; sem publicação de post no Instagram.
+- Corrigido: tipo `image` no Master (prévia/contador/upload único), CRM (arte/JPEG único), página de exemplo (imagem 4:5) e mensagens. Catálogo21 e migração versionada substituem os modelos antigos imediatamente na leitura; gravação/cron persiste a versão. Uploads e remoções posteriores à versão são preservados no fluxo sequencial. Falha de leitura não dispara seed destrutivo.
+- Arquivos: `bundled-example-catalog.js`, `bundled-examples.js`, `showcase-store.js`, `showcase.js`, `crm.js`, `daily-prospects.js`, UI Master/CRM, testes e verificador público. PR #367 passa a incluir integração, não só mídia.
+- Testes: suíte Worker completa **561/561**; UI Master/CRM **13/13**. Harness adicional baixou as 21 artes pelo CRM com nomes por nicho/empresa e bytes iguais aos JPEG. Teste HTTP com handlers reais e DB legado controlado: Master21 imagens, páginas21 e SHA-256 dos JPEG; JPEG corrompido foi rejeitado pelo verificador. GET não escreve DB.
+- Auditoria: nenhum bloqueio funcional; marcador não vaza na contagem; nenhum post, DM ou envio Instagram criado. Limite: mapa inteiro ainda não tem atualização transacional concorrente (herdado).
+- Estado neste registro: implementação testada, envio/deploy em andamento. Etapa `[verify-2x2]` confere as 21 páginas públicas e bytes após deploy. Sessão autenticada do Master em produção e navegador real não inspecionados; não confundir harness local com produção.
+- Próximo passo: concluir deploy e registrar execução e resultado da verificação real.
+
+## 2026-10-22 18:14 BRT — FLOW-ARTES-001: 21 artes 2×2 enviadas em PR
+- Origem → destino: ChatGPT → Claude Code.
+- Pedido: executar a cobrança do topo de HANDOFF_CLAUDE, completando o envio das artes por nicho.
+- Entrega: 21 JPEG RGB, 1080×1350, em `public/exemplos-nicho/<chave>/arte-2x2.jpg`; branch `feat/artes-nicho-2x2`, [PR #367](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/pull/367). Nenhum nicho pendente de arquivo. Inventário e SHA-256 em `ARTES_2X2_MANIFEST.json`.
+- Nichos: restaurante, cafeteria, lanchonete, padaria, bar, salao, academia, pet, racao, agropecuaria, veterinario, dentista, clinica, farmacia, mercado, roupas, oficina, hotel, imobiliaria, contabilidade, material.
+- Produção visual: recuperadas 15 artes existentes; geradas seis ausentes (cafeteria, restaurante, academia, agropecuária, veterinário e mercado) pela ferramenta de imagem do ChatGPT, sem chamar a API paga do Nexus. Clínica, contabilidade e ração tiveram títulos ajustados para preto/sans-serif. A imagem anterior chamada mercado retratava sementes; foi substituída por mercado de alimentos.
+- Modelo visual: quatro cenas na ordem dono pensativo → dono no celular → feed do nicho → atendimento; cabeçalho “Seu Instagram pode trabalhar por você.” e assinatura FLOW ARTS no rodapé. Fotografias ilustrativas geradas por IA, não depoimentos nem resultados reais de clientes.
+- Evidência: decodificação dos 21 JPEG e dimensões verificadas com Pillow; arquivos enviados como blobs Git com SHA conferido. CI do primeiro envio passou (execução 39854578913); verificar o resultado do commit final no PR.
+- Limitação visual: a série segue a mesma composição, mas as artes recuperadas têm pequenas variações de altura das faixas e tamanho do wordmark; não afirmar identidade geométrica pixel a pixel. Revisão do Rodrigo permanece necessária.
+- Estado: entrega de arquivos em PR aguardando revisão; sem merge, deploy ou publicação no Instagram. A vitrine em produção não foi alterada nem validada nesta tarefa.
+- Próximo passo exato (Claude): ler o PR, revisar as 21 imagens com Rodrigo, apontar a vitrine para `arte-2x2.jpg` dos 21 nichos, testar e só publicar com o OK dele.
+
 ## 2026-10-22 — Retomada urgente: conexão Instagram de clientes
 - Proprietário pediu diagnóstico e correção e, por bateria baixa na chamada, registro para retomar depois.
 - Relato: Master → assumir painel de cliente → conectar Instagram → preencher usuário/senha → erro “usuário não encontrado”. Há relato de dois clientes afetados. Não confundir o cliente afetado com a própria Flow Arts. Identidades e credenciais omitidas neste repositório público.

@@ -202,6 +202,7 @@ function view(row, today, showcase = null, now = new Date()) {
 // o painel manda o carrossel ou o vídeo de verdade no WhatsApp, e o texto vai sem o link.
 export function exampleMedia(entry) {
   const ok = u => /^https:\/\//i.test(String(u || ""));
+  if (entry?.kind === "image" && ok(entry.imageUrl)) return { kind: "image", files: [entry.imageUrl] };
   if (entry?.kind === "carousel" && Array.isArray(entry.images)) {
     const files = entry.images.filter(ok).slice(0, 10);
     if (files.length) return { kind: "carousel", files };
@@ -211,9 +212,9 @@ export function exampleMedia(entry) {
 }
 
 export function mediaMessage(message, kind) {
-  const what = kind === "carousel" ? "um carrossel" : "um vídeo";
+  const what = kind === "image" ? "uma arte" : kind === "carousel" ? "um carrossel" : "um vídeo";
   const text = String(message || "");
-  const replaced = text.replace(/Veja (um carrossel|um vídeo) que fizemos para ([^:\n]+):\s*https?:\/\/\S+/i,
+  const replaced = text.replace(/Veja (uma arte|um carrossel|um vídeo) que fizemos para ([^:\n]+):\s*https?:\/\/\S+/i,
     (_, item, who) => `Vou te mandar aqui embaixo ${item} que fizemos para ${who}.`);
   if (replaced !== text) return replaced;
   const clean = text.replace(/\s*https?:\/\/flowarts\.com\.br\/exemplo\/\S+/gi, "").trim();

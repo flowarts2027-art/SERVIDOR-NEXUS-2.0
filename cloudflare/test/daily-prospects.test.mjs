@@ -47,7 +47,7 @@ test("19/10: separa 10 por dia, só nos nichos com exemplo (repete nicho se prec
   const map = fakeFetcher(calls);
   const first = await runDailyProspects(env, NINE_BRT, map);
   assert.equal(first.picked, 3);
-  const withExample = ["bar", "cafeteria", "clinica", "dentista", "farmacia", "hotel", "mercado", "oficina", "pet", "restaurante"]; // bar e dentista vêm junto com o site (19/10)
+  const withExample = FOCUS_NICHES; // os 21 nichos têm arte; a prospecção mantém foco em comida
   assert.equal(new Set(first.added.map(a => a.niche)).size, 3, "um de cada nicho com exemplo");
   assert.ok(first.added.every(a => withExample.includes(a.niche)));
   let out = first, t = NINE_BRT.getTime();
@@ -97,7 +97,7 @@ test("no dia seguinte vai para os próximos nichos e não repete empresa; 'já f
   const day2 = await runDailyProspects(env, new Date(NINE_BRT.getTime() + 86400e3), map);
   const n1 = day1.added.map(a => a.niche), n2 = day2.added.map(a => a.niche);
   // 19/10: só nichos com exemplo (bar e dentista vêm junto com o site), então o nicho pode repetir; a empresa não.
-  assert.ok([...n1, ...n2].every(n => ["bar", "clinica", "dentista", "farmacia", "mercado", "oficina", "hotel"].includes(n)));
+  assert.ok([...n1, ...n2].every(n => FOCUS_NICHES.includes(n)));
   const list = await listContacts(env, {}, new Date(NINE_BRT.getTime() + 86400e3));
   assert.equal(new Set(list.contacts.map(c => c.phone)).size, 6);
   const after = await markContacted(env, list.due[0].id, { followDays: 7 }, NINE_BRT);
@@ -143,16 +143,35 @@ test("empresa com horário no mapa e fechada agora: fica para quando abrir, sem 
   assert.equal(st.nextOpenTime, "18:00");
 });
 
-test("19/10: exemplos do bar e do dentista entram sozinhos, sem trocar o que ele subiu pelo Master", async () => {
+test("22/10: migra os 21 nichos uma vez e preserva upload e remoção posteriores", async () => {
   const { seedBundledExamples } = await import("../src/bundled-examples.js");
-  const { readShowcase } = await import("../src/showcase-store.js");
+  const { BUNDLED_NICHES } = await import("../src/bundled-example-catalog.js");
+  const { readShowcase, writeShowcase } = await import("../src/showcase-store.js");
   const { db, env } = fakeEnv();
-  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ bar: { kind: "video", videoUrl: "https://x/meu-bar.mp4" } }));
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ bar: { kind: "video", videoUrl: "https://x/meu-bar.mp4" }, dentista: { kind: "carousel", images: ["https://x/old.jpg"] } }));
   const out = await seedBundledExamples(env);
-  assert.deepEqual(out.added, ["dentista", "clinica", "farmacia", "mercado", "oficina", "hotel"]);
+  assert.deepEqual(out.added, BUNDLED_NICHES);
   const map = await readShowcase(env);
-  assert.equal(map.bar.videoUrl, "https://x/meu-bar.mp4");
-  assert.equal(map.dentista.images.length, 5);
-  assert.match(map.dentista.images[0], /^https:\/\/flowarts\.com\.br\/exemplos-nicho\/dentista\/cartao-1\.jpg$/);
+  assert.equal(Object.keys(map).length, 21);
+  for (const niche of BUNDLED_NICHES) {
+    assert.equal(map[niche].kind, "image");
+    assert.equal(map[niche].imageUrl, `https://flowarts.com.br/exemplos-nicho/${niche}/arte-2x2.jpg`);
+    assert.equal(map[niche].videoUrl, "");
+    assert.deepEqual(map[niche].images, []);
+  }
+  map.bar = { kind: "image", imageUrl: "https://x/custom.jpg" };
+  delete map.pet;
+  await writeShowcase(env, map);
   assert.deepEqual((await seedBundledExamples(env)).added, [], "segunda vez não mexe");
+  const after = await readShowcase(env);
+  assert.equal(after.bar.imageUrl, "https://x/custom.jpg");
+  assert.equal(after.pet, undefined, "remoção manual posterior não ressuscita");
+});
+
+test("falha de leitura da vitrine não sobrescreve o mapa guardado", async () => {
+  const { seedBundledExamples } = await import("../src/bundled-examples.js");
+  let writes = 0;
+  const env = { DB: { prepare() { return { bind() { return { first: async () => { throw new Error("database unavailable"); }, run: async () => { writes++; } }; } }; } } };
+  await assert.rejects(seedBundledExamples(env), /showcase_read_failed/);
+  assert.equal(writes, 0);
 });

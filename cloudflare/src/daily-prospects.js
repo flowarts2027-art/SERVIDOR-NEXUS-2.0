@@ -56,7 +56,7 @@ export const FOCUS_NICHES = ["cafeteria", "padaria", "lanchonete", "restaurante"
 export function nicheOrder(showcase, cursor, focus = FOCUS_NICHES) {
   const focused = Object.keys(NICHES).filter(k => !focus?.length || focus.includes(k));
   const keys = focused.length ? focused : Object.keys(NICHES);
-  const has = k => Boolean(showcase?.[k]?.videoUrl || (showcase?.[k]?.kind === "carousel" && showcase[k].images?.length));
+  const has = k => Boolean((showcase?.[k]?.kind === "image" && showcase[k].imageUrl) || showcase?.[k]?.videoUrl || (showcase?.[k]?.kind === "carousel" && showcase[k].images?.length));
   const withExample = keys.filter(has);
   const pool = withExample.length ? withExample : keys;
   const start = Number(cursor || 0) % pool.length;

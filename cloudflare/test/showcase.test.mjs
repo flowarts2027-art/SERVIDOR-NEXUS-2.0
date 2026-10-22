@@ -36,10 +36,10 @@ test("Master escolhe o Reel da vitrine; a página pública mostra o vídeo com c
   assert.match(html, /og:image" content="https:\/\/n\/media\/pet\.jpg"/);
   assert.match(html, /wa\.me\/5521964816185/);
   const none = await handleShowcasePage(new Request("https://flowarts.com.br/exemplo/padaria"), env, new URL("https://flowarts.com.br/exemplo/padaria"));
-  assert.equal(none.status, 404);
+  assert.equal(none.status, 200, "padaria já tem a arte 2x2 do pacote");
   assert.equal((await (await master(env, "POST", { niche: "pet", postId: "nao-existe" })).json()).ok, false);
   await master(env, "POST", { niche: "pet", postId: "" });
-  assert.deepEqual((await (await master(env, "GET")).json()).map, {});
+  assert.equal((await (await master(env, "GET")).json()).map.pet, undefined);
 });
 
 test("mensagem do Captador ganha o link só para a Flow Arts e só no nicho com vitrine", async () => {
@@ -120,4 +120,47 @@ test("tirar do painel o Reel usado como exemplo (só se ainda não foi publicado
   await removeFromPanel(env, "reel-rest");
   assert.equal(db.prepare("SELECT status FROM post_ledger WHERE id='reel-rest'").get().status, "cancelled");
   await assert.rejects(removeFromPanel(env, "reel-pet"), /not_in_panel/, "publicado não mexe");
+});
+
+
+test("21 artes aparecem no Master e em páginas públicas imediatamente, sem cron nem post", async () => {
+  const { db, env } = setup();
+  const { BUNDLED_NICHES } = await import("../src/bundled-example-catalog.js");
+  const { handleShowcasePage } = await import("../src/showcase.js");
+  const before = db.prepare("SELECT COUNT(*) AS n FROM post_ledger").get().n;
+  const stateBefore = db.prepare("SELECT COUNT(*) AS n FROM nexus_state").get().n;
+  const out = await (await master(env, "GET")).json();
+  assert.equal(Object.keys(out.map).length, 21);
+  for (const niche of BUNDLED_NICHES) {
+    assert.equal(out.map[niche].kind, "image");
+    const url = new URL(`https://flowarts.com.br/exemplo/${niche}`);
+    const page = await handleShowcasePage(new Request(url), env, url);
+    assert.equal(page.status, 200, niche);
+    const html = await page.text();
+    assert.match(html, new RegExp(`exemplos-nicho/${niche}/arte-2x2\\.jpg`));
+    assert.match(html, /Uma arte que a Flow Arts/);
+    assert.equal((html.match(/<img /g) || []).length, 1);
+    assert.doesNotMatch(html, /<video |Arraste para o lado/);
+  }
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM post_ledger").get().n, before);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM nexus_state").get().n, stateBefore, "GET não escreve no banco");
+});
+
+test("upload de arte única no Master fica no exemplo do nicho, sem criar post", async () => {
+  const { db, env } = setup();
+  const { store, MEDIA } = fakeMedia();
+  Object.assign(env, { MEDIA, PUBLIC_BASE_URL: "https://flowarts.com.br" });
+  const before = db.prepare("SELECT COUNT(*) AS n FROM post_ledger").get().n;
+  const { uploadExample } = await import("../src/showcase.js");
+  const { readShowcase } = await import("../src/showcase-store.js");
+  const form = new FormData();
+  form.set("niche", "cafeteria"); form.set("kind", "image"); form.set("image", jpeg("arte.jpg"));
+  const out = await uploadExample(env, form);
+  assert.equal(out.entry.kind, "image");
+  assert.equal(store.size, 1);
+  assert.equal((await readShowcase(env)).cafeteria.imageUrl, out.entry.imageUrl);
+  assert.equal((await readShowcase(env)).padaria.kind, "image");
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM post_ledger").get().n, before);
+  form.delete("image");
+  await assert.rejects(uploadExample(env, form), /image_required/);
 });
