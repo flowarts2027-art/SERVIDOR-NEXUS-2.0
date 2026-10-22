@@ -41,3 +41,13 @@ test("painel do cliente só libera Aprovar depois da revisão automática de tex
   assert.match(js, /Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\) && reviewed/);
   assert.match(js, /Em revisão automática/);
 });
+
+test("cliente com falha no Instagram vê orientação segura e conta cadastrada", () => {
+  assert.match(js, /Conta cadastrada: @\$\{escapeHtml\(expectedUsername\)\}/);
+  assert.match(js, /Não consegue entrar no Instagram\?/);
+  assert.match(js, /Usuário não encontrado/);
+  assert.match(js, /instagram\.com\/accounts\/login\//);
+  assert.match(js, /testador ou acesso aprovado/);
+  assert.match(js, /Não envie senhas ao suporte/);
+  assert.match(js, /oauth"\) === "account_mismatch"/);
+});
