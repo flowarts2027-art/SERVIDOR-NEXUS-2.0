@@ -48,7 +48,7 @@ ${video ? `<meta property="og:video" content="${esc(video)}"><meta property="og:
   .carrossel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; border-radius: 20px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .carrossel::-webkit-scrollbar { display: none; }
   .carrossel img { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; scroll-snap-align: center; border-radius: 20px; box-shadow: 0 16px 40px rgba(12,12,16,.18); }
-  .arte { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: contain; border-radius: 20px; }
+  .arte { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: contain; border-radius: 20px; }
   .dica { text-align: center; font-size: 14px; color: #6b7080; margin: 10px 0 0; }
 </style>
 </head>
