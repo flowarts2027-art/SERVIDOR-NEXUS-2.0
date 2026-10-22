@@ -39,6 +39,7 @@ This project has a knowledge graph at graphify-out/ with god nodes, community st
 Rules:
 - When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - **Sem o comando `graphify` (sessão na nuvem, 22/10/2026):** não instale nada. Leia primeiro `graphify-out/GRAPH_REPORT.md` (só as partes que importam) e procure em `graphify-out/graph.json` com Grep pelo nome da função ou do arquivo (`"label"`, `"source_file"`, `"source_location"`) para achar o arquivo e a linha. Depois abra só esse trecho do código. O mapa pode estar atrasado em relação à `main` (veja "Built from commit" no relatório): confirme no código antes de mudar.
+- O mapa se atualiza sozinho no GitHub a cada push na `main` (`.github/workflows/nexus-graphify.yml`); ninguém precisa rodar nada no PC.
 - O automático do Claude Code (hook) fica só no PC do Rodrigo, em `.claude/settings.local.json`; não suba esse arquivo.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.

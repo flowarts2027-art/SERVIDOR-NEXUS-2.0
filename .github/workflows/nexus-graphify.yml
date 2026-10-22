@@ -1,0 +1,59 @@
+name: NEXUS Atualizar mapa do Graphify
+
+# Pedido do Rodrigo (22/10/2026): o mapa do código (graphify-out/) se atualiza sozinho,
+# sem ele abrir o Claude Code no PC. A cada mudança na main, o GitHub roda
+# "graphify update ." (só lê o código, sem IA e sem custo) e salva o mapa novo.
+# Só GRAPH_REPORT.md e graph.json vão para o repositório. Não mexe no site nem no painel.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "graphify-out/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nexus-graphify
+  cancel-in-progress: true
+
+jobs:
+  mapa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar o Graphify
+        run: pip install --quiet graphifyy
+
+      - name: Atualizar o mapa
+        run: |
+          graphify --version || true
+          graphify update .
+          ls -la graphify-out | head -20
+
+      - name: Salvar o mapa (só se mudou)
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -f graphify-out/GRAPH_REPORT.md graphify-out/graph.json
+          if git diff --cached --quiet; then
+            echo "::notice::Mapa já estava atualizado."
+            exit 0
+          fi
+          git config user.name "nexus-graphify[bot]"
+          git config user.email "nexus-graphify@users.noreply.github.com"
+          git commit -m "chore(graphify): atualizar mapa do código [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase -q origin main && git push -q origin HEAD:main && { echo "::notice::Mapa atualizado."; exit 0; }
+            sleep 5
+          done
+          echo "::error::Não deu para salvar o mapa (a main mudou ao mesmo tempo)."; exit 1
