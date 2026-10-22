@@ -1,22 +1,13 @@
-// 19/10 (Rodrigo): "não vou salvar, você que vai subir". Exemplos montados no chat vão junto
-// com o site (public/exemplos-nicho/<nicho>/cartao-N.jpg) e entram sozinhos na vitrine.
-// Só preenche nicho SEM exemplo: o que ele subir pelo Master nunca é trocado.
-import { readShowcase, writeShowcase } from "./showcase-store.js";
-
-export const BUNDLED_ORIGIN = "https://flowarts.com.br";
-export const BUNDLED_EXAMPLES = { bar: 5, dentista: 5, clinica: 5, farmacia: 5, mercado: 5, oficina: 5, hotel: 5 };
-
-const hasExample = e => Boolean(e?.videoUrl || (e?.kind === "carousel" && Array.isArray(e?.images) && e.images.length));
-
-export async function seedBundledExamples(env, now = new Date()) {
-  const map = await readShowcase(env);
-  const added = [];
-  for (const [niche, count] of Object.entries(BUNDLED_EXAMPLES)) {
-    if (hasExample(map[niche])) continue;
-    const images = Array.from({ length: count }, (_, i) => `${BUNDLED_ORIGIN}/exemplos-nicho/${niche}/cartao-${i + 1}.jpg`);
-    map[niche] = { kind: "carousel", images, imageUrl: images[0], videoUrl: "", savedAt: now.toISOString(), source: "bundled" };
-    added.push(niche);
-  }
-  if (added.length) await writeShowcase(env, map);
-  return { ok: true, added };
+// Migração única dos 21 nichos: substitui vídeos/carrosséis antigos por artes 2×2.
+// Depois de gravar a versão, uploads e remoções manuais posteriores são preservados.
+import { readShowcase, readShowcaseState, writeShowcase } from "./showcase-store.js";
+import { BUNDLED_NICHES, BUNDLED_VERSION } from "./bundled-example-catalog.js";
+export { BUNDLED_ORIGIN } from "./bundled-example-catalog.js";
+export const BUNDLED_EXAMPLES = Object.fromEntries(BUNDLED_NICHES.map(niche => [niche, 1]));
+export async function seedBundledExamples(env) {
+  const { version, readFailed } = await readShowcaseState(env);
+  if (readFailed) throw new Error("showcase_read_failed");
+  if (version === BUNDLED_VERSION) return { ok: true, added: [] };
+  await writeShowcase(env, await readShowcase(env));
+  return { ok: true, added: [...BUNDLED_NICHES] };
 }

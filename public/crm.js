@@ -62,7 +62,7 @@
       : `<span class="muted">${state.channel === "whatsapp" ? "WhatsApp não cadastrado ou inválido. Confira o número em Detalhes." : "Instagram não cadastrado. Adicione o perfil em Detalhes."}</span>`)
       + (withMedia(c) ? `<button type="button" class="ghost" data-share-example="${esc(c.id)}">Baixar modelo de ${esc(NICHE_NAME[c.niche] || "negócio local")} (${esc(exampleWord(c))})</button>` : "");
   }
-  const exampleWord = c => c.example?.kind === "carousel" ? "carrossel" : "vídeo";
+  const exampleWord = c => c.example?.kind === "image" ? "arte" : c.example?.kind === "carousel" ? "carrossel" : "vídeo";
 
   function prettyPhone(p) {
     const d = String(p || "").replace(/^55/, "");

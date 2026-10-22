@@ -15,10 +15,11 @@ export function showcasePage(niche, entry, whatsapp) {
   const label = CAPTADOR_NICHES[niche]?.label || "pequenos negócios";
   const images = (Array.isArray(entry?.images) ? entry.images : []).map(https).filter(Boolean).slice(0, 10);
   const isCarousel = entry?.kind === "carousel" && images.length > 0;
-  const what = isCarousel ? "carrossel" : "Reel";
+  const isImage = entry?.kind === "image" && Boolean(https(entry?.imageUrl));
+  const what = isImage ? "arte" : isCarousel ? "carrossel" : "Reel";
   const title = `Exemplo de ${what} para ${label.toLowerCase()} · Flow Arts`;
-  const description = "Vídeo feito pela Flow Arts. Conteúdo com a cara do negócio, e você aprova tudo antes de publicar.";
-  const video = isCarousel ? "" : https(entry?.videoUrl);
+  const description = "Conteúdo com a cara do negócio, feito pela Flow Arts. Você aprova tudo antes de publicar.";
+  const video = isCarousel || isImage ? "" : https(entry?.videoUrl);
   const poster = https(entry?.imageUrl) || images[0] || "";
   return `<!doctype html>
 <html lang="pt-BR">
@@ -47,14 +48,15 @@ ${video ? `<meta property="og:video" content="${esc(video)}"><meta property="og:
   .carrossel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; border-radius: 20px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
   .carrossel::-webkit-scrollbar { display: none; }
   .carrossel img { flex: 0 0 100%; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; scroll-snap-align: center; border-radius: 20px; box-shadow: 0 16px 40px rgba(12,12,16,.18); }
+  .arte { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: contain; border-radius: 20px; }
   .dica { text-align: center; font-size: 14px; color: #6b7080; margin: 10px 0 0; }
 </style>
 </head>
 <body>
 <main>
   <div class="marca">FLOW ARTS</div>
-  <h1>Um ${what} que a Flow Arts fez para ${esc(label.toLowerCase())}</h1>
-  ${isCarousel
+  <h1>${isImage ? "Uma" : "Um"} ${what} que a Flow Arts fez para ${esc(label.toLowerCase())}</h1>
+  ${isImage ? `<img class="arte" src="${esc(poster)}" alt="Arte de exemplo para ${esc(label.toLowerCase())}" width="1080" height="1350">` : isCarousel
     ? `<div class="carrossel">${images.map((src, i) => `<img src="${esc(src)}" alt="Cartão ${i + 1} de ${images.length}" loading="${i ? "lazy" : "eager"}">`).join("")}</div><p class="dica">Arraste para o lado para ver os ${images.length} cartões →</p>`
     : video ? `<video src="${esc(video)}" ${poster ? `poster="${esc(poster)}"` : ""} controls autoplay muted loop playsinline></video>` : `<p>O exemplo deste tipo de negócio ainda está sendo preparado.</p>`}
   <p>Conteúdo com a cara do seu negócio. Você aprova tudo antes, pelo painel, e a Flow Arts publica no dia certo.</p>
@@ -124,7 +126,7 @@ export async function handleShowcaseMaster(request, env, url) {
 }
 
 export function hasExample(entry) {
-  return Boolean(https(entry?.videoUrl) || (entry?.kind === "carousel" && Array.isArray(entry?.images) && entry.images.length));
+  return Boolean((entry?.kind === "image" && https(entry?.imageUrl)) || https(entry?.videoUrl) || (entry?.kind === "carousel" && Array.isArray(entry?.images) && entry.images.length));
 }
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -144,7 +146,15 @@ export async function uploadExample(env, form, now = new Date()) {
   const meta = { kind: "sales-example", niche };
   const cache = { contentType: "", cacheControl: "public, max-age=31536000, immutable" };
   let entry;
-  if (kind === "carousel") {
+  if (kind === "image") {
+    const image = form.get("image");
+    if (!image || typeof image.arrayBuffer !== "function") throw new Error("image_required");
+    if (!IMAGE_TYPES.has(String(image.type || "").toLowerCase())) throw new Error("image_type");
+    if (!image.size || image.size > IMAGE_MAX) throw new Error("image_size");
+    const key = `${base}arte.jpg`;
+    await env.MEDIA.put(key, await toInstagramJpeg(env, image), { httpMetadata: { ...cache, contentType: "image/jpeg" }, customMetadata: meta });
+    entry = { kind: "image", imageUrl: origin + "/media/" + key, images: [], videoUrl: "", savedAt: now.toISOString() };
+  } else if (kind === "carousel") {
     const images = form.getAll("images").filter(file => file && typeof file.arrayBuffer === "function");
     if (images.length < 2 || images.length > 10) throw new Error("images_count");
     for (const file of images) {
@@ -205,7 +215,8 @@ async function panelStatus(env, map) {
 
 const EXAMPLE_MESSAGES = {
   niche_invalid: "Escolha um tipo de negócio da lista.",
-  kind_invalid: "Escolha carrossel ou vídeo.",
+  kind_invalid: "Escolha arte, carrossel ou vídeo.",
+  image_required: "Escolha a arte.",
   images_count: "Escolha de 2 a 10 imagens.",
   image_type: "As imagens precisam ser JPG, PNG ou WEBP.",
   image_size: "Cada imagem pode ter no máximo 8 MB.",

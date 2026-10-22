@@ -174,7 +174,7 @@ test("quem responde no WhatsApp da Flow entra no CRM ou passa para 'conversando'
 test("contato do Caçador com nicho leva o link do exemplo no retorno", async () => {
   const { db, env } = fakeEnv();
   db.exec("CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT, PRIMARY KEY(namespace,item_key,client_id))");
-  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ cafeteria: { kind: "carousel", images: ["https://x/1.jpg", "https://x/2.jpg"] } }));
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ __bundledVersion: "artes-2x2-2026-10-22", cafeteria: { kind: "carousel", images: ["https://x/1.jpg", "https://x/2.jpg"] } }));
   const r = await addFromProspect(env, { id: "osm:node/9", name: "Café Bom", phone: "81988881111", city: "Recife", niche: "cafeteria" }, NOW);
   const c = await getContact(env, r.id, NOW);
   assert.equal(c.niche, "cafeteria");
@@ -233,7 +233,7 @@ test("mensagem de Direct considera cada nicho sem inventar análise ou prometer 
 test("Direct usa nicho atual em vez do rascunho antigo, com exemplo somente quando cadastrado", async () => {
   const { db, env } = fakeEnv();
   db.exec("CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT, PRIMARY KEY(namespace,item_key,client_id))");
-  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ cafeteria: { kind: "carousel", images: ["https://x/cafe.jpg"] } }));
+  db.prepare("INSERT INTO nexus_state VALUES('showcase','map','primeiro-teste',?,'x')").run(JSON.stringify({ __bundledVersion: "artes-2x2-2026-10-22", cafeteria: { kind: "carousel", images: ["https://x/cafe.jpg"] } }));
   const c = (await createContact(env, { name: "Empresa Exemplo", phone: "22912345678", stage: "chamar", niche: "cafeteria", draft: "Texto antigo do WhatsApp" }, NOW)).contact;
   assert.match(c.instagramMessage, /cafés, lanches/);
   assert.match(c.instagramMessage, /https:\/\/flowarts\.com\.br\/exemplo\/cafeteria/);

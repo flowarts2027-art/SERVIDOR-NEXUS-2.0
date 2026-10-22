@@ -1,4 +1,4 @@
-// Exemplos por nicho (pedido de 17/10/2026): carrossel ou vídeo de exemplo para cada tipo de negócio.
+// Exemplos por nicho: arte única 2×2; formatos anteriores continuam disponíveis para uploads manuais.
 // Vai junto na mensagem do Caçador como link (com foto no WhatsApp). Só para vendas:
 // NÃO vira post, NÃO vai para o painel do cliente e NÃO vai para o Instagram.
 (() => {
@@ -20,6 +20,7 @@
 
   function describe(entry) {
     if (!entry) return { text: "Sem exemplo", cls: "none" };
+    if (entry.kind === "image" && entry.imageUrl) return { text: "Arte · 4 cenas em 2×2", cls: "ok" };
     if (entry.kind === "carousel" && entry.images?.length) return { text: `Carrossel · ${entry.images.length} cartões`, cls: "ok" };
     if (entry.videoUrl) return { text: "Vídeo", cls: "ok" };
     return { text: "Sem exemplo", cls: "none" };
@@ -29,10 +30,12 @@
     const reels = (data?.reels || []).map(r => `<option value="${esc(r.id)}">${esc(r.title)}</option>`).join("");
     return `<form class="example-form" data-example-form="${esc(niche)}">
       <div class="example-kind" role="radiogroup">
-        <label><input type="radio" name="kind" value="carousel" checked> Carrossel</label>
+        <label><input type="radio" name="kind" value="image" checked> Arte única (2×2)</label>
+        <label><input type="radio" name="kind" value="carousel"> Carrossel</label>
         <label><input type="radio" name="kind" value="video"> Vídeo</label>
       </div>
-      <label class="example-carousel">Imagens na ordem (2 a 10)<input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple></label>
+      <label class="example-image">Arte 4:5<input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
+      <label class="example-carousel" hidden>Imagens na ordem (2 a 10)<input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple></label>
       <label class="example-video" hidden>Vídeo MP4 (vertical)<input type="file" name="video" accept="video/mp4,video/quicktime"></label>
       <div class="example-actions"><button type="submit" class="primary">Salvar exemplo</button><button type="button" class="ghost" data-example-cancel>Cancelar</button></div>
       ${reels ? `<details class="example-reels"><summary>Ou usar um Reel que já foi gravado</summary>
@@ -108,7 +111,8 @@
     if (!form || event.target.name !== "kind") return;
     const video = event.target.value === "video";
     form.querySelector(".example-video").hidden = !video;
-    form.querySelector(".example-carousel").hidden = video;
+    form.querySelector(".example-carousel").hidden = event.target.value !== "carousel";
+    form.querySelector(".example-image").hidden = event.target.value !== "image";
   });
 
   document.addEventListener("submit", async event => {
@@ -122,7 +126,11 @@
     body.set("kind", kind);
     const button = form.querySelector("button[type=submit]");
     try {
-      if (kind === "carousel") {
+      if (kind === "image") {
+        const file = form.querySelector("input[name=image]").files[0];
+        if (!file) throw new Error("Escolha a arte.");
+        body.set("image", file);
+      } else if (kind === "carousel") {
         // Ordem pelo número do arquivo (1, 2, 3…), igual ao carrossel pronto.
         const files = [...form.images.files].sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { numeric: true }));
         if (files.length < 2 || files.length > 10) throw new Error("Escolha de 2 a 10 imagens.");

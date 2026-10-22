@@ -147,7 +147,7 @@ test("sem chave do Google, busca grátis no OpenStreetMap", async () => {
   assert.deepEqual(rows.map(r => r.name), ["Salão Nilson", "Beleza Pura"]);
   assert.equal(rows[1].instagram, "belezapura");
   assert.match(rows[0].maps_url, /google\.com\/maps\/search/);
-  assert.match((await listProspects(env)).items[0].message, /não encontrei um site/);
+  assert.match((await listProspects(env)).items[0].message, /Veja uma arte que fizemos para salões de beleza/);
   const busy = await runProspectSearch(env, { calls: 1 }, async () => new Response("", { status: 504 }));
   assert.equal(busy.error, "osm_busy");
 });

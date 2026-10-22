@@ -34,3 +34,12 @@ test("casa de ração virou loja de ração: chave antiga cai no mesmo nicho e n
   assert.equal(CAPTADOR_NICHES.racao.label, "Loja de ração");
   assert.ok(CAPTADOR_NICHES.agropecuaria, "agropecuária continua separada");
 });
+
+
+test("arte 2x2 é um único JPEG no CRM e a mensagem identifica arte, sem link duplicado", () => {
+  assert.deepEqual(exampleMedia({ kind: "image", imageUrl: "https://flowarts.com.br/exemplos-nicho/padaria/arte-2x2.jpg" }), { kind: "image", files: ["https://flowarts.com.br/exemplos-nicho/padaria/arte-2x2.jpg"] });
+  assert.equal(exampleMedia({ kind: "image", imageUrl: "javascript:bad" }), null);
+  const text = mediaMessage("Veja uma arte que fizemos para padarias: https://flowarts.com.br/exemplo/padaria", "image");
+  assert.match(text, /Vou te mandar aqui embaixo uma arte que fizemos para padarias/);
+  assert.doesNotMatch(text, /http|vídeo|carrossel/);
+});

@@ -1,5 +1,14 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 18:24 BRT — FLOW-ARTES-001: integração das 21 artes ao painel
+- Pedido do Rodrigo: “Então ajuste isso”, depois de esclarecer que só enviar arquivos ao PR não os colocava no painel. Autorizada a integração efetiva; sem publicação de post no Instagram.
+- Corrigido: tipo `image` no Master (prévia/contador/upload único), CRM (arte/JPEG único), página de exemplo (imagem 4:5) e mensagens. Catálogo21 e migração versionada substituem os modelos antigos imediatamente na leitura; gravação/cron persiste a versão. Uploads e remoções posteriores à versão são preservados no fluxo sequencial. Falha de leitura não dispara seed destrutivo.
+- Arquivos: `bundled-example-catalog.js`, `bundled-examples.js`, `showcase-store.js`, `showcase.js`, `crm.js`, `daily-prospects.js`, UI Master/CRM, testes e verificador público. PR #367 passa a incluir integração, não só mídia.
+- Testes: suíte Worker completa **561/561**; UI Master/CRM **13/13**. Harness adicional baixou as 21 artes pelo CRM com nomes por nicho/empresa e bytes iguais aos JPEG. Teste HTTP com handlers reais e DB legado controlado: Master21 imagens, páginas21 e SHA-256 dos JPEG; JPEG corrompido foi rejeitado pelo verificador. GET não escreve DB.
+- Auditoria: nenhum bloqueio funcional; marcador não vaza na contagem; nenhum post, DM ou envio Instagram criado. Limite: mapa inteiro ainda não tem atualização transacional concorrente (herdado).
+- Estado neste registro: implementação testada, envio/deploy em andamento. Etapa `[verify-2x2]` confere as 21 páginas públicas e bytes após deploy. Sessão autenticada do Master em produção e navegador real não inspecionados; não confundir harness local com produção.
+- Próximo passo: concluir deploy e registrar execução e resultado da verificação real.
+
 ## 2026-10-22 18:14 BRT — FLOW-ARTES-001: 21 artes 2×2 enviadas em PR
 - Origem → destino: ChatGPT → Claude Code.
 - Pedido: executar a cobrança do topo de HANDOFF_CLAUDE, completando o envio das artes por nicho.
