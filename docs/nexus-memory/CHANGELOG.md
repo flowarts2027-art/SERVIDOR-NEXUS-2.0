@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 20h55 BRT — Quatree Dog configurado no painel (com OK do Rodrigo)
+- Busca diária ligada: pet shop, loja de ração, agropecuária e veterinário; 10 empresas por dia; 10 cidades em volta de Uberlândia (Uberlândia, Araguari, Indianópolis, Tupaciguara, Monte Alegre de Minas, Estrela do Sul, Prata, Uberaba, Monte Carmelo, Ituiutaba). Limite de cidades subiu de 5 para 10 (9fb87de).
+- "Meu material": banner "Quatree Supreme na sua loja · Peça a tabela de revenda". "Sua mensagem": Ericsson, Quatree Dog, oferta de representante.
+- Limite do Captador do Quatree Dog: 100 → 800 buscas/mês (Rodrigo quer ~300 empresas/mês; cada empresa pode levar várias buscas).
+- Teste real (20h50): 2 empresas separadas em Uberlândia (telefone fixo, sem Instagram no mapa). Uma é a PetPlus, já parceira do cliente: marcar "Não serve".
+
 ## 2026-10-22 20h40 BRT — Busca diária no painel de cada cliente + Direct + agendamento por cliente (publicado com OK do Rodrigo, 20h35)
 - Painel do cliente › Buscar: bloco "Busca diária automática" (tipos de negócio, cidades, até 10 por dia) e aba "Separadas hoje". A partir das 9h o Nexus separa empresas no mapa grátis (OpenStreetMap), com a mensagem e o "Meu material" do cliente. Botões: WhatsApp (+ mandar material) e "Copiar e abrir Direct". Nada é enviado sozinho. Cada busca conta no limite do mês.
 - Ramo de ração sugere sozinho: pet shop, loja de ração, agropecuária e veterinário. Cidade inicial = região do perfil "Meu negócio".
