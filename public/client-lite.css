@@ -419,3 +419,6 @@ input, select, textarea, button { max-width: 100%; }
 .hours-open { color: #15803d; }
 .hours-closed { color: #b91c1c; }
 .hours-unknown { color: #64748b; font-weight: 500; }
+/* Busca diária do Captador (22/10) */
+.cap-niches { border: 1px solid var(--line, #ddd); border-radius: 12px; padding: 8px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 4px 12px; margin: 0; }
+.cap-niches legend { font-weight: 600; padding: 0 4px; }

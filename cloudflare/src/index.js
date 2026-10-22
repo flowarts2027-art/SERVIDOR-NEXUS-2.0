@@ -34,6 +34,7 @@ import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
 import { handleViralRadarRoute, handleFacebookCallback, runViralRadar } from "./viral-radar.js";
 import { handlePushRoute } from "./push.js";
 import { handleCaptadorMaster } from "./captador.js";
+import { runAllClientDaily } from "./captador-daily.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
 import { handleManualCarouselMaster } from "./manual-carousel.js";
@@ -572,6 +573,10 @@ export default {
     ctx.waitUntil(runDailyProspects(env, at).catch(error =>
       console.warn("daily_prospects_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Busca diária do Captador de cada cliente (22/10): separa até 10 empresas por dia. Não envia nada.
+    ctx.waitUntil(runAllClientDaily(env, at, listClients).catch(error =>
+      console.warn("client_daily_prospects_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Radar de virais: 1 vez por semana olha as hashtags dos nichos (só se o Facebook estiver conectado).
     ctx.waitUntil(runViralRadar(env, at).catch(error =>
       console.warn("viral_radar_failed", String(error?.message || error).slice(0, 140))
@@ -667,7 +672,7 @@ export default {
     }
 
     // Caçador de clientes (empresas sem site no Google Maps). Só com login do Master.
-    if (url.pathname === "/api/master/captador/access") {
+    if (url.pathname === "/api/master/captador/access" || url.pathname === "/api/master/captador/daily") {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleCaptadorMaster(request, env, url, listClients);

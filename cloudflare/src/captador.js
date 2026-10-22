@@ -9,9 +9,11 @@
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
 import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./showcase-store.js";
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
+import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily } from "./captador-daily.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
-const CAP_STATUSES = [...STATUSES, "depois"];
+// "hoje" (22/10): separada pela busca diária automática, esperando o cliente mandar.
+const CAP_STATUSES = [...STATUSES, "depois", "hoje"];
 
 // Limite de buscas por cliente, por mês. Começa em 100; o Rodrigo muda no Master.
 export const CAPTADOR_MONTHLY_LIMIT = 100;
@@ -249,6 +251,8 @@ const withMessage = (config, lead, showcase = null, materialKindText = "") => {
   const message = captadorMessage(config, lead, showcase);
   const out = { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
     whatsapp: `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` };
+  // Direct do Instagram (22/10): abre a conversa; o texto vai copiado, porque o Instagram não aceita texto no link.
+  if (/^[a-z0-9._]{1,30}$/i.test(String(lead.instagram || ""))) out.direct = `https://ig.me/m/${lead.instagram}`;
   if (materialKindText) {
     out.messageWithMedia = messageWithMaterial(message, materialKindText);
     out.whatsappWithMedia = `https://wa.me/55${lead.phone}?text=${encodeURIComponent(out.messageWithMedia)}`;
@@ -472,14 +476,15 @@ export async function captadorView(env, client, status = "enviado") {
   counts.novo = 0; // a lista de novos fica só na tela
   const showcase = client.id === SHOWCASE_CLIENT ? await readShowcase(env) : null;
   const material = materialView(await captadorMaterial(env, client));
+  const daily = publicDaily(await clientDailySettings(env, client));
   return {
-    ok: true, enabled: true, ready: true, config, counts, material,
+    ok: true, enabled: true, ready: true, config, counts, material, daily,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
     niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
     items: rows.map(row => {
       const item = withHours(withMessage(config, row, showcase, material.kind), readWeek(row.hours_json));
       return row.remind_at ? { ...item, remindAt: row.remind_at, remindDue: Date.parse(row.remind_at) <= Date.now() } : item;
-    }).sort((a, b) => filter === "depois" ? String(a.remindAt || "").localeCompare(String(b.remindAt || "")) : 0)
+    }).sort((a, b) => filter === "depois" ? String(a.remindAt || "").localeCompare(String(b.remindAt || "")) : filter === "hoje" ? Number(b.score || 0) - Number(a.score || 0) : 0)
   };
 }
 
@@ -517,7 +522,9 @@ const MESSAGES = {
   material_count: "Escolha no máximo 10 arquivos.",
   material_type: "Use fotos (JPG, PNG), vídeo (MP4) ou PDF.",
   material_size: "Os arquivos juntos passam de 95 MB. Escolha menos ou um vídeo menor.",
-  r2_unavailable: "O armazenamento está fora do ar agora. Tente daqui a pouco."
+  r2_unavailable: "O armazenamento está fora do ar agora. Tente daqui a pouco.",
+  daily_niches: "Escolha pelo menos um tipo de negócio para a busca diária.",
+  daily_cities: "Escreva pelo menos uma cidade para a busca diária, por exemplo: Uberaba MG."
 };
 
 // Rotas do portal. Quem chama já conferiu o login do cliente.
@@ -542,6 +549,12 @@ export async function handleCaptadorPortal(request, env, url, client, fetcher = 
       return send(await runCaptadorSearch(env, client, body, fetcher));
     }
     if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+    if (url.pathname === "/api/portal/captador/daily") {
+      return send({ ok: true, daily: await saveClientDailySettings(env, client, body) });
+    }
+    if (url.pathname === "/api/portal/captador/daily/run") {
+      return send(await runClientDaily(env, client, new Date(), fetcher, { force: true }));
+    }
     if (url.pathname === "/api/portal/captador/config") {
       return send({ ok: true, config: await saveCaptadorConfig(env, client, body) });
     }
@@ -567,6 +580,26 @@ export async function handleCaptadorPortal(request, env, url, client, fetcher = 
 
 // Master: liga ou desliga o Captador para cada cliente (quem pagou os R$ 97).
 export async function handleCaptadorMaster(request, env, url, listClients) {
+  // Busca diária de um cliente, ajustada pelo Master (22/10): GET ?clientId= / POST {clientId, enabled, niches, cities, target}.
+  if (url.pathname === "/api/master/captador/daily") {
+    try {
+      const clients = await listClients(env).catch(() => []);
+      const body = request.method === "POST" ? await request.json().catch(() => ({})) : {};
+      const id = String(request.method === "POST" ? body.clientId : url.searchParams.get("clientId") || "");
+      const client = clients.find(c => String(c?.id) === id);
+      if (!client) throw new Error("client_not_found");
+      if (request.method === "GET") return send({ ok: true, clientId: id, daily: publicDaily(await clientDailySettings(env, client)) });
+      if (request.method === "POST") {
+        const daily = await saveClientDailySettings(env, client, body);
+        const run = body.runNow === true ? await runClientDaily(env, client, new Date(), fetch, { force: true }) : null;
+        return send({ ok: true, clientId: id, daily, run });
+      }
+    } catch (error) {
+      const code = String(error?.message || error).slice(0, 80);
+      return send({ ok: false, error: code, message: MESSAGES[code] || code }, 400);
+    }
+    return null;
+  }
   if (url.pathname !== "/api/master/captador/access") return null;
   try {
     if (request.method === "GET") {

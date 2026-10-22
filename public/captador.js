@@ -8,8 +8,8 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const DEMO = new URLSearchParams(location.search).get("demo") === "1";
   const FLOW_WHATS = "https://wa.me/5521964816185?text=" + encodeURIComponent("Olá! Quero ativar o Captador de clientes.");
-  const TABS = [["novo", "Novos"], ["depois", "Mandar depois"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
-  let status = "novo";
+  const TABS = [["hoje", "Separadas hoje"], ["novo", "Novos"], ["depois", "Mandar depois"], ["enviado", "Mandei mensagem"], ["respondeu", "Responderam"], ["reuniao", "Fechando"], ["nao-quer", "Não querem"]];
+  let status = "hoje";
   let data = null;
   let busy = false;
   let found = []; // resultado das buscas, só na memória desta página
@@ -75,6 +75,25 @@
     </details>`;
   }
 
+  // Busca diária (22/10): o Nexus separa até 10 empresas por dia, a partir das 9h. Nada é enviado sozinho.
+  function dailyBlock() {
+    const d = data?.daily || { enabled: false, niches: [], cities: [], target: 10, today: 0 };
+    const boxes = (data.niches || []).map(n => `<label class="cap-check"><input type="checkbox" name="niches" value="${esc(n.key)}" ${d.niches.includes(n.key) ? "checked" : ""}> ${esc(n.label)}</label>`).join("");
+    return `<details class="block cap-config" ${d.enabled ? "" : "open"}>
+      <summary><h2>Busca diária automática ${d.enabled ? `· ligada (${Number(d.today || 0)} de ${Number(d.target || 10)} hoje)` : "· desligada"}</h2></summary>
+      <p class="muted">Todo dia, a partir das 9h, o Nexus separa empresas novas na aba "Separadas hoje", com a mensagem e o seu material prontos. Você só toca para mandar pelo WhatsApp ou pelo Direct.</p>
+      <form id="cap-daily">
+        <label class="cap-check"><input type="checkbox" name="enabled" ${d.enabled ? "checked" : ""}> Ligar a busca diária</label>
+        <fieldset class="cap-niches"><legend>Tipos de negócio</legend>${boxes}</fieldset>
+        <label>Cidades (separe com ponto e vírgula)<input name="cities" maxlength="300" value="${esc((d.cities || []).join("; "))}" placeholder="Ex.: Uberaba MG; Araxá MG"></label>
+        <label>Empresas por dia<input name="target" type="number" min="1" max="10" value="${Number(d.target || 10)}"></label>
+        <button class="btn btn-primary" type="submit">Salvar busca diária</button>
+        <button class="btn btn-soft" type="button" data-cap-daily-run>Buscar agora</button>
+        <p class="muted">Usa o mapa grátis (OpenStreetMap). Cada busca conta no limite do mês.</p>
+      </form>
+    </details>`;
+  }
+
   function usageLine() {
     if (note) return note;
     if (!data.ready) return "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.";
@@ -112,6 +131,15 @@
     if (lead.status === "novo" && closedNow(lead)) return `<button type="button" class="btn btn-primary" data-cap-later="${esc(lead.id)}">${lead.hoursGuessed ? "Lembrar no horário comercial" : "Lembrar quando abrir"}</button>
       <a class="btn btn-soft" href="${esc(withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">Mandar mesmo assim</a>
       <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
+    if (lead.status === "hoje") {
+      const link = withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp;
+      const direct = lead.direct ? `<a class="btn btn-soft" href="${esc(lead.direct)}" target="_blank" rel="noopener" data-cap-direct="${esc(lead.id)}">Copiar e abrir Direct</a>` : "";
+      return `${lead.mobile ? `<a class="btn btn-whats" href="${esc(link)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">${withMedia(lead) ? "1. Abrir conversa" : "Abrir no WhatsApp"}</a>` : ""}
+        ${withMedia(lead) ? `<button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">${lead.mobile ? "2. " : ""}Mandar meu material</button>` : ""}
+        ${direct}
+        <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>
+        ${move("nao-quer", "Não serve", "btn-ghost")}`;
+    }
     if (lead.status === "depois") {
       const link = withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp;
       return `<a class="btn ${lead.remindDue ? "btn-whats" : "btn-soft"}" href="${esc(link)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">${lead.remindDue ? "1. Abrir conversa" : "Mandar agora mesmo assim"}</a>
@@ -138,6 +166,7 @@
     return `<article class="cap-lead">
       <header><strong>${esc(lead.name)}</strong><span class="cap-score" title="Nota de 0 a 10">${Number(lead.score || 0)}/10</span></header>
       <p>${esc((data.niches || []).find(n => n.key === lead.niche)?.label || lead.niche)} · ${esc(lead.city)}</p>
+      ${lead.status === "hoje" ? hoursBadge(lead) : ""}
       ${lead.status === "depois" && lead.remindAt ? `<p class="hours-badge ${lead.remindDue ? "hours-open" : "hours-closed"}">${lead.remindDue ? "● Já pode mandar: a empresa abriu" : "⏰ Lembrete: " + esc(whenText(lead.remindAt))}</p>` : (lead.status === "novo" ? hoursBadge(lead) : "")}
       ${lead.address ? `<p>${esc(lead.address)}</p>` : ""}${stars}
       <p>${bits.join(" · ")} · <a href="${esc(lead.maps_url)}" target="_blank" rel="noopener">Ver no Maps</a></p>
@@ -152,11 +181,11 @@
     if (!data?.enabled) { box.innerHTML = promo(); return; }
     const counts = { ...(data.counts || {}), novo: found.length };
     const items = status === "novo" ? found : (data.items || []);
-    box.innerHTML = configForm(data.config || {}) + materialBlock() + searchForm() + `
+    box.innerHTML = configForm(data.config || {}) + materialBlock() + dailyBlock() + searchForm() + `
       <div class="cap-tabs" role="tablist">${TABS.map(([key, label]) =>
         `<button type="button" role="tab" data-cap-tab="${key}" class="${key === status ? "active" : ""}" aria-selected="${key === status}">${label} (${Number(counts[key] || 0)})</button>`).join("")}</div>
       <div class="cap-list">${items.length ? items.map(leadCard).join("")
-        : `<div class="empty"><strong>${status === "novo" ? "Nenhuma empresa na lista" : "Nada aqui ainda"}</strong>${status === "novo" ? 'Escolha o tipo de negócio, escreva a cidade e toque em "Buscar empresas". A lista aparece aqui e não fica guardada: só quem você chamar no WhatsApp fica salvo.' : ""}</div>`}</div>
+        : `<div class="empty"><strong>${status === "novo" ? "Nenhuma empresa na lista" : status === "hoje" ? "Nenhuma empresa separada hoje" : "Nada aqui ainda"}</strong>${status === "hoje" ? 'Ligue a "Busca diária automática" acima. A partir das 9h, as empresas aparecem aqui.' : ""}${status === "novo" ? 'Escolha o tipo de negócio, escreva a cidade e toque em "Buscar empresas". A lista aparece aqui e não fica guardada: só quem você chamar no WhatsApp fica salvo.' : ""}</div>`}</div>
       <p class="muted cap-credit">Dados do Google Maps. Confira no Maps antes de mandar.</p>`;
   }
 
@@ -239,6 +268,16 @@
       }
       return;
     }
+    if (form.id === "cap-daily") {
+      event.preventDefault();
+      const fd = new FormData(form);
+      try {
+        await call("/api/portal/captador/daily", { enabled: fd.get("enabled") === "on", niches: fd.getAll("niches"), cities: fd.get("cities"), target: Number(fd.get("target")) });
+        note = "Busca diária salva.";
+        await load();
+      } catch (error) { alertLine(error.message); }
+      return;
+    }
     if (form.id === "cap-config") {
       event.preventDefault();
       const fd = new FormData(form);
@@ -286,7 +325,7 @@
     const sent = target.closest("[data-cap-sent]");
     if (sent) {
       // O link abre o WhatsApp; aqui guardamos só este contato, como "mandei mensagem".
-      const lead = found.find(item => item.id === sent.dataset.capSent) || (data?.items || []).find(item => item.id === sent.dataset.capSent && item.status === "depois");
+      const lead = found.find(item => item.id === sent.dataset.capSent) || (data?.items || []).find(item => item.id === sent.dataset.capSent && ["depois", "hoje"].includes(item.status));
       if (lead) call("/api/portal/captador/contacted", lead)
         .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
       return;
@@ -302,6 +341,27 @@
         note = `${lead.name} foi para "Mandar depois". ${out.when && !/Aberta/.test(out.when) ? "Lembro quando " + String(out.when).replace(/^.*· /, "") + "." : ""}`;
         await load();
       } catch (error) { later.disabled = false; later.textContent = error.message; }
+      return;
+    }
+    const direct = target.closest("[data-cap-direct]");
+    if (direct) {
+      // Copia o texto antes de abrir: no Direct, é só colar. Fica salvo como "mandei mensagem".
+      const lead = (data?.items || []).find(item => item.id === direct.dataset.capDirect);
+      if (lead) {
+        try { await navigator.clipboard.writeText(hasMaterial() && lead.messageWithMedia ? lead.messageWithMedia : lead.message); } catch { /* segue abrindo */ }
+        call("/api/portal/captador/contacted", lead).then(() => setTimeout(load, 800)).catch(() => {});
+      }
+      return;
+    }
+    if (target.closest("[data-cap-daily-run]")) {
+      const btn = target.closest("[data-cap-daily-run]");
+      btn.disabled = true; btn.textContent = "Buscando…";
+      try {
+        const out = await call("/api/portal/captador/daily/run", {});
+        status = "hoje";
+        note = out.skipped === "not_configured" ? "Escolha os tipos de negócio e as cidades e salve antes." : `${(out.added || []).length} empresas separadas agora. Hoje: ${Number(out.picked || 0)} de ${Number(out.target || 10)}.`;
+        await load();
+      } catch (error) { btn.disabled = false; btn.textContent = error.message; }
       return;
     }
     const shareBtn = target.closest("[data-cap-share]");
@@ -324,7 +384,7 @@
     const copy = target.closest("[data-cap-copy]");
     if (copy) {
       const lead = [...found, ...(data?.items || [])].find(item => item.id === copy.dataset.capCopy);
-      try { await navigator.clipboard.writeText(lead?.message || ""); copy.textContent = "Copiada!"; } catch { copy.textContent = "Não deu para copiar"; }
+      try { await navigator.clipboard.writeText((lead && withMedia(lead) ? lead.messageWithMedia : lead?.message) || ""); copy.textContent = "Copiada!"; } catch { copy.textContent = "Não deu para copiar"; }
       return;
     }
     const move = target.closest("[data-cap-move]");
