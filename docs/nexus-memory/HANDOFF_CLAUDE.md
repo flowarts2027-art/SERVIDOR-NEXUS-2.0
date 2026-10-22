@@ -2,6 +2,21 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 09h BRT — Análise dos "11 repositórios de IA do GitHub" (LER ANTES DE INSTALAR)
+- **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo. Base: PDF "Os 11 repositórios de IA do GitHub pra testar esta semana" (fabiano.app). Conferi no GitHub em 22/10 o founder-skill (MIT, 1.341 estrelas, push 07/10), video-shotcraft (Apache-2.0, 12.879 estrelas, push 17/10), slides_maker (MIT, push 22/10) e vindex (MIT, 10 estrelas, push 23/07). Os outros 7 não conferi.
+- **Regra principal: nenhum deles vai para dentro do Nexus.** O Nexus é um Worker da Cloudflare (`cloudflare/`, `public/`); esses projetos rodam num computador, com Python, Docker, Node com ffmpeg ou placa de vídeo. Não adicionar código, dependência nem fluxo do GitHub ao Nexus por causa deles. Se algum for usado, é como **ferramenta no PC do Rodrigo**, fora do repositório.
+- **PC do Rodrigo:** Windows, vídeo Intel HD (sem NVIDIA), 10 GB de RAM, sem Docker e sem ffmpeg.
+- **Pode testar (grátis, sem chave de API):** 1) **Founder Skill** (`Jakeschincariol/founder-skill`): validar oferta e preço da Flow Arts no Claude Code; é o melhor primeiro teste. 2) **slide-maker** (`addsumtech/slides_maker`): propostas e apresentações em .pptx; pede LibreOffice.
+- **Só com decisão do Rodrigo:** 3) **Video Shotcraft**: vídeo a partir das telas do site; pede ffmpeg; Remotion pode exigir licença paga para empresa; e o `AGENTS.md` diz para **não restaurar corte/edição de vídeo**.
+- **Não usar agora:** Maestro (exige NVIDIA e a licença proíbe uso comercial); vindex (Mac com chip M; não roda no Windows); Image Blaster, MiroFish, BambooAI e ArtCraft (cobram API ou créditos em dólar; o Rodrigo quer custo zero); WeKnora (Docker, pesado para 10 GB); OpenChatCut (edição de vídeo, AGPL).
+- **Erro no PDF:** o rodapé aponta o vindex para o slides_maker; o certo é `github.com/vaibhav-space/vindex`.
+- **Nada foi instalado.** Qualquer instalação, chave de API ou gasto precisa do OK do Rodrigo.
+
+## 2026-10-22 08h45 BRT — Posts de hoje JÁ ESTÃO no painel (não criar de novo)
+- Os 3 posts de 22/10 (09h, 12h, 19h) foram criados pela **Plataforma IA** do Rodrigo (programa local que usa o ChatGPT pelo plano dele) e enviados por ele com 1 clique para `agendamentos/2026-10-22/` na branch `agendamentos` (commit `b1cbf8a`). O fluxo "NEXUS Agendar conteúdo pronto" terminou com sucesso (execução 39772024382). Estão no painel esperando a aprovação do Rodrigo.
+- **ChatGPT: não crie os posts de 22/10 de novo.** O lembrete abaixo está atendido.
+- A partir de agora a Plataforma IA cria os 3 posts sozinha todo dia às 6h30 e o Rodrigo envia com 1 clique. Antes de criar posts de um dia, confira se `agendamentos/AAAA-MM-DD/` já existe na branch `agendamentos`, para não duplicar.
+
 ## 2026-10-22 08h BRT — LEMBRETE: posts de hoje ainda não estão no painel
 - **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo.
 - **Conferido às 08h09:** a branch `agendamentos` não tem a pasta `agendamentos/2026-10-22/`. Nenhum dos 3 posts de hoje chegou ao painel.
