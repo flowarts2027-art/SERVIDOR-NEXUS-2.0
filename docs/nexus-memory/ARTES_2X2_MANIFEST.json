@@ -1,0 +1,216 @@
+{
+  "tarefa": "FLOW-ARTES-001",
+  "formato": "JPEG RGB 1080x1350, grade 2x2",
+  "arquivos": [
+    {
+      "nicho": "restaurante",
+      "arquivo": "public/exemplos-nicho/restaurante/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 340865,
+      "sha256": "0f494fbc76496af47af52a5d5e37b854729f1caf0d3157777e23ec0c8b49e3dd"
+    },
+    {
+      "nicho": "cafeteria",
+      "arquivo": "public/exemplos-nicho/cafeteria/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 349577,
+      "sha256": "d892dae1800b92e59caf189ca555fb4a9bff31a18bab324e1f87f71989353edb"
+    },
+    {
+      "nicho": "lanchonete",
+      "arquivo": "public/exemplos-nicho/lanchonete/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 295085,
+      "sha256": "febd83493b83a840ce9a108ca7507e12e68cd8034ebabf35228646f9fc7bb969"
+    },
+    {
+      "nicho": "padaria",
+      "arquivo": "public/exemplos-nicho/padaria/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 345157,
+      "sha256": "779e09b40d7f2df613e6ac1d61b751dcac89eb2ea2c2dedcc1c051d427da7293"
+    },
+    {
+      "nicho": "bar",
+      "arquivo": "public/exemplos-nicho/bar/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 323837,
+      "sha256": "d3e339c480c36af322cd12c1beb96becb55e2047112616ee6449ab37f9b5c91a"
+    },
+    {
+      "nicho": "salao",
+      "arquivo": "public/exemplos-nicho/salao/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 352400,
+      "sha256": "113e518a73dc84b12be9764d74e55f408355b2ded5d9ed6dd0dbe61722fe0cd9"
+    },
+    {
+      "nicho": "academia",
+      "arquivo": "public/exemplos-nicho/academia/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 342154,
+      "sha256": "f192184325860d6c3adac6c2ee16f9ca8365e4c98a3836083dd4449fba88e3a3"
+    },
+    {
+      "nicho": "pet",
+      "arquivo": "public/exemplos-nicho/pet/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 353253,
+      "sha256": "3130f0d1813d86f95c3fe45dbbf5ac103d0d099fae919d1b1401530989a3efcc"
+    },
+    {
+      "nicho": "racao",
+      "arquivo": "public/exemplos-nicho/racao/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 352650,
+      "sha256": "38299ea3d47315d5530cdedc0243b1509cfd16c2f6a044e50b5777b33536c27d"
+    },
+    {
+      "nicho": "agropecuaria",
+      "arquivo": "public/exemplos-nicho/agropecuaria/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 384326,
+      "sha256": "2f3db55fa6cf0329bd7550b1985ed28851ad5ae67448e194161e9ded159b6509"
+    },
+    {
+      "nicho": "veterinario",
+      "arquivo": "public/exemplos-nicho/veterinario/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 299698,
+      "sha256": "31877780f9e0df5432b514c4abf032f85c2de8a5ae7c4c61a8aa0200e1e16163"
+    },
+    {
+      "nicho": "dentista",
+      "arquivo": "public/exemplos-nicho/dentista/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 301364,
+      "sha256": "c53b34211ce1f0b25a0ffe7234f61c4a0eb222d3db22551239a69ac752162286"
+    },
+    {
+      "nicho": "clinica",
+      "arquivo": "public/exemplos-nicho/clinica/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 250644,
+      "sha256": "88133a7dbb6cf287c94e6f761ec22901374f19d29005896b8d1318b521918f8b"
+    },
+    {
+      "nicho": "farmacia",
+      "arquivo": "public/exemplos-nicho/farmacia/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 303262,
+      "sha256": "ac938f5f9bf2bad2030fd599e34312292b666bb472eb8557fb5c03e386307371"
+    },
+    {
+      "nicho": "mercado",
+      "arquivo": "public/exemplos-nicho/mercado/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 350743,
+      "sha256": "6cbd8e6810b087690320ee9b8cc374078f1d5e40f66ece838db3d4977e81a84d"
+    },
+    {
+      "nicho": "roupas",
+      "arquivo": "public/exemplos-nicho/roupas/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 306296,
+      "sha256": "bf875020627ec085d1ccdd9620d37d6497b690e22402f50b36789665a3f056db"
+    },
+    {
+      "nicho": "oficina",
+      "arquivo": "public/exemplos-nicho/oficina/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 311321,
+      "sha256": "4f1bfde91a8d56d04ee5587eafd466671bc54109eedc259a85d313fc7bd2e78f"
+    },
+    {
+      "nicho": "hotel",
+      "arquivo": "public/exemplos-nicho/hotel/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 335533,
+      "sha256": "2843d24a75e1ee7403adbe5511d2b532724f34bc135a43c39f07cce34fa946e9"
+    },
+    {
+      "nicho": "imobiliaria",
+      "arquivo": "public/exemplos-nicho/imobiliaria/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 273958,
+      "sha256": "2e7df9c000d1bd0ad2cdc4b867a74c9e26ea25898e0721374b27fdfb5b6ccd4c"
+    },
+    {
+      "nicho": "contabilidade",
+      "arquivo": "public/exemplos-nicho/contabilidade/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 285256,
+      "sha256": "efc68956f53c4dfd033631d99bd7681bd58b012ba67baf89097bcf59fe4d9501"
+    },
+    {
+      "nicho": "material",
+      "arquivo": "public/exemplos-nicho/material/arte-2x2.jpg",
+      "dimensoes": [
+        1080,
+        1350
+      ],
+      "bytes": 323743,
+      "sha256": "574f3b478356a045a140803bb3dde5eab0679d7ab8ab3c511ab622fbb683087b"
+    }
+  ]
+}
