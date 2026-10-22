@@ -15,7 +15,7 @@ export const CLIENT_DAILY_TARGET = 10;
 const START_HOUR_BRT = 9;
 const MAX_ATTEMPTS_PER_DAY = 12;
 const MAX_SEARCHES_PER_RUN = 2;
-const MAX_CITIES = 5;
+const MAX_CITIES = 10; // 22/10: Rodrigo pediu todas as cidades perto de Uberlândia
 
 // Ramo do cliente → tipos de negócio que compram dele. Usado só quando ele ainda não escolheu.
 const NICHE_HINTS = [
@@ -31,7 +31,7 @@ export function suggestedNiches(client = {}) {
   return [];
 }
 
-// "Uberlândia MG; Uberaba MG, Araguari MG" → lista de cidades (no máximo 5).
+// "Uberlândia MG; Uberaba MG, Araguari MG" → lista de cidades (no máximo 10).
 export function parseCities(value) {
   const list = Array.isArray(value) ? value : String(value || "").split(/[;\n]|,(?=\s*\p{Lu}\p{Ll})/u);
   const out = [];
