@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 20h40 BRT — Busca diária no painel de cada cliente + Direct + agendamento por cliente (publicado com OK do Rodrigo, 20h35)
+- Painel do cliente › Buscar: bloco "Busca diária automática" (tipos de negócio, cidades, até 10 por dia) e aba "Separadas hoje". A partir das 9h o Nexus separa empresas no mapa grátis (OpenStreetMap), com a mensagem e o "Meu material" do cliente. Botões: WhatsApp (+ mandar material) e "Copiar e abrir Direct". Nada é enviado sozinho. Cada busca conta no limite do mês.
+- Ramo de ração sugere sozinho: pet shop, loja de ração, agropecuária e veterinário. Cidade inicial = região do perfil "Meu negócio".
+- Master: GET/POST /api/master/captador/daily para ajustar a busca de um cliente.
+- Pasta `agendamentos/clientes/<id-do-cliente>/AAAA-MM-DD/HHMM/` sobe o post para o painel daquele cliente, esperando aprovação.
+- 565/565 testes.
+
 ## 2026-10-22 19h30 BRT — CRM no painel da Flow Arts (saiu do Master)
 - Aba CRM no painel do cliente Flow Arts (CRM, busca diária, Caçador, Exemplos por nicho); rotas /api/portal/flow/* só com login da Flow Arts. Master: menu CRM e Caçador saíram; tela "Acessos" ficou com acessos dos clientes e chave do Google. 561/561 testes. Publicado com OK do Rodrigo (19h23).
 

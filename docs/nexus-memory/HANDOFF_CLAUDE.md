@@ -7,7 +7,7 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Plano completo:** `docs/nexus-memory/CAMPANHA_QUATREE_30D.md` (auditoria, ajustes do perfil, calendário de 30 dias de 26/10 a 24/11, prospecção, regras das artes).
 - **Regra das artes:** base = banners e arquivos do PRÓPRIO cliente, que o Rodrigo vai enviar. Não usar a vitrine da Flow Arts. O ChatGPT só adapta formato (4:5 ou 9:16) e completa o que faltar, sem inventar preço, sabor, peso, selo ou benefício.
 - **Primeira tarefa do ChatGPT:** quando o Rodrigo mandar os banners, preparar a semana 1 (dias 1 a 7, 26/10 a 01/11): arte + legenda de cada dia, para o Rodrigo revisar. Entregar ao Rodrigo; não publicar.
-- **Como chega ao painel do cliente:** por enquanto, o Rodrigo sobe pelo painel do cliente (`quatree-dog`) ou pelo Master. A pasta `agendamentos/clientes/quatree-dog/` só funciona depois de publicar a branch `feat/captador-busca-diaria-cliente` (não publicada).
+- **Como chega ao painel do cliente:** salvar na branch `agendamentos`, pasta `agendamentos/clientes/quatree-dog/AAAA-MM-DD/HHMM/` (publicado em 22/10 20h40). O post entra no painel do cliente esperando aprovação.
 - **Bloqueios:** região a confirmar (parece Uberlândia MG); cliente precisa aceitar o convite de testador (enviado 22/10 20h23) e conectar @ericsson_quatree no painel.
 - **Executado nesta passagem:** só documentação. Nenhum post criado, enviado ou publicado.
 

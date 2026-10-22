@@ -119,7 +119,6 @@ Salvar na branch `agendamentos`, uma pasta por post:
 agendamentos/clientes/quatree-dog/2026-10-26/0900/  (01.jpg … ou imagem.jpg + legenda.txt)
 ```
 O fluxo "NEXUS Agendar conteúdo pronto" sobe o post para o painel **do cliente**, esperando aprovação. Nada é publicado sem aprovar.
-**Atenção:** a pasta por cliente (`agendamentos/clientes/<id>/`) e a busca diária automática do cliente estão na branch `feat/captador-busca-diaria-cliente`, **ainda não publicada**. Até publicar, o Rodrigo sobe os posts pelo painel do cliente (Posts → Enviar conteúdo pronto) ou pelo Master.
 O Instagram dele precisa estar conectado no painel com a conta @ericsson_quatree (convite de testador pendente de aceite).
 
 ## 9. O que medir (toda segunda)
@@ -129,7 +128,6 @@ Alcance e contas não seguidoras alcançadas; salvamentos e envios; cliques no W
 - [ ] Confirmar a região: Uberlândia e quais cidades vizinhas (para a busca diária).
 - [ ] Rodrigo enviar os banners e arquivos do cliente.
 - [ ] Cliente aceitar o convite de testador e conectar @ericsson_quatree no painel.
-- [ ] Publicar a branch `feat/captador-busca-diaria-cliente` (busca diária + pasta por cliente), com o OK do Rodrigo.
 - [ ] Linhas que ele vende e condições que pode divulgar.
 - [ ] Fotos reais: ele, produto, entregas (opcional, melhora muito).
 - [ ] Aplicar os ajustes do perfil (seção 2).
