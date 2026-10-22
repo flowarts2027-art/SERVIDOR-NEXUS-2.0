@@ -9,8 +9,8 @@ test("cidade escrita no Caçador do Master: aceita 'Cidade UF' e recusa vazio ou
   assert.equal(cleanCity(""), "");
 });
 
-test("tela do Master tem o campo de cidade e manda junto na busca", () => {
-  const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
+test("tela do Caçador (painel da Flow Arts desde 22/10) tem o campo de cidade e manda junto na busca", () => {
+  const html = fs.readFileSync(new URL("../../public/portal.html", import.meta.url), "utf8");
   const ui = fs.readFileSync(new URL("../../public/prospects-ui.js", import.meta.url), "utf8");
   assert.match(html, /id="prospect-city"/);
   assert.match(ui, /JSON\.stringify\(\{ calls: 3, niche, city \}\)/);

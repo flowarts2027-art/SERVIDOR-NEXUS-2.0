@@ -66,10 +66,11 @@ test("rotas e caixa do Master ligadas", () => {
   const index = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(index, /handleShowcasePage/);
   assert.match(index, /\/api\/master\/showcase[\s\S]{0,200}resolveMasterSession/);
-  const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
-  // 17/10: a vitrine saiu do Reel animado e virou "Exemplos por nicho" no Caçador.
+  // 22/10: "Exemplos por nicho" foi com o CRM para o painel da Flow Arts.
+  const html = fs.readFileSync(new URL("../../public/portal.html", import.meta.url), "utf8");
   assert.match(html, /id="examples-panel"/);
-  assert.match(html, /\/examples\.js/);
+  const lite = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(lite, /\/examples\.js/);
 });
 
 // ---- Exemplo só para vendas (17/10): carrossel ou vídeo por nicho, sem virar post ----

@@ -3,7 +3,7 @@
 (() => {
   "use strict";
   // 22/10: o CRM mudou para o painel da Flow Arts (cliente), que define window.NEXUS_API = "/api/portal/flow".
-  const API = window.NEXUS_API || "/api/master";
+  const API = globalThis.NEXUS_API || "/api/master";
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const STAGES = [

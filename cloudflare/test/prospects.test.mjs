@@ -107,12 +107,19 @@ test("chave do Google salva com criptografia e o painel sabe se falta", async ()
   await assert.rejects(setProspectStatus(env, "ChIJ_place_0001", "apagar"), /status_invalid/);
 });
 
-test("painel tem o caçador e a rota exige login do Master", () => {
-  const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
+test("caçador fica no painel da Flow Arts (22/10); rota exige login do Master ou da Flow Arts", () => {
+  const html = fs.readFileSync(new URL("../../public/portal.html", import.meta.url), "utf8");
   assert.match(html, /id="prospect-panel"/);
-  assert.match(html, /prospects-ui\.js/);
+  const lite = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(lite, /prospects-ui\.js/);
+  assert.match(lite, /NEXUS_API = "\/api\/portal\/flow"/);
+  const master = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
+  assert.doesNotMatch(master, /id="prospect-panel"|id="crm-list"/);
   const worker = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(worker, /\/api\/master\/prospects[\s\S]{0,200}resolveMasterSession/);
+  assert.match(worker, /\/api\/portal\/flow\/[\s\S]{0,200}portal\.clientId !== SHOWCASE_CLIENT\) return json\(\{ error: "unauthorized" \}, 401\)/);
+  const portal = fs.readFileSync(new URL("../src/portal.js", import.meta.url), "utf8");
+  assert.match(portal, /flowCrm: client\.id === SHOWCASE_CLIENT/);
 });
 
 test("pacote de site aparece no site, nas páginas de nicho e no robô com o mesmo preço", async () => {

@@ -1,5 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 19h30 BRT — CRM no painel da Flow Arts (saiu do Master)
+- Aba CRM no painel do cliente Flow Arts (CRM, busca diária, Caçador, Exemplos por nicho); rotas /api/portal/flow/* só com login da Flow Arts. Master: menu CRM e Caçador saíram; tela "Acessos" ficou com acessos dos clientes e chave do Google. 561/561 testes. Publicado com OK do Rodrigo (19h23).
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.

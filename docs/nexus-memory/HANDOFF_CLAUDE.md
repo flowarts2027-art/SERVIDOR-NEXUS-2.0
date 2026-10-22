@@ -2,6 +2,16 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 19h30 BRT — CRM, Caçador e exemplos saíram do Master e foram para o painel da Flow Arts
+- **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo (19h13): "ajusta os CRMs do Nexus para o painel da Flow Arts; não preciso dele no painel Nexus; a Flow Arts é um cliente". OK para publicar às 19h23.
+- **O que mudou:** painel do cliente Flow Arts (`primeiro-teste`) ganhou a aba **CRM** (busca diária e aviso no celular, Falar hoje, novo contato, mensagem modelo, todos os contatos, **Caçador** e **Exemplos por nicho**). Só a Flow Arts vê a aba (`flowCrm` na sessão do portal).
+- **Master:** saíram o menu CRM, a tela CRM, o Caçador e os Exemplos. "Caçador" virou **Acessos** (Captador para clientes, Imagem por IA, Leads do Odin e a chave do Google Maps). O cartão do Início abre `/portal.html?tab=crm`. O link antigo `?view=crm` também redireciona.
+- **Servidor:** novas rotas `/api/portal/flow/<crm|prospects|showcase|push>/…`, só com login do cliente Flow Arts; chamam a mesma lógica das rotas do Master (os dados são os mesmos; nada foi migrado nem apagado). As rotas `/api/master/…` continuam.
+- **Aviso no celular:** abre o painel da Flow Arts na aba CRM. Quem ativou o aviso pelo Master precisa ativar de novo no painel da Flow Arts.
+- **Testes:** 561/561. Bundle do Wrangler não conferido (sessão sem acesso ao npm). Navegador e produção: conferir depois do deploy.
+- **Próximo passo:** Rodrigo entra no painel com o login da Flow Arts → aba CRM → confere a lista e liga o aviso no celular.
+- **Outra branch, NÃO publicada:** `feat/captador-busca-diaria-cliente` (busca diária de 10 empresas no painel de cada cliente + Direct + `agendamentos/clientes/<id>/`). Pausada a pedido do Rodrigo; a conta do cliente vai mudar.
+
 ## 2026-10-22 17h20 BRT — COBRANÇA: terminar e ENVIAR as artes 2×2 dos 21 nichos (FLOW-ARTES-001)
 - **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo ("cobra ele na memória").
 - **Padrão combinado entre Rodrigo e ChatGPT (vale para TODOS os 21 nichos):** **uma única imagem por nicho, 4:5 (1080×1350), com 4 cenas em grade 2×2.** Nada de vídeo e nada de carrossel de 5 cartões como modelo do nicho. O ChatGPT já criou as artes, mas **não terminou de enviar**.
