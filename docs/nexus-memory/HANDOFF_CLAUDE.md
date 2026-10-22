@@ -2,6 +2,17 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 17h20 BRT — COBRANÇA: terminar e ENVIAR as artes 2×2 dos 21 nichos (FLOW-ARTES-001)
+- **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo ("cobra ele na memória").
+- **Padrão combinado entre Rodrigo e ChatGPT (vale para TODOS os 21 nichos):** **uma única imagem por nicho, 4:5 (1080×1350), com 4 cenas em grade 2×2.** Nada de vídeo e nada de carrossel de 5 cartões como modelo do nicho. O ChatGPT já criou as artes, mas **não terminou de enviar**.
+- **Situação conferida no Master hoje (`/api/master/showcase`):** o modelo dos nichos está misturado. Restaurante e Pet shop estão com **vídeo**; Bar, Dentista, Clínica, Farmácia, Mercado, Oficina e Hotel/pousada estão com **carrossel de 5 cartões**; os outros 12 estão **sem modelo**: cafeteria, lanchonete, padaria, salão, academia, ração, agropecuária, veterinário, roupas, imobiliária, contabilidade e material de construção. **Todos os 21 devem passar para a arte 2×2**, inclusive os que já têm vídeo ou carrossel.
+- **Prioridade:** cafeteria, padaria e lanchonete primeiro (foco de público da Flow Arts), depois restaurante e bar, depois o resto.
+- **Mesmo padrão em todas:** mesma moldura, mesmo estilo de foto realista, mesma posição do logo e mesma ordem de cenas em todos os nichos. Não pode ter uma arte diferente das outras. Texto sem erro de português (regra de 16/10 em `DECISIONS.md`).
+- **Chaves dos 21 nichos (nome da pasta):** restaurante, cafeteria, lanchonete, padaria, bar, salao, academia, pet, racao, agropecuaria, veterinario, dentista, clinica, farmacia, mercado, roupas, oficina, hotel, imobiliaria, contabilidade, material.
+- **Como entregar:** numa branch própria (ex.: `feat/artes-nicho-2x2`), uma arte por nicho em `public/exemplos-nicho/<chave>/arte-2x2.jpg`, e abrir PR. **Não juntar na `main`**: mexer em `public/` publica o site, e isso precisa do OK do Rodrigo. Pode enviar em partes (por exemplo, os 3 prioritários primeiro).
+- **Depois da entrega (Claude):** troca a vitrine para usar a arte 2×2 de cada nicho no lugar do vídeo e do carrossel, roda os testes e publica com o OK do Rodrigo.
+- **Ao terminar, registrar em `HANDOFF_CHATGPT.md`** quais nichos foram enviados, a branch/PR e quais faltam.
+
 ## 2026-10-22 09h BRT — Análise dos "11 repositórios de IA do GitHub" (LER ANTES DE INSTALAR)
 - **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo. Base: PDF "Os 11 repositórios de IA do GitHub pra testar esta semana" (fabiano.app). Conferi no GitHub em 22/10 o founder-skill (MIT, 1.341 estrelas, push 07/10), video-shotcraft (Apache-2.0, 12.879 estrelas, push 17/10), slides_maker (MIT, push 22/10) e vindex (MIT, 10 estrelas, push 23/07). Os outros 7 não conferi.
 - **Regra principal: nenhum deles vai para dentro do Nexus.** O Nexus é um Worker da Cloudflare (`cloudflare/`, `public/`); esses projetos rodam num computador, com Python, Docker, Node com ffmpeg ou placa de vídeo. Não adicionar código, dependência nem fluxo do GitHub ao Nexus por causa deles. Se algum for usado, é como **ferramenta no PC do Rodrigo**, fora do repositório.
