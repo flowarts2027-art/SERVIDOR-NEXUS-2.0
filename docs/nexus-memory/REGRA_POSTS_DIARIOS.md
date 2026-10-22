@@ -11,6 +11,7 @@ Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga
    - **12h · ser descoberto e enviado:** antes e depois de foto de comida (prova). CTA: "Mande para um dono de cafeteria".
    - **19h · gerar conversa:** pergunta, enquete ou bastidor do exemplo grátis. CTA: "Responda nos comentários".
    - Nos três, a oferta do fim é o **exemplo grátis**: comente QUERO.
+   - **REGRA FIXA (Rodrigo, 21/10): todo dia, 1 dos 3 posts usa a mensagem "App de agendar post não cria post. A Flow Arts cria, e você só aprova."** Use a série da seção 3 do `MARKETING_POSICIONAMENTO.md`, uma ideia por dia, no horário indicado. Quando as 5 acabarem, crie ideias novas no mesmo sentido e com o mesmo público de comida. Nunca cite marca ou preço de concorrente e nunca fale mal de ninguém.
    - Escreva também as **5 mensagens de Direct do dia** para o Rodrigo revisar e enviar (elogio verdadeiro + oferta do exemplo grátis, sem preço). Entregue só a ele; não salve no repositório, que é público.
 3. Salve na branch **`agendamentos`** do repositório `flowarts2027-art/SERVIDOR-NEXUS-2.0`. Use uma pasta por post:
    - `agendamentos/AAAA-MM-DD/0900/`
