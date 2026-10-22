@@ -2,7 +2,8 @@ name: NEXUS Atualizar mapa do Graphify
 
 # Pedido do Rodrigo (22/10/2026): o mapa do código (graphify-out/) se atualiza sozinho,
 # sem ele abrir o Claude Code no PC. A cada mudança na main, o GitHub roda
-# "graphify update ." (só lê o código, sem IA e sem custo) e salva o mapa novo.
+# "graphify update . --force" (só lê o código, sem IA e sem custo) e salva o mapa novo.
+# --force: o mapa feito aqui é só do código; pode ter alguns itens a menos que o feito no PC.
 # Só GRAPH_REPORT.md e graph.json vão para o repositório. Não mexe no site nem no painel.
 on:
   push:
@@ -32,15 +33,13 @@ jobs:
           python-version: "3.12"
 
       - name: Instalar o Graphify
-        run: pip install --quiet graphifyy
+        run: pip install --quiet "graphifyy[sql]"
 
       - name: Atualizar o mapa
         shell: bash
         run: |
           set -uo pipefail
-          graphify --help > /tmp/help.txt 2>&1 || true
-          echo "::notice::graphify help: $(head -c 900 /tmp/help.txt | tr '\n' ' ')"
-          if ! graphify update . > /tmp/g.log 2>&1; then
+          if ! graphify update . --force > /tmp/g.log 2>&1; then
             echo "::error::graphify update falhou: $(tail -c 900 /tmp/g.log | tr '\n' ' ')"
             exit 1
           fi
