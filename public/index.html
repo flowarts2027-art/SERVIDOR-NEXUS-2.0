@@ -19,10 +19,9 @@
       <nav>
         <button class="nav-item active" data-view="dashboard">⌂ <span>Início</span></button>
         <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
-        <button class="nav-item" data-view="crm">☺ <span>CRM</span> <b id="crm-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item more-tab" data-view="clients">◉ <span>Clientes</span> <b id="signup-nav-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item more-tab" data-view="odin">◆ <span>Caçador</span></button>
+        <button class="nav-item more-tab" data-view="odin">◆ <span>Acessos</span></button>
         <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
         <button class="nav-item more-tab" data-view="site">◍ <span>Site</span></button>
         <button class="nav-item more-tab" data-view="settings">⚙ <span>Integrações</span></button>
@@ -32,7 +31,7 @@
         <p class="master-more-title">Mais opções</p>
         <div class="master-more-grid">
           <button class="nav-item" type="button" data-view="clients">◉ <span>Clientes</span> <b id="signup-sheet-count" class="notification-count" hidden>0</b></button>
-          <button class="nav-item" type="button" data-view="odin">◆ <span>Caçador</span></button>
+          <button class="nav-item" type="button" data-view="odin">◆ <span>Acessos</span></button>
           <button class="nav-item" type="button" data-view="agents">⬡ <span>Agentes</span></button>
           <button class="nav-item" type="button" data-view="site">◍ <span>Site</span></button>
           <button class="nav-item" type="button" data-view="settings">⚙ <span>Integrações</span></button>
@@ -49,8 +48,7 @@
 
       <section id="dashboard" class="view active">
         <section class="panel today-panel" id="today-panel">
-          <div class="panel-head"><div><h2>Para fazer hoje</h2><p class="muted" id="today-sub">Carregando…</p></div><button class="primary" data-go="crm">Abrir CRM</button></div>
-          <div id="today-list" class="today-list"></div>
+          <div class="panel-head"><div><h2>CRM e Caçador</h2><p class="muted">Desde 22/10, ficam no painel da Flow Arts (entre com o login da Flow Arts).</p></div><a class="primary link-button" href="/portal.html?tab=crm" target="_blank" rel="noopener">Abrir o CRM da Flow Arts</a></div>
         </section>
         <div>
           <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
@@ -229,7 +227,7 @@
             <button type="button" id="auto-reel-now">Criar um agora</button>
             <p class="muted wide" id="auto-reel-status" role="status"></p>
           </form>
-          <p class="muted wide">O exemplo de cada nicho agora fica em <b>Caçador › Exemplos por nicho</b>.</p>
+          <p class="muted wide">O exemplo de cada nicho agora fica no painel da Flow Arts, em <b>CRM › Exemplos por nicho</b>.</p>
           <p class="eyebrow">MANUAL</p>
           <form id="animated-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" required><option value="primeiro-teste">Flow Arts</option></select></label>
@@ -361,32 +359,15 @@
       </section>
 
       <section id="odin" class="view">
-        <section class="panel examples-panel" id="examples-panel">
-          <div class="panel-head"><div><h2>Exemplos por nicho</h2><p class="muted">Uma arte com quatro cenas em 2×2 para cada tipo de negócio. Use o exemplo na apresentação comercial e baixe pelo CRM para anexar manualmente. Estes modelos não são posts e não vão para o Instagram.</p></div></div>
-          <div id="examples-list" class="examples-list"><p class="muted">Carregando…</p></div>
-        </section>
-        <div class="panel prospect-panel" id="prospect-panel">
-          <div class="panel-head">
-            <div><p class="eyebrow">CAÇADOR DE CLIENTES</p><h2>Empresas sem site</h2><p class="muted">Resultados do Google Maps, com nota de 0 a 10. A lista não fica guardada: só quem você chamar no WhatsApp fica salvo. A mensagem já vem pronta. Você toca em "Abrir no WhatsApp" e envia do seu celular.</p></div>
-          </div>
-          <details class="prospect-google">
-            <summary>Chave do Google Maps</summary>
+        <p class="muted">O Caçador, o CRM e os exemplos por nicho ficam no painel da Flow Arts. Aqui ficam só os acessos dos clientes e a chave do Google.</p>
+        <details class="fold"><summary><span class="fold-icon">🔑</span><span><strong>Chave do Google Maps</strong><small>Usada pelo Caçador e pelo Captador dos clientes</small></span></summary><div class="fold-body">
             <form id="prospect-key-form" class="prospect-key">
               <p class="muted">A busca usa o Google Maps. Você mesmo digita a chave aqui. Ela fica guardada com criptografia.</p>
               <label>Chave do Google Maps<input name="apiKey" type="password" autocomplete="off" placeholder="Digite a chave" required></label>
               <button class="primary" type="submit">Salvar chave</button>
               <span id="prospect-key-message" class="form-status"></span>
             </form>
-          </details>
-          <div class="prospect-actions">
-            <label>Tipo de negócio<select id="prospect-niche"><option value="">Todos, em rodízio</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
-            <label>Cidade e estado<input id="prospect-city" maxlength="60" placeholder="Ex.: Niterói RJ (vazio = rodízio)" autocomplete="off"></label>
-            <button class="primary" id="prospect-search" type="button">Buscar empresas</button>
-            <span id="prospect-usage" class="muted"></span>
-          </div>
-          <div class="prospect-tabs" id="prospect-tabs" role="tablist"></div>
-          <div id="prospect-list" class="prospect-list"><p class="muted">Carregando…</p></div>
-        </div>
+                  </div></details>
         <details class="fold"><summary><span class="fold-icon">⌕</span><span><strong>Captador para clientes</strong><small>Quem pode usar (R$ 97/mês)</small></span></summary><div class="fold-body"><div class="panel prospect-panel" id="captador-access">
           <div class="panel-head">
             <div><p class="eyebrow">CAPTADOR PARA CLIENTES · R$ 97/MÊS</p><h2>Quem pode usar</h2><p class="muted">Ligue para o cliente que pagou. Aí a aba "Buscar" do painel dele passa a funcionar.</p></div>
@@ -451,64 +432,6 @@
             <div class="access-actions"><button id="copy-client-access" class="ghost" type="button">Copiar acesso</button><a id="open-client-login" class="primary link-button" href="/login" target="_blank" rel="noopener">Abrir login do cliente</a></div>
           </div>
         </div>
-      </section>
-
-      <section id="crm" class="view">
-        <div class="crm-summary" id="crm-summary"></div>
-        <section class="panel crm-via" id="crm-via"></section>
-        <details class="fold" id="crm-daily-fold"><summary><span class="fold-icon">⏰</span><span><strong>Busca diária e aviso no celular</strong><small id="crm-daily-sub">Todo dia às 9h o Nexus separa empresas para você chamar</small></span></summary><div class="fold-body">
-          <p class="muted">Todo dia, a partir das 9h, o Nexus procura empresas sem site no mapa, uma de cada nicho (em rodízio, primeiro os que têm exemplo). Elas entram em <b>Para chamar</b>, com a mensagem e o exemplo prontos. Nada é enviado sozinho: você toca em Abrir WhatsApp e envia.</p>
-          <div class="crm-daily-row">
-            <label class="crm-check"><input type="checkbox" id="crm-daily-on" checked> Busca diária ligada</label>
-            <label>Empresas por dia<select id="crm-daily-target"><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></label>
-            <button type="button" class="ghost" id="crm-daily-run">Buscar agora</button>
-            <button type="button" class="ghost" id="crm-daily-clean">Limpar quem não respondeu</button>
-          </div>
-          <div class="crm-daily-row">
-            <button type="button" class="primary" id="push-enable">Ativar aviso neste celular</button>
-            <button type="button" class="ghost" id="push-test" hidden>Testar aviso</button>
-          </div>
-          <p class="muted" id="crm-daily-msg" role="status"></p>
-          <p class="muted crm-push-help">No iPhone, o aviso só funciona com o painel adicionado à Tela de Início (Compartilhar › Adicionar à Tela de Início) e aberto por lá.</p>
-        </div></details>
-        <section class="panel crm-today" id="crm-today">
-          <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
-          <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
-        </section>
-        <details class="fold" id="crm-add-fold"><summary><span class="fold-icon">＋</span><span><strong>Novo contato</strong><small>Contato manual pelo Instagram</small></span></summary><div class="fold-body">
-          <form id="crm-form" class="crm-form">
-            <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: João"></label>
-            <label>Negócio<input name="business" maxlength="80" placeholder="Ex.: Pizzaria do João"></label>
-            <label>Instagram da empresa<input name="instagram" maxlength="100" placeholder="@empresa ou link do perfil"></label>
-            <label>WhatsApp (com DDD)<input name="phone" inputmode="tel" maxlength="20" required placeholder="22 99999-9999"></label>
-            <label>Tipo de negócio<select name="niche"><option value="">Não sei / outro</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
-            <label>Interesse<select name="interest"><option value="">Ainda não sei</option><option value="pacote">Pacote de Instagram</option><option value="site">Site</option><option value="pacote-site">Pacote + site</option><option value="outro">Outro</option></select></label>
-            <label>Etapa<select name="stage"><option value="contato">Mandei mensagem</option><option value="conversando">Conversando</option><option value="proposta">Proposta enviada</option><option value="cliente">Virou cliente</option><option value="nao-quer">Não quer agora</option></select></label>
-            <label>Voltar a falar em<select name="followDays"><option value="7" selected>7 dias</option><option value="3">3 dias</option><option value="1">Amanhã</option><option value="15">15 dias</option><option value="30">30 dias</option><option value="0">Não marcar</option></select></label>
-            <label class="wide">Anotação<textarea name="notes" rows="3" maxlength="1000" placeholder="Ex.: Gostou do pacote, pediu para falar depois do dia 20."></textarea></label>
-            <button type="submit" class="primary">Salvar contato</button>
-            <p class="muted wide" id="crm-form-msg" role="status"></p>
-          </form>
-        </div></details>
-        <details class="fold" id="crm-template-fold"><summary><span class="fold-icon">✉</span><span><strong>Mensagem modelo da Meta</strong><small>Para mandar pelo número da Flow depois de 24 h</small></span></summary><div class="fold-body">
-          <p class="muted">A Meta só deixa o número da Flow mandar mensagem livre até 24 h depois que a pessoa falou com ele. Depois disso, vai uma mensagem modelo que a Meta aprova antes. Cada envio de modelo é cobrado pela Meta.</p>
-          <p class="crm-step"><b>1.</b> No Gerenciador do WhatsApp da Meta, crie um modelo: categoria <b>Marketing</b>, idioma <b>Português (BR)</b>.</p>
-          <p class="crm-step"><b>2.</b> Use este texto (o {{1}} vira o nome da pessoa):</p>
-          <pre class="crm-template-text">Olá, {{1}}! Aqui é o Rodrigo, da Flow Arts. Passando para saber se você ainda tem interesse em deixar o Instagram do seu negócio em dia. Posso te mostrar como funciona?</pre>
-          <p class="crm-step"><b>3.</b> Quando a Meta aprovar, escreva aqui o nome do modelo, igual aparece lá.</p>
-          <form id="crm-template-form" class="crm-form">
-            <label>Nome do modelo<input name="templateName" maxlength="512" placeholder="ex.: retorno_flow" autocomplete="off"></label>
-            <label class="crm-check"><input type="checkbox" name="templateUsesName" checked> O modelo tem o {{1}} com o nome</label>
-            <button type="submit" class="primary">Salvar modelo</button>
-            <p class="muted wide" id="crm-template-msg" role="status"></p>
-          </form>
-        </div></details>
-        <section class="panel">
-          <div class="panel-head crm-head"><div><h2>Todos os contatos</h2></div>
-            <label class="crm-search">Buscar<input id="crm-search" type="search" placeholder="Nome, negócio ou número"></label></div>
-          <div class="crm-tabs" id="crm-tabs" role="tablist"></div>
-          <div id="crm-list" class="crm-list"><p class="muted">Carregando…</p></div>
-        </section>
       </section>
 
       <section id="whatsapp" class="view">
@@ -662,7 +585,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=51" defer></script>
+  <script src="/app.js?v=52" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>
@@ -670,10 +593,7 @@
   <script src="/animated-reel.js?v=4" defer></script>
   <script src="/whatsapp-inbox.js?v=3" defer></script>
   <script src="/site-stats.js?v=4" defer></script>
-  <script src="/prospects-ui.js?v=14" defer></script>
-  <script src="/crm.js?v=11" defer></script>
-  <script src="/examples.js?v=2" defer></script>
-  <script src="/master-push.js?v=1" defer></script>
+  <script src="/prospects-ui.js?v=15" defer></script>
   <script src="/signups.js?v=1" defer></script>
   <script src="/viral-radar.js?v=1" defer></script>
 </body>

@@ -1,3 +1,4 @@
+import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { DurableObject } from "cloudflare:workers";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
@@ -735,6 +736,25 @@ export default {
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handlePushRoute(request, env, url);
       if (response) return response;
+    }
+
+    // 22/10 (Rodrigo): o CRM, o Caçador e os exemplos por nicho saíram do Master e foram para o
+    // painel da Flow Arts, que é um cliente. Só o login do cliente Flow Arts usa estas rotas:
+    // /api/portal/flow/<crm|prospects|showcase|push>/… chama a mesma lógica de antes.
+    if (url.pathname.startsWith("/api/portal/flow/")) {
+      const portal = await resolvePortalSession(env, request).catch(() => null);
+      if (!portal || portal.clientId !== SHOWCASE_CLIENT) return json({ error: "unauthorized" }, 401);
+      const rest = url.pathname.slice("/api/portal/flow/".length);
+      if (!/^(crm|prospects|showcase|push)(\/|$)/.test(rest)) return json({ error: "not_found" }, 404);
+      const inner = new URL(url);
+      inner.pathname = "/api/master/" + rest;
+      const req = new Request(inner, request);
+      let response = null;
+      if (rest.startsWith("crm")) response = (await handleCrmSendRoute(req, env, inner)) || (await handleDailyRoute(req, env, inner)) || (await handleCrmRoute(req, env, inner));
+      else if (rest.startsWith("prospects")) response = await handleProspectsRoute(req, env, inner);
+      else if (rest.startsWith("showcase")) response = (await handleShowcaseExtras(req, env, inner)) || (await handleShowcaseMaster(req, env, inner));
+      else if (rest.startsWith("push")) response = await handlePushRoute(req, env, inner);
+      return response || json({ error: "not_found" }, 404);
     }
 
     // CRM: contatos do WhatsApp pessoal do Rodrigo e retorno em 7 dias. Só com login do Master.

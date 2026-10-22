@@ -1,3 +1,4 @@
+import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { handleCaptadorPortal } from "./captador.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
@@ -693,7 +694,8 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(
-      { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "") },
+      // flowCrm (22/10): a Flow Arts vê a aba CRM (o CRM saiu do Master).
+      { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || ""), flowCrm: client.id === SHOWCASE_CLIENT },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );

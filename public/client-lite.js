@@ -644,7 +644,7 @@ function renderAll() {
 }
 
 function showTab(tab) {
-  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "campanha", "negocio", "conta"].includes(tab) ? tab : "inicio";
+  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "campanha", "negocio", "conta", ...(state.flowCrm ? ["crm"] : [])].includes(tab) ? tab : "inicio";
   $$(".tab").forEach(section => { section.hidden = section.id !== "tab-" + state.tab; });
   $$(".tabbar [data-tab]").forEach(btn => {
     const active = btn.dataset.tab === state.tab;
@@ -655,6 +655,28 @@ function showTab(tab) {
   $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "negocio", "conta"].includes(state.tab));
   toggleMore(false);
   window.scrollTo({ top: 0 });
+  // CRM da Flow Arts (22/10): os scripts do CRM carregam quando a aba abre.
+  if (state.tab === "crm") for (const view of ["crm", "odin"]) document.dispatchEvent(new CustomEvent("nexus:view", { detail: view }));
+}
+
+// 22/10: o CRM que era do Master agora fica no painel da Flow Arts (só ela vê esta aba).
+// Toque no aviso do celular com o painel já aberto: vai para a aba CRM.
+navigator.serviceWorker?.addEventListener?.("message", event => {
+  if (event.data?.type === "open-tab" && event.data.tab === "crm" && state.flowCrm) showTab("crm");
+});
+
+function enableFlowCrm() {
+  if (state.flowCrm) return;
+  state.flowCrm = true;
+  window.NEXUS_API = "/api/portal/flow";
+  document.body.classList.add("flow-crm");
+  $$(".flow-only").forEach(el => { el.hidden = false; });
+  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2"]) {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    document.head.appendChild(script);
+  }
 }
 
 function toggleMore(open) {
@@ -674,6 +696,7 @@ function showLogin(message = "") {
 
 function showApp(client) {
   state.client = client || state.client;
+  if (state.client?.flowCrm === true && !DEMO) enableFlowCrm();
   $("#login").hidden = true;
   $("#app").hidden = false;
   renderHome();
@@ -881,7 +904,7 @@ async function boot() {
     const data = await api("/api/portal/session", { signal: AbortSignal.timeout(8000) });
     showApp(data.client || data);
     const params = new URLSearchParams(window.location.search);
-    showTab(params.get("tab") === "instagram" ? "conta" : "inicio");
+    showTab(params.get("tab") === "instagram" ? "conta" : params.get("tab") === "crm" ? "crm" : "inicio");
     if (params.get("oauth") === "success") toast("Instagram conectado com sucesso.");
     else if (params.get("oauth")) toast("A conexão com o Instagram não terminou. Tente de novo.");
     if (params.has("oauth") || params.has("tab")) history.replaceState({}, "", window.location.pathname);

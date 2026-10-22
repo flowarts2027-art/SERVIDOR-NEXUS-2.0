@@ -647,7 +647,7 @@ async function loadWorkspace(){
 function showView(id) {
   $$(".view").forEach(view => view.classList.toggle("active", view.id === id));
   $$(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === id));
-  const titles = { dashboard: "Início", crm: "CRM", whatsapp: "WhatsApp", clients: "Clientes", agents: "Agentes", posts: "Postagens", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Caçador de clientes", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
+  const titles = { dashboard: "Início", crm: "CRM", whatsapp: "WhatsApp", clients: "Clientes", agents: "Agentes", posts: "Postagens", campaigns: "Campanhas & comandos", notifications: "Notificações", portal: "Portal do cliente", odin: "Acessos dos clientes", onboarding: "Novo cliente", site: "Visitas do site", settings: "Integrações" };
   $("#page-title").textContent = titles[id] || "NEXUS AI";
   // Celular: "Mais" fica marcado quando a tela aberta está dentro dele.
   $("#master-more-btn")?.classList.toggle("active", ["clients", "agents", "odin", "site", "settings"].includes(id));
@@ -1182,6 +1182,8 @@ setInterval(()=>{if(document.getElementById("campaigns")?.classList.contains("ac
 // Abrir uma tela direto (ex.: toque no aviso do celular → ?view=crm).
 (() => {
   const open = view => {
+    // 22/10: o CRM saiu do Master; o link antigo (?view=crm) abre o painel da Flow Arts.
+    if (view === "crm") { location.href = "/portal.html?tab=crm"; return; }
     const button = document.querySelector(`.nav-item[data-view="${view}"]`);
     if (button) button.click();
   };

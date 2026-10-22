@@ -3,6 +3,8 @@
 // NÃO vira post, NÃO vai para o painel do cliente e NÃO vai para o Instagram.
 (() => {
   "use strict";
+  // 22/10: o CRM mudou para o painel da Flow Arts (cliente), que define window.NEXUS_API = "/api/portal/flow".
+  const API = window.NEXUS_API || "/api/master";
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const IN_PANEL = new Set(["ready", "scheduled", "failed"]);
@@ -79,7 +81,7 @@
     const box = $("#examples-list");
     if (!box) return;
     try {
-      data = await call("/api/master/showcase");
+      data = await call(API + "/showcase");
       render();
     } catch (error) {
       box.innerHTML = `<p class="muted">${esc(error.message)}</p>`;
@@ -144,7 +146,7 @@
       }
       button.disabled = true;
       button.textContent = "Enviando…";
-      await call("/api/master/showcase/upload", { method: "POST", body });
+      await call(API + "/showcase/upload", { method: "POST", body });
       message[niche] = "Exemplo salvo. ✔ Já vai junto na mensagem do Caçador.";
       openNiche = "";
       await load();
@@ -166,7 +168,7 @@
       const niche = t.dataset.exampleReel;
       const postId = t.closest("form").postId.value;
       try {
-        await call("/api/master/showcase", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ niche, postId }) });
+        await call(API + "/showcase", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ niche, postId }) });
         message[niche] = "Exemplo salvo. ✔";
         openNiche = "";
         await load();
@@ -177,7 +179,7 @@
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Toque de novo"; return; }
       const niche = t.dataset.exampleRemove;
       try {
-        await call("/api/master/showcase", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ niche, postId: "" }) });
+        await call(API + "/showcase", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ niche, postId: "" }) });
         message[niche] = "Exemplo tirado.";
         await load();
       } catch (error) { t.textContent = error.message; }
@@ -186,7 +188,7 @@
     if (t.matches("[data-example-unpanel]")) {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Toque de novo para tirar"; return; }
       try {
-        await call("/api/master/showcase/remove-from-panel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ postId: t.dataset.exampleUnpanel }) });
+        await call(API + "/showcase/remove-from-panel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ postId: t.dataset.exampleUnpanel }) });
         await load();
       } catch (error) { t.textContent = error.message; }
     }

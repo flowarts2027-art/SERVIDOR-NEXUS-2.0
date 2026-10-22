@@ -14,7 +14,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
   <link rel="stylesheet" href="/client-lite.css?v=120">
-  <script src="/client-lite.js?v=121" defer></script>
+  <link rel="stylesheet" href="/flow-crm.css?v=1">
+  <script src="/client-lite.js?v=122" defer></script>
   <script src="/captador.js?v=7" defer></script>
   <script src="/negocio.js?v=2" defer></script>
   <script src="/campanha.js?v=2" defer></script>
@@ -52,6 +53,7 @@
       <button type="button" data-tab="numeros" class="more-tab"><span aria-hidden="true">↗</span>Números</button>
       <button type="button" data-tab="contatos" class="more-tab"><span aria-hidden="true">☺</span>Contatos</button>
       <button type="button" data-tab="campanha"><span aria-hidden="true">◷</span>Campanha</button>
+      <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true">☺</span>CRM</button>
       <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
       <button type="button" data-tab="negocio" class="more-tab"><span aria-hidden="true">▣</span>Meu negócio</button>
       <button type="button" data-tab="conta" class="more-tab"><span aria-hidden="true">⚙</span>Conta</button>
@@ -124,6 +126,87 @@
         <h1 class="page-title">Contatos</h1>
         <p class="lead-intro">Pessoas que mostraram interesse nos seus posts.</p>
         <div id="lead-list"></div>
+      </section>
+
+      <section id="tab-crm" class="tab" hidden>
+        <h1 class="page-title">CRM da Flow Arts</h1>
+        <p class="lead-intro">Empresas para chamar, retornos e o Caçador. Nada é enviado sozinho: você manda pelo seu WhatsApp ou Instagram.</p>
+        <div class="crm-summary" id="crm-summary"></div>
+        <section class="panel crm-via" id="crm-via"></section>
+        <details class="fold" id="crm-daily-fold"><summary><span class="fold-icon">⏰</span><span><strong>Busca diária e aviso no celular</strong><small id="crm-daily-sub">Todo dia às 9h o Nexus separa empresas para você chamar</small></span></summary><div class="fold-body">
+          <p class="muted">Todo dia, a partir das 9h, o Nexus procura empresas sem site no mapa, uma de cada nicho (em rodízio, primeiro os que têm exemplo). Elas entram em <b>Para chamar</b>, com a mensagem e o exemplo prontos. Nada é enviado sozinho: você toca em Abrir WhatsApp e envia.</p>
+          <div class="crm-daily-row">
+            <label class="crm-check"><input type="checkbox" id="crm-daily-on" checked> Busca diária ligada</label>
+            <label>Empresas por dia<select id="crm-daily-target"><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></label>
+            <button type="button" class="ghost" id="crm-daily-run">Buscar agora</button>
+            <button type="button" class="ghost" id="crm-daily-clean">Limpar quem não respondeu</button>
+          </div>
+          <div class="crm-daily-row">
+            <button type="button" class="primary" id="push-enable">Ativar aviso neste celular</button>
+            <button type="button" class="ghost" id="push-test" hidden>Testar aviso</button>
+          </div>
+          <p class="muted" id="crm-daily-msg" role="status"></p>
+          <p class="muted crm-push-help">No iPhone, o aviso só funciona com o painel adicionado à Tela de Início (Compartilhar › Adicionar à Tela de Início) e aberto por lá.</p>
+        </div></details>
+        <section class="panel crm-today" id="crm-today">
+          <div class="panel-head"><div><h2>Falar hoje</h2><p class="muted">Contatos com retorno marcado para hoje ou atrasado.</p></div></div>
+          <div id="crm-due" class="crm-list"><p class="muted">Carregando…</p></div>
+        </section>
+        <details class="fold" id="crm-add-fold"><summary><span class="fold-icon">＋</span><span><strong>Novo contato</strong><small>Contato manual pelo Instagram</small></span></summary><div class="fold-body">
+          <form id="crm-form" class="crm-form">
+            <label>Nome<input name="name" maxlength="80" required placeholder="Ex.: João"></label>
+            <label>Negócio<input name="business" maxlength="80" placeholder="Ex.: Pizzaria do João"></label>
+            <label>Instagram da empresa<input name="instagram" maxlength="100" placeholder="@empresa ou link do perfil"></label>
+            <label>WhatsApp (com DDD)<input name="phone" inputmode="tel" maxlength="20" required placeholder="22 99999-9999"></label>
+            <label>Tipo de negócio<select name="niche"><option value="">Não sei / outro</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
+            <label>Interesse<select name="interest"><option value="">Ainda não sei</option><option value="pacote">Pacote de Instagram</option><option value="site">Site</option><option value="pacote-site">Pacote + site</option><option value="outro">Outro</option></select></label>
+            <label>Etapa<select name="stage"><option value="contato">Mandei mensagem</option><option value="conversando">Conversando</option><option value="proposta">Proposta enviada</option><option value="cliente">Virou cliente</option><option value="nao-quer">Não quer agora</option></select></label>
+            <label>Voltar a falar em<select name="followDays"><option value="7" selected>7 dias</option><option value="3">3 dias</option><option value="1">Amanhã</option><option value="15">15 dias</option><option value="30">30 dias</option><option value="0">Não marcar</option></select></label>
+            <label class="wide">Anotação<textarea name="notes" rows="3" maxlength="1000" placeholder="Ex.: Gostou do pacote, pediu para falar depois do dia 20."></textarea></label>
+            <button type="submit" class="primary">Salvar contato</button>
+            <p class="muted wide" id="crm-form-msg" role="status"></p>
+          </form>
+        </div></details>
+        <details class="fold" id="crm-template-fold"><summary><span class="fold-icon">✉</span><span><strong>Mensagem modelo da Meta</strong><small>Para mandar pelo número da Flow depois de 24 h</small></span></summary><div class="fold-body">
+          <p class="muted">A Meta só deixa o número da Flow mandar mensagem livre até 24 h depois que a pessoa falou com ele. Depois disso, vai uma mensagem modelo que a Meta aprova antes. Cada envio de modelo é cobrado pela Meta.</p>
+          <p class="crm-step"><b>1.</b> No Gerenciador do WhatsApp da Meta, crie um modelo: categoria <b>Marketing</b>, idioma <b>Português (BR)</b>.</p>
+          <p class="crm-step"><b>2.</b> Use este texto (o {{1}} vira o nome da pessoa):</p>
+          <pre class="crm-template-text">Olá, {{1}}! Aqui é o Rodrigo, da Flow Arts. Passando para saber se você ainda tem interesse em deixar o Instagram do seu negócio em dia. Posso te mostrar como funciona?</pre>
+          <p class="crm-step"><b>3.</b> Quando a Meta aprovar, escreva aqui o nome do modelo, igual aparece lá.</p>
+          <form id="crm-template-form" class="crm-form">
+            <label>Nome do modelo<input name="templateName" maxlength="512" placeholder="ex.: retorno_flow" autocomplete="off"></label>
+            <label class="crm-check"><input type="checkbox" name="templateUsesName" checked> O modelo tem o {{1}} com o nome</label>
+            <button type="submit" class="primary">Salvar modelo</button>
+            <p class="muted wide" id="crm-template-msg" role="status"></p>
+          </form>
+        </div></details>
+        <section class="panel">
+          <div class="panel-head crm-head"><div><h2>Todos os contatos</h2></div>
+            <label class="crm-search">Buscar<input id="crm-search" type="search" placeholder="Nome, negócio ou número"></label></div>
+          <div class="crm-tabs" id="crm-tabs" role="tablist"></div>
+          <div id="crm-list" class="crm-list"><p class="muted">Carregando…</p></div>
+        </section>
+              <details class="fold" id="cacador-fold"><summary><span class="fold-icon">◆</span><span><strong>Caçador de clientes</strong><small>Buscar empresas no mapa</small></span></summary><div class="fold-body">
+        <div class="prospect-panel" id="prospect-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">CAÇADOR DE CLIENTES</p><h2>Empresas sem site</h2><p class="muted">Resultados do Google Maps, com nota de 0 a 10. A lista não fica guardada: só quem você chamar no WhatsApp fica salvo. A mensagem já vem pronta. Você toca em "Abrir no WhatsApp" e envia do seu celular.</p></div>
+          </div>
+          <div class="prospect-actions">
+            <label>Tipo de negócio<select id="prospect-niche"><option value="">Todos, em rodízio</option><option value="cafeteria">Cafeteria</option><option value="restaurante">Restaurante</option><option value="lanchonete">Lanchonete</option><option value="padaria">Padaria</option><option value="bar">Bar</option><option value="salao">Salão de beleza e barbearia</option><option value="academia">Academia</option><option value="pet">Pet shop</option><option value="racao">Loja de ração</option><option value="agropecuaria">Agropecuária</option><option value="veterinario">Veterinário</option><option value="dentista">Dentista</option><option value="clinica">Clínica e consultório</option><option value="farmacia">Farmácia</option><option value="mercado">Mercado</option><option value="roupas">Loja de roupas</option><option value="oficina">Oficina mecânica</option><option value="hotel">Hotel e pousada</option><option value="imobiliaria">Imobiliária</option><option value="contabilidade">Contabilidade</option><option value="material">Material de construção</option></select></label>
+            <label>Cidade e estado<input id="prospect-city" maxlength="60" placeholder="Ex.: Niterói RJ (vazio = rodízio)" autocomplete="off"></label>
+            <button class="primary" id="prospect-search" type="button">Buscar empresas</button>
+            <span id="prospect-usage" class="muted"></span>
+          </div>
+          <div class="prospect-tabs" id="prospect-tabs" role="tablist"></div>
+          <div id="prospect-list" class="prospect-list"><p class="muted">Carregando…</p></div>
+        </div>
+        </div></details>
+        <details class="fold" id="exemplos-fold"><summary><span class="fold-icon">▦</span><span><strong>Exemplos por nicho</strong><small>A arte 2×2 que vai junto com a mensagem</small></span></summary><div class="fold-body">
+        <section class="examples-panel" id="examples-panel">
+          <div class="panel-head"><div><h2>Exemplos por nicho</h2><p class="muted">Uma arte com quatro cenas em 2×2 para cada tipo de negócio. Use o exemplo na apresentação comercial e baixe pelo CRM para anexar manualmente. Estes modelos não são posts e não vão para o Instagram.</p></div></div>
+          <div id="examples-list" class="examples-list"><p class="muted">Carregando…</p></div>
+        </section>
+        </div></details>
       </section>
 
       <section id="tab-buscar" class="tab" hidden>

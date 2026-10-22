@@ -2,6 +2,8 @@
 // Contato manual pelo Instagram da empresa; nenhuma mensagem é enviada automaticamente.
 (() => {
   "use strict";
+  // 22/10: o CRM mudou para o painel da Flow Arts (cliente), que define window.NEXUS_API = "/api/portal/flow".
+  const API = window.NEXUS_API || "/api/master";
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const STAGES = [
@@ -209,7 +211,7 @@
     state.sendMsg = "Enviando…";
     render();
     try {
-      const out = await call("/api/master/crm/send", { method: "POST", body: JSON.stringify({ ids, confirmed: true, followDays: 7 }) });
+      const out = await call(API + "/crm/send", { method: "POST", body: JSON.stringify({ ids, confirmed: true, followDays: 7 }) });
       const fails = out.results.filter(r => !r.ok);
       state.sendMsg = `<strong>${out.sent} enviada(s).</strong>` + (fails.length
         ? `<ul>${fails.map(r => `<li>${esc(r.name || "Contato")}: ${esc(REASONS[r.reason] || r.reason)}</li>`).join("")}</ul>` : "");
@@ -241,8 +243,8 @@
       if (state.stage) qs.set("stage", state.stage);
       if (state.q) qs.set("q", state.q);
       const [data, cfg] = await Promise.all([
-        call("/api/master/crm" + (qs.toString() ? "?" + qs : "")),
-        call("/api/master/crm/settings").catch(() => null)
+        call(API + "/crm" + (qs.toString() ? "?" + qs : "")),
+        call(API + "/crm/settings").catch(() => null)
       ]);
       state.data = data;
       if (cfg?.settings) state.settings = cfg.settings;
@@ -269,7 +271,7 @@
       try {
         const body = formBody(form);
         body.followDays = Number(body.followDays);
-        await call("/api/master/crm", { method: "POST", body: JSON.stringify(body) });
+        await call(API + "/crm", { method: "POST", body: JSON.stringify(body) });
         form.reset();
         msg.textContent = "Contato salvo. ✔";
         await load();
@@ -281,7 +283,7 @@
       const msg = $("#crm-template-msg");
       msg.textContent = "Salvando…";
       try {
-        const out = await call("/api/master/crm/settings", { method: "POST", body: JSON.stringify({ templateName: form.templateName.value, templateUsesName: form.templateUsesName.checked }) });
+        const out = await call(API + "/crm/settings", { method: "POST", body: JSON.stringify({ templateName: form.templateName.value, templateUsesName: form.templateUsesName.checked }) });
         state.settings = out.settings;
         msg.textContent = "Salvo. ✔";
         render();
@@ -293,7 +295,7 @@
       const msg = form.querySelector("[data-edit-msg]");
       msg.textContent = "Salvando…";
       try {
-        await call("/api/master/crm/" + encodeURIComponent(form.dataset.edit), { method: "POST", body: JSON.stringify(formBody(form)) });
+        await call(API + "/crm/" + encodeURIComponent(form.dataset.edit), { method: "POST", body: JSON.stringify(formBody(form)) });
         state.open.delete(form.dataset.edit);
         await load();
       } catch (error) { msg.textContent = error.message; }
@@ -379,7 +381,7 @@
     }
     if (t.matches("[data-when-open]")) {
       t.disabled = true;
-      try { await call("/api/master/crm/" + encodeURIComponent(t.dataset.whenOpen) + "/when-open", { method: "POST", body: "{}" }); await load(); }
+      try { await call(API + "/crm/" + encodeURIComponent(t.dataset.whenOpen) + "/when-open", { method: "POST", body: "{}" }); await load(); }
       catch (error) { t.disabled = false; t.textContent = error.message; }
       return;
     }
@@ -390,7 +392,7 @@
       state.settings.via = via;
       state.sendMsg = "";
       render();
-      call("/api/master/crm/settings", { method: "POST", body: JSON.stringify({ via }) }).catch(() => {});
+      call(API + "/crm/settings", { method: "POST", body: JSON.stringify({ via }) }).catch(() => {});
       return;
     }
     if (t.matches("[data-send]")) {
@@ -429,7 +431,7 @@
       const box = t.closest("[data-done-box]");
       t.disabled = true;
       try {
-        await call("/api/master/crm/" + encodeURIComponent(t.dataset.doneSave) + "/contacted", {
+        await call(API + "/crm/" + encodeURIComponent(t.dataset.doneSave) + "/contacted", {
           method: "POST",
           body: JSON.stringify({ followDays: Number(box.querySelector("[data-done-days]").value), note: box.querySelector("[data-done-note]").value })
         });
@@ -440,7 +442,7 @@
     if (t.matches("[data-archive]")) {
       if (t.dataset.confirm !== "1") { t.dataset.confirm = "1"; t.textContent = "Toque de novo para tirar"; return; }
       try {
-        await call("/api/master/crm/" + encodeURIComponent(t.dataset.archive) + "/archive", { method: "POST", body: "{}" });
+        await call(API + "/crm/" + encodeURIComponent(t.dataset.archive) + "/archive", { method: "POST", body: "{}" });
         state.open.delete(t.dataset.archive);
         await load();
       } catch (error) { t.textContent = error.message; }

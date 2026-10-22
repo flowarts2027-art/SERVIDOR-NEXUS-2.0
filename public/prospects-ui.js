@@ -3,6 +3,8 @@
 // quem o Rodrigo chamar no WhatsApp. Nada é enviado sozinho.
 (() => {
   "use strict";
+  // 22/10: o CRM mudou para o painel da Flow Arts (cliente), que define window.NEXUS_API = "/api/portal/flow".
+  const API = window.NEXUS_API || "/api/master";
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const TABS = [
@@ -68,7 +70,7 @@
     const list = $("#prospect-list");
     if (!list) return;
     try {
-      const data = await call("/api/master/prospects?status=" + encodeURIComponent(status === "novo" ? "enviado" : status) + "&limit=60");
+      const data = await call(API + "/prospects?status=" + encodeURIComponent(status === "novo" ? "enviado" : status) + "&limit=60");
       items = status === "novo" ? found : (data.items || []);
       provider = data.provider || "osm";
       // O mapa grátis está sempre disponível; o Google é opcional (precisa de crédito).
@@ -88,11 +90,11 @@
   }
 
   async function move(id, to) {
-    await call("/api/master/prospects/" + encodeURIComponent(id) + "/status", { method: "POST", body: JSON.stringify({ status: to }) });
+    await call(API + "/prospects/" + encodeURIComponent(id) + "/status", { method: "POST", body: JSON.stringify({ status: to }) });
   }
 
   document.addEventListener("click", async event => {
-    const tab = event.target.closest("[data-tab]");
+    const tab = event.target.closest("#prospect-tabs [data-tab]");
     if (tab) { status = tab.dataset.tab; load(); return; }
 
     const sent = event.target.closest("[data-sent]");
@@ -100,7 +102,7 @@
       // O link abre o WhatsApp; aqui guardamos só este contato, como "mandei mensagem".
       const lead = found.find(item => item.id === sent.dataset.sent);
       if (lead) {
-        call("/api/master/prospects/contacted", { method: "POST", body: JSON.stringify(lead) })
+        call(API + "/prospects/contacted", { method: "POST", body: JSON.stringify(lead) })
           .then(() => { found = found.filter(item => item.id !== lead.id); setTimeout(load, 800); }).catch(() => {});
       }
       return;
@@ -112,7 +114,7 @@
       if (!lead) return;
       later.disabled = true;
       try {
-        const out = await call("/api/master/prospects/later", { method: "POST", body: JSON.stringify(lead) });
+        const out = await call(API + "/prospects/later", { method: "POST", body: JSON.stringify(lead) });
         found = found.filter(item => item.id !== lead.id);
         await load();
         $("#prospect-usage").textContent = `${lead.name} foi para o CRM, em "Para chamar". ${out.when ? "Lembro quando " + String(out.when).replace(/^.*· /, "") + "." : ""}`;
@@ -124,7 +126,7 @@
     if (skip) {
       skip.disabled = true;
       try {
-        await call("/api/master/prospects/skip", { method: "POST", body: JSON.stringify({ id: skip.dataset.skip }) });
+        await call(API + "/prospects/skip", { method: "POST", body: JSON.stringify({ id: skip.dataset.skip }) });
         found = found.filter(item => item.id !== skip.dataset.skip);
         await load();
       } catch { skip.disabled = false; skip.textContent = "Erro, tente de novo"; }
@@ -156,7 +158,7 @@
       try {
         const niche = $("#prospect-niche").value;
         const city = ($("#prospect-city")?.value || "").trim();
-        const result = await call("/api/master/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche, city }) });
+        const result = await call(API + "/prospects/search", { method: "POST", body: JSON.stringify({ calls: 3, niche, city }) });
         const seen = new Set(found.map(item => item.id));
         for (const item of result.items || []) if (!seen.has(item.id)) { seen.add(item.id); found.push(item); }
         found.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
@@ -183,7 +185,7 @@
     const message = $("#prospect-key-message");
     message.textContent = "Salvando…";
     try {
-      await call("/api/master/prospects/key", { method: "POST", body: JSON.stringify({ apiKey: input.value.trim() }) });
+      await call(API + "/prospects/key", { method: "POST", body: JSON.stringify({ apiKey: input.value.trim() }) });
       input.value = "";
       message.textContent = "Chave salva.";
       await load();
@@ -197,7 +199,7 @@
     const box = $("#captador-access-list");
     if (!box) return;
     try {
-      const data = await call("/api/master/captador/access");
+      const data = await call(API + "/captador/access");
       box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row">
           <label><input type="checkbox" data-captador-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${esc(c.id)}</small></span>
@@ -220,7 +222,7 @@
     const button = form.querySelector("button");
     button.disabled = true;
     try {
-      await call("/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.captadorLimit, monthlyLimit: Number(form.limit.value) }) });
+      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.captadorLimit, monthlyLimit: Number(form.limit.value) }) });
       button.textContent = "Salvo!";
       setTimeout(loadAccess, 900);
     } catch { button.disabled = false; button.textContent = "Erro, tente de novo"; }
@@ -231,7 +233,7 @@
     if (!input) return;
     input.disabled = true;
     try {
-      await call("/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.captadorClient, enabled: input.checked }) });
+      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.captadorClient, enabled: input.checked }) });
     } catch { input.checked = !input.checked; }
     input.disabled = false;
     loadAccess();
@@ -242,7 +244,7 @@
     const box = $("#ai-images-access-list");
     if (!box) return;
     try {
-      const data = await call("/api/master/ai-images/access");
+      const data = await call(API + "/ai-images/access");
       box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row">
           <label><input type="checkbox" data-ai-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${c.artSource === "ai" ? "Escolheu: criar com IA" : c.artSource === "own" ? "Escolheu: artes prontas" : "Ainda não escolheu"}</small></span>
@@ -259,7 +261,7 @@
     if (!input) return;
     input.disabled = true;
     try {
-      await call("/api/master/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.aiClient, enabled: input.checked }) });
+      await call(API + "/ai-images/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.aiClient, enabled: input.checked }) });
     } catch { input.checked = !input.checked; }
     input.disabled = false;
     loadAiAccess();
@@ -267,4 +269,5 @@
 
   document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); loadAiAccess(); }));
   if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); loadAiAccess(); }
+  document.addEventListener("nexus:view", event => { if (event.detail === "odin") { load(); loadAccess(); loadAiAccess(); } });
 })();

@@ -1,0 +1,97 @@
+/* CRM da Flow Arts dentro do painel do cliente (22/10/2026).
+   Só vale dentro da aba #tab-crm, que só aparece para a Flow Arts. Usa as cores do painel do cliente. */
+#tab-crm .panel, #tab-crm .fold { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-top: 14px; }
+#tab-crm .panel-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
+#tab-crm h2 { font-size: 1.15rem; margin: 0 0 4px; }
+#tab-crm h3 { margin: 0; font-size: 1.05rem; overflow-wrap: anywhere; }
+#tab-crm p { margin: 0; }
+#tab-crm .muted { color: var(--muted); font-size: .95rem; }
+#tab-crm .eyebrow { font-size: .75rem; letter-spacing: .12em; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+#tab-crm .wide { grid-column: 1 / -1; }
+#tab-crm .danger-text { color: var(--danger); }
+
+/* Botões do CRM (usam as classes do Master: primary / ghost) */
+#tab-crm button, #tab-crm .primary, #tab-crm .ghost, #tab-crm .prospect-wa, #tab-crm .crm-wa {
+  min-height: 44px; border-radius: var(--radius-sm); padding: 9px 14px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--card); color: var(--navy); text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: .95rem;
+}
+#tab-crm .primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+#tab-crm .ghost { background: transparent; color: var(--navy); }
+#tab-crm .prospect-wa, #tab-crm .crm-wa { background: var(--whats); border-color: var(--whats); color: #fff; }
+#tab-crm button:disabled { opacity: .55; cursor: wait; }
+
+/* Campos */
+#tab-crm label { display: grid; gap: 6px; font-size: .9rem; color: var(--muted); font-weight: 700; }
+#tab-crm input, #tab-crm select, #tab-crm textarea { width: 100%; padding: 11px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--line); background: #fff; color: var(--ink); font-weight: 400; }
+#tab-crm .crm-check { display: flex; align-items: center; gap: 8px; }
+#tab-crm .crm-check input { width: 22px; height: 22px; }
+
+/* Partes que abrem e fecham */
+#tab-crm .fold { padding: 0; }
+#tab-crm .fold > summary { list-style: none; cursor: pointer; display: flex; gap: 12px; align-items: center; padding: 14px 16px; }
+#tab-crm .fold > summary::-webkit-details-marker { display: none; }
+#tab-crm .fold summary strong, #tab-crm .fold summary small { display: block; }
+#tab-crm .fold summary small { color: var(--muted); font-weight: 400; }
+#tab-crm .fold-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--blue-soft); display: grid; place-items: center; flex: none; }
+#tab-crm .fold-body { padding: 0 16px 16px; display: grid; gap: 12px; }
+
+/* Resumo e abas */
+#tab-crm .crm-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+#tab-crm .crm-summary article { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+#tab-crm .crm-summary strong { display: block; font-size: 1.7rem; line-height: 1.1; }
+#tab-crm .crm-summary span { color: var(--muted); font-size: .9rem; }
+#tab-crm .crm-summary article.hot { background: var(--blue); border-color: var(--blue); color: #fff; }
+#tab-crm .crm-summary article.hot span { color: #fff; }
+#tab-crm .crm-summary article.ok strong { color: var(--ok); }
+#tab-crm .crm-tabs, #tab-crm .prospect-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+#tab-crm .crm-tabs button, #tab-crm .prospect-tabs button { flex: none; border-radius: 999px; min-height: 40px; font-weight: 700; }
+#tab-crm .crm-tabs button.active, #tab-crm .prospect-tabs button.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+#tab-crm .crm-via-row, #tab-crm .crm-daily-row, #tab-crm .prospect-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+#tab-crm .crm-switch { display: inline-flex; gap: 6px; }
+#tab-crm .crm-switch .active { background: var(--navy); border-color: var(--navy); color: #fff; }
+#tab-crm .crm-head { align-items: flex-end; }
+#tab-crm .crm-search { min-width: 220px; flex: 1; }
+
+/* Cartões de contato */
+#tab-crm .crm-list, #tab-crm .prospect-list { display: grid; gap: 12px; }
+#tab-crm .crm-card, #tab-crm .prospect-card { border: 1px solid var(--line); border-radius: var(--radius); background: #fff; padding: 14px; display: grid; gap: 8px; }
+#tab-crm .crm-card.due { border-left: 5px solid var(--blue); }
+#tab-crm .crm-card.late { border-left: 5px solid var(--danger); }
+#tab-crm .crm-card-main { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+#tab-crm .crm-card-text p, #tab-crm .prospect-card p { color: var(--muted); font-size: .95rem; overflow-wrap: anywhere; }
+#tab-crm .crm-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+#tab-crm .crm-stage, #tab-crm .crm-when { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; background: var(--paper); border: 1px solid var(--line); }
+#tab-crm .crm-stage.s-conversando { background: var(--blue-soft); }
+#tab-crm .crm-stage.s-proposta { background: var(--warm-soft); color: var(--warm); }
+#tab-crm .crm-stage.s-cliente { background: var(--ok-soft); color: var(--ok); }
+#tab-crm .crm-when.due { background: var(--blue); color: #fff; border-color: var(--blue); }
+#tab-crm .crm-when.late { background: var(--danger); color: #fff; border-color: var(--danger); }
+#tab-crm .crm-actions, #tab-crm .prospect-buttons, #tab-crm .example-buttons, #tab-crm .example-actions, #tab-crm .crm-edit-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#tab-crm .crm-note { padding: 10px 12px; border-radius: 10px; background: var(--paper); }
+#tab-crm .crm-done, #tab-crm .crm-edit, #tab-crm .crm-form, #tab-crm .example-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end; }
+#tab-crm .crm-done { padding: 12px; border-radius: 12px; background: var(--blue-soft); }
+#tab-crm .crm-edit { border-top: 1px solid var(--line); padding-top: 12px; }
+#tab-crm .crm-history { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: .9rem; }
+#tab-crm .crm-history span { color: var(--muted); margin-right: 6px; }
+#tab-crm pre, #tab-crm .crm-template-text { white-space: pre-wrap; font: inherit; margin: 6px 0 0; padding: 10px; border-radius: 10px; background: var(--paper); }
+#tab-crm details > summary { cursor: pointer; }
+#tab-crm .prospect-card header { display: flex; justify-content: space-between; gap: 10px; }
+#tab-crm .prospect-score { flex: none; font-weight: 700; background: var(--navy); color: #fff; border-radius: 999px; padding: 2px 10px; }
+#tab-crm .hours-badge { font-size: .9rem; font-weight: 700; }
+
+/* Exemplos por nicho */
+#tab-crm .examples-list { display: grid; gap: 10px; }
+#tab-crm .example-row { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 8px; background: #fff; }
+#tab-crm .example-main { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+#tab-crm .example-thumb, #tab-crm .example-image { width: 72px; height: 90px; object-fit: cover; border-radius: 8px; background: var(--paper); }
+#tab-crm .example-chip, #tab-crm .example-kind { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--paper); font-size: .8rem; font-weight: 700; }
+#tab-crm .example-warn { color: var(--warm); }
+#tab-crm .today-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+
+@media (max-width: 640px) {
+  #tab-crm .crm-summary { grid-template-columns: 1fr 1fr; }
+  #tab-crm .crm-actions > *, #tab-crm .prospect-buttons > * { flex: 1 1 auto; }
+}
+/* Com a aba CRM, o menu de baixo do celular tem 6 botões. */
+.flow-crm .tabbar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
