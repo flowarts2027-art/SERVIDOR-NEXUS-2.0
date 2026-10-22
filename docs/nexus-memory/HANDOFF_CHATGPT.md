@@ -1,5 +1,51 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 — Quatree: três posts de 23/10 preparados para ingestão
+- Rodrigo autorizou 3 posts/dia (09h/12h/19h), início 23/10, referências de todas as linhas oficiais e envio ao painel do cliente para aprovação.
+- Criadas três artes a partir de packshots oficiais Supreme/Life/Select Power; JPEG 1080×1350, legendas completas, sem preço/região/condições inventadas.
+- Salvos em agendamentos/clientes/quatree-dog/2026-10-23/. Branch agendamentos recebeu cópia exata do workflow e script multi-cliente já presentes na main; fluxo antigo ignorava clientes/<id>.
+- Este registro acompanha o envio; confirmação da ingestão será registrada após ler os logs. Nenhuma publicação Instagram efetuada. Materiais de prospecção não foram alterados.
+
+## 2026-10-22 18:34 BRT — FLOW-ARTES-001 integrado e implantado
+- Pedido atendido: Rodrigo determinou ajustar a integração porque o envio dos arquivos ao PR não os colocava no painel.
+- PR #367 integrado em `5eca11e`; ajustes de verificação em `2c306a7`; proporção CSS corrigida em `900fec9` (`height:auto`, eliminando área vazia excessiva).
+- Deploy final **success**, execução [39858182963](https://github.com/flowarts 2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39858182963), Worker `90900145-558d-4985-941e-bf 2c415375bf`. Bundle, upload de assets, helper e portal verificados pelo workflow. A etapa opcional `[verify-2x2]` não rodou nesta última execução; não dizer que seu SHA público passou.
+- Produção verificada pelo navegador: abertas as **21 páginas** `https://flowarts.com.br/exemplo/<nicho>`; em cada uma, imagem do nicho em `.../arte-2x2.jpg`, carregada (`complete=true`) e tamanho natural **1080× 1350**. Cafeteria inspecionada visualmente após o último deploy: render **428× 535**, proporção 4:5 correta. Nenhuma imagem faltante.
+- Master/CRM: suporte image, catálogo 21 e migração versionada implantados. Contagem 21/21, upload único, troca/remoção e download por nicho testados em ambiente controlado. **561/561 testes Worker** passaram, inclusive nova rodada após CSS; bundle local aprovado. QA independente confirmou 21 downloads JPEG idênticos e ausência de envio de mensagem/post.
+- Limite: a sessão administrativa do Master não estava autenticada no navegador; a tela de login foi observada, sem inserir credenciais. Não afirmar inspeção visual da aba Exemplos autenticada. O painel do cliente e as páginas públicas responderam no navegador.
+- Monitoramento: as duas tentativas anteriores do verificador HTTP no GitHub (39857242396 e 39857618773) receberam 403, tanto no domínio público quanto no endpoint técnico. O upload/deploy dessas execuções ocorreu; falharam na conferência, não no upload. Causa do 403 não determinada. A verificação real no navegador confirmou os 21 arquivos/páginas; não alterar proteção de domínio nem mascarar a falha como sucesso de SHA-256 remoto.
+- Estado: **integração implantada, 21 páginas/imagens reais conferidas**; nenhuma publicação ou mensagem no Instagram realizada. As artes são modelos comerciais da aba Exemplos, não posts pendentes de aprovação do cliente.
+- Próximo passo: usar Master → Exemplos e o download de arte no CRM. A conferência dentro da sessão Master só pode ser feita com login administrativo autorizado; não requer novo deploy nem reenvio das artes.
+
+## 2026-10-22 18:24 BRT — FLOW-ARTES-001: integração das 21 artes ao painel
+- Pedido do Rodrigo: “Então ajuste isso”, depois de esclarecer que só enviar arquivos ao PR não os colocava no painel. Autorizada a integração efetiva; sem publicação de post no Instagram.
+- Corrigido: tipo `image` no Master (prévia/contador/upload único), CRM (arte/JPEG único), página de exemplo (imagem 4:5) e mensagens. Catálogo21 e migração versionada substituem os modelos antigos imediatamente na leitura; gravação/cron persiste a versão. Uploads e remoções posteriores à versão são preservados no fluxo sequencial. Falha de leitura não dispara seed destrutivo.
+- Arquivos: `bundled-example-catalog.js`, `bundled-examples.js`, `showcase-store.js`, `showcase.js`, `crm.js`, `daily-prospects.js`, UI Master/CRM, testes e verificador público. PR #367 passa a incluir integração, não só mídia.
+- Testes: suíte Worker completa **561/561**; UI Master/CRM **13/13**. Harness adicional baixou as 21 artes pelo CRM com nomes por nicho/empresa e bytes iguais aos JPEG. Teste HTTP com handlers reais e DB legado controlado: Master21 imagens, páginas21 e SHA-256 dos JPEG; JPEG corrompido foi rejeitado pelo verificador. GET não escreve DB.
+- Auditoria: nenhum bloqueio funcional; marcador não vaza na contagem; nenhum post, DM ou envio Instagram criado. Limite: mapa inteiro ainda não tem atualização transacional concorrente (herdado).
+- Estado neste registro: implementação testada, envio/deploy em andamento. Etapa `[verify-2x2]` confere as 21 páginas públicas e bytes após deploy. Sessão autenticada do Master em produção e navegador real não inspecionados; não confundir harness local com produção.
+- Próximo passo: concluir deploy e registrar execução e resultado da verificação real.
+
+## 2026-10-22 18:14 BRT — FLOW-ARTES-001: 21 artes 2×2 enviadas em PR
+- Origem → destino: ChatGPT → Claude Code.
+- Pedido: executar a cobrança do topo de HANDOFF_CLAUDE, completando o envio das artes por nicho.
+- Entrega: 21 JPEG RGB, 1080×1350, em `public/exemplos-nicho/<chave>/arte-2x2.jpg`; branch `feat/artes-nicho-2x2`, [PR #367](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/pull/367). Nenhum nicho pendente de arquivo. Inventário e SHA-256 em `ARTES_2X2_MANIFEST.json`.
+- Nichos: restaurante, cafeteria, lanchonete, padaria, bar, salao, academia, pet, racao, agropecuaria, veterinario, dentista, clinica, farmacia, mercado, roupas, oficina, hotel, imobiliaria, contabilidade, material.
+- Produção visual: recuperadas 15 artes existentes; geradas seis ausentes (cafeteria, restaurante, academia, agropecuária, veterinário e mercado) pela ferramenta de imagem do ChatGPT, sem chamar a API paga do Nexus. Clínica, contabilidade e ração tiveram títulos ajustados para preto/sans-serif. A imagem anterior chamada mercado retratava sementes; foi substituída por mercado de alimentos.
+- Modelo visual: quatro cenas na ordem dono pensativo → dono no celular → feed do nicho → atendimento; cabeçalho “Seu Instagram pode trabalhar por você.” e assinatura FLOW ARTS no rodapé. Fotografias ilustrativas geradas por IA, não depoimentos nem resultados reais de clientes.
+- Evidência: decodificação dos 21 JPEG e dimensões verificadas com Pillow; arquivos enviados como blobs Git com SHA conferido. CI do primeiro envio passou (execução 39854578913); verificar o resultado do commit final no PR.
+- Limitação visual: a série segue a mesma composição, mas as artes recuperadas têm pequenas variações de altura das faixas e tamanho do wordmark; não afirmar identidade geométrica pixel a pixel. Revisão do Rodrigo permanece necessária.
+- Estado: entrega de arquivos em PR aguardando revisão; sem merge, deploy ou publicação no Instagram. A vitrine em produção não foi alterada nem validada nesta tarefa.
+- Próximo passo exato (Claude): ler o PR, revisar as 21 imagens com Rodrigo, apontar a vitrine para `arte-2x2.jpg` dos 21 nichos, testar e só publicar com o OK dele.
+
+## 2026-10-22 — Retomada urgente: conexão Instagram de clientes
+- Proprietário pediu diagnóstico e correção e, por bateria baixa na chamada, registro para retomar depois.
+- Relato: Master → assumir painel de cliente → conectar Instagram → preencher usuário/senha → erro “usuário não encontrado”. Há relato de dois clientes afetados. Não confundir o cliente afetado com a própria Flow Arts. Identidades e credenciais omitidas neste repositório público.
+- Segundo o proprietário, Global Play e Ragnar conectavam e publicavam anteriormente; isso não comprova o estado atual da integração.
+- Ainda desconhecido: se a mensagem vem da página do Instagram ou do callback/painel Nexus. Não atribuir a senha errada, configuração Meta ou perda de contexto do cliente sem evidências.
+- Executado: consulta ao histórico disponível, AGENTS e memória do repositório. Busca de contexto não recuperou as tentativas técnicas do assistente anterior. Nenhuma correção, teste de login, alteração de código ou deploy realizado.
+- Próximo passo: examinar código OAuth e identificação do cliente no fluxo de painel assumido, localizar a origem exata da mensagem, conferir alterações/deploys recentes e reproduzir com segurança; preparar correção pequena e testes. Não publicar posts para testar. Retomar quando o proprietário chamar novamente.
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.

@@ -10,7 +10,10 @@
 #   video.mp4 + capa.jpg             Reel (9:16)
 #   story.jpg  ou  story.mp4 + capa.jpg   Story (9:16)
 #
-# Uso: agendar-pasta.sh SLOT...   (SLOT = AAAA-MM-DD/HHMM)
+# Outro cliente (22/10): agendamentos/clientes/<id-do-cliente>/AAAA-MM-DD/HHMM/  (ex.: clientes/quatree-dog/2026-10-24/0900/)
+#   O post vai para o painel DAQUELE cliente, esperando aprovação, igual à Flow Arts.
+#
+# Uso: agendar-pasta.sh SLOT...   (SLOT = AAAA-MM-DD/HHMM ou clientes/<id>/AAAA-MM-DD/HHMM)
 # DRY_RUN=1 só mostra o que faria, sem banco nem envio.
 
 set -euo pipefail
@@ -57,6 +60,7 @@ sys.exit(1)' 2>/dev/null \
 
 session_ready=0
 HASH=""
+declare -A CLIENT_OK=()
 # A sessão temporária do Master (15 min) é apagada no fim, mesmo se der erro.
 cleanup() { if [ -n "$HASH" ]; then q "DELETE FROM master_sessions WHERE token_hash='$HASH'" >/dev/null 2>&1 || true; fi; }
 trap cleanup EXIT
@@ -64,9 +68,6 @@ trap cleanup EXIT
 start_session() {
   [ "$session_ready" = 1 ] && return 0
   local found
-  found="$(q "SELECT id FROM clients WHERE id='primeiro-teste' LIMIT 1")"
-  CLIENT_ID="$(printf '%s' "$found" | jq -r '.[0].results[0].id // empty' 2>/dev/null || true)"
-  [ -n "$CLIENT_ID" ] || { fail "Cliente Flow Arts (primeiro-teste) não encontrado. D1 respondeu: $(printf '%s' "$found" | cut -c1-300)"; return 1; }
   TOKEN="$(openssl rand -hex 32)"
   HASH="$(printf '%s' "$TOKEN" | sha256sum | cut -d' ' -f1)"
   local exp; exp="$(date -u -d '+15 minutes' +%Y-%m-%dT%H:%M:%S.000Z)"
@@ -74,9 +75,25 @@ start_session() {
   session_ready=1
 }
 
+# Confere no banco que o cliente existe (uma vez por cliente).
+client_exists() {
+  local id="$1"
+  [ -n "${CLIENT_OK[$id]:-}" ] && return 0
+  local found
+  found="$(q "SELECT id FROM clients WHERE id='$id' LIMIT 1")"
+  [ "$(printf '%s' "$found" | jq -r '.[0].results[0].id // empty' 2>/dev/null || true)" = "$id" ] || return 1
+  CLIENT_OK[$id]=1
+}
+
 process_slot() {
-  local slot="$1"
-  [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
+  local slot="$1" CLIENT_ID="primeiro-teste"
+  if [[ "$slot" =~ ^clientes/([a-z0-9][a-z0-9-]{1,48})/(.+)$ ]]; then
+    CLIENT_ID="${BASH_REMATCH[1]}"
+    local rest="${BASH_REMATCH[2]}"
+    [[ "$rest" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use clientes/<cliente>/AAAA-MM-DD/HHMM)"; return; }
+  else
+    [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
+  fi
   local day="${BASH_REMATCH[1]}" time="${BASH_REMATCH[2]}:${BASH_REMATCH[3]}" dir="$ROOT/$slot"
   [ -d "$dir" ] || { note "$slot: pasta apagada, nada a fazer"; return; }
 
@@ -117,11 +134,12 @@ process_slot() {
   fi
 
   if [ "$DRY_RUN" = 1 ]; then
-    note "$slot: enviaria $type para $iso (esperando aprovação), ${#args[@]} campos"
+    note "$slot: enviaria $type para $iso no painel de $CLIENT_ID (esperando aprovação), ${#args[@]} campos"
     return
   fi
 
   start_session || return
+  client_exists "$CLIENT_ID" || { fail "$slot: cliente '$CLIENT_ID' não encontrado no Nexus"; return; }
   local existing
   existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
   if [ "${existing:-0}" != 0 ]; then
