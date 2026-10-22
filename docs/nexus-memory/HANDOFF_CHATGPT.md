@@ -1,5 +1,13 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 — Retomada urgente: conexão Instagram de clientes
+- Proprietário pediu diagnóstico e correção e, por bateria baixa na chamada, registro para retomar depois.
+- Relato: Master → assumir painel de cliente → conectar Instagram → preencher usuário/senha → erro “usuário não encontrado”. Há relato de dois clientes afetados. Não confundir o cliente afetado com a própria Flow Arts. Identidades e credenciais omitidas neste repositório público.
+- Segundo o proprietário, Global Play e Ragnar conectavam e publicavam anteriormente; isso não comprova o estado atual da integração.
+- Ainda desconhecido: se a mensagem vem da página do Instagram ou do callback/painel Nexus. Não atribuir a senha errada, configuração Meta ou perda de contexto do cliente sem evidências.
+- Executado: consulta ao histórico disponível, AGENTS e memória do repositório. Busca de contexto não recuperou as tentativas técnicas do assistente anterior. Nenhuma correção, teste de login, alteração de código ou deploy realizado.
+- Próximo passo: examinar código OAuth e identificação do cliente no fluxo de painel assumido, localizar a origem exata da mensagem, conferir alterações/deploys recentes e reproduzir com segurança; preparar correção pequena e testes. Não publicar posts para testar. Retomar quando o proprietário chamar novamente.
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.
