@@ -147,6 +147,18 @@ figure{margin:0}
 
 /* 6. Pacotes */
 .offer{display:grid;gap:28px}
+.cmp{display:grid;gap:16px}
+.cmp-col{border-radius:22px;padding:22px 20px;background:var(--deep);border:1px solid var(--line)}
+.cmp-col h3{font-size:1.15rem;margin-bottom:12px}
+.cmp-col ul{list-style:none;margin:0 0 4px;padding:0;display:grid;gap:10px}
+.cmp-col li{position:relative;padding-left:28px;color:var(--muted)}
+.cmp-col li::before{position:absolute;left:0;top:0;font-weight:700}
+.cmp-col li.ok::before{content:"✓";color:#3DDC84}
+.cmp-col li.no::before{content:"✕";color:#FF7A7A}
+.cmp-us{border-color:var(--glow);background:radial-gradient(120% 120% at 100% 0%,rgba(73,163,255,.30),transparent 55%),var(--deep)}
+.cmp-us li{color:var(--bright)}
+.cmp-us .btn{margin-top:18px}
+@media (min-width:880px){.cmp{grid-template-columns:1fr 1fr 1fr;align-items:stretch}}
 .feature{border-radius:28px;padding:28px 24px;background:radial-gradient(120% 120% at 0% 0%,rgba(31,107,255,.28),transparent 55%),var(--deep);border:1px solid #2A3E77}
 .feature .price{font-family:Fraunces,Georgia,serif;font-size:2.6rem;color:var(--bright);margin:12px 0 4px}
 .feature .price small{font-size:1rem;color:var(--muted);font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400}
@@ -274,7 +286,7 @@ footer a:hover{color:var(--bright)}
 .phone-small{border-radius:38px}.phone-small .screen{border-radius:34px;padding-top:26px}
 .reel-phone .screen{padding-top:0}.reel-phone .home{display:none}
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Agência de marketing digital com IA para pequenos negócios: sites, posts para Instagram, Reels, resposta automática no direct e logos.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Instagram no Automático · Básico", "price": "397", "priceCurrency": "BRL", "description": "30 conteúdos por mês com IA (posts e carrosséis) e postagem automática com aprovação. Entrada de R$ 197.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "397", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Instagram no Automático · com Vídeo", "price": "697", "priceCurrency": "BRL", "description": "60 conteúdos por mês (Reels em vídeo, carrosséis e posts) e postagem automática com aprovação. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site do seu negócio", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Instagram com resposta automática", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Funciona para o meu tipo de negócio?", "acceptedAnswer": {"@type": "Answer", "text": "Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Agência de marketing digital com IA para pequenos negócios: sites, posts para Instagram, Reels, resposta automática no direct e logos.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Instagram no Automático · Básico", "price": "397", "priceCurrency": "BRL", "description": "30 conteúdos por mês com IA (posts e carrosséis) e postagem automática com aprovação. Entrada de R$ 197.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "397", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Instagram no Automático · com Vídeo", "price": "697", "priceCurrency": "BRL", "description": "60 conteúdos por mês (Reels em vídeo, carrosséis e posts) e postagem automática com aprovação. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site do seu negócio", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Instagram com resposta automática", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "É igual a um app de agendar post?", "acceptedAnswer": {"@type": "Answer", "text": "Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular."}}, {"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Funciona para o meu tipo de negócio?", "acceptedAnswer": {"@type": "Answer", "text": "Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
 </head>
 <body>
 <div class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/video/fundo-cafe.jpg"><source src="/video/fundo-cafe.mp4" type="video/mp4"></video></div>
@@ -417,6 +429,41 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
     </div>
   </section>
 
+  <!-- 5b. Comparação (21/10): app de agendar post x social media x Flow Arts. Sem citar marcas nem preço de terceiros. -->
+  <section class="section" id="comparar" aria-labelledby="cmp-title">
+    <div class="wrap">
+      <h2 id="cmp-title">App de agendar post não cria post.</h2>
+      <p class="intro">Os apps só marcam o horário. A foto, o texto e a ideia continuam sendo trabalho seu.</p>
+      <div class="cmp">
+        <article class="cmp-col">
+          <h3>App de agendamento</h3>
+          <ul>
+            <li class="no">Você tira a foto e escreve o texto</li>
+            <li class="no">Você pensa no que postar todo dia</li>
+            <li class="ok">Ele só agenda e mostra números</li>
+          </ul>
+        </article>
+        <article class="cmp-col">
+          <h3>Social media contratado</h3>
+          <ul>
+            <li class="ok">Cria os posts para você</li>
+            <li class="no">Costuma custar bem mais por mês</li>
+            <li class="no">Depende da agenda de uma pessoa</li>
+          </ul>
+        </article>
+        <article class="cmp-col cmp-us">
+          <h3>Flow Arts</h3>
+          <ul>
+            <li class="ok">A IA cria foto, texto e post</li>
+            <li class="ok">Você só aprova no celular</li>
+            <li class="ok">Posta sozinho no horário certo</li>
+          </ul>
+          <a class="btn btn-whats" href="/exemplo">Quero meu exemplo grátis</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- 6. Pacotes: preço grande, poucas palavras -->
   <section class="section" id="pacotes" aria-labelledby="pack-title">
     <div class="wrap">
@@ -485,7 +532,7 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
     <div class="wrap">
       <h2 id="faq-title">Perguntas frequentes</h2>
       <div class="faq">
-        <details><summary>Os posts saem sem eu ver?</summary><p>Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste.</p></details>
+        <details><summary>É igual a um app de agendar post?</summary><p>Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular.</p></details>        <details><summary>Os posts saem sem eu ver?</summary><p>Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste.</p></details>
         <details><summary>Preciso dar a senha do meu Instagram?</summary><p>Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser.</p></details>
         <details><summary>Funciona para o meu tipo de negócio?</summary><p>Atendemos pequenos negócios de todo o Brasil: lojas, salões, lanchonetes, clínicas, prestadores de serviço e muito mais.</p></details>
         <details><summary>Como eu pago?</summary><p>No Pix. Os pacotes são de pagamento único e não têm fidelidade.</p></details>

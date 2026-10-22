@@ -5,7 +5,7 @@
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
 
 ## Rotina diária (terminar até 08h de Brasília)
-1. Leia esta regra, o `PLANO_CRESCIMENTO.md` (público, função de cada horário e metas), o standup do dia do CEO (`empresa/standup/AAAA-MM-DD.md` na branch `empresa-standup`, se existir) e a entrada mais recente de `HANDOFF_CLAUDE.md`. Veja o que já existe em `agendamentos/` na branch `agendamentos`, para não repetir tema nem horário.
+1. Leia esta regra, o `PLANO_CRESCIMENTO.md` (público, função de cada horário e metas), o `MARKETING_POSICIONAMENTO.md` (mensagem contra os apps de agendamento, série de posts e respostas prontas), o standup do dia do CEO (`empresa/standup/AAAA-MM-DD.md` na branch `empresa-standup`, se existir) e a entrada mais recente de `HANDOFF_CLAUDE.md`. Veja o que já existe em `agendamentos/` na branch `agendamentos`, para não repetir tema nem horário.
 2. Crie 3 posts para o dia: **09:00, 12:00 e 19:00**, seguindo o padrão abaixo e a função de cada horário.
    - **09h · ser salvo:** carrossel útil (passo a passo ou checklist). CTA: "Salve para usar depois".
    - **12h · ser descoberto e enviado:** antes e depois de foto de comida (prova). CTA: "Mande para um dono de cafeteria".
