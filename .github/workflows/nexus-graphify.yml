@@ -35,10 +35,16 @@ jobs:
         run: pip install --quiet graphifyy
 
       - name: Atualizar o mapa
+        shell: bash
         run: |
-          graphify --version || true
-          graphify update .
-          ls -la graphify-out | head -20
+          set -uo pipefail
+          graphify --help > /tmp/help.txt 2>&1 || true
+          echo "::notice::graphify help: $(head -c 900 /tmp/help.txt | tr '\n' ' ')"
+          if ! graphify update . > /tmp/g.log 2>&1; then
+            echo "::error::graphify update falhou: $(tail -c 900 /tmp/g.log | tr '\n' ' ')"
+            exit 1
+          fi
+          echo "::notice::$(tail -c 400 /tmp/g.log | tr '\n' ' ')"
 
       - name: Salvar o mapa (só se mudou)
         shell: bash
