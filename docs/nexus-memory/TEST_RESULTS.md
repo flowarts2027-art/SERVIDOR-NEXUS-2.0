@@ -1,5 +1,12 @@
 # Testes e evidências
 
+## 2026-10-22 18:34 BRT — Integração artes 2× 2
+- Worker:561/561, incluindo UI Master/CRM; repetidos após correção CSS.
+- QA controlado:21 downloads pelo CRM com nomes e bytes corretos, sem envio; Master 21/21 e upload único.
+- Bundle Wrangler local e deploy final 39858182963 aprovados.
+- Navegador real em produção:21 páginas do domínio público; cada imagem natural 1080× 1350 carregada. Cafeteria após 900fec9:428× 535 renderizados.
+- Não validado: sessão Master autenticada. Conferência HTTP GitHub anterior 403; não há prova de SHA-256 remoto pelo script.
+
 ## 2026-10-20 — CRM: escolha manual Instagram ou WhatsApp na mesma entrega
 - Pedido confirmado: escolher um dos dois canais, com texto e modelo do nicho; nada é enviado automaticamente.
 - Implementado: seletor Instagram | WhatsApp, preferência local no navegador (Instagram como padrão); WhatsApp abre wa.me com a mensagem por nome/nicho preenchida e respeita revisão; Instagram abre Direct e copia texto. Edição preservada ao alternar canal, sem alterar opção antiga de envio Flow. Modelo baixado mantém nicho/nome no arquivo; anexar continua manual. Asset crm.js v10.

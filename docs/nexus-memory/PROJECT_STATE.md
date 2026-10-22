@@ -1,5 +1,8 @@
 # Estado do Nexus 2.0
 
+## 2026-10-22 18:34 BRT — Vitrine 21 artes 2× 2 implantada
+PR #367 + ajustes `900fec9`; deploy 39858182963 success. Master/CRM/páginas suportam imagem única, migração 21 versionada e uploads posteriores. Navegador confirmou 21 páginas do domínio público e 21 JPEG carregados 1080× 1350; layout 4:5 corrigido. Master autenticado não inspecionado (login necessário). Detalhes e limitações no topo do HANDOFF_CHATGPT.
+
 ## 2026-10-21 — Correção: CRM Instagram/WhatsApp já está na `main`
 - As três entradas de 20/10 abaixo dizem "sem merge/deploy". Isso ficou desatualizado: o PR #328 (abrir Instagram) e o PR #330 (Direct + escolha Instagram | WhatsApp, branch fix/crm-direct-mensagem) foram juntados na `main`. Commit atual da `main`: f31375f (20/10 10:47 BRT).
 - Como push na `main` que muda `cloudflare/` ou `public/` publica sozinho, o recurso provavelmente está no ar. **Não verificado:** resultado do workflow de deploy de f31375f, teste no Master e contato real no Instagram/WhatsApp.

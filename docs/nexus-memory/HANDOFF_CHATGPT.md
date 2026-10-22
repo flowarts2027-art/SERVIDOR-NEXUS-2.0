@@ -1,5 +1,16 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 18:34 BRT — FLOW-ARTES-001 integrado e implantado
+- Pedido atendido: Rodrigo determinou ajustar a integração porque o envio dos arquivos ao PR não os colocava no painel.
+- PR #367 integrado em `5eca11e`; ajustes de verificação em `2c306a7`; proporção CSS corrigida em `900fec9` (`height:auto`, eliminando área vazia excessiva).
+- Deploy final **success**, execução [39858182963](https://github.com/flowarts 2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39858182963), Worker `90900145-558d-4985-941e-bf 2c415375bf`. Bundle, upload de assets, helper e portal verificados pelo workflow. A etapa opcional `[verify-2x2]` não rodou nesta última execução; não dizer que seu SHA público passou.
+- Produção verificada pelo navegador: abertas as **21 páginas** `https://flowarts.com.br/exemplo/<nicho>`; em cada uma, imagem do nicho em `.../arte-2x2.jpg`, carregada (`complete=true`) e tamanho natural **1080× 1350**. Cafeteria inspecionada visualmente após o último deploy: render **428× 535**, proporção 4:5 correta. Nenhuma imagem faltante.
+- Master/CRM: suporte image, catálogo 21 e migração versionada implantados. Contagem 21/21, upload único, troca/remoção e download por nicho testados em ambiente controlado. **561/561 testes Worker** passaram, inclusive nova rodada após CSS; bundle local aprovado. QA independente confirmou 21 downloads JPEG idênticos e ausência de envio de mensagem/post.
+- Limite: a sessão administrativa do Master não estava autenticada no navegador; a tela de login foi observada, sem inserir credenciais. Não afirmar inspeção visual da aba Exemplos autenticada. O painel do cliente e as páginas públicas responderam no navegador.
+- Monitoramento: as duas tentativas anteriores do verificador HTTP no GitHub (39857242396 e 39857618773) receberam 403, tanto no domínio público quanto no endpoint técnico. O upload/deploy dessas execuções ocorreu; falharam na conferência, não no upload. Causa do 403 não determinada. A verificação real no navegador confirmou os 21 arquivos/páginas; não alterar proteção de domínio nem mascarar a falha como sucesso de SHA-256 remoto.
+- Estado: **integração implantada, 21 páginas/imagens reais conferidas**; nenhuma publicação ou mensagem no Instagram realizada. As artes são modelos comerciais da aba Exemplos, não posts pendentes de aprovação do cliente.
+- Próximo passo: usar Master → Exemplos e o download de arte no CRM. A conferência dentro da sessão Master só pode ser feita com login administrativo autorizado; não requer novo deploy nem reenvio das artes.
+
 ## 2026-10-22 18:24 BRT — FLOW-ARTES-001: integração das 21 artes ao painel
 - Pedido do Rodrigo: “Então ajuste isso”, depois de esclarecer que só enviar arquivos ao PR não os colocava no painel. Autorizada a integração efetiva; sem publicação de post no Instagram.
 - Corrigido: tipo `image` no Master (prévia/contador/upload único), CRM (arte/JPEG único), página de exemplo (imagem 4:5) e mensagens. Catálogo21 e migração versionada substituem os modelos antigos imediatamente na leitura; gravação/cron persiste a versão. Uploads e remoções posteriores à versão são preservados no fluxo sequencial. Falha de leitura não dispara seed destrutivo.

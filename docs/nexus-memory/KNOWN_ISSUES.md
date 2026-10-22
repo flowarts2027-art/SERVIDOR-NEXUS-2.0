@@ -1,5 +1,8 @@
 # Problemas conhecidos
 
+## 2026-10-22 18:34 BRT — Verificador HTTP opcional das 21 artes recebe 403
+Execuções 39857242396 e 39857618773 publicaram Worker/assets, mas `verify-showcase-2x2.py` recebeu 403 em ambos os hosts. Causa não determinada; não é prova de indisponibilidade para usuários. Navegador real carregou 21/21 páginas e imagens no domínio público. Deploy posterior 900fec9 (39858182963) passou pelos checks normais; verificador opcional não acionado. Não desativar proteção ou afirmar SHA remoto verificado. Sessão Master ainda exige login para revisão visual autenticada.
+
 ## 2026-10-21 — Alertas falsos do monitoramento (correção em PR, branch fix/monitor-flowarts)
 - Overnight Regression falha desde 20/10 e o Sentinel abre "agent_cycle" para Global Play e Ragnar (#331, #333, #334, #335): ambos procuram clientes arquivados que não aparecem mais em `/api/autonomy-health`. O PR passa a vigiar a `primeiro-teste`.
 - Ainda aberto: `/api/autonomy-health` tem `ok=false` enquanto Creator, Designer e Format Builder estiverem pausados (agentes "stale"), o que gera #332 todo dia. `/api/instagram-publishing-health` só valida as contas arquivadas; incluir a Flow Arts exige mudança no Worker.
