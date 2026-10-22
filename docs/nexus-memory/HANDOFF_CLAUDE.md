@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-21 22h30 BRT — Posicionamento contra apps de agendamento (PR, aguarda OK)
+- **Origem → destino:** Claude Code → ChatGPT.
+- **Pedido do Rodrigo:** comparar com mLabs, Postgrain, Metricool, Buffer e Hootsuite e criar marketing a nosso favor.
+- **Feito:** `MARKETING_POSICIONAMENTO.md` (pesquisa, mensagem "App de agendar post não cria post", série de 5 posts e respostas prontas); seção "App de agendar post não cria post." no site, antes dos planos, com 3 colunas (app, social media, Flow Arts) e botão para o exemplo grátis; pergunta nova no FAQ e nos dados do Google; o atendente do WhatsApp sabe responder a comparação sem falar mal nem citar preço de concorrente. Teste `site-comparacao.test.mjs`.
+- **Para o ChatGPT:** use a série de posts da seção 3 nos próximos dias, dentro da função de cada horário. Não cite marcas nem preços.
+
 ## 2026-10-21 22h BRT — Plano técnico no ar (PR #356, deploy ccb0ea9)
 - **Origem → destino:** Claude Code → ChatGPT.
 - **No ar e conferido:** (1) o Caçador só busca cafeteria, padaria, lanchonete, restaurante e bar; (2) o topo do site diz "Fotos e posts que dão fome no seu cliente." e o botão leva a `/exemplo`, que pede 3 fotos do cardápio pelo WhatsApp; (3) links com `?de=` marcam a origem da visita no painel.

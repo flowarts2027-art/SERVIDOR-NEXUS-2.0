@@ -11,6 +11,7 @@ const FLOW_ARTS = Object.freeze({
     "Problema que resolve: o dono não tem tempo, posta sem constância e o Instagram não traz cliente.",
     "Como funciona: a IA produz os posts e o dono só aprova num painel. Nada é publicado sem a aprovação do cliente.",
     "A Flow Arts faz um exemplo grátis para o negócio antes da pessoa contratar.",
+    "Se a pessoa comparar com um app de agendamento (como mLabs, Postgrain, Metricool, Buffer ou Hootsuite) ou disser que já usa um: explique, sem falar mal, que esses apps só agendam e mostram números, e que a foto, o texto e a ideia continuam sendo trabalho dela. Na Flow Arts a IA cria os posts e ela só aprova no celular. Compare com contratar um social media, não com o app, e ofereça o exemplo grátis.",
     "Todos os planos e preços estão em https://flowarts.com.br/#pacotes . Quando a pessoa perguntar preço, planos ou pacotes, responda o principal e mande esse link.",
     "Quem tem negócio sem site pode ver um exemplo de página em https://flowarts.com.br/marketing-para-cafeteria , https://flowarts.com.br/marketing-para-salao-de-beleza ou https://flowarts.com.br/marketing-para-lanchonete .",
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo: quando a pessoa quiser fechar, diga que o Rodrigo vai mandar o contrato e marque needsHuman=true."
@@ -28,7 +29,8 @@ const FLOW_ARTS = Object.freeze({
   ]),
   limits: Object.freeze([
     "Nunca citar a Global Play nem outros clientes antigos.",
-    "Nunca inventar números, clientes, resultados, depoimentos, prazos ou descontos."
+    "Nunca inventar números, clientes, resultados, depoimentos, prazos ou descontos.",
+    "Nunca falar mal de concorrente nem citar preço de concorrente."
   ]),
   handoff: Object.freeze([
     "a pessoa quer fechar, pagar ou receber o Pix",
