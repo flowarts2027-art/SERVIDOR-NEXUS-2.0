@@ -67,7 +67,7 @@ def main():
                 except Exception as error:
                     errors[niche] = str(error)
         if not pending:
-            print('LIVE_SHOWCASE_2X2_VERIFIED 21/21 public pages and exact JPEGs; authenticated Master session not inspected.')
+            print(f'LIVE_SHOWCASE_2X2_VERIFIED 21/21 public pages and exact JPEGs at {origin}; authenticated Master session not inspected.')
             return
         print(f'Propagation attempt {attempt}: {len(pending)} niches pending', flush=True)
         if attempt < args.attempts:
