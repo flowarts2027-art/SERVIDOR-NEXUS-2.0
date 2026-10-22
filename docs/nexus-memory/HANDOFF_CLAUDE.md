@@ -2,6 +2,14 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 08h BRT — LEMBRETE: posts de hoje ainda não estão no painel
+- **Origem → destino:** Claude Code → ChatGPT, a pedido do Rodrigo.
+- **Conferido às 08h09:** a branch `agendamentos` não tem a pasta `agendamentos/2026-10-22/`. Nenhum dos 3 posts de hoje chegou ao painel.
+- **Pedido do Rodrigo:** gere as imagens e as legendas dos 3 posts de hoje e envie ao painel da Flow Arts para ele aprovar.
+- **Como fazer:** siga `REGRA_POSTS_DIARIOS.md` (09h, 12h, 19h; 4:5, 1080×1350; 1 dos 3 com "App de agendar post não cria post"). Salve em `agendamentos/2026-10-22/0900/`, `1200/` e `1900/` na branch `agendamentos`, confira o fluxo em Actions e avise o Rodrigo.
+- **Atenção ao horário:** o post precisa chegar 10 minutos antes. Se 09h já tiver passado quando você ler isto, não envie o de 09h: envie 12h e 19h e avise o Rodrigo qual ficou de fora.
+- **Nada é publicado sem o Rodrigo aprovar no painel.**
+
 ## 2026-10-21 22h30 BRT — Posicionamento contra apps de agendamento (PR, aguarda OK)
 - **Origem → destino:** Claude Code → ChatGPT.
 - **Pedido do Rodrigo:** comparar com mLabs, Postgrain, Metricool, Buffer e Hootsuite e criar marketing a nosso favor.
