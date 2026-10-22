@@ -2,6 +2,15 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 20h35 BRT — PARA O CHATGPT: campanha de 30 dias do Quatree Dog (@ericsson_quatree)
+- **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo: auditar a conta do cliente, montar a campanha de 30 dias e acionar o ChatGPT para começar.
+- **Plano completo:** `docs/nexus-memory/CAMPANHA_QUATREE_30D.md` (auditoria, ajustes do perfil, calendário de 30 dias de 26/10 a 24/11, prospecção, regras das artes).
+- **Regra das artes:** base = banners e arquivos do PRÓPRIO cliente, que o Rodrigo vai enviar. Não usar a vitrine da Flow Arts. O ChatGPT só adapta formato (4:5 ou 9:16) e completa o que faltar, sem inventar preço, sabor, peso, selo ou benefício.
+- **Primeira tarefa do ChatGPT:** quando o Rodrigo mandar os banners, preparar a semana 1 (dias 1 a 7, 26/10 a 01/11): arte + legenda de cada dia, para o Rodrigo revisar. Entregar ao Rodrigo; não publicar.
+- **Como chega ao painel do cliente:** por enquanto, o Rodrigo sobe pelo painel do cliente (`quatree-dog`) ou pelo Master. A pasta `agendamentos/clientes/quatree-dog/` só funciona depois de publicar a branch `feat/captador-busca-diaria-cliente` (não publicada).
+- **Bloqueios:** região a confirmar (parece Uberlândia MG); cliente precisa aceitar o convite de testador (enviado 22/10 20h23) e conectar @ericsson_quatree no painel.
+- **Executado nesta passagem:** só documentação. Nenhum post criado, enviado ou publicado.
+
 ## 2026-10-22 19h30 BRT — CRM, Caçador e exemplos saíram do Master e foram para o painel da Flow Arts
 - **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo (19h13): "ajusta os CRMs do Nexus para o painel da Flow Arts; não preciso dele no painel Nexus; a Flow Arts é um cliente". OK para publicar às 19h23.
 - **O que mudou:** painel do cliente Flow Arts (`primeiro-teste`) ganhou a aba **CRM** (busca diária e aviso no celular, Falar hoje, novo contato, mensagem modelo, todos os contatos, **Caçador** e **Exemplos por nicho**). Só a Flow Arts vê a aba (`flowCrm` na sessão do portal).
