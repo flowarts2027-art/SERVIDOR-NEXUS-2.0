@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 23h05 BRT — Planos do site com feed, Reels e stories (pedido do Rodrigo)
+- Básico (R$ 197): por mês, 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories. Com Vídeo: 30 no feed, 30 Reels em vídeo de verdade e 60 stories, com resposta automática e código de pedido.
+- site.html (lista e JSON-LD) e whatsapp-knowledge.js. 574/574 testes. Grade de produção em FORMATOS_POSTAGENS.md.
+
 ## 2026-10-22 23h BRT — Oferta nova da Flow Arts e código de pedido (branch feat/oferta-197, aguarda OK)
 - Site e robô: Básico R$ 197/mês sem entrada (antes R$ 397 + R$ 197); fundador R$ 147/mês nos 3 primeiros meses, 3 vagas, até 30/11/2026; garantia do 1º mês; cancelar "é só avisar no WhatsApp" (antes aviso de 30 dias); resposta automática e código de pedido incluídos no Básico; Vídeo sem o "preço de fundador" (era igual ao normal). Botões "Quero 3 posts grátis"; botão verde com texto escuro (contraste 2,9 → 6,8).
 - Código de pedido: campo em Meu negócio; o Nexus põe "📲 Para pedir, chame no WhatsApp (DDD) número e diga: CÓDIGO" antes das hashtags nas legendas enviadas pelo Master/pasta e nas prontas. Não repete.
