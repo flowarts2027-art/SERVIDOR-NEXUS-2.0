@@ -1,5 +1,10 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-23 — DOTs de marketing: transferência para outra conta
+
+Publicação pública expressamente autorizada pelo proprietário nesta conversa. Instruções completas dos oito agentes Agência Flow (Dante, Lia, Caio, Maya, Ravi, Bento, Clara, Nilo) e DOT ATELIER, com memória de marketing disponível e roteiro de recuperação, em [DOTS_MARKETING_TRANSFERENCIA.md](DOTS_MARKETING_TRANSFERENCIA.md). Commit `6b251543d57b1638041e135608979036d5d931e6`; conteúdo relido e comparado integralmente com a exportação. Somente documentação. Nenhuma instalação na conta de destino testada ou confirmada; nenhuma conexão, tarefa agendada ou credencial transferida. Nexus está fora do escopo dos agentes exportados. Próximo: conta nova ler esse arquivo inteiro e recriar as skills com ferramentas realmente disponíveis, reportando o resultado.
+
+
 ## 2026-10-23 12h30 BRT — MASKARA-24-10: seis conteúdos corrigidos no painel
 **Enviados e aguardando aprovação:** 3 feeds + 3 stories inéditos para 24/10, 09h/12h/19h BRT. Palavra final **QUERO nos comentários**, nas artes e legendas. Actions [39978674414](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39978674414) success; logs confirmam seis uploads novos, sem duplicação. Conteúdo em agendamentos@3fd202f. Nenhum conteúdo aprovado/publicado pelo assistente. Próximo: cliente revisar/aprovar; não reenviar. Detalhes no HANDOFF_CHATGPT.
 
