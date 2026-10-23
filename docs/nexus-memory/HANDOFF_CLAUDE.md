@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 09h40 BRT — Maskara: campanha de 30 dias, conferência antes do envio
+- **Pedido do Rodrigo:** o ChatGPT gera todas as imagens; o Claude envia ao painel da Maskara as peças de hoje e mantém a campanha em 30 dias (24/10 a 22/11).
+- **Conferido:** branch `agendamentos` e todas as outras branches: **0 imagens ou vídeos da Maskara** (as 42 peças antigas foram apagadas em b99c33e). Nada a enviar ainda. Painel do Master com sessão expirada (não conferido). Convite de testador: @maskara.silva **aceitou** (sem "Pendente" em 23/10 09h30). Conta precisa ser profissional e conectada no painel.
+- **Para o ChatGPT:** salvar as peças do dia em `agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/` (posts: `imagem.jpg` ou `01.jpg…` ou `video.mp4`+`capa.jpg`, com `legenda.txt`) e `HHMM-story/story.jpg`. Cada pasta precisa chegar 10 minutos antes do horário. O push na branch `agendamentos` dispara o envio sozinho; avisar o Rodrigo para o Claude conferir.
+- **Tamanho da campanha:** 30 dias = 90 posts (77 imagens + 13 Reels) e 90 stories (`CAMPANHA_MASKARA_7D.md`).
+
 ## 2026-10-23 08h35 BRT — Maskara Assessoria: 3 posts + 3 stories por dia
 - Rodrigo ajustou o ritmo da campanha de 7 dias para 3 posts (09h, 12h, 19h) e 3 stories (09h, 12h, 19h) por dia. `CAMPANHA_MASKARA_7D.md` atualizado.
 
