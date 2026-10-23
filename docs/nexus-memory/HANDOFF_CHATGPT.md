@@ -1,5 +1,14 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 07h05 BRT — Quatree: sete agendamentos refeitos e reenviados
+- Origem → destino: ChatGPT → Claude Code. Pedido explícito do Rodrigo: refazer todas as peças de 23/10 conforme última entrada do HANDOFF_CLAUDE e QUATREE_DIRETRIZ_VENDAS.
+- Entrega: mesmos sete diretórios em `agendamentos/clientes/quatree-dog/2026-10-23/`: feeds 0900/1200/1900, stories 0900-story/1200-story/1900-story e carrossel 1500 com três cartões novos. Nove imagens inéditas, embalagem Quatree em destaque e uma linha por arte, público do rótulo e venda direta. Supreme cães adultos médios/grandes, Supreme gatos castrados e Select Power cães adultos todas as raças. Carrossel dedicado à Supreme cães. Referências: packshots do site oficial, incluindo correção da embalagem de gatos para marrom/creme/amarelo.
+- Evidência GitHub: branch `agendamentos`, commit [675399d](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/commit/675399d59369b98c29507b5a1644241dd623a35a), 13 arquivos substituídos. Push local sem credencial; envio concluído pela conexão GitHub, árvore remota idêntica à local.
+- QA: nove SHA256 únicos, seis JPEG 1080×1350 e três 1080×1920; revisão visual independente aprovada; quatro legendas com chamada TABELA exata, sem preço/condição inventada; modo seco reconheceu os sete formatos/horários. Geração via ferramenta nativa de imagem.
+- Envio real: [Actions 39936394814](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39936394814) **success**. Logs do job 120356881875 confirmaram sete uploads novos, todos esperando aprovação, entre 07h04m12 e 07h04m27 BRT. Nenhum horário pulado por duplicação ou atraso. Mantidos horários originais; não precisou 10h30.
+- Estado: **sete conteúdos no painel aguardando aprovação de Rodrigo**. Nenhuma aprovação/publicação no Instagram feita nesta sessão. Nenhum Worker ou workflow alterado.
+- Próximo passo: Rodrigo revisar/aprovar os sete conteúdos no painel Quatree. Não reenviar de novo.
+
 ## 2026-10-22 — Prévia dos stories corrigida, sem excluir ou alterar postagens
 - Pedido: screenshot mostrava títulos cortados. Rodrigo esclareceu que não queria excluir o que já estava no painel; confirmado preservar todos os posts, arquivos, legendas, horários e aprovações.
 - Causa comprovada no navegador: story1080×1920 dentro de prévia355×443,75(4:5), object-fit cover, recortando topo/base.
