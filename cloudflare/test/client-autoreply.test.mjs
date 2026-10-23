@@ -80,3 +80,13 @@ test("direct vai com botão Chamar no WhatsApp e o texto sem o link", async () =
   const body = giftButtonMessage(msg);
   assert.equal(body.attachment.payload.buttons[0].type, "web_url");
 });
+
+test("texto do WhatsApp por cliente: padrão pelo ramo e personalizado", async () => {
+  const { buildDmMessage, defaultWaText } = await import("../src/client-autoreply.js");
+  const despachante = { id: "m", niche: "Despachante bélico", config: { agentProfile: { brandName: "Maskara", whatsapp: "5521900000000" } } };
+  assert.equal(defaultWaText(despachante), "Olá! Vi no Instagram e quero mais informações.");
+  const msg = buildDmMessage(despachante, { dm: "Fale comigo: {whatsapp}", waText: "Quero ajuda com minha documentação" });
+  assert.match(decodeURIComponent(msg.url), /Quero ajuda com minha documentação/);
+  const racao = { id: "q", niche: "Ração pet", config: { agentProfile: { whatsapp: "5534900000000" } } };
+  assert.match(decodeURIComponent(buildDmMessage(racao, { dm: "{whatsapp}" }).url), /tabela/);
+});

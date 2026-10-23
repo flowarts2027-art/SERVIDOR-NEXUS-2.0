@@ -31,6 +31,7 @@
         <label>Palavras (separe com vírgula)<textarea name="keywords" rows="2" maxlength="600">${esc(c.keywords.join(", "))}</textarea></label>
         <label>Mensagem do direct ({whatsapp} vira o botão "Chamar no WhatsApp")<textarea name="dm" rows="4" maxlength="900">${esc(c.dm)}</textarea></label>
         <label>Resposta no comentário<input name="publicReply" maxlength="150" value="${esc(c.publicReply)}"></label>
+        <label>Texto que chega no seu WhatsApp quando a pessoa toca no botão<input name="waText" maxlength="300" value="${esc(c.waText || "")}"></label>
         <button class="btn btn-primary" type="submit">Salvar respostas</button>
       </form>
       <details><summary>Ver como a mensagem chega</summary><pre class="autoreply-preview">${esc(data.preview)}</pre></details>
@@ -52,7 +53,7 @@
     event.preventDefault();
     const fd = new FormData(event.target);
     try {
-      const out = await call("/api/portal/autoreply", { enabled: fd.get("enabled") === "on", keywords: fd.get("keywords"), dm: fd.get("dm"), publicReply: fd.get("publicReply") });
+      const out = await call("/api/portal/autoreply", { enabled: fd.get("enabled") === "on", keywords: fd.get("keywords"), dm: fd.get("dm"), publicReply: fd.get("publicReply"), waText: fd.get("waText") });
       data = { ...data, config: out.config, preview: out.preview, hasWhatsapp: out.hasWhatsapp };
       note = out.config.enabled ? "Salvo. As respostas começam nos próximos minutos." : "Salvo. As respostas estão desligadas.";
     } catch (error) { note = error.message; }

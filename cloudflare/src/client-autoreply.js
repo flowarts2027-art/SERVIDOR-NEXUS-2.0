@@ -24,6 +24,14 @@ export function defaultDm(client = {}) {
   return `Oi! 👋 Que bom que você se interessou pela ${brand}.\nMe chama no WhatsApp que eu te passo a tabela e as condições: {whatsapp}`;
 }
 
+// Texto que já chega escrito no WhatsApp do cliente quando a pessoa toca no botão (23/10: por cliente).
+export function defaultWaText(client = {}) {
+  const text = [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
+  return /ra[cç][aã]o|pet/i.test(text)
+    ? "Olá! Comentei no Instagram e quero a tabela e as condições."
+    : "Olá! Vi no Instagram e quero mais informações.";
+}
+
 export function parseKeywords(value) {
   const list = Array.isArray(value) ? value : String(value || "").split(/[,;\n]/);
   const out = [];
@@ -58,7 +66,8 @@ export async function clientAutoReplyConfig(env, client) {
     enabled: saved?.enabled === true,
     keywords: Array.isArray(saved?.keywords) && saved.keywords.length ? parseKeywords(saved.keywords) : defaultKeywords(client),
     dm: clean(saved?.dm, 900) || defaultDm(client),
-    publicReply: clean(saved?.publicReply, 150) || "Te chamei no direct! 📩"
+    publicReply: clean(saved?.publicReply, 150) || "Te chamei no direct! 📩",
+    waText: clean(saved?.waText, 300) || defaultWaText(client)
   };
 }
 
@@ -68,7 +77,8 @@ export async function saveClientAutoReplyConfig(env, client, body = {}) {
     enabled: "enabled" in body ? body.enabled === true : current.enabled,
     keywords: "keywords" in body ? parseKeywords(body.keywords) : current.keywords,
     dm: "dm" in body ? clean(body.dm, 900) : current.dm,
-    publicReply: "publicReply" in body ? clean(body.publicReply, 150) : current.publicReply
+    publicReply: "publicReply" in body ? clean(body.publicReply, 150) : current.publicReply,
+    waText: "waText" in body ? (clean(body.waText, 300) || defaultWaText(client)) : current.waText
   };
   if (next.enabled && !next.keywords.length) throw new Error("autoreply_keywords");
   if (next.enabled && !next.dm) throw new Error("autoreply_dm");
@@ -90,7 +100,7 @@ export function previewText(client, config) {
   return typeof msg === "object" ? msg.text + "\n\n[ " + msg.buttonTitle + " ]" : msg;
 }
 export function buildDmMessage(client, config) {
-  const url = whatsappLink(client, "Olá! Comentei no Instagram e quero a tabela e as condições.");
+  const url = whatsappLink(client, String(config?.waText || "") || defaultWaText(client));
   const dm = String(config?.dm || "");
   if (!url || !dm.includes("{whatsapp}")) return buildDm(client, config);
   const text = dm.replace(/\s*:?\s*\{whatsapp\}/g, " 👇").replace(/[ \t]+\n/g, "\n").trim().slice(0, 600);
@@ -99,7 +109,7 @@ export function buildDmMessage(client, config) {
 
 // Texto final do direct: {whatsapp} vira o link do WhatsApp do cliente (aba "Meu negócio").
 export function buildDm(client, config) {
-  const link = whatsappLink(client, "Olá! Comentei no Instagram e quero a tabela e as condições.");
+  const link = whatsappLink(client, String(config?.waText || "") || defaultWaText(client));
   return String(config.dm || "").replace(/\{whatsapp\}/g, link || "").trim();
 }
 
