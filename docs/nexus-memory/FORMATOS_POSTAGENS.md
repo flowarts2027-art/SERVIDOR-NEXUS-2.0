@@ -1,32 +1,41 @@
-# Grade de formatos — Flow Arts e Quatree Dog (decisão do Rodrigo, 22/10/2026)
+# Grade de formatos — Flow Arts e Quatree Dog
 
-**Pedido do Rodrigo (22/10, 22h59):** postar carrossel, stories, feed e Reels nos dois perfis, com mais postagens por dia quando for preciso.
-**Vale a partir de 23/10/2026**, até o Rodrigo mudar. Nada é publicado sem aprovação no painel.
-Quem cria: o ChatGPT (plano do Rodrigo). Como envia: pasta `agendamentos/` (ver `agendamentos/README.md`). Qualquer horário `HHMM` funciona.
+**Decisão direta de Rodrigo, 22/10/2026, após a grade anterior:** cada perfil recebe **3 stories exclusivos por dia, às 09h, 12h e 19h (Brasília)**, a partir de 23/10. Esta decisão substitui os stories das 10h30/16h da Flow Arts e das 18h da Quatree.
 
-## 1. Flow Arts (@flowarts2026) — 5 por dia
+## Regra prioritária: nenhuma imagem repetida
+- **Nunca reutilizar uma mesma imagem entre feed, carrossel, story ou Reel**, inclusive mudando só o corte, proporção, texto ou fundo.
+- Cada cartão do carrossel tem uma cena própria. Cada story tem uma cena própria. O Reel usa cenas próprias que não foram usadas em outro post.
+- Produto e identidade podem permanecer; a fotografia, cena e composição precisam ser inéditas. Comparar visualmente e por hashes antes do envio.
+- Não repetir a arte do gato da Quatree: manter a arte do feed somente no feed; carrossel e stories usam outras cenas.
+- **Desativar o espelhamento automático de feed/carrossel em stories** (`NEXUS_AUTO_STORY="false"`). Stories passam a ser conteúdos explícitos, exclusivos, enviados ao painel para aprovação.
+- A capa de um Reel é a prévia técnica do próprio vídeo, não uma nova postagem; não usar essa imagem em outro conteúdo.
+- Nada é publicado nem aprovado pelo assistente. O usuário aprova no painel.
+
+## 1. Flow Arts (@flowarts2026) — 6 conteúdos por dia
 | Horário | Formato | Pasta | Função |
 | --- | --- | --- | --- |
-| 09:00 | **Carrossel** (5 a 7 cartões, 4:5) | `agendamentos/AAAA-MM-DD/0900/` → `01.jpg…` + `legenda.txt` | Ser salvo (passo a passo, checklist) |
-| 10:30 | **Story** (9:16) | `.../1030/` → `story.jpg` | Bastidor ou tema do dia + "responda no direct" |
-| 12:00 | **Reel** (9:16, 8 a 15 s) | `.../1200/` → `video.mp4` + `capa.jpg` + `legenda.txt` | Ser descoberto (antes e depois, prova) |
-| 16:00 | **Story** (9:16) | `.../1600/` → `story.jpg` | Chamada: "3 posts grátis: comente QUERO no post de hoje" |
-| 19:00 | **Feed de 1 imagem** (4:5) | `.../1900/` → `imagem.jpg` + `legenda.txt` | Conversa (pergunta) |
+| 09:00 | Carrossel, 5–7 cartões 4:5 | `agendamentos/AAAA-MM-DD/0900/` | Conteúdo útil para salvar |
+| 09:00 | Story exclusivo 9:16 | `.../0900-story/story.jpg` | Abrir o tema do dia |
+| 12:00 | Reel, 9:16, 8–15s | `.../1200/` | Descoberta; cenas inéditas |
+| 12:00 | Story exclusivo 9:16 | `.../1200-story/story.jpg` | Oferta e conversa |
+| 19:00 | Feed de uma imagem, 4:5 | `.../1900/` | Pergunta/conversa |
+| 19:00 | Story exclusivo 9:16 | `.../1900-story/story.jpg` | Aprovação, rotina ou convite |
 
-- **Além disso, o Nexus publica sozinho** a 1ª imagem do carrossel das 09h e o post das 19h também como story. Não precisa fazer esses.
-- A regra "1 post por dia com *App de agendar post não cria post*" continua: vale para um dos 3 do feed (09h, 12h ou 19h).
-- Tudo do `REGRA_POSTS_DIARIOS.md` continua valendo (público de comida, sem preço, sem azul, título na metade de cima, QUERO no fim).
+Público de comida local; sem preço, sem azul/neon/robôs; CTA **QUERO**, oferta **3 posts grátis**. Uma das peças do feed mantém “App de agendar post não cria post”.
 
-## 2. Quatree Dog (@ericsson_quatree) — 2 a 3 por dia
-Pasta: `agendamentos/clientes/quatree-dog/AAAA-MM-DD/HHMM/`. Base: banners e fotos do cliente (`CAMPANHA_QUATREE_30D.md`).
-| Horário | Dias | Formato | Função |
-| --- | --- | --- | --- |
-| 09:00 | todos | **Feed**: seg, qua e sex **carrossel**; ter, qui, sáb e dom **1 imagem** (segue o calendário da campanha) | Produto, ajuda ao lojista, confiança, revenda |
-| 12:00 | ter, qui e sáb | **Reel** (9:16, 8 a 15 s) feito com os banners do cliente | Ser descoberto por lojistas da região |
-| 18:00 | todos | **Story** (9:16) | Bastidor, produto chegando, "peça a tabela no direct" |
+## 2. Quatree Dog (@ericsson_quatree)
+Base: materiais corretos do cliente e cenas novas; seguir `CAMPANHA_QUATREE_30D.md`.
+| Horário | Dias | Formato |
+| --- | --- | --- |
+| 09:00 | Todos | Feed: carrossel seg/qua/sex; imagem nos outros dias |
+| 09:00 | Todos | Story exclusivo, `agendamentos/clientes/quatree-dog/AAAA-MM-DD/0900-story/story.jpg` |
+| 12:00 | Ter/qui/sáb | Reel com cenas próprias |
+| 12:00 | Todos | Story exclusivo, `.../1200-story/story.jpg` |
+| 19:00 | Todos | Story exclusivo, `.../1900-story/story.jpg` |
 
-- Toda legenda do feed e do Reel termina com a palavra **TABELA** (aciona a resposta automática com o botão do WhatsApp). Story não tem legenda.
-- Dias de Reel do calendário da campanha (dias 4 e 11) passam a ser às 12h.
+Toda legenda Quatree termina, antes das hashtags, com **Comente TABELA que eu te mando a tabela de revenda no direct 📩**. Story usa “Comente TABELA no post de hoje” ou “Responda TABELA”, sem legenda. A programação excepcional de 23/10 mantém os três feeds e carrossel 15h solicitados, com imagens diferentes nos sete conteúdos.
+
+**Envio simultâneo feed + story:** usar a pasta `HHMM-story` para o story e `HHMM` para feed/Reel/carrossel. A ingestão deve diferenciar os formatos ao evitar duplicatas. Só declarar suporte após o envio ser validado.
 
 ## 3. Como fazer cada formato
 **Carrossel e feed:** 4:5, 1080×1350, JPG. Igual ao `REGRA_POSTS_DIARIOS.md`.
