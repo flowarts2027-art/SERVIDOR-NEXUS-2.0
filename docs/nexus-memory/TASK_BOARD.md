@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-23 — MASKARA: campanha anterior apagada; refação fotográfica em andamento
+Rodrigo reprovou as artes didáticas.42posts antigos removidos do painel, zero restantes (Actions39948848202). Arquivos retirados. Nova ordem: imagens realistas de armas de fogo, estande de tiro e material tático, texto curto para captar clientes do serviço documental. Nenhuma nova campanha reenviada ainda. A confirmação anterior de42uploads é histórica e foi substituída por esta retirada.
+
 ## 2026-10-23 08h43 BRT — MASKARA-7D-001: 42 conteúdos no painel
 **Concluído o envio**, aguardando aprovação: 3 posts + 3 stories/dia, 24–30/10, 09h/12h/19h. Reels às12h em25/27/29. [Actions39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success; logs confirmam42uploads novos, sem falhas/duplicatas/horários pulados. 60cenas distintas, QA aprovado. Nenhum aprovado/publicado pelo assistente. Próximo: Rodrigo revisar/aprovar e conferir conexão Meta/DOCUMENTOS. Detalhes no HANDOFF_CHATGPT.
 
@@ -31,7 +34,7 @@ Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, n
 | FORMATOS-001 | Carrossel, stories, Reels e feed na Flow Arts (5 por dia) e no Quatree (2 a 3 por dia) | ChatGPT cria; Rodrigo aprova | **Regra registrada (22/10)** em `FORMATOS_POSTAGENS.md`; vale de 23/10 | ChatGPT segue a grade nova a partir de 23/10. |
 | PLANOS-PIX-001 | Planos com nomes curtos; /cadastro com escolha do plano e Pix (CNPJ); aprovação no Master; plano no painel do cliente; Master com leitura fácil | Claude implementou; Rodrigo aprova | **No ar** (PR #381, merge 3d84d1f; deploy 39889673145 success; /cadastro conferido no navegador com os 8 planos, 22/10 23h30) | Primeiro cadastro real: Rodrigo confere o Pix no banco e aprova no Master. |
 | QUATREE-VENDA-001 | Conteúdo do Quatree focado em venda: toda peça com produto | ChatGPT cria; Rodrigo aprova | **Diretriz registrada (23/10)** em `QUATREE_DIRETRIZ_VENDAS.md`; auditoria de 23/10: 3 de 9 peças com produto | ChatGPT segue a diretriz no próximo conteúdo. |
-| MASKARA-7D-001 | Campanha de 7 dias, 24–30/10, 3 posts + 3 stories/dia | ChatGPT criou; cliente aprova | **42 conteúdos enviados ao painel e aguardando aprovação**. Actions39947767760 success,42uploads confirmados;QA aprovado | Rodrigo revisa/aprova; confere conta profissional, convite e DOCUMENTOS. Não reenviar. |
+| MASKARA-7D-001 | Refazer campanha 24–30/10 com fotografia realista para captar clientes | ChatGPT cria; cliente aprova | **Campanha anterior apagada:42removidos,0restantes. Nova produção em andamento** | Usar armas/estande/material tático conforme Rodrigo; não reenviar artes didáticas. |
 | FLOW-ARTES-001 | Uma imagem 4:5 com quatro cenas em 2× 2 para os 21 nichos, integrada ao Master/CRM/vitrine | ChatGPT implementou e implantou | **Implantado**: PR #367 e 900fec9; deploy 39858182963 success. Navegador confirmou 21 páginas/imagens 1080× 1350.561/561 testes. | Usar Master → Exemplos e baixar arte no CRM. Sessão Master autenticada não inspecionada; verificação HTTP opcional 403 registrada no handoff/KNOWN_ISSUES. Nenhuma arte pendente de envio. |
 
 ## Convenções de estado
