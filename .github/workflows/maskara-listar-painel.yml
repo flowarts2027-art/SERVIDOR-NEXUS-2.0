@@ -1,0 +1,25 @@
+name: Maskara listar posts do painel (somente leitura)
+on:
+  push:
+    branches: [agendamentos]
+    paths: ['.github/workflows/maskara-listar-painel.yml']
+permissions:
+  contents: read
+jobs:
+  listar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Listar posts da Maskara (sem alterar nada)
+        env:
+          D1_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN }}
+        run: |
+          python - <<'PY'
+          import os,json,urllib.request
+          url='https://api.cloudflare.com/client/v4/accounts/d9ecb78dbc0c1b0b61f8caae501f59df/d1/database/3d440c4a-8925-4526-8d29-03f9eb227d60/query'
+          sql="SELECT id,scheduled_for,status,approval_status,json_extract(payload_json,'$.source') AS source,json_extract(payload_json,'$.creativeFeatures.requestedFormat') AS format,substr(caption,1,70) AS cap FROM post_ledger WHERE client_id='maskara-assessoria' AND COALESCE(status,'') NOT LIKE 'cancel%' AND COALESCE(approval_status,'')<>'rejected' ORDER BY scheduled_for LIMIT 80"
+          req=urllib.request.Request(url,data=json.dumps({'sql':sql}).encode(),headers={'Authorization':'Bearer '+os.environ['D1_TOKEN'],'Content-Type':'application/json'})
+          rows=json.load(urllib.request.urlopen(req))['result'][0]['results']
+          print('::notice::total ativos='+str(len(rows)))
+          for r in rows:
+            print('::notice::'+' | '.join(str(r.get(k)) for k in ['scheduled_for','status','approval_status','source','format','id','cap']).replace('\n',' '))
+          PY
