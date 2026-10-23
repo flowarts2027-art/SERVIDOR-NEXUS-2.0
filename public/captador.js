@@ -159,8 +159,9 @@
     if (lead.status === "hoje") {
       const link = withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp;
       const direct = lead.direct ? `<a class="btn btn-soft" href="${esc(lead.direct)}" target="_blank" rel="noopener" data-cap-direct="${esc(lead.id)}">Copiar e abrir Direct</a>` : "";
-      return `${lead.mobile ? `<a class="btn btn-whats" href="${esc(link)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">${withMedia(lead) ? "1. Abrir conversa" : "Abrir no WhatsApp"}</a>` : ""}
-        ${withMedia(lead) ? `<button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">${lead.mobile ? "2. " : ""}Mandar meu material</button>` : ""}
+      // 23/10: telefone fixo também ganha o botão: muita loja usa WhatsApp Business no número fixo.
+      return `<a class="btn btn-whats" href="${esc(link)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">${withMedia(lead) ? "1. Abrir conversa" : lead.mobile ? "Abrir no WhatsApp" : "Tentar no WhatsApp (fixo)"}</a>
+        ${withMedia(lead) ? `<button type="button" class="btn btn-primary" data-cap-share="${esc(lead.id)}">2. Mandar meu material</button>` : ""}
         ${direct}
         <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>
         ${move("nao-quer", "Não serve", "btn-ghost")}`;
@@ -185,7 +186,7 @@
   }
 
   function leadCard(lead) {
-    const bits = [!lead.phone ? "Sem telefone no mapa" : lead.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)", lead.has_site ? "Tem site" : "Sem site"];
+    const bits = [!lead.phone ? "Sem telefone no mapa" : lead.mobile ? "Celular" : "Telefone fixo (muitas lojas têm WhatsApp no fixo)", lead.has_site ? "Tem site" : "Sem site"];
     if (lead.instagram) bits.push("Instagram @" + esc(lead.instagram));
     const stars = Number(lead.reviews) ? `<p>Nota ${esc(String(Number(lead.rating || 0).toFixed(1)).replace(".", ","))} · ${Number(lead.reviews)} avaliações no Google</p>` : "";
     return `<article class="cap-lead">
