@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-23 07h05 BRT — Quatree de hoje refeito e reenviado
+Pedido novo de Rodrigo substitui o conteúdo anterior: sete agendamentos / nove imagens inéditas com embalagem e venda, mesmos diretórios/horários de 23/10. Commit `675399d` na branch `agendamentos`; Actions [39936394814](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39936394814) success com sete uploads confirmados esperando aprovação. QA visual, dimensões e hashes aprovados. Próximo passo: Rodrigo revisar/aprovar no painel. Não reenviar. Detalhes no topo do HANDOFF_CHATGPT.
+
 ## Atualização prioritária —23/10, stories e imagens exclusivas
 Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, novo carrosselQuatree15h e ReelFlow12h sem reutilizar cartões/feeds. Execução39891196118 success,8uploads aguardando aprovação e antigos cancelados. Espelhamento feed→story desativado e implantado(39890408576). **Nunca repetir imagem entre formatos.** Esta ordem substitui os resumos anteriores de5conteúdos/1story ou carrossel com feeds reutilizados. Detalhes no topo HANDOFF_CHATGPT e FORMATOS_POSTAGENS. Próximo passo: aprovação de Rodrigo no painel.
 
