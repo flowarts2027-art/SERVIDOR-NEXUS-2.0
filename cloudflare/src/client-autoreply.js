@@ -14,8 +14,9 @@ const GENERAL_WORDS = ["quero", "preço", "preco", "valor", "info", "informaçã
 
 const clean = (value, max) => String(value ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, " ").replace(/[ \t]+/g, " ").trim().slice(0, max);
 
-// Despachante / documentação de armas e CAC (Maskara, 23/10): as artes pedem "DOCUMENTOS".
-const DOCS_WORDS = ["documentos", "documento", "documentação", "documentacao", ...GENERAL_WORDS];
+// Despachante / documentação de armas e CAC (Maskara): desde 23/10 12h a palavra é "QUERO"
+// ("Comenta QUERO abaixo"); "documentos" não é mais usada.
+const DOCS_WORDS = [...GENERAL_WORDS];
 const nicheText = client => [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
 const isRacao = client => /ra[cç][aã]o|pet/i.test(nicheText(client));
 const isDocs = client => /despachante|documenta|\bcac\b|armas?\b|tiro/i.test(nicheText(client));
