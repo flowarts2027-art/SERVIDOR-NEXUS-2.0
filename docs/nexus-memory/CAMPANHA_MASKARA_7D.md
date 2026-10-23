@@ -1,86 +1,74 @@
-# Campanha de teste de 7 dias — Maskara Assessoria (@maskara.silva)
+# Campanha comercial de 30 dias — Maskara Assessoria (@maskara.silva)
 
-## Direção atualizada por Rodrigo — 23/10/2026
-**Campanha anterior rejeitada e removida:42conteúdos apagados, zero restantes (Actions39948848202). Não restaurar as artes editoriais.**
-Objetivo: **atrair clientes para a assessoria**, com fotografia realista de **armas de fogo, estande de tiro e material tático**, pouco texto e chamada comercial. Esta ordem substitui a regra visual anterior sem arma em destaque. Não explicar etapas nem usar diagramas. Manter grade3posts+3stories/dia,24–30/10,09h/12h/19h eReels12h25/27/29. Continuam serviço documental, sem venda de arma/munição, sem preço ou promessa. Nenhuma aprovação por Meta garantida.
+**Atualização solicitada em 23/10/2026:** a campanha não é mais de 7 dias. Período **24/10 a 22/11/2026**, 30 dias consecutivos. A campanha editorial anterior foi rejeitada e os **42 conteúdos anteriores foram excluídos**, segundo a passagem de trabalho. Não restaurar as artes rejeitadas.
 
-**Pedido do Rodrigo (23/10/2026, 08h21):** auditar o Instagram e preparar a campanha do nicho para o ChatGPT. Cliente amigo testando o Nexus por **7 dias** (24/10 a 30/10/2026).
-**Cliente no Nexus:** `maskara-assessoria` · nicho **Despachante bélico (documentação de armas e CAC)** · convite de testador do app enviado para @maskara.silva em 23/10 (pendente de aceite).
-**Pasta dos posts:** `agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/` (e `HHMM-story/`). Tudo vai para o painel do cliente **esperando aprovação**.
-Repositório público: sem telefone, nome completo, endereço ou dados de clientes dele.
+**Objetivo:** atrair contatos para o serviço de assessoria e despachante de documentação de armas de fogo e CAC. Fotografias realistas com contexto de estande de tiro, equipamentos esportivos/táticos e atendimento de escritório. Imagens chamativas, pouco texto e CTA para conversar com a Maskara. Evitar conteúdos didáticos que ensinam passo a passo ou desenhos explicativos. A presença de armas nas fotografias não é anúncio de armas: **não vender, intermediar nem oferecer armas, munições ou acessórios**. Não indicar preço, modelo ou links de compra de armas. Não apontar armas para pessoas ou câmera. Não prometer aprovação, resultado ou prazo. Linguagem responsável; nenhum auxílio a procedimentos ilegais.
 
-## 1. Auditoria do perfil (público, 23/10, só leitura)
-| Ponto | Hoje | Problema |
-| --- | --- | --- |
-| Tipo de conta | Perfil pessoal | **A publicação pelo Nexus exige conta profissional** (Empresa ou Criador de conteúdo). |
-| Números | ~690 seguidores · ~910 seguindo | Segue mais do que é seguido. |
-| Bio | Apelido, lema, "TI", menção a armas cortada | Não diz o serviço, a região nem como contratar. |
-| Conteúdo | Trilhas de moto, paisagens, 1 arte de caveira com fuzil | Nenhum post sobre o serviço de despachante. A arte com arma pode limitar o alcance. |
-| Destaques | Moto e passeios | Nenhum destaque do serviço. |
+## Status operacional verificado
+- Cliente Nexus: `maskara-assessoria`; Instagram informado: `@maskara.silva`.
+- Em 23/10 houve envio de 42 itens da versão **antiga**, depois excluídos conforme relato documentado. Portanto **a nova campanha de 30 dias ainda não está confirmada como enviada**.
+- O convite de testador estava pendente e a conta foi identificada como pessoal. É necessário aceitar convite, migrar para conta profissional e conectar ao Nexus antes de publicar.
+- **Pasta de destino:** branch `agendamentos`, `agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/` (posts) e `HHMM-story/` (stories). Não enviar sem verificar se a agenda existente foi realmente esvaziada.
+- Tudo deve chegar ao painel **aguardando aprovação**, nunca publicar automaticamente sem o aceite do cliente.
 
-**Resumo:** hoje é um perfil pessoal de lazer. Para o teste, o ideal é virar profissional e passar a falar do serviço. Não precisa apagar nada: só arquivar o que não combina.
+## Grade diária (30 dias)
+- 09h: postagem comercial de feed 4:5 (1080×1350), imagem inédita.
+- 12h: postagem de feed 4:5 ou Reel 9:16 nas datas indicadas, imagem/vídeo inédito.
+- 19h: postagem comercial de feed 4:5, imagem inédita.
+- Stories às 09h, 12h e 19h: **três imagens 9:16 inéditas, diferentes dos feeds e umas das outras**.
+- **Totais:** 90 posts (77 imagens/feed + 13 Reels) e 90 stories = **180 peças**; 13 Reels substituem o post das 12h, não são posts adicionais.
+- Reels: 25, 27, 29/10; 01, 03, 05, 08, 10, 12, 15, 17, 19 e 22/11. Cenas realistas em ambiente esportivo e atendimento, sem procedimentos de uso de armas.
 
-## 2. Ajustes do perfil (o cliente faz no celular, antes de conectar)
-1. **Mudar para conta profissional:** Perfil › ☰ › Configurações e privacidade › Tipo de conta e ferramentas › Mudar para conta profissional › categoria "Serviço" ou "Consultor". Sem isso o Nexus não publica.
-2. **Nome (busca):** `Maskara | Despachante CAC` (ajustar como ele preferir).
-3. **Bio (sugestão, ajustar a cidade):**
-   ```
-   Despachante bélico · CAC
-   CR · CRAF · Guia de Tráfego · Transferências
-   Exército (SIGMA) e Polícia Federal (SINARM)
-   📍 <cidade> RJ · Atendimento online
-   👇 Fale comigo no WhatsApp
-   ```
-4. **Arquivar** (não apagar) a arte da caveira com fuzil.
-5. **Link:** WhatsApp dele com mensagem pronta ("Quero ajuda com minha documentação").
+| Data | Tema do dia | Post 09h | Post 12h | Post 19h | Stories 09h/12h/19h |
+|---|---|---|---|---|---|
+| 24/10 | Sua documentação CAC merece atenção profissional | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 25/10 | CR: acompanhamento e organização | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 26/10 | Guia de Tráfego: suporte documental | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 27/10 | Regularidade começa com organização | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 28/10 | Atendimento especializado para CAC | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 29/10 | CRAF: documentação sem desencontro | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 30/10 | Assessoria para atiradores esportivos | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 31/10 | Documentos em ordem para sua rotina | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 01/11 | Pendências? Consulte um despachante | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 02/11 | Seu tempo vale: delegue a papelada | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 03/11 | Acompanhamento de solicitações | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 04/11 | Documentação relacionada ao SIGMA | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 05/11 | Documentação relacionada ao SINARM | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 06/11 | Transferências: apoio administrativo | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 07/11 | Dúvidas sobre o CR? Fale conosco | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 08/11 | Atenção aos vencimentos documentais | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 09/11 | Sua agenda no estande, documentos acompanhados | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 10/11 | Atendimento individualizado | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 11/11 | Assessoria documental com responsabilidade | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 12/11 | Evite deixar documentação para a última hora | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 13/11 | Converse com quem trabalha com processos | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 14/11 | Organização de arquivos e informações | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 15/11 | Precisando de orientação documental? | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 16/11 | Regularização: análise do seu caso | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 17/11 | Processos administrativos: acompanhamento | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 18/11 | Tranquilidade para cuidar da sua atividade | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 19/11 | Atendimento para demandas de CAC | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 20/11 | Documentos de transporte: orientação | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 21/11 | Faça uma consulta sobre sua documentação | 09h: cena documental / CTA | 12h: feed realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
+| 22/11 | Última chamada da campanha: fale com a Maskara | 09h: cena documental / CTA | 12h: Reel realista / CTA distinto | 19h: dúvida do cliente / WhatsApp | 3 fotos inéditas: estande, equipamento esportivo e atendimento (sem repetir composição) |
 
-## 3. Regras do nicho (OBRIGATÓRIAS — regras do Instagram para armas)
-- **Vender o serviço de documentação, nunca arma ou munição.** Proibido: "vendo", "compre", preço de arma, modelo de arma à venda, "pronta entrega", link para loja de arma.
-- **Visual atualizado por Rodrigo:** fotografia realista de armas de fogo, estande de tiro e material tático para chamar atenção ao serviço de assessoria. Nenhuma arma apontada para o observador/pessoas, nenhuma oferta de venda ou preço. Não usar o visual didático rejeitado.
-- **Sem promessa:** não prometer aprovação, prazo garantido nem "porte facilitado". Falar em "acompanhamento" e "organização dos documentos".
-- **Sem ensinar a burlar a lei** e sem opinião política sobre armas.
-- **Fatos:** prazos, taxas e documentos exatos mudam. Escrever de forma geral e pedir confirmação ao cliente antes de citar número ou prazo.
-- Sem preço do serviço nos posts (o cliente passa no WhatsApp).
+## Diretriz visual e comercial
+- Fotografia realista, contrastes e enquadramentos variados, sem colagens genéricas, sem diagramas e sem texto excessivo.
+- Ângulos diferenciados de estande, mesa de equipamentos esportivos e assessoria. Fotografias sem risco de confusão com oferta comercial de arma.
+- Mensagens independentes: cada peça deve funcionar sozinha, sem exigir ver o conteúdo anterior.
+- Frase curta por arte: por exemplo **“Seu CR precisa de atenção?”**, **“Documentação CAC em dia?”**, **“Precisa de assessoria?”** e **“Fale com a Maskara”**.
+- Cada legenda deverá contextualizar o **serviço de assessoria documental** e incentivar consulta por WhatsApp ou mensagem, sem prometer resultados. Confirmar dados de atendimento com o cliente; não inventar telefones ou cidades.
+- A palavra `DOCUMENTOS` para respostas automáticas só pode ser usada como CTA se estiver configurada no painel.
+- Validar imagens individualmente: legibilidade e enquadramento no 4:5/9:16, margens seguras, sem textos cortados, sem duplicação perceptual ou literal.
 
-## 4. Grade dos 7 dias (24/10 a 30/10)
-**Ritmo (Rodrigo, 23/10, 08h32 — cliente amigo): 3 posts + 3 stories por dia.**
-- **Posts:** 09h (o tema do dia, tabela abaixo), 12h (Reel ou carrossel curto com dica do mesmo assunto) e 19h (imagem com pergunta ou chamada para o WhatsApp).
-- **Stories:** 09h, 12h e 19h, cada um com arte própria (`HHMM-story/story.jpg`), sem repetir a imagem dos posts.
-- Os 3 posts do dia são 3 imagens e 3 ideias diferentes sobre o tema do dia.
-| Dia | Feed 09h | Tema |
-| --- | --- | --- |
-| 24/10 | Carrossel | "Quer tirar seu CR de CAC? Veja o caminho" (etapas gerais: documentos, exames, cadastro, acompanhamento) |
-| 25/10 | Imagem | "Os documentos que todo CAC precisa ter em ordem" (CR, CRAF, GT) |
-| 26/10 | Carrossel | "Guia de Tráfego: para que serve" (transporte legal para estande, competição, manutenção) |
-| 27/10 | Imagem | "SIGMA ou SINARM? Entenda a diferença" |
-| 28/10 | Carrossel | "Transferência de arma entre CACs: o que muda na papelada" |
-| 29/10 | Imagem | "Processo indeferido? Ainda dá para recorrer" |
-| 30/10 | Carrossel | "Como funciona a assessoria: você manda, eu organizo e acompanho" (chamada para o WhatsApp) |
-Reels (25, 27, 29/10): 3 a 5 cenas de documentos e checklist com texto curto (ex.: "3 erros que travam o seu CR").
-Stories (19h): pergunta do dia ("Seu CR vence quando?"), bastidor de pasta organizada, "responda DOCUMENTOS".
+## Checklist de entrega
+- [ ] Gerar cada imagem/vídeo novo; não reutilizar as antigas 42 peças.
+- [ ] Fazer revisão visual, ortográfica e de proporção.
+- [ ] Conferir exatamente 180 slots de postagem de 24/10 a 22/11.
+- [ ] Subir todos os arquivos e legendas para a branch de agendamentos.
+- [ ] Verificar logs de workflow/API e o número de itens realmente carregados no painel.
+- [ ] Registrar resultado de entrega em `HANDOFF_CHATGPT.md`.
+- [ ] Manter todos os itens pendentes de aprovação do cliente.
 
-## 5. Legenda (modelo)
-```
-<Gancho com a palavra de busca: "CR de CAC", "Guia de Tráfego", "CRAF"...>
-
-<2 a 4 frases curtas, gerais e corretas.>
-
-Precisa de ajuda com a sua documentação? Comente DOCUMENTOS que eu te chamo no direct 📩
-
-#DespachanteCAC #CAC #AtiradorEsportivo #Documentacao #SIGMA
-```
-- A palavra **DOCUMENTOS** precisa estar na lista da resposta automática do painel dele (Conta › Respostas automáticas). O Rodrigo configura.
-
-## Entrega confirmada — 23/10/2026, 08h43 BRT
-- 42 conteúdos enviados ao painel esperando aprovação: 4 carrosséis (4 cartões cada), 14 imagens de feed, 3 Reels (25/27/29 às12h) e21stories. Três posts e três stories por dia, nos horários09h/12h/19h.
-- Artes editoriais originais com identificação DESPACHANTE · ARMAS DE FOGO:60cenas distintas, sem armas, preços, vendas ou promessas. Feed4:5; story/Reel9:16;Reels9s,H264/AAC,30fps. Nenhum dado pessoal ou documento oficial simulado.
-- [Actions39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success;42uploads novos confirmados. Nenhum aprovado/publicado pelo assistente.
-- Fontes, inventário e comprovantes: [docs/campanhas/maskara-2026-10-24](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/tree/agendamentos/docs/campanhas/maskara-2026-10-24). Arquivos em agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/ e HHMM-story/.
-- Conferir conexão profissional/convite e configurar DOCUMENTOS antes da publicação. A conexão Meta e a interface autenticada não foram reinspecionadas; o envio foi confirmado nos logs/API de upload.
-
-## 6. Conferir antes de salvar
-- [ ] Visual realista de armas/estande/material tático; nenhuma venda ou preço de armas/munições.
-- [ ] Nada prometido (aprovação, prazo).
-- [ ] Imagem nova em cada peça (regra de `FORMATOS_POSTAGENS.md`).
-- [ ] 4:5 no feed; 9:16 no story e no Reel; nada nos 20% de baixo.
-- [ ] Legenda termina com a linha do DOCUMENTOS.
+## Histórico da versão cancelada
+Plano antigo de 7 dias (24–30/10): Actions 39947767760 havia confirmado 42 uploads; versão rejeitada e removida depois (Actions 39948848202, conforme registro anterior). **Esses uploads não contam para a campanha nova.**
