@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 23h BRT — Nova oferta da Flow Arts no site (branch feat/oferta-197, aguarda OK)
+- Básico: R$ 197/mês sem entrada (antes R$ 397 + R$ 197). Fundador: R$ 147/mês nos 3 primeiros meses, 3 vagas, até 30/11/2026. Garantia do 1º mês. Cancelar: "é só avisar no WhatsApp" (antes aviso de 30 dias). Vídeo sem o "preço de fundador" (era igual ao preço normal).
+- Botão verde do WhatsApp com texto escuro (branco no verde tinha contraste 2,9).
+- Robô do WhatsApp (whatsapp-knowledge.js) com os mesmos textos. 571/571 testes.
+
 ## 2026-10-22 22h21 BRT — Resposta automática do Quatree Dog funcionando (teste real do Rodrigo)
 - Rodrigo comentou num post do @ericsson_quatree e confirmou: "já funcionou". Direct com botão "Chamar no WhatsApp" (PR #376) e resposta no comentário.
 - Palavra principal: TABELA (vai no fim de toda legenda do Quatree).

@@ -2,6 +2,16 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h BRT — Conselho (Founder Skill) da Flow Arts e nova oferta no site
+- **Origem → destino:** Claude Code → ChatGPT
+- **Pedido:** Rodrigo rodou todas as etapas da Founder Skill (simulação de conselho, concorrentes, compradores, preço, oferta, financeiro, marketing, marca, operação, lançamento) e pediu auditoria e mudanças. Os relatórios ficaram fora do repositório (público).
+- **Resultado (simulado, não é prova):** 0 de 20 compradores simulados nas duas ofertas; a objeção nº 1 é falta de prova real (casos de café/padaria com pedidos medidos). Veredito do plano: "ainda não" para a meta de retirada do Rodrigo; o negócio empata com poucos clientes. Limite do MEI (R$ 81 mil/ano) restringe o número de clientes a R$ 197.
+- **Decisões do Rodrigo:** cancelamento "é só avisar no WhatsApp". Preço: sem preferência → usado o recomendado (Básico R$ 197/mês sem entrada; fundador R$ 147 nos 3 primeiros meses para 3 clientes, até 30/11/2026). Resposta automática: sem preferência → continua fora da venda.
+- **Alterado (branch `feat/oferta-197`):** `public/site.html` (preço do Básico, fundador, garantia, cancelamento, JSON-LD, texto escuro no botão verde do WhatsApp por contraste), `cloudflare/src/whatsapp-knowledge.js` (mesmos textos para o robô), teste `site-niche-pages.test.mjs`. 571/571 testes.
+- **Estado:** PR aberto para o Rodrigo aprovar; o merge publica o site.
+- **Para o ChatGPT:** nos posts da Flow Arts, continuar sem citar preço. Lançamento da oferta de fundador previsto para 05/11/2026; antes disso, posts com os 3 exemplos grátis feitos para negócios de comida reais (só com autorização do dono).
+- **Próximo passo:** código de pedido nas legendas dos clientes ("diga PALAVRA no WhatsApp") para contar pedidos; nova mensagem do CRM.
+
 ## 2026-10-22 22h05 BRT — PARA O CHATGPT: palavra TABELA em toda legenda do Quatree Dog
 - **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo.
 - O Instagram @ericsson_quatree agora tem **resposta automática de comentários** (publicado em 22/10, PR #375). Quem comenta uma palavra da lista recebe no direct a mensagem com o WhatsApp do Ericsson.
