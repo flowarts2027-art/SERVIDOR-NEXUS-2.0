@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 10h05 BRT — Resposta automática: texto do WhatsApp por cliente
+- O texto que já chega escrito no WhatsApp quando a pessoa toca no botão era fixo ("quero a tabela e as condições", do Quatree). Agora é por cliente (campo novo no painel, Conta › Respostas automáticas); padrão: ração/pet = tabela; outros = "Olá! Vi no Instagram e quero mais informações." 582/582 testes.
+- Maskara (23/10): 6 peças movidas para hoje (10h30, 12h, 19h; post + story), runs 39956597567 (envio) e 39956597612 (cancelou as 6 de 24/10).
+
 ## 2026-10-23 08h20 BRT — Captador: WhatsApp também no telefone fixo
 - Teste no ar (07h55): busca do Quatree volta 8 lojas (antes 0); o Google recusa com PERMISSION_DENIED porque a conta do Google Cloud ainda não foi ativada (Rodrigo vai depositar). Caçador do Master: 50 contatos do mapa grátis, 36 celulares (cidades grandes têm mais telefone no mapa).
 - Painel do cliente: telefone fixo agora mostra "Tentar no WhatsApp (fixo)" (muita loja usa WhatsApp Business no fixo). Antes o botão sumia.
