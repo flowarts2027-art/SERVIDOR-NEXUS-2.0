@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 20h50 BRT — Site novo: público agora é VENDEDOR e REPRESENTANTE
+- **Decisão do Rodrigo (voz, 23/10):** comida/cafeteria não trouxe cliente. O público da Flow Arts passa a ser quem vive de prospectar empresa (aluguel de equipamentos, representante comercial, energia solar, seguro, consórcio). A busca de leads é o produto principal; o Instagram é o cartão de visita. Pessoa física (ex.: Maskara) fica num pacote só de Instagram, sem a busca no painel (ainda não feito).
+- **Feito (branch `site-vendedores`, `public/site.html`):** título "Novos clientes todo dia no seu WhatsApp.", vídeos de vendedor (topo, Reel, obra) no lugar da cafeteria, comparação "Procurar cliente no Google cansa.", lista de perfis no lugar das portas de nicho, rodapé sem links de comida (as páginas de nicho continuam no ar e no sitemap). Saiu o vídeo da cafeteria com bug. Testes de site ajustados; 593/593.
+- **Não mexido:** preços dos pacotes (R$ 197 / R$ 697). O Rodrigo pensa em R$ 350 por mês para os primeiros clientes; esperar a decisão dele.
+- **PARA O CHATGPT:** posts diários da Flow Arts devem parar de falar com cafeteria/padaria e falar com vendedores e representantes. Fotos do site novo: o Rodrigo vai mandar as 6 imagens (vendedor no carro, obra, representante, lista, energia solar, WhatsApp); sem texto, sem comida.
+- **Estado:** PR aguardando o OK do Rodrigo; merge na `main` publica o site.
+
 ## 2026-10-23 19h05 BRT — Quatree: usar TODAS as linhas de ração
 - **Pedido do Rodrigo:** o ChatGPT só gera imagens da linha Supreme; precisa gerar de todas as linhas, para cães e gatos, usando o site oficial.
 - **Causa provável:** a página quatreepet.com.br/produtos mostra só a Supreme; as outras linhas ficam em /produtos/cao e /produtos/gato.

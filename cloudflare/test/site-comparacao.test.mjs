@@ -4,11 +4,11 @@ import fs from "node:fs";
 
 const site = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
 
-test("site compara app de agendamento, social media e Flow Arts, sem citar marcas nem preços de terceiros", () => {
+test("site compara procurar sozinho, lista pronta e Flow Arts, sem citar marcas nem preços de terceiros", () => {
   const section = site.slice(site.indexOf('id="comparar"'), site.indexOf('id="pacotes"'));
   assert.ok(section.length > 200, "seção de comparação antes dos pacotes");
-  assert.match(section, /App de agendar post não cria post\./);
-  assert.match(section, /href="\/exemplo"/);
+  assert.match(section, /Procurar cliente no Google cansa\./);
+  assert.match(section, /href="https:\/\/wa\.me\//);
   assert.doesNotMatch(section, /mLabs|Postgrain|Metricool|Buffer|Hootsuite|R\$/i);
 });
 

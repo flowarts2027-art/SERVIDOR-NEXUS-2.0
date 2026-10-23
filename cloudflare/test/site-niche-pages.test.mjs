@@ -5,7 +5,7 @@ import fs from "node:fs";
 const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
 const pages = ["marketing-para-cafeteria", "marketing-para-salao-de-beleza", "marketing-para-lanchonete", ...["barbearia", "pet-shop", "restaurante", "academia", "loja-de-roupas", "padaria", "confeitaria", "oficina-mecanica", "floricultura"].map(n => "marketing-para-" + n)];
 
-test("páginas de nicho existem, estão no sitemap e no rodapé do site", () => {
+test("páginas de nicho existem e estão no sitemap (saíram do rodapé com o site para vendedores, 23/10)", () => {
   const sitemap = read("sitemap.xml");
   const site = read("site.html");
   for (const slug of pages) {
@@ -14,7 +14,6 @@ test("páginas de nicho existem, estão no sitemap e no rodapé do site", () => 
     assert.match(html, /<title>[^<]*Flow Arts Marketing<\/title>/);
     assert.match(html, /"@type": "FAQPage"/);
     assert.ok(sitemap.includes("https://flowarts.com.br/" + slug + "<"), slug + " fora do sitemap");
-    assert.ok(site.includes('href="/' + slug + '"'), slug + " fora do rodapé");
   }
 });
 
@@ -55,13 +54,14 @@ test("site tem vídeo de fundo leve, sem som, e para com menos movimento", () =>
   assert.ok(size > 10000 && size < 1_000_000, "vídeo leve: " + size);
 });
 
-test("site: Reel de exemplo no lugar do antes/depois e perfil de exemplo com logo de cafeteria", () => {
+test("site para vendedores (23/10): vídeos de vendedor no lugar da cafeteria", () => {
   const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
-  assert.doesNotMatch(home, /class="phone phone-small is-before"|class="grid grid-empty"/);
-  assert.match(home, /<video id="reel-demo" src="\/video\/reel-cafeteria\.mp4" poster="\/video\/reel-cafeteria\.jpg" muted loop playsinline controls preload="none"/);
-  assert.match(home, /Demonstração para cafeteria, criada com IA/);
-  assert.match(home, /src="\/brand\/cafe-brisa\.svg"[\s\S]{0,120}cafe\.brisa/);
-  assert.ok(fs.statSync(new URL("../../public/video/reel-cafeteria.mp4", import.meta.url)).size < 3_000_000);
+  assert.match(home, /<video id="reel-demo" src="\/video\/reel-vendedor-2\.mp4" poster="\/video\/reel-vendedor-2\.jpg" muted loop playsinline controls preload="none"/);
+  assert.match(home, /Novos clientes todo dia no seu WhatsApp\./);
+  assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
+  for (const f of ["fundo-vendedor.mp4", "reel-vendedor.mp4", "reel-vendedor-2.mp4", "obra-vendedor.mp4"]) {
+    assert.ok(fs.statSync(new URL("../../public/video/" + f, import.meta.url)).size < 3_000_000, f);
+  }
 });
 
 test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e não prometem resultado", () => {
