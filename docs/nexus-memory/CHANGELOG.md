@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 23h40 BRT — Planos com nomes curtos, cadastro com Pix e Master mais fácil de ler (pedido do Rodrigo)
+- Planos (cloudflare/src/plans.js, lista única): Essencial R$ 197/mês (fundador R$ 147 por 3 meses, 3 vagas, até 30/11), Completo R$ 297 + R$ 697/mês, Captador R$ 97/mês, Site R$ 497, Responde R$ 197, Reels 5 R$ 147, Posts 10 R$ 97, Logo R$ 67.
+- /cadastro em 4 passos: plano → empresa → acesso → Pix (copia e cola + QR code, chave CNPJ, passo a passo). Antes do Pix, o servidor confere dados e usuário (checkOnly). O valor é calculado no servidor. "Já paguei" → pedido no Master.
+- Master › Clientes › Cadastros novos: mostra plano, valor e o aviso "confira o Pix no banco antes de aprovar". Ao aprovar, config.plan vai para o cliente; o painel do cliente mostra "Seu plano" na aba Conta.
+- Site: botões "Contratar" levam a /cadastro?plano=…; nomes curtos nos cartões e no robô do WhatsApp.
+- Master: leitura fácil (Atkinson Hyperlegible, letra maior, fundo creme, texto cinza-escuro, menu em cima no computador em vez da barra lateral).
+- Pix fixo (sem banco no meio): não há confirmação automática; o Rodrigo confere no app do banco.
+- Testes: plans-signup.test.mjs (CRC do Pix igual ao exemplo do Banco Central). 578/578.
+
 ## 2026-10-22 23h05 BRT — Planos do site com feed, Reels e stories (pedido do Rodrigo)
 - Básico (R$ 197): por mês, 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories. Com Vídeo: 30 no feed, 30 Reels em vídeo de verdade e 60 stories, com resposta automática e código de pedido.
 - site.html (lista e JSON-LD) e whatsapp-knowledge.js. 574/574 testes. Grade de produção em FORMATOS_POSTAGENS.md.

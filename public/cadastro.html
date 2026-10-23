@@ -12,121 +12,262 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
   :root {
-    --navy: #0F1E3D; --blue: #2B63F0; --blue-soft: #E6EDFF; --paper: #F4F6FA; --card: #FFFFFF;
-    --ink: #16233F; --muted: #5B6680; --line: #D5DCE8; --ok: #17895E; --ok-soft: #E3F4EC;
-    --danger: #B42318; --danger-soft: #FDECEA; font-size: 17px;
+    --navy: #0F1E3D; --blue: #2457D6; --blue-soft: #E6EDFF; --paper: #F7F4EC; --card: #FFFDF8;
+    --ink: #1D2633; --muted: #3F4B5C; --line: #D9D2C3; --ok: #146C4B; --ok-soft: #E3F4EC;
+    --danger: #A11D12; --danger-soft: #FDECEA; font-size: 18px;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--paper); color: var(--ink); font-family: "Atkinson Hyperlegible", system-ui, sans-serif; line-height: 1.45; }
-  header { background: var(--navy); color: #fff; padding: 28px 16px 56px; text-align: center; }
-  header img { width: 56px; height: 56px; border-radius: 14px; }
-  header h1 { margin: 12px 0 4px; font-size: 1.5rem; }
-  header p { margin: 0; color: #CAD3E2; }
-  main { max-width: 480px; margin: -36px auto 40px; padding: 0 16px; }
+  body { background: var(--paper); color: var(--ink); font-family: "Atkinson Hyperlegible", system-ui, sans-serif; line-height: 1.6; letter-spacing: .01em; }
+  header { background: var(--navy); color: #fff; padding: 26px 16px 54px; text-align: center; }
+  header img { width: 52px; height: 52px; border-radius: 14px; }
+  header h1 { margin: 10px 0 4px; font-size: 1.45rem; }
+  header p { margin: 0; color: #D7DEEA; }
+  main { max-width: 520px; margin: -34px auto 40px; padding: 0 16px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 16px; box-shadow: 0 8px 24px rgba(15,30,61,.08); }
-  h2 { font-size: 1.05rem; margin: 18px 0 10px; color: var(--navy); }
-  h2:first-child { margin-top: 0; }
+  .steps { display: flex; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
+  .steps li { flex: 1; height: 8px; border-radius: 99px; background: var(--line); }
+  .steps li.on { background: var(--blue); }
+  .step-label { color: var(--muted); margin: 0 0 4px; font-weight: 700; }
+  h2 { font-size: 1.2rem; margin: 0 0 12px; color: var(--navy); }
   label { display: block; font-weight: 700; margin: 0 0 14px; }
-  label small { display: block; font-weight: 400; color: var(--muted); font-size: .85rem; }
-  input, select { display: block; width: 100%; margin-top: 6px; padding: 13px 12px; font: inherit; color: var(--ink);
-    background: #fff; border: 1.5px solid var(--line); border-radius: 9px; }
-  input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  label small { display: block; font-weight: 400; color: var(--muted); font-size: .9rem; }
+  input { display: block; width: 100%; margin-top: 6px; padding: 13px 12px; font: inherit; color: var(--ink);
+    background: #fff; border: 1.5px solid #B9B09E; border-radius: 9px; }
+  input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+  .plans { display: grid; gap: 10px; margin: 0 0 14px; }
+  .plan { display: block; margin: 0; font-weight: 400; border: 2px solid var(--line); border-radius: 12px; padding: 14px; cursor: pointer; background: #fff; }
+  .plan input { display: inline; width: auto; margin: 0 8px 0 0; vertical-align: middle; accent-color: var(--blue); }
+  .plan:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
+  .plan strong { font-size: 1.1rem; }
+  .plan .price { display: block; font-weight: 700; color: var(--navy); margin: 4px 0 2px; }
+  .plan .founder { display: inline-block; font-size: .85rem; font-weight: 700; color: var(--ok); background: var(--ok-soft); border-radius: 99px; padding: 2px 10px; margin-top: 4px; }
+  .plan ul { margin: 6px 0 0; padding-left: 20px; color: var(--muted); }
+  .group-title { font-weight: 700; color: var(--muted); margin: 6px 0 4px; }
   .themes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 14px; }
-  .themes label { margin: 0; font-weight: 400; display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 9px; padding: 10px; cursor: pointer; }
+  .themes label { margin: 0; font-weight: 400; display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 9px; padding: 10px; cursor: pointer; background: #fff; }
   .themes input { width: auto; margin: 0; }
   .themes label:has(input:checked) { border-color: var(--blue); background: var(--blue-soft); }
   .dot { width: 18px; height: 18px; border-radius: 50%; flex: none; }
-  .show-pass { display: flex; align-items: center; gap: 8px; font-weight: 400; margin-top: -4px; }
-  .show-pass input { width: auto; margin: 0; }
+  .show-pass, .paid { display: flex; align-items: center; gap: 10px; font-weight: 400; }
+  .show-pass input, .paid input { width: 22px; height: 22px; margin: 0; flex: none; accent-color: var(--blue); }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  button { width: 100%; padding: 15px; font: inherit; font-weight: 700; color: #fff; background: var(--blue); border: 0; border-radius: 10px; cursor: pointer; margin-top: 6px; }
+  .row { display: flex; gap: 10px; margin-top: 8px; }
+  button { width: 100%; padding: 15px; font: inherit; font-weight: 700; color: #fff; background: var(--blue); border: 0; border-radius: 10px; cursor: pointer; }
+  button.back { background: transparent; color: var(--blue); border: 2px solid var(--blue); flex: 0 0 34%; }
   button:disabled { opacity: .6; }
   .msg { margin: 12px 0 0; padding: 12px; border-radius: 9px; }
   .msg.error { background: var(--danger-soft); color: var(--danger); }
+  .total { background: var(--blue-soft); border-radius: 12px; padding: 14px; margin: 0 0 14px; }
+  .total b { display: block; font-size: 1.6rem; color: var(--navy); }
+  ol.how { padding-left: 22px; margin: 0 0 14px; }
+  ol.how li { margin-bottom: 6px; }
+  .qr { display: grid; place-items: center; margin: 4px 0 12px; }
+  .qr img, .qr svg { width: 220px; height: 220px; }
+  .code { width: 100%; font: .85rem/1.4 ui-monospace, monospace; word-break: break-all; background: #fff; border: 1.5px dashed #B9B09E; border-radius: 9px; padding: 10px; margin: 0 0 8px; }
+  .copy { background: var(--ok); margin-bottom: 14px; }
   .done { text-align: center; }
   .done .check { width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; font-size: 1.8rem; }
   .done p { color: var(--muted); }
-  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 16px 32px; }
+  [hidden] { display: none !important; }
+  footer { text-align: center; color: var(--muted); font-size: .9rem; padding: 0 16px 32px; }
   footer a { color: var(--muted); }
 </style>
 </head>
 <body>
 <header>
   <img src="/brand/app-cliente-192.png" alt="">
-  <h1>Cadastro Flow Arts</h1>
-  <p>Crie o acesso ao seu painel. Leva 1 minuto.</p>
+  <h1>Contratar a Flow Arts</h1>
+  <p>4 passos curtos. No fim, você paga no Pix.</p>
 </header>
 <main>
   <div class="card">
     <form id="signup" novalidate>
-      <h2>Sua empresa</h2>
-      <label>Nome da empresa<input name="name" required maxlength="80" autocomplete="organization" placeholder="Ex.: Pet Shop Amigo"></label>
-      <label>Nicho<small>O tipo do seu negócio.</small><input name="niche" required maxlength="80" placeholder="Ex.: pet shop, salão, restaurante"></label>
-      <label>Instagram da empresa<input name="instagram" required maxlength="60" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="@suaempresa"></label>
-      <label>WhatsApp com DDD<input name="whatsapp" required inputmode="tel" autocomplete="tel" placeholder="22 99999-8888"></label>
+      <ul class="steps" aria-hidden="true"><li></li><li></li><li></li><li></li></ul>
 
-      <h2>Cores do painel</h2>
-      <div class="themes" role="radiogroup" aria-label="Cores do painel">
-        <label><input type="radio" name="theme" value="green-black" checked><span class="dot" style="background:linear-gradient(135deg,#18c96e 50%,#07140c 50%)"></span>Preto + Verde</label>
-        <label><input type="radio" name="theme" value="red-black"><span class="dot" style="background:linear-gradient(135deg,#ff4b55 50%,#200306 50%)"></span>Preto + Vermelho</label>
-        <label><input type="radio" name="theme" value="blue-white"><span class="dot" style="background:linear-gradient(135deg,#3d9bff 50%,#10253c 50%)"></span>Azul + Branco</label>
-        <label><input type="radio" name="theme" value="gold-black"><span class="dot" style="background:linear-gradient(135deg,#e9bd52 50%,#211804 50%)"></span>Preto + Dourado</label>
+      <section data-step="1">
+        <p class="step-label">Passo 1 de 4</p>
+        <h2>Escolha o plano</h2>
+        <div id="plans" class="plans"><p>Carregando os planos…</p></div>
+      </section>
+
+      <section data-step="2" hidden>
+        <p class="step-label">Passo 2 de 4</p>
+        <h2>Sua empresa</h2>
+        <label>Nome da empresa<input name="name" required maxlength="80" autocomplete="organization" placeholder="Ex.: Padaria Sol"></label>
+        <label>Tipo do negócio<input name="niche" required maxlength="80" placeholder="Ex.: padaria, café, pet shop"></label>
+        <label>Instagram da empresa<input name="instagram" required maxlength="60" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="@suaempresa"></label>
+        <label>WhatsApp com DDD<input name="whatsapp" required inputmode="tel" autocomplete="tel" placeholder="22 99999-8888"></label>
+        <p class="group-title">Cores do seu painel</p>
+        <div class="themes" role="radiogroup" aria-label="Cores do painel">
+          <label><input type="radio" name="theme" value="green-black" checked><span class="dot" style="background:linear-gradient(135deg,#18c96e 50%,#07140c 50%)"></span>Preto + Verde</label>
+          <label><input type="radio" name="theme" value="red-black"><span class="dot" style="background:linear-gradient(135deg,#ff4b55 50%,#200306 50%)"></span>Preto + Vermelho</label>
+          <label><input type="radio" name="theme" value="blue-white"><span class="dot" style="background:linear-gradient(135deg,#3d9bff 50%,#10253c 50%)"></span>Azul + Branco</label>
+          <label><input type="radio" name="theme" value="gold-black"><span class="dot" style="background:linear-gradient(135deg,#e9bd52 50%,#211804 50%)"></span>Preto + Dourado</label>
+        </div>
+      </section>
+
+      <section data-step="3" hidden>
+        <p class="step-label">Passo 3 de 4</p>
+        <h2>Seu acesso ao painel</h2>
+        <label>Usuário<small>Letras e números, sem espaço e sem acento. Pode usar ponto.</small><input name="username" required minlength="3" maxlength="30" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" placeholder="ex.: padariasol"></label>
+        <label>Senha<small>Pelo menos 8 caracteres.</small><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+        <label>Repita a senha<input name="passwordConfirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+        <label class="show-pass"><input type="checkbox" id="show-pass"> Mostrar senha</label>
+        <label class="hp" aria-hidden="true">Site<input name="website" tabindex="-1" autocomplete="off"></label>
+      </section>
+
+      <section data-step="4" hidden>
+        <p class="step-label">Passo 4 de 4</p>
+        <h2>Pagar no Pix</h2>
+        <div class="total"><span id="pay-plan"></span><b id="pay-amount"></b><small id="pay-line"></small></div>
+        <ol class="how">
+          <li>Abra o app do seu banco e toque em <b>Pix</b>.</li>
+          <li>Escolha <b>Pix copia e cola</b> e cole o código abaixo. Ou leia o QR code.</li>
+          <li>Confira: o valor é <b id="pay-amount-2"></b>, para <b>FLOW ARTS</b> (<span id="pix-key"></span>).</li>
+          <li>Confirme o pagamento no banco.</li>
+          <li>Volte aqui, marque "Já paguei" e toque em <b>Enviar</b>.</li>
+        </ol>
+        <div class="qr" id="qr"></div>
+        <div class="code" id="pix-code"></div>
+        <button type="button" class="copy" id="copy-code">Copiar código Pix</button>
+        <label class="paid"><input type="checkbox" id="paid"> Já paguei o Pix</label>
+      </section>
+
+      <div class="row">
+        <button type="button" class="back" id="back" hidden>Voltar</button>
+        <button type="submit" id="next">Continuar</button>
       </div>
-
-      <h2>Seu acesso</h2>
-      <label>Usuário<small>Letras e números, sem espaço e sem acento. Pode usar ponto.</small><input name="username" required minlength="3" maxlength="30" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" placeholder="ex.: petamigo"></label>
-      <label>Senha<small>Pelo menos 8 caracteres.</small><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
-      <label>Repita a senha<input name="passwordConfirm" type="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
-      <label class="show-pass"><input type="checkbox" id="show-pass"> Mostrar senha</label>
-      <label class="hp" aria-hidden="true">Site<input name="website" tabindex="-1" autocomplete="off"></label>
-
-      <button type="submit">Enviar cadastro</button>
       <p id="msg" class="msg error" role="alert" hidden></p>
     </form>
 
     <div id="done" class="done" hidden>
       <div class="check">✓</div>
-      <h2>Cadastro enviado!</h2>
-      <p>Vamos conferir e liberar o seu acesso. Você recebe o aviso pelo WhatsApp.</p>
+      <h2>Pronto! Recebemos o seu cadastro.</h2>
+      <p>Agora a Flow Arts confere o Pix e libera o seu painel. Você recebe o aviso no WhatsApp.</p>
       <p>Depois é só entrar em <strong>painel.flowarts.com.br</strong> com o usuário e a senha que você escolheu.</p>
     </div>
   </div>
 </main>
-<footer><a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a></footer>
+<footer><a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a> · <a href="/">Site</a></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 (function () {
   var form = document.getElementById("signup");
   var msg = document.getElementById("msg");
-  var button = form.querySelector("button");
+  var next = document.getElementById("next");
+  var back = document.getElementById("back");
+  var step = 1;
+  var plans = [];
+  var wanted = new URLSearchParams(location.search).get("plano") || "";
+
+  function esc(value) { var el = document.createElement("span"); el.textContent = String(value == null ? "" : value); return el.innerHTML; }
+  function show(text) { msg.textContent = text; msg.hidden = false; msg.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  function chosen() { var input = form.querySelector("input[name=planId]:checked"); return plans.find(function (p) { return input && p.id === input.value; }) || null; }
+
+  function planCard(p) {
+    return '<label class="plan"><input type="radio" name="planId" value="' + esc(p.id) + '"' + (p.id === wanted ? " checked" : "") + '>' +
+      '<strong>' + esc(p.name) + '</strong><span class="price">' + esc(p.priceLine) + '</span>' + esc(p.summary) +
+      (p.founder ? '<br><span class="founder">Preço de fundador: só 3 vagas, até 30/11</span>' : "") +
+      '<ul>' + p.includes.map(function (i) { return "<li>" + esc(i) + "</li>"; }).join("") + '</ul></label>';
+  }
+
+  fetch("/api/signup/plans").then(function (r) { return r.json(); }).then(function (data) {
+    plans = data.plans || [];
+    document.getElementById("pix-key").textContent = data.pixKey || "";
+    var monthly = plans.filter(function (p) { return p.kind === "mensal"; });
+    var once = plans.filter(function (p) { return p.kind !== "mensal"; });
+    document.getElementById("plans").innerHTML =
+      '<p class="group-title">Todo mês</p>' + monthly.map(planCard).join("") +
+      '<p class="group-title">Pagamento único</p>' + once.map(planCard).join("");
+  }).catch(function () {
+    document.getElementById("plans").innerHTML = "<p>Não consegui carregar os planos. Recarregue a página.</p>";
+  });
+
   document.getElementById("show-pass").addEventListener("change", function (event) {
     form.querySelectorAll("input[name=password], input[name=passwordConfirm]").forEach(function (input) {
       input.type = event.target.checked ? "text" : "password";
     });
   });
-  function show(text) { msg.textContent = text; msg.hidden = false; msg.scrollIntoView({ behavior: "smooth", block: "center" }); }
+
+  function go(n) {
+    step = n;
+    form.querySelectorAll("[data-step]").forEach(function (s) { s.hidden = Number(s.dataset.step) !== n; });
+    form.querySelectorAll(".steps li").forEach(function (li, i) { li.classList.toggle("on", i < n); });
+    back.hidden = n === 1;
+    next.textContent = n === 4 ? "Enviar" : n === 3 ? "Ir para o pagamento" : "Continuar";
+    msg.hidden = true;
+    if (n === 4) fillPayment();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function fillPayment() {
+    var p = chosen();
+    if (!p) return;
+    document.getElementById("pay-plan").textContent = "Plano " + p.name;
+    document.getElementById("pay-amount").textContent = p.firstPaymentLabel;
+    document.getElementById("pay-amount-2").textContent = p.firstPaymentLabel;
+    document.getElementById("pay-line").textContent = p.priceLine;
+    document.getElementById("pix-code").textContent = p.pix;
+    var box = document.getElementById("qr");
+    box.innerHTML = "";
+    try { var qr = window.qrcode(0, "M"); qr.addData(p.pix); qr.make(); box.innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2 }); } catch (e) { box.hidden = true; }
+  }
+
+  document.getElementById("copy-code").addEventListener("click", function (event) {
+    var code = document.getElementById("pix-code").textContent;
+    var button = event.currentTarget;
+    (navigator.clipboard ? navigator.clipboard.writeText(code) : Promise.reject()).then(function () {
+      button.textContent = "Código copiado ✓";
+    }).catch(function () { window.prompt("Copie o código Pix:", code); });
+    setTimeout(function () { button.textContent = "Copiar código Pix"; }, 3000);
+  });
+
+  back.addEventListener("click", function () { go(step - 1); });
+
+  function data() {
+    var d = Object.fromEntries(new FormData(form));
+    d.username = String(d.username || "").trim().toLowerCase();
+    return d;
+  }
+
+  function send(body) {
+    return fetch("/api/signup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (response) { return response.json().catch(function () { return {}; }).then(function (b) { return { ok: response.ok && b.ok, body: b }; }); });
+  }
+
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     msg.hidden = true;
-    var data = Object.fromEntries(new FormData(form));
-    data.username = String(data.username || "").trim().toLowerCase();
-    if (data.password !== data.passwordConfirm) { show("As duas senhas estão diferentes."); return; }
-    button.disabled = true;
-    button.textContent = "Enviando…";
-    fetch("/api/signup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) })
-      .then(function (response) { return response.json().catch(function () { return {}; }).then(function (body) { return { response: response, body: body }; }); })
-      .then(function (result) {
-        if (result.response.ok && result.body.ok) {
-          form.hidden = true;
-          document.getElementById("done").hidden = false;
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          return;
-        }
-        show(result.body.message || "Não foi possível enviar agora. Tente de novo.");
-      })
-      .catch(function () { show("Sem conexão. Confira a internet e tente de novo."); })
-      .finally(function () { button.disabled = false; button.textContent = "Enviar cadastro"; });
+    var d = data();
+    if (step === 1) { if (!chosen()) { show("Escolha um plano."); return; } go(2); return; }
+    if (step === 2) {
+      if (!d.name || !d.niche || !d.instagram || !d.whatsapp) { show("Preencha os 4 campos da empresa."); return; }
+      go(3); return;
+    }
+    if (step === 3) {
+      if (d.password !== d.passwordConfirm) { show("As duas senhas estão diferentes."); return; }
+      next.disabled = true; next.textContent = "Conferindo…";
+      d.checkOnly = true;
+      send(d).then(function (r) {
+        if (r.ok) { go(4); return; }
+        show(r.body.message || "Confira os dados e tente de novo.");
+        if (/name|niche|instagram|whatsapp/.test(r.body.error || "")) go(2);
+      }).catch(function () { show("Sem conexão. Confira a internet e tente de novo."); })
+        .finally(function () { next.disabled = false; if (step === 3) next.textContent = "Ir para o pagamento"; });
+      return;
+    }
+    if (!document.getElementById("paid").checked) { show('Depois de pagar, marque "Já paguei o Pix".'); return; }
+    d.paidClaimed = true;
+    next.disabled = true; next.textContent = "Enviando…";
+    send(d).then(function (r) {
+      if (r.ok) { form.hidden = true; document.getElementById("done").hidden = false; window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+      show(r.body.message || "Não foi possível enviar agora. Tente de novo.");
+    }).catch(function () { show("Sem conexão. Confira a internet e tente de novo."); })
+      .finally(function () { next.disabled = false; next.textContent = "Enviar"; });
   });
+
+  go(1);
 })();
 </script>
 </body>

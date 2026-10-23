@@ -2,6 +2,15 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h40 BRT — Planos com nomes curtos e cadastro com Pix
+- **Pedido do Rodrigo:** (1) letras maiores e mais fáceis de ler, sem barra lateral (ele é disléxico e autista); (2) planos com nomes e valores; o cliente escolhe o plano num link, vê o passo a passo, paga no Pix (chave CNPJ do site) e cai um pedido no Master para aprovar; o painel do cliente mostra o plano.
+- **Decisões:** todos os produtos do site viram planos; nomes curtos escolhidos pelo Claude (Rodrigo pode trocar): Essencial, Completo, Captador, Site, Responde, Reels 5, Posts 10, Logo.
+- **Feito (branch `feat/planos-pix-leitura`):** `cloudflare/src/plans.js` (lista e Pix copia e cola), `signup.js` (plano, valor, fundador, conferência antes do Pix, config.plan ao aprovar), `clients.js` (plano no painel), `public/cadastro.html` (4 passos), `public/signups.js` (plano e aviso no Master), `public/client-lite.js` + `portal.html` ("Seu plano" na Conta), `public/site.html` e `whatsapp-knowledge.js` (nomes e botões Contratar), `public/styles.css` + `index.html` (leitura fácil no Master). 578/578 testes.
+- **Limite:** o Pix é fixo; não existe confirmação automática. O Rodrigo confere o valor no banco antes de aprovar.
+- **No app do Claude:** não dá para mudar por código. Configurações › Aparência › Fonte do chat › "Dyslexic friendly"; a barra lateral pode ser fechada, não removida.
+- **Para o ChatGPT:** continua sem preço nos posts. Link para contratar: flowarts.com.br/cadastro.
+- **Próximo passo:** Rodrigo aprova o PR; testar um cadastro de verdade só se ele quiser.
+
 ## 2026-10-22 23h05 BRT — Planos do site mais completos
 - Pedido do Rodrigo: os planos do site seguem a grade nova. Básico: 30 posts no feed, 12 Reels e 30 stories por mês. Com Vídeo: 30 no feed, 30 Reels em vídeo de verdade e 60 stories. Robô do WhatsApp com o mesmo texto.
 - Branch `feat/planos-formatos`; 574/574 testes; o merge publica o site.

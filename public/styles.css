@@ -529,3 +529,29 @@ input[type=radio]{display:inline-block;width:20px!important;height:20px;margin:0
 .site-tip{margin:10px 0 0;font-size:14px}
 @media(max-width:700px){.site-results{grid-template-columns:1fr 1fr}}
 .post-show-removed{display:flex;align-items:center;gap:8px;width:auto!important;align-self:flex-end;min-height:44px}.post-show-removed input{display:inline-block;width:20px;height:20px;margin:0}
+
+/* Leitura fácil — pedido do Rodrigo (dislexia e autismo), 22/10/2026.
+   Fonte Atkinson Hyperlegible, letras maiores, mais espaço entre linhas,
+   fundo creme com texto cinza-escuro (menos brilho que preto no branco)
+   e menu em cima em vez da barra lateral (no celular continua embaixo). */
+:root{--bg:#f7f4ec;--surface:#fffdf8;--surface2:#f3efe4;--line:#d9d2c3;--text:#1d2633;--muted:#3f4b5c}
+html{font-size:19px}
+body{font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif!important;font-size:19px;line-height:1.7;letter-spacing:.012em;word-spacing:.06em;background:var(--bg)!important;color:var(--text)!important}
+button,input,select,textarea{font-family:inherit!important}
+p,li,td,.muted,.disclaimer{line-height:1.7}
+.muted,.disclaimer,label,small,th{color:var(--muted)!important}
+em{font-style:normal}
+.metrics article,.panel,.portal-metrics article{background:var(--surface)!important;border-color:var(--line)!important;box-shadow:none!important}
+main{zoom:1.12}
+@media(min-width:701px){
+  .shell{grid-template-columns:1fr!important}
+  .sidebar{position:sticky!important;top:0;z-index:20;height:auto!important;flex-direction:row!important;align-items:center;flex-wrap:wrap;gap:14px;padding:10px 22px!important}
+  .sidebar .brand{padding:0!important}
+  .sidebar nav{display:flex!important;flex-wrap:wrap;gap:6px}
+  .sidebar .nav-item{font-size:18px!important;padding:10px 14px!important}
+  main{padding:24px 28px!important;max-width:1500px;margin:0 auto}
+}
+
+/* Cadastro com plano e Pix (22/10/2026) */
+.signup-plan{margin:8px 0 2px;font-size:1rem;color:var(--text)}
+.signup-check{margin:0;padding:6px 10px;border-radius:8px;background:#fff4d6;color:#5a4300;font-size:.95rem}

@@ -32,10 +32,10 @@ test("páginas de nicho usam os mesmos preços da página principal e não citam
 test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; robô e contrato iguais", async () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   const home = read("site.html");
-  assert.match(home, /Instagram no Automático · Básico[\s\S]{0,80}R\$ 197 <small>por mês, sem entrada/);
+  assert.match(home, /Essencial <small>· Instagram no Automático<\/small>[\s\S]{0,80}R\$ 197 <small>por mês, sem entrada/);
   assert.match(home, /R\$ 147 por mês nos 3 primeiros meses/);
   assert.doesNotMatch(home, /aviso de 30 dias/);
-  assert.match(home, /Instagram no Automático · com Vídeo[\s\S]{0,80}R\$ 697[\s\S]{0,40}R\$ 297 de entrada/);
+  assert.match(home, /Completo <small>[\s\S]{0,80}R\$ 697[\s\S]{0,40}R\$ 297 de entrada/);
   assert.match(home, /1º ano incluso: domínio \.com\.br/);
   assert.match(home, /R\$ 297 por ano \(ou R\$ 29 por mês\), já com a renovação do domínio/);
   assert.doesNotMatch(home, /Domínio \.com\.br por sua conta/);
