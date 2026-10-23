@@ -125,10 +125,10 @@ test("caçador fica no painel da Flow Arts (22/10); rota exige login do Master o
 test("pacote de site aparece no site, nas páginas de nicho e no robô com o mesmo preço", async () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   for (const page of ["site.html", "marketing-para-cafeteria.html", "marketing-para-salao-de-beleza.html", "marketing-para-lanchonete.html"]) {
-    assert.match(read(page), /Site do seu negócio[\s\S]{0,120}R\$ 497/, page);
+    assert.match(read(page), /Site[\s\S]{0,40}do seu negócio[\s\S]{0,120}R\$ 497/, page);
   }
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
-  assert.match(knowledgePrompt("primeiro-teste"), /Site do seu negócio: R\$ 497/);
+  assert.match(knowledgePrompt("primeiro-teste"), /Site \(site do seu negócio\): R\$ 497/);
 });
 
 test("sem chave do Google, busca grátis no OpenStreetMap", async () => {

@@ -12,6 +12,7 @@ import {
 } from "./auth.js";
 import { getClient, upsertClient } from "./clients.js";
 import { THEME_COLORS, newManagedClientConfig, slugify } from "./client-create.js";
+import { findPlan, firstPayment, founderOpen, publicPlans, planRecord, brl, PIX_KEY_LABEL } from "./plans.js";
 
 export const SIGNUP_RATE_SCOPE = "signup";
 const USERNAME_PATTERN = /^[a-z0-9._]{3,30}$/;
@@ -49,6 +50,10 @@ async function ensureSignupSchema(env) {
   await env.DB.prepare(
     "CREATE INDEX IF NOT EXISTS idx_signup_requests_status ON signup_requests(status, created_at)"
   ).run();
+  // Plano escolhido e Pix (22/10/2026): o cliente escolhe o plano, paga e o Rodrigo confere antes de aprovar.
+  for (const column of ["plan_id TEXT", "amount_cents INTEGER NOT NULL DEFAULT 0", "founder INTEGER NOT NULL DEFAULT 0", "paid_claimed INTEGER NOT NULL DEFAULT 0"]) {
+    try { await env.DB.prepare("ALTER TABLE signup_requests ADD COLUMN " + column).run(); } catch { /* já existe */ }
+  }
   signupSchemaReady.add(env.DB);
 }
 
@@ -86,6 +91,8 @@ export function validateSignup(body = {}) {
   const username = normalizeSignupUsername(body.username);
   const password = String(body.password || "");
   const confirm = body.passwordConfirm === undefined ? password : String(body.passwordConfirm);
+  const planId = String(body.planId || "").trim().toLowerCase();
+  const plan = planId ? findPlan(planId) : null;
 
   if (name.length < 2) return fail("name_required", "Escreva o nome da empresa.");
   if (niche.length < 2) return fail("niche_required", "Escreva o nicho (ex.: pet shop, salão).");
@@ -97,7 +104,8 @@ export function validateSignup(body = {}) {
   if (password.length < 8) return fail("password_too_short", "A senha precisa ter pelo menos 8 caracteres.");
   if (password.length > 128) return fail("password_too_long", "A senha está muito longa.");
   if (password !== confirm) return fail("password_mismatch", "As duas senhas estão diferentes.");
-  return { ok: true, data: { name, niche, instagram, whatsapp, theme, username, password } };
+  if (planId && !plan) return fail("plan_invalid", "Escolha um dos planos da lista.");
+  return { ok: true, data: { name, niche, instagram, whatsapp, theme, username, password, planId: plan ? plan.id : "", paidClaimed: body.paidClaimed === true } };
 }
 
 async function usernameUnavailable(env, username) {
@@ -118,13 +126,30 @@ export async function createSignupRequest(env, body) {
   }
   const record = await createPortalPasswordRecord(env, data.password);
   const id = crypto.randomUUID();
+  // O valor é sempre calculado aqui (o navegador não decide o preço).
+  const plan = findPlan(data.planId);
+  const founder = Boolean(plan?.founderPrice) && founderOpen(new Date(), await foundersUsed(env));
+  const amount = firstPayment(plan, founder);
   await env.DB.prepare(
     `INSERT INTO signup_requests(id, name, niche, instagram, whatsapp, theme, username,
-       password_algo, password_salt, password_hash, status, created_at)
-     VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, 'pending', CURRENT_TIMESTAMP)`
+       password_algo, password_salt, password_hash, status, created_at, plan_id, amount_cents, founder, paid_claimed)
+     VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, 'pending', CURRENT_TIMESTAMP, ?11, ?12, ?13, ?14)`
   ).bind(id, data.name, data.niche, data.instagram, data.whatsapp, data.theme, data.username,
-    record.algorithm, record.salt, record.hash).run();
-  return { ok: true, id };
+    record.algorithm, record.salt, record.hash, plan ? plan.id : null, amount, founder ? 1 : 0, data.paidClaimed ? 1 : 0).run();
+  return { ok: true, id, planId: plan ? plan.id : "", amount, founder };
+}
+
+// Vagas de fundador já usadas (pedidos esperando ou aprovados).
+async function foundersUsed(env) {
+  const row = await env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM signup_requests WHERE founder = 1 AND status IN ('pending','approved')"
+  ).first().catch(() => null);
+  return Number(row?.n || 0);
+}
+
+export async function signupPlans(env) {
+  await ensureSignupSchema(env);
+  return { ok: true, pixKey: PIX_KEY_LABEL, plans: publicPlans(founderOpen(new Date(), await foundersUsed(env))) };
 }
 
 function signupView(row) {
@@ -138,6 +163,12 @@ function signupView(row) {
     username: String(row.username || ""),
     status: String(row.status || "pending"),
     clientId: row.client_id ? String(row.client_id) : null,
+    planId: row.plan_id ? String(row.plan_id) : "",
+    planName: findPlan(row.plan_id)?.name || "",
+    amount: Number(row.amount_cents || 0),
+    amountLabel: row.amount_cents ? brl(row.amount_cents) : "",
+    founder: Number(row.founder || 0) === 1,
+    paidClaimed: Number(row.paid_claimed || 0) === 1,
     createdAt: row.created_at || null,
     decidedAt: row.decided_at || null
   };
@@ -146,7 +177,8 @@ function signupView(row) {
 export async function listSignupRequests(env, status = "pending") {
   await ensureSignupSchema(env);
   const result = await env.DB.prepare(
-    `SELECT id, name, niche, instagram, whatsapp, theme, username, status, client_id, created_at, decided_at
+    `SELECT id, name, niche, instagram, whatsapp, theme, username, status, client_id, created_at, decided_at,
+       plan_id, amount_cents, founder, paid_claimed
      FROM signup_requests WHERE status = ?1 ORDER BY created_at DESC LIMIT 50`
   ).bind(status).all();
   return (result?.results || []).map(signupView);
@@ -178,7 +210,9 @@ export async function approveSignupRequest(env, id) {
   const [primaryColor, secondaryColor] = THEME_COLORS[row.theme] || THEME_COLORS["green-black"];
   const config = newManagedClientConfig(clientId, { theme: row.theme, primaryColor, secondaryColor }, {
     contact: { instagramHandle: String(row.instagram || ""), whatsapp: String(row.whatsapp || "") },
-    signup: { requestId: String(row.id), source: "cadastro-publico" }
+    signup: { requestId: String(row.id), source: "cadastro-publico" },
+    // Plano que o cliente escolheu e pagou: o painel dele mostra o que tem direito.
+    plan: planRecord(findPlan(row.plan_id), { founder: Number(row.founder || 0) === 1, paid: Number(row.amount_cents || 0) })
   });
   const client = await upsertClient(env, {
     id: clientId,
@@ -213,6 +247,7 @@ export async function rejectSignupRequest(env, id) {
 
 // Rota pública: POST /api/signup
 export async function handlePublicSignup(request, env, url) {
+  if (url.pathname === "/api/signup/plans" && request.method === "GET") return json(await signupPlans(env));
   if (url.pathname !== "/api/signup") return null;
   if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
   const body = await request.json().catch(() => ({}));
@@ -228,9 +263,20 @@ export async function handlePublicSignup(request, env, url) {
   }
   await recordLoginFailure(env, request, SIGNUP_RATE_SCOPE);
 
+  // Conferência antes do Pix: dados e usuário livre, sem criar nada (o cliente só paga se estiver tudo certo).
+  if (body?.checkOnly === true) {
+    await ensureSignupSchema(env);
+    const checked = validateSignup(body);
+    if (!checked.ok) return json(checked, 400);
+    if (await usernameUnavailable(env, checked.data.username)) {
+      return json({ ok: false, error: "username_taken", message: "Este usuário já existe. Escolha outro." }, 409);
+    }
+    return json({ ok: true });
+  }
+
   const result = await createSignupRequest(env, body);
   if (!result.ok) return json(result, result.error === "username_taken" ? 409 : 400);
-  return json({ ok: true, message: "Cadastro enviado. Você recebe a liberação pelo WhatsApp." }, 201);
+  return json({ ok: true, message: "Cadastro enviado. Você recebe a liberação pelo WhatsApp.", planId: result.planId, amount: result.amount, founder: result.founder }, 201);
 }
 
 // Rotas do Master (já protegidas pelo login do Master em handleMaster).

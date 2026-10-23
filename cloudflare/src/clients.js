@@ -117,6 +117,8 @@ export function portalClientView(client) {
       phone: String(config.contact?.phone || "")
     },
     videoTemplate: { whatsappNumber: String(config.videoTemplate?.whatsappNumber || "") },
+    // Plano contratado (cadastro com Pix, 22/10/2026). Sem plano: null.
+    plan: config.plan && typeof config.plan === "object" ? config.plan : null,
     status: client.status,
     theme: config.theme || "nexus",
     primaryColor: config.primaryColor || (client.id === "ragnar-one" ? "#19c563" : "#22c55e"),

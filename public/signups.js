@@ -44,6 +44,8 @@
           <strong>${esc(item.name)}</strong>
           <small>${esc(item.niche)} · ${esc(item.instagram)} · WhatsApp ${esc(item.whatsapp)}</small>
           <small>Usuário: <b>${esc(item.username)}</b> · ${esc(THEMES[item.theme] || item.theme)} · ${esc(when(item.createdAt))}</small>
+          ${item.planName ? `<p class="signup-plan"><b>Plano ${esc(item.planName)}</b>${item.founder ? " (fundador)" : ""} · Pix de <b>${esc(item.amountLabel)}</b> · ${item.paidClaimed ? "o cliente disse que já pagou" : "sem aviso de pagamento"}</p>
+          <p class="signup-check">Antes de aprovar, confira no app do banco se entrou o Pix de ${esc(item.amountLabel)}.</p>` : `<p class="signup-check">Sem plano escolhido (cadastro antigo).</p>`}
         </div>
         <div class="signup-actions">
           <button class="primary" type="button" data-signup-action="approve">Aprovar</button>

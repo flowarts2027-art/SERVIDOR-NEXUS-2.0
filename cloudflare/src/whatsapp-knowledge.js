@@ -17,15 +17,16 @@ const FLOW_ARTS = Object.freeze({
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo: quando a pessoa quiser fechar, diga que o Rodrigo vai mandar o contrato e marque needsHuman=true."
   ]),
   offers: Object.freeze([
-    "Instagram no Automático · Básico: por mês, 30 posts no feed (carrosséis e imagens), 12 Reels (imagens com movimento) e 30 stories, feitos com as fotos do negócio, resposta automática no direct que leva ao WhatsApp do negócio e código de pedido no fim de cada post. R$ 197 por mês, sem taxa de entrada. Fundador: os 3 primeiros clientes pagam R$ 147 por mês nos 3 primeiros meses (até 30/11/2026). Garantia: se no 1º mês não gostar dos posts, devolvemos o valor do mês. Sem fidelidade: para sair, é só avisar no WhatsApp. Pagamento por Pix.",
-    "Instagram no Automático · com Vídeo: por mês, 30 posts no feed, 30 Reels em vídeo de verdade e 60 stories, com resposta automática e código de pedido. R$ 297 de entrada + R$ 697 por mês. Sem fidelidade: para sair, é só avisar no WhatsApp. Pagamento por Pix.",
-    "Site do seu negócio: R$ 497, pagamento único. Site de 1 página com fotos, serviços, horário, mapa e botão para o WhatsApp, feito para aparecer no Google e abrir bem no celular. Pronto em até 5 dias. O primeiro ano já inclui o domínio .com.br, a hospedagem e ajustes pequenos. Depois do primeiro ano, R$ 297 por ano ou R$ 29 por mês, já com a renovação do domínio. Tem contrato.",
-    "Instagram com resposta automática: R$ 197, pagamento único. Resposta automática no direct quando alguém comenta a palavra combinada (ex.: QUERO), levando a pessoa para o WhatsApp do negócio, e 10 posts prontos. Funcionando em até 2 dias.",
-    "Captador de clientes: R$ 97 por mês. Ferramenta no painel do cliente: ele escolhe o tipo de negócio e a cidade e recebe empresas com telefone e uma mensagem pronta para mandar pelo próprio WhatsApp. Busca no Google Maps. Inclui 100 buscas por mês.",
-    "5 Reels com IA: R$ 147, pagamento único. Entrega em até 5 dias.",
-    "10 posts prontos: R$ 97, pagamento único. Entrega em 24 horas.",
-    "Criação de logo: R$ 67, pagamento único. Três opções em 24 horas.",
-    "No plano mensal, os primeiros posts ficam prontos em até 5 dias."
+    "Essencial (Instagram no Automático, antes chamado Básico): por mês, 30 posts no feed (carrosséis e imagens), 12 Reels (imagens com movimento) e 30 stories, feitos com as fotos do negócio, resposta automática no direct que leva ao WhatsApp do negócio e código de pedido no fim de cada post. R$ 197 por mês, sem taxa de entrada. Fundador: os 3 primeiros clientes pagam R$ 147 por mês nos 3 primeiros meses (até 30/11/2026). Garantia: se no 1º mês não gostar dos posts, devolvemos o valor do mês. Sem fidelidade: para sair, é só avisar no WhatsApp. Pagamento por Pix.",
+    "Completo (Instagram no Automático com Vídeo): por mês, 30 posts no feed, 30 Reels em vídeo de verdade e 60 stories, com resposta automática e código de pedido. R$ 297 de entrada + R$ 697 por mês. Sem fidelidade: para sair, é só avisar no WhatsApp. Pagamento por Pix.",
+    "Site (site do seu negócio): R$ 497, pagamento único. Site de 1 página com fotos, serviços, horário, mapa e botão para o WhatsApp, feito para aparecer no Google e abrir bem no celular. Pronto em até 5 dias. O primeiro ano já inclui o domínio .com.br, a hospedagem e ajustes pequenos. Depois do primeiro ano, R$ 297 por ano ou R$ 29 por mês, já com a renovação do domínio. Tem contrato.",
+    "Responde (Instagram com resposta automática): R$ 197, pagamento único. Resposta automática no direct quando alguém comenta a palavra combinada (ex.: QUERO), levando a pessoa para o WhatsApp do negócio, e 10 posts prontos. Funcionando em até 2 dias.",
+    "Captador (de clientes): R$ 97 por mês. Ferramenta no painel do cliente: ele escolhe o tipo de negócio e a cidade e recebe empresas com telefone e uma mensagem pronta para mandar pelo próprio WhatsApp. Busca no Google Maps. Inclui 100 buscas por mês.",
+    "Reels 5 (5 Reels com IA): R$ 147, pagamento único. Entrega em até 5 dias.",
+    "Posts 10 (10 posts prontos): R$ 97, pagamento único. Entrega em 24 horas.",
+    "Logo (criação de logo): R$ 67, pagamento único. Três opções em 24 horas.",
+    "No plano mensal, os primeiros posts ficam prontos em até 5 dias.",
+    "Para contratar qualquer plano: https://flowarts.com.br/cadastro . São 4 passos (plano, empresa, acesso e Pix na chave CNPJ). Depois do Pix, a Flow Arts confere e libera o painel."
   ]),
   limits: Object.freeze([
     "Nunca citar a Global Play nem outros clientes antigos.",

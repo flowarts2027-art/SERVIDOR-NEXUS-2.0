@@ -593,7 +593,29 @@ function renderLeads() {
 
 /* ---------- Conta ---------- */
 
+// Plano contratado (cadastro com Pix, 22/10/2026): o que o cliente tem direito.
+function renderPlan() {
+  const box = $("#plan-box");
+  const plan = state.client?.plan;
+  if (!box) return;
+  if (!plan || typeof plan !== "object") { box.hidden = true; return; }
+  const quotas = plan.quotas && typeof plan.quotas === "object" ? plan.quotas : null;
+  const quotaText = quotas ? [
+    quotas.feed ? quotas.feed + " posts no feed" : "",
+    quotas.reels ? quotas.reels + " Reels" : "",
+    quotas.stories ? quotas.stories + " stories" : ""
+  ].filter(Boolean).join(" · ") + " por mês" : "";
+  const items = Array.isArray(plan.includes) ? plan.includes : [];
+  box.innerHTML = `<h2>Seu plano: ${escapeHtml(plan.name || "")}</h2>
+    <p style="margin:4px 0 8px"><strong>${escapeHtml(plan.priceLine || "")}</strong></p>
+    ${quotaText ? `<p class="muted" style="margin:0 0 8px">${escapeHtml(quotaText)}</p>` : ""}
+    ${items.length ? `<ul style="margin:0;padding-left:20px">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+    ${plan.startedAt ? `<p class="muted" style="margin:10px 0 0">Desde ${escapeHtml(formatDate(plan.startedAt, false))}</p>` : ""}`;
+  box.hidden = false;
+}
+
 function renderAccount() {
+  try { renderPlan(); } catch (error) { console.error("painel: plano", error); }
   const ig = state.connection || {};
   if (ig.demo) {
     $("#instagram-box").innerHTML = `<h2>Instagram</h2>

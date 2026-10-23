@@ -196,10 +196,10 @@ test("Master liga o Captador por cliente; portal e telas existem", async () => {
 test("Captador à venda com o mesmo preço no site, nas páginas de nicho e no robô", async () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   for (const page of ["site.html", "marketing-para-cafeteria.html", "marketing-para-salao-de-beleza.html", "marketing-para-lanchonete.html"]) {
-    assert.match(read(page), /Captador de clientes[\s\S]{0,60}R\$ 97/, page);
+    assert.match(read(page), /Captador[\s\S]{0,40}de clientes[\s\S]{0,60}R\$ 97/, page);
   }
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
-  assert.match(knowledgePrompt("primeiro-teste"), /Captador de clientes: R\$ 97 por mês/);
+  assert.match(knowledgePrompt("primeiro-teste"), /Captador \(de clientes\): R\$ 97 por mês/);
 });
 
 test("robô manda planos e o contrato só sai pelo Rodrigo", async () => {
