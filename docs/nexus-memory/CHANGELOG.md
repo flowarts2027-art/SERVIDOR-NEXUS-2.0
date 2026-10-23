@@ -1,5 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 15h50 BRT — Caçador: só WhatsApp
+- Busca manual do Caçador (Google e mapa) descarta telefone fixo. Entram só celular, link wa.me/api.whatsapp.com no site ou `contact:whatsapp` do mapa. Procura celular em todos os campos de telefone. 593/593 testes. Branch `fix/cacador-so-whatsapp`.
+
 ## 2026-10-23 11h40 BRT — Resposta automática também por palavra no DIRECT (Maskara)
 - Auditoria da Maskara (pedido do Rodrigo): as 6 artes de hoje dizem "Responda DOCUMENTOS no direct", mas a resposta automática só funcionava em comentário. Mensagem no direct não disparava nada.
 - Novo `cloudflare/src/dm-keyword-reply.js`: o webhook "messages" agora lê o texto do direct; se tiver uma das palavras do cliente (Conta › Respostas automáticas, ligada), manda a mesma mensagem do direct com o botão do WhatsApp. Uma vez por pessoa a cada 24 h. Ignora eco, botões e "já segui". Flow Arts continua no funil próprio.

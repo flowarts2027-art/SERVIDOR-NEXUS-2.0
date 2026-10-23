@@ -5,7 +5,8 @@ import { DatabaseSync } from "node:sqlite";
 import {
   phoneInfo, siteInfo, prospectScore, placeToProspect, firstMessage, whatsappLink,
   runProspectSearch, listProspects, setProspectStatus, savePlacesKey, DAILY_SEARCH_LIMIT,
-  osmToProspect, overpassQuery, planBrowserSearch, importBrowserResults, saveContacted, skipProspect
+  osmToProspect, overpassQuery, planBrowserSearch, importBrowserResults, saveContacted, skipProspect,
+  whatsappFromUrl, pickMobile
 } from "../src/prospects.js";
 
 function fakeEnv() {
@@ -44,6 +45,24 @@ test("empresa com site próprio, fechada ou sem telefone fica de fora", () => {
   assert.equal(placeToProspect(place({ nationalPhoneNumber: "" }), "cafeteria", "Recife PE"), null);
   const ok = placeToProspect(place({ websiteUri: "https://instagram.com/cafedapraca" }), "cafeteria", "Recife PE");
   assert.equal(ok.instagram, "cafedapraca");
+});
+
+test("só WhatsApp (23/10): fixo fica de fora; link wa.me ou celular entram", () => {
+  assert.equal(placeToProspect(place({ nationalPhoneNumber: "(81) 3333-4444" }), "cafeteria", "Recife PE"), null);
+  assert.equal(placeToProspect(place({ nationalPhoneNumber: "(81) 3333-4444", internationalPhoneNumber: "+55 81 3333-4444" }), "cafeteria", "Recife PE"), null);
+  const viaLink = placeToProspect(place({ nationalPhoneNumber: "(81) 3333-4444", websiteUri: "https://wa.me/5581977776666" }), "cafeteria", "Recife PE");
+  assert.equal(viaLink.phone, "81977776666", "número do link do WhatsApp vence o fixo");
+  assert.equal(viaLink.mobile, true);
+  const apiLink = placeToProspect(place({ nationalPhoneNumber: "", websiteUri: "https://api.whatsapp.com/send?phone=558133335555" }), "cafeteria", "Recife PE");
+  assert.equal(apiLink.phone, "8133335555", "fixo com WhatsApp Business (link) entra");
+  assert.equal(whatsappFromUrl("https://site.com.br"), "");
+  assert.equal(pickMobile("(81) 3333-4444", "(81) 98888-1111"), "81988881111");
+  assert.equal(pickMobile("(81) 3333-4444; (81) 97777-2222"), "81977772222");
+  assert.equal(pickMobile("(81) 3333-4444"), "");
+  const osmMobileTag = osmToProspect({ type: "node", id: 10, tags: { name: "Y", phone: "(81) 3333-4444", mobile: "(81) 96666-1111" } }, "cafeteria", "Recife PE");
+  assert.equal(osmMobileTag.phone, "81966661111", "no mapa, acha o celular mesmo com fixo em 'phone'");
+  const osmWaFixo = osmToProspect({ type: "node", id: 11, tags: { name: "Z", "contact:whatsapp": "(81) 3222-1111" } }, "cafeteria", "Recife PE");
+  assert.equal(osmWaFixo.phone, "8132221111", "marcado como WhatsApp no mapa vale");
 });
 
 test("mensagem pronta: honesta, com link do nicho e opção de não receber", () => {
@@ -161,7 +180,8 @@ test("sem chave do Google, busca grátis no OpenStreetMap", async () => {
 
 test("ponto do mapa: só nome, telefone e sem site próprio", () => {
   assert.equal(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "123" } }, "cafeteria", "Recife PE"), null);
-  assert.ok(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "(81) 3333-4444", website: "instagram.com/x" } }, "cafeteria", "Recife PE"));
+  assert.equal(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "(81) 3333-4444", website: "instagram.com/x" } }, "cafeteria", "Recife PE"), null, "só fixo: fora");
+  assert.ok(osmToProspect({ type: "node", id: 9, tags: { name: "X", phone: "(81) 98888-4444", website: "instagram.com/x" } }, "cafeteria", "Recife PE"));
   assert.match(overpassQuery("lanchonete", 0), /"amenity"="fast_food"/);
 });
 

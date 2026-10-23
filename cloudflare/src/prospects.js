@@ -170,6 +170,29 @@ export function phoneInfo(national) {
   return { phone: digits, mobile: digits.length === 11 && digits[2] === "9" };
 }
 
+// Pedido do Rodrigo (23/10): o Caçador só mostra quem tem WhatsApp.
+// Link wa.me / api.whatsapp.com no Google ou no mapa = WhatsApp com certeza (vale até número fixo do WhatsApp Business).
+export function whatsappFromUrl(value) {
+  let url;
+  try { url = new URL(/^https?:/i.test(String(value || "")) ? String(value) : "https://" + String(value || "")); } catch { return ""; }
+  const host = url.hostname.replace(/^www\./, "").toLowerCase();
+  let raw = "";
+  if (host === "wa.me") raw = url.pathname.split("/").filter(Boolean)[0] || "";
+  else if (["api.whatsapp.com", "web.whatsapp.com", "whatsapp.com"].includes(host)) raw = url.searchParams.get("phone") || "";
+  return phoneInfo(raw).phone;
+}
+
+// Sem link do WhatsApp: só celular (11 dígitos com 9). Telefone fixo fica de fora.
+export function pickMobile(...values) {
+  for (const value of values) {
+    for (const part of String(value || "").split(/[;,/]|\s+ou\s+/i)) {
+      const info = phoneInfo(part);
+      if (info.mobile) return info.phone;
+    }
+  }
+  return "";
+}
+
 export function siteInfo(websiteUri) {
   if (!websiteUri) return { hasOwnSite: false, instagram: "" };
   let url;
@@ -213,10 +236,12 @@ export function osmToProspect(element, nicheKey, city) {
   if (tags.disused || tags["disused:amenity"] || tags["disused:shop"]) return null;
   // Redes e franquias (Starbucks, McDonald's...) não são o nosso cliente.
   if (tags.brand || tags["brand:wikidata"] || tags.operator && tags["operator:wikidata"]) return null;
-  const rawPhone = String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0];
-  const { phone, mobile } = phoneInfo(rawPhone);
-  if (!phone) return null;
   const website = String(tags.website || tags["contact:website"] || tags.url || "").trim();
+  // WhatsApp marcado no mapa (ou link wa.me) vale mesmo se for fixo; senão, só celular.
+  const phone = phoneInfo(String(tags["contact:whatsapp"] || "").split(/[;,]/)[0]).phone || whatsappFromUrl(website)
+    || pickMobile(tags["contact:mobile"], tags.mobile, tags.phone, tags["contact:phone"]);
+  if (!phone) return null;
+  const mobile = true;
   const site = siteInfo(website && !/^https?:/i.test(website) ? "https://" + website : website);
   if (site.hasOwnSite) return null;
   const igTag = String(tags["contact:instagram"] || "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/^@/, "").split(/[/?]/)[0];
@@ -268,8 +293,10 @@ export function placeToProspect(place, nicheKey, city) {
   if (place.businessStatus && place.businessStatus !== "OPERATIONAL") return null;
   const site = siteInfo(place.websiteUri);
   if (site.hasOwnSite) return null;
-  const { phone, mobile } = phoneInfo(place.nationalPhoneNumber || place.internationalPhoneNumber);
+  // Só WhatsApp: link wa.me no lugar do site ou celular. Telefone fixo fica de fora.
+  const phone = whatsappFromUrl(place.websiteUri) || pickMobile(place.nationalPhoneNumber, place.internationalPhoneNumber);
   if (!phone) return null;
+  const mobile = true;
   const item = {
     id: String(place.id),
     name: String(place.displayName?.text || "").slice(0, 120),
