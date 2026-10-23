@@ -1,0 +1,986 @@
+{
+  "client": "maskara-assessoria",
+  "timezone": "America/Sao_Paulo",
+  "dates": [
+    "2026-10-24",
+    "2026-10-30"
+  ],
+  "approval": "pending",
+  "style": "Diagramas editoriais originais. Não são documentos oficiais.",
+  "slots": [
+    {
+      "date": "2026-10-24",
+      "time": "0900",
+      "format": "carousel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "0900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/0900"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "0900",
+      "format": "carousel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "0900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/0900"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "0900",
+      "format": "carousel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "0900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/0900"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "0900",
+      "format": "carousel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1900-story"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1900-story"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1900-story"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1900-story"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1900-story"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1900-story"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "1900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1900-story"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "1200",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1200"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1900"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1900"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "1200",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1200"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1900"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1900"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "1200",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1200"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1900"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1900"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "1200",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1200"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "1900",
+      "format": "post",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1900"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900-story"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/0900-story"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900-story"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/0900-story"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900-story"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/0900-story"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "0900-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900-story"
+    },
+    {
+      "date": "2026-10-24",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1200-story"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1200-story"
+    },
+    {
+      "date": "2026-10-26",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1200-story"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1200-story"
+    },
+    {
+      "date": "2026-10-28",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1200-story"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1200-story"
+    },
+    {
+      "date": "2026-10-30",
+      "time": "1200-story",
+      "format": "story",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1200-story"
+    },
+    {
+      "date": "2026-10-25",
+      "time": "1200",
+      "format": "reel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1200"
+    },
+    {
+      "date": "2026-10-27",
+      "time": "1200",
+      "format": "reel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1200"
+    },
+    {
+      "date": "2026-10-29",
+      "time": "1200",
+      "format": "reel",
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1200"
+    }
+  ],
+  "artworks": [
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900/01.jpg",
+      "title": "Seu CR começa na organização.",
+      "sub": "Entenda o caminho geral, antes de iniciar.",
+      "scene": 0,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "fdc09d2115d00a996f66d39562cd2c2a06739bf47f153bc3492cb4ae304e6d88"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900/02.jpg",
+      "title": "Comece pelos documentos.",
+      "sub": "A relação depende do seu caso e das exigências vigentes.",
+      "scene": 1,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "e1f919d8902518b80097c2a178b816ef875f078d7a69e7cad87f59b1a12e4a11"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900/03.jpg",
+      "title": "Confira os requisitos aplicáveis.",
+      "sub": "Legibilidade e informações consistentes fazem diferença.",
+      "scene": 2,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "b559a346be20bf5d09852a6690d9283bebc211ecfe0b450fb1f31399c82f49a8"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900/04.jpg",
+      "title": "Acompanhe cada etapa.",
+      "sub": "A assessoria organiza e acompanha. A decisão é do órgão responsável.",
+      "scene": 3,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "57870fe8d10dde89c4539c233486cff6d237f968c364fa5f6859f91d270556a3"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/0900/imagem.jpg",
+      "title": "CR, CRAF e GT: tudo em ordem?",
+      "sub": "Confira o que se aplica ao seu caso, as validades e eventuais pendências.",
+      "scene": 4,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "5778c240f650b44b44f5c46c9723dcd006f83e128717e65f2cf68a8aa728f9b3"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900/01.jpg",
+      "title": "Guia de Tráfego: para que serve?",
+      "sub": "Entenda a documentação de trânsito aplicável ao seu caso.",
+      "scene": 5,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "db6944f4c14bad36b5ddadce3968e147edd4c8534bed1ba4e236dbc4ab400593"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900/02.jpg",
+      "title": "A finalidade precisa estar clara.",
+      "sub": "O uso depende das condições e autorizações aplicáveis.",
+      "scene": 6,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "0e914a03421e1171c3c1ed8381b6f5f0b25e53fc2cd034a9d55334a60c36a7b1"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900/03.jpg",
+      "title": "Confira antes de se deslocar.",
+      "sub": "Consulte o documento e as orientações oficiais vigentes.",
+      "scene": 7,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "21d4b6f0ecb772efe3cfcfc4479ee6d18a57ba85235fe49f136519d42750f19d"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900/04.jpg",
+      "title": "Validade também merece atenção.",
+      "sub": "Confira vigência, finalidade e demais condições aplicáveis.",
+      "scene": 8,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "178af80276ec9b99809186614808547277191da92b272a375ab69f989e141302"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/0900/imagem.jpg",
+      "title": "SIGMA ou SINARM?",
+      "sub": "Sistemas distintos: confirme qual se aplica ao seu registro e ao seu caso.",
+      "scene": 9,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "962ed6054931847a0699ec1829bf38a2046b93c6a93adabbede56fcbbfa573c6"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900/01.jpg",
+      "title": "Transferência começa na papelada.",
+      "sub": "Entre CACs, o caso deve ser conferido antes de iniciar o processo.",
+      "scene": 10,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "77d83890d563c6d74999ef31502b423743efd9c5fa26925b2c6c3b605c767c65"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900/02.jpg",
+      "title": "Cada processo tem seus requisitos.",
+      "sub": "Verifique os documentos e as condições aplicáveis.",
+      "scene": 11,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "5e67e5bcd902db118c39a6f12059ab6a589602337549ebe916d113c989665b69"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900/03.jpg",
+      "title": "Os dados precisam conferir.",
+      "sub": "Informações e arquivos devem estar consistentes e legíveis.",
+      "scene": 12,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "5aa67ec392dcbcb4128cc2213dcc7b9f3839e2495a840f4e027f36d9150a4ec6"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900/04.jpg",
+      "title": "Organize e acompanhe.",
+      "sub": "As orientações dependem do caso e das regras vigentes.",
+      "scene": 13,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "6ebaeb458de1add7275c9917c5345038e98636a0f9d4b659f616e70c24da3a02"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/0900/imagem.jpg",
+      "title": "Indeferimento? Entenda o motivo.",
+      "sub": "Leia a decisão antes de avaliar os próximos passos.",
+      "scene": 14,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "58d6a344a95b04fe1d685bb6dc878d23b2827a11714f983c75723212ca258010"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900/01.jpg",
+      "title": "Como funciona a assessoria?",
+      "sub": "Você apresenta a demanda. A Maskara ajuda a organizar o processo.",
+      "scene": 15,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "b30b19a028266c15f49bec28653a80b1b196c9f5ae52d3d0f2d92f333709d15f"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900/02.jpg",
+      "title": "Documentos bem organizados.",
+      "sub": "Conferência de arquivos e identificação de pendências.",
+      "scene": 16,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "15f70244b27e224860a3a459521a1886b9629c991197d8b974806b4fd3cb69f7"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900/03.jpg",
+      "title": "Acompanhamento do processo.",
+      "sub": "Atenção às etapas e às orientações recebidas.",
+      "scene": 17,
+      "cta": "Deslize para conferir.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "72eafb2ad10adbd56ee4fdd001c659aa6f4faaa706dec695bca123317a99ddbe"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900/04.jpg",
+      "title": "Vamos entender o seu caso?",
+      "sub": "Fale sobre sua necessidade de documentação pelo direct.",
+      "scene": 18,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "e8df698ccd2bcbf45c8a209d3e8c8b2a7f50e48bd606b333082b5b221b7de60a"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1900-story/story.jpg",
+      "title": "Vai começar seu CR?",
+      "sub": "Organize a documentação antes de iniciar.",
+      "scene": 19,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "9f10cb91439e082bcdd7d48d213714c5edf7cb76fe17e8760df9799dbc4560ab"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1900-story/story.jpg",
+      "title": "Sua pasta está atualizada?",
+      "sub": "Revise validades e pendências do seu caso.",
+      "scene": 20,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "da297b854286867585055264d4dd63fc12ed2b54a29710172fd40cd108e6333d"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1900-story/story.jpg",
+      "title": "Sua GT corresponde ao deslocamento?",
+      "sub": "Confira finalidade e condições aplicáveis.",
+      "scene": 21,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "308a13d971a4c162d468677e6572080c96b8751437de3f73fd4d9d7a3907498d"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1900-story/story.jpg",
+      "title": "Você conhece o seu cadastro?",
+      "sub": "Confirme o sistema que se aplica ao seu caso.",
+      "scene": 22,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "61f2f0f8c83ebfa09022ffe2145d03db7c29318fe09b57e6646a4782ba6002ec"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1900-story/story.jpg",
+      "title": "Vai iniciar uma transferência?",
+      "sub": "Converse sobre a documentação antes de começar.",
+      "scene": 23,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "8d882aabe8f0e21652999e6cdb5d6b437dfcc409c386578dba42f758da979f82"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1900-story/story.jpg",
+      "title": "Recebeu uma decisão?",
+      "sub": "Entender os motivos vem antes dos próximos passos.",
+      "scene": 24,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "978ea23405a5f22a79e14326b3cb95d8e4b2a798fb6e629d62272ce4e95a53cd"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1900-story/story.jpg",
+      "title": "O que falta organizar?",
+      "sub": "Conte sua necessidade de documentação à Maskara.",
+      "scene": 25,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "99f67ab595f3731c9e8b54ec27ee33e8747f89faa04883dd1ce3f3db45d6a9c2"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1200/imagem.jpg",
+      "title": "CR: antes de enviar, confira.",
+      "sub": "Revise a documentação conforme os requisitos do seu caso.",
+      "scene": 35,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "66e86a53550fa8d1a50e4e795b281fd8fb9cf84e054f3e5b24ac07e6f1ce8731"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1900/imagem.jpg",
+      "title": "Qual é sua dúvida sobre o CR?",
+      "sub": "Conte sua necessidade de documentação pelo direct.",
+      "scene": 36,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "746110e96f1ac4cae301a96dd465ffb1be4bac6d7ccc5adb20de339a4f548b15"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1900/imagem.jpg",
+      "title": "Sua documentação tem uma pasta?",
+      "sub": "Separe os arquivos e confira eventuais pendências.",
+      "scene": 37,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "cb24d7eefef4cee7e77bb034b4d1af0bd513579b27929b669436ea24c3142098"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1200/imagem.jpg",
+      "title": "GT: confira a vigência.",
+      "sub": "Consulte também a finalidade e as condições aplicáveis.",
+      "scene": 38,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "d2800f098e4cb99802c9aac2746177d8ee82827a67bcd0f3db07e3eab38f29a3"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1900/imagem.jpg",
+      "title": "Vai se deslocar? Confira antes.",
+      "sub": "Tire dúvidas sobre a documentação aplicável ao seu caso.",
+      "scene": 39,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "96a73abdf5b9409d5c281564ee4e60a67e5095cd96d085b0b7409ba5404bcfac"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1900/imagem.jpg",
+      "title": "Você sabe onde está seu registro?",
+      "sub": "Consulte a documentação existente antes de iniciar um pedido.",
+      "scene": 40,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "b0d9a088d9f058f22ebb1c50cbbb07d30260598a5bdb22888dff770670d242df"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1200/imagem.jpg",
+      "title": "Transferência: revise os arquivos.",
+      "sub": "Dados consistentes e documentos legíveis merecem atenção.",
+      "scene": 41,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "e67c5afca9792c97a21889e558f4a5c3865e8b8a64649c6d8da3646ccd20dae0"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1900/imagem.jpg",
+      "title": "Em qual etapa está seu processo?",
+      "sub": "Organize as pendências e as orientações recebidas.",
+      "scene": 42,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "2d399009e5fcb428d5c262d6ac20798bd04ff6556794adb8e776ce21aae7c867"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1900/imagem.jpg",
+      "title": "Recurso? Primeiro, analise o caso.",
+      "sub": "A possibilidade de revisão depende da decisão e das regras vigentes.",
+      "scene": 43,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "2504ba1294c643142241e474c070635f8e239e3db084bf66f12ace4b8a188697"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1200/imagem.jpg",
+      "title": "Organização e acompanhamento.",
+      "sub": "Esse é o foco da assessoria documental da Maskara.",
+      "scene": 44,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "d9804875f245abbbdb44b9460a4747cf9191f8d70ecfa745a8089db039e28eb7"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1900/imagem.jpg",
+      "title": "Vamos organizar sua documentação?",
+      "sub": "Conte sua necessidade no direct para entender o atendimento.",
+      "scene": 45,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1350
+      ],
+      "sha256": "047208a076010d45df82193e8e9dd2e285fd7929c011a1a20c2cef4e09a57362"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/0900-story/story.jpg",
+      "title": "Quer iniciar seu CR?",
+      "sub": "Comece pela organização do seu caso.",
+      "scene": 46,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "f699c49c3f8f867067119f309031c8a5618dfee7707ae41cb51d779618492aa2"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/0900-story/story.jpg",
+      "title": "Você revisou o seu CRAF?",
+      "sub": "Confira a documentação e eventuais pendências.",
+      "scene": 48,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "eecf46dc67ed5a6a87b7eba76e675a226671a54f93d05b0cc4d706a96f8c9ad5"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/0900-story/story.jpg",
+      "title": "Sua GT está vigente?",
+      "sub": "Confira o documento antes do deslocamento.",
+      "scene": 50,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "b731aefa3802fe2f44a1152f5347b73db753e4c6b87d5dc71a9637b184cb59e0"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/0900-story/story.jpg",
+      "title": "Qual sistema se aplica a você?",
+      "sub": "Confira o registro e as orientações oficiais.",
+      "scene": 52,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "102a56463228df0e60a8033690ab6503ac2a0f7555a2770b9a95fcbe8c9656e2"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/0900-story/story.jpg",
+      "title": "Transferência em vista?",
+      "sub": "Organize a pasta antes de iniciar o processo.",
+      "scene": 54,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "5df5c88fcfb2c2cf63331623cb264a66c0846c755f8a4dc387da1fc9ae9c73ce"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/0900-story/story.jpg",
+      "title": "Entendeu o indeferimento?",
+      "sub": "Leia com atenção os motivos da decisão.",
+      "scene": 56,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "e79b7707b8fd3dd219078a5721b31bb822aaf301281fa9abfdc45cbb17e6a833"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/0900-story/story.jpg",
+      "title": "Precisa de assessoria documental?",
+      "sub": "Conte sua necessidade à Maskara.",
+      "scene": 58,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "4169f87aa2e486e1340181b0ffe1a134aacc5c2dc88b6d5fb1144d591f8e0b7e"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-24/1200-story/story.jpg",
+      "title": "Seus arquivos estão legíveis?",
+      "sub": "Faça uma conferência antes de enviar.",
+      "scene": 47,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "1edf2046acb23276fe623a6bc42712a44d93257cd0971576cc1661d55c1943cb"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-25/1200-story/story.jpg",
+      "title": "Quais documentos se aplicam?",
+      "sub": "A relação deve ser conferida para o seu caso.",
+      "scene": 49,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "162df9bbcec36accfafd4aab12a5bda8da4fcab133a85d2c41f500fc803bd3a4"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-26/1200-story/story.jpg",
+      "title": "Qual a finalidade do deslocamento?",
+      "sub": "Confirme as condições documentais aplicáveis.",
+      "scene": 51,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "5114b8ba460c80ad251eb69d4c53102945459510833da82fb25cc3bed8ab0873"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-27/1200-story/story.jpg",
+      "title": "Já consultou o registro existente?",
+      "sub": "Esse é um ponto de partida para a conferência.",
+      "scene": 53,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "bfba55861a7d69a69e647b5824ea14e36e026ff9b60213d9e6bc7a86987dcb9e"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-28/1200-story/story.jpg",
+      "title": "As informações conferem?",
+      "sub": "Revise os dados e os arquivos do processo.",
+      "scene": 55,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "f35e8acfae794df339310fa9b5775cb484f34346f04bf5f27a9d4e608d6f038c"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-29/1200-story/story.jpg",
+      "title": "Qual é o próximo passo?",
+      "sub": "A possibilidade de revisão precisa de análise.",
+      "scene": 57,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "50d3bfc22a606c58ae99d4fca77e6f10d9292fec3f09ae6cd31563b16a116fce"
+    },
+    {
+      "path": "agendamentos/clientes/maskara-assessoria/2026-10-30/1200-story/story.jpg",
+      "title": "O que falta na sua pasta?",
+      "sub": "Organizar pendências faz parte do atendimento.",
+      "scene": 59,
+      "cta": "Responda DOCUMENTOS no direct.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "0c9b729235d7602ce895d4d90a9a4979b196a372b8391134e3a1435718d87517"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/25-c1.jpg",
+      "title": "Dados não conferem?",
+      "sub": "Revise as informações antes de enviar.",
+      "scene": 26,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "66f37580c79e83dad02832b0a4527a84f886ca2e8edf5b3084eb7a403d964d89"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/25-c2.jpg",
+      "title": "Arquivo difícil de ler?",
+      "sub": "Confira a legibilidade dos documentos.",
+      "scene": 27,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "c6381a1a1ca2f565fea26760b0ade37fdf67d30fb51ca4921b70fe4783934e03"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/25-c3.jpg",
+      "title": "Pendência sem acompanhar?",
+      "sub": "Organize as próximas ações do seu caso.",
+      "scene": 28,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "ddb7cc755fb974dbb51cb1954e8b3638a44c67a3e5e09609b5abef76e94959d0"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/27-c1.jpg",
+      "title": "SIGMA ou SINARM?",
+      "sub": "Comece conferindo o seu enquadramento.",
+      "scene": 29,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "f49c0be477529e2782ae149f930b6ebf182a61ae6e59471da2118cde2014b909"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/27-c2.jpg",
+      "title": "O registro precisa conferir.",
+      "sub": "Consulte os documentos existentes.",
+      "scene": 30,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "b874124ec5c41dc6678b0089ffdfc87e8658105015e363fbe35e9109ff786670"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/27-c3.jpg",
+      "title": "Confirme nas fontes oficiais.",
+      "sub": "As orientações aplicáveis podem mudar.",
+      "scene": 31,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "b25ce70e4c4731cd54c62ce7ccdce581c79b87dabba05cb6fddf15257c38a893"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/29-c1.jpg",
+      "title": "Seu processo foi indeferido?",
+      "sub": "Primeiro, leia a decisão com atenção.",
+      "scene": 32,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "1dd85d39ca75478dba86d1d445b10c58b1051b404381384cf62c30bfde376f84"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/29-c2.jpg",
+      "title": "Qual foi o motivo?",
+      "sub": "Organize o que foi apontado no processo.",
+      "scene": 33,
+      "cta": "Confira o próximo ponto.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "64eb214d4e650d0f81a7d3d24a5e72e0be9b2d1b1234dced81c08e03995d1f18"
+    },
+    {
+      "path": "docs/campanhas/maskara-2026-10-24/fontes-reels/29-c3.jpg",
+      "title": "Cada caso precisa de análise.",
+      "sub": "A possibilidade de revisão deve ser avaliada.",
+      "scene": 34,
+      "cta": "Comente DOCUMENTOS no post.",
+      "size": [
+        1080,
+        1920
+      ],
+      "sha256": "fb2d442e05be53c82a8dc0bde7750568f725f9bb01abb8f092ceadf5b435c720"
+    }
+  ]
+}

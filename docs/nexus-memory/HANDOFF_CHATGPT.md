@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — Maskara 24–30/10, produção concluída e envio em conferência
+- Pedido inicial ampliado pelo Rodrigo durante a sessão: **3 posts + 3 stories por dia**, às 09h, 12h e 19h Brasília. 42 slots: 4 carrosséis de 4 cartões, 14 feeds de imagem, 3 Reels (25/27/29 às 12h), 21 stories. Nenhum aprovado/publicado pelo assistente.
+- Criados em `agendamentos/clientes/maskara-assessoria/2026-10-24/` a `2026-10-30/`. Fontes reprodutíveis e inventário em `docs/campanhas/maskara-2026-10-24/`. Diagramas editoriais originais sobre documentação/regularização de armas de fogo, sem armas, preço, venda, promessa ou dados pessoais. Não são documentos oficiais.
+- QA independente aprovou após corrigir uma sobreposição e substituir cinco estruturas repetidas por 25 composições distintas. 60 cenas/artes e SHA-256 únicos, 1080×1350 ou 1080×1920, texto fora dos20% inferiores e fora da direita nos Reels. Capas são prévias técnicas do próprio vídeo. Reels9s/H264/AAC silencioso/30fps.21legendas<2200 com DOCUMENTOS na última linha;21stories sem legenda.
+- Modo seco do script atual da main reconheceu os42slots e passou a checagem de imagem repetida. **Envio real ainda em conferência nesta entrada; não inferir painel a partir dos arquivos ou do modo seco.** Nenhum Worker, workflow ou configuração de produção alterado.
+- Handoff Claude registra conta ainda pessoal e convite de testador pendente; esses estados não foram verificados novamente na Meta. Próximo passo: verificar logs dos42uploads e registrar execução/resultado. Rodrigo confere conexão profissional e resposta automática DOCUMENTOS.
+
 ## 2026-10-22 — Quatree: três posts de 23/10 preparados para ingestão
 - Rodrigo autorizou 3 posts/dia (09h/12h/19h), início 23/10, referências de todas as linhas oficiais e envio ao painel do cliente para aprovação.
 - Criadas três artes a partir de packshots oficiais Supreme/Life/Select Power; JPEG 1080×1350, legendas completas, sem preço/região/condições inventadas.
