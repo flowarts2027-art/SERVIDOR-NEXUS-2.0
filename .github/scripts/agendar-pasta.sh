@@ -140,21 +140,6 @@ process_slot() {
 
   start_session || return
   client_exists "$CLIENT_ID" || { fail "$slot: cliente '$CLIENT_ID' não encontrado no Nexus"; return; }
-  # Correções pontuais autorizadas: somente rascunhos pendentes conhecidos.
-  # Preserva o histórico e nunca altera conteúdo publicado ou em publicação.
-  local old_id="" old_pending replacement
-  case "$slot" in
-    clientes/quatree-dog/2026-10-23/0900) old_id=upload-feed-f20d14e6-9b5d-4617-aa85-105419ce83bb ;;
-    clientes/quatree-dog/2026-10-23/1900) old_id=upload-feed-17e11b4e-c104-43b0-aa75-8817d3428dd6 ;;
-  esac
-  if [ -n "$old_id" ]; then
-    old_pending="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE id='$old_id' AND client_id='$CLIENT_ID' AND scheduled_for='$iso' AND approval_status='pending' AND status NOT IN ('published','publishing','cancelled') AND COALESCE(media_id,'')=''" | jq -r '.[0].results[0].n // 0')"
-    if [ "$old_pending" = 1 ]; then
-      replacement="$(curl -sS --max-time 30 -b "nexus_master=$TOKEN" -H 'Content-Type: application/json' -X POST "$BASE/api/master/posts/decision" --data "$(jq -nc --arg client "$CLIENT_ID" --arg post "$old_id" '{clientId:$client,postId:$post,decision:"rejected"}')")"
-      printf '%s' "$replacement" | jq -e '.ok == true and .post.approvalStatus == "rejected"' >/dev/null || { fail "$slot: rascunho antigo não foi recusado; troca interrompida"; return; }
-      note "$slot: rascunho anterior recusado para corrigir CTA TABELA; histórico preservado"
-    fi
-  fi
   local existing
   existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
   if [ "${existing:-0}" != 0 ]; then
