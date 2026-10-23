@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 08h10 BRT — Captador do Quatree corrigido (pedido do Rodrigo)
+- Diagnóstico no painel do Quatree (busca de teste, 07h40): a busca caiu no mapa grátis (o Google falhou e o erro ficava escondido), achou 19 pet shops em Uberlândia e mostrou 0, porque todo lugar sem telefone era descartado. A busca diária achou só 3 pelo mesmo motivo.
+- Agora: lugares sem telefone entram (botão "Ver no Maps (telefone)"), depois dos que têm telefone; o erro do Google volta na resposta (googleError) e no log.
+- Tipos de negócio por cliente: quem vende ração vê só Pet shop, Loja de ração, Agropecuária e Veterinário (clientNiches).
+- Cidades prontas de Uberlândia e região (32 cidades de MG, captador-regions.js) em caixinhas na busca diária (até 40 cidades); busca manual com lista de cidades e bairro de Uberlândia (54 bairros) — o bairro vale para a busca no Google.
+- 581/581 testes.
+
 ## 2026-10-23 07h50 BRT — Master v2 (pedido do Rodrigo)
 - Início sem atalhos repetidos do menu: ficou Suporte, CRM da Flow Arts, Adicionar cliente e Link de cadastro (copia). O número de posts esperando aprovação foi para o menu (Postagens).
 - Postagens: tabela tipo planilha (Prévia, Cliente, Tipo, Quando, Situação, Ações), com selo do tipo e botões Aprovar, Recusar e Excluir. Rota nova POST /api/master/posts/delete (usa deletePostFromPanel). Colunas Custo, Modelo e Detalhe saíram (erro aparece em Situação).

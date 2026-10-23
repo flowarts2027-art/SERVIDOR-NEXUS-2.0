@@ -15,6 +15,7 @@
   let found = []; // resultado das buscas, só na memória desta página
   let lastNiche = "";
   let lastCity = "";
+  let lastArea = "";
   let note = "";
 
   async function call(path, body) {
@@ -31,7 +32,7 @@
     return `<section class="block cap-promo">
       <h2>Ache novos clientes perto de você</h2>
       <p>Escolha o tipo de negócio e a cidade. O Captador busca no Google Maps e mostra empresas com telefone e uma mensagem pronta para você mandar pelo seu WhatsApp.</p>
-      <ul><li>21 tipos de negócio: pet shops, lojas de ração, agropecuárias, restaurantes, salões, clínicas e mais</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
+      <ul><li>Os tipos de negócio que compram de você</li><li>Mensagem com o seu nome e a sua oferta</li><li>Lista organizada: quem você já chamou, quem respondeu, quem está fechando</li></ul>
       <p class="cap-price">${esc(data?.price || "R$ 97 por mês")}</p>
       ${DEMO ? '<p class="muted">Na demonstração, a busca fica desligada.</p>' : `<a class="btn btn-whats" href="${FLOW_WHATS}" target="_blank" rel="noopener">Quero ativar</a>`}
     </section>`;
@@ -85,7 +86,7 @@
       <form id="cap-daily">
         <label class="cap-check"><input type="checkbox" name="enabled" ${d.enabled ? "checked" : ""}> Ligar a busca diária</label>
         <fieldset class="cap-niches"><legend>Tipos de negócio</legend>${boxes}</fieldset>
-        <label>Cidades (separe com ponto e vírgula)<input name="cities" maxlength="300" value="${esc((d.cities || []).join("; "))}" placeholder="Ex.: Uberaba MG; Araxá MG"></label>
+        ${regionCities(d)}
         <label>Empresas por dia<input name="target" type="number" min="1" max="10" value="${Number(d.target || 10)}"></label>
         <button class="btn btn-primary" type="submit">Salvar busca diária</button>
         <button class="btn btn-soft" type="button" data-cap-daily-run>Buscar agora</button>
@@ -94,10 +95,22 @@
     </details>`;
   }
 
+  // Cidades prontas da região (23/10): marque as da busca diária. Outras cidades, escreva embaixo.
+  function regionCities(d) {
+    const region = data?.region;
+    const saved = d.cities || [];
+    if (!region) return `<label>Cidades (separe com ponto e vírgula)<input name="cities" maxlength="300" value="${esc(saved.join("; "))}" placeholder="Ex.: Uberaba MG; Araxá MG"></label>`;
+    const others = saved.filter(c => !region.cities.includes(c));
+    return `<fieldset class="cap-niches cap-cities"><legend>Cidades · ${esc(region.label)}</legend>
+        ${region.cities.map(c => `<label class="cap-check"><input type="checkbox" name="regionCities" value="${esc(c)}" ${saved.includes(c) ? "checked" : ""}> ${esc(c.replace(/ MG$/, ""))}</label>`).join("")}
+      </fieldset>
+      <label>Outras cidades (opcional, separe com ponto e vírgula)<input name="cities" maxlength="300" value="${esc(others.join("; "))}" placeholder="Ex.: Goiânia GO"></label>`;
+  }
+
   function usageLine() {
     if (note) return note;
     if (!data.ready) return "A busca no Google Maps está fora do ar agora. Fale com a Flow Arts.";
-    return `Fonte: Google Maps. Buscas este mês: ${Number(data.usedMonth || 0)} de ${Number(data.monthlyLimit || 0)}`;
+    return `Buscas este mês: ${Number(data.usedMonth || 0)} de ${Number(data.monthlyLimit || 0)}`;
   }
 
   function searchForm() {
@@ -106,7 +119,11 @@
       <form id="cap-search" class="cap-search">
         <label>Tipo de negócio<select name="niche" required>${(data.niches || []).map(n =>
           `<option value="${esc(n.key)}" ${n.key === lastNiche ? "selected" : ""}>${esc(n.label)}</option>`).join("")}</select></label>
-        <label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Curitiba PR" value="${esc(lastCity)}" required></label>
+        ${data.region
+          ? `<label>Cidade<select name="city" required>${data.region.cities.map(c => `<option value="${esc(c)}" ${c === lastCity ? "selected" : ""}>${esc(c.replace(/ MG$/, ""))}</option>`).join("")}</select></label>
+             <label>Bairro de ${esc(String(data.region.areaCity || "").replace(/ [A-Z]{2}$/, ""))} (opcional)<input name="area" list="cap-bairros" maxlength="60" placeholder="Ex.: Santa Mônica" value="${esc(lastArea)}"></label>
+             <datalist id="cap-bairros">${data.region.bairros.map(b => `<option value="${esc(b)}">`).join("")}</datalist>`
+          : `<label>Cidade e estado<input name="city" maxlength="60" placeholder="Ex.: Curitiba PR" value="${esc(lastCity)}" required></label>`}
         <button class="btn btn-primary" type="submit" ${data.ready ? "" : "disabled"}>Buscar empresas</button>
       </form>
       <p class="muted" id="cap-usage">${esc(usageLine())}</p>
@@ -128,6 +145,14 @@
 
   function leadActions(lead) {
     const move = (to, label, cls = "btn-soft") => `<button type="button" class="btn ${cls}" data-cap-move="${to}" data-id="${esc(lead.id)}">${label}</button>`;
+    // Sem telefone no mapa (23/10): abre no Maps para pegar o número; a mensagem fica pronta para copiar.
+    if (!lead.phone && ["novo", "hoje"].includes(lead.status)) {
+      const direct = lead.direct ? `<a class="btn btn-soft" href="${esc(lead.direct)}" target="_blank" rel="noopener" data-cap-direct="${esc(lead.id)}">Copiar e abrir Direct</a>` : "";
+      return `<a class="btn btn-primary" href="${esc(lead.maps_url)}" target="_blank" rel="noopener">Ver no Maps (telefone)</a>
+        ${direct}
+        <button type="button" class="btn btn-soft" data-cap-copy="${esc(lead.id)}">Copiar mensagem</button>
+        ${lead.status === "hoje" ? move("nao-quer", "Não serve", "btn-ghost") : `<button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`}`;
+    }
     if (lead.status === "novo" && closedNow(lead)) return `<button type="button" class="btn btn-primary" data-cap-later="${esc(lead.id)}">${lead.hoursGuessed ? "Lembrar no horário comercial" : "Lembrar quando abrir"}</button>
       <a class="btn btn-soft" href="${esc(withMedia(lead) ? lead.whatsappWithMedia : lead.whatsapp)}" target="_blank" rel="noopener" data-cap-sent="${esc(lead.id)}">Mandar mesmo assim</a>
       <button type="button" class="btn btn-ghost" data-cap-skip="${esc(lead.id)}">Não serve</button>`;
@@ -160,7 +185,7 @@
   }
 
   function leadCard(lead) {
-    const bits = [lead.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)", lead.has_site ? "Tem site" : "Sem site"];
+    const bits = [!lead.phone ? "Sem telefone no mapa" : lead.mobile ? "Celular" : "Telefone fixo (pode não ter WhatsApp)", lead.has_site ? "Tem site" : "Sem site"];
     if (lead.instagram) bits.push("Instagram @" + esc(lead.instagram));
     const stars = Number(lead.reviews) ? `<p>Nota ${esc(String(Number(lead.rating || 0).toFixed(1)).replace(".", ","))} · ${Number(lead.reviews)} avaliações no Google</p>` : "";
     return `<article class="cap-lead">
@@ -272,7 +297,8 @@
       event.preventDefault();
       const fd = new FormData(form);
       try {
-        await call("/api/portal/captador/daily", { enabled: fd.get("enabled") === "on", niches: fd.getAll("niches"), cities: fd.get("cities"), target: Number(fd.get("target")) });
+        const cities = [...fd.getAll("regionCities").map(String), ...String(fd.get("cities") || "").split(";").map(c => c.trim()).filter(Boolean)];
+        await call("/api/portal/captador/daily", { enabled: fd.get("enabled") === "on", niches: fd.getAll("niches"), cities, target: Number(fd.get("target")) });
         note = "Busca diária salva.";
         await load();
       } catch (error) { alertLine(error.message); }
@@ -296,15 +322,17 @@
       button.disabled = true;
       lastNiche = String(fd.get("niche") || "");
       lastCity = String(fd.get("city") || "").trim();
-      alertLine("Buscando no Google Maps…");
+      lastArea = String(fd.get("area") || "").trim();
+      alertLine("Buscando…");
       try {
-        const result = await call("/api/portal/captador/search", { niche: lastNiche, city: lastCity });
+        const result = await call("/api/portal/captador/search", { niche: lastNiche, city: lastCity, area: lastArea && data?.region?.areaCity === lastCity ? lastArea : "" });
         const seen = new Set(found.map(item => item.id));
         let added = 0;
         for (const item of result.items || []) if (!seen.has(item.id)) { seen.add(item.id); found.push(item); added++; }
         found.sort((a, b) => Number(b.score || 0) - Number(a.score || 0));
         status = "novo";
-        note = `${added} empresas novas na lista. Buscas este mês: ${result.usedMonth} de ${result.monthlyLimit}.`;
+        const noPhone = (result.items || []).filter(item => !item.phone).length;
+        note = `${added} empresas novas na lista${noPhone ? ` (${noPhone} sem telefone no mapa: toque em "Ver no Maps")` : ""}. Fonte: ${result.source === "google" ? "Google Maps" : "mapa grátis"}. Buscas este mês: ${result.usedMonth} de ${result.monthlyLimit}.`;
         await load();
       } catch (error) {
         alertLine(error.message);

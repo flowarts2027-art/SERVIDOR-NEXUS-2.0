@@ -9,7 +9,8 @@
 import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces, OVERPASS_ENDPOINTS, searchNominatim } from "./prospects.js";
 import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./showcase-store.js";
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
-import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily } from "./captador-daily.js";
+import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily, suggestedNiches } from "./captador-daily.js";
+import { clientRegion } from "./captador-regions.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
 // "hoje" (22/10): separada pela busca diária automática, esperando o cliente mandar.
@@ -63,6 +64,14 @@ const thisMonth = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sa
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 const GOOGLE_ID = /^[A-Za-z0-9_-]{10,300}$/;
 const validLeadId = id => GOOGLE_ID.test(id) || OSM_ID.test(id);
+
+// Tipos de negócio que o cliente pode buscar (23/10): quem vende ração vê só pet shop,
+// loja de ração, agropecuária e veterinário. Os outros clientes veem todos.
+export function clientNiches(client = {}) {
+  const only = suggestedNiches(client);
+  const keys = only.length ? only : Object.keys(CAPTADOR_NICHES);
+  return keys.filter(key => CAPTADOR_NICHES[key]);
+}
 
 export async function ensureCaptadorSchema(env) {
   await env.DB.prepare(`
@@ -250,12 +259,12 @@ export function captadorMessage(config, lead, showcase = null) {
 const withMessage = (config, lead, showcase = null, materialKindText = "") => {
   const message = captadorMessage(config, lead, showcase);
   const out = { ...lead, mobile: Boolean(lead.mobile), has_site: Boolean(lead.has_site), message,
-    whatsapp: `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` };
+    whatsapp: lead.phone ? `https://wa.me/55${lead.phone}?text=${encodeURIComponent(message)}` : "" };
   // Direct do Instagram (22/10): abre a conversa; o texto vai copiado, porque o Instagram não aceita texto no link.
   if (/^[a-z0-9._]{1,30}$/i.test(String(lead.instagram || ""))) out.direct = `https://ig.me/m/${lead.instagram}`;
   if (materialKindText) {
     out.messageWithMedia = messageWithMaterial(message, materialKindText);
-    out.whatsappWithMedia = `https://wa.me/55${lead.phone}?text=${encodeURIComponent(out.messageWithMedia)}`;
+    out.whatsappWithMedia = lead.phone ? `https://wa.me/55${lead.phone}?text=${encodeURIComponent(out.messageWithMedia)}` : "";
   }
   return out;
 };
@@ -341,7 +350,8 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
   const name = clean(tags.name, 120);
   if (!name || tags.disused || tags.brand || tags["brand:wikidata"]) return null;
   const { phone, mobile } = phoneInfo(String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0]);
-  if (!phone) return null;
+  // 23/10: o mapa grátis quase nunca tem telefone. Sem telefone, a empresa entra assim mesmo,
+  // com o botão "Ver no Maps" para o cliente pegar o número (antes era descartada).
   const website = String(tags.website || tags["contact:website"] || tags.url || "").trim();
   const site = siteInfo(website && !/^https?:/i.test(website) ? "https://" + website : website);
   if (onlyNoSite && site.hasOwnSite) return null;
@@ -351,7 +361,7 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
     id, name, niche: nicheKey, city, address, phone, mobile,
     has_site: site.hasOwnSite, instagram: site.instagram || (/^[a-z0-9._]{1,30}$/i.test(igTag) ? igTag : ""),
     rating: 0, reviews: 0, maps_url: mapsSearchLink(name, city),
-    score: captadorScore({ reviews: 0, rating: 0, mobile, hasSite: site.hasOwnSite }),
+    score: Math.max(0, captadorScore({ reviews: 0, rating: 0, mobile, hasSite: site.hasOwnSite }) - (phone ? 0 : 3)),
     hours: parseOsmHours(tags.opening_hours)
   };
 }
@@ -362,8 +372,9 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
   const niche = canonicalNiche(body.niche);
-  if (!CAPTADOR_NICHES[niche]) throw new Error("niche_invalid");
+  if (!CAPTADOR_NICHES[niche] || !clientNiches(client).includes(niche)) throw new Error("niche_invalid");
   const city = clean(body.city, 60);
+  const area = clean(body.area, 60); // bairro (opcional), só na busca do Google
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
   const key = await placesKey(env);
   const { monthlyLimit } = await readAccess(env, client.id);
@@ -374,12 +385,18 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   let leads = null;
   let found = 0;
   let source = "google";
+  let googleError = key ? "" : "sem_chave";
   if (key) {
     try {
-      const places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${city}`, fetcher);
+      const places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${area ? area + ", " : ""}${city}`, fetcher);
       found = places.length;
       leads = places.map(place => captadorLead(place, niche, city, config.onlyNoSite));
-    } catch { leads = null; }
+    } catch (error) {
+      // 23/10: o erro do Google aparecia escondido; agora volta na resposta e no log.
+      googleError = String(error?.message || error).slice(0, 120);
+      console.warn("captador_google_failed", client.id, googleError);
+      leads = null;
+    }
   }
   if (!leads) {
     source = "osm";
@@ -403,7 +420,8 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
     items.push(withHours(withMessage(config, { ...lead, status: "novo" }, showcase, material.kind), lead.hours));
   }
   items.sort((a, b) => b.score - a.score);
-  return { ok: true, found, items, source, usedMonth: used + 1, monthlyLimit };
+  items.sort((a, b) => Boolean(b.phone) - Boolean(a.phone));
+  return { ok: true, found, items, source, googleError: googleError || undefined, area: area || undefined, usedMonth: used + 1, monthlyLimit };
 }
 
 // Quem o cliente chamou no WhatsApp vira contato dele (nome, telefone, cidade).
@@ -480,7 +498,8 @@ export async function captadorView(env, client, status = "enviado") {
   return {
     ok: true, enabled: true, ready: true, config, counts, material, daily,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
-    niches: Object.entries(CAPTADOR_NICHES).map(([key, n]) => ({ key, label: n.label })),
+    niches: clientNiches(client).map(key => ({ key, label: CAPTADOR_NICHES[key].label })),
+    region: clientRegion(client, daily),
     items: rows.map(row => {
       const item = withHours(withMessage(config, row, showcase, material.kind), readWeek(row.hours_json));
       return row.remind_at ? { ...item, remindAt: row.remind_at, remindDue: Date.parse(row.remind_at) <= Date.now() } : item;
