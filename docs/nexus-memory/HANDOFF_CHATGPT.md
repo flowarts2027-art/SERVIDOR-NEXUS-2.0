@@ -1,5 +1,18 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 23h24 BRT — Campanhas de 23/10 enviadas; tarefa 06h antecipada
+- Pedido direto de Rodrigo: executar agora a tarefa das 06h e incluir stories, feed e carrossel na Quatree e na Flow Arts, seguindo a regra do Claude.
+- Lidas a grade nova `FORMATOS_POSTAGENS.md`, regras, campanha, handoffs, memória obrigatória e PRs. As regras novas já estavam integradas; não foram recriadas. Standup de 23/10 não encontrado (404).
+- Tarefa “Enviar arte Quatree ao painel” desativada para não repetir às 06h. Tarefa diária “Atualizar memória Flow Arts” passou a ler explicitamente a grade e a campanha Quatree; não cria/aprova posts nessa leitura.
+- **Flow Arts, 23/10:** 09h carrossel 7 cartões (“5 fotos para o seu café”); 10h30 story (“Qual foto falta?”); 12h Reel ilustrativo de 9s com três cenas; 16h story “3 posts grátis”; 19h feed “O que trava seu Instagram?”. Público cafeteria, CTA QUERO, sem preço. Fotografias ilustrativas geradas por IA e identificadas nas legendas; não são prova de cliente ou promessa de resultado. Reel H.264/AAC silencioso, 1080×1920, 30 fps.
+- **Quatree, 23/10:** mantidos feeds 09h Supreme cães e 19h Select Power; corrigida a arte das 12h para Supreme gatos castrados (arquivo recuperado da conversa). Acrescentados carrossel 3 cartões às 15h e story às 18h. Esta é uma exceção complementar para 23/10 autorizada pelo pedido; não muda a grade regular de 2–3/dia. Nas próximas datas seguir `FORMATOS_POSTAGENS.md`.
+- **Envio comprovado:** commit `394c246`, [execução 39888688531](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39888688531) success, logs de oito uploads com resposta “enviado ao painel, esperando aprovação”: cinco Flow Arts e Quatree 12h/15h/18h. A ingestão de Quatree 09h/12h/19h anterior foi comprovada na execução 39875147443.
+- As legendas antigas Quatree 09h/19h tinham REVENDA/SELECT. Reenvio inicial foi bloqueado corretamente por deduplicação (39888879575). Corrigidas **no próprio registro**, mantendo mídia e horário e voltando a `pending`; [execução 39889202971](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39889202971) confirmou uma legenda exata por horário, com TABELA e sem duplicação. Operação limitada a cliente, data, origem de upload e registros não publicados/em publicação; nenhum conteúdo publicado alterado.
+- Correções pontuais de execução retiradas: ingestão padrão restaurada em `c59ee89` na branch `agendamentos`. Nenhuma mudança no Worker/site nem deploy de aplicação por esta tarefa.
+- **QA:** 18 JPEG decodificáveis; feed/carrossel 1080×1350, stories/capa 1080×1920; legendas <2200 caracteres com QUERO/TABELA; Reel 9s/30fps/H.264/AAC e cenas distintas inspecionadas. Ingestão conferida em modo seco antes do envio; sintaxe Bash validada.
+- **Estado observado no navegador depois do envio:** os cinco conteúdos Flow Arts apareceram em Posts → Agendados, com os horários acima e rótulo “Aprovado · será publicado”. Nenhuma ação de aprovação/publicação foi feita por esta sessão; não inferir a origem dessa aprovação. Painel Quatree não inspecionado visualmente; envio e alterações confirmados pelos logs/API/banco.
+- **Próximo passo:** Rodrigo revisar no painel, especialmente as duas legendas Quatree que voltaram para aprovação. Nada foi publicado no Instagram por esta sessão. Não recriar 23/10 nem reenviar às 06h.
+
 ## 2026-10-22 18:34 BRT — FLOW-ARTES-001 integrado e implantado
 - Pedido atendido: Rodrigo determinou ajustar a integração porque o envio dos arquivos ao PR não os colocava no painel.
 - PR #367 integrado em `5eca11e`; ajustes de verificação em `2c306a7`; proporção CSS corrigida em `900fec9` (`height:auto`, eliminando área vazia excessiva).
