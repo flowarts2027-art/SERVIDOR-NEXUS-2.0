@@ -1,5 +1,11 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — Liberação documental de imagens (opção 2)
+- Rodrigo confirmou a opção 2: permitir artes, referências, fotos de produto e fotos de clientes para posts na memória/repositório público, com as exclusões descritas no BRIDGE_PROTOCOL.
+- Alterados BRIDGE_PROTOCOL.md e DECISIONS.md na branch docs/liberar-imagens-memoria-20261023; commits 199f72a e 62646c4.
+- Apenas documentação. Nenhuma imagem enviada, API religada, produção alterada ou teste de runtime executado. A opção 1 permanece inalterada.
+- Estado: proposta em branch para revisão; próximo passo: revisar e integrar o PR. A autorização não concede permissões técnicas de escrita a outra conta.
+
 ## 2026-10-23 — DOTs de marketing: transferência para outra conta
 
 Publicação pública expressamente autorizada pelo proprietário nesta conversa. Instruções completas dos oito agentes Agência Flow (Dante, Lia, Caio, Maya, Ravi, Bento, Clara, Nilo) e DOT ATELIER, com memória de marketing disponível e roteiro de recuperação, em [DOTS_MARKETING_TRANSFERENCIA.md](DOTS_MARKETING_TRANSFERENCIA.md). Commit `6b251543d57b1638041e135608979036d5d931e6`; conteúdo relido e comparado integralmente com a exportação. Somente documentação. Nenhuma instalação na conta de destino testada ou confirmada; nenhuma conexão, tarefa agendada ou credencial transferida. Nexus está fora do escopo dos agentes exportados. Próximo: conta nova ler esse arquivo inteiro e recriar as skills com ferramentas realmente disponíveis, reportando o resultado.
