@@ -41,3 +41,16 @@ test("Instagram desconectado vira erro claro", async () => {
   assert.equal(out.ok, false);
   assert.equal(out.error, "instagram_not_connected");
 });
+
+test("trocou de Instagram: descarta números e histórico da conta antiga na hora", async () => {
+  const store = {}; let calls = 0;
+  const env = fakeEnv(store);
+  const old = { ...snapshot, username: "contapessoal", followersCount: 1433 };
+  await clientInsights(env, { id: "c", instagram: "@contapessoal" }, { fetchSnapshot: async () => old, now: new Date("2026-10-11T10:00:00Z") });
+  const fresh = { ...snapshot, username: "contanova", followersCount: 395 };
+  const out = await clientInsights(env, { id: "c", instagram: "@contanova" }, { fetchSnapshot: async () => { calls++; return fresh; }, now: new Date("2026-10-11T10:05:00Z") });
+  assert.equal(calls, 1, "não usa o cache da conta antiga");
+  assert.equal(out.followers, 395);
+  assert.equal(out.username, "contanova");
+  assert.deepEqual(out.followersHistory, [{ day: "2026-10-11", followers: 395 }]);
+});
