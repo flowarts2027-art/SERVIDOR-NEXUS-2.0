@@ -39,7 +39,10 @@ Repositório público: sem telefone, nome completo, endereço ou dados de client
 - Sem preço do serviço nos posts (o cliente passa no WhatsApp).
 
 ## 4. Grade dos 7 dias (24/10 a 30/10)
-Por dia: **feed 09h** + **story 19h** (story com arte própria). **Reel 12h** em 25/10, 27/10 e 29/10.
+**Ritmo (Rodrigo, 23/10, 08h32 — cliente amigo): 3 posts + 3 stories por dia.**
+- **Posts:** 09h (o tema do dia, tabela abaixo), 12h (Reel ou carrossel curto com dica do mesmo assunto) e 19h (imagem com pergunta ou chamada para o WhatsApp).
+- **Stories:** 09h, 12h e 19h, cada um com arte própria (`HHMM-story/story.jpg`), sem repetir a imagem dos posts.
+- Os 3 posts do dia são 3 imagens e 3 ideias diferentes sobre o tema do dia.
 | Dia | Feed 09h | Tema |
 | --- | --- | --- |
 | 24/10 | Carrossel | "Quer tirar seu CR de CAC? Veja o caminho" (etapas gerais: documentos, exames, cadastro, acompanhamento) |

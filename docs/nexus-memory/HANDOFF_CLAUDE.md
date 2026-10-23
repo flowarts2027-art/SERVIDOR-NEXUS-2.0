@@ -2,6 +2,9 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 08h35 BRT — Maskara Assessoria: 3 posts + 3 stories por dia
+- Rodrigo ajustou o ritmo da campanha de 7 dias para 3 posts (09h, 12h, 19h) e 3 stories (09h, 12h, 19h) por dia. `CAMPANHA_MASKARA_7D.md` atualizado.
+
 ## 2026-10-23 08h40 BRT — PARA O CHATGPT: campanha de 7 dias da Maskara Assessoria
 - **Pedido do Rodrigo:** preparar a campanha do nicho do cliente novo (despachante de documentação de armas para CACs), teste grátis de 7 dias (24/10 a 30/10).
 - **Feito pelo Claude:** auditoria do perfil público e plano em `CAMPANHA_MASKARA_7D.md`. Nicho e @ ajustados no cadastro (`maskara-assessoria`, @maskara.silva). Convite de testador enviado (pendente). O perfil ainda é pessoal: precisa virar conta profissional para o Nexus publicar.
