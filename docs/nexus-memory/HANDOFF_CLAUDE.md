@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 12h20 BRT — Maskara: palavra agora é QUERO
+- **Pedido do Rodrigo:** a palavra da Maskara passa a ser "QUERO" (CTA "Comenta QUERO abaixo"), não mais "DOCUMENTOS".
+- **Feito (branch `fix/maskara-palavra-quero`):** palavras padrão do ramo despachante sem "documentos" (fica "quero" e as gerais); teste ajustado; `CAMPANHA_MASKARA_7D.md` atualizado.
+- **Para o ChatGPT:** em todas as peças novas da Maskara, arte e legenda com "Comenta QUERO abaixo". Nunca mais "DOCUMENTOS".
+- **Depende do painel:** se a Maskara já tiver lista salva em Conta › Respostas automáticas, trocar "documentos" por "quero" lá (a lista salva vale mais que a padrão).
+
 ## 2026-10-23 11h55 BRT — Story travava o feed do mesmo horário (Maskara)
 - **Relato do Rodrigo:** o story da Maskara saiu no Instagram, mas o post do feed que o cliente aprovou não saiu.
 - **Causa no código:** o Publisher contava o story como "post publicado" e esperava 90 min antes do próximo; e só publicava 1 item por rodada. Com post + story no mesmo horário, o story saía e o feed ficava travado.

@@ -1,5 +1,5 @@
 // Resposta automática por PALAVRA NO DIRECT (pedido do Rodrigo, 23/10/2026, Maskara).
-// As artes dizem "Responda DOCUMENTOS no direct", mas a resposta automática só
+// (23/10 12h: a palavra da Maskara agora é "QUERO".) As artes diziam "Responda DOCUMENTOS no direct", mas a resposta automática só
 // funcionava em comentário. Agora, quando a pessoa manda no direct uma das palavras
 // do cliente (painel: Conta › Respostas automáticas), o Nexus responde com a mesma
 // mensagem do direct (texto + botão do WhatsApp).
