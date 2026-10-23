@@ -23,7 +23,7 @@ import { startInstagramOAuth, handleInstagramOAuthCallback } from "./instagram.j
 import { AGENT_CORE_MODULES, normalizeAgentCoreConfig, agentCoreState, agentExecutions, saveAgentCoreConfig } from "./agent-core.js";
 import { leadsForClient, leadHunterSummary } from "./leads.js";
 import { leadHunterView, saveLeadHunterConfig, runLeadHunter, discardLead } from "./lead-hunter.js";
-import { decidePost, requestPostRevision, cancelPost, saveOwnPostContent, publishPostNow, useLibraryImageForPost } from "./posts.js";
+import { decidePost, requestPostRevision, cancelPost, deletePostFromPanel, saveOwnPostContent, publishPostNow, useLibraryImageForPost } from "./posts.js";
 import { addDirective, createCampaign, masterWorkspace } from "./master-workspace.js";
 import { startGitHubVideoRender, startYouTubeVideoIngest, recoverLocalIngestViaServer, retryFailedYoutubeIngestWithLocalHelper, localHelperStaleReason, ingestTimeoutDetail } from "./github-video-render.js";
 import { confirmedVideoSource, isMp4Header, videoErrorMessages, videoRenderQueueExpired } from "./video-source.js";
@@ -1838,6 +1838,17 @@ export async function handlePortalApi(request, env, url, ctx) {
         publishing_in_progress: "A postagem já está sendo publicada."
       };
       return json({ error: code, message: messages[code] || "Não foi possível pedir a correção." }, code === "post_not_found" ? 404 : 400);
+    }
+  }
+
+  const postDeleteMatch = url.pathname.match(/^\/api\/portal\/posts\/([^/]+)\/delete$/);
+  if (postDeleteMatch && request.method === "POST") {
+    try {
+      return json(await deletePostFromPanel(env, client, decodeURIComponent(postDeleteMatch[1])));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      const messages = { post_not_found: "Post não encontrado.", publishing_in_progress: "Este post está sendo publicado agora. Espere 1 minuto e tente de novo." };
+      return json({ error: code, message: messages[code] || "Não foi possível excluir este post." }, code === "post_not_found" ? 404 : 409);
     }
   }
 

@@ -11,6 +11,11 @@
 - A capa de um Reel é a prévia técnica do próprio vídeo, não uma nova postagem; não usar essa imagem em outro conteúdo.
 - Nada é publicado nem aprovado pelo assistente. O usuário aprova no painel.
 
+- Variar a cena no dia e na semana: não usar a mesma comida em mais de 2 artes por dia (pão, bolo, pizza, lanche, salgado, café, fachada, balcão, mãos do dono, cardápio, celular).
+- Quatree: o banner do cliente serve de base **uma vez só**; carrossel nunca reaproveita imagens do feed.
+- Antes de salvar, compare com as artes dos últimos 7 dias do mesmo perfil.
+- **O GitHub recusa imagem idêntica** (`agendar-pasta.sh`, desde 23/10): se o Actions mostrar "imagem repetida", crie uma arte nova para aquela pasta.
+
 ## 1. Flow Arts (@flowarts2026) — 6 conteúdos por dia
 | Horário | Formato | Pasta | Função |
 | --- | --- | --- | --- |
@@ -22,6 +27,7 @@
 | 19:00 | Story exclusivo 9:16 | `.../1900-story/story.jpg` | Aprovação, rotina ou convite |
 
 Público de comida local; sem preço, sem azul/neon/robôs; CTA **QUERO**, oferta **3 posts grátis**. Uma das peças do feed mantém “App de agendar post não cria post”.
+- O Nexus não repete mais o post como story: o story automático está desligado no código (só liga com `NEXUS_AUTO_STORY="true"`).
 
 ## 2. Quatree Dog (@ericsson_quatree)
 Base: materiais corretos do cliente e cenas novas; seguir `CAMPANHA_QUATREE_30D.md`.

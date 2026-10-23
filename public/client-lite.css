@@ -423,3 +423,28 @@ input, select, textarea, button { max-width: 100%; }
 .cap-niches { border: 1px solid var(--line, #ddd); border-radius: 12px; padding: 8px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 4px 12px; margin: 0; }
 .cap-niches legend { font-weight: 600; padding: 0 4px; }
 #tab-conta .autoreply-preview{white-space:pre-wrap;font:inherit;background:var(--paper);padding:10px;border-radius:10px;margin:6px 0 0}
+
+/* Tipo do post bem visível (22/10/2026) */
+.format-badge { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 6px 12px; border-radius: 10px; font-weight: 800; font-size: 1.05rem; color: #fff; }
+.format-badge small { font-weight: 400; font-size: .9rem; opacity: .95; }
+.format-post { background: #1F4FBF; }
+.format-carousel { background: #6A3FB5; }
+.format-reel { background: #B4232A; }
+.format-story { background: #8A5A00; }
+
+/* Computador: menu em cima, com nome em cada botão (sem barra lateral) — 22/10/2026 */
+@media (min-width: 900px) {
+  .app { display: block !important; }
+  .tabbar, .flow-crm .tabbar {
+    position: sticky !important; top: 0; z-index: 20; height: auto !important;
+    display: flex !important; flex-wrap: wrap; justify-content: center; gap: 6px;
+    padding: 10px 16px !important; border: 0 !important; border-bottom: 1px solid var(--line) !important;
+    background: var(--card) !important; grid-template-columns: none !important;
+  }
+  .tabbar > button { flex: 0 0 auto; width: auto; overflow: visible; font-size: 1.05rem !important; padding: 10px 16px !important; }
+  .tabbar > button span { font-size: 1.15rem; }
+  .content { max-width: 1100px; margin: 0 auto; }
+}
+
+/* Botão Excluir em todos os posts (22/10/2026) */
+.actions .btn-cancel { grid-column: 1 / -1; color: #A11D12; }

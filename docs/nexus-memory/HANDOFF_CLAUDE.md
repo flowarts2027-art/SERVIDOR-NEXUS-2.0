@@ -2,6 +2,21 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h59 BRT — Botão Excluir em todos os posts do painel do cliente
+- Pedido do Rodrigo: botão excluir em todos os posts, até nos aprovados.
+- Feito (mesma branch `fix/painel-formato-menu`, PR #384): não publicado → cancela e some; publicado → some só do painel (no Instagram continua). 579/579 testes.
+
+## 2026-10-22 23h55 BRT — Painel do cliente: tipo do post visível e menu arrumado
+- Pedido do Rodrigo: deixar claro no painel se o post é feed, Reels ou stories; o painel da Flow Arts estava bagunçado no computador (menu lateral só com ícones).
+- Feito (branch `fix/painel-formato-menu`): selo colorido com o tipo em cada post e no "próximo post"; menu em cima no computador. 578/578 testes. Conferido em prévia local (demo).
+- Para o ChatGPT: o tipo vem do arquivo da pasta (imagem.jpg = Feed, 01.jpg… = Carrossel, video.mp4 = Reels, story.jpg = Stories). Use o arquivo certo.
+## 2026-10-22 23h45 BRT — PARA O CHATGPT: nunca repetir imagem
+- **Pedido do Rodrigo:** o ChatGPT nunca pode criar imagens iguais para postagens. Ele pediu stories para Flow Arts e Quatree e viu a mesma imagem do post no story.
+- **Diagnóstico (branch `agendamentos`, 23/10):** no Quatree, o carrossel das 15h (`01.jpg`, `02.jpg`, `03.jpg`) é cópia exata das imagens das 09h, 12h e 19h. Na Flow Arts, os stories são arquivos diferentes, mas o Nexus também publicava sozinho a imagem do post como story (story automático), e todas as artes do dia eram pão de queijo com café.
+- **Feito (branch `fix/sem-imagem-repetida`):** regra fixa no topo de `FORMATOS_POSTAGENS.md` (+ `REGRA_POSTS_DIARIOS.md`, `CAMPANHA_QUATREE_30D.md`, `AGENTS.md`); `agendar-pasta.sh` recusa imagem idêntica a outra pasta do mesmo cliente ou repetida na própria pasta (testado em cópia local: a pasta do Quatree 15h foi recusada); story automático desligado em `publisher.js` (só liga com `NEXUS_AUTO_STORY="true"`). 578/578 testes.
+- **Para o ChatGPT agora:** refazer o carrossel do Quatree de 23/10 15h com 3 artes novas; variar as cenas da Flow Arts.
+- **Pendente do Rodrigo:** se o carrossel repetido do Quatree (23/10 15h) já está no painel, recusar ou cancelar.
+
 ## 2026-10-22 23h40 BRT — Planos com nomes curtos e cadastro com Pix
 - **Pedido do Rodrigo:** (1) letras maiores e mais fáceis de ler, sem barra lateral (ele é disléxico e autista); (2) planos com nomes e valores; o cliente escolhe o plano num link, vê o passo a passo, paga no Pix (chave CNPJ do site) e cai um pedido no Master para aprovar; o painel do cliente mostra o plano.
 - **Decisões:** todos os produtos do site viram planos; nomes curtos escolhidos pelo Claude (Rodrigo pode trocar): Essencial, Completo, Captador, Site, Responde, Reels 5, Posts 10, Logo.

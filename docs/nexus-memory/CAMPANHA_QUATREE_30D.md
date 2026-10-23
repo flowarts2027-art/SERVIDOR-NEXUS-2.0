@@ -54,6 +54,7 @@ Nada disso foi mudado pelo Nexus. Quem muda é o próprio cliente.
 
 ## 4. Ritmo
 
+- **Nunca repetir imagem (22/10):** o banner do cliente serve de base uma vez só; carrossel nunca reaproveita imagens do feed; story é arte própria. Ver `FORMATOS_POSTAGENS.md`.
 - **Grade nova (Rodrigo, 22/10, 22h59) — ver `FORMATOS_POSTAGENS.md`:**
   - **Feed 09h todo dia:** seg, qua e sex carrossel; ter, qui, sáb e dom 1 imagem.
   - **Reel 12h** ter, qui e sáb, feito com os banners do cliente.

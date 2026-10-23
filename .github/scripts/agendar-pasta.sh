@@ -85,6 +85,25 @@ client_exists() {
   CLIENT_OK[$id]=1
 }
 
+# Imagem repetida: o mesmo arquivo (mesmo conteúdo) já usado em outra pasta do MESMO cliente,
+# ou repetido dentro da própria pasta. Se achar, o post não sobe e o erro diz onde está a cópia.
+repeated_image() {
+  local dir="$1" client="$2" base f h other seen=""
+  if [ "$client" = "primeiro-teste" ]; then base="$ROOT"; else base="$ROOT/clientes/$client"; fi
+  while IFS= read -r f; do
+    h="$(sha256sum "$f" | cut -d' ' -f1)"
+    case " $seen " in *" $h "*) fail "${dir#$ROOT/}: imagem repetida dentro da pasta ($(basename "$f")). Cada imagem tem que ser diferente."; return 0 ;; esac
+    seen="$seen $h"
+    while IFS= read -r other; do
+      [ "$(sha256sum "$other" | cut -d' ' -f1)" = "$h" ] || continue
+      fail "${dir#$ROOT/}: $(basename "$f") é igual a ${other#$ROOT/}. Regra: nunca repetir imagem; crie uma arte nova."
+      return 0
+    done < <(find "$base" -type f -iregex '.*\.\(jpg\|jpeg\|png\|webp\)' -not -path "$dir/*" \
+               $( [ "$client" = "primeiro-teste" ] && printf '%s' "-not -path $ROOT/clientes/*" ) 2>/dev/null)
+  done < <(find "$dir" -maxdepth 1 -type f -iregex '.*\.\(jpg\|jpeg\|png\|webp\)' | sort)
+  return 1
+}
+
 process_slot() {
   local slot="$1" CLIENT_ID="primeiro-teste"
   if [[ "$slot" =~ ^clientes/([a-z0-9][a-z0-9-]{1,48})/(.+)$ ]]; then
@@ -131,6 +150,9 @@ process_slot() {
   if [[ "$slot" = *-story ]] && [ "$type" != story ]; then
     fail "$slot: pasta -story exige story.jpg ou story.mp4"; return
   fi
+
+  # Regra do Rodrigo (22/10): nunca a mesma imagem em dois posts, stories ou cartões.
+  repeated_image "$dir" "$CLIENT_ID" && return
 
   if [ "$type" != story ]; then
     [ -s "$caption" ] || { fail "$slot: falta legenda.txt"; return; }

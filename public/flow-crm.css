@@ -94,4 +94,4 @@
   #tab-crm .crm-actions > *, #tab-crm .prospect-buttons > * { flex: 1 1 auto; }
 }
 /* Com a aba CRM, o menu de baixo do celular tem 6 botões. */
-.flow-crm .tabbar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 899px) { .flow-crm .tabbar { grid-template-columns: repeat(6, minmax(0, 1fr)); } }

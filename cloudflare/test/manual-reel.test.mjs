@@ -74,8 +74,8 @@ test("rota só no Master; tela do Master e do cliente prontas", async () => {
 
 test("cliente pode cancelar post aprovado antes de sair", async () => {
   const js = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
-  assert.match(js, /data-cancel-post=/);
-  assert.match(js, /\/cancel", \{ method: "POST" \}/);
+  assert.match(js, /data-delete-post=/);
+  assert.match(js, /\/delete", \{ method: "POST" \}/);
   const { cancelPost } = await import("../src/posts.js");
   const { db, env } = fakeEnv();
   db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json) VALUES('p1','quatree-dog','2026-10-15T15:00:00Z','ready','approved','x','{}')").run();
@@ -111,4 +111,20 @@ test("carrossel incompleto: aviso e Aprovar travado até as imagens ficarem pron
   assert.match(js, /function carouselIncomplete/);
   assert.match(js, /As outras imagens do carrossel estão sendo criadas/);
   assert.match(js, /const ready = Boolean\(postImage\(post\)\) && !carouselIncomplete\(post\) && reviewed( && !dateMissing)?;/);
+});
+
+test("botão Excluir: não publicado é cancelado e some; publicado só some do painel", async () => {
+  const { deletePostFromPanel } = await import("../src/posts.js");
+  const { db, env } = fakeEnv();
+  db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json) VALUES('d1','quatree-dog','2026-10-15T15:00:00Z','ready','pending','x','{}')").run();
+  db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json) VALUES('d2','quatree-dog','2026-10-15T15:00:00Z','published','approved','x','{}')").run();
+  const a = await deletePostFromPanel(env, { id: "quatree-dog" }, "d1");
+  assert.equal(a.published, false);
+  assert.equal(a.post.status, "cancelled");
+  assert.equal(a.post.hiddenFromPanel, true);
+  const b = await deletePostFromPanel(env, { id: "quatree-dog" }, "d2");
+  assert.equal(b.published, true);
+  assert.equal(b.post.status, "published");
+  assert.equal(b.post.hiddenFromPanel, true);
+  await assert.rejects(() => deletePostFromPanel(env, { id: "outro" }, "d1"), /post_not_found/);
 });
