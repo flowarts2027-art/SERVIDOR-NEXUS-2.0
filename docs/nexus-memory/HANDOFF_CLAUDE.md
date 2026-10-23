@@ -2,6 +2,10 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 07h50 BRT — Master v2
+- Pedido do Rodrigo: tirar abas duplicadas, Postagens igual à tabela de clientes com botão excluir, Agentes e Site como painel holográfico, trocar a logo preta.
+- Feito (branch `feat/master-v2`): ver CHANGELOG 23/10 07h50. Conferido em prévia local com dados de exemplo. 580/580 testes.
+
 ## 2026-10-23 07h20 BRT — Master mais coeso e fácil de ler
 - Pedido do Rodrigo: login azul igual ao do cliente; clientes como planilha com cor alternada; menos informação solta e menos rolagem; ícones melhores; painel clicável; adaptado para dislexia.
 - Feito (branch `feat/master-coeso`): ver CHANGELOG 23/10 07h20. Nada foi apagado do código: o que é pouco usado ficou em blocos fechados. Conferido em prévia local com dados de exemplo. 579/579 testes.

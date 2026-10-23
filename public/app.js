@@ -251,7 +251,12 @@ function formatPostDate(value) {
 
 function renderPostLedger() {
   const data = state.postLedger || {};
-  // Bloco "Postagens" do Início: quantos esperam aprovação.
+  // Postagens esperando aprovação: número no menu (23/10).
+  {
+    const pending = (Array.isArray(data.posts) ? data.posts : []).filter(post => String(post.approvalStatus || "") === "pending" && ["ready", "scheduled"].includes(String(post.status || "")) && post.hiddenFromPanel !== true).length;
+    const badge = $("#posts-nav-count");
+    if (badge) { badge.textContent = pending; badge.hidden = pending <= 0; }
+  }
   if ($("#tile-posts")) {
     const list = Array.isArray(data.posts) ? data.posts : [];
     $("#tile-posts").textContent = list.filter(post => String(post.approvalStatus || "") === "pending" && ["ready", "scheduled"].includes(String(post.status || ""))).length;
@@ -290,7 +295,7 @@ function renderPostLedger() {
   if (state.postClientFilter) posts = posts.filter(post => post.clientId === state.postClientFilter);
   // 22/10 (Rodrigo): "limpa os posts removidos". Recusados, cancelados e vencidos sem aprovação somem
   // da lista (continuam guardados). A caixa "Mostrar removidos" mostra de novo.
-  const removedPost = post => String(post.approvalStatus || "") === "rejected" || String(post.status || "") === "cancelled"
+  const removedPost = post => post.hiddenFromPanel === true || String(post.approvalStatus || "") === "rejected" || String(post.status || "") === "cancelled"
     || (String(post.status || "") === "expired" && String(post.approvalStatus || "") !== "approved");
   const removedCount = posts.filter(removedPost).length;
   const showRemoved = $("#post-show-removed");
@@ -330,31 +335,33 @@ function renderPostLedger() {
         + missedClients.map(id => `<button type="button" class="btn" data-reschedule-today="${escapeHtml(id)}" style="margin-top:8px">Reagendar para hoje${missedClients.length > 1 ? " · " + escapeHtml(id) : ""}</button>`).join(" ")
       : "";
   }
+  const FORMATS = { reel: ["Reels", "fmt-reel"], carousel: ["Carrossel", "fmt-carousel"], story: ["Stories", "fmt-story"], post: ["Feed", "fmt-post"] };
   body.innerHTML = posts.length ? posts.map(post => {
     const [label, cls] = postStatusMeta(post.status);
-    const errorText = { approved_post_missed: "Aprovado, mas passou do horário sem publicar.", stale_ready_expired: "Venceu sem aprovação." }[String(post.error || "")];
-    const detail = errorText ? escapeHtml(errorText) : post.error ? escapeHtml(post.error) : post.mediaId ? "Media ID " + escapeHtml(post.mediaId) : "—";
+    const errorText = { approved_post_missed: "Passou do horário sem publicar.", stale_ready_expired: "Venceu sem aprovação." }[String(post.error || "")];
     const finished = ["expired", "cancelled", "failed", "skipped"].includes(String(post.status || ""));
     const image = /^https:\/\//i.test(String(post.imageUrl || "")) ? String(post.imageUrl) : "";
     const caption = String(post.caption || "").trim();
-    const approval = String(post.approvalStatus || "") === "approved" ? (finished ? "Aprovado · NÃO foi publicado" : "Aprovado · publica no horário") : String(post.approvalStatus || "") === "rejected" ? "Recusado · não será publicado" : String(post.approvalStatus || "") === "pending" ? "Aguardando aprovação" : "";
-    const canDecide = ["ready", "scheduled"].includes(String(post.status || "")) && String(post.approvalStatus || "") !== "approved";
-    const decisionButtons = canDecide
-      ? `<div class="post-decision"><button type="button" class="post-approve" data-post-decision="approved" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✓ Aprovar</button><button type="button" class="post-reject" data-post-decision="rejected" data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}">✕ Recusar</button></div>`
-      : "";
-    const preview = `<div class="post-preview">${image ? `<a href="${escapeHtml(image)}" target="_blank" rel="noopener"><img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy"></a>` : '<span class="post-preview-empty">Sem imagem</span>'}${caption ? `<details><summary>Ver legenda</summary><p>${escapeHtml(caption).replace(/\n/g, "<br>")}</p></details>` : ""}${approval ? `<small>${approval}</small>` : ""}${decisionButtons}</div>`;
+    const approvalStatus = String(post.approvalStatus || "");
+    const approval = approvalStatus === "approved" ? (finished ? "Aprovado · NÃO foi publicado" : "Aprovado") : approvalStatus === "rejected" ? "Recusado" : approvalStatus === "pending" ? "Esperando aprovação" : "";
+    const canDecide = ["ready", "scheduled"].includes(String(post.status || "")) && approvalStatus !== "approved";
+    const ids = `data-client-id="${escapeHtml(post.clientId)}" data-post-id="${escapeHtml(post.id)}"`;
+    const published = String(post.status || "") === "published";
+    const buttons = (canDecide ? `<button type="button" class="post-approve" data-post-decision="approved" ${ids}>✓ Aprovar</button><button type="button" class="post-reject" data-post-decision="rejected" ${ids}>✕ Recusar</button>` : "")
+      + (post.hiddenFromPanel ? "" : `<button type="button" class="post-delete" data-post-delete ${published ? 'data-published="1"' : ""} ${ids}>Excluir</button>`);
+    const formatKey = String(post.creativeFeatures?.requestedFormat || post.formatBuild?.kind || "post");
+    const [formatName, formatCls] = FORMATS[formatKey] || FORMATS.post;
+    const cards = (post.formatBuild?.carouselUrls || []).length;
+    const thumb = image ? `<a href="${escapeHtml(image)}" target="_blank" rel="noopener"><img src="${escapeHtml(image)}" alt="Imagem do post" loading="lazy"></a>` : '<span class="post-preview-empty">Sem imagem</span>';
     return `<tr>
-      <td>${preview}</td>
-      <td><strong>${escapeHtml(post.clientName || post.clientId)}</strong></td>
-      <td>${escapeHtml(post.instagram || "—")}</td>
-      <td><strong>${escapeHtml(post.scheduledHour || "—")}</strong><br><small>${formatPostDate(post.scheduledFor)}</small></td>
-      <td>${formatPostDate(post.publishedAt || post.attemptedAt)}</td>
-      <td><span class="post-status ${cls}">${label}</span></td>
-      <td><strong>${moneyPost(post.costUsd)}</strong><br><small>${escapeHtml(post.costSource || "sem custo registrado")}</small></td>
-      <td>${escapeHtml(post.model || "—")}</td>
-      <td class="post-detail">${detail}</td>
+      <td class="post-thumb">${thumb}</td>
+      <td><strong>${escapeHtml(post.clientName || post.clientId)}</strong><small>${escapeHtml(post.instagram || "")}</small>${caption ? `<details><summary>Ver legenda</summary><p>${escapeHtml(caption).replace(/\n/g, "<br>")}</p></details>` : ""}</td>
+      <td><span class="fmt ${formatCls}">${formatName}</span>${formatKey === "carousel" && cards > 1 ? `<small>${cards} cartões</small>` : ""}</td>
+      <td><strong>${escapeHtml(post.scheduledHour || "—")}</strong><small>${formatPostDate(post.scheduledFor)}</small>${post.publishedAt ? `<small>saiu ${formatPostDate(post.publishedAt)}</small>` : ""}</td>
+      <td><span class="post-status ${cls}">${label}</span>${approval ? `<small>${approval}</small>` : ""}${errorText || (post.error && !published) ? `<small class="post-err">${escapeHtml(errorText || post.error)}</small>` : ""}</td>
+      <td><div class="post-decision">${buttons}</div></td>
     </tr>`;
-  }).join("") : '<tr><td colspan="9">Nenhuma postagem registrada para este filtro.</td></tr>';
+  }).join("") : '<tr><td colspan="6">Nenhuma postagem registrada para este filtro.</td></tr>';
 }
 
 async function decideMasterPost(button) {
@@ -1229,3 +1236,30 @@ setInterval(()=>{if(document.getElementById("campaigns")?.classList.contains("ac
     if (source) new MutationObserver(copy).observe(source, { childList: true, characterData: true, subtree: true, attributes: true });
   });
 })();
+
+// Excluir post pelo Master (23/10).
+document.addEventListener("click", async event => {
+  const button = event.target.closest?.("[data-post-delete]");
+  if (!button) return;
+  const published = button.dataset.published === "1";
+  if (!confirm(published ? "Tirar este post do painel? No Instagram ele continua." : "Excluir este post? Ele não vai sair no Instagram.")) return;
+  button.disabled = true;
+  try {
+    await api("/api/master/posts/delete", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ clientId: button.dataset.clientId, postId: button.dataset.postId }) });
+    state.postLedger = await api("/api/master/posts");
+    renderPostLedger();
+  } catch (error) {
+    alert(error.message || "Não foi possível excluir.");
+    button.disabled = false;
+  }
+});
+
+// Início: copiar o link do cadastro (23/10).
+document.addEventListener("click", async event => {
+  const button = event.target.closest?.("#home-copy-signup");
+  if (!button) return;
+  const link = "https://flowarts.com.br/cadastro";
+  const small = button.querySelector("small");
+  try { await navigator.clipboard.writeText(link); if (small) small.textContent = "Copiado: " + link; }
+  catch { prompt("Copie o link:", link); }
+});
