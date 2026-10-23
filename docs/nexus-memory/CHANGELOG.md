@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 22h21 BRT — Resposta automática do Quatree Dog funcionando (teste real do Rodrigo)
+- Rodrigo comentou num post do @ericsson_quatree e confirmou: "já funcionou". Direct com botão "Chamar no WhatsApp" (PR #376) e resposta no comentário.
+- Palavra principal: TABELA (vai no fim de toda legenda do Quatree).
+
 ## 2026-10-22 22h BRT — Resposta automática de comentários para qualquer cliente (pedido do Rodrigo, Quatree Dog)
 - Painel do cliente › Conta › "Respostas automáticas": ligar/desligar, palavras (padrão de ração: quero, preço, tabela, revenda…), mensagem do direct com {whatsapp} (WhatsApp da aba Meu negócio) e resposta curta no comentário. Responde 1 vez por comentário, só a quem usou uma das palavras (até 7 dias, limite da Meta).
 - Usa o mesmo motor da Flow Arts (cron a cada execução + webhook). A Flow Arts continua com o funil próprio e não vê o bloco.
