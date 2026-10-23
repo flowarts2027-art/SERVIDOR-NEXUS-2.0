@@ -90,9 +90,9 @@ process_slot() {
   if [[ "$slot" =~ ^clientes/([a-z0-9][a-z0-9-]{1,48})/(.+)$ ]]; then
     CLIENT_ID="${BASH_REMATCH[1]}"
     local rest="${BASH_REMATCH[2]}"
-    [[ "$rest" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use clientes/<cliente>/AAAA-MM-DD/HHMM)"; return; }
+    [[ "$rest" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])(-story)?$ ]] || { fail "$slot: nome inválido (use clientes/<cliente>/AAAA-MM-DD/HHMM)"; return; }
   else
-    [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
+    [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])(-story)?$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
   fi
   local day="${BASH_REMATCH[1]}" time="${BASH_REMATCH[2]}:${BASH_REMATCH[3]}" dir="$ROOT/$slot"
   [ -d "$dir" ] || { note "$slot: pasta apagada, nada a fazer"; return; }
@@ -128,6 +128,10 @@ process_slot() {
     fail "$slot: nenhuma arte encontrada (imagem.jpg, 01.jpg..., video.mp4 ou story.jpg)"; return
   fi
 
+  if [[ "$slot" = *-story ]] && [ "$type" != story ]; then
+    fail "$slot: pasta -story exige story.jpg ou story.mp4"; return
+  fi
+
   if [ "$type" != story ]; then
     [ -s "$caption" ] || { fail "$slot: falta legenda.txt"; return; }
     args+=(-F "caption=<$caption")
@@ -140,8 +144,25 @@ process_slot() {
 
   start_session || return
   client_exists "$CLIENT_ID" || { fail "$slot: cliente '$CLIENT_ID' não encontrado no Nexus"; return; }
-  local existing
-  existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
+  # Substituições autorizadas pelo Rodrigo: bloquear as peças que repetiam imagens.
+  local superseded="" superseded_count
+  case "$slot" in
+    clientes/quatree-dog/2026-10-23/1500) superseded=upload-carousel-5a57541d-188e-4b77-8031-3d9c79ea6da6 ;;
+    2026-10-23/1200) superseded=upload-reel-0cad7c84-a287-4b8f-8339-e322531f2018 ;;
+  esac
+  if [ -n "$superseded" ]; then
+    q "UPDATE post_ledger SET status='cancelled',approval_status='rejected',updated_at=CURRENT_TIMESTAMP WHERE id='$superseded' AND client_id='$CLIENT_ID' AND scheduled_for='$iso' AND status NOT IN ('published','publishing')" >/dev/null
+    superseded_count="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE id='$superseded' AND client_id='$CLIENT_ID' AND status='cancelled' AND approval_status='rejected'" | jq -r '.[0].results[0].n // 0')"
+    [ "$superseded_count" = 1 ] || { fail "$slot: peça repetida anterior não cancelada; substituição interrompida"; return; }
+    note "$slot: peça anterior que repetia imagens cancelada; histórico preservado"
+  fi
+  local existing format_filter
+  if [ "$type" = story ]; then
+    format_filter="json_extract(payload_json,'\$.creativeFeatures.requestedFormat')='story'"
+  else
+    format_filter="COALESCE(json_extract(payload_json,'\$.creativeFeatures.requestedFormat'),'post')<>'story'"
+  fi
+  existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND $format_filter AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
   if [ "${existing:-0}" != 0 ]; then
     note "$slot: já existe um post enviado para $time; não duplicado (cancele no painel para trocar)"; return
   fi
@@ -158,4 +179,20 @@ process_slot() {
 
 [ "$#" -gt 0 ] || { note "Nenhum post novo na pasta agendamentos."; exit 0; }
 for slot in "$@"; do process_slot "$slot"; done
+if [ "$DRY_RUN" != 1 ] && [ "$FAIL" = 0 ] && [[ " $* " == *" 2026-10-23/0900-story "* ]] && [[ " $* " == *" clientes/quatree-dog/2026-10-23/1900-story "* ]]; then
+  # Só retirar os horários antigos depois de comprovar os três novos horários de ambos.
+  for story_client in primeiro-teste quatree-dog; do
+    ready_stories="$(q "SELECT COUNT(*) AS n,COUNT(DISTINCT scheduled_for) AS d FROM post_ledger WHERE client_id='$story_client' AND scheduled_for IN ('2026-10-23T12:00:00.000Z','2026-10-23T15:00:00.000Z','2026-10-23T22:00:00.000Z') AND json_extract(payload_json,'\$.creativeFeatures.requestedFormat')='story' AND approval_status IN ('pending','approved') AND status='ready'" | jq -r '.[0].results[0] | ((.n // 0)|tostring)+":"+((.d // 0)|tostring)')"
+    [ "$ready_stories" = 3:3 ] || { fail "$story_client: novos stories incompletos; horários antigos preservados"; exit 1; }
+  done
+  q "UPDATE post_ledger SET status='cancelled',approval_status='rejected',updated_at=CURRENT_TIMESTAMP WHERE ((client_id='primeiro-teste' AND id IN ('upload-story-059e253c-a03e-4ea9-ac94-6de1cc7636e3','upload-story-87921cf5-d7d2-447f-94dd-6ca1026d73af')) OR (client_id='quatree-dog' AND id='upload-story-4781fa26-2c09-4d9a-a39a-530ffee30ebc')) AND scheduled_for LIKE '2026-10-23%' AND status NOT IN ('published','publishing')" >/dev/null
+  old_stories="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE id IN ('upload-story-059e253c-a03e-4ea9-ac94-6de1cc7636e3','upload-story-87921cf5-d7d2-447f-94dd-6ca1026d73af','upload-story-4781fa26-2c09-4d9a-a39a-530ffee30ebc') AND status='cancelled' AND approval_status='rejected'" | jq -r '.[0].results[0].n // 0')"
+  [ "$old_stories" = 3 ] || fail "Cancelamento dos 3 stories substituídos não confirmado"
+  note "Stories antigos substituídos: $old_stories cancelados, histórico preservado"
+  for story_client in primeiro-teste quatree-dog; do
+    verified_stories="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$story_client' AND scheduled_for IN ('2026-10-23T12:00:00.000Z','2026-10-23T15:00:00.000Z','2026-10-23T22:00:00.000Z') AND json_extract(payload_json,'\$.creativeFeatures.requestedFormat')='story' AND approval_status IN ('pending','approved') AND status='ready'" | jq -r '.[0].results[0].n // 0')"
+    [ "$verified_stories" = 3 ] || fail "$story_client: 3 stories nos horários 09/12/19 não confirmados"
+    note "$story_client: $verified_stories stories exclusivos 09h/12h/19h ativos confirmados no painel"
+  done
+fi
 exit "$FAIL"

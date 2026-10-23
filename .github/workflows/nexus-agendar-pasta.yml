@@ -54,7 +54,7 @@ jobs:
             files="$(git diff --name-only --diff-filter=d "$GITHUB_SHA~1" "$GITHUB_SHA" -- agendamentos 2>/dev/null || git ls-files agendamentos)"
           fi
           # Flow Arts: agendamentos/AAAA-MM-DD/HHMM/ · outro cliente: agendamentos/clientes/<id>/AAAA-MM-DD/HHMM/
-          slots="$(printf '%s\n' "$files" | sed -nE 's#^agendamentos/((clientes/[a-z0-9-]+/)?[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4})/.*#\1#p' | sort -u | tr '\n' ' ')"
+          slots="$(printf '%s\n' "$files" | sed -nE 's#^agendamentos/((clientes/[a-z0-9-]+/)?[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4}(-story)?)/.*#\1#p' | sort -u | tr '\n' ' ')"
           echo "::notice::Posts a enviar: ${slots:-nenhum}"
           echo "list=$slots" >> "$GITHUB_OUTPUT"
       - name: Conferir o acesso ao banco

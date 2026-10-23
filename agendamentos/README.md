@@ -29,3 +29,6 @@ agendamentos/2026-10-22/1900/
 - Envie na branch `agendamentos` (ou na `main`). Cada push só envia as pastas que mudaram.
 - Se já existe um post para aquele dia e hora, ele **não é duplicado**. Para trocar, o Rodrigo cancela o antigo no painel e a pasta é enviada de novo.
 - Não coloque aqui dados de clientes, telefones, senhas ou chaves: o repositório é público.
+
+## Story no mesmo horário do feed (ordem do Rodrigo, 22/10)
+Use `HHMM-story/story.jpg` para story e `HHMM/` para feed, carrossel ou Reel. A deduplicação distingue story dos outros formatos. Cada perfil recebe stories próprios às 09h, 12h e 19h. Nunca repetir uma imagem entre formatos; não usar espelhamento automático.
