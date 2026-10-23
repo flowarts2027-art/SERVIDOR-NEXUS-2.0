@@ -1,5 +1,13 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-22 — Prévia dos stories corrigida, sem excluir ou alterar postagens
+- Pedido: screenshot mostrava títulos cortados. Rodrigo esclareceu que não queria excluir o que já estava no painel; confirmado preservar todos os posts, arquivos, legendas, horários e aprovações.
+- Causa comprovada no navegador: story1080×1920 dentro de prévia355×443,75(4:5), object-fit cover, recortando topo/base.
+- Corrigido somente public/client-lite.css (hero/post com altura natural, imagens height:auto/object-fit:contain) e cacheCSSv124 no portal.html. Commit `ba76ad7`.
+- Deploy39892155811 success, versãoWorker `2b727969-9a51-4b0a-b4ed-937182557363`; CI39892155861 success;578/578testes locais. Playwrightlocal indisponível por Chromiumausente/downloadtruncado; não confundido com teste real.
+- **Produção verificada por root no navegador autenticado Flow Arts:** após recarregar, dois stories1080×1920 renderizaram355×631,109375(9:16), contain e alturaigualàimagem; cartão de carrossel1080×1350 permaneceu355×443,75(4:5). Elementoslazyabaixodadobra ainda semcarga não foram classificados como falha.
+- Nenhuma imagem regenerada, postagem excluída, reenvio, mudança de data/hora, aprovação ou publicação nesta correção. Componente de prévia compartilhado pelos clientes. Próximo passo: Rodrigo atualizar a página para carregar CSSv124.
+
 ## 2026-10-22 23h46 BRT — Correção de erro: NENHUMA imagem repetida; 3 stories exclusivos por perfil
 - **Correção de Rodrigo:** o carrossel Quatree enviado antes reutilizava os três feeds e o story repetia o gato do feed. Foi erro do ChatGPT. **Não seguir a orientação anterior de aproveitar feed/carrossel nos stories nem reutilizar cartões no Reel.**
 - **Regra prioritária e permanente até nova ordem:** três stories próprios para Quatree e Flow Arts, **09h, 12h e 19h**, com fotos/cenas inéditas; nenhuma imagem repetida em feed, carrossel, story ou Reel, nem apenas recortada/reformatada. Fonte canônica atualizada: FORMATOS_POSTAGENS.md. Tarefa diária de leitura de memória também atualizada.
