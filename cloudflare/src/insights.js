@@ -86,7 +86,11 @@ async function writeCache(env, clientId, value) {
 }
 
 export async function clientInsights(env, client, { fetchSnapshot, force = false, now = new Date() } = {}) {
-  const cached = await readCache(env, client.id);
+  let cached = await readCache(env, client.id);
+  // 22/10 (Quatree): o cliente trocou de Instagram. Números e histórico da conta antiga não valem para a nova.
+  const expected = String(client?.instagram || "").replace(/^@/, "").trim().toLowerCase();
+  const cachedUser = String(cached.username || "").replace(/^@/, "").trim().toLowerCase();
+  if (expected && cachedUser && expected !== cachedUser) cached = {};
   const age = Date.parse(String(cached.updatedAt || ""));
   if (!force && Number.isFinite(age) && now.getTime() - age < CACHE_MINUTES * 60000) {
     return { ok: true, cached: true, ...cached };
