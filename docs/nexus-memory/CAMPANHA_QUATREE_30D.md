@@ -1,5 +1,8 @@
 # Campanha de 30 dias — Quatree Dog (@ericsson_quatree)
 
+## ORDEM MAIS RECENTE DE RODRIGO —22/10/2026
+**3stories exclusivos por dia neste perfil, às09h,12h e19h. Nunca repetir a mesma imagem entre feed, carrossel, story e Reel**, nem só mudar corte/formato/texto. Não espelhar feed em stories. Seguir a grade atual de FORMATOS_POSTAGENS.md, que substitui quantidades/horários antigos abaixo. Na Quatree, não reutilizar a imagem do gato do feed em carrossel ou story. Correção de23/10 enviada e validada na execução39891196118; ver HANDOFF_CHATGPT antes de criar/recriar arquivos.
+
 **Pedido do Rodrigo (22/10/2026, 19h02):** auditar a conta, montar uma campanha de 30 dias de posts e de busca de clientes, ajustar o painel do cliente e passar para o ChatGPT começar.
 **Decisões do Rodrigo (22/10):** as imagens do cliente **não** usam a vitrine da Flow Arts (19h06). A conta da campanha passou a ser **@ericsson_quatree** (19h10/20h22), e não mais a pessoal. A base das artes são **os banners e arquivos do próprio cliente**, que o Rodrigo vai enviar (20h29); o ChatGPT só adapta formato ou completa o que faltar.
 **Cliente no Nexus:** `quatree-dog` (confirmado na sessão do painel em 22/10).

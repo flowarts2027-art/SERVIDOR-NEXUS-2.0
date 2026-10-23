@@ -21,6 +21,7 @@
   },
   "vars": {
     "APP_NAME": "Servidor Nexus",
+    "NEXUS_AUTO_STORY": "false",
     "RAGNAR_CLIENT_ID": "ragnar-one",
     "CLOUDFLARE_AUTOMATION_ACTIVE": "true",
     "PUBLIC_BASE_URL": "https://servidor-nexus.diamantehinode2015.workers.dev",
