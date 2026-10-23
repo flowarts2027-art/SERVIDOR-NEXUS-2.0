@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## Atualização prioritária —23/10, stories e imagens exclusivas
+Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, novo carrosselQuatree15h e ReelFlow12h sem reutilizar cartões/feeds. Execução39891196118 success,8uploads aguardando aprovação e antigos cancelados. Espelhamento feed→story desativado e implantado(39890408576). **Nunca repetir imagem entre formatos.** Esta ordem substitui os resumos anteriores de5conteúdos/1story ou carrossel com feeds reutilizados. Detalhes no topo HANDOFF_CHATGPT e FORMATOS_POSTAGENS. Próximo passo: aprovação de Rodrigo no painel.
+
 ## 2026-10-22 23h24 BRT — Campanhas de 23/10 concluídas no envio
 - **POSTS-2026-10-23:** cinco conteúdos Flow Arts enviados (09h carrossel, 10h30 story, 12h Reel, 16h story, 19h feed); três feeds Quatree preservados/corrigidos + carrossel 15h e story 18h. Exceção complementar Quatree só para 23/10; rotina segue FORMATOS_POSTAGENS.md.
 - Evidências: Actions 39888688531 (oito uploads confirmados) e 39889202971 (TABELA corrigido nas legendas 09h/19h do Quatree, pending, sem duplicação). Tarefa de 06h desativada pois executada agora. Detalhes/limites no topo do HANDOFF_CHATGPT.
