@@ -14,20 +14,29 @@ const GENERAL_WORDS = ["quero", "preço", "preco", "valor", "info", "informaçã
 
 const clean = (value, max) => String(value ?? "").replace(/[\u0000-\u0008\u000b-\u001f<>]/g, " ").replace(/[ \t]+/g, " ").trim().slice(0, max);
 
+// Despachante / documentação de armas e CAC (Maskara, 23/10): as artes pedem "DOCUMENTOS".
+const DOCS_WORDS = ["documentos", "documento", "documentação", "documentacao", ...GENERAL_WORDS];
+const nicheText = client => [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
+const isRacao = client => /ra[cç][aã]o|pet/i.test(nicheText(client));
+const isDocs = client => /despachante|documenta|\bcac\b|armas?\b|tiro/i.test(nicheText(client));
+
 export function defaultKeywords(client = {}) {
-  const text = [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
-  return /ra[cç][aã]o|pet/i.test(text) ? [...RACAO_WORDS] : [...GENERAL_WORDS];
+  if (isRacao(client)) return [...RACAO_WORDS];
+  if (isDocs(client)) return [...DOCS_WORDS];
+  return [...GENERAL_WORDS];
 }
 
 export function defaultDm(client = {}) {
   const brand = clientBrand(client).brandName || "nossa empresa";
-  return `Oi! 👋 Que bom que você se interessou pela ${brand}.\nMe chama no WhatsApp que eu te passo a tabela e as condições: {whatsapp}`;
+  // "tabela e condições" só faz sentido para ração/pet (Quatree); os outros recebem texto geral.
+  return isRacao(client)
+    ? `Oi! 👋 Que bom que você se interessou pela ${brand}.\nMe chama no WhatsApp que eu te passo a tabela e as condições: {whatsapp}`
+    : `Oi! 👋 Que bom que você se interessou pela ${brand}.\nMe chama no WhatsApp que eu te explico como funciona: {whatsapp}`;
 }
 
 // Texto que já chega escrito no WhatsApp do cliente quando a pessoa toca no botão (23/10: por cliente).
 export function defaultWaText(client = {}) {
-  const text = [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
-  return /ra[cç][aã]o|pet/i.test(text)
+  return isRacao(client)
     ? "Olá! Comentei no Instagram e quero a tabela e as condições."
     : "Olá! Vi no Instagram e quero mais informações.";
 }

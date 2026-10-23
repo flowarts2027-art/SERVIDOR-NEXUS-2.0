@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 11h40 BRT — Auditoria Maskara e correção da resposta no direct
+- **Pedido do Rodrigo:** auditar o painel da Maskara e corrigir tudo.
+- **Achados:** (1) artes pedem "DOCUMENTOS no direct", mas só comentário disparava resposta — **corrigido no código** (PR desta entrada). (2) às 10h05 as peças foram canceladas e recriadas para hoje; a aprovação do cliente feita antes ficou nas canceladas, por isso a de 10h30 caiu no Master. O botão Aprovar do cliente já publica direto, sem Master. (3) legendas de hoje não citam DOCUMENTOS (só "envie mensagem no direct"); com a correção, a palavra no direct passa a responder.
+- **Depende do painel (não dá pelo código):** em Conta › Respostas automáticas da Maskara, ligar e conferir a palavra "documentos" e o WhatsApp em "Meu negócio". Se já houver lista salva, a palavra padrão nova não entra sozinha.
+- **Para o ChatGPT:** em peças futuras, usar o mesmo CTA na arte e na legenda ("Responda DOCUMENTOS no direct") e o mesmo logo da Maskara em todas.
+- Ao mover peças de dia, a aprovação não acompanha: avisar o cliente para aprovar de novo.
+
 ## 2026-10-23 09h40 BRT — Maskara: campanha de 30 dias, conferência antes do envio
 - **Pedido do Rodrigo:** o ChatGPT gera todas as imagens; o Claude envia ao painel da Maskara as peças de hoje e mantém a campanha em 30 dias (24/10 a 22/11).
 - **Conferido:** branch `agendamentos` e todas as outras branches: **0 imagens ou vídeos da Maskara** (as 42 peças antigas foram apagadas em b99c33e). Nada a enviar ainda. Painel do Master com sessão expirada (não conferido). Convite de testador: @maskara.silva **aceitou** (sem "Pendente" em 23/10 09h30). Conta precisa ser profissional e conectada no painel.
