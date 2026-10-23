@@ -8,6 +8,13 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Para o ChatGPT:** em todas as peças novas da Maskara, arte e legenda com "Comenta QUERO abaixo". Nunca mais "DOCUMENTOS".
 - **Depende do painel:** se a Maskara já tiver lista salva em Conta › Respostas automáticas, trocar "documentos" por "quero" lá (a lista salva vale mais que a padrão).
 
+## 2026-10-23 11h55 BRT — Story travava o feed do mesmo horário (Maskara)
+- **Relato do Rodrigo:** o story da Maskara saiu no Instagram, mas o post do feed que o cliente aprovou não saiu.
+- **Causa no código:** o Publisher contava o story como "post publicado" e esperava 90 min antes do próximo; e só publicava 1 item por rodada. Com post + story no mesmo horário, o story saía e o feed ficava travado.
+- **Correção (branch `fix/story-nao-trava-feed`):** `executor.js` não conta stories nos 90 min; em cada rodada sai no máximo 1 feed (com os 90 min) e 1 story (sem esperar o feed). Teste novo `test/story-feed-spacing.test.mjs`; 592/592 testes.
+- **Não conferido:** registros de produção (sessão sem acesso às Actions/D1). Depois do deploy, conferir se o feed das 10h30/12h saiu.
+- **Próximo passo:** Rodrigo aprovar o merge do PR; o deploy é automático.
+
 ## 2026-10-23 11h40 BRT — Auditoria Maskara e correção da resposta no direct
 - **Pedido do Rodrigo:** auditar o painel da Maskara e corrigir tudo.
 - **Achados:** (1) artes pedem "DOCUMENTOS no direct", mas só comentário disparava resposta — **corrigido no código** (PR desta entrada). (2) às 10h05 as peças foram canceladas e recriadas para hoje; a aprovação do cliente feita antes ficou nas canceladas, por isso a de 10h30 caiu no Master. O botão Aprovar do cliente já publica direto, sem Master. (3) legendas de hoje não citam DOCUMENTOS (só "envie mensagem no direct"); com a correção, a palavra no direct passa a responder.
