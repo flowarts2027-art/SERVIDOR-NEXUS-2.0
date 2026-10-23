@@ -1,3 +1,38 @@
+# Auditoria @flowarts2026 — 2026-10-22 22h (Claude + departamentos Marketing, Vendas, Revisor e CEO; perfil público, só leitura)
+
+## Números
+- 10 seguidores (9 em 21/10), segue 31, 21 posts. Insights (alcance, salvamentos, envios) não lidos: exigem o login do Rodrigo.
+- Dados do funil de 21/10 (empresa/metricas.md): CRM com 11 empresas e nenhuma chamada; 0 pedidos de exemplo no site de 14 a 21/10.
+
+## Melhorou
+- Os 3 posts de 22/10 falam só com comida local, foto realista, título inteiro no topo, cumprem as 3 funções do dia (conversa, prova, dica).
+
+## Continua errado
+- Grade mista: ainda tem 1 post de robô/neon/azul e 1 com título cortado.
+- Bio genérica (não fala com comida) e link na página principal, não em /exemplo.
+- Antes e depois é ilustrativo; não há prova real.
+- O funil trava na CONVERSA: empresas chegam ao CRM, mas ninguém recebe mensagem.
+
+## Prioridade nº 1 (CEO)
+Começar conversas com cafés, padarias e restaurantes para fechar o 1º cliente pagante.
+
+## Plano de 7 dias (revisado)
+1. Nexus põe empresas de comida no CRM todo dia (automático). Rodrigo manda 3 a 5 mensagens/dia por Direct ou WhatsApp e faz 10 comentários reais.
+2. Exemplo grátis para quem responder, entregue em até 2 dias (24 h só se o Rodrigo garantir), e pedido de Collab.
+3. ChatGPT escreve a proposta curta padrão com o preço do visao.md (R$ 297 entrada + R$ 697/mês fundador); Captador R$ 97 fica fora. Revisor confere; Rodrigo aprova.
+4. Rodrigo arquiva o post de robô e o de título cortado, fixa os 3 melhores, troca a bio (café/padaria/restaurante) e o link para /exemplo?de=instagram. ChatGPT segue os 3 posts/dia + repost das 12h e enquete nos Stories.
+5. No 7º dia, o Rodrigo lê os Insights e conta as conversas abertas; isso decide a semana seguinte.
+
+## Decisões pendentes do Rodrigo (recomendação do CEO)
+- Contatos/dia: 3 (plano diz 5).
+- Prazo do exemplo: 2 dias.
+- Regra "não vender resposta automática a comentários": manter nesta semana.
+- Quatree Dog como prova: esperar; só com autorização dele e sem dados pessoais.
+
+## Pendências registradas
+- empresa/metricas.md desatualizado (9 seguidores / 12 posts).
+- .agents/product-marketing.md desatualizado (persona, paleta azul, CTA antigo): não usar como fonte até atualizar com OK do Rodrigo.
+
 # Auditoria do Instagram @flowarts2026 — 2026-10-21 (Claude, perfil público sem login, só leitura)
 
 ## Números (perfil público, 21/10 ~07h40 BRT)
