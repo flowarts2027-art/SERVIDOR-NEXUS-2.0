@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 08h40 BRT — PARA O CHATGPT: campanha de 7 dias da Maskara Assessoria
+- **Pedido do Rodrigo:** preparar a campanha do nicho do cliente novo (despachante de documentação de armas para CACs), teste grátis de 7 dias (24/10 a 30/10).
+- **Feito pelo Claude:** auditoria do perfil público e plano em `CAMPANHA_MASKARA_7D.md`. Nicho e @ ajustados no cadastro (`maskara-assessoria`, @maskara.silva). Convite de testador enviado (pendente). O perfil ainda é pessoal: precisa virar conta profissional para o Nexus publicar.
+- **Para o ChatGPT:** criar os posts de 24/10 a 30/10 seguindo `CAMPANHA_MASKARA_7D.md` (seção 3 é obrigatória: só serviço de documentação, sem arma em destaque, sem venda, sem preço, sem promessa) e `FORMATOS_POSTAGENS.md` (nunca repetir imagem). Pasta `agendamentos/clientes/maskara-assessoria/`.
+- **Também registrado:** Luciana Carvalho (@lucianacarvalhoficial) recebeu convite de testador em 23/10 (pendente).
+
 ## 2026-10-23 08h10 BRT — Captador do Quatree
 - Pedido do Rodrigo: tirar da busca do Quatree os tipos que não são dele; busca manual não funcionava; busca diária de 10 achou 3; cidades e bairros de Uberlândia e região.
 - Feito (branch `fix/captador-quatree`): ver CHANGELOG 23/10 08h10. Pendente: depois do deploy, olhar o `googleError` de uma busca para saber por que o Google falha (a chave existe no Master).
