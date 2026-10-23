@@ -1,5 +1,8 @@
 # REGRA FIXA — ChatGPT cria 3 posts por dia da Flow Arts e envia ao painel
 
+## ORDEM MAIS RECENTE DE RODRIGO —22/10/2026
+**3stories exclusivos por dia neste perfil, às09h,12h e19h. Nunca repetir a mesma imagem entre feed, carrossel, story e Reel**, nem só mudar corte/formato/texto. Não espelhar feed em stories. Seguir a grade atual de FORMATOS_POSTAGENS.md, que substitui quantidades/horários antigos abaixo. Na Quatree, não reutilizar a imagem do gato do feed em carrossel ou story. Correção de23/10 enviada e validada na execução39891196118; ver HANDOFF_CHATGPT antes de criar/recriar arquivos.
+
 **Decisão do Rodrigo (21/10/2026):** o ChatGPT cria **3 posts por dia** para a Flow Arts (@flowarts2026), no padrão abaixo, e envia ao painel pela pasta `agendamentos/`. **Nada é publicado sem o Rodrigo aprovar no painel.**
 
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
