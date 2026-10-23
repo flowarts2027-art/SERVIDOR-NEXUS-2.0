@@ -140,15 +140,6 @@ process_slot() {
 
   start_session || return
   client_exists "$CLIENT_ID" || { fail "$slot: cliente '$CLIENT_ID' não encontrado no Nexus"; return; }
-  # Correção pontual das legendas de dois rascunhos já enviados (sem duplicar mídia).
-  if [[ "$slot" = clientes/quatree-dog/2026-10-23/0900 || "$slot" = clientes/quatree-dog/2026-10-23/1900 ]]; then
-    local caption_sql changed verified
-    caption_sql="$(python3 -c "import sys; print(open(sys.argv[1]).read().replace(chr(39),chr(39)*2))" "$caption")"
-    changed="$(q "UPDATE post_ledger SET caption='$caption_sql', approval_status='pending', updated_at=CURRENT_TIMESTAMP WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND status NOT IN ('published','publishing','cancelled')")"
-    verified="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND approval_status='pending' AND status NOT IN ('published','publishing','cancelled') AND caption='$caption_sql'" | jq -r '.[0].results[0].n // 0')"
-    [ "$verified" = 1 ] || { fail "$slot: legenda corrigida não confirmada ($verified registros)"; return; }
-    note "$slot: legenda TABELA corrigida no próprio rascunho e confirmada; aprovação pending, sem nova mídia"
-  fi
   local existing
   existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
   if [ "${existing:-0}" != 0 ]; then
