@@ -2,6 +2,11 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h55 BRT — Painel do cliente: tipo do post visível e menu arrumado
+- Pedido do Rodrigo: deixar claro no painel se o post é feed, Reels ou stories; o painel da Flow Arts estava bagunçado no computador (menu lateral só com ícones).
+- Feito (branch `fix/painel-formato-menu`): selo colorido com o tipo em cada post e no "próximo post"; menu em cima no computador. 578/578 testes. Conferido em prévia local (demo).
+- Para o ChatGPT: o tipo vem do arquivo da pasta (imagem.jpg = Feed, 01.jpg… = Carrossel, video.mp4 = Reels, story.jpg = Stories). Use o arquivo certo.
+
 ## 2026-10-22 23h40 BRT — Planos com nomes curtos e cadastro com Pix
 - **Pedido do Rodrigo:** (1) letras maiores e mais fáceis de ler, sem barra lateral (ele é disléxico e autista); (2) planos com nomes e valores; o cliente escolhe o plano num link, vê o passo a passo, paga no Pix (chave CNPJ do site) e cai um pedido no Master para aprovar; o painel do cliente mostra o plano.
 - **Decisões:** todos os produtos do site viram planos; nomes curtos escolhidos pelo Claude (Rodrigo pode trocar): Essencial, Completo, Captador, Site, Responde, Reels 5, Posts 10, Logo.
