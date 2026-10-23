@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — Quatree Dog: artes inéditas de 24/10 preparadas para aprovação
+- Pedido de Rodrigo: começar as artes de amanhã, nunca repetir arte. Produzidos 3 feeds e 3 stories inéditos para 24/10, 09h/12h/19h. Esta entrega de artes não contém Reel e não comprova cumprimento da grade regular de vídeo.
+- Produto: Supreme Natural cães adultos de raças pequenas; referência de embalagem obtida do site oficial https://www.quatreepet.com.br/nova-supreme/qsarp . Mesma embalagem em cenas/composições novas; não reutilizadas imagens de 23/10. Fotografias ilustrativas de IA, sem alegação de loja/parceria real, sem preços ou condições inventadas.
+- Arquivos em agendamentos/clientes/quatree-dog/2026-10-24/: 0900/1200/1900 com imagem.jpg + legenda.txt e equivalentes -story/story.jpg. 6 JPEG com hashes distintos; feeds 1080x1350, stories 1080x1920; legendas <2200 caracteres com TABELA. Ajustadas chamadas dos stories para afastar da interface inferior.
+- Estado neste commit: arquivos preparados e enviados à branch; ingestão no painel ainda precisa ser conferida no Actions. Nenhuma aprovação/publicação, exclusão ou alteração de conteúdo de hoje. Não dizer que chegou ao painel sem conferir a execução.
+
+
 ## 2026-10-23 — Autorização contínua para envio de artes públicas ao painel
 - Rodrigo, proprietário da Flow Arts e do Nexus, autorizou diariamente salvar artes e legendas de Flow Arts, Quatree Dog e Maskara na branch `agendamentos` deste repositório público, para ingestão no painel aguardando aprovação.
 - O proprietário declarou ciência de que o repositório é público e aceitou a exposição dessas peças destinadas ao Instagram. Esta autorização é específica para essas artes e legendas; não abrange segredos ou outros arquivos privados.
