@@ -12,7 +12,7 @@
 - Nada é publicado nem aprovado pelo assistente. O usuário aprova no painel.
 
 - Variar a cena no dia e na semana: não usar a mesma comida em mais de 2 artes por dia (pão, bolo, pizza, lanche, salgado, café, fachada, balcão, mãos do dono, cardápio, celular).
-- Quatree: o banner do cliente serve de base **uma vez só**; carrossel nunca reaproveita imagens do feed.
+- Quatree: **toda peça mostra a embalagem Quatree** (diretriz de venda, 23/10: `QUATREE_DIRETRIZ_VENDAS.md`). A embalagem pode aparecer em todas as artes; a imagem/cena não pode repetir. Carrossel nunca reaproveita imagens do feed.
 - Antes de salvar, compare com as artes dos últimos 7 dias do mesmo perfil.
 - **O GitHub recusa imagem idêntica** (`agendar-pasta.sh`, desde 23/10): se o Actions mostrar "imagem repetida", crie uma arte nova para aquela pasta.
 
@@ -30,6 +30,7 @@ Público de comida local; sem preço, sem azul/neon/robôs; CTA **QUERO**, ofert
 - O Nexus não repete mais o post como story: o story automático está desligado no código (só liga com `NEXUS_AUTO_STORY="true"`).
 
 ## 2. Quatree Dog (@ericsson_quatree)
+**Antes de criar, leia `QUATREE_DIRETRIZ_VENDAS.md`: o objetivo é VENDER. Toda peça (feed, cartão, story, Reel) mostra produto Quatree.**
 Base: materiais corretos do cliente e cenas novas; seguir `CAMPANHA_QUATREE_30D.md`.
 | Horário | Dias | Formato |
 | --- | --- | --- |

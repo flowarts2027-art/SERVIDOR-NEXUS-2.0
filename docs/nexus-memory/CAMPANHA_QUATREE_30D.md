@@ -1,5 +1,7 @@
 # Campanha de 30 dias — Quatree Dog (@ericsson_quatree)
 
+> **ATUALIZAÇÃO 23/10/2026 (Rodrigo): o cliente quer VENDA.** Toda peça mostra uma embalagem Quatree e pede o pedido. Os temas "L" (ajuda ao lojista) e "C" (confiança) do calendário só entram **com o produto aparecendo** e terminando em pedido. Regras e auditoria em **`QUATREE_DIRETRIZ_VENDAS.md`**, que manda sobre este calendário.
+
 ## ORDEM MAIS RECENTE DE RODRIGO —22/10/2026
 **3stories exclusivos por dia neste perfil, às09h,12h e19h. Nunca repetir a mesma imagem entre feed, carrossel, story e Reel**, nem só mudar corte/formato/texto. Não espelhar feed em stories. Seguir a grade atual de FORMATOS_POSTAGENS.md, que substitui quantidades/horários antigos abaixo. Na Quatree, não reutilizar a imagem do gato do feed em carrossel ou story. Correção de23/10 enviada e validada na execução39891196118; ver HANDOFF_CHATGPT antes de criar/recriar arquivos.
 
