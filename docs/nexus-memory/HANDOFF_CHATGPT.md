@@ -1,5 +1,13 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — Autorização contínua para envio de artes públicas ao painel
+- Rodrigo, proprietário da Flow Arts e do Nexus, autorizou diariamente salvar artes e legendas de Flow Arts, Quatree Dog e Maskara na branch `agendamentos` deste repositório público, para ingestão no painel aguardando aprovação.
+- O proprietário declarou ciência de que o repositório é público e aceitou a exposição dessas peças destinadas ao Instagram. Esta autorização é específica para essas artes e legendas; não abrange segredos ou outros arquivos privados.
+- Limite expresso: o assistente NUNCA aprova nem publica em nome de Rodrigo. Envio ao painel não equivale a aprovação ou publicação.
+- Antes de cada execução: consultar AGENTS.md e docs/nexus-memory, seguir regras atuais de cada cliente, conferir duplicatas e validar o resultado da ingestão antes de declarar entrega.
+- Executado nesta sessão: consulta às instruções/memória e registro desta autorização. Nenhuma arte enviada, aprovação, publicação, alteração de código ou deploy. Nenhuma nova tarefa diária criada nesta sessão; autorização não é prova de execução automática.
+
+
 ## 2026-10-23 — Campanha Maskara anterior REPROVADA e APAGADA; nova direção fotográfica
 - Rodrigo rejeitou toda a campanha editorial: queria atrair clientes para a assessoria, não explicar o processo. Solicitou apagar tudo e usar imagens realistas de **armas de fogo, estande de tiro e material tático**. Esta instrução substitui a restrição visual anterior de não destacar arma. Continuam sem venda de armas/munições, sem preço e sem promessa de aprovação/prazo; o serviço anunciado é documentação/regularização.
 - **Apagados os 42 conteúdos antigos do painel:** [execução39948848202](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39948848202), job120398081803, success. Operação limitada aos42IDs originais da campanha e ao cliente maskara-assessoria; conferência: antes42, removidos42, restantes0. Nenhum post de outro cliente afetado. Workflow temporário removido após a operação (f938bb4).
