@@ -73,7 +73,8 @@ test("Flow Arts continua com o funil próprio", async () => {
 });
 
 test("palavras e direct padrão por ramo", () => {
-  assert.ok(defaultKeywords(maskara).includes("documentos"));
+  assert.ok(defaultKeywords(maskara).includes("quero"));
+  assert.ok(!defaultKeywords(maskara).includes("documentos"));
   assert.ok(defaultKeywords({ niche: "loja de ração" }).includes("tabela"));
   assert.ok(!defaultKeywords({ niche: "cafeteria" }).includes("documentos"));
   assert.ok(!defaultDm(maskara).includes("tabela"));

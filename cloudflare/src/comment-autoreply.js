@@ -414,7 +414,7 @@ export async function handleInstagramWebhook(request, env, url, ctx) {
       .catch(error => console.warn("ig_webhook_followed_failed", String(error?.message || error).slice(0, 140)));
     if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
   }
-  // Palavra do cliente no direct (ex.: "DOCUMENTOS"): responde com a mensagem do painel.
+  // Palavra do cliente no direct (ex.: "QUERO"): responde com a mensagem do painel.
   const dmTexts = dmTextsFromWebhook(body);
   if (dmTexts.length) {
     const work = processWebhookDmKeywords(env, dmTexts, { findClient: igUserId => clientForInstagramUser(env, igUserId) })

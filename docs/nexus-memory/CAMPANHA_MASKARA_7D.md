@@ -58,7 +58,7 @@
 - Mensagens independentes: cada peça deve funcionar sozinha, sem exigir ver o conteúdo anterior.
 - Frase curta por arte: por exemplo **“Seu CR precisa de atenção?”**, **“Documentação CAC em dia?”**, **“Precisa de assessoria?”** e **“Fale com a Maskara”**.
 - Cada legenda deverá contextualizar o **serviço de assessoria documental** e incentivar consulta por WhatsApp ou mensagem, sem prometer resultados. Confirmar dados de atendimento com o cliente; não inventar telefones ou cidades.
-- A palavra `DOCUMENTOS` para respostas automáticas só pode ser usada como CTA se estiver configurada no painel.
+- **Desde 23/10 12h (pedido do Rodrigo): a palavra é `QUERO`, não mais `DOCUMENTOS`.** CTA na arte e na legenda: "Comenta QUERO abaixo". Não usar mais "DOCUMENTOS".
 - Validar imagens individualmente: legibilidade e enquadramento no 4:5/9:16, margens seguras, sem textos cortados, sem duplicação perceptual ou literal.
 
 ## Checklist de entrega
