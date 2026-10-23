@@ -4,6 +4,9 @@
 
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
 
+## NUNCA REPETIR IMAGEM (Rodrigo, 22/10/2026)
+Cada post, cartão, story e capa é uma imagem nova. Story não é cópia do post. Regras completas no topo de **`FORMATOS_POSTAGENS.md`**. O GitHub recusa imagem idêntica.
+
 ## GRADE NOVA (Rodrigo, 22/10/2026, 22h59): 5 por dia com Reel e stories
 A partir de 23/10, a Flow Arts posta **carrossel 09h, story 10h30, Reel 12h, story 16h e feed 19h**. O Quatree Dog também ganhou Reel e story. Siga **`FORMATOS_POSTAGENS.md`** (grade, tamanhos e como fazer o Reel). Onde este arquivo fala em "3 posts", leia "a grade do `FORMATOS_POSTAGENS.md`".
 

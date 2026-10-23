@@ -243,7 +243,9 @@ export async function publishInstagramStory(env, clientId, imageUrl, request = g
 }
 
 async function withAutoStory(env, clientId, target, result) {
-  if (!brandProfileVersion(clientId) || env?.NEXUS_AUTO_STORY === "false") return result;
+  // 22/10/2026: desligado. O Rodrigo não quer a mesma imagem do post repetida no story;
+  // os stories agora são artes próprias (FORMATOS_POSTAGENS.md). Só liga com NEXUS_AUTO_STORY="true".
+  if (!brandProfileVersion(clientId) || env?.NEXUS_AUTO_STORY !== "true") return result;
   const art = target.kind === "post" ? target.imageUrl : target.kind === "carousel" ? target.carouselUrls?.[0] : "";
   if (!art) return result;
   try {
