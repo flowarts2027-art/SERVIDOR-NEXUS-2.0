@@ -51,8 +51,10 @@ Nada disso foi mudado pelo Nexus. Quem muda é o próprio cliente.
 
 ## 4. Ritmo
 
-- **Feed:** 1 post por dia às **09h** (lojista vê antes de abrir a loja). Seg, qua e sex: carrossel. Ter, qui e sáb: post de 1 imagem ou Reel. Domingo: post leve.
-- **Stories:** 3 por semana (bastidor de entrega, produto chegando na loja, enquete).
+- **Grade nova (Rodrigo, 22/10, 22h59) — ver `FORMATOS_POSTAGENS.md`:**
+  - **Feed 09h todo dia:** seg, qua e sex carrossel; ter, qui, sáb e dom 1 imagem.
+  - **Reel 12h** ter, qui e sáb, feito com os banners do cliente.
+  - **Story 18h todo dia** (bastidor, produto chegando na loja, "peça a tabela no direct"). Sem enquete: o envio automático não permite figurinhas.
 - **Busca de clientes:** 10 lojas por dia, separadas sozinhas pelo Nexus às 9h (seção 6).
 
 ## 5. Calendário dos 30 dias (feed, 09h)
