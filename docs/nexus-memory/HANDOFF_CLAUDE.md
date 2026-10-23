@@ -6,6 +6,13 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - Pedido do Rodrigo: os planos do site seguem a grade nova. Básico: 30 posts no feed, 12 Reels e 30 stories por mês. Com Vídeo: 30 no feed, 30 Reels em vídeo de verdade e 60 stories. Robô do WhatsApp com o mesmo texto.
 - Branch `feat/planos-formatos`; 574/574 testes; o merge publica o site.
 - Para o ChatGPT: clientes do Básico recebem cerca de 3 Reels por semana e 1 story por dia (igual à grade do Quatree em `FORMATOS_POSTAGENS.md`).
+## 2026-10-22 23h10 BRT — PARA O CHATGPT: grade nova com Reels e stories (Flow Arts e Quatree)
+- **Pedido do Rodrigo:** postar carrossel, stories, feed e Reels nos dois perfis, com mais posts por dia se for preciso.
+- **Regra nova:** `FORMATOS_POSTAGENS.md`. Flow Arts: 09h carrossel, 10h30 story, 12h Reel, 16h story, 19h feed (o Nexus já repete o carrossel e o feed como story). Quatree: 09h feed todo dia, 12h Reel ter/qui/sáb, 18h story todo dia.
+- **Conferido no código:** a pasta `agendamentos/` já aceita `story.jpg`, `story.mp4`, `video.mp4` + `capa.jpg` em qualquer horário `HHMM` (`agendar-pasta.sh`). Nenhuma mudança de código.
+- **Limites:** story pelo envio automático não tem enquete nem link; Reel sem música (só áudio silencioso).
+- **Vale a partir de 23/10.** Também atualizados: `REGRA_POSTS_DIARIOS.md`, `CAMPANHA_QUATREE_30D.md`, `AGENTS.md`.
+- **Oferta nova (PR #378):** já está na `main` (merge b34a6c7, feito pelo Rodrigo).
 
 ## 2026-10-22 23h BRT — Conselho (Founder Skill) da Flow Arts, oferta nova e código de pedido
 - **Origem → destino:** Claude Code → ChatGPT
@@ -14,7 +21,7 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Correções do Rodrigo:** o Quatree Dog é amigo e **cliente teste, não pagante**. As "5 a 10 horas" eram o tempo dele construindo o Nexus, não o tempo por cliente (este ainda será medido).
 - **Decisões:** cancelamento "é só avisar no WhatsApp"; Básico R$ 197/mês sem entrada; fundador R$ 147 nos 3 primeiros meses (3 vagas, até 30/11/2026); garantia do 1º mês; **resposta automática com botão do WhatsApp entra no Básico** (regra antiga em `empresa/visao.md` atualizada); "exemplo grátis" vira "3 posts grátis".
 - **Alterado (branch `feat/oferta-197`):** `public/site.html` (preço, fundador, garantia, cancelamento, resposta automática e código de pedido no Básico, botões "Quero 3 posts grátis", texto escuro no botão verde), `public/exemplo.html` (título "3 posts grátis"), `cloudflare/src/whatsapp-knowledge.js` (robô com os mesmos textos), **código de pedido**: campo novo em Meu negócio (`business-profile.js`, `public/negocio.js`), `clientBrand().orderCode`, `withOrderCode()` em `caption-templates.js` aplicado no envio do Master/pasta `agendamentos/` (`master-upload.js`) e nas legendas prontas; mensagem do Caçador para comida oferece "3 posts com as fotos da [empresa], grátis" (`prospects.js`). Testes novos `order-code.test.mjs`; 574/574.
-- **Estado:** PR aberto para o Rodrigo aprovar; o merge publica o site e o Worker.
+- **Estado:** juntado pelo Rodrigo na `main` (PR #378, merge b34a6c7); deploy automático.
 - **Para o ChatGPT:** ver a seção "Oferta nova" no topo de `REGRA_POSTS_DIARIOS.md`. Posts da Flow Arts continuam sem preço.
 - **Próximo passo:** Rodrigo faz o merge; cadastrar o código de pedido de cada cliente em Meu negócio; fazer os 3 posts grátis para 1 padaria e 1 café conhecidos; lançamento 05/11.
 

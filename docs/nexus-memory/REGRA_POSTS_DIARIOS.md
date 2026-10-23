@@ -4,6 +4,9 @@
 
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
 
+## GRADE NOVA (Rodrigo, 22/10/2026, 22h59): 5 por dia com Reel e stories
+A partir de 23/10, a Flow Arts posta **carrossel 09h, story 10h30, Reel 12h, story 16h e feed 19h**. O Quatree Dog também ganhou Reel e story. Siga **`FORMATOS_POSTAGENS.md`** (grade, tamanhos e como fazer o Reel). Onde este arquivo fala em "3 posts", leia "a grade do `FORMATOS_POSTAGENS.md`".
+
 ## Oferta nova (Rodrigo, 22/10/2026) — vale a partir de agora
 - O "exemplo grátis" passa a se chamar **"3 posts grátis"** com as fotos do negócio do dono. Nos posts, troque "exemplo grátis" por "3 posts grátis". O QUERO continua igual.
 - **Lançamento da vaga de fundador: 05/11/2026.** Nesse dia, um post "3 vagas de fundador" **sem preço**. Entre 26/10 e 04/11, posts mostrando exemplos reais feitos para padaria e café, **só com a autorização do dono do negócio** (o Rodrigo confirma).
