@@ -15,7 +15,7 @@ export const CLIENT_DAILY_TARGET = 10;
 const START_HOUR_BRT = 9;
 const MAX_ATTEMPTS_PER_DAY = 12;
 const MAX_SEARCHES_PER_RUN = 2;
-const MAX_CITIES = 10; // 22/10: Rodrigo pediu todas as cidades perto de Uberlândia
+const MAX_CITIES = 40; // 23/10: lista pronta de Uberlândia e região (até 40 cidades)
 
 // Ramo do cliente → tipos de negócio que compram dele. Usado só quando ele ainda não escolheu.
 const NICHE_HINTS = [
@@ -74,7 +74,8 @@ export async function clientDailySettings(env, client) {
 
 export async function saveClientDailySettings(env, client, body = {}) {
   const current = await clientDailySettings(env, client);
-  const niches = Array.isArray(body.niches) ? [...new Set(body.niches.map(String))].filter(k => CAPTADOR_NICHES[k]) : current.niches;
+  const allowed = suggestedNiches(client);
+  const niches = Array.isArray(body.niches) ? [...new Set(body.niches.map(String))].filter(k => CAPTADOR_NICHES[k] && (!allowed.length || allowed.includes(k))) : current.niches;
   const cities = "cities" in body ? parseCities(body.cities) : current.cities;
   const target = "target" in body ? Math.max(1, Math.min(CLIENT_DAILY_TARGET, Number(body.target) || CLIENT_DAILY_TARGET)) : current.target;
   const enabled = "enabled" in body ? body.enabled === true : current.enabled;
@@ -140,7 +141,7 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
     try { elements = await searchCaptadorOSM(niche, city, fetcher); } catch (error) { lastError = String(error?.message || error).slice(0, 60); continue; }
     // Celular primeiro (WhatsApp), depois quem tem Instagram; melhor nota primeiro.
     const leads = elements.map(e => captadorLeadOSM(e, niche, city, config.onlyNoSite)).filter(Boolean)
-      .sort((a, b) => (b.mobile - a.mobile) || (Boolean(b.instagram) - Boolean(a.instagram)) || (b.score - a.score));
+      .sort((a, b) => (Boolean(b.phone) - Boolean(a.phone)) || (b.mobile - a.mobile) || (Boolean(b.instagram) - Boolean(a.instagram)) || (b.score - a.score));
     // No máximo 4 de uma mesma busca, para variar tipos e cidades no dia.
     let fromThis = 0;
     for (const lead of leads) {

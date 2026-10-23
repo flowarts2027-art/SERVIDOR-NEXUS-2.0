@@ -127,7 +127,9 @@ test("sem chave do Google a busca usa o mapa grátis", async () => {
   const data = await response.json();
   assert.equal(data.ok, true);
   assert.equal(data.source, "osm");
-  assert.deepEqual(data.items.map(i => i.name), ["Pet Amigo"]);
+  // 23/10: sem telefone também entra (com "Ver no Maps"), depois dos que têm telefone.
+  assert.deepEqual(data.items.map(i => i.name), ["Pet Amigo", "Sem Telefone"]);
+  assert.equal(data.items[1].whatsapp, "");
   assert.match(data.items[0].id, /^osm:node\/11$/);
   assert.match(body, /"name"="Belo Horizonte"/);
   assert.match(body, /"shop"="pet"/);
@@ -145,7 +147,8 @@ test("Google recusa: usa o mapa grátis; os dois falham: avisa e não conta no l
     : new Response(JSON.stringify(OSM_ELEMENTS), { status: 200 });
   const ok = await (await handleCaptadorPortal(searchReq({ niche: "pet", city: "Belo Horizonte MG" }), env, url, ana, googleNo)).json();
   assert.equal(ok.source, "osm");
-  assert.equal(ok.items.length, 1);
+  assert.equal(ok.googleError, "google_PERMISSION_DENIED");
+  assert.equal(ok.items.filter(i => i.phone).length, 1);
   const allNo = async () => new Response("", { status: 504 });
   const fail = await (await handleCaptadorPortal(searchReq({ niche: "pet", city: "Belo Horizonte MG" }), env, url, ana, allNo)).json();
   assert.equal(fail.error, "search_failed");
@@ -240,8 +243,20 @@ test("mapa grátis fora do ar: usa o Nominatim (terceira reserva)", async () => 
   const req = new Request("https://painel.flowarts.com.br/api/portal/captador/search", { method: "POST", body: JSON.stringify({ niche: "pet", city: "Rio de Janeiro RJ" }) });
   const data = await (await handleCaptadorPortal(req, env, new URL(req.url), ana, fetcher)).json();
   assert.equal(data.ok, true);
-  assert.deepEqual(data.items.map(i => i.name), ["Pet Lu"]);
+  assert.deepEqual(data.items.map(i => i.name), ["Pet Lu", "Sem Tel"]);
   const nom = urls.find(u => u.includes("nominatim"));
   assert.match(decodeURIComponent(nom), /q=pet shop in Rio de Janeiro/);
   assert.ok(urls.filter(u => u.includes("interpreter")).length >= 3, "tentou os servidores do Overpass antes");
+});
+
+test("Quatree (ração): só tipos de pet e agro, cidades de Uberlândia e região com bairros", async () => {
+  const { clientNiches } = await import("../src/captador.js");
+  const { clientRegion, UBERLANDIA_REGION } = await import("../src/captador-regions.js");
+  const quatree = { id: "quatree-dog", niche: "Ração pet", config: {} };
+  assert.deepEqual(clientNiches(quatree), ["pet", "racao", "agropecuaria", "veterinario"]);
+  assert.ok(clientNiches({ id: "x", niche: "Agência" }).includes("restaurante"));
+  assert.equal(clientRegion(quatree)?.id, "uberlandia");
+  assert.ok(UBERLANDIA_REGION.cities.length >= 30 && UBERLANDIA_REGION.cities.includes("Uberlândia MG"));
+  assert.ok(UBERLANDIA_REGION.bairros.includes("Santa Mônica"));
+  assert.equal(clientRegion({ id: "y", niche: "Café", config: {} }), null);
 });

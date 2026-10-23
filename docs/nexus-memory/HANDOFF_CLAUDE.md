@@ -2,6 +2,10 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 08h10 BRT — Captador do Quatree
+- Pedido do Rodrigo: tirar da busca do Quatree os tipos que não são dele; busca manual não funcionava; busca diária de 10 achou 3; cidades e bairros de Uberlândia e região.
+- Feito (branch `fix/captador-quatree`): ver CHANGELOG 23/10 08h10. Pendente: depois do deploy, olhar o `googleError` de uma busca para saber por que o Google falha (a chave existe no Master).
+
 ## 2026-10-23 07h50 BRT — Master v2
 - Pedido do Rodrigo: tirar abas duplicadas, Postagens igual à tabela de clientes com botão excluir, Agentes e Site como painel holográfico, trocar a logo preta.
 - Feito (branch `feat/master-v2`): ver CHANGELOG 23/10 07h50. Conferido em prévia local com dados de exemplo. 580/580 testes.
