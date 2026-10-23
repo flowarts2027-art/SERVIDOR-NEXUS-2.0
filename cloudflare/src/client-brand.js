@@ -127,6 +127,7 @@ export function clientBrand(client = {}) {
     audience: pick(profile.audience, defaults.audience),
     offer: pick(profile.offer, defaults.offer),
     whatsapp: pick(String(profile.whatsapp || "").replace(/\D/g, ""), defaults.whatsapp),
+    orderCode: text(profile.orderCode).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16),
     cta: pick(profile.cta, defaults.cta),
     giftCta: pick(defaults.giftCta),
     hashtags: pick(defaults.hashtags),

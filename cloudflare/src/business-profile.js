@@ -14,8 +14,13 @@ export const BUSINESS_FIELDS = [
   ["audience", 300, false],
   ["region", 120, false],
   ["differentials", 400, false],
-  ["whatsapp", 20, false]
+  ["whatsapp", 20, false],
+  ["orderCode", 20, false]
 ];
+
+export function normalizeOrderCode(value = "") {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16);
+}
 
 export function businessProfileView(client = {}) {
   const profile = client?.config?.agentProfile && typeof client.config.agentProfile === "object" ? client.config.agentProfile : {};
@@ -30,6 +35,8 @@ export function normalizeBusinessProfile(body = {}) {
   const next = {};
   for (const [key, max] of BUSINESS_FIELDS) next[key] = clean(body[key], max);
   next.whatsapp = next.whatsapp.replace(/\D/g, "").slice(0, 13);
+  // Código de pedido: a palavra que o freguês diz no WhatsApp (ex.: PAO10). Só letras e números.
+  next.orderCode = normalizeOrderCode(next.orderCode);
   if (next.whatsapp && (next.whatsapp.length < 10)) throw new Error("whatsapp_invalid");
   for (const [key, , required] of BUSINESS_FIELDS) if (required && !next[key]) throw new Error("required_" + key);
   return next;

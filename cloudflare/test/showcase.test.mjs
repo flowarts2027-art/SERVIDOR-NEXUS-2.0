@@ -111,7 +111,9 @@ test("Caçador: cafeteria com exemplo manda o link do carrossel logo na mensagem
   const map = { cafeteria: { kind: "carousel", images: ["https://x/1.jpg", "https://x/2.jpg"] } };
   const text = firstMessage({ name: "Café Bom", niche: "cafeteria", city: "Recife PE", id: "osm:node/1" }, map);
   assert.match(text, /Veja um carrossel que fizemos para cafeterias: https:\/\/flowarts\.com\.br\/exemplo\/cafeteria/);
-  assert.match(text, /Posso fazer um assim para a Café Bom\?/);
+  assert.match(text, /Faço 3 posts com as fotos da Café Bom, grátis, antes de qualquer conversa de preço\. Quer ver\?/);
+  const salon = firstMessage({ name: "Salão X", niche: "salao", city: "Recife PE", id: "osm:node/2" }, { salao: { kind: "carousel", images: ["https://x/1.jpg"] } });
+  assert.doesNotMatch(salon, /3 posts/);
 });
 
 test("tirar do painel o Reel usado como exemplo (só se ainda não foi publicado)", async () => {

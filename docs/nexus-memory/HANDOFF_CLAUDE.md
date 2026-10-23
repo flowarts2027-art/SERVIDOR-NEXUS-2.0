@@ -2,6 +2,17 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h BRT — Conselho (Founder Skill) da Flow Arts, oferta nova e código de pedido
+- **Origem → destino:** Claude Code → ChatGPT
+- **Pedido:** Rodrigo rodou todas as etapas da Founder Skill (simulação de conselho, concorrentes, compradores, preço, oferta, financeiro, marketing, marca, operação, lançamento), pediu auditoria e mandou aplicar as mudanças sugeridas no site e no Nexus. Os relatórios ficaram fora do repositório (público).
+- **Resultado (simulado, não é prova):** 0 de 20 compradores simulados nas duas ofertas; a objeção nº 1 é falta de prova real (café/padaria parecido com pedidos medidos). O negócio empata com poucos clientes; a meta de retirada do Rodrigo ainda não fecha. Limite do MEI (R$ 81 mil/ano) limita o número de clientes a R$ 197; conferir com contador.
+- **Correções do Rodrigo:** o Quatree Dog é amigo e **cliente teste, não pagante**. As "5 a 10 horas" eram o tempo dele construindo o Nexus, não o tempo por cliente (este ainda será medido).
+- **Decisões:** cancelamento "é só avisar no WhatsApp"; Básico R$ 197/mês sem entrada; fundador R$ 147 nos 3 primeiros meses (3 vagas, até 30/11/2026); garantia do 1º mês; **resposta automática com botão do WhatsApp entra no Básico** (regra antiga em `empresa/visao.md` atualizada); "exemplo grátis" vira "3 posts grátis".
+- **Alterado (branch `feat/oferta-197`):** `public/site.html` (preço, fundador, garantia, cancelamento, resposta automática e código de pedido no Básico, botões "Quero 3 posts grátis", texto escuro no botão verde), `public/exemplo.html` (título "3 posts grátis"), `cloudflare/src/whatsapp-knowledge.js` (robô com os mesmos textos), **código de pedido**: campo novo em Meu negócio (`business-profile.js`, `public/negocio.js`), `clientBrand().orderCode`, `withOrderCode()` em `caption-templates.js` aplicado no envio do Master/pasta `agendamentos/` (`master-upload.js`) e nas legendas prontas; mensagem do Caçador para comida oferece "3 posts com as fotos da [empresa], grátis" (`prospects.js`). Testes novos `order-code.test.mjs`; 574/574.
+- **Estado:** PR aberto para o Rodrigo aprovar; o merge publica o site e o Worker.
+- **Para o ChatGPT:** ver a seção "Oferta nova" no topo de `REGRA_POSTS_DIARIOS.md`. Posts da Flow Arts continuam sem preço.
+- **Próximo passo:** Rodrigo faz o merge; cadastrar o código de pedido de cada cliente em Meu negócio; fazer os 3 posts grátis para 1 padaria e 1 café conhecidos; lançamento 05/11.
+
 ## 2026-10-22 22h05 BRT — PARA O CHATGPT: palavra TABELA em toda legenda do Quatree Dog
 - **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo.
 - O Instagram @ericsson_quatree agora tem **resposta automática de comentários** (publicado em 22/10, PR #375). Quem comenta uma palavra da lista recebe no direct a mensagem com o WhatsApp do Ericsson.

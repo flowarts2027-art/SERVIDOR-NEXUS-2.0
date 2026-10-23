@@ -129,6 +129,37 @@ export function captionVariants(client = {}, format = "post") {
 
 // Número da vez (contador) → combinação. Pula longe a cada vez, para o gancho, o texto e a chamada
 // mudarem juntos de uma postagem para a outra. Passa por todas antes de repetir.
+// Código de pedido: a última chamada do post pede para o freguês dizer
+// a palavra no WhatsApp. Assim o dono conta quantos pedidos vieram dos posts.
+function phoneLabel(digits = "") {
+  const d = String(digits || "").replace(/\D/g, "").replace(/^55(?=\d{10,11}$)/, "");
+  if (d.length === 11) return "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7);
+  if (d.length === 10) return "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6);
+  return "";
+}
+
+export function orderCodeLine(client = {}) {
+  const brand = clientBrand(client);
+  const code = String(brand.orderCode || "").trim();
+  if (!code) return "";
+  const phone = phoneLabel(brand.whatsapp);
+  return "📲 Para pedir, chame no WhatsApp" + (phone ? " " + phone : "") + " e diga: " + code;
+}
+
+export function withOrderCode(client = {}, caption = "") {
+  const text = String(caption || "");
+  const line = orderCodeLine(client);
+  if (!line || !text.trim()) return text;
+  const code = String(clientBrand(client).orderCode || "");
+  if (new RegExp("\\b" + code + "\\b", "i").test(text)) return text;
+  const parts = text.split(/\n\n/);
+  const last = parts[parts.length - 1] || "";
+  // Deixa as hashtags no fim: a chamada entra logo antes delas.
+  if (parts.length > 1 && /^\s*#/.test(last)) parts.splice(parts.length - 1, 0, line);
+  else parts.push(line);
+  return parts.join("\n\n").slice(0, 2200);
+}
+
 export function readyCaption(client = {}, format = "post", turn = 0) {
   const fmt = format === "feed" ? "post" : format;
   if (fmt === "story") return ""; // Stories não têm legenda no Instagram.
@@ -153,5 +184,5 @@ export function readyCaption(client = {}, format = "post", turn = 0) {
   if (EXTRA[idx[3]]) lines.push(EXTRA[idx[3]]);
   lines.push(CTA[idx[2]] + (showName ? "\n" + name : ""));
   lines.push(tags.slice(0, 6).join(" "));
-  return lines.join("\n\n").slice(0, 2200);
+  return withOrderCode(client, lines.join("\n\n").slice(0, 2200));
 }

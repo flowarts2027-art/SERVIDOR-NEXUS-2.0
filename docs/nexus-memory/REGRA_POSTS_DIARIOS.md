@@ -4,6 +4,13 @@
 
 Esta regra vale todos os dias até o Rodrigo mudar. Ela substitui a frase antiga "1 post por dia vale mais que 3".
 
+## Oferta nova (Rodrigo, 22/10/2026) — vale a partir de agora
+- O "exemplo grátis" passa a se chamar **"3 posts grátis"** com as fotos do negócio do dono. Nos posts, troque "exemplo grátis" por "3 posts grátis". O QUERO continua igual.
+- **Lançamento da vaga de fundador: 05/11/2026.** Nesse dia, um post "3 vagas de fundador" **sem preço**. Entre 26/10 e 04/11, posts mostrando exemplos reais feitos para padaria e café, **só com a autorização do dono do negócio** (o Rodrigo confirma).
+- Mensagem central: **"pedido, não curtida"**. Ganchos aprovados: "Seu post deu pedido? Agora dá para contar." · "A legenda fala do seu jeito. Você muda o que quiser antes de sair." · "Nada sai sem o seu OK." · "1 minuto por dia: abrir, olhar, aprovar." · "Já pagou social media e não viu cliente? Então veja os posts antes de pagar."
+- Continua proibido: preço (nosso ou de outros), cliente, número ou depoimento inventado, promessa de pedidos.
+- **Posts de clientes:** o Nexus põe sozinho, no fim da legenda, a linha "📲 Para pedir, chame no WhatsApp … e diga: CÓDIGO" quando o cliente tem código de pedido em "Meu negócio". Não precisa escrever; se escrever o mesmo código, ele não repete.
+
 ## Rotina diária (terminar até 08h de Brasília)
 1. Leia esta regra, o `PLANO_CRESCIMENTO.md` (público, função de cada horário e metas), o `MARKETING_POSICIONAMENTO.md` (mensagem contra os apps de agendamento, série de posts e respostas prontas), o standup do dia do CEO (`empresa/standup/AAAA-MM-DD.md` na branch `empresa-standup`, se existir) e a entrada mais recente de `HANDOFF_CLAUDE.md`. Veja o que já existe em `agendamentos/` na branch `agendamentos`, para não repetir tema nem horário.
 2. Crie 3 posts para o dia: **09:00, 12:00 e 19:00**, seguindo o padrão abaixo e a função de cada horário.

@@ -14,6 +14,6 @@ Fonte compartilhada dos departamentos (CEO, Marketing, Vendas). Atualize quando 
 Detalhes de marca e público: `.agents/product-marketing.md`. Decisões: `docs/nexus-memory/DECISIONS.md`.
 
 ## Limites que valem para todos
-- Ainda não vender resposta automática a comentários (depende da aprovação do app pela Meta).
+- Resposta automática a comentários (com botão do WhatsApp) entra no plano Básico (decisão do Rodrigo, 22/10/2026). Enquanto a Meta não aprova o app, cada cliente entra por convite de testador.
 - Nunca citar a Global Play nem outros clientes antigos.
 - Nunca inventar números, clientes, resultados ou depoimentos.
