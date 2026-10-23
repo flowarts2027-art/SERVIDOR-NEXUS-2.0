@@ -12,6 +12,7 @@ import { masterInstagramCredentials } from "./instagram.js";
 import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js";
 import { materialForComment } from "./gift-materials.js";
 import { clientAutoReplyConfig, buildDmMessage, matchesKeyword } from "./client-autoreply.js";
+import { dmTextsFromWebhook, processWebhookDmKeywords } from "./dm-keyword-reply.js";
 import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
@@ -411,6 +412,13 @@ export async function handleInstagramWebhook(request, env, url, ctx) {
   if (followed.length) {
     const work = processWebhookFollowed(env, followed, { findClient: igUserId => clientForInstagramUser(env, igUserId) })
       .catch(error => console.warn("ig_webhook_followed_failed", String(error?.message || error).slice(0, 140)));
+    if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
+  }
+  // Palavra do cliente no direct (ex.: "DOCUMENTOS"): responde com a mensagem do painel.
+  const dmTexts = dmTextsFromWebhook(body);
+  if (dmTexts.length) {
+    const work = processWebhookDmKeywords(env, dmTexts, { findClient: igUserId => clientForInstagramUser(env, igUserId) })
+      .catch(error => console.warn("ig_webhook_dm_keyword_failed", String(error?.message || error).slice(0, 140)));
     if (ctx?.waitUntil) ctx.waitUntil(work); else await work;
   }
   return plain("ok");

@@ -24,7 +24,7 @@
     const c = data.config;
     box.hidden = false;
     box.innerHTML = `<h2>Respostas automáticas ${c.enabled ? '<span class="tag tag-ok">Ligadas</span>' : '<span class="tag">Desligadas</span>'}</h2>
-      <p class="muted">Quem comentar uma destas palavras nos seus posts recebe uma mensagem no direct, uma vez só, e uma resposta curta no comentário.</p>
+      <p class="muted">Quem comentar uma destas palavras nos seus posts, ou mandar a palavra no seu direct, recebe a mensagem abaixo no direct, uma vez só. No comentário, também sai uma resposta curta.</p>
       ${data.hasWhatsapp ? "" : '<p class="form-error">Cadastre o seu WhatsApp na aba "Meu negócio" para o link funcionar.</p>'}
       <form id="autoreply-form" class="cap-search">
         <label class="cap-check"><input type="checkbox" name="enabled" ${c.enabled ? "checked" : ""}> Ligar as respostas automáticas</label>

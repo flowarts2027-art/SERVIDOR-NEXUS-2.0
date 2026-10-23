@@ -1,5 +1,12 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 11h40 BRT — Resposta automática também por palavra no DIRECT (Maskara)
+- Auditoria da Maskara (pedido do Rodrigo): as 6 artes de hoje dizem "Responda DOCUMENTOS no direct", mas a resposta automática só funcionava em comentário. Mensagem no direct não disparava nada.
+- Novo `cloudflare/src/dm-keyword-reply.js`: o webhook "messages" agora lê o texto do direct; se tiver uma das palavras do cliente (Conta › Respostas automáticas, ligada), manda a mesma mensagem do direct com o botão do WhatsApp. Uma vez por pessoa a cada 24 h. Ignora eco, botões e "já segui". Flow Arts continua no funil próprio.
+- Palavras padrão novas para despachante/CAC/armas: documentos, documento, documentação + as gerais. Direct padrão sem "tabela e condições" para quem não é ração/pet.
+- Texto do painel (autoreply.js v4) e página de privacidade falam de comentário e direct.
+- 587/587 testes.
+
 ## 2026-10-23 10h05 BRT — Resposta automática: texto do WhatsApp por cliente
 - O texto que já chega escrito no WhatsApp quando a pessoa toca no botão era fixo ("quero a tabela e as condições", do Quatree). Agora é por cliente (campo novo no painel, Conta › Respostas automáticas); padrão: ração/pet = tabela; outros = "Olá! Vi no Instagram e quero mais informações." 582/582 testes.
 - Maskara (23/10): 6 peças movidas para hoje (10h30, 12h, 19h; post + story), runs 39956597567 (envio) e 39956597612 (cancelou as 6 de 24/10).
