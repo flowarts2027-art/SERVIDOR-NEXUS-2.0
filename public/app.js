@@ -56,7 +56,8 @@ function render() {
   $("#funnel-warm").textContent = totals.warm;
   $("#funnel-hot").textContent = totals.hot;
 
-  $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#e5e5e5"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : client.status === "paused" ? "PAUSADO" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
+  if ($("#tile-clients")) $("#tile-clients").textContent = clients.length;
+  if ($("#client-cards")) $("#client-cards").innerHTML = clients.length ? clients.slice(0, 4).map(client => `<div class="client-card"><div class="avatar" style="--accent:${client.primaryColor || "#e5e5e5"}">${initials(client.name)}</div><div><strong>${escapeHtml(client.name)}</strong><small>${escapeHtml(client.instagram || "Instagram pendente")} · ${escapeHtml(client.niche || "Outro")}</small></div>${badge(client.status === "online" ? "ONLINE" : client.status === "paused" ? "PAUSADO" : "SETUP", client.status === "online")}</div>`).join("") : `<p class="muted">Nenhum cliente cadastrado.</p>`;
 
   const managedUsageClients = clients.filter(client => client.id !== "ragnar-one");
   $("#usage-list").innerHTML = managedUsageClients.length ? managedUsageClients.map(client => {
@@ -86,8 +87,10 @@ function render() {
     const remove = (!ragnar && !client.ownerAccount)
       ? `<button type="button" class="small-danger" data-delete-client="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Excluir</button>`
       : "";
-    const action = `<div class="client-action-stack"><a class="small-primary" href="/api/clients/${encodeURIComponent(client.id)}/assume-open" target="_blank" rel="noopener">Assumir painel</a><button type="button" class="small-primary" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Definir acesso</button>${remove}${protect}</div>`;
-    return `<tr><td><strong>${escapeHtml(client.name)}</strong><br><small>${escapeHtml(client.niche || "Outro")}</small></td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td><strong>Automático</strong><br><small>horário definido pelos agentes</small></td><td><strong>${mode}</strong>${extra}</td><td>${action}</td></tr>`;
+    const openUrl = `/api/clients/${encodeURIComponent(client.id)}/assume-open`;
+    const action = `<div class="client-action-row"><a class="small-primary" href="${openUrl}" target="_blank" rel="noopener">Abrir painel</a><button type="button" class="ghost" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Acesso</button>${remove}${protect}</div>`;
+    // Linha clicável (22/10): tocar no nome abre o painel do cliente.
+    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><small>${escapeHtml(client.niche || "Outro")}</small></td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();
@@ -248,6 +251,11 @@ function formatPostDate(value) {
 
 function renderPostLedger() {
   const data = state.postLedger || {};
+  // Bloco "Postagens" do Início: quantos esperam aprovação.
+  if ($("#tile-posts")) {
+    const list = Array.isArray(data.posts) ? data.posts : [];
+    $("#tile-posts").textContent = list.filter(post => String(post.approvalStatus || "") === "pending" && ["ready", "scheduled"].includes(String(post.status || ""))).length;
+  }
   if ($("#posts-total-cost")) $("#posts-total-cost").textContent = moneyPost(data.totalCostUsd);
   if ($("#posts-total-count")) $("#posts-total-count").textContent = Number(data.totalPosts || 0);
   if ($("#posts-published-count")) $("#posts-published-count").textContent = Number(data.published || 0);
@@ -747,6 +755,7 @@ function renderSupportNotifications(summary = null) {
   const open = summary?.openCount ?? tickets.filter(item => item.status !== "resolved").length;
   const counter = $("#notification-count");
   if (counter) { counter.textContent = unread; counter.hidden = unread <= 0; }
+  if ($("#tile-support")) $("#tile-support").textContent = unread;
   if ($("#support-new-count")) $("#support-new-count").textContent = unread;
   if ($("#support-open-count")) $("#support-open-count").textContent = open;
 
@@ -1203,4 +1212,20 @@ setInterval(()=>{if(document.getElementById("campaigns")?.classList.contains("ac
   const view = new URLSearchParams(location.search).get("view");
   if (view) setTimeout(() => open(view), 300);
   navigator.serviceWorker?.addEventListener("message", event => { if (event.data?.type === "open-view") open(event.data.view); });
+})();
+
+// Início (22/10): os blocos copiam os números do menu (WhatsApp e cadastros novos).
+(function mirrorHomeTiles() {
+  const pairs = [["#wa-nav-count", "#tile-wa"], ["#signup-nav-count", "#tile-signups"]];
+  const copy = () => pairs.forEach(([from, to]) => {
+    const source = document.querySelector(from), target = document.querySelector(to);
+    if (source && target) target.textContent = source.hidden ? "0" : (source.textContent || "0");
+  });
+  const site = document.querySelector("#tile-site");
+  if (site) site.textContent = "↗";
+  copy();
+  pairs.forEach(([from]) => {
+    const source = document.querySelector(from);
+    if (source) new MutationObserver(copy).observe(source, { childList: true, characterData: true, subtree: true, attributes: true });
+  });
 })();
