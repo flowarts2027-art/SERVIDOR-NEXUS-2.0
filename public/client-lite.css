@@ -99,8 +99,8 @@ h1, h2 { line-height: 1.2; margin: 0; }
 }
 .hero-label { padding: 14px 16px 0; margin: 0; color: var(--blue); font-weight: 700; }
 .hero-title { padding: 2px 16px 12px; font-size: 1.25rem; }
-.hero-media { aspect-ratio: 4 / 5; background: var(--navy-2); }
-.hero-media img { width: 100%; height: 100%; object-fit: cover; }
+.hero-media { aspect-ratio: auto; background: var(--navy-2); }
+.hero-media img { width: 100%; height: auto; object-fit: contain; }
 .hero-body { padding: 14px 16px 18px; }
 .hero-empty { padding: 22px 16px; }
 .hero-empty h2 { font-size: 1.2rem; margin-bottom: 6px; }
@@ -131,8 +131,8 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .segmented button.active { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(15,30,61,.12); }
 .post-list { display: grid; gap: 14px; margin-top: 16px; }
 .post { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-.post-media { aspect-ratio: 4 / 5; background: var(--navy-2); }
-.post-media img { width: 100%; height: 100%; object-fit: cover; }
+.post-media { aspect-ratio: auto; background: var(--navy-2); }
+.post-media img { width: 100%; height: auto; object-fit: contain; }
 .post-body { padding: 14px 16px 16px; }
 .tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: .85rem; font-weight: 700; margin-bottom: 8px; }
 .tag-wait { background: var(--warm-soft); color: var(--warm); }
