@@ -19,7 +19,7 @@ import { masterLeadSummary } from "./leads.js";
 import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { addDirective, createCampaign, masterWorkspace, updateCampaign } from "./master-workspace.js";
 import { handleMasterOpenAI } from "./master-openai.js";
-import { decidePost } from "./posts.js";
+import { decidePost, deletePostFromPanel } from "./posts.js";
 import { rescheduleMissedToday } from "./reschedule-today.js";
 import { createCarouselTest, carouselTestStatus, stepCarouselTest } from "./format-builder.js";
 import { commentAutoReplyStatus } from "./comment-autoreply.js";
@@ -132,7 +132,7 @@ button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;backg
 </style>
 </head>
 <body><main class="card">
-<div class="brand"><img src="/assets/nexus-ai-mark.svg" alt=""><div><strong>NEXUS AI</strong><small>SERVIDOR NEXUS</small></div></div>
+<div class="brand"><img src="/assets/nexus-mark-blue.svg" alt=""><div><strong>NEXUS AI</strong><small>SERVIDOR NEXUS</small></div></div>
 <h1>Acesso administrativo</h1><p class="muted">Área exclusiva do administrador NEXUS.</p>
 <form method="post" action="${action}">
 <label>Usuário<input name="username" autocomplete="username" required></label>
@@ -875,6 +875,22 @@ export async function handleMaster(request, env, url) {
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       return json({ error: code }, code === "not_found" ? 404 : 400);
+    }
+  }
+
+  // Excluir post pelo Master (23/10): não publicado → cancela e some; publicado → some do painel.
+  if (url.pathname === "/api/master/posts/delete" && request.method === "POST") {
+    const body = await request.json().catch(() => ({}));
+    const clientId = String(body?.clientId || "").trim();
+    const postId = String(body?.postId || "").trim();
+    if (!clientId || !postId) return json({ error: "client_and_post_required" }, 400);
+    const client = await getClient(env, clientId);
+    if (!client) return json({ error: "client_not_found" }, 404);
+    try {
+      return json(await deletePostFromPanel(env, client, postId));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      return json({ error: code, message: code === "publishing_in_progress" ? "Este post está sendo publicado agora." : "Não foi possível excluir." }, code === "post_not_found" ? 404 : 409);
     }
   }
 

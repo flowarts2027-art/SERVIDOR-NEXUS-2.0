@@ -1,5 +1,13 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 07h50 BRT — Master v2 (pedido do Rodrigo)
+- Início sem atalhos repetidos do menu: ficou Suporte, CRM da Flow Arts, Adicionar cliente e Link de cadastro (copia). O número de posts esperando aprovação foi para o menu (Postagens).
+- Postagens: tabela tipo planilha (Prévia, Cliente, Tipo, Quando, Situação, Ações), com selo do tipo e botões Aprovar, Recusar e Excluir. Rota nova POST /api/master/posts/delete (usa deletePostFromPanel). Colunas Custo, Modelo e Detalhe saíram (erro aparece em Situação).
+- Agentes: painel holográfico "Ao vivo" (números do dia + 1 cartão por agente), configuração em bloco fechado.
+- Site: painéis no mesmo estilo holográfico.
+- Logo nova azul (public/assets/nexus-mark-blue.svg) no Master e no login.
+- Barra de cima não estica mais na tela Início. 580/580 testes.
+
 ## 2026-10-23 07h20 BRT — Master mais coeso e fácil de ler (pedido do Rodrigo)
 - Login do Master no azul do painel do cliente (antes preto e branco), fonte Atkinson, letra maior.
 - Menu numa linha só em cima, com ícones de linha (SVG) em vez de símbolos; "Mais" só no celular; título "PAINEL MASTER" removido.

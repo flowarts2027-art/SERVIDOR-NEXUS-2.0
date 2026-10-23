@@ -28,3 +28,11 @@ test("clientes arquivados não aparecem na lista do painel", () => {
   const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
   assert.match(master, /String\(client\.status \|\| ""\) !== "archived"/);
 });
+
+test("Master: botão Excluir em todos os posts e rota de exclusão protegida", () => {
+  const app = fs.readFileSync(new URL("../../public/app.js", import.meta.url), "utf8");
+  const master = fs.readFileSync(new URL("../src/master.js", import.meta.url), "utf8");
+  assert.match(app, /data-post-delete/);
+  assert.match(app, /\/api\/master\/posts\/delete/);
+  assert.match(master, /"\/api\/master\/posts\/delete"[\s\S]{0,900}deletePostFromPanel/);
+});

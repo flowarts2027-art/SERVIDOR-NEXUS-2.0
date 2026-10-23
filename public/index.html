@@ -13,15 +13,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=45">
+  <link rel="stylesheet" href="/styles.css?v=46">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
-      <div class="brand"><img src="/assets/nexus-ai-mark.svg" alt="NEXUS AI"><div><strong>Nexus</strong><small>Flow Arts · Master</small></div></div>
+      <div class="brand"><img src="/assets/nexus-mark-blue.svg" alt="Nexus"><div><strong>Nexus</strong><small>Flow Arts · Master</small></div></div>
       <nav>
         <button class="nav-item active" data-view="dashboard"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg> <span>Início</span></button>
-        <button class="nav-item" data-view="posts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg> <span>Postagens</span></button>
+        <button class="nav-item" data-view="posts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg> <span>Postagens</span> <b id="posts-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item" data-view="whatsapp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg> <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item more-tab" data-view="clients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-5-5.5"/></svg> <span>Clientes</span> <b id="signup-nav-count" class="notification-count" hidden>0</b></button>
         <button class="nav-item more-tab" data-view="odin"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg> <span>Acessos</span></button>
@@ -51,12 +51,10 @@
 
       <section id="dashboard" class="view active">
         <section class="home-tiles" aria-label="Atalhos">
-          <button type="button" class="tile" data-go="posts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg><span class="tile-text"><strong>Postagens</strong><small>esperando aprovação</small></span><b class="tile-num" id="tile-posts">—</b></button>
-          <button type="button" class="tile" data-go="clients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-5-5.5"/></svg><span class="tile-text"><strong>Clientes</strong><small>cadastros novos: <span id="tile-signups">0</span></small></span><b class="tile-num" id="tile-clients">—</b></button>
-          <button type="button" class="tile" data-go="whatsapp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg><span class="tile-text"><strong>WhatsApp</strong><small>conversas novas</small></span><b class="tile-num" id="tile-wa">—</b></button>
           <button type="button" class="tile" data-go="notifications"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/></svg><span class="tile-text"><strong>Suporte</strong><small>pedidos dos clientes</small></span><b class="tile-num" id="tile-support">—</b><b id="notification-count" hidden>0</b></button>
           <a class="tile" href="/portal.html?tab=crm" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg><span class="tile-text"><strong>CRM da Flow Arts</strong><small>CRM e Caçador (abre o painel da Flow Arts)</small></span><b class="tile-num">↗</b></a>
-          <button type="button" class="tile" data-go="site"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span class="tile-text"><strong>Site</strong><small>visitas do site</small></span><b class="tile-num" id="tile-site">—</b></button>
+          <button type="button" class="tile" data-go="onboarding"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span class="tile-text"><strong>Adicionar cliente</strong><small>Cadastro feito por você</small></span><b class="tile-num">+</b></button>
+          <button type="button" class="tile" id="home-copy-signup"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span class="tile-text"><strong>Link de cadastro</strong><small>Copia o link para mandar ao cliente</small></span><b class="tile-num">⧉</b></button>
         </section>
         <div id="client-cards" hidden></div>
         <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Números do sistema</strong><small>Agentes, alertas e custo da IA</small></span></summary><div class="fold-body"><div class="metrics">
@@ -80,36 +78,27 @@
       </section>
 
       <section id="agents" class="view">
-        <details class="fold"><summary><span class="fold-icon">$</span><span><strong>Execuções e custo de hoje</strong><small>Números dos agentes</small></span></summary><div class="fold-body"><div class="agent-core-metrics">
+        
+
+
+
+        <section class="panel holo">
+          <div class="holo-head"><div><p class="holo-eyebrow">AO VIVO</p><h2>Agentes</h2></div><label class="agent-core-client-select">Cliente<select id="agent-core-client"></select></label></div>
+          <div class="agent-core-metrics">
           <article><span>Execuções hoje</span><strong id="agent-core-executions">0</strong><small>tarefas registradas pelos agentes</small></article>
           <article><span>Custo hoje</span><strong id="agent-core-cost-today">US$ 0,0000</strong><small>somente custos realmente informados</small></article>
           <article><span>Custo no mês</span><strong id="agent-core-cost-month">US$ 0,0000</strong><small>somatório das execuções</small></article>
           <article><span>Clientes ativos</span><strong id="agent-core-active-clients">0</strong><small>Agent Core habilitado</small></article>
-        </div></div></details>
-
-        <details class="fold"><summary><span class="fold-icon">⬡</span><span><strong>Os 13 agentes</strong><small>O que cada um faz</small></span></summary><div class="fold-body"><div class="agent-core-grid" id="agent-core-modules">
-          <article><span>01</span><strong>RADAR</strong><small>Sinais, tendências e histórico real do Instagram.</small></article>
-          <article><span>02</span><strong>ESTRATEGISTA</strong><small>Nicho, público, Radar, leads e feedback do Auditor.</small></article>
-          <article><span>03</span><strong>CREATOR</strong><small>Pautas, ganchos, legendas, CTA e hashtags da marca.</small></article>
-          <article><span>04</span><strong>PUBLISHER</strong><small>Fila, publicação aprovada, tentativas e registro de falhas.</small></article>
-          <article><span>05</span><strong>AUDITOR</strong><small>Métricas pós-publicação e retorno para a estratégia.</small></article>
-          <article><span>06</span><strong>ODIN</strong><small>Intenção, classificação e prioridade comercial dos leads.</small></article>
-          <article><span>07</span><strong>PESQUISADOR</strong><small>Pesquisa oportunidades, temas e sinais do nicho.</small></article>
-          <article><span>08</span><strong>ANALISTA</strong><small>Analisa desempenho e potencial dos conteúdos.</small></article>
-          <article><span>09</span><strong>COPY CHIEF</strong><small>Revisa gancho, CTA e qualidade da legenda.</small></article>
-          <article><span>10</span><strong>DESIGNER</strong><small>Valida visual, originalidade e prontidão da mídia.</small></article>
-          <article><span>11</span><strong>VIDEO</strong><small>Planeja adaptação para conteúdo vertical curto.</small></article>
-          <article><span>12</span><strong>SUPORTE</strong><small>Detecta falhas reais e pendências operacionais.</small></article>
-          <article><span>13</span><strong>GROWTH</strong><small>Executa testes de crescimento e escala vencedores.</small></article>
-        </div></div></details>
-
-        <div class="agent-core-layout">
+        </div>
+          <div id="agent-core-live-state" class="agent-core-live-state holo-grid"><p class="muted">Carregando estado dos agentes…</p></div>
+        </section>
+        <details class="fold"><summary><span class="fold-icon">⚙</span><span><strong>Configurar agentes</strong><small>Ligar, desligar, aprovação e ciclo</small></span></summary><div class="fold-body">
           <section class="panel agent-core-control">
             <div class="panel-head">
               <div><p class="eyebrow">CONTROLE POR CLIENTE</p><h2>Operação dos agentes</h2><p class="muted"><button type="button" class="link-inline" data-go="campaigns">Campanhas e comandos para os agentes</button></p><p class="muted">Por padrão, o Creator prepara a pauta e o Publisher só publica depois da aprovação do cliente.</p></div>
               <span id="agent-core-client-state" class="badge">ATIVO</span>
             </div>
-            <label class="agent-core-client-select">Cliente<select id="agent-core-client"></select></label>
+            
             <div class="agent-core-config">
               <label><input type="checkbox" id="agent-core-enabled"> Agent Core habilitado</label>
               <label><input type="checkbox" id="agent-core-auto-publish"> Modo automático</label>
@@ -142,13 +131,23 @@
               </div>
             </div>
           </section>
+        </div></details>
 
-          <section class="panel">
-            <div class="panel-head"><div><p class="eyebrow">ESTADO ATUAL</p><h2>Última atividade</h2><p class="muted">Status persistido de cada módulo do cliente selecionado.</p></div></div>
-            <div id="agent-core-live-state" class="agent-core-live-state"><p class="muted">Carregando estado dos agentes…</p></div>
-          </section>
-        </div>
-
+        <details class="fold"><summary><span class="fold-icon">⬡</span><span><strong>Os 13 agentes</strong><small>O que cada um faz</small></span></summary><div class="fold-body"><div class="agent-core-grid" id="agent-core-modules">
+          <article><span>01</span><strong>RADAR</strong><small>Sinais, tendências e histórico real do Instagram.</small></article>
+          <article><span>02</span><strong>ESTRATEGISTA</strong><small>Nicho, público, Radar, leads e feedback do Auditor.</small></article>
+          <article><span>03</span><strong>CREATOR</strong><small>Pautas, ganchos, legendas, CTA e hashtags da marca.</small></article>
+          <article><span>04</span><strong>PUBLISHER</strong><small>Fila, publicação aprovada, tentativas e registro de falhas.</small></article>
+          <article><span>05</span><strong>AUDITOR</strong><small>Métricas pós-publicação e retorno para a estratégia.</small></article>
+          <article><span>06</span><strong>ODIN</strong><small>Intenção, classificação e prioridade comercial dos leads.</small></article>
+          <article><span>07</span><strong>PESQUISADOR</strong><small>Pesquisa oportunidades, temas e sinais do nicho.</small></article>
+          <article><span>08</span><strong>ANALISTA</strong><small>Analisa desempenho e potencial dos conteúdos.</small></article>
+          <article><span>09</span><strong>COPY CHIEF</strong><small>Revisa gancho, CTA e qualidade da legenda.</small></article>
+          <article><span>10</span><strong>DESIGNER</strong><small>Valida visual, originalidade e prontidão da mídia.</small></article>
+          <article><span>11</span><strong>VIDEO</strong><small>Planeja adaptação para conteúdo vertical curto.</small></article>
+          <article><span>12</span><strong>SUPORTE</strong><small>Detecta falhas reais e pendências operacionais.</small></article>
+          <article><span>13</span><strong>GROWTH</strong><small>Executa testes de crescimento e escala vencedores.</small></article>
+        </div></div></details>
         <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Execuções e custos</strong><small>Histórico de cada execução dos agentes</small></span></summary><div class="fold-body"><section class="panel agent-core-log-panel">
           <div class="panel-head"><div><p class="eyebrow">AUDITORIA</p><h2>Execuções e custos</h2><p class="muted">Cliente, agente, função, modelo, quantidade, custo e horário de cada execução.</p></div><button type="button" id="agent-core-refresh" class="ghost">Atualizar</button></div>
           <div class="table-wrap">
@@ -163,14 +162,14 @@
       <section id="posts" class="view">
         <section class="panel master-post-ledger">
           <div class="panel-head">
-            <div><p class="eyebrow">HISTÓRICO DETALHADO</p><h2>Postagens por cliente</h2><p class="muted">Veja a prévia, aprove ou recuse cada post antes da publicação.</p></div>
+            <div><p class="muted">Aprove, recuse ou exclua. Toque na imagem para ver grande.</p></div>
             <label class="post-client-filter">Cliente<select id="post-client-filter"><option value="">Todos</option></select></label>
             <label class="post-client-filter post-show-removed"><input type="checkbox" id="post-show-removed"> Mostrar removidos <span id="post-removed-count"></span></label>
           </div>
           <div class="table-wrap">
-            <table class="post-ledger-table">
-              <thead><tr><th>Prévia</th><th>Cliente</th><th>Instagram</th><th>Programada</th><th>Publicada / tentativa</th><th>Status</th><th>Custo</th><th>Modelo</th><th>Detalhe</th></tr></thead>
-              <tbody id="post-ledger-body"><tr><td colspan="9">Nenhuma postagem registrada ainda.</td></tr></tbody>
+            <table class="post-ledger-table sheet">
+              <thead><tr><th>Prévia</th><th>Cliente</th><th>Tipo</th><th>Quando</th><th>Situação</th><th>Ações</th></tr></thead>
+              <tbody id="post-ledger-body"><tr><td colspan="6">Nenhuma postagem registrada ainda.</td></tr></tbody>
             </table>
           </div>
         </section>
@@ -594,7 +593,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=54" defer></script>
+  <script src="/app.js?v=55" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>
