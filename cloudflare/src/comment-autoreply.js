@@ -11,7 +11,7 @@ import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
 import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js";
 import { materialForComment } from "./gift-materials.js";
-import { clientAutoReplyConfig, buildDm, matchesKeyword } from "./client-autoreply.js";
+import { clientAutoReplyConfig, buildDmMessage, matchesKeyword } from "./client-autoreply.js";
 import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
@@ -197,7 +197,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     out.errors.push("media:" + error.message);
   }
   // Cliente com resposta própria (painel): texto simples com o WhatsApp dele, palavras dele.
-  const message = custom ? buildDm(client, custom) : messageBuilder(env, client, ownUsername, { token, request });
+  const message = custom ? buildDmMessage(client, custom) : messageBuilder(env, client, ownUsername, { token, request });
   const extra = custom ? { matches: text => matchesKeyword(text, custom.keywords), publicText: custom.publicReply } : {};
 
   for (const item of Array.isArray(media?.data) ? media.data : []) {
@@ -377,7 +377,7 @@ export async function processWebhookComments(env, items, { request = fetch, now 
     const res = await replyToComment({
       request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""),
       ownUsername: own, state, now,
-      message: custom ? buildDm(client, custom) : messageBuilder(env, client, own, { token: String(conn.accessToken || ""), request }),
+      message: custom ? buildDmMessage(client, custom) : messageBuilder(env, client, own, { token: String(conn.accessToken || ""), request }),
       ...(custom ? { matches: text => matchesKeyword(text, custom.keywords), publicText: custom.publicReply } : {})
     }, comment);
     state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
