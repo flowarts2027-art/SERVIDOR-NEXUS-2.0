@@ -29,7 +29,7 @@
       <form id="autoreply-form" class="cap-search">
         <label class="cap-check"><input type="checkbox" name="enabled" ${c.enabled ? "checked" : ""}> Ligar as respostas automáticas</label>
         <label>Palavras (separe com vírgula)<textarea name="keywords" rows="2" maxlength="600">${esc(c.keywords.join(", "))}</textarea></label>
-        <label>Mensagem do direct ({whatsapp} vira o link do seu WhatsApp)<textarea name="dm" rows="4" maxlength="900">${esc(c.dm)}</textarea></label>
+        <label>Mensagem do direct ({whatsapp} vira o botão "Chamar no WhatsApp")<textarea name="dm" rows="4" maxlength="900">${esc(c.dm)}</textarea></label>
         <label>Resposta no comentário<input name="publicReply" maxlength="150" value="${esc(c.publicReply)}"></label>
         <button class="btn btn-primary" type="submit">Salvar respostas</button>
       </form>

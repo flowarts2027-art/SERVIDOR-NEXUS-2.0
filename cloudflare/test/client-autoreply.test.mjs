@@ -67,3 +67,16 @@ test("painel do cliente tem o bloco e a Flow Arts não vê", () => {
   const src = fs.readFileSync(new URL("../src/client-autoreply.js", import.meta.url), "utf8");
   assert.match(src, /brandProfileVersion\(client\.id\)\) return send\(\{ ok: true, hidden: true \}\)/);
 });
+
+test("direct vai com botão Chamar no WhatsApp e o texto sem o link", async () => {
+  const { buildDmMessage, previewText } = await import("../src/client-autoreply.js");
+  const msg = buildDmMessage(client, { dm: "Oi! Me chama no WhatsApp que eu te passo a tabela: {whatsapp}" });
+  assert.equal(msg.buttonTitle, "Chamar no WhatsApp");
+  assert.match(msg.url, /^https:\/\/wa\.me\/5534999990000/);
+  assert.equal(msg.text, "Oi! Me chama no WhatsApp que eu te passo a tabela 👇");
+  assert.match(previewText(client, { dm: "Tabela: {whatsapp}" }), /\[ Chamar no WhatsApp \]$/);
+  assert.equal(typeof buildDmMessage(client, { dm: "Sem link aqui" }), "string");
+  const { giftButtonMessage } = await import("../src/gift.js");
+  const body = giftButtonMessage(msg);
+  assert.equal(body.attachment.payload.buttons[0].type, "web_url");
+});

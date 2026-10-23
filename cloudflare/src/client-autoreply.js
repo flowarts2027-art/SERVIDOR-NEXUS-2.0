@@ -78,7 +78,23 @@ export async function saveClientAutoReplyConfig(env, client, body = {}) {
      VALUES(?1,'config',?2,?3,CURRENT_TIMESTAMP)
      ON CONFLICT(namespace,item_key,client_id) DO UPDATE SET value_json=excluded.value_json,updated_at=CURRENT_TIMESTAMP`
   ).bind(NAMESPACE, String(client.id), JSON.stringify(next)).run();
-  return { ...next, preview: buildDm(client, next) };
+  return { ...next, preview: previewText(client, next) };
+}
+
+// Direct com BOTÃO (22/10, Rodrigo): o {whatsapp} sai do texto e vira o botão "Chamar no WhatsApp".
+// Se o Instagram recusar o botão, replyToComment manda o texto com o link (já faz isso).
+export const WHATSAPP_BUTTON = "Chamar no WhatsApp";
+// Prévia do painel: texto + o botão desenhado como [ Chamar no WhatsApp ].
+export function previewText(client, config) {
+  const msg = buildDmMessage(client, config);
+  return typeof msg === "object" ? msg.text + "\n\n[ " + msg.buttonTitle + " ]" : msg;
+}
+export function buildDmMessage(client, config) {
+  const url = whatsappLink(client, "Olá! Comentei no Instagram e quero a tabela e as condições.");
+  const dm = String(config?.dm || "");
+  if (!url || !dm.includes("{whatsapp}")) return buildDm(client, config);
+  const text = dm.replace(/\s*:?\s*\{whatsapp\}/g, " 👇").replace(/[ \t]+\n/g, "\n").trim().slice(0, 600);
+  return { text, buttonTitle: WHATSAPP_BUTTON, url };
 }
 
 // Texto final do direct: {whatsapp} vira o link do WhatsApp do cliente (aba "Meu negócio").
@@ -102,7 +118,7 @@ export async function handleClientAutoReplyPortal(request, env, url, client) {
     if (brandProfileVersion(client.id)) return send({ ok: true, hidden: true });
     if (request.method === "GET") {
       const config = await clientAutoReplyConfig(env, client);
-      return send({ ok: true, config, preview: buildDm(client, config), hasWhatsapp: Boolean(clientBrand(client).whatsapp) });
+      return send({ ok: true, config, preview: previewText(client, config), hasWhatsapp: Boolean(clientBrand(client).whatsapp) });
     }
     if (request.method === "POST") {
       const config = await saveClientAutoReplyConfig(env, client, await request.json().catch(() => ({})));
