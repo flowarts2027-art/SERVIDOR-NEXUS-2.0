@@ -115,17 +115,20 @@ export function masterLoginPage(error = false, action = "/master-login") {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#020508">
+<meta name="theme-color" content="#0F1E3D">
 <title>NEXUS AI · Master</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#1e1e1e,#050505 45%,#020202);font-family:Inter,system-ui,Arial;color:#f8f8f8}
-.card{width:min(430px,92vw);padding:34px;border:1px solid rgba(189,189,189,.16);border-radius:22px;background:linear-gradient(180deg,rgba(18,18,18,.96),rgba(7,7,7,.98));box-shadow:0 30px 100px #00000099,inset 0 1px #ffffff08}
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:28px}.brand img{width:56px;height:56px}.brand strong{display:block;font-size:21px;letter-spacing:.08em}.brand small{color:#838383;letter-spacing:.14em}
-h1{font-size:30px;margin:0 0 8px}.muted{color:#8e8e8e;margin:0 0 24px;font-size:14px}
-label{display:grid;gap:7px;margin:13px 0;color:#b1b1b1;font-size:12px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1px solid #2d2d2d;background:#080808;color:#ffffff;outline:none}
-button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:10px;background:linear-gradient(135deg,#f4f4f4 0%,#a9a9a9 38%,#ececec 55%,#8a8a8a 100%);color:#0a0a0a;font-weight:900;cursor:pointer}
-.check{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:400;color:#d3d3d3}.check input{width:20px;height:20px;padding:0}
-.error{min-height:18px;margin-top:12px;color:#ff8690;font-size:12px}.secure{margin-top:20px;padding-top:15px;border-top:1px solid #bdbdbd12;color:#6c6c6c;font-size:11px;text-align:center}
+/* Login do Master no azul do painel do cliente (pedido do Rodrigo, 23/10/2026). */
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,#0F1E3D 0%,#183A75 100%);font-family:"Atkinson Hyperlegible",system-ui,Arial,sans-serif;color:#1D2633;font-size:18px;line-height:1.6}
+.card{width:min(440px,92vw);padding:32px;border-radius:20px;background:#FFFDF8;box-shadow:0 24px 70px rgba(5,12,30,.45)}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:22px}.brand img{width:52px;height:52px}.brand strong{display:block;font-size:21px;color:#0F1E3D}.brand small{color:#3F4B5C;letter-spacing:.06em}
+h1{font-size:28px;margin:0 0 6px;color:#0F1E3D}.muted{color:#3F4B5C;margin:0 0 18px;font-size:16px}
+label{display:grid;gap:6px;margin:14px 0;color:#1D2633;font-size:16px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1.5px solid #B9B09E;background:#fff;color:#1D2633;font:inherit;outline:none}input:focus{border-color:#2457D6;box-shadow:0 0 0 3px #E6EDFF}
+button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;background:#2457D6;color:#fff;font:inherit;font-weight:700;cursor:pointer}button:hover{background:#1A44AD}
+.check{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:400;color:#1D2633}.check input{width:22px;height:22px;padding:0;accent-color:#2457D6}
+.error{min-height:20px;margin-top:12px;color:#A11D12;font-size:15px}.secure{margin-top:18px;padding-top:14px;border-top:1px solid #D9D2C3;color:#3F4B5C;font-size:14px;text-align:center}
 </style>
 </head>
 <body><main class="card">

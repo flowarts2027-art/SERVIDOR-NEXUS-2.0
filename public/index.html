@@ -13,31 +13,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=44">
+  <link rel="stylesheet" href="/styles.css?v=45">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
       <div class="brand"><img src="/assets/nexus-ai-mark.svg" alt="NEXUS AI"><div><strong>Nexus</strong><small>Flow Arts · Master</small></div></div>
       <nav>
-        <button class="nav-item active" data-view="dashboard">⌂ <span>Início</span></button>
-        <button class="nav-item" data-view="posts">▤ <span>Postagens</span></button>
-        <button class="nav-item" data-view="whatsapp">✆ <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item more-tab" data-view="clients">◉ <span>Clientes</span> <b id="signup-nav-count" class="notification-count" hidden>0</b></button>
-        <button class="nav-item more-tab" data-view="odin">◆ <span>Acessos</span></button>
-        <button class="nav-item more-tab" data-view="agents">⬡ <span>Agentes</span></button>
-        <button class="nav-item more-tab" data-view="site">◍ <span>Site</span></button>
-        <button class="nav-item more-tab" data-view="settings">⚙ <span>Integrações</span></button>
-        <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet">☰ <span>Mais</span> <b id="signup-more-count" class="notification-count" hidden>0</b></button>
+        <button class="nav-item active" data-view="dashboard"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg> <span>Início</span></button>
+        <button class="nav-item" data-view="posts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg> <span>Postagens</span></button>
+        <button class="nav-item" data-view="whatsapp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg> <span>WhatsApp</span> <b id="wa-nav-count" class="notification-count" hidden>0</b></button>
+        <button class="nav-item more-tab" data-view="clients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-5-5.5"/></svg> <span>Clientes</span> <b id="signup-nav-count" class="notification-count" hidden>0</b></button>
+        <button class="nav-item more-tab" data-view="odin"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg> <span>Acessos</span></button>
+        <button class="nav-item more-tab" data-view="agents"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6"/></svg> <span>Agentes</span></button>
+        <button class="nav-item more-tab" data-view="site"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg> <span>Site</span></button>
+        <button class="nav-item more-tab" data-view="settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v4"/></svg> <span>Integrações</span></button>
+        <button class="nav-item master-more-btn" id="master-more-btn" type="button" aria-expanded="false" aria-controls="master-more-sheet"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg> <span>Mais</span> <b id="signup-more-count" class="notification-count" hidden>0</b></button>
       </nav>
       <div id="master-more-sheet" class="master-more-sheet" hidden>
         <p class="master-more-title">Mais opções</p>
         <div class="master-more-grid">
-          <button class="nav-item" type="button" data-view="clients">◉ <span>Clientes</span> <b id="signup-sheet-count" class="notification-count" hidden>0</b></button>
-          <button class="nav-item" type="button" data-view="odin">◆ <span>Acessos</span></button>
-          <button class="nav-item" type="button" data-view="agents">⬡ <span>Agentes</span></button>
-          <button class="nav-item" type="button" data-view="site">◍ <span>Site</span></button>
-          <button class="nav-item" type="button" data-view="settings">⚙ <span>Integrações</span></button>
+          <button class="nav-item" type="button" data-view="clients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-5-5.5"/></svg> <span>Clientes</span> <b id="signup-sheet-count" class="notification-count" hidden>0</b></button>
+          <button class="nav-item" type="button" data-view="odin"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></svg> <span>Acessos</span></button>
+          <button class="nav-item" type="button" data-view="agents"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6"/></svg> <span>Agentes</span></button>
+          <button class="nav-item" type="button" data-view="site"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg> <span>Site</span></button>
+          <button class="nav-item" type="button" data-view="settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v4"/></svg> <span>Integrações</span></button>
         </div>
       </div>
       <div class="core-card"><span class="pulse"></span><div><strong>Agent Core</strong><small>Motor central disponível</small></div></div>
@@ -50,13 +50,15 @@
       </header>
 
       <section id="dashboard" class="view active">
-        <section class="panel today-panel" id="today-panel">
-          <div class="panel-head"><div><h2>CRM e Caçador</h2><p class="muted">Desde 22/10, ficam no painel da Flow Arts (entre com o login da Flow Arts).</p></div><a class="primary link-button" href="/portal.html?tab=crm" target="_blank" rel="noopener">Abrir o CRM da Flow Arts</a></div>
+        <section class="home-tiles" aria-label="Atalhos">
+          <button type="button" class="tile" data-go="posts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg><span class="tile-text"><strong>Postagens</strong><small>esperando aprovação</small></span><b class="tile-num" id="tile-posts">—</b></button>
+          <button type="button" class="tile" data-go="clients"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-5-5.5"/></svg><span class="tile-text"><strong>Clientes</strong><small>cadastros novos: <span id="tile-signups">0</span></small></span><b class="tile-num" id="tile-clients">—</b></button>
+          <button type="button" class="tile" data-go="whatsapp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.4 7.9L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg><span class="tile-text"><strong>WhatsApp</strong><small>conversas novas</small></span><b class="tile-num" id="tile-wa">—</b></button>
+          <button type="button" class="tile" data-go="notifications"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/></svg><span class="tile-text"><strong>Suporte</strong><small>pedidos dos clientes</small></span><b class="tile-num" id="tile-support">—</b><b id="notification-count" hidden>0</b></button>
+          <a class="tile" href="/portal.html?tab=crm" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg><span class="tile-text"><strong>CRM da Flow Arts</strong><small>CRM e Caçador (abre o painel da Flow Arts)</small></span><b class="tile-num">↗</b></a>
+          <button type="button" class="tile" data-go="site"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span class="tile-text"><strong>Site</strong><small>visitas do site</small></span><b class="tile-num" id="tile-site">—</b></button>
         </section>
-        <div>
-          <section class="panel"><div class="panel-head"><div><p class="eyebrow">OPERAÇÃO</p><h2>Clientes ativos</h2><p class="muted"><button type="button" class="link-inline" data-go="notifications">Pedidos de suporte dos clientes <b id="notification-count" class="notification-count" hidden>0</b></button></p></div><button class="ghost" data-go="clients">Ver todos</button></div><div id="client-cards" class="client-list"></div></section>
-          
-        </div>
+        <div id="client-cards" hidden></div>
         <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Números do sistema</strong><small>Agentes, alertas e custo da IA</small></span></summary><div class="fold-body"><div class="metrics">
           <article><span>Clientes</span><strong id="metric-clients">—</strong><small>gerenciados na Central</small></article>
           <article><span>Agentes online</span><strong id="metric-online">—</strong><small>em produção</small></article>
@@ -70,11 +72,11 @@
           <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
           <div id="signup-list"><p class="muted">Carregando…</p></div>
         </div>
-        <div class="panel"><div class="panel-head"><div><p class="eyebrow">GESTÃO</p><h2>Todos os clientes</h2></div><button class="primary" data-go="onboarding">＋ Adicionar cliente</button></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Status</th><th>Instagram</th><th>Odin</th><th>Agendamento</th><th>IA do cliente</th><th>Ações</th></tr></thead><tbody id="clients-table"></tbody></table></div></div>
+        <div class="panel"><div class="panel-head"><div><p class="eyebrow">GESTÃO</p><h2>Todos os clientes</h2></div><button class="primary" data-go="onboarding">＋ Adicionar cliente</button></div><div class="table-wrap"><table class="sheet"><thead><tr><th>Cliente</th><th>Status</th><th>Instagram</th><th>Odin</th><th>IA do cliente</th><th>Ações</th></tr></thead><tbody id="clients-table"></tbody></table></div></div>
+        <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Perfis enviados pelos clientes</strong><small>Configuração dos agentes de cada cliente</small></span></summary><div class="fold-body">
         <div class="panel master-profiles-panel">
-          <div class="panel-head"><div><p class="eyebrow">PERFIS RECEBIDOS</p><h2>Configuração dos agentes</h2><p class="muted">Revise as informações já recebidas e defina a operação dos agentes.</p></div></div>
           <div id="master-agent-profiles" class="master-agent-profiles"></div>
-        </div>
+        </div></div></details>
       </section>
 
       <section id="agents" class="view">
@@ -173,7 +175,7 @@
           </div>
         </section>
         <p class="section-title">Enviar ou criar conteúdo</p>
-        <details class="fold" open><summary><span class="fold-icon">⇪</span><span><strong>Subir conteúdo do cliente</strong><small>Post, carrossel, Reels ou Stories. Legenda pronta.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="master-upload">
+        <details class="fold"><summary><span class="fold-icon">⇪</span><span><strong>Subir conteúdo do cliente</strong><small>Post, carrossel, Reels ou Stories. Legenda pronta.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="master-upload">
           <div class="panel-head"><div><p class="eyebrow">CONTEÚDO PRONTO</p><h2>Subir conteúdo do cliente</h2><p class="muted">Escolha o cliente e o tipo. A legenda já vem pronta pelo nicho do cliente (sem IA, sem custo); você pode mudar. Depois marque o dia e a hora.</p></div></div>
           <form id="master-upload-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="mu-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
@@ -195,7 +197,8 @@
             <p class="muted wide" id="mu-status" role="status"></p>
           </form>
         </div></div></details>
-        <details class="fold"><summary><span class="fold-icon">▶</span><span><strong>Enviar Reel pronto</strong><small>Vídeo feito no Flow. O cliente aprova.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="manual-reel">
+        <details class="fold fold-group"><summary><span class="fold-icon">⚒</span><span><strong>Outras ferramentas</strong><small>Reel pronto, carrossel pronto, Reel animado e teste com IA</small></span></summary><div class="fold-body">
+<details class="fold"><summary><span class="fold-icon">▶</span><span><strong>Enviar Reel pronto</strong><small>Vídeo feito no Flow. O cliente aprova.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="manual-reel">
           <div class="panel-head"><div><p class="eyebrow">PLANO COM VÍDEO</p><h2>Enviar Reel pronto</h2><p class="muted">Faça o vídeo no Flow e envie aqui. Ele vai para o painel do cliente, que aprova. Depois de aprovado, sai no dia e hora escolhidos.</p></div></div>
           <form id="manual-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="manual-reel-client" required><option value="">Carregando…</option></select></label>
@@ -280,12 +283,8 @@
             <div class="wide" id="carousel-test-status" role="status"></div>
           </form>
         </div></div></details>
-        
-
-        
-
-        
-      <details class="fold"><summary><span class="fold-icon">$</span><span><strong>Custos da IA</strong><small>Gasto do mês e ranking por cliente</small></span></summary><div class="fold-body"><div class="post-cost-metrics">
+        </div></details>
+        <details class="fold"><summary><span class="fold-icon">$</span><span><strong>Custos da IA</strong><small>Gasto do mês e ranking por cliente</small></span></summary><div class="fold-body"><div class="post-cost-metrics">
           <article><span>Gasto nas postagens</span><strong id="posts-total-cost">US$ 0,00</strong><small>mês atual · custo OpenAI calculado</small></article>
           <article><span>Postagens registradas</span><strong id="posts-total-count">0</strong><small>tentativas no mês</small></article>
           <article><span>Publicadas</span><strong id="posts-published-count">0</strong><small>concluídas no Instagram</small></article>
@@ -506,6 +505,7 @@
           <div id="integration-list" class="integration-list"></div>
         </div>
 
+        <details class="fold"><summary><span class="fold-icon">◎</span><span><strong>Radar de virais</strong><small>O que está bombando no nicho de cada cliente</small></span></summary><div class="fold-body">
         <div class="panel" id="radar-panel">
           <div class="panel-head">
             <div><p class="eyebrow">RADAR DE VIRAIS</p><h2>O que está bombando no nicho</h2><p class="muted">Toda semana o Nexus olha as hashtags do nicho de cada cliente e passa os melhores ganchos para os agentes. Você conecta uma vez só.</p></div>
@@ -519,6 +519,8 @@
           <div id="radar-results"></div>
         </div>
 
+        </div></details>
+        <details class="fold"><summary><span class="fold-icon">$</span><span><strong>OpenAI NEXUS</strong><small>Créditos, gasto do mês e chaves</small></span></summary><div class="fold-body">
         <div class="panel master-openai-panel">
           <div class="panel-head">
             <div><p class="eyebrow">CENTRAL DE CRÉDITOS</p><h2>OpenAI NEXUS</h2><p class="muted">Uma conta central da OpenAI abastece todos os clientes.</p></div>
@@ -542,6 +544,8 @@
           <p class="disclaimer">O gasto total em dólares vem da OpenAI quando a Admin API Key estiver conectada. A geração paga de imagens para clientes está desativada. Esta integração permanece disponível para recursos de texto, análise e vídeo que utilizem a API.</p>
         </div>
 
+        </div></details>
+        <details class="fold"><summary><span class="fold-icon">◉</span><span><strong>Instagram NEXUS</strong><small>App do Instagram e reconexão das contas</small></span></summary><div class="fold-body">
         <div class="panel master-instagram-panel">
           <div class="panel-head">
             <div><p class="eyebrow">AUTORIZAÇÃO CENTRAL</p><h2>Instagram NEXUS</h2><p class="muted">Configure uma única vez. Depois cada cliente apenas entra no Instagram e autoriza a própria conta.</p></div>
@@ -570,6 +574,7 @@
 
           <p class="disclaimer">A autorização abre direto no Instagram e volta para esta tela.</p>
         </div>
+        </div></details>
       </section>
     </main>
   </div>
@@ -589,7 +594,7 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=53" defer></script>
+  <script src="/app.js?v=54" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>

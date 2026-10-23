@@ -1,5 +1,14 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 07h20 BRT — Master mais coeso e fácil de ler (pedido do Rodrigo)
+- Login do Master no azul do painel do cliente (antes preto e branco), fonte Atkinson, letra maior.
+- Menu numa linha só em cima, com ícones de linha (SVG) em vez de símbolos; "Mais" só no celular; título "PAINEL MASTER" removido.
+- Início: 6 blocos clicáveis (Postagens esperando aprovação, Clientes + cadastros novos, WhatsApp, Suporte, CRM da Flow Arts, Site). Saiu o aviso velho "CRM e Caçador" e a lista de 4 clientes repetida.
+- Clientes: tabela como planilha (cabeçalho azul-escuro, linhas alternadas, linha ao passar o mouse); nome do cliente abre o painel; botões "Abrir painel", "Acesso", "Excluir" numa linha; coluna "Agendamento" (sempre igual) removida; "Perfis enviados pelos clientes" fechado em bloco.
+- Postagens: "Subir conteúdo" fechado; Reel pronto, carrossel pronto, Reel animado e teste com IA agrupados em "Outras ferramentas" (nada apagado).
+- Integrações: Radar, OpenAI e Instagram viraram blocos fechados. Altura da página: Postagens 2583 → 1310 px; Integrações 2740 → 981 px.
+- Botões azuis sólidos (sem degradê metálico). index.html (styles v=45, app v=54), app.js, styles.css, master.js. 579/579 testes.
+
 ## 2026-10-22 23h59 BRT — Botão Excluir em todos os posts do painel do cliente (pedido do Rodrigo)
 - Esperando aprovação e agendados: "Excluir" cancela (não vai ao Instagram) e o post some do painel.
 - Publicados: "Excluir do painel" só esconde no painel; no Instagram continua (a API da Meta não apaga post).

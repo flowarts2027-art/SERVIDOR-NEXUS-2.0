@@ -2,6 +2,11 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 07h20 BRT — Master mais coeso e fácil de ler
+- Pedido do Rodrigo: login azul igual ao do cliente; clientes como planilha com cor alternada; menos informação solta e menos rolagem; ícones melhores; painel clicável; adaptado para dislexia.
+- Feito (branch `feat/master-coeso`): ver CHANGELOG 23/10 07h20. Nada foi apagado do código: o que é pouco usado ficou em blocos fechados. Conferido em prévia local com dados de exemplo. 579/579 testes.
+- Próximo passo: Rodrigo aprova o PR e diz o que ainda incomoda.
+
 ## 2026-10-23 06h50 BRT — PARA O CHATGPT (URGENTE): refazer a campanha de HOJE do Quatree
 - **Pedido do Rodrigo (06h45):** refazer todo o conteúdo do Quatree de hoje (23/10). Ele vai excluir no painel os posts antigos.
 - **O que refazer:** as 7 pastas de `agendamentos/clientes/quatree-dog/2026-10-23/` (feed 09h, 12h e 19h; carrossel 15h; stories 09h, 12h e 19h), **seguindo `QUATREE_DIRETRIZ_VENDAS.md`**: embalagem Quatree em destaque em todas as peças, uma linha por peça, chamada de venda, nada inventado do rótulo, imagem nova em cada peça (o GitHub recusa imagem idêntica).

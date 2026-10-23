@@ -555,3 +555,53 @@ main{zoom:1.12}
 /* Cadastro com plano e Pix (22/10/2026) */
 .signup-plan{margin:8px 0 2px;font-size:1rem;color:var(--text)}
 .signup-check{margin:0;padding:6px 10px;border-radius:8px;background:#fff4d6;color:#5a4300;font-size:.95rem}
+
+/* Master coeso (pedido do Rodrigo, 23/10/2026): azul igual ao painel do cliente,
+   blocos clicáveis no Início, tabela de clientes como planilha, ícones de linha. */
+:root{--blue:#2457D6;--blue-dark:#1A44AD;--blue-soft:#E6EDFF;--navy:#0F1E3D}
+.ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.sidebar{background:var(--navy)!important}
+.sidebar .nav-item{display:inline-flex!important;align-items:center;gap:8px;color:#D7E2F5!important}
+.sidebar .nav-item.active{background:var(--blue)!important;color:#fff!important}
+.sidebar .nav-item:hover{background:#1B3A70!important;color:#fff!important}
+header{margin-bottom:16px!important}
+h1#page-title{font-size:28px}
+/* Botões: azul sólido, sem degradê metálico */
+.primary,.small-primary{background:var(--blue)!important;border:1px solid var(--blue)!important;color:#fff!important;font-weight:700!important;border-radius:10px!important;text-decoration:none}
+.primary:hover,.small-primary:hover{background:var(--blue-dark)!important}
+.ghost{background:#fff!important;border:1.5px solid var(--blue)!important;color:var(--blue)!important;font-weight:700;border-radius:10px!important}
+.small-primary,.ghost,.small-danger{padding:8px 12px!important;font-size:15px!important;min-height:40px}
+/* Início: blocos clicáveis */
+.home-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 16px}
+.tile{display:flex;align-items:center;gap:14px;padding:18px;border:1.5px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);text-align:left;font:inherit;cursor:pointer;text-decoration:none;min-height:96px}
+.tile:hover,.tile:focus-visible{border-color:var(--blue);background:var(--blue-soft);outline:none}
+.tile>.ic{width:44px;height:44px;padding:10px;border-radius:12px;background:var(--blue-soft);color:var(--blue)}
+.tile-text{flex:1;min-width:0}.tile-text strong{display:block;font-size:19px}.tile-text small{display:block;color:var(--muted);font-size:15px}
+.tile-num{font-size:30px;color:var(--navy);min-width:40px;text-align:right}
+/* Tabela de clientes como planilha */
+table.sheet{border-collapse:separate;border-spacing:0;min-width:820px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table.sheet th{background:var(--navy);color:#fff!important;font-size:14px;letter-spacing:.04em;padding:12px;position:sticky;top:0}
+table.sheet td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:16px}
+table.sheet tbody tr:nth-child(odd) td{background:#FFFDF8}
+table.sheet tbody tr:nth-child(even) td{background:#EFE9DB}
+table.sheet tbody tr:hover td{background:var(--blue-soft)}
+table.sheet small{display:block;color:var(--muted);font-size:14px}
+.client-open{color:var(--blue);text-decoration:none;font-size:17px}.client-open:hover{text-decoration:underline}
+.client-action-row{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+.client-action-row .protected-client{font-size:12px}
+table.sheet .ai-image-cell{margin-top:4px}
+@media(max-width:980px){.home-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.home-tiles{grid-template-columns:1fr}.tile{min-height:76px;padding:14px}.client-action-row{flex-wrap:wrap}}
+/* Ajustes da prévia (23/10): menu numa linha só, sem "Mais" no computador, tabela mais baixa */
+@media(min-width:701px){
+  .sidebar{flex-wrap:nowrap!important;gap:18px!important}
+  .sidebar nav{flex:1}
+  .sidebar .master-more-btn,.master-more-sheet{display:none!important}
+  .sidebar .brand small{color:#AFC3E6!important}
+}
+header .eyebrow{display:none}
+table.sheet .ai-image-toggle{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:15px;font-weight:700;color:var(--text)}
+table.sheet .ai-image-toggle input{width:20px;height:20px;margin:0}
+table.sheet .ai-image-cell small{display:inline;margin-left:4px}
+.client-action-row>*{white-space:nowrap}
+.signup-panel .muted{margin-bottom:4px}
