@@ -291,6 +291,8 @@ export function placeToProspect(place, nicheKey, city) {
   return item;
 }
 
+const FOOD_NICHES = new Set(["cafeteria", "restaurante", "lanchonete", "padaria", "bar"]);
+
 export function firstMessage(p, showcase = null) {
   const niche = NICHES[p.niche] || NICHES.cafeteria;
   const cityName = String(p.city || "").replace(/\s[A-Z]{2}$/, "");
@@ -302,9 +304,11 @@ export function firstMessage(p, showcase = null) {
   }
   // Exemplo do nicho (pedido de 17/10): a pessoa quer VER o resultado, então ele vem primeiro e o texto fica curto.
   const example = showcase ? showcaseLine(showcase, p.niche, niche.plural) : "";
+  // Comida (oferta de 22/10): 3 posts grátis com as fotos do próprio negócio, antes de falar de preço.
+  const freeOffer = FOOD_NICHES.has(p.niche) ? `Faço 3 posts com as fotos da ${p.name}, grátis, antes de qualquer conversa de preço. Quer ver?` : "";
   if (example) {
     lines.push(`Eu cuido do Instagram de ${niche.plural}. ${example}`);
-    lines.push(`Posso fazer um assim para a ${p.name}?`);
+    lines.push(freeOffer || `Posso fazer um assim para a ${p.name}?`);
   } else {
     const page = niche.page && niche.page !== "/" ? niche.page : "";
     lines.push(p.instagram
@@ -313,7 +317,7 @@ export function firstMessage(p, showcase = null) {
     lines.push(p.instagram
       ? `Eu faço site e cuido do Instagram de ${niche.plural}. Assim, quem procura no Google acha vocês e chega direto no seu WhatsApp. Veja um exemplo: ${SITE}${page}`
       : `Eu faço site para ${niche.plural}: uma página com fotos, serviços, mapa e botão para o seu WhatsApp, feita para aparecer no Google. Veja um exemplo: ${SITE}${page}`);
-    lines.push(`Posso te mostrar como ficaria para a ${p.name}?`);
+    lines.push(freeOffer || `Posso te mostrar como ficaria para a ${p.name}?`);
   }
   lines.push("Se preferir não receber mensagens, é só me avisar.");
   return lines.join("\n\n");

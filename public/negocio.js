@@ -13,7 +13,8 @@
     ["audience", "Para quem você vende", "input", 300, "Ex.: Famílias do bairro e empresas que fazem eventos", false],
     ["region", "Cidade ou região que atende", "input", 120, "Ex.: Centro e zona sul da cidade", false],
     ["differentials", "Por que comprar com você", "textarea", 400, "Ex.: Receitas da família e entrega em até 1 hora.", false],
-    ["whatsapp", "WhatsApp do negócio (com DDD)", "input", 20, "Ex.: 11 99999-1111", false]
+    ["whatsapp", "WhatsApp do negócio (com DDD)", "input", 20, "Ex.: 11 99999-1111", false],
+    ["orderCode", "Código de pedido (a palavra que o cliente diz no seu WhatsApp)", "input", 20, "Ex.: PAO10", false]
   ];
   let loaded = false;
 

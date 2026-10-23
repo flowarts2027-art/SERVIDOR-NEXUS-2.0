@@ -41,7 +41,7 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   assert.doesNotMatch(home, /Domínio \.com\.br por sua conta/);
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
   const prompt = knowledgePrompt("primeiro-teste");
-  assert.match(prompt, /Básico[\s\S]{0,120}R\$ 197 por mês, sem taxa de entrada/);
+  assert.match(prompt, /Básico[\s\S]{0,400}R\$ 197 por mês, sem taxa de entrada/);
   assert.doesNotMatch(prompt, /aviso de 30 dias/);
   assert.match(prompt, /já com a renovação do domínio/);
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);

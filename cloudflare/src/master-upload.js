@@ -5,7 +5,7 @@
 
 import { getClient } from "./clients.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
-import { readyCaption, captionNiche, captionVariants } from "./caption-templates.js";
+import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
@@ -55,6 +55,8 @@ export async function masterUpload(env, form, now = new Date()) {
   if (type !== "story" && !String(form.get("caption") || "").trim()) {
     form.set("caption", await nextCaption(env, client, type));
   }
+  // Legenda do ChatGPT ou escrita à mão: garante o código de pedido do cliente.
+  if (type !== "story") form.set("caption", withOrderCode(client, String(form.get("caption") || "")));
   const approval = String(form.get("approval") || "cliente") === "eu" ? "approved" : "pending";
   return createClientUpload(env, client, form, now, {
     approval, allowClientDate: true,
