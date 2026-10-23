@@ -2,6 +2,10 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h05 BRT — Planos do site mais completos
+- Pedido do Rodrigo: os planos do site seguem a grade nova. Básico: 30 posts no feed, 12 Reels e 30 stories por mês. Com Vídeo: 30 no feed, 30 Reels em vídeo de verdade e 60 stories. Robô do WhatsApp com o mesmo texto.
+- Branch `feat/planos-formatos`; 574/574 testes; o merge publica o site.
+- Para o ChatGPT: clientes do Básico recebem cerca de 3 Reels por semana e 1 story por dia (igual à grade do Quatree em `FORMATOS_POSTAGENS.md`).
 ## 2026-10-22 23h10 BRT — PARA O CHATGPT: grade nova com Reels e stories (Flow Arts e Quatree)
 - **Pedido do Rodrigo:** postar carrossel, stories, feed e Reels nos dois perfis, com mais posts por dia se for preciso.
 - **Regra nova:** `FORMATOS_POSTAGENS.md`. Flow Arts: 09h carrossel, 10h30 story, 12h Reel, 16h story, 19h feed (o Nexus já repete o carrossel e o feed como story). Quatree: 09h feed todo dia, 12h Reel ter/qui/sáb, 18h story todo dia.
