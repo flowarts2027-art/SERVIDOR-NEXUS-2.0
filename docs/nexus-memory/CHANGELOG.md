@@ -1,5 +1,9 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-23 08h20 BRT — Captador: WhatsApp também no telefone fixo
+- Teste no ar (07h55): busca do Quatree volta 8 lojas (antes 0); o Google recusa com PERMISSION_DENIED porque a conta do Google Cloud ainda não foi ativada (Rodrigo vai depositar). Caçador do Master: 50 contatos do mapa grátis, 36 celulares (cidades grandes têm mais telefone no mapa).
+- Painel do cliente: telefone fixo agora mostra "Tentar no WhatsApp (fixo)" (muita loja usa WhatsApp Business no fixo). Antes o botão sumia.
+
 ## 2026-10-23 08h10 BRT — Captador do Quatree corrigido (pedido do Rodrigo)
 - Diagnóstico no painel do Quatree (busca de teste, 07h40): a busca caiu no mapa grátis (o Google falhou e o erro ficava escondido), achou 19 pet shops em Uberlândia e mostrou 0, porque todo lugar sem telefone era descartado. A busca diária achou só 3 pelo mesmo motivo.
 - Agora: lugares sem telefone entram (botão "Ver no Maps (telefone)"), depois dos que têm telefone; o erro do Google volta na resposta (googleError) e no log.
