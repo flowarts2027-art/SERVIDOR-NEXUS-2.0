@@ -11,6 +11,7 @@ import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
 import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js";
 import { materialForComment } from "./gift-materials.js";
+import { clientAutoReplyConfig, buildDm, matchesKeyword } from "./client-autoreply.js";
 import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
@@ -107,7 +108,8 @@ async function graph(request, token, path, options = {}) {
 
 // Responde UM comentário (DM privada + resposta pública), uma vez por comentário.
 // Usado pela leitura a cada 15 min e pelo webhook da Meta (aviso na hora).
-export async function replyToComment({ request = fetch, token, igUserId, ownUsername = "", state, message, now = new Date() }, comment = {}) {
+// matches/publicText (22/10): resposta automática de outros clientes, com as palavras e a frase escolhidas no painel.
+export async function replyToComment({ request = fetch, token, igUserId, ownUsername = "", state, message, now = new Date(), matches = null, publicText = "Te chamei no direct! 📩" }, comment = {}) {
   const res = { checked: false, replied: false, errors: [], skipped: "" };
   const id = String(comment.id || "");
   const username = String(comment.username || comment.from?.username || "").replace(/^@/, "").toLowerCase();
@@ -116,7 +118,7 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
   // A Meta nem sempre manda o nome de quem comentou; basta o id do comentário e de quem comentou.
   if (!id || (!username && !fromId)) { res.skipped = "incomplete"; return res; }
   if ((username && username === String(ownUsername || "").toLowerCase()) || (fromId && fromId === String(igUserId || ""))) { res.skipped = "own_comment"; return res; }
-  if (!wantsReply(comment.text)) { res.skipped = "no_interest_word"; return res; }
+  if (!(typeof matches === "function" ? matches(comment.text) : wantsReply(comment.text))) { res.skipped = "no_interest_word"; return res; }
   if (Number.isFinite(createdMs) && now.getTime() - createdMs > WINDOW_MS) { res.skipped = "too_old"; return res; }
   const previous = state.handled[id] || {};
   if (previous.status === "sent" || Number(previous.attempts || 0) >= MAX_ATTEMPTS) { res.skipped = "already_handled"; return res; }
@@ -146,7 +148,7 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
     await graph(request, token, encodeURIComponent(id) + "/replies", {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ message: "Te chamei no direct! 📩" })
+      body: new URLSearchParams({ message: publicText || "Te chamei no direct! 📩" })
     }).catch(error => res.errors.push("public_reply:" + error.message));
     state.handled[id] = { status: "sent", username: username || fromId, at: now.toISOString(), attempts: Number(previous.attempts || 0) + 1 };
     res.replied = true;
@@ -178,7 +180,7 @@ async function ensureWebhookSubscription(request, token, state, now) {
   return state.webhook;
 }
 
-export async function runCommentAutoReplyForClient(env, client, { request = fetch, now = new Date() } = {}) {
+export async function runCommentAutoReplyForClient(env, client, { request = fetch, now = new Date(), custom = null } = {}) {
   const out = { checked: 0, replied: 0, errors: [], seen: [] };
   const conn = await resolveInstagramCredentials(env, client.id);
   const token = String(conn?.accessToken || "");
@@ -194,7 +196,9 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   } catch (error) {
     out.errors.push("media:" + error.message);
   }
-  const message = messageBuilder(env, client, ownUsername, { token, request });
+  // Cliente com resposta própria (painel): texto simples com o WhatsApp dele, palavras dele.
+  const message = custom ? buildDm(client, custom) : messageBuilder(env, client, ownUsername, { token, request });
+  const extra = custom ? { matches: text => matchesKeyword(text, custom.keywords), publicText: custom.publicReply } : {};
 
   for (const item of Array.isArray(media?.data) ? media.data : []) {
     if (out.replied >= MAX_REPLIES_PER_RUN) break;
@@ -209,7 +213,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     }
     for (const comment of comments) {
       if (out.replied >= MAX_REPLIES_PER_RUN) break;
-      const result = await replyToComment({ request, token, igUserId, ownUsername, state, message, now }, comment);
+      const result = await replyToComment({ request, token, igUserId, ownUsername, state, message, now, ...extra }, comment);
       if (result.checked) out.checked += 1;
       if (result.replied) out.replied += 1;
       out.errors.push(...result.errors);
@@ -225,10 +229,15 @@ export async function runCommentAutoReplies(env, now = new Date(), options = {})
   const rows = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE status = 'online'").all().catch(() => ({ results: [] }));
   const results = {};
   for (const row of rows?.results || []) {
-    if (BLOCKED_PUBLISH_CLIENTS.has(String(row.id)) || !brandProfileVersion(row.id)) continue;
+    if (BLOCKED_PUBLISH_CLIENTS.has(String(row.id))) continue;
     const client = { ...row, config: parseJson(row.config_json, {}) };
-    if (!clientBrand(client).whatsapp) continue;
-    results[row.id] = await runCommentAutoReplyForClient(env, client, { ...options, now }).catch(error => ({ error: String(error?.message || error).slice(0, 200) }));
+    let custom = null;
+    if (!brandProfileVersion(row.id) || !clientBrand(client).whatsapp) {
+      // 22/10: outros clientes só respondem se ligaram a resposta automática no painel.
+      custom = await clientAutoReplyConfig(env, client).catch(() => null);
+      if (!custom?.enabled) continue;
+    }
+    results[row.id] = await runCommentAutoReplyForClient(env, client, { ...options, now, custom }).catch(error => ({ error: String(error?.message || error).slice(0, 200) }));
   }
   return results;
 }
@@ -358,12 +367,18 @@ export async function processWebhookComments(env, items, { request = fetch, now 
     const found = await clientForInstagramUser(env, igUserId);
     if (!found) { results.push({ comment: comment.id, skipped: "unknown_account" }); continue; }
     const { client, conn } = found;
-    if (!brandProfileVersion(client.id) || !clientBrand(client).whatsapp) { results.push({ comment: comment.id, skipped: "no_brand" }); continue; }
+    let custom = null;
+    if (!brandProfileVersion(client.id) || !clientBrand(client).whatsapp) {
+      custom = await clientAutoReplyConfig(env, client).catch(() => null);
+      if (!custom?.enabled) { results.push({ comment: comment.id, skipped: "no_brand" }); continue; }
+    }
     const state = await readState(env, client.id);
+    const own = String(conn.username || client.instagram || "").replace(/^@/, "");
     const res = await replyToComment({
       request, token: String(conn.accessToken || ""), igUserId: String(conn.igUserId || ""),
-      ownUsername: String(conn.username || client.instagram || "").replace(/^@/, ""),
-      state, message: messageBuilder(env, client, String(conn.username || client.instagram || "").replace(/^@/, ""), { token: String(conn.accessToken || ""), request }), now
+      ownUsername: own, state, now,
+      message: custom ? buildDm(client, custom) : messageBuilder(env, client, own, { token: String(conn.accessToken || ""), request }),
+      ...(custom ? { matches: text => matchesKeyword(text, custom.keywords), publicText: custom.publicReply } : {})
     }, comment);
     state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
     await writeState(env, client.id, state).catch(() => null);
