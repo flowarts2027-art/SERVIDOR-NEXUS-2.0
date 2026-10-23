@@ -94,6 +94,14 @@ Pilares: **P** = produto · **L** = ajuda o lojista a vender · **C** = confian�
 
 **Legenda (padrão):** linha 1 com palavra de busca + gancho (ex.: "Ração para pet shop: …"); 3 a 5 frases curtas; chamada; 3 a 5 hashtags (#RacaoQuatree #PetShop #CasaDeRacao #Agropecuaria + cidade). Sem preço. Sem promessa de venda.
 
+**REGRA FIXA DA LEGENDA (Rodrigo, 22/10/2026): palavra que aciona a resposta automática.**
+- Toda legenda termina com esta linha, igual, em todos os posts:
+  `Comente TABELA que eu te mando a tabela de revenda no direct 📩`
+- A palavra é **TABELA**, em maiúsculas, sozinha. Quem comentar recebe sozinho, no direct, a mensagem com o WhatsApp do Ericsson (painel › Conta › Respostas automáticas).
+- Pode ter outra chamada no meio da legenda ("Salve", "Mande para um lojista"), mas a linha do TABELA vem sempre no fim, antes das hashtags.
+- Nos Stories, use o texto "Comente TABELA" ou "Responda TABELA" na arte.
+- Não troque a palavra sem o Rodrigo trocar a lista no painel; se a palavra não estiver na lista, ninguém recebe resposta.
+
 ## 6. Busca de clientes (10 por dia, no painel dele)
 
 - **Onde:** Painel do cliente → **Buscar** → bloco **"Busca diária automática"**. Tipos já sugeridos pelo ramo: **Pet shop, Loja de ração, Agropecuária, Veterinário**. Falta escrever **as cidades** que ele atende.

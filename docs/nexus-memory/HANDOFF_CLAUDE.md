@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 22h05 BRT — PARA O CHATGPT: palavra TABELA em toda legenda do Quatree Dog
+- **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo.
+- O Instagram @ericsson_quatree agora tem **resposta automática de comentários** (publicado em 22/10, PR #375). Quem comenta uma palavra da lista recebe no direct a mensagem com o WhatsApp do Ericsson.
+- **Regra para toda legenda do Quatree:** terminar com `Comente TABELA que eu te mando a tabela de revenda no direct 📩` (antes das hashtags). Detalhes na seção "REGRA FIXA DA LEGENDA" de `CAMPANHA_QUATREE_30D.md`.
+- Stories: "Comente TABELA" ou "Responda TABELA" na arte.
+- Não usar outra palavra sem o Rodrigo mudar a lista no painel.
+
 ## 2026-10-22 20h35 BRT — PARA O CHATGPT: campanha de 30 dias do Quatree Dog (@ericsson_quatree)
 - **Origem → destino:** Claude Code → ChatGPT. Pedido do Rodrigo: auditar a conta do cliente, montar a campanha de 30 dias e acionar o ChatGPT para começar.
 - **Plano completo:** `docs/nexus-memory/CAMPANHA_QUATREE_30D.md` (auditoria, ajustes do perfil, calendário de 30 dias de 26/10 a 24/11, prospecção, regras das artes).
