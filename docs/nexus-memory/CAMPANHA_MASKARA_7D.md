@@ -67,6 +67,13 @@ Precisa de ajuda com a sua documentação? Comente DOCUMENTOS que eu te chamo no
 ```
 - A palavra **DOCUMENTOS** precisa estar na lista da resposta automática do painel dele (Conta › Respostas automáticas). O Rodrigo configura.
 
+## Entrega confirmada — 23/10/2026, 08h43 BRT
+- 42 conteúdos enviados ao painel esperando aprovação: 4 carrosséis (4 cartões cada), 14 imagens de feed, 3 Reels (25/27/29 às12h) e21stories. Três posts e três stories por dia, nos horários09h/12h/19h.
+- Artes editoriais originais com identificação DESPACHANTE · ARMAS DE FOGO:60cenas distintas, sem armas, preços, vendas ou promessas. Feed4:5; story/Reel9:16;Reels9s,H264/AAC,30fps. Nenhum dado pessoal ou documento oficial simulado.
+- [Actions39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success;42uploads novos confirmados. Nenhum aprovado/publicado pelo assistente.
+- Fontes, inventário e comprovantes: [docs/campanhas/maskara-2026-10-24](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/tree/agendamentos/docs/campanhas/maskara-2026-10-24). Arquivos em agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/ e HHMM-story/.
+- Conferir conexão profissional/convite e configurar DOCUMENTOS antes da publicação. A conexão Meta e a interface autenticada não foram reinspecionadas; o envio foi confirmado nos logs/API de upload.
+
 ## 6. Conferir antes de salvar
 - [ ] Nenhuma arma em destaque, nenhuma venda, nenhum preço.
 - [ ] Nada prometido (aprovação, prazo).
