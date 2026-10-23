@@ -1,5 +1,10 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — DOTs de marketing: transferência para outra conta
+
+Publicação pública expressamente autorizada pelo proprietário nesta conversa. Instruções completas dos oito agentes Agência Flow (Dante, Lia, Caio, Maya, Ravi, Bento, Clara, Nilo) e DOT ATELIER, com memória de marketing disponível e roteiro de recuperação, em [DOTS_MARKETING_TRANSFERENCIA.md](DOTS_MARKETING_TRANSFERENCIA.md). Commit `6b251543d57b1638041e135608979036d5d931e6`; conteúdo relido e comparado integralmente com a exportação. Somente documentação. Nenhuma instalação na conta de destino testada ou confirmada; nenhuma conexão, tarefa agendada ou credencial transferida. Nexus está fora do escopo dos agentes exportados. Próximo: conta nova ler esse arquivo inteiro e recriar as skills com ferramentas realmente disponíveis, reportando o resultado.
+
+
 ## 2026-10-23 12h30 BRT — Maskara: campanha de 24/10 corrigida com QUERO e enviada
 - Pedido direto: enviar ao painel as seis peças de amanhã, com mais destaque para armas, acessórios e clube de tiro. Palavra final escolhida por Rodrigo: **QUERO nos comentários da postagem**, substituindo DOCUMENTOS/direct.
 - **Envio real confirmado:** [Actions 39978674414](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39978674414), job 120499909436, success. Logs confirmam seis uploads novos (3 feeds + 3 stories) para maskara-assessoria, 24/10 às 09h/12h/19h BRT, todos aguardando aprovação. Nenhum horário pulado ou duplicado. Commit de conteúdo 3fd202f7e89b5190d04b358b0e0e1f4fab02748a, branch agendamentos.
