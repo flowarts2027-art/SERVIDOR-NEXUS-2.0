@@ -90,9 +90,9 @@ process_slot() {
   if [[ "$slot" =~ ^clientes/([a-z0-9][a-z0-9-]{1,48})/(.+)$ ]]; then
     CLIENT_ID="${BASH_REMATCH[1]}"
     local rest="${BASH_REMATCH[2]}"
-    [[ "$rest" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use clientes/<cliente>/AAAA-MM-DD/HHMM)"; return; }
+    [[ "$rest" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])(-story)?$ ]] || { fail "$slot: nome inválido (use clientes/<cliente>/AAAA-MM-DD/HHMM)"; return; }
   else
-    [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
+    [[ "$slot" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})/([0-2][0-9])([0-5][0-9])(-story)?$ ]] || { fail "$slot: nome inválido (use AAAA-MM-DD/HHMM)"; return; }
   fi
   local day="${BASH_REMATCH[1]}" time="${BASH_REMATCH[2]}:${BASH_REMATCH[3]}" dir="$ROOT/$slot"
   [ -d "$dir" ] || { note "$slot: pasta apagada, nada a fazer"; return; }
@@ -128,6 +128,10 @@ process_slot() {
     fail "$slot: nenhuma arte encontrada (imagem.jpg, 01.jpg..., video.mp4 ou story.jpg)"; return
   fi
 
+  if [[ "$slot" = *-story ]] && [ "$type" != story ]; then
+    fail "$slot: pasta -story exige story.jpg ou story.mp4"; return
+  fi
+
   if [ "$type" != story ]; then
     [ -s "$caption" ] || { fail "$slot: falta legenda.txt"; return; }
     args+=(-F "caption=<$caption")
@@ -140,8 +144,13 @@ process_slot() {
 
   start_session || return
   client_exists "$CLIENT_ID" || { fail "$slot: cliente '$CLIENT_ID' não encontrado no Nexus"; return; }
-  local existing
-  existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
+  local existing format_filter
+  if [ "$type" = story ]; then
+    format_filter="json_extract(payload_json,'\$.creativeFeatures.requestedFormat')='story'"
+  else
+    format_filter="COALESCE(json_extract(payload_json,'\$.creativeFeatures.requestedFormat'),'post')<>'story'"
+  fi
+  existing="$(q "SELECT COUNT(*) AS n FROM post_ledger WHERE client_id='$CLIENT_ID' AND scheduled_for='$iso' AND json_extract(payload_json,'\$.source')='master:upload' AND $format_filter AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'" | jq -r '.[0].results[0].n // 0')"
   if [ "${existing:-0}" != 0 ]; then
     note "$slot: já existe um post enviado para $time; não duplicado (cancele no painel para trocar)"; return
   fi
