@@ -1,0 +1,32 @@
+name: Maskara diagnostico publicacao (temporario)
+on:
+  push:
+    branches: [agendamentos]
+    paths: ['.github/workflows/maskara-diagnostico.yml']
+permissions:
+  contents: read
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ler post_ledger e scheduled_jobs da Maskara
+        env:
+          D1_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN }}
+        run: |
+          python - <<'PY'
+          import os,json,urllib.request
+          url='https://api.cloudflare.com/client/v4/accounts/d9ecb78dbc0c1b0b61f8caae501f59df/d1/database/3d440c4a-8925-4526-8d29-03f9eb227d60/query'
+          def q(sql):
+              req=urllib.request.Request(url,data=json.dumps({'sql':sql}).encode(),headers={'Authorization':'Bearer '+os.environ['D1_TOKEN'],'Content-Type':'application/json'})
+              d=json.load(urllib.request.urlopen(req))
+              if not d.get('success'):raise RuntimeError('D1 recusou')
+              return d['result'][0]['results']
+          rows=q("SELECT substr(id,1,28) id,scheduled_for,scheduled_hour,status,approval_status,substr(error,1,160) error,media_id,updated_at,json_extract(payload_json,'$.creativeFeatures.requestedFormat') fmt,json_extract(payload_json,'$.mediaType') mt,json_extract(payload_json,'$.retryCount') rc,substr(json_extract(payload_json,'$.lastPublishError'),1,160) lpe FROM post_ledger WHERE client_id='maskara-assessoria' AND updated_at>='2026-10-23 09:00:00' ORDER BY scheduled_for")
+          for r in rows: print('::notice title=post::'+json.dumps(r,ensure_ascii=False))
+          jobs=q("SELECT substr(id,1,24) id,kind,due_at,status,attempts,substr(last_error,1,200) err,updated_at FROM scheduled_jobs WHERE client_id='maskara-assessoria' ORDER BY updated_at DESC LIMIT 8")
+          for r in jobs: print('::notice title=job::'+json.dumps(r,ensure_ascii=False))
+          cn=q("SELECT provider,connected_at,updated_at,json_extract(payload_json,'$.username') u,json_extract(payload_json,'$.expiresAt') exp FROM connections WHERE client_id='maskara-assessoria'")
+          for r in cn: print('::notice title=conn::'+json.dumps(r,ensure_ascii=False))
+          gj=q("SELECT kind,status,due_at,substr(last_error,1,200) err,updated_at FROM scheduled_jobs WHERE kind LIKE 'publisher%' ORDER BY updated_at DESC LIMIT 4")
+          for r in gj: print('::notice title=global::'+json.dumps(r,ensure_ascii=False))
+          PY
