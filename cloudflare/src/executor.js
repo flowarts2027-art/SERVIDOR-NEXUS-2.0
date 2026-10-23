@@ -3,7 +3,7 @@ import { publishInstagramPost, findRecentMediaByCaption } from "./publisher.js";
 import { runLeadHunter, leadHunterConfig } from "./lead-hunter.js";
 import { runAgentCoreCycle } from "./agent-runtime.js";
 import { getClient } from "./clients.js";
-import { publishingGate } from "./publishing-policy.js";
+import { publishingGate, isPublishingWindow } from "./publishing-policy.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -154,6 +154,16 @@ export async function recoverStuckPublishing(env, clientId, now = new Date(), fi
   return out;
 }
 
+export function isStoryPost(payload = {}) {
+  return String(payload?.creativeFeatures?.requestedFormat || "").toLowerCase() === "story";
+}
+
+// Em cada rodada: no máximo 1 post do feed (respeitando os 90 min) e 1 story (sem esperar o feed).
+export function canPublishInSweep({ story = false, gateOk = true, done = { feed: 0, story: 0 } } = {}) {
+  if (story) return Number(done.story || 0) === 0;
+  return gateOk && Number(done.feed || 0) === 0;
+}
+
 async function runPublisherSweep(env, clientId, now) {
   await recoverStuckPublishing(env, clientId, now).catch(() => null);
   const rows = await duePosts(env, clientId, now.toISOString());
@@ -165,6 +175,7 @@ async function runPublisherSweep(env, clientId, now) {
      FROM post_ledger
      WHERE client_id=?1
        AND status='published'
+       AND LOWER(COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.creativeFeatures.requestedFormat'),''))<>'story'
        AND date(COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishedAt'),updated_at),'-3 hours')=date(?2,'-3 hours')`
   ).bind(clientId, now.toISOString()).first();
   const gate = publishingGate({
@@ -172,13 +183,19 @@ async function runPublisherSweep(env, clientId, now) {
     publishedToday: Number(publishedState?.published_today || 0),
     lastPublishedAt: publishedState?.last_published_at || null
   });
-  if (!gate.ok) {
+  // 23/10/2026: story não conta nos 90 min entre posts do feed e não espera por eles.
+  // Antes, o story das 10h30 saía e travava o post do feed do mesmo horário.
+  const hasStory = rows.some(row => isStoryPost(parseJson(row.payload_json, {})));
+  if (!gate.ok && !(hasStory && isPublishingWindow(now))) {
     return { ...summary, blockedReason: gate.reason };
   }
+  if (!gate.ok) summary.blockedReason = gate.reason;
+  const done = { feed: 0, story: 0 };
 
   for (const row of rows) {
-    if (summary.published > 0) break;
     const payload = parseJson(row.payload_json, {});
+    const story = isStoryPost(payload);
+    if (!canPublishInSweep({ story, gateOk: gate.ok, done })) continue;
     const guard = publishGuard(payload, clientId);
     if (!guard.ok) {
       await savePostResult(env, row, { status: row.status, error: guard.error, payload });
@@ -219,6 +236,7 @@ async function runPublisherSweep(env, clientId, now) {
         }
       });
       summary.published += 1;
+      done[story ? "story" : "feed"] += 1;
     } catch (error) {
       const retries = Math.max(0, Number(payload.retryCount || 0)) + 1;
       await savePostResult(env, row, {
