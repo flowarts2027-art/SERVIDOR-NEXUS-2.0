@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 22h BRT — Resposta automática de comentários para qualquer cliente (pedido do Rodrigo, Quatree Dog)
+- Painel do cliente › Conta › "Respostas automáticas": ligar/desligar, palavras (padrão de ração: quero, preço, tabela, revenda…), mensagem do direct com {whatsapp} (WhatsApp da aba Meu negócio) e resposta curta no comentário. Responde 1 vez por comentário, só a quem usou uma das palavras (até 7 dias, limite da Meta).
+- Usa o mesmo motor da Flow Arts (cron a cada execução + webhook). A Flow Arts continua com o funil próprio e não vê o bloco.
+- Novo: cloudflare/src/client-autoreply.js, public/autoreply.js; rota /api/portal/autoreply. 570/570 testes.
+
 ## 2026-10-22 20h55 BRT — Quatree Dog configurado no painel (com OK do Rodrigo)
 - Busca diária ligada: pet shop, loja de ração, agropecuária e veterinário; 10 empresas por dia; 10 cidades em volta de Uberlândia (Uberlândia, Araguari, Indianópolis, Tupaciguara, Monte Alegre de Minas, Estrela do Sul, Prata, Uberaba, Monte Carmelo, Ituiutaba). Limite de cidades subiu de 5 para 10 (9fb87de).
 - "Meu material": banner "Quatree Supreme na sua loja · Peça a tabela de revenda". "Sua mensagem": Ericsson, Quatree Dog, oferta de representante.

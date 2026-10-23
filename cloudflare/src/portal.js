@@ -1,5 +1,6 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { handleCaptadorPortal } from "./captador.js";
+import { handleClientAutoReplyPortal } from "./client-autoreply.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
@@ -685,6 +686,9 @@ export async function handlePortalApi(request, env, url, ctx) {
   const { session, client } = await sessionClient(request, env);
   if (!session || !client) return json({ error: "unauthorized" }, 401);
 
+  // Resposta automática de comentários do próprio cliente (22/10).
+  const autoReplyResponse = await handleClientAutoReplyPortal(request, env, url, client);
+  if (autoReplyResponse) return autoReplyResponse;
   const captadorResponse = await handleCaptadorPortal(request, env, url, client);
   if (captadorResponse) return captadorResponse;
   const businessResponse = await handleBusinessProfilePortal(request, env, url, client);
