@@ -2,6 +2,15 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 15h50 BRT — Caçador só mostra quem tem WhatsApp
+- **Pedido do Rodrigo:** o Caçador (Google Maps) entregava muitos números sem WhatsApp; ele quer só WhatsApp.
+- **Diagnóstico:** a busca diária automática já filtrava celular, mas a busca manual do Caçador (Google e mapa grátis) aceitava telefone fixo e só marcava "Telefone fixo (pode não ter WhatsApp)". O Google costuma dar só o fixo da empresa.
+- **Feito (branch `fix/cacador-so-whatsapp`, `cloudflare/src/prospects.js`):** `placeToProspect` e `osmToProspect` só aceitam (1) número de link wa.me/api.whatsapp.com no lugar do site, (2) `contact:whatsapp` do mapa, ou (3) celular (11 dígitos com 9), procurando em todos os campos de telefone. Fixo sem link de WhatsApp fica de fora. Novas funções `whatsappFromUrl` e `pickMobile`.
+- **Não mexido:** Captador dos clientes (`captador.js`), que é ferramenta de cada assinante.
+- **Limite honesto:** celular não garante WhatsApp; não há verificação oficial gratuita de número. O filtro tira os fixos, que eram a maior parte das falhas.
+- **Testes:** 593/593 (`node --test test/*.test.mjs`), com teste novo de fixo, link wa.me e celular.
+- **Estado:** PR aguardando o OK do Rodrigo; merge na `main` faz deploy.
+
 ## 2026-10-23 12h20 BRT — Maskara: palavra agora é QUERO
 - **Pedido do Rodrigo:** a palavra da Maskara passa a ser "QUERO" (CTA "Comenta QUERO abaixo"), não mais "DOCUMENTOS".
 - **Feito (branch `fix/maskara-palavra-quero`):** palavras padrão do ramo despachante sem "documentos" (fica "quero" e as gerais); teste ajustado; `CAMPANHA_MASKARA_7D.md` atualizado.
