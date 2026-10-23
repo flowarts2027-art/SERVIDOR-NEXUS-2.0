@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 23h55 BRT — Painel do cliente: tipo do post e menu arrumado (pedido do Rodrigo)
+- Cada post mostra um selo colorido com o tipo: Feed (imagem no perfil), Carrossel (nº de cartões), Reels (vídeo) ou Stories (some em 24 horas). "Post" virou "Feed" também no calendário.
+- Computador: menu em cima com o nome de cada botão (antes ficava espremido na lateral, só ícones, porque o flow-crm.css forçava 6 colunas em 220 px). No celular, menu de baixo igual.
+- client-lite.js/css, flow-crm.css, portal.html (v=124). 578/578 testes.
+
 ## 2026-10-22 23h40 BRT — Planos com nomes curtos, cadastro com Pix e Master mais fácil de ler (pedido do Rodrigo)
 - Planos (cloudflare/src/plans.js, lista única): Essencial R$ 197/mês (fundador R$ 147 por 3 meses, 3 vagas, até 30/11), Completo R$ 297 + R$ 697/mês, Captador R$ 97/mês, Site R$ 497, Responde R$ 197, Reels 5 R$ 147, Posts 10 R$ 97, Logo R$ 67.
 - /cadastro em 4 passos: plano → empresa → acesso → Pix (copia e cola + QR code, chave CNPJ, passo a passo). Antes do Pix, o servidor confere dados e usuário (checkOnly). O valor é calculado no servidor. "Já paguei" → pedido no Master.

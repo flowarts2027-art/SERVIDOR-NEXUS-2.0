@@ -104,9 +104,24 @@ function carouselIncomplete(post) {
   return (post.formatBuild?.carouselUrls || []).map(safeUrl).filter(Boolean).length < 2;
 }
 
-function formatName(post) {
+function formatKey(post) {
   const format = String(post.creativeFeatures?.requestedFormat || post.formatBuild?.kind || "post");
-  return format === "reel" ? "Reels" : format === "carousel" ? "Carrossel" : format === "story" ? "Stories" : "Post";
+  return ["reel", "carousel", "story"].includes(format) ? format : "post";
+}
+
+function formatName(post) {
+  return ({ reel: "Reels", carousel: "Carrossel", story: "Stories", post: "Feed" })[formatKey(post)];
+}
+
+// Selo grande com o tipo do post (pedido do Rodrigo, 22/10): Feed, Carrossel, Reels ou Stories.
+function formatBadgeHtml(post) {
+  const key = formatKey(post);
+  const cards = (post.formatBuild?.carouselUrls || []).length;
+  const extra = key === "carousel" && cards > 1 ? " · " + cards + " cartões"
+    : key === "story" ? " · some em 24 horas"
+    : key === "reel" ? " · vídeo" : " · imagem no perfil";
+  const icon = ({ reel: "🎬", carousel: "🖼", story: "⏱", post: "▣" })[key];
+  return `<p class="format-badge format-${key}"><span aria-hidden="true">${icon}</span> ${formatName(post)}<small>${escapeHtml(extra)}</small></p>`;
 }
 
 function mediaHtml(post, cls) {
@@ -219,9 +234,10 @@ function postCardHtml(post) {
   return `<article class="post">
     ${mediaHtml(post, "post-media")}
     <div class="post-body">
+      ${formatBadgeHtml(post)}
       ${tagHtml(post)}
       ${reviewHtml(post)}
-      <p class="when">${formatName(post)} · ${escapeHtml(formatDate(when) || "data a definir")}</p>
+      <p class="when">${escapeHtml(formatDate(when) || "data a definir")}</p>
       <p class="caption short">${escapeHtml(post.caption || "Legenda sendo escrita.")}</p>
       ${String(post.caption || "").length > 180 ? `<button type="button" class="more" data-more>Ler legenda inteira</button>` : ""}
       ${actionsHtml(post)}
@@ -241,7 +257,7 @@ function sortPosts(list, group) {
 
 const SP_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" });
 const MONTH_NAMES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-const FORMAT_LABEL = { reel: "Reels", carousel: "Carrossel", post: "Post", story: "Stories" };
+const FORMAT_LABEL = { reel: "Reels", carousel: "Carrossel", post: "Feed", story: "Stories" };
 
 function capitalize(text) {
   const value = String(text || "");
@@ -299,7 +315,7 @@ function dayCellHtml(key, posts, plan, today) {
   const status = groups.has("aprovar") ? "wait" : groups.has("agendados") ? "sched" : groups.has("publicados") ? "done" : plan.length ? "plan" : "empty";
   const label = day + " — " + (posts.length
     ? posts.length + (posts.length === 1 ? " post" : " posts")
-    : plan.length ? "planejado: " + plan.map(item => FORMAT_LABEL[item.format] || "Post").join(" e ") : "sem post");
+    : plan.length ? "planejado: " + plan.map(item => FORMAT_LABEL[item.format] || "Feed").join(" e ") : "sem post");
   const classes = ["cal-day", "is-" + status, key === today ? "is-today" : "", key === state.calDay ? "is-selected" : ""].filter(Boolean).join(" ");
   return `<button type="button" class="${classes}" data-cal-day="${key}" aria-label="${escapeHtml(label)}" ${key === state.calDay ? 'aria-pressed="true"' : 'aria-pressed="false"'}>
       ${cover ? `<img src="${escapeHtml(cover)}" alt="" loading="lazy">` : ""}
@@ -316,7 +332,7 @@ function dayDetailHtml(key, posts, plan) {
     ? `<ul class="plan-list">${plan.map(item => `<li>
         <span class="plan-time">${escapeHtml(item.time)}</span>
         <div><strong>${escapeHtml(item.theme)}</strong>
-        <p>${escapeHtml(FORMAT_LABEL[item.format] || "Post")} · objetivo: ${escapeHtml(item.goal)}</p></div>
+        <p>${escapeHtml(FORMAT_LABEL[item.format] || "Feed")} · objetivo: ${escapeHtml(item.goal)}</p></div>
       </li>`).join("")}</ul>
       <p class="note">Plano da campanha. Os agentes criam este post perto do dia, e ele aparece aqui para você aprovar.</p>`
     : "";
@@ -414,7 +430,8 @@ function renderHome() {
       <h1 class="hero-title">Seu próximo post está pronto para olhar</h1>
       ${mediaHtml(next, "hero-media")}
       <div class="hero-body">
-        <p class="when">${formatName(next)} · ${escapeHtml(formatDate(next.scheduledFor) || "data a definir")}</p>
+        ${formatBadgeHtml(next)}
+        <p class="when">${escapeHtml(formatDate(next.scheduledFor) || "data a definir")}</p>
         <p class="caption short">${escapeHtml(next.caption || "")}</p>
         ${actionsHtml(next)}
         ${waiting.length > 1 ? `<button type="button" class="link" data-go="posts">${waiting.length === 2 ? "Ver o outro post para aprovar" : "Ver os outros " + (waiting.length - 1) + " posts para aprovar"}</button>` : ""}
