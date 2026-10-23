@@ -5,11 +5,6 @@
 **Pasta dos posts:** `agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/` (e `HHMM-story/`). Tudo vai para o painel do cliente **esperando aprovação**.
 Repositório público: sem telefone, nome completo, endereço ou dados de clientes dele.
 
-## Atualização de escopo — Rodrigo, 23/10/2026
-**Esta grade substitui a frequência original da seção 4:** 3 posts e 3 stories por dia, 24 a 30/10, às 09h, 12h e 19h (Brasília). São 42 conteúdos: 18 feeds (4 carrosséis + 14 imagens), 3 Reels e 21 stories. Reels ocupam o post das 12h em 25, 27 e 29/10; não são posts adicionais. Stories têm cenas próprias em `0900-story`, `1200-story`, `1900-story`. Todos entram esperando aprovação.
-
-Nicho confirmado pelo Rodrigo: despachante de documentação e regularização de armas de fogo. Identificação nas peças: **DESPACHANTE · ARMAS DE FOGO**. Mantida integralmente a seção 3; esta versão não mostra armas, não vende armas/munições, não cita preços e não promete aprovação ou prazo. Artes editoriais em diagramas de documentos, sem simular documentos oficiais. Fontes e inventário em `docs/campanhas/maskara-2026-10-24/`.
-
 ## 1. Auditoria do perfil (público, 23/10, só leitura)
 | Ponto | Hoje | Problema |
 | --- | --- | --- |
@@ -44,7 +39,10 @@ Nicho confirmado pelo Rodrigo: despachante de documentação e regularização d
 - Sem preço do serviço nos posts (o cliente passa no WhatsApp).
 
 ## 4. Grade dos 7 dias (24/10 a 30/10)
-Por dia: **feed 09h** + **story 19h** (story com arte própria). **Reel 12h** em 25/10, 27/10 e 29/10.
+**Ritmo (Rodrigo, 23/10, 08h32 — cliente amigo): 3 posts + 3 stories por dia.**
+- **Posts:** 09h (o tema do dia, tabela abaixo), 12h (Reel ou carrossel curto com dica do mesmo assunto) e 19h (imagem com pergunta ou chamada para o WhatsApp).
+- **Stories:** 09h, 12h e 19h, cada um com arte própria (`HHMM-story/story.jpg`), sem repetir a imagem dos posts.
+- Os 3 posts do dia são 3 imagens e 3 ideias diferentes sobre o tema do dia.
 | Dia | Feed 09h | Tema |
 | --- | --- | --- |
 | 24/10 | Carrossel | "Quer tirar seu CR de CAC? Veja o caminho" (etapas gerais: documentos, exames, cadastro, acompanhamento) |
@@ -68,6 +66,13 @@ Precisa de ajuda com a sua documentação? Comente DOCUMENTOS que eu te chamo no
 #DespachanteCAC #CAC #AtiradorEsportivo #Documentacao #SIGMA
 ```
 - A palavra **DOCUMENTOS** precisa estar na lista da resposta automática do painel dele (Conta › Respostas automáticas). O Rodrigo configura.
+
+## Entrega confirmada — 23/10/2026, 08h43 BRT
+- 42 conteúdos enviados ao painel esperando aprovação: 4 carrosséis (4 cartões cada), 14 imagens de feed, 3 Reels (25/27/29 às12h) e21stories. Três posts e três stories por dia, nos horários09h/12h/19h.
+- Artes editoriais originais com identificação DESPACHANTE · ARMAS DE FOGO:60cenas distintas, sem armas, preços, vendas ou promessas. Feed4:5; story/Reel9:16;Reels9s,H264/AAC,30fps. Nenhum dado pessoal ou documento oficial simulado.
+- [Actions39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success;42uploads novos confirmados. Nenhum aprovado/publicado pelo assistente.
+- Fontes, inventário e comprovantes: [docs/campanhas/maskara-2026-10-24](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/tree/agendamentos/docs/campanhas/maskara-2026-10-24). Arquivos em agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/ e HHMM-story/.
+- Conferir conexão profissional/convite e configurar DOCUMENTOS antes da publicação. A conexão Meta e a interface autenticada não foram reinspecionadas; o envio foi confirmado nos logs/API de upload.
 
 ## 6. Conferir antes de salvar
 - [ ] Nenhuma arma em destaque, nenhuma venda, nenhum preço.
