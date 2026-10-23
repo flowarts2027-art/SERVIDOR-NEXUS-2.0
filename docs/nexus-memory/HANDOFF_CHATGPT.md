@@ -1,5 +1,14 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 12h30 BRT — Maskara: campanha de 24/10 corrigida com QUERO e enviada
+- Pedido direto: enviar ao painel as seis peças de amanhã, com mais destaque para armas, acessórios e clube de tiro. Palavra final escolhida por Rodrigo: **QUERO nos comentários da postagem**, substituindo DOCUMENTOS/direct.
+- **Envio real confirmado:** [Actions 39978674414](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39978674414), job 120499909436, success. Logs confirmam seis uploads novos (3 feeds + 3 stories) para maskara-assessoria, 24/10 às 09h/12h/19h BRT, todos aguardando aprovação. Nenhum horário pulado ou duplicado. Commit de conteúdo 3fd202f7e89b5190d04b358b0e0e1f4fab02748a, branch agendamentos.
+- Feeds: “Comente QUERO nesta postagem”. Stories: “Comente QUERO no post de hoje”. Legendas com a mesma chamada. Somente o serviço de assessoria documental é anunciado; sem venda de armas/equipamentos, preço ou promessa de resultado.
+- QA: três JPEGs 1080×1350 e três 1080×1920; seis hashes distintos; revisão visual das seis versões finais e modo seco do script de ingestão aprovados. Arquivos em agendamentos/clientes/maskara-assessoria/2026-10-24/. Nenhum código de produção ou workflow alterado.
+- Limite: confirmação por respostas de upload nos logs; interface autenticada e configuração de resposta automática para QUERO não verificadas nesta sessão. Não afirmar que a automação foi configurada por este envio.
+- Próximo passo: cliente revisar/aprovar no painel. Não reenviar as seis peças.
+
+
 ## 2026-10-23 — Campanha Maskara anterior REPROVADA e APAGADA; nova direção fotográfica
 - Rodrigo rejeitou toda a campanha editorial: queria atrair clientes para a assessoria, não explicar o processo. Solicitou apagar tudo e usar imagens realistas de **armas de fogo, estande de tiro e material tático**. Esta instrução substitui a restrição visual anterior de não destacar arma. Continuam sem venda de armas/munições, sem preço e sem promessa de aprovação/prazo; o serviço anunciado é documentação/regularização.
 - **Apagados os 42 conteúdos antigos do painel:** [execução39948848202](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39948848202), job120398081803, success. Operação limitada aos42IDs originais da campanha e ao cliente maskara-assessoria; conferência: antes42, removidos42, restantes0. Nenhum post de outro cliente afetado. Workflow temporário removido após a operação (f938bb4).
