@@ -1,5 +1,9 @@
 # Campanha de teste de 7 dias — Maskara Assessoria (@maskara.silva)
 
+## Direção atualizada por Rodrigo — 23/10/2026
+**Campanha anterior rejeitada e removida:42conteúdos apagados, zero restantes (Actions39948848202). Não restaurar as artes editoriais.**
+Objetivo: **atrair clientes para a assessoria**, com fotografia realista de **armas de fogo, estande de tiro e material tático**, pouco texto e chamada comercial. Esta ordem substitui a regra visual anterior sem arma em destaque. Não explicar etapas nem usar diagramas. Manter grade3posts+3stories/dia,24–30/10,09h/12h/19h eReels12h25/27/29. Continuam serviço documental, sem venda de arma/munição, sem preço ou promessa. Nenhuma aprovação por Meta garantida.
+
 **Pedido do Rodrigo (23/10/2026, 08h21):** auditar o Instagram e preparar a campanha do nicho para o ChatGPT. Cliente amigo testando o Nexus por **7 dias** (24/10 a 30/10/2026).
 **Cliente no Nexus:** `maskara-assessoria` · nicho **Despachante bélico (documentação de armas e CAC)** · convite de testador do app enviado para @maskara.silva em 23/10 (pendente de aceite).
 **Pasta dos posts:** `agendamentos/clientes/maskara-assessoria/AAAA-MM-DD/HHMM/` (e `HHMM-story/`). Tudo vai para o painel do cliente **esperando aprovação**.
@@ -32,7 +36,7 @@ Repositório público: sem telefone, nome completo, endereço ou dados de client
 
 ## 3. Regras do nicho (OBRIGATÓRIAS — regras do Instagram para armas)
 - **Vender o serviço de documentação, nunca arma ou munição.** Proibido: "vendo", "compre", preço de arma, modelo de arma à venda, "pronta entrega", link para loja de arma.
-- **Imagem sem arma em destaque.** Usar documentos, pasta, carimbo, mesa de escritório, calendário, celular com checklist, estande de tiro ao fundo e desfocado, pessoa de costas com protetor auricular. Nada de arma apontada, close de arma ou munição.
+- **Visual atualizado por Rodrigo:** fotografia realista de armas de fogo, estande de tiro e material tático para chamar atenção ao serviço de assessoria. Nenhuma arma apontada para o observador/pessoas, nenhuma oferta de venda ou preço. Não usar o visual didático rejeitado.
 - **Sem promessa:** não prometer aprovação, prazo garantido nem "porte facilitado". Falar em "acompanhamento" e "organização dos documentos".
 - **Sem ensinar a burlar a lei** e sem opinião política sobre armas.
 - **Fatos:** prazos, taxas e documentos exatos mudam. Escrever de forma geral e pedir confirmação ao cliente antes de citar número ou prazo.
@@ -75,7 +79,7 @@ Precisa de ajuda com a sua documentação? Comente DOCUMENTOS que eu te chamo no
 - Conferir conexão profissional/convite e configurar DOCUMENTOS antes da publicação. A conexão Meta e a interface autenticada não foram reinspecionadas; o envio foi confirmado nos logs/API de upload.
 
 ## 6. Conferir antes de salvar
-- [ ] Nenhuma arma em destaque, nenhuma venda, nenhum preço.
+- [ ] Visual realista de armas/estande/material tático; nenhuma venda ou preço de armas/munições.
 - [ ] Nada prometido (aprovação, prazo).
 - [ ] Imagem nova em cada peça (regra de `FORMATOS_POSTAGENS.md`).
 - [ ] 4:5 no feed; 9:16 no story e no Reel; nada nos 20% de baixo.
