@@ -1,7 +1,18 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
-## 2026-10-23 — MASKARA-7D-001 ampliado para42conteúdos
-Produção e QA concluídos:3posts+3stories/dia,24–30/10,09h/12h/19h;Reels12h25/27/29.42pastas prontas,60cenas inéditas. Envio real ainda em conferência; não afirmar painel antes dos logs. Ver HANDOFF_CHATGPT.
+## 2026-10-23 08h43 BRT — MASKARA-7D-001: 42 conteúdos no painel
+**Concluído o envio**, aguardando aprovação: 3 posts + 3 stories/dia, 24–30/10, 09h/12h/19h. Reels às12h em25/27/29. [Actions39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success; logs confirmam42uploads novos, sem falhas/duplicatas/horários pulados. 60cenas distintas, QA aprovado. Nenhum aprovado/publicado pelo assistente. Próximo: Rodrigo revisar/aprovar e conferir conexão Meta/DOCUMENTOS. Detalhes no HANDOFF_CHATGPT.
+
+## 2026-10-23 07h05 BRT — Quatree de hoje refeito e reenviado
+Pedido novo de Rodrigo substitui o conteúdo anterior: sete agendamentos / nove imagens inéditas com embalagem e venda, mesmos diretórios/horários de 23/10. Commit `675399d` na branch `agendamentos`; Actions [39936394814](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39936394814) success com sete uploads confirmados esperando aprovação. QA visual, dimensões e hashes aprovados. Próximo passo: Rodrigo revisar/aprovar no painel. Não reenviar. Detalhes no topo do HANDOFF_CHATGPT.
+
+## Atualização prioritária —23/10, stories e imagens exclusivas
+Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, novo carrosselQuatree15h e ReelFlow12h sem reutilizar cartões/feeds. Execução39891196118 success,8uploads aguardando aprovação e antigos cancelados. Espelhamento feed→story desativado e implantado(39890408576). **Nunca repetir imagem entre formatos.** Esta ordem substitui os resumos anteriores de5conteúdos/1story ou carrossel com feeds reutilizados. Detalhes no topo HANDOFF_CHATGPT e FORMATOS_POSTAGENS. Próximo passo: aprovação de Rodrigo no painel.
+
+## 2026-10-22 23h24 BRT — Campanhas de 23/10 concluídas no envio
+- **POSTS-2026-10-23:** cinco conteúdos Flow Arts enviados (09h carrossel, 10h30 story, 12h Reel, 16h story, 19h feed); três feeds Quatree preservados/corrigidos + carrossel 15h e story 18h. Exceção complementar Quatree só para 23/10; rotina segue FORMATOS_POSTAGENS.md.
+- Evidências: Actions 39888688531 (oito uploads confirmados) e 39889202971 (TABELA corrigido nas legendas 09h/19h do Quatree, pending, sem duplicação). Tarefa de 06h desativada pois executada agora. Detalhes/limites no topo do HANDOFF_CHATGPT.
+- **Próximo passo:** revisão/aprovação no painel, sem recriar os posts de 23/10. Cinco Flow Arts já apareceram como aprovados/agendados na interface; esta sessão não os aprovou nem publicou.
 
 **Regra:** só marcar `concluído` com evidência. `PR aberto` não significa `no ar`. Este quadro é um índice de transferência, não substitui `NEXT_ACTIONS.md`, `PROJECT_STATE.md` nem o rastreamento de PRs.
 
@@ -15,6 +26,12 @@ Produção e QA concluídos:3posts+3stories/dia,24–30/10,09h/12h/19h;Reels12h2
 | POSTS-2026-10-22 | Criar e enviar ao painel os 3 posts de hoje (09h, 12h, 19h) com imagens e legendas | Plataforma IA do Rodrigo (ChatGPT pelo plano dele) criou; Rodrigo enviou e aprova | **No painel, esperando aprovação:** commit `b1cbf8a` em `agendamentos/2026-10-22/` (0900, 1200, 1900); fluxo com sucesso (execução 39772024382) | Rodrigo aprova no painel. ChatGPT **não** cria estes de novo. |
 | POSTS-2026-10-21 | Criar os 3 posts de hoje da Flow Arts (09h, 12h, 19h), 4:5, sem confundir com circo/acrobacia | **ChatGPT** cria; Rodrigo revisa e aprova no painel | Briefing completo no topo de `HANDOFF_CLAUDE.md` (21/10); nada criado ainda | ChatGPT lê o briefing, cria artes e legendas, entrega ao Rodrigo sem publicar e registra em `HANDOFF_CHATGPT.md`. |
 | QUATREE-CAMP-001 | Campanha de 30 dias do Quatree Dog (@ericsson_quatree): posts + busca de lojas | ChatGPT cria artes e legendas com o material do cliente; Rodrigo aprova | **Planejado (22/10):** plano em `CAMPANHA_QUATREE_30D.md`; esperando os banners do cliente e o aceite do convite de testador | ChatGPT prepara a semana 1 quando o Rodrigo mandar os banners. |
+| OFERTA-197-001 | Oferta nova no site e no robô: Básico R$ 197 sem entrada, fundador R$ 147 (3 vagas até 30/11), garantia, cancelar pelo WhatsApp, resposta automática no Básico, código de pedido, "3 posts grátis" na mensagem do CRM de comida | Claude implementou; Rodrigo aprova | **Na `main`** (PR #378, merge b34a6c7 pelo Rodrigo, 22/10); 574/574 testes; deploy automático | Conferir o site no ar. |
+| LANCAMENTO-FUNDADOR-001 | Fechar 3 clientes fundadores de comida até 30/11 e medir pedidos com código e horas por cliente | Rodrigo vende; ChatGPT faz posts; Claude ajusta o Nexus | **Planejado (22/10)**: exemplos reais até 26/10, lançamento 05/11 | Rodrigo faz os 3 posts grátis para 1 padaria e 1 café conhecidos. |
+| FORMATOS-001 | Carrossel, stories, Reels e feed na Flow Arts (5 por dia) e no Quatree (2 a 3 por dia) | ChatGPT cria; Rodrigo aprova | **Regra registrada (22/10)** em `FORMATOS_POSTAGENS.md`; vale de 23/10 | ChatGPT segue a grade nova a partir de 23/10. |
+| PLANOS-PIX-001 | Planos com nomes curtos; /cadastro com escolha do plano e Pix (CNPJ); aprovação no Master; plano no painel do cliente; Master com leitura fácil | Claude implementou; Rodrigo aprova | **No ar** (PR #381, merge 3d84d1f; deploy 39889673145 success; /cadastro conferido no navegador com os 8 planos, 22/10 23h30) | Primeiro cadastro real: Rodrigo confere o Pix no banco e aprova no Master. |
+| QUATREE-VENDA-001 | Conteúdo do Quatree focado em venda: toda peça com produto | ChatGPT cria; Rodrigo aprova | **Diretriz registrada (23/10)** em `QUATREE_DIRETRIZ_VENDAS.md`; auditoria de 23/10: 3 de 9 peças com produto | ChatGPT segue a diretriz no próximo conteúdo. |
+| MASKARA-7D-001 | Campanha de 7 dias, 24–30/10, 3 posts + 3 stories/dia | ChatGPT criou; cliente aprova | **42 conteúdos enviados ao painel e aguardando aprovação**. Actions39947767760 success,42uploads confirmados;QA aprovado | Rodrigo revisa/aprova; confere conta profissional, convite e DOCUMENTOS. Não reenviar. |
 | FLOW-ARTES-001 | Uma imagem 4:5 com quatro cenas em 2× 2 para os 21 nichos, integrada ao Master/CRM/vitrine | ChatGPT implementou e implantou | **Implantado**: PR #367 e 900fec9; deploy 39858182963 success. Navegador confirmou 21 páginas/imagens 1080× 1350.561/561 testes. | Usar Master → Exemplos e baixar arte no CRM. Sessão Master autenticada não inspecionada; verificação HTTP opcional 403 registrada no handoff/KNOWN_ISSUES. Nenhuma arte pendente de envio. |
 
 ## Convenções de estado
@@ -34,6 +51,3 @@ Produção e QA concluídos:3posts+3stories/dia,24–30/10,09h/12h/19h;Reels12h2
 
 ## 2026-10-20 — Canal manual do CRM
 - Incluído na mesma branch fix/crm-direct-mensagem: seletor Instagram | WhatsApp, preferência local, texto por nicho revisável e download do modelo. 541 testes + bundle + Chromium com destinos simulados aprovados; aguardando publicação manual, sem envios reais.
-
-## 22/10 — QUATREE-CAMP-001
-Rodrigo autorizou 3 posts/dia às 09h/12h/19h a partir de 23/10. Três artes 1080×1350 e legendas preparadas (Supreme, Life, Select Power); ingestão no painel em verificação. Calendário anterior de 1/dia substituído pela nova frequência. Não publicado no Instagram.
