@@ -204,6 +204,27 @@ export async function cancelPost(env, client, postId) {
   };
 }
 
+// Botão "Excluir" do painel do cliente (pedido do Rodrigo, 22/10/2026), em qualquer post.
+// Ainda não publicado: cancela (não vai para o Instagram) e some do painel.
+// Já publicado: some do painel; no Instagram continua (a API da Meta não apaga post).
+export async function deletePostFromPanel(env, client, postId) {
+  const row = await postRow(env, client.id, postId);
+  if (!row) throw new Error("post_not_found");
+  if (row.status === "publishing") throw new Error("publishing_in_progress");
+  const published = row.status === "published";
+  const updated = await updateRow(env, row, published
+    ? { status: row.status, approvalStatus: row.approval_status, payload: { hiddenFromPanel: true, hiddenAt: new Date().toISOString() } }
+    : { status: "cancelled", approvalStatus: "rejected", error: "", payload: { hiddenFromPanel: true, cancelledAt: new Date().toISOString(), cancelledBy: "client" } });
+  return {
+    ok: true,
+    published,
+    message: published
+      ? "Post tirado do painel. No Instagram ele continua; para apagar lá, use o app do Instagram."
+      : "Post excluído. Ele não vai sair no Instagram.",
+    post: view(updated)
+  };
+}
+
 export async function saveOwnPostContent(env, client, postId, body = {}, publicOrigin = "") {
   const caption = String(body.caption || "").trim().slice(0, 2200);
   const imageDataUrl = String(body.imageDataUrl || "").trim();

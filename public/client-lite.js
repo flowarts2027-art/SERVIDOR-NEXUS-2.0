@@ -80,6 +80,7 @@ const DONE = new Set(["expired", "cancelled"]);
 function postGroup(post) {
   const status = String(post.status || "");
   const approval = String(post.approvalStatus || "");
+  if (post.hiddenFromPanel === true) return "";
   if (DONE.has(status)) return "";
   if (status === "published") return "publicados";
   if (approval === "approved") return "agendados";
@@ -185,7 +186,7 @@ function actionsButtonsHtml(post) {
     return `<div class="actions">
       <button type="button" class="btn btn-ok" data-publish-now="${id}">Publicar agora</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
-      <button type="button" class="btn btn-soft btn-cancel" data-cancel-post="${id}">Cancelar esta postagem</button>
+      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
@@ -193,6 +194,9 @@ function actionsButtonsHtml(post) {
       <p class="muted">O post volta para "esperando aprovação" e só sai depois que você aprovar de novo.</p>
       <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
     </form>`;
+  }
+  if (postGroup(post) === "publicados") {
+    return `<div class="actions"><button type="button" class="btn btn-soft btn-cancel" data-delete-post="${escapeHtml(post.id)}" data-published="1">Excluir do painel</button></div>`;
   }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
@@ -203,6 +207,7 @@ function actionsButtonsHtml(post) {
   return `<div class="actions">
       <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
+      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
@@ -784,6 +789,23 @@ async function cancelPost(id, button) {
   }
 }
 
+async function deletePost(id, button) {
+  const published = button.dataset.published === "1";
+  const question = published
+    ? "Tirar este post do painel? No Instagram ele continua. Para apagar lá, use o app do Instagram."
+    : "Excluir este post? Ele não vai sair no Instagram.";
+  if (!window.confirm(question)) return;
+  button.disabled = true;
+  try {
+    const result = await api("/api/portal/posts/" + encodeURIComponent(id) + "/delete", { method: "POST" });
+    toast(result.message || "Post excluído.");
+    await loadAll();
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+  }
+}
+
 async function saveSchedule(form) {
   const id = form.dataset.scheduleForm;
   const data = new FormData(form);
@@ -836,7 +858,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-publish-now], [data-connect], [data-discard-lead], #logout")) {
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-delete-post], [data-publish-now], [data-connect], [data-discard-lead], #logout")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -877,6 +899,8 @@ document.addEventListener("click", event => {
   }
   const publishBtn = target.closest("[data-publish-now]");
   if (publishBtn) { publishNow(publishBtn.dataset.publishNow, publishBtn); return; }
+  const del = target.closest("[data-delete-post]");
+  if (del) { deletePost(del.dataset.deletePost, del); return; }
   const cancel = target.closest("[data-cancel-post]");
   if (cancel) { cancelPost(cancel.dataset.cancelPost, cancel); return; }
   const revise = target.closest("[data-revise]");

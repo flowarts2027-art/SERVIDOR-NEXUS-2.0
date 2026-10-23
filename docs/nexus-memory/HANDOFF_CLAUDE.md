@@ -2,6 +2,10 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-22 23h59 BRT — Botão Excluir em todos os posts do painel do cliente
+- Pedido do Rodrigo: botão excluir em todos os posts, até nos aprovados.
+- Feito (mesma branch `fix/painel-formato-menu`, PR #384): não publicado → cancela e some; publicado → some só do painel (no Instagram continua). 579/579 testes.
+
 ## 2026-10-22 23h55 BRT — Painel do cliente: tipo do post visível e menu arrumado
 - Pedido do Rodrigo: deixar claro no painel se o post é feed, Reels ou stories; o painel da Flow Arts estava bagunçado no computador (menu lateral só com ícones).
 - Feito (branch `fix/painel-formato-menu`): selo colorido com o tipo em cada post e no "próximo post"; menu em cima no computador. 578/578 testes. Conferido em prévia local (demo).

@@ -1,5 +1,10 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-22 23h59 BRT — Botão Excluir em todos os posts do painel do cliente (pedido do Rodrigo)
+- Esperando aprovação e agendados: "Excluir" cancela (não vai ao Instagram) e o post some do painel.
+- Publicados: "Excluir do painel" só esconde no painel; no Instagram continua (a API da Meta não apaga post).
+- posts.js deletePostFromPanel + rota POST /api/portal/posts/:id/delete; client-lite.js (v=125). 579/579 testes.
+
 ## 2026-10-22 23h55 BRT — Painel do cliente: tipo do post e menu arrumado (pedido do Rodrigo)
 - Cada post mostra um selo colorido com o tipo: Feed (imagem no perfil), Carrossel (nº de cartões), Reels (vídeo) ou Stories (some em 24 horas). "Post" virou "Feed" também no calendário.
 - Computador: menu em cima com o nome de cada botão (antes ficava espremido na lateral, só ícones, porque o flow-crm.css forçava 6 colunas em 220 px). No celular, menu de baixo igual.

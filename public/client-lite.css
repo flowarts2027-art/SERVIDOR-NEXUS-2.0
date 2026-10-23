@@ -445,3 +445,6 @@ input, select, textarea, button { max-width: 100%; }
   .tabbar > button span { font-size: 1.15rem; }
   .content { max-width: 1100px; margin: 0 auto; }
 }
+
+/* Botão Excluir em todos os posts (22/10/2026) */
+.actions .btn-cancel { grid-column: 1 / -1; color: #A11D12; }
