@@ -1,5 +1,10 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-22 23h24 BRT — Campanhas de 23/10 concluídas no envio
+- **POSTS-2026-10-23:** cinco conteúdos Flow Arts enviados (09h carrossel, 10h30 story, 12h Reel, 16h story, 19h feed); três feeds Quatree preservados/corrigidos + carrossel 15h e story 18h. Exceção complementar Quatree só para 23/10; rotina segue FORMATOS_POSTAGENS.md.
+- Evidências: Actions 39888688531 (oito uploads confirmados) e 39889202971 (TABELA corrigido nas legendas 09h/19h do Quatree, pending, sem duplicação). Tarefa de 06h desativada pois executada agora. Detalhes/limites no topo do HANDOFF_CHATGPT.
+- **Próximo passo:** revisão/aprovação no painel, sem recriar os posts de 23/10. Cinco Flow Arts já apareceram como aprovados/agendados na interface; esta sessão não os aprovou nem publicou.
+
 **Regra:** só marcar `concluído` com evidência. `PR aberto` não significa `no ar`. Este quadro é um índice de transferência, não substitui `NEXT_ACTIONS.md`, `PROJECT_STATE.md` nem o rastreamento de PRs.
 
 | ID | Objetivo | Responsável preferido | Estado em 19/10/2026 | Próximo passo |
