@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 06h50 BRT — PARA O CHATGPT (URGENTE): refazer a campanha de HOJE do Quatree
+- **Pedido do Rodrigo (06h45):** refazer todo o conteúdo do Quatree de hoje (23/10). Ele vai excluir no painel os posts antigos.
+- **O que refazer:** as 7 pastas de `agendamentos/clientes/quatree-dog/2026-10-23/` (feed 09h, 12h e 19h; carrossel 15h; stories 09h, 12h e 19h), **seguindo `QUATREE_DIRETRIZ_VENDAS.md`**: embalagem Quatree em destaque em todas as peças, uma linha por peça, chamada de venda, nada inventado do rótulo, imagem nova em cada peça (o GitHub recusa imagem idêntica).
+- **Como:** troque os arquivos dentro das mesmas pastas (mesmos horários). O envio sobe de novo porque o Rodrigo excluiu os antigos (post excluído libera o horário).
+- **Horário:** cada pasta precisa chegar pelo menos 10 minutos antes da hora. Se a das 09h não der tempo, use 10h30 (`1030/` e `1030-story/`) e avise o Rodrigo.
+- **Nada é publicado sem a aprovação do Rodrigo.** Ao terminar, registrar em `HANDOFF_CHATGPT.md` o que foi enviado e o resultado do Actions.
+
 ## 2026-10-23 06h50 BRT — PARA O CHATGPT: Quatree é VENDA, toda peça mostra produto
 - **Pedido do Rodrigo:** o ChatGPT está fugindo nas postagens do Quatree; o objetivo é mostrar os produtos, o cliente quer venda. Auditar e deixar orientação.
 - **Auditoria (pasta `agendamentos/clientes/quatree-dog/2026-10-23/`):** 3 de 9 peças mostram produto (os 3 feeds). Os 3 stories (porta da loja, gato brincando, caderno) e os 3 cartões do carrossel das 15h ("boas perguntas", conversa, caderno) não mostram nada da Quatree. Legendas com "conheça / consulte", sem pedir o pedido.
