@@ -58,3 +58,34 @@ Comente TABELA que eu te mando a tabela de revenda no direct 📩
 ## 6. O que fazer com o que já está no painel
 - Os 3 feeds de 23/10 podem ficar (mostram produto); melhorar a legenda no próximo dia.
 - Os 3 stories e o carrossel das 15h de 23/10 **não mostram produto**: o Rodrigo decide se recusa no painel. O ChatGPT refaz seguindo esta diretriz, só se o Rodrigo pedir.
+
+## 7. TODAS as linhas de ração, para cães E gatos (Rodrigo, 23/10/2026, 19h)
+**Pedido do Rodrigo:** o ChatGPT está gerando imagens só da linha Supreme. Ele precisa gerar imagens de **todas as linhas**, para cães e para gatos.
+
+**Atenção:** a página `https://www.quatreepet.com.br/produtos` mostra só a Supreme. As outras linhas ficam nas páginas de cães e de gatos abaixo. **Abra cada página de linha** antes de criar a arte, para copiar a embalagem real e o que está escrito no rótulo (porte, fase de vida, sabor, seco ou úmido). Não invente variação que não esteja no site.
+
+**Cães** (lista: https://www.quatreepet.com.br/produtos/cao)
+| Categoria no site | Página da linha |
+| --- | --- |
+| Super Premium Natural (Supreme) | https://www.quatreepet.com.br/supc-umidas-e-secas |
+| Premium Especial Natural (Life) | https://www.quatreepet.com.br/caes-nova-life |
+| Premium Especial (Select) | https://www.quatreepet.com.br/quatree-select-caes |
+| Premium Plus (Gourmet) | https://www.quatreepet.com.br/cao/gourmet |
+| Premium | https://www.quatreepet.com.br/nova-quatree-carne |
+
+**Gatos** (lista: https://www.quatreepet.com.br/produtos/gato)
+| Categoria no site | Página da linha |
+| --- | --- |
+| Super Premium Natural (Supreme) | https://www.quatreepet.com.br/supg-umidas-e-secas |
+| Premium Especial Natural (Life) | https://www.quatreepet.com.br/gatos-nova-life |
+| Premium Especial (Select) | https://www.quatreepet.com.br/quatree-select-gatos |
+| Premium Plus (Gourmet) | https://www.quatreepet.com.br/gato/gourmet |
+
+Petiscos (cães: /snackscaes; gatos: /nuggets-gatos e /miaow) não são ração: só entram se o Rodrigo pedir.
+
+**Regra de rodízio (fixa):**
+1. São **9 linhas de ração** (5 de cães + 4 de gatos). Antes de repetir uma linha, use as outras.
+2. **Toda semana, todas as 9 linhas aparecem** pelo menos uma vez.
+3. **Gatos todo dia:** pelo menos 1 peça de gato por dia.
+4. **Supreme no máximo 1 peça por dia.**
+5. Antes de criar, veja em `agendamentos/clientes/quatree-dog/` quais linhas saíram nos últimos dias e escolha as que faltam. No `HANDOFF_CHATGPT.md`, escreva a linha de cada peça enviada.

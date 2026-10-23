@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-23 19h05 BRT — Quatree: usar TODAS as linhas de ração
+- **Pedido do Rodrigo:** o ChatGPT só gera imagens da linha Supreme; precisa gerar de todas as linhas, para cães e gatos, usando o site oficial.
+- **Causa provável:** a página quatreepet.com.br/produtos mostra só a Supreme; as outras linhas ficam em /produtos/cao e /produtos/gato.
+- **Feito:** seção 7 em `QUATREE_DIRETRIZ_VENDAS.md` com as 9 linhas (5 cães, 4 gatos), links de cada uma e regra de rodízio (todas na semana, gato todo dia, Supreme no máximo 1 por dia). Só documentação; nada implantado.
+- **Próximo passo (ChatGPT):** nas próximas artes do Quatree, abrir a página da linha, seguir o rodízio e registrar a linha de cada peça no HANDOFF_CHATGPT.
+
 ## 2026-10-23 15h50 BRT — Caçador só mostra quem tem WhatsApp
 - **Pedido do Rodrigo:** o Caçador (Google Maps) entregava muitos números sem WhatsApp; ele quer só WhatsApp.
 - **Diagnóstico:** a busca diária automática já filtrava celular, mas a busca manual do Caçador (Google e mapa grátis) aceitava telefone fixo e só marcava "Telefone fixo (pode não ter WhatsApp)". O Google costuma dar só o fixo da empresa.
