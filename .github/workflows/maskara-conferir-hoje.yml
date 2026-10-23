@@ -1,0 +1,24 @@
+name: Maskara conferir somente agenda 23 outubro
+on:
+  push:
+    branches: [agendamentos]
+    paths: ['.github/workflows/maskara-conferir-hoje.yml']
+permissions:
+  contents: read
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar somente os registros Maskara de hoje
+        env:
+          D1_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN }}
+        run: |
+          python - <<'PY'
+          import os,json,urllib.request
+          url='https://api.cloudflare.com/client/v4/accounts/d9ecb78dbc0c1b0b61f8caae501f59df/d1/database/3d440c4a-8925-4526-8d29-03f9eb227d60/query'
+          sql="SELECT id,scheduled_for,status,approval_status,json_extract(payload_json,'$.source') AS source,json_extract(payload_json,'$.creativeFeatures.requestedFormat') AS format FROM post_ledger WHERE client_id='maskara-assessoria' AND scheduled_for>='2026-10-23T03:00:00' AND scheduled_for<'2026-10-24T03:00:00' ORDER BY scheduled_for"
+          req=urllib.request.Request(url,data=json.dumps({'sql':sql}).encode(),headers={'Authorization':'Bearer '+os.environ['D1_TOKEN'],'Content-Type':'application/json'})
+          data=json.load(urllib.request.urlopen(req))
+          if not data.get('success'):raise RuntimeError('Consulta D1 recusada')
+          print(json.dumps({'cliente':'maskara-assessoria','data':'2026-10-23','registros':data['result'][0]['results']}))
+          PY
