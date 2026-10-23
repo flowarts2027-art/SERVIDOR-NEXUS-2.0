@@ -9,6 +9,10 @@
 - Cada post mostra um selo colorido com o tipo: Feed (imagem no perfil), Carrossel (nº de cartões), Reels (vídeo) ou Stories (some em 24 horas). "Post" virou "Feed" também no calendário.
 - Computador: menu em cima com o nome de cada botão (antes ficava espremido na lateral, só ícones, porque o flow-crm.css forçava 6 colunas em 220 px). No celular, menu de baixo igual.
 - client-lite.js/css, flow-crm.css, portal.html (v=124). 578/578 testes.
+## 2026-10-22 23h45 BRT — Nunca repetir imagem (pedido do Rodrigo)
+- agendar-pasta.sh: recusa imagem idêntica (sha256) a outra pasta do mesmo cliente ou repetida na mesma pasta, com erro dizendo onde está a cópia.
+- publisher.js: story automático (repetia a imagem do post) desligado; só liga com NEXUS_AUTO_STORY="true".
+- Regra fixa para o ChatGPT no topo de FORMATOS_POSTAGENS.md. 578/578 testes.
 
 ## 2026-10-22 23h40 BRT — Planos com nomes curtos, cadastro com Pix e Master mais fácil de ler (pedido do Rodrigo)
 - Planos (cloudflare/src/plans.js, lista única): Essencial R$ 197/mês (fundador R$ 147 por 3 meses, 3 vagas, até 30/11), Completo R$ 297 + R$ 697/mês, Captador R$ 97/mês, Site R$ 497, Responde R$ 197, Reels 5 R$ 147, Posts 10 R$ 97, Logo R$ 67.

@@ -4,6 +4,15 @@
 **Vale a partir de 23/10/2026**, até o Rodrigo mudar. Nada é publicado sem aprovação no painel.
 Quem cria: o ChatGPT (plano do Rodrigo). Como envia: pasta `agendamentos/` (ver `agendamentos/README.md`). Qualquer horário `HHMM` funciona.
 
+## REGRA FIXA: NUNCA REPETIR IMAGEM (Rodrigo, 22/10/2026, 23h32)
+Em 23/10 o Quatree recebeu um carrossel (15h) feito com as mesmas 3 imagens dos posts de 09h, 12h e 19h, e a Flow Arts teve stories com cara de post repetido. Isso não pode acontecer.
+1. **Cada post, cartão de carrossel, story e capa de Reel é uma imagem nova**, criada para aquele lugar. Proibido reaproveitar arquivo, recortar ou esticar a imagem de um post para virar story, ou repetir a mesma cena com mudança pequena.
+2. **Story não é cópia do post:** outra cena (outro ângulo, outro objeto, outro ambiente) e outro texto.
+3. **Variar a cena no dia e na semana.** Flow Arts: os 5 do dia com 5 cenas diferentes, alternando o tipo de comida e o lugar (pão, bolo, pizza, lanche, salgado, café, fachada, balcão, mãos do dono, cardápio, celular). Não usar a mesma comida em mais de 2 artes por dia.
+4. **Quatree:** o banner do cliente pode servir de base **uma vez só**. As outras artes mudam fundo, enquadramento, produto e texto. Carrossel nunca reaproveita imagens do feed.
+5. **Antes de salvar:** compare com as artes dos últimos 7 dias do mesmo perfil.
+6. **O GitHub agora recusa imagem idêntica:** se o Actions mostrar "imagem repetida", crie uma arte nova para aquela pasta.
+
 ## 1. Flow Arts (@flowarts2026) — 5 por dia
 | Horário | Formato | Pasta | Função |
 | --- | --- | --- | --- |
@@ -13,7 +22,7 @@ Quem cria: o ChatGPT (plano do Rodrigo). Como envia: pasta `agendamentos/` (ver 
 | 16:00 | **Story** (9:16) | `.../1600/` → `story.jpg` | Chamada: "3 posts grátis: comente QUERO no post de hoje" |
 | 19:00 | **Feed de 1 imagem** (4:5) | `.../1900/` → `imagem.jpg` + `legenda.txt` | Conversa (pergunta) |
 
-- **Além disso, o Nexus publica sozinho** a 1ª imagem do carrossel das 09h e o post das 19h também como story. Não precisa fazer esses.
+- **O Nexus não repete mais o post como story** (desligado em 22/10). Os stories são só os que você criar, cada um com arte própria.
 - A regra "1 post por dia com *App de agendar post não cria post*" continua: vale para um dos 3 do feed (09h, 12h ou 19h).
 - Tudo do `REGRA_POSTS_DIARIOS.md` continua valendo (público de comida, sem preço, sem azul, título na metade de cima, QUERO no fim).
 
