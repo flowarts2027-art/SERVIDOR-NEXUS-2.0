@@ -280,6 +280,18 @@ function renderPostLedger() {
   if (!body) return;
   let posts = Array.isArray(data.posts) ? data.posts : [];
   if (state.postClientFilter) posts = posts.filter(post => post.clientId === state.postClientFilter);
+  // 22/10 (Rodrigo): "limpa os posts removidos". Recusados, cancelados e vencidos sem aprovação somem
+  // da lista (continuam guardados). A caixa "Mostrar removidos" mostra de novo.
+  const removedPost = post => String(post.approvalStatus || "") === "rejected" || String(post.status || "") === "cancelled"
+    || (String(post.status || "") === "expired" && String(post.approvalStatus || "") !== "approved");
+  const removedCount = posts.filter(removedPost).length;
+  const showRemoved = $("#post-show-removed");
+  if (showRemoved) {
+    showRemoved.checked = Boolean(state.postShowRemoved);
+    const label = $("#post-removed-count");
+    if (label) label.textContent = removedCount ? `(${removedCount})` : "";
+  }
+  if (!state.postShowRemoved) posts = posts.filter(post => !removedPost(post));
   // Aviso: post aprovado que passou do horário sem sair no Instagram.
   // Aprovados que não saíram: vencidos, presos ou com horário já passado.
   const nowMs = Date.now();
@@ -888,6 +900,7 @@ const portalAccessForm=$("#portal-access-form");
 const closePortalAccess=()=>{if(portalAccessDialog?.open)portalAccessDialog.close();};
 $("#portal-access-close")?.addEventListener("click",closePortalAccess);
 $("#portal-access-cancel")?.addEventListener("click",closePortalAccess);
+$("#post-show-removed")?.addEventListener("change",event=>{state.postShowRemoved=event.target.checked;renderPostLedger();});
 portalAccessForm?.addEventListener("submit",async event=>{
   event.preventDefault();
   const clientId=$("#portal-access-client-id")?.value||"";
