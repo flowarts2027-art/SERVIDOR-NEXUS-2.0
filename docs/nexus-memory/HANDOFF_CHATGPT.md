@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-23 — Campanha Maskara anterior REPROVADA e APAGADA; nova direção fotográfica
+- Rodrigo rejeitou toda a campanha editorial: queria atrair clientes para a assessoria, não explicar o processo. Solicitou apagar tudo e usar imagens realistas de **armas de fogo, estande de tiro e material tático**. Esta instrução substitui a restrição visual anterior de não destacar arma. Continuam sem venda de armas/munições, sem preço e sem promessa de aprovação/prazo; o serviço anunciado é documentação/regularização.
+- **Apagados os 42 conteúdos antigos do painel:** [execução39948848202](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39948848202), job120398081803, success. Operação limitada aos42IDs originais da campanha e ao cliente maskara-assessoria; conferência: antes42, removidos42, restantes0. Nenhum post de outro cliente afetado. Workflow temporário removido após a operação (f938bb4).
+- Arquivos ativos e fontes editoriais antigos retirados da branch agendamentos em b99c33e. O recibo do envio anterior é apenas histórico; **não indica conteúdo ainda no painel**.
+- Nova produção fotográfica iniciada, com armas/estande/equipamento tático como contexto e chamadas comerciais curtas para a assessoria. **Ainda não reenviada nesta entrada.** Uma primeira imagem sem armas, iniciada antes da nova orientação, não serve como padrão e foi descartada da campanha.
+- Próximo passo: concluir a nova produção no estilo pedido, conferir visualmente, enviar os42conteúdos para aprovação e registrar evidências. Não restaurar diagramas, fluxogramas ou conteúdo didático rejeitado.
+
 ## 2026-10-23 08h43 BRT — Maskara: 42 conteúdos enviados ao painel
 - Pedido de Rodrigo ampliado durante a sessão: **3 posts + 3 stories por dia**, 24 a 30/10, às **09h, 12h e 19h de Brasília**. Reels ocupam as 12h em 25, 27 e 29/10. São 4 carrosséis de 4 cartões, 14 imagens de feed, 3 Reels e 21 stories.
 - **Envio real comprovado:** [Actions 39947767760](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/39947767760) success; job 120394518988. Logs confirmaram **42 uploads novos**, cliente maskara-assessoria, todos esperando aprovação, entre 08h41m12 e 08h43m07 BRT. Nenhuma falha, duplicação ou horário pulado. Commit de conteúdo [bf3d26c](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/commit/bf3d26cf6520ab124f916bc8bfef006cb944d102), branch agendamentos. **Nenhum conteúdo aprovado ou publicado pelo assistente.**
