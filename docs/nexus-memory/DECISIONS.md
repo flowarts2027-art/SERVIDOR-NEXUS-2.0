@@ -1,5 +1,10 @@
 # Decisões e limites
 
+## 2026-10-23 — Imagens autorizadas na memória e no repositório
+- **Imagens liberadas (decisão do Rodrigo, 23/10/2026):** o ChatGPT e o Claude podem enviar imagens para a memória e para o repositório (artes, referências, fotos de produto e fotos dos clientes para os posts). Continua proibido subir imagem que mostre documento, CPF/CNPJ, telefone, senha, token ou print de conversa privada. Esta autorização substitui a proibição genérica de imagens privadas somente nesse escopo; não altera o envio de referências à OpenAI nem religa a geração paga pela API.
+- **Envio ao painel autorizado (Rodrigo, 24/10/2026):** o ChatGPT pode enviar todo dia as imagens, vídeos e legendas de todos os clientes ativos para o painel, salvando na branch `agendamentos` (pastas `agendamentos/clientes/<cliente>/AAAA-MM-DD/HHMM/`). Tudo chega como "esperando aprovação": o ChatGPT não aprova nem publica. Não é preciso pedir nova autorização a cada envio.
+- Escopo escolhido pelo Rodrigo: opção 2, regra documental do BRIDGE_PROTOCOL.md. A opção 1 (pixels privados enviados à OpenAI) não foi autorizada por esta decisão. Nenhum arquivo de imagem enviado nesta alteração.
+
 ## 2026-10-18 — Imagens por IA pausadas até ter mais clientes
 - Rodrigo: assinatura do ChatGPT (~R$ 100/mês) sai mais barata agora; ele gera as imagens e sobe pelo Master. Religar a API quando houver clientes demais para fazer na mão (conta feita: empata por volta de 4–5 clientes; aí pôr o custo da imagem no preço do plano).
 - Trava no código: `generateOriginalMedia` recusa com `image_generation_paused` se a variável NEXUS_IMAGE_GENERATION não for "on". Vale para Creator, Format Builder, agente de carrossel, campanha "IA" do cliente e emergência. Religar = criar NEXUS_IMAGE_GENERATION=on na Cloudflare, só com OK do Rodrigo.
