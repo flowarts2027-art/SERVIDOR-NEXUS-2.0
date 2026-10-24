@@ -111,7 +111,7 @@ async function saveToday(env, clientId, lead, now) {
 // Uma rodada para um cliente. `force` = botão "Buscar agora" (ignora o horário das 9h).
 export async function runClientDaily(env, client, now = new Date(), fetcher = fetch, { force = false } = {}) {
   await ensureCaptadorSchema(env);
-  if (!(await captadorEnabled(env, client.id))) return { ok: true, skipped: "captador_disabled" };
+  if (!(await captadorEnabled(env, client.id, client))) return { ok: true, skipped: "captador_disabled" };
   const s = await clientDailySettings(env, client);
   if (!s.enabled && !force) return { ok: true, skipped: "disabled" };
   if (!s.niches.length || !s.cities.length) return { ok: true, skipped: "not_configured" };

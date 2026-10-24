@@ -28,12 +28,14 @@ export const PLANS = Object.freeze([
   },
   {
     id: "completo", name: "Completo", kind: "mensal", price: 69700, setup: 0,
-    summary: "Tudo do Essencial, com Reels em vídeo de verdade.",
+    summary: "Tudo do Essencial, com Reels em vídeo de verdade e o Captador de brinde.",
     quotas: { feed: 30, reels: 30, stories: 60 },
+    gifts: ["captador"],
     includes: [
       "30 posts no feed por mês",
       "30 Reels por mês com vídeo de verdade",
       "60 stories por mês",
+      "Brinde: Captador de clientes (vale R$ 97 por mês) para quem vende para empresas",
       "Resposta automática e código de pedido",
       "Painel no celular: você aprova antes de sair"
     ]

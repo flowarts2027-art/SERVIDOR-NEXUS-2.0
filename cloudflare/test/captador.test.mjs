@@ -270,3 +270,10 @@ test2("cliente que vende para pessoa física fica sem a busca", () => {
   assert2.equal(audienceOf({ niche: "aluguel de equipamentos para construção" }), "empresas");
   assert2.equal(audienceOf({}), "empresas");
 });
+
+import { planGivesCaptador } from "../src/captador.js";
+test2("plano Completo dá o Captador de brinde", () => {
+  assert2.equal(planGivesCaptador({ config: { plan: { id: "completo" } } }), true);
+  assert2.equal(planGivesCaptador({ config: { plan: { id: "essencial" } } }), false);
+  assert2.equal(planGivesCaptador({}), false);
+});
