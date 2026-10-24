@@ -29,7 +29,9 @@ export function adsLive(env = {}) {
 
 export function planGivesAds(client = {}) {
   const plan = client?.config?.plan || client?.plan;
-  return Boolean(plan && typeof plan === "object" && String(plan.id || "").toLowerCase() === ADS_PLAN_ID);
+  if (!plan || typeof plan !== "object") return false;
+  if (Array.isArray(plan.gifts) && plan.gifts.includes("ads")) return true;
+  return ["trafego", "completo-trafego"].includes(String(plan.id || "").toLowerCase());
 }
 
 async function readAccess(env, client) {

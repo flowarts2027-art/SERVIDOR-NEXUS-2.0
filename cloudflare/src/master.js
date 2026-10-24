@@ -26,6 +26,7 @@ import { commentAutoReplyStatus } from "./comment-autoreply.js";
 import { runGiftInboxForClient } from "./gift-dm.js";
 import { newManagedClientConfig } from "./client-create.js";
 import { handleMasterSignups } from "./signup.js";
+import { handleUpgradesMaster } from "./upgrades.js";
 
 function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -535,6 +536,8 @@ export async function handleMaster(request, env, url) {
 
   const signupResponse = await handleMasterSignups(request, env, url);
   if (signupResponse) return signupResponse;
+  const upgradeResponse = await handleUpgradesMaster(request, env, url);
+  if (upgradeResponse) return upgradeResponse;
 
   const openaiResponse = await handleMasterOpenAI(request, env, url);
   if (openaiResponse) return openaiResponse;

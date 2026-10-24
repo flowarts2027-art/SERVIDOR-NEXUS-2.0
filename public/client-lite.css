@@ -466,3 +466,25 @@ input, select, textarea, button { max-width: 100%; }
 .ads-form .ads-check input { width: 22px; height: 22px; margin-top: 2px; }
 .ads-total { margin: 0; font-size: 1.05rem; }
 .ads-msg { margin: 0; font-weight: 700; color: var(--navy); }
+
+/* Planos e upgrade no painel (24/10) */
+#plans-upgrade .up-group { font-size: 1.05rem; margin: 18px 0 8px; }
+.up-list { display: grid; gap: 10px; }
+.up-card { border: 1.5px solid var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 6px; background: var(--card); }
+.up-card .tag { justify-self: start; margin: 0; }
+.up-card h3 { margin: 0; font-size: 1.15rem; }
+.up-card p { margin: 0; }
+.up-price { font-weight: 700; font-size: 1.05rem; color: var(--navy); }
+.up-note { background: var(--ok-soft); color: var(--ok); border-radius: var(--radius-sm); padding: 8px 10px; font-weight: 700; font-size: .92rem; }
+.up-card details summary { cursor: pointer; color: var(--blue); font-weight: 700; }
+.up-card ul { margin: 6px 0 0; padding-left: 20px; }
+.up-card .btn { justify-self: start; }
+.up-hot { border: 2px solid var(--blue); background: linear-gradient(160deg, var(--blue-soft), #fff 60%); }
+.up-current { border-color: var(--ok); }
+.up-pending { background: var(--warm-soft); color: var(--warm); border-radius: var(--radius-sm); padding: 10px 12px; font-weight: 700; margin: 8px 0; }
+.up-pay { display: grid; gap: 8px; margin-top: 6px; padding: 12px; border-radius: var(--radius-sm); background: var(--paper); }
+.up-pay p, .up-pay ol { margin: 0; }
+.up-pay ol { padding-left: 20px; }
+.up-pay textarea { width: 100%; font: 400 .8rem/1.4 monospace; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 8px; resize: none; }
+.up-pay .btn { width: 100%; }
+.up-msg { font-weight: 700; color: var(--ok); }

@@ -634,7 +634,8 @@ function renderPlan() {
     <p style="margin:4px 0 8px"><strong>${escapeHtml(plan.priceLine || "")}</strong></p>
     ${quotaText ? `<p class="muted" style="margin:0 0 8px">${escapeHtml(quotaText)}</p>` : ""}
     ${items.length ? `<ul style="margin:0;padding-left:20px">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
-    ${plan.startedAt ? `<p class="muted" style="margin:10px 0 0">Desde ${escapeHtml(formatDate(plan.startedAt, false))}</p>` : ""}`;
+    ${plan.startedAt ? `<p class="muted" style="margin:10px 0 0">Desde ${escapeHtml(formatDate(plan.startedAt, false))}</p>` : ""}
+    <button type="button" class="btn btn-primary" data-plans-open style="margin-top:12px">Ver planos e fazer upgrade</button>`;
   box.hidden = false;
 }
 

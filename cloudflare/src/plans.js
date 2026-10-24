@@ -41,6 +41,19 @@ export const PLANS = Object.freeze([
     ]
   },
   {
+    id: "completo-trafego", name: "Completo + Tráfego", kind: "mensal", price: 89700, setup: 0,
+    summary: "Tudo do Completo com o Tráfego junto, mais barato que separado (R$ 1.094).",
+    quotas: { feed: 30, reels: 30, stories: 60 },
+    gifts: ["captador", "ads"],
+    includes: [
+      "Tudo do Completo: 30 posts, 30 Reels e 60 stories por mês",
+      "Brinde: Captador de clientes para quem vende para empresas",
+      "Tráfego: botão Impulsionar nos seus posts, com o seu WhatsApp no anúncio",
+      "Economia de R$ 197 por mês em relação aos dois separados",
+      "A verba do anúncio é paga no seu cartão, direto na Meta (não está inclusa)"
+    ]
+  },
+  {
     id: "trafego", name: "Tráfego", kind: "mensal", price: 39700, setup: 0,
     summary: "Impulsione seus posts pelo painel e receba clientes no WhatsApp.",
     includes: [
@@ -157,7 +170,7 @@ export function planRecord(plan, { founder = false, paid = 0, startedAt = new Da
     id: plan.id, name: plan.name, kind: plan.kind, price: plan.price, setup: plan.setup,
     founder: Boolean(founder && plan.founderPrice), founderPrice: plan.founderPrice || 0,
     founderMonths: plan.founderPrice ? FOUNDER.months : 0,
-    quotas: plan.quotas ? { ...plan.quotas } : null, includes: [...plan.includes],
+    quotas: plan.quotas ? { ...plan.quotas } : null, includes: [...plan.includes], gifts: Array.isArray(plan.gifts) ? [...plan.gifts] : [],
     priceLine: priceLine(plan, founder), firstPayment: Number(paid || 0), startedAt
   };
 }
