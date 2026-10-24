@@ -36,7 +36,7 @@ test("Pix copia e cola: CRC igual ao exemplo do Banco Central e valor certo", ()
 
 test("planos: nomes curtos, primeiro pagamento e fundador só até 30/11 e 3 vagas", () => {
   assert.deepEqual(publicPlans().map(p => p.name), ["Essencial", "Completo", "Captador", "Site", "Responde", "Reels 5", "Posts 10", "Logo"]);
-  assert.equal(firstPayment(findPlan("completo")), 99400);
+  assert.equal(firstPayment(findPlan("completo")), 69700);
   assert.equal(firstPayment(findPlan("essencial"), true), 14700);
   assert.equal(founderOpen(new Date("2026-11-30T20:00:00Z"), 2), true);
   assert.equal(founderOpen(new Date("2026-12-01T12:00:00Z"), 0), false);
@@ -49,10 +49,10 @@ test("cadastro com plano: o servidor calcula o valor; ao aprovar, o painel mostr
   assert.equal(bad.error, "plan_invalid");
   const made = await createSignupRequest(env, { ...BASE, planId: "completo", paidClaimed: true, amount: 1 });
   assert.equal(made.ok, true);
-  assert.equal(made.amount, 99400);
+  assert.equal(made.amount, 69700);
   const [row] = await listSignupRequests(env);
   assert.equal(row.planName, "Completo");
-  assert.equal(row.amountLabel, "R$ 994");
+  assert.equal(row.amountLabel, "R$ 697");
   assert.equal(row.paidClaimed, true);
   const approved = await approveSignupRequest(env, row.id);
   assert.equal(approved.ok, true);
