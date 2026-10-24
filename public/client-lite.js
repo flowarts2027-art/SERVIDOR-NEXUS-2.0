@@ -243,7 +243,9 @@ function postCardHtml(post) {
       ${tagHtml(post)}
       ${reviewHtml(post)}
       <p class="when">${escapeHtml(formatDate(when) || "data a definir")}</p>
-      <p class="caption short">${escapeHtml(post.caption || "Legenda sendo escrita.")}</p>
+      ${post.caption ? `<p class="caption short">${escapeHtml(post.caption)}</p>`
+        : formatKey(post) === "story" ? `<p class="caption short muted">Story não leva legenda: o texto já está na imagem.</p>`
+        : `<p class="caption short">Legenda sendo escrita.</p>`}
       ${String(post.caption || "").length > 180 ? `<button type="button" class="more" data-more>Ler legenda inteira</button>` : ""}
       ${actionsHtml(post)}
     </div>
