@@ -138,7 +138,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .wz{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;background:#ECE5DD;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .wz.on{transform:none}
 .wz-top{background:#075E54;color:#fff;display:flex;align-items:center;gap:10px;padding:14px 14px}
-.wz-top i{width:34px;height:34px;border-radius:50%;background:#DFE5E7;color:#075E54;display:grid;place-items:center;font-style:normal;font-weight:700}
+.wz-top i{flex:none;width:38px;height:38px;border-radius:50%;background:var(--av,#FFFFFF);display:grid;place-items:center;font-style:normal;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.wz-top i svg{width:26px;height:26px}
 .wz-top b{display:block;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
 .wz-top small{font-size:.75rem;color:#CFE9E4}
 .wz-chat{flex:1;padding:14px 12px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
@@ -323,7 +324,7 @@ footer a{color:var(--silver);text-decoration:none}
               </ul>
             </div>
             <div class="wz" id="wz" aria-hidden="true">
-              <div class="wz-top"><span>←</span><i id="wz-ini">C</i><div><b id="wz-nome">Construtora Pedra Alta</b><small>online</small></div></div>
+              <div class="wz-top"><span>←</span><i id="wz-ini"><svg viewBox="0 0 24 24" stroke="#1B2A44" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 16.5V15a7.5 7.5 0 0 1 15 0v1.5z" fill="#F2A900"/><path d="M10 8.2V6.5h4v1.7" fill="#F2A900"/><path d="M12 6.5v6" fill="none"/><path d="M2.5 16.5h19a.5.5 0 0 1 0 2h-19a.5.5 0 0 1 0-2z" fill="#F2A900"/></svg></i><div><b id="wz-nome">Construtora Pedra Alta</b><small>online</small></div></div>
               <div class="wz-chat"><span class="wz-day">HOJE</span><div class="wz-bubble" id="wz-bolha"><span id="wz-texto"></span><small>09:14 <b id="wz-check">✓✓</b></small></div></div>
               <div class="wz-bar"><div class="wz-in" id="wz-campo"></div><div class="wz-send" id="wz-enviar">➤</div></div>
             </div>
@@ -562,17 +563,25 @@ footer a{color:var(--silver);text-decoration:none}
   if (!tipo || !list) return;
   // r: [empresa, bairro, nota de 0 a 10, nota no Google, fecha às]
   var B = [
-    { t: "Construtoras", c: "Belo Horizonte MG", m: "Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?",
+    { l: "obra", t: "Construtoras", c: "Belo Horizonte MG", m: "Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?",
       r: [["Construtora Pedra Alta","Savassi",9,"4,8","18h"],["Engeforte Obras","Pampulha",8,"4,6","17h30"],["Mineira Empreiteira","Barreiro",8,"4,5","18h"]] },
-    { t: "Distribuidoras", c: "Campinas SP", m: "Olá! Represento uma linha de produtos de limpeza com entrega na região. Posso mandar o catálogo e a tabela de revenda?",
+    { l: "caixa", t: "Distribuidoras", c: "Campinas SP", m: "Olá! Represento uma linha de produtos de limpeza com entrega na região. Posso mandar o catálogo e a tabela de revenda?",
       r: [["Distribuidora Barão","Barão Geraldo",9,"4,7","18h"],["Paulista Atacado","Cambuí",8,"4,6","17h"],["Atacadão Taquaral","Taquaral",7,"4,5","19h"]] },
-    { t: "Galpões e indústrias", c: "Curitiba PR", m: "Olá! Trabalho com energia solar para empresas. Posso fazer uma simulação de economia para o telhado do galpão de vocês?",
+    { l: "fabrica", t: "Galpões e indústrias", c: "Curitiba PR", m: "Olá! Trabalho com energia solar para empresas. Posso fazer uma simulação de economia para o telhado do galpão de vocês?",
       r: [["Indústria Pinhais","CIC",9,"4,6","17h"],["Logística Araucária","Boqueirão",8,"4,4","18h"],["Têxtil Boa Vista","Boa Vista",7,"4,3","17h30"]] },
-    { t: "Transportadoras", c: "Goiânia GO", m: "Olá! Sou corretor de seguros e trabalho com seguro de frota. Posso mandar uma cotação para os caminhões de vocês?",
+    { l: "caminhao", t: "Transportadoras", c: "Goiânia GO", m: "Olá! Sou corretor de seguros e trabalho com seguro de frota. Posso mandar uma cotação para os caminhões de vocês?",
       r: [["Transportes Cerrado","Setor Bueno",9,"4,7","18h"],["Goiás Cargas","Jardim Goiás",8,"4,5","18h"],["Log Express Centro-Oeste","Setor Marista",7,"4,4","17h"]] },
-    { t: "Lojas de materiais", c: "Recife PE", m: "Olá! Sou representante de uma marca de tintas e ferramentas. Posso passar na loja de vocês com o mostruário esta semana?",
+    { l: "ferramenta", t: "Lojas de materiais", c: "Recife PE", m: "Olá! Sou representante de uma marca de tintas e ferramentas. Posso passar na loja de vocês com o mostruário esta semana?",
       r: [["Casa do Construtor Boa Viagem","Boa Viagem",9,"4,8","18h"],["Materiais Capibaribe","Madalena",8,"4,6","17h"],["Recife Ferragens","Casa Amarela",8,"4,6","18h"]] }
   ];
+  // Logo do perfil no WhatsApp, combinando com o ramo da empresa (desenho simples, sem marca real).
+  var LOGO = {
+    obra: ["#FFFFFF", '<svg viewBox="0 0 24 24" stroke="#1B2A44" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 16.5V15a7.5 7.5 0 0 1 15 0v1.5z" fill="#F2A900"/><path d="M10 8.2V6.5h4v1.7" fill="#F2A900"/><path d="M12 6.5v6" fill="none"/><path d="M2.5 16.5h19a.5.5 0 0 1 0 2h-19a.5.5 0 0 1 0-2z" fill="#F2A900"/></svg>'],
+    caixa: ["#2B63F0", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5"/><path d="M12 12v9"/></svg>'],
+    fabrica: ["#5B6680", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V10l5 3V10l5 3V6h4l1 14z"/><path d="M3 20h18"/></svg>'],
+    caminhao: ["#E4572E", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>'],
+    ferramenta: ["#17895E", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2z"/><path d="M4 20l3-3"/></svg>']
+  };
   var i = 0, visivel = true, rodando = false;
   function later(f, ms) { setTimeout(f, ms); }
   function digita(el, txt, done) {
@@ -609,7 +618,7 @@ footer a{color:var(--silver);text-decoration:none}
     later(function () {
       tap.style.transition = "none"; tap.style.left = "75%"; tap.style.top = "88%"; void tap.offsetWidth; tap.style.transition = "";
       toca(btn, function () {
-        $i("wz-nome").textContent = x.r[0][0]; $i("wz-ini").textContent = x.r[0][0].charAt(0);
+        $i("wz-nome").textContent = x.r[0][0]; var lg = LOGO[x.l] || LOGO.obra; $i("wz-ini").style.setProperty("--av", lg[0]); $i("wz-ini").innerHTML = lg[1];
         $i("wz-campo").textContent = x.m; $i("wz-texto").textContent = x.m;
         $i("wz-bolha").classList.remove("on"); $i("wz-check").classList.remove("lido");
         tap.classList.remove("on"); wz.classList.add("on");
