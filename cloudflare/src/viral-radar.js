@@ -10,6 +10,7 @@ import { encryptSecret, decryptSecret } from "./secrets.js";
 import { getState, putState } from "./storage.js";
 import { captionNiche, nicheHashtags } from "./caption-templates.js";
 import { listClients } from "./clients.js";
+import { finishAdsConnect } from "./ads.js";
 
 export const RADAR_NS = "viral-radar";
 export const HASHTAGS_PER_WEEK_MAX = 24;      // a Meta deixa 30; sobra margem
@@ -169,9 +170,9 @@ export async function startRadarConnect(env, request) {
   return { url: url.toString() };
 }
 
-function page(ok, message, back = "") {
+function page(ok, message, back = "", path = "/master") {
   const safe = String(message).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const link = back ? `<p><a href="${back}/master" style="color:#5dd3ff">Voltar ao Nexus</a></p>` : "";
+  const link = back ? `<p><a href="${back}${path}" style="color:#5dd3ff">Voltar ao ${path === "/master" ? "Nexus" : "painel"}</a></p>` : "";
   return new Response(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>NEXUS</title><body style="margin:0;background:#050807;color:#f4f8f5;font-family:system-ui;display:grid;place-items:center;min-height:100vh"><div style="max-width:480px;padding:28px;text-align:center"><h1 style="color:${ok ? "#5dd3ff" : "#ff9898"}">${ok ? "Facebook conectado" : "Não deu certo"}</h1><p style="color:#aab9c2;line-height:1.5">${safe}</p>${link}</div></body></html>`,
     { status: ok ? 200 : 400, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }
@@ -196,6 +197,11 @@ export async function handleFacebookCallback(env, request, url, fetcher = fetch)
     const lq = new URLSearchParams({ grant_type: "fb_exchange_token", client_id: appId, client_secret: secret, fb_exchange_token: short.access_token });
     const long = await (await fetcher(graph(env) + "/oauth/access_token?" + lq)).json();
     const token = long?.access_token || short.access_token;
+    // Pedido de anúncios do painel do cliente (24/10): mesmo retorno, outro destino.
+    if (saved.kind === "ads") {
+      const done = await finishAdsConnect(env, saved, token, long?.expires_in, fetcher);
+      return page(done.ok, done.message, back, "/");
+    }
     const pages = await (await fetcher(graph(env) + "/me/accounts?fields=name,instagram_business_account{id,username}&access_token=" + encodeURIComponent(token))).json();
     const list = (pages?.data || []).filter(p => p.instagram_business_account?.id);
     const pick = list.find(p => /flowarts/i.test(p.instagram_business_account.username || "")) || list[0];

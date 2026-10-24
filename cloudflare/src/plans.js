@@ -41,6 +41,17 @@ export const PLANS = Object.freeze([
     ]
   },
   {
+    id: "trafego", name: "Tráfego", kind: "mensal", price: 39700, setup: 0,
+    summary: "Impulsione seus posts pelo painel e receba clientes no WhatsApp.",
+    includes: [
+      "Botão Impulsionar nos seus posts, direto no painel",
+      "Você escolhe quanto gastar por dia, os dias e a cidade",
+      "O anúncio leva a pessoa direto para o seu WhatsApp",
+      "Acompanhamento da Flow Arts",
+      "A verba do anúncio é paga no seu cartão, direto na Meta (não está inclusa)"
+    ]
+  },
+  {
     id: "captador", name: "Captador", kind: "mensal", price: 9700, setup: 0,
     summary: "Ache empresas da sua cidade para vender.",
     includes: ["100 buscas por mês no painel", "Empresas com telefone e mensagem pronta para o seu WhatsApp"]

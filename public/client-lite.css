@@ -448,3 +448,21 @@ input, select, textarea, button { max-width: 100%; }
 
 /* Botão Excluir em todos os posts (22/10/2026) */
 .actions .btn-cancel { grid-column: 1 / -1; color: #A11D12; }
+
+/* Tráfego pago: Impulsionar (24/10) */
+#ads-box .ads-wait { background: var(--warm-soft); color: var(--warm); border-radius: var(--radius-sm); padding: 10px 12px; font-weight: 700; margin: 8px 0; }
+#ads-box .ok-line { color: var(--ok); font-weight: 700; margin: 8px 0; }
+#ads-box .ads-note { font-size: .92rem; margin-top: 12px; }
+.ads-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.ads-list li { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; display: grid; gap: 4px; }
+.ads-list .tag { justify-self: start; margin: 0; }
+.ads-list small { color: var(--muted); }
+.ads-list .ads-err { color: var(--danger); }
+.ads-form { display: grid; gap: 10px; margin-top: 12px; padding: 14px; border: 2px solid var(--blue); border-radius: var(--radius); background: var(--blue-soft); }
+.ads-form h3 { margin: 0; font-size: 1.1rem; }
+.ads-form label { display: grid; gap: 6px; font-weight: 700; }
+.ads-form input:not([type=checkbox]), .ads-form select { min-height: 46px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 0 12px; font: inherit; background: #fff; }
+.ads-form .ads-check { grid-template-columns: auto 1fr; align-items: start; font-weight: 400; }
+.ads-form .ads-check input { width: 22px; height: 22px; margin-top: 2px; }
+.ads-total { margin: 0; font-size: 1.05rem; }
+.ads-msg { margin: 0; font-weight: 700; color: var(--navy); }
