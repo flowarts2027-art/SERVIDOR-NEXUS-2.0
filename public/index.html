@@ -70,6 +70,10 @@
           <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
           <div id="signup-list"><p class="muted">Carregando…</p></div>
         </div>
+        <div class="panel signup-panel" id="upgrade-panel">
+          <div class="panel-head"><div><p class="eyebrow">UPGRADES</p><h2>Clientes mudando de plano</h2><p class="muted">O cliente escolheu no painel e pagou no Pix. Confira o Pix no banco e aprove: o plano muda sozinho.</p></div></div>
+          <div id="upgrade-list"><p class="muted">Carregando…</p></div>
+        </div>
         <div class="panel"><div class="panel-head"><div><p class="eyebrow">GESTÃO</p><h2>Todos os clientes</h2></div><button class="primary" data-go="onboarding">＋ Adicionar cliente</button></div><div class="table-wrap"><table class="sheet"><thead><tr><th>Cliente</th><th>Status</th><th>Instagram</th><th>Odin</th><th>IA do cliente</th><th>Ações</th></tr></thead><tbody id="clients-table"></tbody></table></div></div>
         <details class="fold"><summary><span class="fold-icon">≡</span><span><strong>Perfis enviados pelos clientes</strong><small>Configuração dos agentes de cada cliente</small></span></summary><div class="fold-body">
         <div class="panel master-profiles-panel">
@@ -609,6 +613,7 @@
   <script src="/site-stats.js?v=4" defer></script>
   <script src="/prospects-ui.js?v=18" defer></script>
   <script src="/signups.js?v=2" defer></script>
+  <script src="/upgrades-master.js?v=1" defer></script>
   <script src="/viral-radar.js?v=1" defer></script>
 </body>
 </html>

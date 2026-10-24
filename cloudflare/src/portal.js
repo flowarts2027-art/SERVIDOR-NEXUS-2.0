@@ -1,6 +1,7 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { handleCaptadorPortal } from "./captador.js";
 import { handleAdsPortal } from "./ads.js";
+import { handleUpgradesPortal } from "./upgrades.js";
 import { handleClientAutoReplyPortal } from "./client-autoreply.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
@@ -694,6 +695,8 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (captadorResponse) return captadorResponse;
   const adsResponse = await handleAdsPortal(request, env, url, client);
   if (adsResponse) return adsResponse;
+  const upgradesResponse = await handleUpgradesPortal(request, env, url, client);
+  if (upgradesResponse) return upgradesResponse;
   const businessResponse = await handleBusinessProfilePortal(request, env, url, client);
   if (businessResponse) return businessResponse;
   const campaignResponse = await handleClientCampaignPortal(request, env, url, client);

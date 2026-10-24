@@ -35,7 +35,7 @@ test("Pix copia e cola: CRC igual ao exemplo do Banco Central e valor certo", ()
 });
 
 test("planos: nomes curtos, primeiro pagamento e fundador só até 30/11 e 3 vagas", () => {
-  assert.deepEqual(publicPlans().map(p => p.name), ["Essencial", "Completo", "Tráfego", "Captador", "Site", "Responde", "Reels 5", "Posts 10", "Logo"]);
+  assert.deepEqual(publicPlans().map(p => p.name), ["Essencial", "Completo", "Completo + Tráfego", "Tráfego", "Captador", "Site", "Responde", "Reels 5", "Posts 10", "Logo"]);
   assert.equal(firstPayment(findPlan("completo")), 69700);
   assert.equal(firstPayment(findPlan("essencial"), true), 14700);
   assert.equal(founderOpen(new Date("2026-11-30T20:00:00Z"), 2), true);
@@ -64,7 +64,7 @@ test("cadastro com plano: o servidor calcula o valor; ao aprovar, o painel mostr
 test("rota pública de planos e conferência antes do Pix (não cria pedido)", async () => {
   const { env } = fakeEnv();
   const plans = await (await handlePublicSignup(new Request("https://x/api/signup/plans"), env, new URL("https://x/api/signup/plans"))).json();
-  assert.equal(plans.plans.length, 9);
+  assert.equal(plans.plans.length, 10);
   assert.match(plans.pixKey, /CNPJ/);
   const req = new Request("https://x/api/signup", { method: "POST", headers: { "content-type": "application/json", "cf-connecting-ip": "9.9.9.9" }, body: JSON.stringify({ ...BASE, planId: "essencial", checkOnly: true }) });
   const res = await handlePublicSignup(req, env, new URL("https://x/api/signup"));

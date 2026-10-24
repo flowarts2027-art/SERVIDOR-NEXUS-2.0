@@ -2,6 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-24 10h05 BRT — Combo Completo + Tráfego e upgrade pelo painel do cliente
+- **Decisão do Rodrigo:** combo **Completo + Tráfego por R$ 897/mês** (separado R$ 1.094; economia de R$ 197). A verba do anúncio continua à parte, no cartão do cliente.
+- **Feito:** plano `completo-trafego` (dá Captador e Tráfego), opção "➕ Adicional com desconto" dentro do card do Completo no site; `cloudflare/src/upgrades.js` + `public/planos.js`: na aba Conta do painel, "Planos e upgrade" com todos os planos (base, adicionais e avulsos), Pix copia e cola com o valor e botão "Já paguei"; `public/upgrades-master.js`: em Clientes, "Clientes mudando de plano" com Aprovar/Recusar. Aprovar: plano base troca o plano (guarda o antigo em `planHistory`), adicional liga o Captador/Tráfego, avulso fica em `purchases` para o Rodrigo entregar.
+- **Regra atual:** a troca de plano cobra o 1º mês cheio do plano novo (sem proporcional). Rodrigo pode pedir para cobrar só a diferença.
+- Testes: 600/600.
+
 ## 2026-10-24 09h50 BRT — Tráfego pago: botão Impulsionar pronto, desligado até a Meta liberar
 - **Decisões do Rodrigo (24/10):** a verba do anúncio é paga no **cartão do cliente, direto na Meta** (não passa pela Flow Arts); a Flow Arts cobra a gestão no plano **Tráfego, R$ 397/mês** (Pix, como os outros planos).
 - **Feito:** `cloudflare/src/ads.js` (pedido de impulsionamento, conexão pelo login do Facebook com Página + conta de anúncios, criação de campanha → conjunto → criativo do post do Instagram → anúncio com botão do WhatsApp; apaga a campanha se der erro no meio), rotas `/api/portal/ads*` e `/api/master/ads`, plano `trafego` em `plans.js`, `public/ads.js` (botão "🚀 Impulsionar" nos posts publicados, formulário com valor/dia, dias, cidade, raio e confirmação do total; bloco "Anúncios" em Conta), bloco "Tráfego para clientes" no Master, card do plano e pergunta no site. O login do Facebook usa o mesmo retorno do Radar (`/api/oauth/facebook/callback`), sem configurar nada novo no app.

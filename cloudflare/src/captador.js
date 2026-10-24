@@ -137,7 +137,7 @@ export function planGivesCaptador(client = {}) {
   const plan = client?.config?.plan || client?.plan;
   if (!plan || typeof plan !== "object") return false;
   if (Array.isArray(plan.gifts) && plan.gifts.includes("captador")) return true;
-  return String(plan.id || "").toLowerCase() === "completo";
+  return ["completo", "completo-trafego"].includes(String(plan.id || "").toLowerCase());
 }
 
 async function readAccess(env, clientId, client = null) {
@@ -146,6 +146,10 @@ async function readAccess(env, clientId, client = null) {
   const audience = AUDIENCES.includes(access.audience) ? access.audience : defaultAudience(client || {});
   const gift = Boolean(client && planGivesCaptador(client) && audience === "empresas" && access.giftOff !== true);
   return { enabled: access.enabled === true || gift, gift, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT, audience };
+}
+
+export async function captadorAudience(env, client) {
+  return (await readAccess(env, client?.id, client)).audience;
 }
 
 export async function captadorEnabled(env, clientId, client = null) {

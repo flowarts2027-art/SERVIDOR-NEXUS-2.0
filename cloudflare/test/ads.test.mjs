@@ -35,3 +35,12 @@ test("impulsionar: desligado até a Meta liberar; plano Tráfego dá acesso", as
   const no = await handleAdsPortal(new Request("https://x/api/portal/ads/connect", { method: "POST" }), fakeEnv(), new URL("https://x/api/portal/ads/connect"), { id: "c2" });
   assert.equal((await no.json()).error, "ads_no_access");
 });
+
+test("combo Completo + Tráfego dá anúncios e Captador", async () => {
+  const { planGivesCaptador } = await import("../src/captador.js");
+  const { findPlan, planRecord } = await import("../src/plans.js");
+  const rec = planRecord(findPlan("completo-trafego"));
+  assert.equal(rec.price, 89700);
+  assert.equal(planGivesAds({ config: { plan: rec } }), true);
+  assert.equal(planGivesCaptador({ config: { plan: rec } }), true);
+});

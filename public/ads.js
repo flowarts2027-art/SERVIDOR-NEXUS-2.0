@@ -7,7 +7,6 @@
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   const brl = n => "R$ " + Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  const FLOW_WHATS = "https://wa.me/5521964816185?text=" + encodeURIComponent("Olá! Quero o plano Tráfego para impulsionar meus posts.");
   const STATUS = {
     criando: ["tag-blue", "Criando o anúncio…"], em_analise: ["tag-wait", "A Meta está revisando"], ativo: ["tag-ok", "Rodando"],
     parado: ["tag-blue", "Parado"], terminado: ["tag-blue", "Terminou"], erro: ["tag-wait", "Não deu certo"]
@@ -47,7 +46,7 @@
     if (!data.access) {
       el.innerHTML = `<h2>🚀 Impulsionar posts</h2>
         <p class="muted">Faça seus posts chegarem em mais gente da sua cidade, com o botão do seu WhatsApp. ${esc(data.price || "")}</p>
-        <a class="btn btn-whats" href="${FLOW_WHATS}" target="_blank" rel="noopener">Quero o plano Tráfego</a>`;
+        <button type="button" class="btn btn-primary" data-plans-open>Ver o plano Tráfego</button>`;
       return;
     }
     const c = data.connection;
