@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#050B1F">
 <title>Flow Arts | Clientes novos todo dia para vendedores e representantes</title>
-<meta name="description" content="Para vendedores e representantes comerciais: a Flow Arts acha empresas da sua região com WhatsApp e mantém o seu Instagram em dia como cartão de visita. Você só aprova pelo celular.">
+<meta name="description" content="Captador de clientes da Flow Arts: escolha o tipo de empresa e a cidade e receba a lista só com quem tem WhatsApp, com mensagem pronta. E o seu Instagram em dia como cartão de visita.">
 <link rel="canonical" href="https://flowarts.com.br/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="facebook-domain-verification" content="4y5qf57yga91suujq5cx6xody4zinn" />
@@ -23,526 +23,425 @@
 <link rel="apple-touch-icon" href="/brand/flowarts-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,600..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,500..800&display=swap">
 <style>
+/* Ideia: a tela do Captador é a estrela. Fundo azul-noite da marca, fotos grandes de quem vende na rua,
+   uma única animação (as empresas chegando na lista). Texto em Atkinson Hyperlegible, fácil de ler. */
 :root{
-  --ink:#050B1F;        /* azul-noite do fundo do logo */
-  --deep:#0A1636;       /* superfícies */
-  --line:#1C2B57;
-  --chrome:#C9D1DE;     /* prata do logo */
-  --bright:#F2F5FA;
-  --muted:#93A0BB;
-  --blue:#1F6BFF;       /* azul elétrico */
-  --glow:#49A3FF;
-  --whats:#1FAF5F;
+  --ink:#050B1F;      /* azul-noite do logo */
+  --deep:#0B1736;     /* superfícies */
+  --line:#1E2D5A;
+  --silver:#C9D1DE;   /* prata do logo */
+  --white:#F4F6FB;
+  --muted:#97A3BE;
+  --blue:#2F74FF;     /* azul elétrico */
+  --glow:#5AACFF;
+  --whats:#22B866;    /* só para ação de WhatsApp */
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--ink);color:var(--chrome);font:400 17px/1.6 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-img{max-width:100%;height:auto;display:block}
+body{margin:0;background:var(--ink);color:var(--silver);font:400 18px/1.65 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,video{max-width:100%;display:block}
 a{color:var(--glow)}
-a:focus-visible,button:focus-visible,summary:focus-visible,.strip:focus-visible{outline:3px solid var(--glow);outline-offset:3px;border-radius:6px}
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;color:var(--bright);font-weight:700;letter-spacing:-.015em;margin:0}
-h1{font-size:clamp(2.1rem,6vw,3.9rem);line-height:1.04;text-wrap:balance}
-h2{font-size:clamp(1.55rem,4vw,2.5rem);line-height:1.1;text-wrap:balance;margin-bottom:28px}
-h3{font-size:1.1rem;line-height:1.3;font-weight:500}
+:focus-visible{outline:3px solid var(--glow);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--serif);color:var(--white);font-weight:700;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.4rem,6.4vw,4.6rem);line-height:1.02;letter-spacing:-.02em}
+h2{font-size:clamp(1.8rem,4.2vw,3rem);line-height:1.06;letter-spacing:-.015em}
+h3{font-size:1.25rem;line-height:1.25}
 p{margin:0}
-figure{margin:0}
-.lead{font-size:1.2rem;color:var(--chrome);max-width:28em}
+.lead{font-size:clamp(1.1rem,1.6vw,1.3rem);max-width:34em}
+.muted{color:var(--muted)}
 
 /* Botões */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;font:700 1rem "Atkinson Hyperlegible",sans-serif;text-decoration:none;border:0;cursor:pointer}
-.btn-whats{background:var(--whats);color:#050B1F}
-.btn-whats:hover{background:#1a9a53}
-.btn-line{color:var(--bright);border:1.5px solid #3A4E86;background:transparent}
-.btn-line:hover{border-color:var(--glow)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 28px;border-radius:999px;font:700 1.02rem var(--sans);text-decoration:none;border:0;cursor:pointer;transition:transform .15s,background .15s}
+.btn:active{transform:scale(.98)}
 .btn svg{width:20px;height:20px;flex:none}
+.btn-whats{background:var(--whats);color:#04140B}
+.btn-whats:hover{background:#1CA35A}
+.btn-line{color:var(--white);border:1.5px solid #3B5394;background:rgba(5,11,31,.35)}
+.btn-line:hover{border-color:var(--glow)}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
 
 /* Topo */
-.top{position:sticky;top:0;z-index:5;background:rgba(5,11,31,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(28,43,87,.6)}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--bright);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:1.05rem}
-.brand img{height:38px;width:auto}
-.top .btn{min-height:42px;padding:0 18px;font-size:.95rem}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(5,11,31,.82);backdrop-filter:blur(12px);border-bottom:1px solid rgba(30,45,90,.7)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--ink)}
+.top .wrap{display:flex;align-items:center;gap:24px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--white);font:700 1.1rem var(--serif);margin-right:auto}
+.brand img{height:36px;width:auto}
+.top nav{display:none;gap:26px}
+.top nav a{color:var(--silver);text-decoration:none;font-weight:700;font-size:.98rem}
+.top nav a:hover{color:var(--white)}
+.top .btn{min-height:44px;padding:0 18px;font-size:.95rem}
+@media (min-width:900px){.top nav{display:flex}}
 
-/* Celular (moldura prata do logo) */
-.phone{position:relative;border-radius:40px;padding:10px;background:linear-gradient(160deg,#D9E0EC,#6E7B95 40%,#C9D1DE 60%,#5B6782);box-shadow:0 30px 80px rgba(0,0,0,.55)}
-.screen{border-radius:31px;background:#0E1424;overflow:hidden}
+/* Herói: vídeo do vendedor no carro + a tela do Captador */
+.hero{position:relative;overflow:hidden;padding-block:56px 72px;isolation:isolate}
+.bg-video{position:absolute;inset:0;z-index:-2}
+.bg-video video{width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(5,11,31,.96) 0%,rgba(5,11,31,.86) 46%,rgba(5,11,31,.55) 100%),linear-gradient(0deg,var(--ink),transparent 30%)}
+.hero .wrap{display:grid;gap:44px;align-items:center}
+.hero-text{display:grid;gap:22px;min-width:0}
+.hero .tag{display:inline-flex;align-items:center;gap:8px;width:max-content;max-width:100%;padding:6px 14px;border-radius:999px;background:rgba(34,184,102,.14);border:1px solid rgba(34,184,102,.45);color:#9BE7BC;font-weight:700;font-size:.95rem}
+.hero .tag i{width:8px;height:8px;border-radius:50%;background:var(--whats);box-shadow:0 0 0 4px rgba(34,184,102,.25)}
+@media (min-width:980px){.hero{padding-block:88px 110px}.hero .wrap{grid-template-columns:1.05fr .95fr}}
 
-/* Quadradinhos de post (imagem real ou bloco provisório) */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
-.post{position:relative;aspect-ratio:4/5;background:#1A2340;overflow:hidden}
-.post img{width:100%;height:100%;object-fit:cover}
-.post.placeholder{background:linear-gradient(150deg,#1D3B8F,#0F1E4A 55%,#28407F)}
-.post.placeholder::after{content:"";position:absolute;inset:30% 30%;border-radius:8px;border:2px solid rgba(201,209,222,.35)}
-
-/* 1. Hero */
-.hero{position:relative;overflow:hidden;padding:44px 0 64px}
-.hero::before{content:"";position:absolute;inset:-10% -20% auto auto;width:760px;height:760px;background:radial-gradient(closest-side,rgba(31,107,255,.30),transparent 70%);pointer-events:none}
-.hero .wrap{position:relative;display:grid;gap:40px;align-items:center}
-.hero h1{margin-bottom:18px}
-.hero .lead{margin-bottom:28px}
-.actions{display:flex;flex-wrap:wrap;gap:12px}
-.phone-hero{justify-self:center;width:min(340px,86vw);transform:rotate(-2.5deg)}
-.profile{display:flex;align-items:center;gap:14px;padding:18px 16px 14px}
-.profile img{width:58px;height:58px;border-radius:50%;background:var(--ink);padding:0;border:2px solid #C8A27A}
-.profile-name{color:#fff;font-weight:700}
-.profile-note{color:#7DDBA3;font-size:.85rem}
-
-/* 2. Antes e depois */
-.ba{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:640px}
-.phone-small{padding:7px;border-radius:30px}
-.phone-small .screen{border-radius:24px;padding-top:12px}
-.phone-small figcaption{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%);white-space:nowrap;font-family:Fraunces,Georgia,serif;font-weight:700;color:var(--bright);font-size:.95rem}
-.when{font-size:.78rem;padding:0 12px 10px;color:var(--muted)}
-.is-after .when{color:#7DDBA3}
-.grid-empty i{display:block;aspect-ratio:4/5;background:#2A3044}
-.grid-empty i.off{background:#141A2B}
-.is-before{filter:saturate(.4)}
-.before-after{padding-bottom:110px}
-
-/* 3. Galeria */
-.gallery .hint{color:var(--muted);margin:-18px 0 18px}
-.strip{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:4px 0 18px;scrollbar-width:thin}
-.strip-track{display:flex;gap:14px;padding:0 20px;width:max-content}
-.post-big{width:min(72vw,300px);border-radius:18px;scroll-snap-align:center;box-shadow:0 18px 40px rgba(0,0,0,.45)}
-
-/* 4. Como funciona */
-.how .wrap{display:grid;gap:40px;align-items:center}
-.steps{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:18px;counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:48px 1fr;column-gap:14px;color:var(--muted)}
-.steps li::before{content:counter(s);grid-row:span 2;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:Fraunces,Georgia,serif;font-weight:700;color:var(--bright);background:var(--deep);border:1.5px solid #34508F}
-.steps b{color:var(--bright);font-size:1.1rem}
-.phone-chat{justify-self:center;width:min(320px,84vw)}
-.phone-chat .screen{min-height:420px;display:flex;flex-direction:column}
-.screen-head{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;border-bottom:1px solid #1E2740}
-.screen-head img{width:34px;height:34px;border-radius:50%;background:var(--ink);object-fit:contain;padding:0}
-.screen-head b{color:#fff;font-size:.95rem;display:block}
-.screen-head small{color:#8C96AD;font-size:.78rem}
-.chat{flex:1;display:flex;flex-direction:column;gap:12px;padding:16px}
-.comment{background:#151D33;border:1px solid #232D4A;border-radius:14px;padding:10px 12px;font-size:.88rem;color:#C7CFE0}
-.comment b{color:#fff}
-.bubble{max-width:86%;padding:10px 14px;border-radius:20px;font-size:.92rem;line-height:1.4}
-.from-brand{align-self:flex-start;background:#262B3B;color:#F1F3F8;border-bottom-left-radius:6px}
-.from-client{align-self:flex-end;background:linear-gradient(135deg,#5A3CF0,#2F6BFF);color:#fff;border-bottom-right-radius:6px}
-.wa{align-self:center;margin-top:auto;font-size:.82rem;color:#7DDBA3}
-.step{opacity:0;transform:translateY(8px)}
-.play .step{animation:pop .45s ease-out forwards}
-.play .s1{animation-delay:.3s}.play .s2{animation-delay:1.3s}.play .s3{animation-delay:2.3s}.play .s4{animation-delay:3.3s}
-@keyframes pop{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.step{opacity:1;transform:none}.play .step{animation:none}.phone-hero{transform:none}}
-
-/* 5. Portas por tipo de negócio */
-.doors{display:grid;gap:14px}
-.door{position:relative;display:block;border-radius:22px;overflow:hidden;min-height:150px;background:linear-gradient(150deg,#1D3B8F,#0F1E4A);text-decoration:none}
-.door .post{position:absolute;inset:0;aspect-ratio:auto}
-.door span{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 16px;background:linear-gradient(transparent,rgba(5,11,31,.92));color:var(--bright);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:1.15rem}
-.door:hover span{color:var(--glow)}
+/* A tela do Captador (desenhada em HTML, sem imagem de IA) */
+.app{width:100%;max-width:520px;justify-self:center;border-radius:22px;background:#0D1A3D;border:1px solid #2A3F7A;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 6px rgba(47,116,255,.08);overflow:hidden}
+.app-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #22356A;background:#0A1533}
+.app-bar img{width:26px;height:26px}
+.app-bar b{color:var(--white);font-size:1rem}
+.app-bar span{margin-left:auto;font-size:.82rem;color:var(--muted)}
+.app-search{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 18px}
+.field{border-radius:12px;background:#081127;border:1px solid #263B73;padding:8px 12px;min-width:0}
+.field small{display:block;font-size:.75rem;color:var(--muted)}
+.field b{display:block;color:var(--white);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-count{padding:0 18px 10px;font-size:.9rem;color:#9BE7BC;font-weight:700}
+.leads{list-style:none;margin:0;padding:0 10px 12px;display:grid;gap:8px}
+.lead-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#0A1636;border:1px solid #1D2F62}
+.lead-row .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font:700 1rem var(--serif);color:var(--white);background:linear-gradient(150deg,#2B4FB0,#16295E)}
+.lead-row div{min-width:0}
+.lead-row b{display:block;color:var(--white);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-row small{display:block;color:var(--muted);font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-row .wa{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--whats);color:#04140B;font-weight:700;font-size:.85rem;white-space:nowrap}
+.lead-row .wa svg{width:15px;height:15px}
+.app-msg{margin:4px 18px 18px;padding:12px 14px;border-radius:14px;background:#0F2A1D;border:1px solid #1F5C3B;color:#CDEFD9;font-size:.9rem;line-height:1.5}
+.app-msg small{display:block;color:#7FD3A3;font-weight:700;margin-bottom:4px}
+.app-note{text-align:center;font-size:.82rem;color:var(--muted);margin-top:12px}
+/* A única animação: as empresas chegam na lista uma por uma */
+.fx .lead-row{opacity:0;transform:translateY(10px)}
+.fx.go .lead-row{animation:chega .5s cubic-bezier(.2,.9,.3,1.2) forwards;animation-delay:calc(.5s + var(--i)*.45s)}
+@keyframes chega{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.fx .lead-row{opacity:1;transform:none;animation:none!important}}
 
 /* Seções */
-.section{padding:72px 0}
-.section .intro{color:var(--muted);margin:-16px 0 28px}
+.band{padding-block:88px}
+.band-head{display:grid;gap:16px;margin-bottom:40px;max-width:760px}
 
-/* 6. Pacotes */
-.offer{display:grid;gap:28px}
+/* O que o Captador faz */
+.cap{display:grid;gap:36px;align-items:center}
+.cap-photo{border-radius:26px;overflow:hidden;aspect-ratio:16/10;max-width:100%}
+.cap-photo img{width:100%;height:100%;object-fit:cover}
+.feats{list-style:none;margin:0;padding:0;display:grid;gap:22px}
+.feats li{display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start}
+.feats svg{width:52px;height:52px;padding:13px;border-radius:16px;background:var(--deep);border:1px solid var(--line);color:var(--glow)}
+.feats b{display:block;color:var(--white);font-size:1.12rem;margin-bottom:2px}
+@media (min-width:980px){.cap{grid-template-columns:1.1fr .9fr;gap:64px}}
+
+/* Para quem é: fotos grandes */
+.who{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.who figure{margin:0;position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5;max-width:100%}
+.who img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.who figure:hover img{transform:scale(1.04)}
+.who figcaption{position:absolute;inset:auto 0 0;padding:70px 20px 20px;background:linear-gradient(transparent,rgba(5,11,31,.94) 65%)}
+.who figcaption b{display:block;font:700 1.3rem var(--serif);color:var(--white)}
+.who figcaption span{color:var(--silver);font-size:.95rem}
+
+/* Como funciona: é uma sequência de verdade, então tem número */
+.how{display:grid;gap:40px;align-items:center}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:26px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;gap:16px}
+.steps li::before{content:counter(s);width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font:700 1.4rem var(--serif);color:var(--white);background:var(--blue)}
+.steps b{display:block;color:var(--white);font-size:1.15rem}
+.how video{border-radius:24px;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000}
+@media (min-width:980px){.how{grid-template-columns:.85fr 1.15fr;gap:64px}}
+
+/* Instagram como cartão de visita */
+.insta{display:grid;gap:44px;align-items:center}
+.phone{justify-self:center;width:min(320px,80vw);border-radius:52px;padding:8px;background:linear-gradient(155deg,#8EA2CC,#2A3966 30%,#141E3C 55%,#5C70A0 75%,#222F55);box-shadow:0 34px 90px rgba(0,0,0,.6)}
+.phone .screen{border-radius:45px;overflow:hidden;background:#000;aspect-ratio:9/16}
+.phone video{width:100%;height:100%;object-fit:cover}
+.phone figcaption{text-align:center;font-size:.85rem;color:var(--muted);margin-top:14px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.checks li{position:relative;padding-left:34px}
+.checks li::before{content:"";position:absolute;left:0;top:.35em;width:20px;height:20px;border-radius:50%;background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat}
+.chat{display:grid;gap:10px;max-width:420px;margin-top:28px;padding:18px;border-radius:20px;background:var(--deep);border:1px solid var(--line)}
+.chat p{padding:10px 14px;border-radius:18px;font-size:.95rem;max-width:88%}
+.chat .c1{background:#141E3A;color:var(--silver)}
+.chat .c1 b{color:var(--white)}
+.chat .c2{background:#24304F;color:var(--white);justify-self:start}
+.chat .c3{background:var(--blue);color:#fff;justify-self:end}
+@media (min-width:980px){.insta{grid-template-columns:auto 1fr;gap:80px}}
+
+/* Comparação */
 .cmp{display:grid;gap:16px}
-.cmp-col{border-radius:22px;padding:22px 20px;background:var(--deep);border:1px solid var(--line)}
-.cmp-col h3{font-size:1.15rem;margin-bottom:12px}
-.cmp-col ul{list-style:none;margin:0 0 4px;padding:0;display:grid;gap:10px}
-.cmp-col li{position:relative;padding-left:28px;color:var(--muted)}
-.cmp-col li::before{position:absolute;left:0;top:0;font-weight:700}
-.cmp-col li.ok::before{content:"✓";color:#3DDC84}
-.cmp-col li.no::before{content:"✕";color:#FF7A7A}
-.cmp-us{border-color:var(--glow);background:radial-gradient(120% 120% at 100% 0%,rgba(73,163,255,.30),transparent 55%),var(--deep)}
-.cmp-us li{color:var(--bright)}
-.cmp-us .btn{margin-top:18px}
-@media (min-width:880px){.cmp{grid-template-columns:1fr 1fr 1fr;align-items:stretch}}
-.feature{border-radius:28px;padding:28px 24px;background:radial-gradient(120% 120% at 0% 0%,rgba(31,107,255,.28),transparent 55%),var(--deep);border:1px solid #2A3E77}
-.feature .price{font-family:Fraunces,Georgia,serif;font-size:2.6rem;color:var(--bright);margin:12px 0 4px}
-.feature .price small{font-size:1rem;color:var(--muted);font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400}
-.feature ul{margin:14px 0 24px;padding-left:20px;display:grid;gap:6px}
-.more{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
-.more li{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
-.more b{font-family:Fraunces,Georgia,serif;color:var(--bright);font-size:1.25rem}
-.more a{font-weight:700;text-decoration:none}
+.cmp article{border-radius:24px;padding:26px 24px;background:var(--deep);border:1px solid var(--line);display:grid;gap:14px;align-content:start}
+.cmp ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.cmp li{position:relative;padding-left:28px;color:var(--muted)}
+.cmp li::before{position:absolute;left:0;top:0;font-weight:700}
+.cmp li.no::before{content:"✕";color:#FF8A8A}
+.cmp li.ok::before{content:"✓";color:#4BE08F}
+.cmp .us{border-color:var(--glow);background:linear-gradient(160deg,#16306E,var(--deep) 60%)}
+.cmp .us li{color:var(--white)}
+@media (min-width:900px){.cmp{grid-template-columns:repeat(3,1fr)}}
 
-.plan{margin-bottom:28px;border-color:var(--glow);background:radial-gradient(120% 120% at 100% 0%,rgba(73,163,255,.30),transparent 55%),var(--deep)}
-.plan .price small{display:block;margin-top:4px}
-.site-pack{margin-bottom:28px}
-/* 7. Perguntas */
-.faq{display:grid;gap:10px;max-width:780px}
-.faq details{background:var(--deep);border:1px solid var(--line);border-radius:16px;padding:0 20px}
-.faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;color:var(--bright);display:flex;justify-content:space-between;gap:16px}
+/* Planos */
+.plans{display:grid;gap:18px}
+.plan{border-radius:28px;padding:30px 26px;background:var(--deep);border:1px solid var(--line);display:grid;gap:14px;align-content:start}
+.plan h3 small{font:400 1rem var(--sans);color:var(--muted)}
+.price{font:700 2.7rem/1 var(--serif);color:var(--white)}
+.price small{display:block;margin-top:8px;font:400 1rem var(--sans);color:var(--muted)}
+.plan ul{margin:0;padding-left:20px;display:grid;gap:7px}
+.plan .btn{margin-top:6px;justify-self:start}
+.plan-star{border:2px solid var(--whats);background:linear-gradient(165deg,#0F3326,var(--deep) 55%)}
+.plan-star .pill{justify-self:start;padding:4px 12px;border-radius:999px;background:var(--whats);color:#04140B;font-weight:700;font-size:.85rem}
+.more{list-style:none;margin:28px 0 0;padding:0;border-top:1px solid var(--line)}
+.more li{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+.more h3 small{font:400 1rem var(--sans);color:var(--muted)}
+.more b{font:700 1.25rem var(--serif);color:var(--white)}
+.more a{font-weight:700;text-decoration:none}
+@media (min-width:900px){.plans{grid-template-columns:repeat(2,1fr)}}
+
+/* Perguntas */
+.faq{display:grid;gap:10px;max-width:820px}
+.faq details{background:var(--deep);border:1px solid var(--line);border-radius:18px;padding:0 22px}
+.faq summary{cursor:pointer;list-style:none;padding:20px 0;font-weight:700;color:var(--white);display:flex;justify-content:space-between;gap:16px}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font-family:Fraunces,Georgia,serif;color:var(--glow);transition:transform .2s}
+.faq summary::after{content:"+";font:700 1.4rem/1 var(--serif);color:var(--glow);transition:transform .2s}
 .faq details[open] summary::after{transform:rotate(45deg)}
-.faq details p{padding:0 0 18px}
+.faq details p{padding-bottom:20px}
 
 /* Final */
-.final{text-align:center;padding:84px 0;background:radial-gradient(60% 80% at 50% 100%,rgba(31,107,255,.28),transparent 70%)}
-.final img{width:min(140px,38vw);margin:0 auto 24px;filter:drop-shadow(0 0 24px rgba(73,163,255,.35))}
-.final h2{margin-bottom:24px}
-footer{border-top:1px solid var(--line);padding:28px 0 calc(28px + env(safe-area-inset-bottom));color:var(--muted);font-size:.9rem}
-footer .wrap{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
-footer nav{display:flex;flex-wrap:wrap;gap:12px 18px}
-footer a{color:var(--chrome);text-decoration:none}
-footer a:hover{color:var(--bright)}
+.final{position:relative;overflow:hidden;isolation:isolate;padding-block:110px;text-align:center}
+.final img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:rgba(5,11,31,.84)}
+.final .wrap{display:grid;gap:24px;justify-items:center}
+footer{border-top:1px solid var(--line);padding-block:30px calc(30px + env(safe-area-inset-bottom,0px));color:var(--muted);font-size:.92rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:12px 20px}
+footer a{color:var(--silver);text-decoration:none}
 
-@media (min-width:880px){
-  .hero{padding:72px 0 96px}
-  .hero .wrap{grid-template-columns:1.1fr .9fr}
-  .how .wrap{grid-template-columns:1fr auto}
-  .doors{grid-template-columns:repeat(3,1fr)}
-  .door{min-height:300px}
-  .offer{grid-template-columns:1fr 1fr;align-items:start}
-  .strip-track{padding:0 max(20px,calc((100vw - 1080px)/2))}
-}
-@media (max-width:520px){
-  .top .btn span{display:none}
-  .actions .btn{width:100%}
-}
-/* Vídeo de fundo (marca d'água em movimento): bem claro, atrás de tudo, sem som. */
-.bg-video{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.bg-video video{width:100%;height:100%;object-fit:cover;opacity:.18;filter:saturate(.85)}
-.bg-video::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,11,31,.45),rgba(5,11,31,.7))}
-@media (min-width:900px){.bg-video video{opacity:.14;filter:saturate(.85) blur(2px)}}
-/* Celular moderno (2026): borda fina escura, cantos bem arredondados, câmera em pílula. Genérico, sem marca. */
-.phone{border-radius:54px;padding:5px;background:linear-gradient(160deg,#4A4E57,#1D1F24 42%,#545862 58%,#202227);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14),0 30px 80px rgba(0,0,0,.55)}
-.phone .screen{border-radius:49px;padding-top:36px;position:relative}
-.phone::after{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:31%;height:27px;border-radius:999px;background:#05070C;z-index:3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-.phone::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:14%;border-radius:0 3px 3px 0;background:#3A3D45}
-.phone-small{border-radius:36px;padding:4px}
-.phone-small .screen{border-radius:32px;padding-top:24px}
-.phone-small::after{top:11px;height:16px}
-/* Exemplo de Reel em vídeo */
-.reel-wrap{display:grid;gap:28px;align-items:center}
-.reel-phone{justify-self:center;width:min(300px,78vw);margin:0}
-.reel-phone .screen{padding-top:0;aspect-ratio:9/16}
-.reel-phone video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
-.reel-phone::after{top:12px}
-.reel-phone figcaption{position:absolute;left:-20px;right:-20px;bottom:-36px;text-align:center;font-size:.88rem;color:var(--muted)}
-.reel-demo{padding-bottom:90px}
-@media (min-width:860px){.reel-wrap{grid-template-columns:1.1fr .9fr}}
-/* ===== Movimento (só com JS e sem "reduzir movimento"): .fx é ligada pelo script ===== */
-.progress{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--blue),var(--glow),#fff);z-index:20;pointer-events:none}
-.chip{position:absolute;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:rgba(14,20,36,.88);border:1px solid #2A3E77;color:var(--bright);font-size:.85rem;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.45);backdrop-filter:blur(6px);white-space:nowrap;pointer-events:none;z-index:4}
-.chip i{font-style:normal}
-.chip-a{left:-6%;top:14%}.chip-b{right:-4%;top:46%}.chip-c{left:-2%;bottom:10%}
-.hero-visual{position:relative;justify-self:center;perspective:900px}
-.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--glow),#fff 50%,var(--glow));background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
-.sticky-cta{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9;display:none;transform:translateY(140%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+/* Botão fixo do WhatsApp no celular */
+.sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(5,11,31,.92);backdrop-filter:blur(10px);transform:translateY(110%);transition:transform .3s}
 .sticky-cta.on{transform:none}
-.sticky-cta .btn{width:100%;box-shadow:0 14px 40px rgba(0,0,0,.55)}
-.replay{margin-top:14px;background:none;border:1.5px solid #34508F;color:var(--bright);border-radius:999px;min-height:42px;padding:0 18px;font:700 .9rem "Atkinson Hyperlegible",sans-serif;cursor:pointer}
-.replay:hover{border-color:var(--glow)}
-.typing{align-self:flex-start;display:none;gap:4px;padding:12px 14px;border-radius:20px;background:#262B3B;border-bottom-left-radius:6px}
-.typing b{width:7px;height:7px;border-radius:50%;background:#8C96AD;display:block}
-@media (max-width:879px){.sticky-cta{display:block}.chip-a{display:none}.chip-b{right:0}.chip-c{left:0}body.fx{padding-bottom:84px}}
-@media (prefers-reduced-motion:no-preference){
-  .fx .word{display:inline-block;opacity:0;transform:translateY(.7em) rotate(2deg);transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i)*70ms)}
-  .fx.go .word{opacity:1;transform:none}
-  .fx.go .hero h1 em{animation:shine 4s linear infinite}
-  @keyframes shine{to{background-position:-220% 0}}
-  .fx .hero .lead,.fx .hero .actions{opacity:0;transform:translateY(16px);transition:opacity .7s .55s,transform .7s .55s}
-  .fx.go .hero .lead,.fx.go .hero .actions{opacity:1;transform:none}
-  .fx .hero .grid .post{opacity:0;transform:scale(.6);transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1);transition-delay:calc(.5s + var(--i)*90ms)}
-  .fx.go .hero .grid .post{opacity:1;transform:none}
-  .fx .phone-hero{transform:none;animation:float 6s ease-in-out infinite}
-  @keyframes float{50%{transform:translateY(-12px) rotate(-1.5deg)}}
-  .fx .chip{opacity:0;transform:scale(.7) translateY(10px);transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}
-  .fx.go .chip{opacity:1;transform:none;animation:bob 5s ease-in-out infinite}
-  .fx.go .chip-a{transition-delay:1.3s;animation-delay:1.9s}.fx.go .chip-b{transition-delay:1.8s;animation-delay:2.4s}.fx.go .chip-c{transition-delay:2.3s;animation-delay:2.9s}
-  @keyframes bob{50%{translate:0 -8px}}
-  .fx .rv{opacity:0;transform:translateY(34px);transition:opacity .7s ease,transform .8s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d,0)*110ms)}
-  .fx .rv.in{opacity:1;transform:none}
-  .fx .post-big{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
-  .fx .post-big:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 26px 50px rgba(31,107,255,.35)}
-  .fx .door .post img{transition:transform .8s cubic-bezier(.2,.8,.2,1)}
-  .fx .door:hover .post img{transform:scale(1.12)}
-  .fx .door{transition:transform .25s ease-out;transform-style:preserve-3d;will-change:transform}
-  .fx .feature{position:relative;overflow:hidden;transition:transform .3s,border-color .3s}
-  .fx .feature::after{content:"";position:absolute;inset:0;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(73,163,255,.22),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
-  .fx .feature:hover{transform:translateY(-4px);border-color:var(--glow)}
-  .fx .feature:hover::after{opacity:1}
-  .fx .btn-whats{animation:pulse 2.8s ease-out infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,175,95,.55)}70%,100%{box-shadow:0 0 0 18px rgba(31,175,95,0)}}
-  .fx .steps li{opacity:.45;transition:opacity .5s}
-  .fx .steps li.in{opacity:1}
-  .fx .steps li::before{transition:background .4s,transform .4s,border-color .4s}
-  .fx .steps li.in::before{background:var(--blue);border-color:var(--glow);transform:scale(1.08)}
-  .fx .typing.show{display:flex}
-  .fx .typing.show b{animation:dot 1s infinite}.fx .typing.show b:nth-child(2){animation-delay:.15s}.fx .typing.show b:nth-child(3){animation-delay:.3s}
-  @keyframes dot{40%{transform:translateY(-5px);background:#fff}}
-}
-/* Moldura estilo iPhone 17 Pro Max (azul-profundo): corpo único, bordas finas, ilha dinâmica, botões laterais. Sem logos de marca. */
-.phone{border-radius:58px;padding:7px;background:linear-gradient(155deg,#8EA2CC 0%,#33436F 22%,#16203D 48%,#5C70A0 62%,#222F55 100%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22),inset 0 0 0 2px rgba(8,6,4,.7),0 34px 90px rgba(0,0,0,.6),0 0 60px rgba(31,107,255,.18)}
-.phone .screen{border-radius:51px;padding-top:40px;background:#080C18}
-.phone::after{top:14px;width:30%;height:28px;background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.phone::before{right:auto;left:-3px;top:15%;width:3px;height:30%;border-radius:3px 0 0 3px;background:linear-gradient(#7F92BC,#7F92BC) 0 0/100% 9%no-repeat,linear-gradient(#7F92BC,#7F92BC) 0 34%/100% 22%no-repeat,linear-gradient(#7F92BC,#7F92BC) 0 66%/100% 22%no-repeat}
-.phone .pwr{position:absolute;right:-3px;top:27%;width:3px;height:13%;border-radius:0 3px 3px 0;background:#7F92BC}
-.phone .home{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);width:34%;height:5px;border-radius:3px;background:rgba(255,255,255,.55);z-index:3;pointer-events:none}
-.phone-small{border-radius:38px}.phone-small .screen{border-radius:34px;padding-top:26px}
-.reel-phone .screen{padding-top:0}.reel-phone .home{display:none}
+.sticky-cta .btn{width:100%}
+@media (min-width:900px){.sticky-cta{display:none}}
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Agência de marketing digital com IA para pequenos negócios: sites, posts para Instagram, Reels, resposta automática no direct e logos.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Essencial (Instagram no Automático)", "price": "197", "priceCurrency": "BRL", "description": "Por mês: 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories, com postagem automática com aprovação, resposta automática que leva ao WhatsApp e código de pedido. Sem taxa de entrada.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "197", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Completo (Instagram no Automático com Vídeo)", "price": "697", "priceCurrency": "BRL", "description": "Por mês: 30 posts no feed, 30 Reels em vídeo de verdade e 60 stories, com postagem automática com aprovação, resposta automática e código de pedido. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site (site do seu negócio)", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Responde (Instagram com resposta automática)", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "É igual a um app de agendar post?", "acceptedAnswer": {"@type": "Answer", "text": "Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular."}}, {"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Para quem é a busca de clientes?", "acceptedAnswer": {"@type": "Answer", "text": "Para quem vende para empresas: vendedores, representantes comerciais, aluguel de equipamentos, energia solar, seguro e consórcio. A busca mostra empresas, não pessoas físicas."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "ProfessionalService", "@id": "https://flowarts.com.br/#empresa", "name": "Flow Arts", "url": "https://flowarts.com.br/", "logo": "https://flowarts.com.br/brand/flowarts-logo.webp", "image": "https://flowarts.com.br/brand/flowarts-logo.webp", "description": "Captador de clientes para vendedores e representantes comerciais: empresas da região com WhatsApp e mensagem pronta. E Instagram no automático, com aprovação pelo celular.", "slogan": "Ideas in motion", "areaServed": {"@type": "Country", "name": "Brasil"}, "taxID": "65.299.616/0001-50", "sameAs": ["https://www.instagram.com/flowarts2026/"], "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": "+55-21-96481-6185", "availableLanguage": "Portuguese"}, "makesOffer": [{"@type": "Offer", "name": "Essencial (Instagram no Automático)", "price": "197", "priceCurrency": "BRL", "description": "Por mês: 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories, com postagem automática com aprovação, resposta automática que leva ao WhatsApp e código de pedido. Sem taxa de entrada.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "197", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Completo (Instagram no Automático com Vídeo)", "price": "697", "priceCurrency": "BRL", "description": "Por mês: 30 posts no feed, 30 Reels em vídeo de verdade e 60 stories, com postagem automática com aprovação, resposta automática e código de pedido. Entrada de R$ 297.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "697", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "Site (site do seu negócio)", "price": "497", "priceCurrency": "BRL", "description": "Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. Inclui o 1º ano com domínio .com.br e hospedagem; depois, R$ 297 por ano com a renovação do domínio."}, {"@type": "Offer", "name": "Responde (Instagram com resposta automática)", "price": "197", "priceCurrency": "BRL", "description": "Resposta automática no direct e 10 posts prontos."}, {"@type": "Offer", "name": "Captador de clientes", "price": "97", "priceCurrency": "BRL", "description": "Ferramenta no painel para achar empresas com telefone e mensagem pronta para o WhatsApp.", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "97", "priceCurrency": "BRL", "unitText": "mês"}}, {"@type": "Offer", "name": "5 Reels com IA", "price": "147", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "10 posts prontos para Instagram", "price": "97", "priceCurrency": "BRL"}, {"@type": "Offer", "name": "Logo profissional", "price": "67", "priceCurrency": "BRL"}], "alternateName": ["Flow Arts Marketing", "Flow Arts Agência de Marketing"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "É igual a um app de agendar post?", "acceptedAnswer": {"@type": "Answer", "text": "Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular."}}, {"@type": "Question", "name": "Os posts saem sem eu ver?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste."}}, {"@type": "Question", "name": "Preciso dar a senha do meu Instagram?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser."}}, {"@type": "Question", "name": "Para quem é a busca de clientes?", "acceptedAnswer": {"@type": "Answer", "text": "Para quem vende para empresas: vendedores, representantes comerciais, aluguel de equipamentos, energia solar, seguro e consórcio. A busca mostra empresas, não pessoas físicas."}}, {"@type": "Question", "name": "Como eu pago?", "acceptedAnswer": {"@type": "Answer", "text": "No Pix. Os pacotes são de pagamento único e não têm fidelidade."}}]}]}</script>
 </head>
 <body>
-<div class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/video/fundo-vendedor.jpg"><source src="/video/fundo-vendedor.mp4" type="video/mp4"></video></div>
-<script>
-/* Quem pediu menos movimento ou economia de dados vê só a imagem parada. */
-(function(){var v=document.getElementById("bg-video");if(!v)return;var c=navigator.connection;
-if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||(c&&c.saveData)){v.removeAttribute("autoplay");v.pause();}})();
-</script>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#inicio"><img src="/brand/flowarts-symbol.webp" alt="" width="31" height="38">Flow Arts</a>
+    <a class="brand" href="#inicio"><img src="/brand/flowarts-symbol.webp" alt="" width="29" height="36">Flow Arts</a>
+    <nav aria-label="Seções">
+      <a href="#captador">Captador de clientes</a>
+      <a href="#instagram">Instagram</a>
+      <a href="#pacotes">Planos</a>
+    </nav>
     <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Flow%20Arts." target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
-      <span>Falar no WhatsApp</span>
+      <span>WhatsApp</span>
     </a>
   </div>
 </header>
 
 <main id="inicio">
 
-  <!-- 1. O feed é a vitrine: o celular com o perfil cheio é o destaque da página -->
-  <section class="hero">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline preload="metadata" poster="/video/fundo-vendedor.jpg"><source src="/video/fundo-vendedor.mp4" type="video/mp4"></video></div>
     <div class="wrap">
       <div class="hero-text">
-        <h1>Novos clientes todo dia no seu WhatsApp.</h1>
-        <p class="lead">Para vendedores e representantes comerciais. A Flow Arts acha empresas da sua região com WhatsApp, e o seu Instagram fica em dia como cartão de visita. Você só aprova pelo celular.</p>
+        <span class="tag"><i aria-hidden="true"></i>Captador de clientes</span>
+        <h1 id="hero-title">Novos clientes todo dia no seu WhatsApp.</h1>
+        <p class="lead">Para vendedores e representantes comerciais. Você escolhe o tipo de empresa e a cidade, e a Flow Arts entrega a lista só com quem tem WhatsApp, com a mensagem pronta para você chamar.</p>
         <div class="actions">
-          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Sou%20vendedor%20e%20quero%20ver%20como%20a%20Flow%20Arts%20acha%20clientes%20para%20mim." target="_blank" rel="noopener">Quero ver funcionando</a>
-          <a class="btn btn-line" href="#como-funciona">Como funciona</a>
+          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20ver%20quantos%20clientes%20o%20Captador%20acha%20na%20minha%20regi%C3%A3o." target="_blank" rel="noopener">Ver clientes da minha região</a>
+          <a class="btn btn-line" href="#captador">Como o Captador funciona</a>
         </div>
       </div>
 
-      <figure class="phone phone-hero reel-phone" aria-label="Vídeo: vendedor no carro acha um cliente novo no celular">
-        <div class="screen">
-          <video src="/video/reel-vendedor.mp4" poster="/video/reel-vendedor.jpg" autoplay muted loop playsinline preload="metadata"></video>
-        </div>
-      </figure>
-    </div>
-  </section>
-
-  <!-- 1b. Vídeo: comentário vira resposta no direct e contato no WhatsApp -->
-  <section class="section reel-demo" id="resposta-automatica" aria-labelledby="auto-title">
-    <div class="wrap reel-wrap">
       <div>
-        <h2 id="auto-title">Comentou? A resposta chega sozinha.</h2>
-        <p class="lead">Você combina uma palavra, como QUERO. Quando alguém comenta, recebe a mensagem no direct e vai direto para o seu WhatsApp.</p>
-        <div class="actions" style="margin-top:24px"><a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20o%20Instagram%20com%20resposta%20autom%C3%A1tica." target="_blank" rel="noopener">Quero este</a></div>
+        <figure class="app" aria-label="Exemplo da tela do Captador de clientes">
+          <div class="app-bar"><img src="/brand/flowarts-symbol.webp" alt=""><b>Captador de clientes</b><span>hoje</span></div>
+          <div class="app-search">
+            <div class="field"><small>Tipo de empresa</small><b>Construtoras</b></div>
+            <div class="field"><small>Cidade</small><b>Belo Horizonte MG</b></div>
+          </div>
+          <p class="app-count">✓ Só empresas com WhatsApp</p>
+          <ul class="leads">
+            <li class="lead-row" style="--i:0"><span class="ico" aria-hidden="true">C</span><div><b>Construtora Pedra Alta</b><small>Savassi · nota 4,8 no Google</small></div><span class="wa">WhatsApp</span></li>
+            <li class="lead-row" style="--i:1"><span class="ico" aria-hidden="true">E</span><div><b>Engeforte Obras</b><small>Pampulha · obra em andamento</small></div><span class="wa">WhatsApp</span></li>
+            <li class="lead-row" style="--i:2"><span class="ico" aria-hidden="true">M</span><div><b>Mineira Empreiteira</b><small>Barreiro · nota 4,6 no Google</small></div><span class="wa">WhatsApp</span></li>
+            <li class="lead-row" style="--i:3"><span class="ico" aria-hidden="true">R</span><div><b>Rocha &amp; Filhos Construções</b><small>Contagem · 12 anos no mapa</small></div><span class="wa">WhatsApp</span></li>
+          </ul>
+          <div class="app-msg"><small>Mensagem pronta</small>Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?</div>
+        </figure>
+        <p class="app-note">Tela de exemplo. Os nomes são ilustrativos.</p>
       </div>
-      <figure class="phone reel-phone">
-        <div class="screen">
-          <video id="auto-demo" src="/video/instagram-responde.mp4" poster="/video/instagram-responde.jpg" muted loop playsinline controls preload="none" aria-label="Demonstração: uma pessoa comenta QUERO, recebe a resposta no direct e chama no WhatsApp"></video>
-        </div>
-        <figcaption>Demonstração ilustrativa</figcaption>
-      </figure>
     </div>
   </section>
-<script>
-(function(){var v=document.getElementById("auto-demo");if(!v||!("IntersectionObserver" in window))return;var c=navigator.connection;
-if((window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)||(c&&c.saveData))return;
-new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){v.play&&v.play().catch(function(){});}else v.pause();});},{threshold:.5}).observe(v);})();
-</script>
 
-  <!-- 2. Exemplo de Reel em vídeo (plano com vídeo) -->
-  <section class="section reel-demo" aria-labelledby="reel-title">
-    <div class="wrap reel-wrap">
-      <div class="reel-text">
-        <h2 id="reel-title">Feito para quem vive de prospectar</h2>
-        <p class="intro">Aluguel de equipamentos, representante comercial, energia solar, seguro, consórcio. Você escolhe o tipo de empresa e a cidade. A Flow Arts traz a lista com WhatsApp e uma mensagem pronta para você chamar.</p>
-        <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20a%20busca%20de%20clientes%20da%20Flow%20Arts." target="_blank" rel="noopener">Quero buscar clientes</a>
+  <section class="band" id="captador" aria-labelledby="cap-title">
+    <div class="wrap">
+      <div class="band-head">
+        <h2 id="cap-title">Pare de procurar cliente. Comece a conversar com eles.</h2>
+        <p class="lead muted">O Captador fica no seu painel, no celular. É uma ferramenta de busca feita para quem vende para empresas.</p>
       </div>
-      <figure class="phone reel-phone">
+      <div class="cap">
+        <div class="cap-photo"><picture><source srcset="/img/vendedores/carro.webp" type="image/webp"><img src="/img/vendedores/carro.jpg" alt="Vendedor no carro sorrindo ao ver um cliente novo no celular" width="1600" height="900" loading="lazy"></picture></div>
+        <ul class="feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><div><b>Escolha o tipo de empresa e a cidade</b>Construtoras, lojas, distribuidoras, galpões. Na sua cidade e nos bairros que você atende.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5Z"/></svg><div><b>Só quem tem WhatsApp</b>Telefone fixo fica de fora. Você não perde tempo com número que não responde.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H8l-4 4V5Z"/><path d="M8 9h8M8 12h5"/></svg><div><b>Mensagem pronta para chamar</b>Um toque abre o WhatsApp com a conversa já escrita. Você ajusta se quiser e envia.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><b>Lembrete de retorno</b>Marque quem pediu para falar depois. O painel lembra você no dia certo.</div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="who-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="band-head"><h2 id="who-title">Para quem vende para empresas</h2></div>
+      <div class="who">
+        <figure><picture><source srcset="/img/vendedores/obra.webp" type="image/webp"><img src="/img/vendedores/obra.jpg" alt="Vendedor conversando com o mestre de obras num canteiro" width="1000" height="1250" loading="lazy"></picture><figcaption><b>Aluguel de equipamentos</b><span>Construtoras, empreiteiras e obras</span></figcaption></figure>
+        <figure><picture><source srcset="/img/vendedores/representante.webp" type="image/webp"><img src="/img/vendedores/representante.jpg" alt="Representante comercial com catálogo na porta de uma loja de ferramentas" width="1000" height="1250" loading="lazy"></picture><figcaption><b>Representante comercial</b><span>Lojas, distribuidoras e revendas</span></figcaption></figure>
+        <figure><picture><source srcset="/img/vendedores/solar.webp" type="image/webp"><img src="/img/vendedores/solar.jpg" alt="Vendedor de energia solar apertando a mão de um empresário em frente a um galpão" width="1000" height="1250" loading="lazy"></picture><figcaption><b>Energia solar</b><span>Galpões, comércios e indústrias</span></figcaption></figure>
+        <figure><picture><source srcset="/img/vendedores/lista.webp" type="image/webp"><img src="/img/vendedores/lista.jpg" alt="Vendedor organizando a lista de contatos do dia no notebook" width="1000" height="1250" loading="lazy"></picture><figcaption><b>Seguro e consórcio</b><span>Empresas e frotas da região</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="como-funciona" aria-labelledby="how-title" style="background:linear-gradient(180deg,var(--ink),#081232 50%,var(--ink))">
+    <div class="wrap how">
+      <div style="display:grid;gap:28px">
+        <h2 id="how-title">Como funciona</h2>
+        <ol class="steps">
+          <li><div><b>Você diz o que vende e onde atende</b><span class="muted">Pelo WhatsApp, em uma conversa rápida.</span></div></li>
+          <li><div><b>O Captador traz as empresas</b><span class="muted">Só com WhatsApp, com endereço e nota no Google.</span></div></li>
+          <li><div><b>Você chama com a mensagem pronta</b><span class="muted">E anota quem pediu retorno, tudo no celular.</span></div></li>
+        </ol>
+      </div>
+      <video id="obra" src="/video/obra-vendedor.mp4" poster="/video/obra-vendedor.jpg" muted loop playsinline controls preload="none" aria-label="Vídeo: vendedor de equipamentos fecha negócio com o mestre de obras"></video>
+    </div>
+  </section>
+
+  <section class="band" id="instagram" aria-labelledby="insta-title">
+    <div class="wrap insta">
+      <figure class="phone">
         <div class="screen">
           <video id="reel-demo" src="/video/reel-vendedor-2.mp4" poster="/video/reel-vendedor-2.jpg" muted loop playsinline controls preload="none" aria-label="Vídeo: vendedor no carro se anima ao achar um cliente novo no celular">Seu navegador não toca vídeo. <a href="/video/reel-vendedor-2.mp4">Abrir o vídeo</a>.</video>
         </div>
         <figcaption>Vídeo ilustrativo, criado com IA</figcaption>
       </figure>
-    </div>
-  </section>
-<script>
-/* Toca sem som só quando aparece na tela; para fora dela. Quem pediu menos movimento aperta o play. */
-(function(){var v=document.getElementById("reel-demo");if(!v||!("IntersectionObserver" in window))return;
-if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){v.play().catch(function(){});}else{v.pause();}});},{threshold:.5}).observe(v);})();
-</script>
-
-  <!-- 3. Cena real do público: vendedor na obra -->
-  <section class="section" id="obra" aria-labelledby="obra-title">
-    <div class="wrap">
-      <h2 id="obra-title">Menos tempo procurando. Mais tempo vendendo.</h2>
-      <p class="intro">Em vez de passar o dia no Google, você já sai de casa sabendo quem visitar e com quem falar no WhatsApp.</p>
-      <video src="/video/obra-vendedor.mp4" poster="/video/obra-vendedor.jpg" muted loop playsinline controls preload="none" style="width:100%;border-radius:18px;margin-top:20px" aria-label="Vídeo: vendedor de equipamentos fecha negócio com o mestre de obras"></video>
-    </div>
-  </section>
-
-  <!-- 4. Como funciona: a conversa animada é o único movimento da página -->
-  <section class="section how" id="como-funciona" aria-labelledby="how-title">
-    <div class="wrap">
-      <div>
-        <h2 id="how-title">Como funciona</h2>
-        <ol class="steps">
-          <li><b>Você escolhe o tipo de empresa e a cidade</b>pelo celular</li>
-          <li><b>A Flow Arts traz a lista</b>só com quem tem WhatsApp</li>
-          <li><b>Você chama com a mensagem pronta</b>e o seu Instagram fica em dia sozinho</li>
-        </ol>
-        <a class="btn btn-line" href="/demo">Ver um painel de exemplo</a>
-      </div>
-      <figure class="phone phone-chat" aria-label="Exemplo: uma cliente comenta QUERO e recebe a resposta no direct">
-        <div class="screen" id="screen">
-          <div class="screen-head">
-            <img src="/brand/flowarts-symbol.webp" alt="">
-            <div><b>seu.perfil</b><small>Resposta automática</small></div>
-          </div>
-          <div class="chat">
-            <div class="comment step s1"><b>carlos.obras</b> comentou: QUERO</div>
-            <div class="bubble from-brand step s2">Oi, Carlos! Te mandei a tabela 📋</div>
-            <div class="bubble from-client step s3">Show! Quero um orçamento 👍</div>
-            <div class="wa step s4">● Novo contato no seu WhatsApp</div>
-          </div>
+      <div style="display:grid;gap:22px;min-width:0">
+        <h2 id="insta-title">E o seu Instagram vira cartão de visita.</h2>
+        <p class="lead muted">Quando você chama uma empresa, o dono olha o seu perfil. A Flow Arts deixa ele em dia, sem você parar de vender.</p>
+        <ul class="checks">
+          <li>Posts, carrosséis, stories e Reels prontos com a cara do seu trabalho</li>
+          <li>Nada sai sem você aprovar no celular</li>
+          <li>Posta sozinho no horário certo</li>
+          <li>Quem comenta a palavra combinada recebe a sua mensagem no direct</li>
+        </ul>
+        <div class="chat" aria-label="Exemplo de resposta automática">
+          <p class="c1"><b>carlos.obras</b> comentou: QUERO</p>
+          <p class="c2">Oi, Carlos! Te mandei a tabela 📋</p>
+          <p class="c3">Show! Quero um orçamento 👍</p>
         </div>
-      </figure>
+      </div>
     </div>
   </section>
 
-  <!-- 5. Para quem é -->
-  <section class="section niches" aria-labelledby="niche-title">
+  <section class="band" id="comparar" aria-labelledby="cmp-title">
     <div class="wrap">
-      <h2 id="niche-title">Para quem vende para empresas</h2>
-      <ul class="steps">
-        <li><b>Aluguel de equipamentos</b>construtoras, empreiteiras e obras</li>
-        <li><b>Representante comercial</b>lojas, distribuidoras e revendas</li>
-        <li><b>Energia solar</b>galpões, comércios e indústrias</li>
-        <li><b>Seguro e consórcio</b>empresas e frotas da região</li>
+      <div class="band-head">
+        <h2 id="cmp-title">Procurar cliente no Google cansa.</h2>
+        <p class="lead muted">Você perde horas copiando telefone, e metade nem tem WhatsApp.</p>
+      </div>
+      <div class="cmp">
+        <article><h3>Procurar sozinho</h3><ul><li class="no">Horas no Google e no mapa</li><li class="no">Muito telefone fixo, sem WhatsApp</li><li class="no">Lista bagunçada no caderno</li></ul></article>
+        <article><h3>Comprar lista pronta</h3><ul><li class="ok">Vem muita empresa de uma vez</li><li class="no">Contatos velhos e de outras regiões</li><li class="no">Ninguém sabe quem você é</li></ul></article>
+        <article class="us"><h3>Flow Arts</h3><ul><li class="ok">Empresas da sua região, com WhatsApp</li><li class="ok">Mensagem pronta para chamar</li><li class="ok">Instagram em dia como cartão de visita</li></ul>
+          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20a%20busca%20de%20clientes%20da%20Flow%20Arts." target="_blank" rel="noopener">Quero buscar clientes</a></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="pacotes" aria-labelledby="pack-title">
+    <div class="wrap">
+      <div class="band-head">
+        <h2 id="pack-title">Escolha por onde começar</h2>
+        <p class="lead muted">Pague no Pix. Sem fidelidade. Nada sai sem a sua aprovação.</p>
+      </div>
+      <div class="plans">
+        <article class="plan plan-star">
+          <span class="pill">Para achar clientes</span>
+          <h3>Captador <small>de clientes</small></h3>
+          <p class="price">R$ 97 <small>por mês</small></p>
+          <ul>
+            <li>Busca por tipo de empresa, cidade e bairro</li>
+            <li>Só empresas com WhatsApp</li>
+            <li>Mensagem pronta e lembrete de retorno</li>
+            <li>Tudo no painel, pelo celular</li>
+          </ul>
+          <a class="btn btn-whats" href="/cadastro?plano=captador">Contratar o Captador</a>
+        </article>
+        <article class="plan">
+          <h3>Essencial <small>· Instagram no Automático</small></h3>
+          <p class="price">R$ 197 <small>por mês, sem entrada</small></p>
+          <ul>
+            <li>Todo mês: 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories</li>
+            <li>Postagem automática no horário certo, depois da sua aprovação</li>
+            <li>Resposta automática que leva ao seu WhatsApp</li>
+            <li>Fundador: os 3 primeiros clientes pagam R$ 147 por mês nos 3 primeiros meses (até 30/11/2026)</li>
+            <li>Sem fidelidade: para sair, é só avisar no WhatsApp</li>
+          </ul>
+          <a class="btn btn-whats" href="/cadastro?plano=essencial">Contratar o Essencial</a>
+        </article>
+        <article class="plan">
+          <h3>Completo <small>· Instagram no Automático com Vídeo</small></h3>
+          <p class="price">R$ 697 <small>por mês + R$ 297 de entrada</small></p>
+          <ul>
+            <li>Todo mês: 30 posts no feed, 30 Reels e 60 stories</li>
+            <li>Reels com vídeo de verdade, com movimento, feitos com IA</li>
+            <li>Resposta automática e postagem com a sua aprovação</li>
+            <li>Sem fidelidade: para sair, é só avisar no WhatsApp</li>
+          </ul>
+          <a class="btn btn-whats" href="/cadastro?plano=completo">Contratar o Completo</a>
+        </article>
+        <article class="plan">
+          <h3>Site <small>· site do seu negócio</small></h3>
+          <p class="price">R$ 497 <small>pagamento único</small></p>
+          <ul>
+            <li>Site de 1 página com botão para o seu WhatsApp, pronto em até 5 dias</li>
+            <li>1º ano incluso: domínio .com.br, hospedagem e ajustes pequenos</li>
+            <li>Depois do 1º ano: R$ 297 por ano (ou R$ 29 por mês), já com a renovação do domínio</li>
+          </ul>
+          <a class="btn btn-whats" href="/cadastro?plano=site">Contratar o Site</a>
+        </article>
+      </div>
+      <ul class="more">
+        <li><h3>Responde <small>· resposta automática + 10 posts</small></h3><b>R$ 197 <small>pagamento único</small></b><a href="/cadastro?plano=responde">Contratar</a></li>
+        <li><h3>Reels 5 <small>com IA</small></h3><b>R$ 147</b><a href="/cadastro?plano=reels5">Contratar</a></li>
+        <li><h3>Posts 10 <small>prontos</small></h3><b>R$ 97</b><a href="/cadastro?plano=posts10">Contratar</a></li>
+        <li><h3>Logo <small>profissional</small></h3><b>R$ 67</b><a href="/cadastro?plano=logo">Contratar</a></li>
       </ul>
     </div>
   </section>
 
-  <!-- 5b. Comparação (21/10): app de agendar post x social media x Flow Arts. Sem citar marcas nem preço de terceiros. -->
-  <section class="section" id="comparar" aria-labelledby="cmp-title">
+  <section class="band" id="perguntas" aria-labelledby="faq-title">
     <div class="wrap">
-      <h2 id="cmp-title">Procurar cliente no Google cansa.</h2>
-      <p class="intro">Você perde horas copiando telefone, e metade nem tem WhatsApp.</p>
-      <div class="cmp">
-        <article class="cmp-col">
-          <h3>Procurar sozinho</h3>
-          <ul>
-            <li class="no">Horas no Google e no mapa</li>
-            <li class="no">Muito telefone fixo, sem WhatsApp</li>
-            <li class="no">Lista bagunçada no caderno</li>
-          </ul>
-        </article>
-        <article class="cmp-col">
-          <h3>Comprar lista pronta</h3>
-          <ul>
-            <li class="ok">Vem muita empresa de uma vez</li>
-            <li class="no">Contatos velhos e de outras regiões</li>
-            <li class="no">Ninguém sabe quem você é</li>
-          </ul>
-        </article>
-        <article class="cmp-col cmp-us">
-          <h3>Flow Arts</h3>
-          <ul>
-            <li class="ok">Empresas da sua região, com WhatsApp</li>
-            <li class="ok">Mensagem pronta para chamar</li>
-            <li class="ok">Instagram em dia como cartão de visita</li>
-          </ul>
-          <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20a%20busca%20de%20clientes%20da%20Flow%20Arts." target="_blank" rel="noopener">Quero buscar clientes</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. Pacotes: preço grande, poucas palavras -->
-  <section class="section" id="pacotes" aria-labelledby="pack-title">
-    <div class="wrap">
-      <h2 id="pack-title">Escolha por onde começar</h2>
-      <p class="intro">Escolha, cadastre e pague no Pix em 4 passos. Sem fidelidade. Nada sai sem a sua aprovação.</p>
-      <article class="feature plan">
-        <h3>Essencial <small>· Instagram no Automático</small></h3>
-        <p class="price">R$ 197 <small>por mês, sem entrada</small></p>
-        <ul>
-          <li>Todo mês: 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories, feitos com as fotos do seu negócio</li>
-          <li>Postagem automática no horário certo, depois da sua aprovação</li>
-          <li>Painel no celular com os posts e os números do seu Instagram</li>
-          <li>Resposta automática: quem comenta a palavra combinada recebe no direct o botão do seu WhatsApp</li>
-          <li>Código de pedido no fim de cada post, para você contar os pedidos que vieram do Instagram</li>
-          <li>Fundador: os 3 primeiros clientes pagam R$ 147 por mês nos 3 primeiros meses (até 30/11/2026)</li>
-          <li>Garantia: se no 1º mês você não gostar dos posts, devolvemos o valor do mês</li>
-          <li>Sem fidelidade: para sair, é só avisar no WhatsApp</li>
-        </ul>
-        <a class="btn btn-whats" href="/cadastro?plano=essencial">Contratar o Essencial</a>
-      </article>
-      <article class="feature plan">
-        <h3>Completo <small>· Instagram no Automático com Vídeo</small></h3>
-        <p class="price">R$ 697 <small>por mês + R$ 297 de entrada</small></p>
-        <ul>
-          <li>Todo mês: 30 posts no feed (carrosséis e imagens), 30 Reels e 60 stories</li>
-          <li>Reels com vídeo de verdade, com movimento, feitos com IA</li>
-          <li>Resposta automática que leva ao seu WhatsApp e código de pedido, como no Básico</li>
-          <li>Postagem automática no horário certo, depois da sua aprovação</li>
-          <li>Painel no celular com os posts e os números do seu Instagram</li>
-          <li>Sem fidelidade: para sair, é só avisar no WhatsApp</li>
-        </ul>
-        <a class="btn btn-whats" href="/cadastro?plano=completo">Contratar o Completo</a>
-      </article>
-      <article class="feature site-pack">
-        <h3>Site <small>· site do seu negócio</small></h3>
-        <p class="price">R$ 497 <small>pagamento único</small></p>
-        <ul>
-          <li>Site de 1 página com fotos, serviços, horário e mapa</li>
-          <li>Botão que leva o cliente direto para o seu WhatsApp</li>
-          <li>Feito para aparecer no Google e abrir bem no celular</li>
-          <li>Pronto em até 5 dias</li>
-          <li>1º ano incluso: domínio .com.br, hospedagem e ajustes pequenos</li>
-          <li>Depois do 1º ano: R$ 297 por ano (ou R$ 29 por mês), já com a renovação do domínio</li>
-        </ul>
-        <a class="btn btn-whats" href="/cadastro?plano=site">Contratar o Site</a>
-      </article>
-      <div class="offer">
-        <article class="feature">
-          <h3>Responde <small>· Instagram com resposta automática</small></h3>
-          <p class="price">R$ 197 <small>pagamento único</small></p>
-          <ul>
-            <li>Resposta automática no direct quando alguém comenta a palavra combinada (ex.: QUERO)</li>
-            <li>A pessoa vai direto para o seu WhatsApp</li>
-            <li>10 posts prontos</li>
-          </ul>
-          <a class="btn btn-whats" href="/cadastro?plano=responde">Contratar o Responde</a>
-        </article>
-        <ul class="more">
-          <li><h3>Captador <small>de clientes</small></h3><b>R$ 97/mês</b><a href="/cadastro?plano=captador">Contratar</a></li>
-          <li><h3>Reels 5 <small>com IA</small></h3><b>R$ 147</b><a href="/cadastro?plano=reels5">Contratar</a></li>
-          <li><h3>Posts 10 <small>prontos</small></h3><b>R$ 97</b><a href="/cadastro?plano=posts10">Contratar</a></li>
-          <li><h3>Logo <small>profissional</small></h3><b>R$ 67</b><a href="/cadastro?plano=logo">Contratar</a></li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. Perguntas: fechadas, só abre quem quer ler -->
-  <section class="section" id="perguntas" aria-labelledby="faq-title">
-    <div class="wrap">
-      <h2 id="faq-title">Perguntas frequentes</h2>
+      <div class="band-head"><h2 id="faq-title">Perguntas frequentes</h2></div>
       <div class="faq">
-        <details><summary>É igual a um app de agendar post?</summary><p>Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular.</p></details>        <details><summary>Os posts saem sem eu ver?</summary><p>Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste.</p></details>
-        <details><summary>Preciso dar a senha do meu Instagram?</summary><p>Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser.</p></details>
         <details><summary>Para quem é a busca de clientes?</summary><p>Para quem vende para empresas: vendedores, representantes comerciais, aluguel de equipamentos, energia solar, seguro e consórcio. A busca mostra empresas, não pessoas físicas.</p></details>
-        <details><summary>Como eu pago?</summary><p>No Pix. Os pacotes são de pagamento único e não têm fidelidade.</p></details>
+        <details><summary>De onde vêm os contatos?</summary><p>De dados públicos de mapas, como o Google Maps e o mapa aberto (OpenStreetMap). Só aparecem empresas com WhatsApp, e cada mensagem traz a opção de não receber mais contato.</p></details>
+        <details><summary>É igual a um app de agendar post?</summary><p>Não. O app só agenda: a foto, o texto e a ideia continuam com você. Na Flow Arts, a IA cria os posts e você só aprova pelo celular.</p></details>
+        <details><summary>Os posts saem sem eu ver?</summary><p>Não. Cada post fica esperando a sua aprovação no painel. Você pode aprovar ou pedir ajuste.</p></details>
+        <details><summary>Preciso dar a senha do meu Instagram?</summary><p>Não. Você conecta o Instagram pelo login oficial da Meta, e pode desconectar quando quiser.</p></details>
+        <details><summary>Como eu pago?</summary><p>No Pix. Sem fidelidade: para sair, é só avisar no WhatsApp.</p></details>
       </div>
     </div>
   </section>
 
-  <section class="final">
+  <section class="final" aria-labelledby="final-title">
+    <img class="bg" src="/img/vendedores/carro.jpg" alt="" loading="lazy">
     <div class="wrap">
-      <img src="/brand/flowarts-logo.webp" alt="Flow Arts — Ideas in motion" width="720" height="892" loading="lazy">
-      <h2>Quer ver quantos clientes tem na sua região?</h2>
+      <img src="/brand/flowarts-symbol.webp" alt="" width="58" height="72" loading="lazy">
+      <h2 id="final-title">Quer ver quantos clientes tem na sua região?</h2>
+      <p class="lead">Diga o que você vende e a sua cidade. A gente mostra o resultado no WhatsApp.</p>
       <a class="btn btn-whats" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20ver%20quantos%20clientes%20tem%20na%20minha%20regi%C3%A3o." target="_blank" rel="noopener">Quero ver na minha região</a>
     </div>
   </section>
@@ -550,7 +449,7 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
 
 <footer>
   <div class="wrap">
-    <span>Flow Arts — CNPJ 65.299.616/0001-50</span>
+    <span>Flow Arts — 65.299.616 Rodrigo Alexandre de Carvalho — CNPJ 65.299.616/0001-50</span>
     <nav aria-label="Rodapé">
       <a href="https://www.instagram.com/flowarts2026/" target="_blank" rel="noopener">Instagram</a>
       <a href="/privacidade">Privacidade</a>
@@ -560,165 +459,33 @@ new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){
 </footer>
 
 <script>
-// Posts do site: imagens reais geradas pelo Nexus (Flow Arts e demo Café Brisa). Para trocar, edite a lista.
-// Enquanto um arquivo não existe, aparece um bloco provisório no lugar.
-(function () {
-  var POSTS = [
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-13:1000/generated-fec642cd-3be1-4456-b2fe-38f916e49c24.jpg", alt: "Café com pão de queijo saindo do forno", tag: "" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1800/generated-c949c495-7010-4084-8103-4b7e3ee38cb8.jpg", alt: "Mesa de café com bolo, pão de queijo e celular", tag: "cafe" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900/generated-95e02ec9-2d37-4ea6-b7fd-da25eaed467c.jpg", alt: "Barista sorrindo e mostrando o celular", tag: "" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-13:1900-carousel-4/generated-7f4f81f4-4734-4d76-9474-cd188e976971.jpg", alt: "Post com o convite Comente QUERO", tag: "" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1400/generated-3eb4f456-3c77-4b74-85e7-73d3397d3c54.jpg", alt: "Café e doces numa mesa de madeira", tag: "" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1200/generated-5720abb3-f51f-469b-97a1-eb54c76477ab.jpg", alt: "Dois celulares mostrando fotos de produtos", tag: "" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900-carousel-4/generated-9e9bf15b-3e94-48c0-a029-9e72f52cd478.jpg", alt: "Dona de cafeteria sorrindo atrás do balcão", tag: "" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-11:1000/generated-1532f731-5418-40f2-b1b4-412a88a0d93a.jpg", alt: "Café da manhã com vista para o Pão de Açúcar", tag: "" },
-    { src: "/media/posts/demo-cafe/agentcore:demo-cafe:2026-10-12:1000/generated-941d816b-ce4f-48a9-90c4-c9d62549eeeb.jpg", alt: "Cappuccino e pão de queijo perto da janela", tag: "" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-11:1900-carousel-3/generated-5eba9ec8-496e-4f32-af6c-d41d95686a37.jpg", alt: "Dona de negócio sorrindo na sua loja", tag: "salao" },
-    { src: "/media/posts/primeiro-teste/agentcore:primeiro-teste:2026-10-12:1900-carousel-3/generated-b13e9370-0822-41e4-b58b-8a79da202a2a.jpg", alt: "Balcão com doces e celular mostrando o feed", tag: "lanche" }
-  ];
-  function tile(post, big) {
-    var box = document.createElement("div");
-    box.className = big ? "post post-big" : "post";
-    var img = new Image();
-    img.src = post.src; img.alt = post.alt; img.loading = "lazy"; img.decoding = "async";
-    img.onerror = function () { box.classList.add("placeholder"); img.remove(); };
-    box.appendChild(img);
-    return box;
-  }
-  document.querySelectorAll("[data-posts]").forEach(function (el) {
-    var n = Number(el.getAttribute("data-posts")), start = Number(el.getAttribute("data-start") || 0), big = el.hasAttribute("data-big");
-    for (var i = 0; i < n; i++) el.appendChild(tile(POSTS[(start + i) % POSTS.length], big));
-  });
-  document.querySelectorAll("[data-post]").forEach(function (el) {
-    var tag = el.getAttribute("data-post");
-    var post = POSTS.filter(function (p) { return p.tag === tag; })[0];
-    if (post) el.insertBefore(tile(post, false), el.firstChild);
-  });
-  // Uma única animação: a conversa aparece quando o celular entra na tela.
-  var screen = document.getElementById("screen");
-  if (!("IntersectionObserver" in window)) { screen.classList.add("play"); return; }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) { if (e.isIntersecting) { screen.classList.add("play"); io.disconnect(); } });
-  }, { threshold: 0.35 });
-  io.observe(screen);
-})();
-</script>
-<script>
-/* Movimento da página. Sem JS ou com "reduzir movimento" ligado, tudo aparece parado e normal. */
+/* Uma só animação: as empresas chegam na lista do Captador. Com "reduzir movimento" ou economia de dados, tudo aparece parado. */
 (function () {
   var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var c = navigator.connection, lite = !!(c && c.saveData);
-  var body = document.body, root = document.documentElement;
-
-  // Botão fixo do WhatsApp no celular (aparece depois do topo). Útil mesmo sem animação.
+  var v = document.getElementById("bg-video");
+  if (v && (calm || lite)) { v.removeAttribute("autoplay"); v.pause(); }
+  if (!calm) { document.body.classList.add("fx"); requestAnimationFrame(function () { setTimeout(function () { document.body.classList.add("go"); }, 60); }); }
+  // Vídeos das seções tocam sem som só quando aparecem
+  if ("IntersectionObserver" in window && !calm) {
+    ["reel-demo", "obra"].forEach(function (id) {
+      var el = document.getElementById(id); if (!el) return;
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { el.play && el.play().catch(function () {}); } else el.pause(); }); }, { threshold: .5 }).observe(el);
+    });
+  }
+  // Botão fixo do WhatsApp no celular
   var wa = document.querySelector(".top .btn-whats");
   if (wa) {
     var bar = document.createElement("div"); bar.className = "sticky-cta";
-    var a = wa.cloneNode(true); a.querySelector("span") && (a.querySelector("span").style.display = "inline");
-    a.href = a.href.replace(/text=[^&]*/, "text=" + encodeURIComponent("Olá! Sou vendedor e quero ver como a Flow Arts acha clientes para mim."));
-    bar.appendChild(a); body.appendChild(bar);
-    var tick = false;
-    addEventListener("scroll", function () { if (tick) return; tick = true; requestAnimationFrame(function () { tick = false; bar.classList.toggle("on", scrollY > 520); }); }, { passive: true });
+    var a = wa.cloneNode(true);
+    a.href = a.href.replace(/text=[^&]*/, "text=" + encodeURIComponent("Olá! Quero ver quantos clientes o Captador acha na minha região."));
+    a.querySelector("span").textContent = "Ver clientes da minha região";
+    bar.appendChild(a); document.body.appendChild(bar);
+    var t = false;
+    addEventListener("scroll", function () { if (t) return; t = true; requestAnimationFrame(function () { t = false; bar.classList.toggle("on", scrollY > 560); }); }, { passive: true });
   }
-  if (calm || lite) return;
-  body.classList.add("fx");
-
-  // Barra de progresso de rolagem
-  var pb = document.createElement("div"); pb.className = "progress"; pb.setAttribute("aria-hidden", "true"); body.appendChild(pb);
-  function prog() { var h = root.scrollHeight - innerHeight; pb.style.transform = "scaleX(" + (h > 0 ? Math.min(1, scrollY / h) : 0) + ")"; }
-  addEventListener("scroll", function () { requestAnimationFrame(prog); }, { passive: true }); prog();
-
-  // Título: palavra por palavra, com a palavra-chave brilhando
-  var h1 = document.querySelector(".hero h1");
-  if (h1) {
-    var txt = h1.textContent.trim(); h1.setAttribute("aria-label", txt); h1.textContent = "";
-    txt.split(" ").forEach(function (w, i) {
-      var s = document.createElement("span"); s.className = "word"; s.style.setProperty("--i", i); s.setAttribute("aria-hidden", "true");
-      if (/^clientes/i.test(w)) { var em = document.createElement("em"); em.textContent = w; s.appendChild(em); } else s.textContent = w;
-      h1.appendChild(s); h1.appendChild(document.createTextNode(" "));
-    });
-  }
-
-  // Celular do topo: etiquetas flutuantes + inclinação que acompanha o dedo/mouse
-  var ph = document.querySelector(".phone-hero");
-  if (ph) {
-    var vis = document.createElement("div"); vis.className = "hero-visual"; ph.parentNode.insertBefore(vis, ph); vis.appendChild(ph);
-    [["chip-a", "✅", "Post aprovado"], ["chip-b", "💬", "Novo contato no WhatsApp"], ["chip-c", "📈", "Feed sempre em dia"]].forEach(function (d) {
-      var el = document.createElement("div"); el.className = "chip " + d[0]; el.setAttribute("aria-hidden", "true");
-      el.innerHTML = "<i>" + d[1] + "</i>" + d[2]; vis.appendChild(el);
-    });
-    vis.addEventListener("pointermove", function (e) {
-      var r = vis.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      ph.style.animation = "none"; ph.style.transform = "rotateY(" + (x * 16) + "deg) rotateX(" + (-y * 12) + "deg)";
-    });
-    vis.addEventListener("pointerleave", function () { ph.style.transform = ""; ph.style.animation = ""; });
-  }
-  document.querySelectorAll(".hero .grid .post").forEach(function (p, i) { p.style.setProperty("--i", i); });
-
-  // Entrada do topo (espera as fontes para não pular)
-  function go() { body.classList.add("go"); }
-  (document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(function (r) { setTimeout(r, 900); })]) : Promise.resolve()).then(function () { requestAnimationFrame(go); });
-
-  // Aparecer ao rolar
-  var targets = document.querySelectorAll(".section h2,.section .intro,.section .hint,.reel-wrap>*,.door,.feature,.more li,.faq details,.final img,.final h2,.final .btn,.steps li,.gallery .strip");
-  targets.forEach(function (el) {
-    el.classList.add("rv");
-    var sib = Array.prototype.indexOf.call(el.parentNode.children, el);
-    el.style.setProperty("--d", Math.min(sib, 4));
-  });
-  var io = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
-  }, { threshold: .15, rootMargin: "0px 0px -6% 0px" });
-  targets.forEach(function (el) { io.observe(el); });
-
-  // Inclinação 3D nas portas e brilho que segue o mouse nos pacotes
-  if (matchMedia("(hover:hover)").matches) {
-    document.querySelectorAll(".door").forEach(function (d) {
-      d.addEventListener("pointermove", function (e) {
-        var r = d.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-        d.style.transform = "perspective(700px) rotateY(" + (x * 10) + "deg) rotateX(" + (-y * 8) + "deg) scale(1.02)";
-      });
-      d.addEventListener("pointerleave", function () { d.style.transform = ""; });
-    });
-    document.querySelectorAll(".feature").forEach(function (f) {
-      f.addEventListener("pointermove", function (e) {
-        var r = f.getBoundingClientRect(); f.style.setProperty("--mx", (e.clientX - r.left) + "px"); f.style.setProperty("--my", (e.clientY - r.top) + "px");
-      });
-    });
-  }
-
-  // Conversa: digitando..., botão "Ver de novo"
-  var scr = document.getElementById("screen"), chat = scr && scr.querySelector(".chat");
-  if (chat) {
-    var ty = document.createElement("div"); ty.className = "typing"; ty.setAttribute("aria-hidden", "true"); ty.innerHTML = "<b></b><b></b><b></b>";
-    chat.insertBefore(ty, chat.querySelector(".s3"));
-    var rb = document.createElement("button"); rb.type = "button"; rb.className = "replay"; rb.textContent = "↻ Ver a conversa de novo";
-    scr.closest("figure").appendChild(rb);
-    var timers = [];
-    function run() {
-      timers.forEach(clearTimeout); timers = [];
-      scr.classList.remove("play"); ty.classList.remove("show"); void scr.offsetWidth; scr.classList.add("play");
-      timers.push(setTimeout(function () { ty.classList.add("show"); }, 1700));
-      timers.push(setTimeout(function () { ty.classList.remove("show"); }, 2300));
-    }
-    rb.addEventListener("click", run);
-    new IntersectionObserver(function (es, o) { if (es[0].isIntersecting) { run(); o.disconnect(); } }, { threshold: .5 }).observe(scr);
-  }
-
-  // Passos de "Como funciona" acendem em sequência
-  var steps = document.querySelectorAll(".steps li");
-  if (steps.length) new IntersectionObserver(function (es, o) {
-    if (es[0].isIntersecting) { o.disconnect(); steps.forEach(function (s, i) { setTimeout(function () { s.classList.add("in"); }, 500 + i * 700); }); }
-  }, { threshold: .4 }).observe(steps[0].parentNode);
-
-  // Galeria: uma dica de que dá para arrastar
-  var strip = document.querySelector(".strip");
-  if (strip) new IntersectionObserver(function (es, o) {
-    if (es[0].isIntersecting) { o.disconnect(); strip.scrollTo({ left: 90, behavior: "smooth" }); setTimeout(function () { strip.scrollTo({ left: 0, behavior: "smooth" }); }, 900); }
-  }, { threshold: .6 }).observe(strip);
 })();
 </script>
-<script>document.querySelectorAll(".phone").forEach(function(p){var a=document.createElement("i");a.className="pwr";a.setAttribute("aria-hidden","true");var h=document.createElement("i");h.className="home";h.setAttribute("aria-hidden","true");p.appendChild(a);p.appendChild(h);});</script>
 <script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){var nb=function(o){navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{type:"text/plain"}))};nb({p:location.pathname,r:document.referrer,d:(location.search.match(/[?&]de=([a-z]+)/)||[])[1]});document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({p:location.pathname,e:"whatsapp"})},true)}}catch(e){}</script>
 </body>
 </html>
