@@ -34,6 +34,7 @@ import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
 import { handleViralRadarRoute, handleFacebookCallback, runViralRadar } from "./viral-radar.js";
 import { handlePushRoute } from "./push.js";
 import { handleCaptadorMaster } from "./captador.js";
+import { handleAdsMaster } from "./ads.js";
 import { runAllClientDaily } from "./captador-daily.js";
 import { handleClientCampaignMaster } from "./client-campaign.js";
 import { handleManualReelMaster } from "./manual-reel.js";
@@ -676,6 +677,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleCaptadorMaster(request, env, url, listClients);
+      if (response) return response;
+    }
+
+    // Tráfego pago (24/10): quem pode impulsionar e quem já conectou a conta de anúncios. Só com login do Master.
+    if (url.pathname === "/api/master/ads") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleAdsMaster(request, env, url, listClients);
       if (response) return response;
     }
 

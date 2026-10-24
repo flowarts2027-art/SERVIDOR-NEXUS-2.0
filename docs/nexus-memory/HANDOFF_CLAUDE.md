@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-24 09h50 BRT — Tráfego pago: botão Impulsionar pronto, desligado até a Meta liberar
+- **Decisões do Rodrigo (24/10):** a verba do anúncio é paga no **cartão do cliente, direto na Meta** (não passa pela Flow Arts); a Flow Arts cobra a gestão no plano **Tráfego, R$ 397/mês** (Pix, como os outros planos).
+- **Feito:** `cloudflare/src/ads.js` (pedido de impulsionamento, conexão pelo login do Facebook com Página + conta de anúncios, criação de campanha → conjunto → criativo do post do Instagram → anúncio com botão do WhatsApp; apaga a campanha se der erro no meio), rotas `/api/portal/ads*` e `/api/master/ads`, plano `trafego` em `plans.js`, `public/ads.js` (botão "🚀 Impulsionar" nos posts publicados, formulário com valor/dia, dias, cidade, raio e confirmação do total; bloco "Anúncios" em Conta), bloco "Tráfego para clientes" no Master, card do plano e pergunta no site. O login do Facebook usa o mesmo retorno do Radar (`/api/oauth/facebook/callback`), sem configurar nada novo no app.
+- **Desligado:** só funciona com `NEXUS_ADS=on` na Cloudflare, depois que a Meta aprovar `ads_management` (e a verificação da empresa). Enquanto isso o painel mostra "aguardando liberação" e guarda quem tentou impulsionar (aparece no Master).
+- **Não testado com a Meta de verdade** (sem permissão ainda). Testes locais: 597/597. Ao ligar, testar primeiro com a Flow Arts e R$ 10/dia.
+- **Próximo passo:** pedir na análise do app da Meta as permissões `ads_management`, `ads_read`, `business_management`, `pages_show_list`, `pages_read_engagement`, `instagram_basic`; depois criar `NEXUS_ADS=on`.
+
 ## 2026-10-24 08h00 BRT — Site: vídeos com som, Captador animado e pacote para pessoa física (PR #406)
 - **Pedido do Rodrigo:** continuar as alterações do site flowarts.com.br.
 - **Feito (branch `site-som-captador`, `public/site.html` e 2 vídeos):** vídeos da obra e do Reel com som (começam mudos; a pessoa liga). O painel do Captador no topo troca de busca sozinho: 5 exemplos (construtoras BH, distribuidoras Campinas, galpões Curitiba, transportadoras Goiânia, lojas de materiais Recife), cada um com mensagem pronta. Nomes ilustrativos. Parado para quem pede menos movimento; pausa fora da tela.

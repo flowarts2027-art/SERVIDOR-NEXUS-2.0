@@ -251,6 +251,37 @@
     loadAccess();
   });
 
+  // Tráfego pago (24/10): quem pode impulsionar, quem conectou a conta de anúncios e quem já pediu.
+  async function loadAds() {
+    const box = $("#ads-access-list");
+    if (!box) return;
+    try {
+      const data = await call(API + "/ads");
+      const note = $("#ads-live-note");
+      if (note) note.textContent = data.live
+        ? "Ligado: a Meta liberou. O cliente conecta a conta de anúncios e impulsiona pelo painel."
+        : "Esperando a Meta liberar a permissão de anúncios (ads_management). Depois, criar NEXUS_ADS=on na Cloudflare.";
+      box.innerHTML = (data.clients || []).map(c => `<div class="captador-row">
+          <label><input type="checkbox" data-ads-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
+          <span><b>${esc(c.name)}</b><small>${esc(c.id)}</small></span>
+          <em>${c.enabled ? (c.byPlan ? "Ligado (plano Tráfego)" : "Ligado") : "Desligado"}</em></label>
+          <small style="display:block;margin:6px 0 0 32px">${c.connection ? "Conta de anúncios: " + esc(c.connection.adAccountName || c.connection.adAccountId) + (c.connection.needsPayment ? " · sem cartão" : "") : "Conta de anúncios não conectada"}${c.interest ? " · tentou impulsionar " + Number(c.interest.count || 0) + "x" : ""}</small>
+        </div>`).join("") || '<p class="muted">Nenhum cliente cadastrado.</p>';
+    } catch (error) {
+      box.innerHTML = `<p class="muted">Não consegui carregar. ${esc(error.message)}</p>`;
+    }
+  }
+
+  document.addEventListener("change", async event => {
+    const input = event.target.closest?.("[data-ads-client]");
+    if (!input) return;
+    input.disabled = true;
+    try { await call(API + "/ads", { method: "POST", body: JSON.stringify({ clientId: input.dataset.adsClient, enabled: input.checked }) }); }
+    catch { input.checked = !input.checked; }
+    input.disabled = false;
+    loadAds();
+  });
+
   // Imagem por IA para clientes: liga/desliga e limite do mês por cliente.
   async function loadAiAccess() {
     const box = $("#ai-images-access-list");
@@ -281,7 +312,7 @@
     loadAiAccess();
   });
 
-  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); loadAiAccess(); }));
-  if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); loadAiAccess(); }
-  document.addEventListener("nexus:view", event => { if (event.detail === "odin") { load(); loadAccess(); loadAiAccess(); } });
+  document.querySelectorAll('[data-view="odin"]').forEach(button => button.addEventListener("click", () => { load(); loadAccess(); loadAiAccess(); loadAds(); }));
+  if (document.getElementById("odin")?.classList.contains("active")) { load(); loadAccess(); loadAiAccess(); loadAds(); }
+  document.addEventListener("nexus:view", event => { if (event.detail === "odin") { load(); loadAccess(); loadAiAccess(); loadAds(); } });
 })();
