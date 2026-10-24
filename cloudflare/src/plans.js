@@ -27,7 +27,7 @@ export const PLANS = Object.freeze([
     ]
   },
   {
-    id: "completo", name: "Completo", kind: "mensal", price: 69700, setup: 29700,
+    id: "completo", name: "Completo", kind: "mensal", price: 69700, setup: 0,
     summary: "Tudo do Essencial, com Reels em vídeo de verdade.",
     quotas: { feed: 30, reels: 30, stories: 60 },
     includes: [

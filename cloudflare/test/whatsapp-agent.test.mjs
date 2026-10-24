@@ -24,7 +24,8 @@ test("WhatsApp webhook verifies Meta signature before processing", () => {
 
 test("Flow Arts knowledge has the approved prices and no legacy streaming text", () => {
   const prompt = knowledgePrompt(CLIENT);
-  assert.match(prompt, /R\$ 297 de entrada \+ R\$ 697 por mês/);
+  assert.match(prompt, /R\$ 697 por mês, sem taxa de entrada/);
+  assert.doesNotMatch(prompt, /R\$ 297 de entrada/);
   assert.match(prompt, /3 primeiros clientes/);
   assert.match(prompt, /Global Play/); // aparece só como proibição
   assert.match(prompt, /Nunca citar a Global Play/);
