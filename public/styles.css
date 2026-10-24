@@ -233,6 +233,7 @@
 .captador-row{padding:12px 0;border-bottom:1px solid var(--line);font-size:17px}
 .captador-row>label{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;cursor:pointer}
 .captador-row>label input{width:20px;height:20px;margin:0}
+.captador-row>.captador-pf{display:flex;gap:10px;align-items:center;margin:8px 0 0 32px;font-size:15px;cursor:pointer}.captador-pf input{width:18px;height:18px;margin:0}.captador-pf small{display:block;color:var(--muted)}
 .captador-row b,.captador-row small{display:block}
 .captador-row small{color:var(--muted);font-size:14px;margin-top:2px}
 .captador-row em{font-style:normal;font-size:14px;color:var(--muted)}

@@ -2,11 +2,12 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
-## 2026-10-24 08h00 BRT — Site: vídeos com som e Captador animado no topo (PR #406)
+## 2026-10-24 08h00 BRT — Site: vídeos com som, Captador animado e pacote para pessoa física (PR #406)
 - **Pedido do Rodrigo:** continuar as alterações do site flowarts.com.br.
 - **Feito (branch `site-som-captador`, `public/site.html` e 2 vídeos):** vídeos da obra e do Reel com som (começam mudos; a pessoa liga). O painel do Captador no topo troca de busca sozinho: 5 exemplos (construtoras BH, distribuidoras Campinas, galpões Curitiba, transportadoras Goiânia, lojas de materiais Recife), cada um com mensagem pronta. Nomes ilustrativos. Parado para quem pede menos movimento; pausa fora da tela.
-- **Testes:** 593/593, sobre a `main` 5dde3bc.
-- **Ainda falta (decisão do Rodrigo):** pacote só de Instagram para quem vende a pessoa física (ex.: Maskara), sem a busca de leads no painel.
+- **Testes:** 594/594, sobre a `main` 5dde3bc.
+- **Pacote pessoa física (pedido do Rodrigo, 24/10):** site mostra "Você vende para empresas?" (Captador + Essencial) e "Você vende para pessoa física?" (Essencial ou Completo, só Instagram) e uma pergunta nova no FAQ. No painel do cliente, quem vende para pessoa física não vê a aba Buscar. No Master (Prospecção › Captador para clientes) há a caixinha "Vende para pessoa física". Padrão automático pelo nicho (despachante, CAC, armas = pessoa física; resto = empresas). `cloudflare/src/captador.js` (`audience` no acesso), `public/captador.js` v11, `public/prospects-ui.js` v16.
+- **Pendente:** Rodrigo apontou que o vídeo `reel-vendedor-2.mp4` fala "cliente" duas vezes; a sessão não tem como transcrever o áudio, então espera ele dizer o trecho.
 - **Estado:** PR #406 aguardando o OK do Rodrigo; o merge publica o site.
 
 ## 2026-10-23 20h50 BRT — Site novo: público agora é VENDEDOR e REPRESENTANTE
