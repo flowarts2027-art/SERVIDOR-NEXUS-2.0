@@ -131,15 +131,25 @@ export function defaultAudience(client = {}) {
   return PESSOA_FISICA_HINT.test(text) ? "pessoas" : "empresas";
 }
 
+// Brinde (24/10, pedido do Rodrigo): o plano Completo já vem com o Captador ligado
+// para quem vende para empresas. O Master ainda pode desligar (giftOff).
+export function planGivesCaptador(client = {}) {
+  const plan = client?.config?.plan || client?.plan;
+  if (!plan || typeof plan !== "object") return false;
+  if (Array.isArray(plan.gifts) && plan.gifts.includes("captador")) return true;
+  return String(plan.id || "").toLowerCase() === "completo";
+}
+
 async function readAccess(env, clientId, client = null) {
   const access = await readState(env, String(clientId || ""), "access", { enabled: false });
   const limit = Math.round(Number(access.monthlyLimit));
   const audience = AUDIENCES.includes(access.audience) ? access.audience : defaultAudience(client || {});
-  return { enabled: access.enabled === true, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT, audience };
+  const gift = Boolean(client && planGivesCaptador(client) && audience === "empresas" && access.giftOff !== true);
+  return { enabled: access.enabled === true || gift, gift, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT, audience };
 }
 
-export async function captadorEnabled(env, clientId) {
-  return (await readAccess(env, clientId)).enabled;
+export async function captadorEnabled(env, clientId, client = null) {
+  return (await readAccess(env, clientId, client)).enabled;
 }
 
 // Buscas já feitas pelo cliente neste mês.
@@ -161,7 +171,9 @@ export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit, au
     if (!Number.isFinite(limit) || limit < 0 || limit > CAPTADOR_MAX_LIMIT) throw new Error("limit_invalid");
   }
   const on = enabled === undefined ? current.enabled : Boolean(enabled);
-  await writeState(env, id, "access", { enabled: on, monthlyLimit: limit, audience: who, updatedAt: new Date().toISOString() });
+  const saved = await readState(env, id, "access", {});
+  const giftOff = enabled === undefined ? saved.giftOff === true : enabled === false;
+  await writeState(env, id, "access", { enabled: on, monthlyLimit: limit, audience: who, giftOff, updatedAt: new Date().toISOString() });
   return { ok: true, clientId: id, enabled: on, monthlyLimit: limit, audience: who };
 }
 
@@ -384,7 +396,7 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
 // A lista vai direto para a tela do cliente, sem guardar.
 export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch) {
   await ensureCaptadorSchema(env);
-  if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+  if (!(await captadorEnabled(env, client.id, client))) throw new Error("captador_disabled");
   const niche = canonicalNiche(body.niche);
   if (!CAPTADOR_NICHES[niche] || !clientNiches(client).includes(niche)) throw new Error("niche_invalid");
   const city = clean(body.city, 60);
@@ -571,19 +583,19 @@ export async function handleCaptadorPortal(request, env, url, client, fetcher = 
     }
     if (request.method !== "POST") return send({ ok: false, error: "not_found" }, 404);
     if (url.pathname === "/api/portal/captador/material") {
-      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+      if (!(await captadorEnabled(env, client.id, client))) throw new Error("captador_disabled");
       const form = await request.formData().catch(() => null);
       return send({ ok: true, material: await saveCaptadorMaterial(env, client, form) });
     }
     if (url.pathname === "/api/portal/captador/material/clear") {
-      if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+      if (!(await captadorEnabled(env, client.id, client))) throw new Error("captador_disabled");
       return send({ ok: true, material: await clearCaptadorMaterial(env, client) });
     }
     const body = await request.json().catch(() => ({}));
     if (url.pathname === "/api/portal/captador/search") {
       return send(await runCaptadorSearch(env, client, body, fetcher));
     }
-    if (!(await captadorEnabled(env, client.id))) throw new Error("captador_disabled");
+    if (!(await captadorEnabled(env, client.id, client))) throw new Error("captador_disabled");
     if (url.pathname === "/api/portal/captador/daily") {
       return send({ ok: true, daily: await saveClientDailySettings(env, client, body) });
     }
@@ -644,7 +656,7 @@ export async function handleCaptadorMaster(request, env, url, listClients) {
         const id = String(client?.id || "");
         if (!id) continue;
         const access = await readAccess(env, id, client);
-        rows.push({ id, name: String(client.name || id), enabled: access.enabled, monthlyLimit: access.monthlyLimit, audience: access.audience, usedMonth: await captadorUsage(env, id) });
+        rows.push({ id, name: String(client.name || id), enabled: access.enabled, gift: access.gift, monthlyLimit: access.monthlyLimit, audience: access.audience, usedMonth: await captadorUsage(env, id) });
       }
       return send({ ok: true, price: CAPTADOR_PRICE, defaultLimit: CAPTADOR_MONTHLY_LIMIT, clients: rows });
     }

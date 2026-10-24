@@ -203,7 +203,7 @@
       box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row" data-audience="${c.audience === "pessoas" ? "pessoas" : "empresas"}">
           <label><input type="checkbox" data-captador-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${esc(c.id)}</small></span>
-          <em>${c.enabled ? "Ligado" : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
+          <em>${c.enabled ? (c.gift ? "Ligado (brinde do Completo)" : "Ligado") : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
           <label class="captador-pf"><input type="checkbox" data-captador-pf="${esc(c.id)}" ${c.audience === "pessoas" ? "checked" : ""}>
           <span>Vende para pessoa física <small>(só Instagram: a aba Buscar some do painel)</small></span></label>
           <form class="captador-limit" data-captador-limit="${esc(c.id)}">
@@ -260,7 +260,7 @@
       box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row" data-audience="${c.audience === "pessoas" ? "pessoas" : "empresas"}">
           <label><input type="checkbox" data-ai-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${c.artSource === "ai" ? "Escolheu: criar com IA" : c.artSource === "own" ? "Escolheu: artes prontas" : "Ainda não escolheu"}</small></span>
-          <em>${c.enabled ? "Ligado" : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
+          <em>${c.enabled ? (c.gift ? "Ligado (brinde do Completo)" : "Ligado") : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
           <label class="captador-pf"><input type="checkbox" data-captador-pf="${esc(c.id)}" ${c.audience === "pessoas" ? "checked" : ""}>
           <span>Vende para pessoa física <small>(só Instagram: a aba Buscar some do painel)</small></span></label>
           <p class="captador-limit"><small>${Number(c.campaignLimit) ? `Usou ${Number(c.usedCampaign || 0)} de ${Number(c.campaignLimit)} da campanha` : "Sem campanha salva"}</small></p>
