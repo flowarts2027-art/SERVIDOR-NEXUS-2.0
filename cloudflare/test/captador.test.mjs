@@ -182,7 +182,7 @@ test("Master liga o Captador por cliente; portal e telas existem", async () => {
   assert.deepEqual(data.clients.map(c => c.monthlyLimit), [100, 100]);
   const change = new Request("https://x/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: beto.id, monthlyLimit: 300 }) });
   assert.deepEqual(await (await handleCaptadorMaster(change, env, new URL(change.url), listClients)).json(),
-    { ok: true, clientId: beto.id, enabled: false, monthlyLimit: 300 });
+    { ok: true, clientId: beto.id, enabled: false, monthlyLimit: 300, audience: "empresas" });
   const bad = new Request("https://x/api/master/captador/access", { method: "POST", body: JSON.stringify({ clientId: beto.id, monthlyLimit: -5 }) });
   assert.equal((await handleCaptadorMaster(bad, env, new URL(bad.url), listClients)).status, 400);
 
@@ -259,4 +259,14 @@ test("Quatree (ração): só tipos de pet e agro, cidades de Uberlândia e regi�
   assert.ok(UBERLANDIA_REGION.cities.length >= 30 && UBERLANDIA_REGION.cities.includes("Uberlândia MG"));
   assert.ok(UBERLANDIA_REGION.bairros.includes("Santa Mônica"));
   assert.equal(clientRegion({ id: "y", niche: "Café", config: {} }), null);
+});
+
+// 24/10: quem vende para pessoa física não vê a aba Buscar.
+import { defaultAudience as audienceOf } from "../src/captador.js";
+import test2 from "node:test";
+import assert2 from "node:assert/strict";
+test2("cliente que vende para pessoa física fica sem a busca", () => {
+  assert2.equal(audienceOf({ niche: "despachante de documentação de armas para CACs" }), "pessoas");
+  assert2.equal(audienceOf({ niche: "aluguel de equipamentos para construção" }), "empresas");
+  assert2.equal(audienceOf({}), "empresas");
 });

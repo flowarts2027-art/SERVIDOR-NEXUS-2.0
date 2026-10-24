@@ -200,10 +200,12 @@
     if (!box) return;
     try {
       const data = await call(API + "/captador/access");
-      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row">
+      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row" data-audience="${c.audience === "pessoas" ? "pessoas" : "empresas"}">
           <label><input type="checkbox" data-captador-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${esc(c.id)}</small></span>
-          <em>${c.enabled ? "Ligado" : "Desligado"}</em></label>
+          <em>${c.enabled ? "Ligado" : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
+          <label class="captador-pf"><input type="checkbox" data-captador-pf="${esc(c.id)}" ${c.audience === "pessoas" ? "checked" : ""}>
+          <span>Vende para pessoa física <small>(só Instagram: a aba Buscar some do painel)</small></span></label>
           <form class="captador-limit" data-captador-limit="${esc(c.id)}">
             <label>Buscas por mês <input type="number" name="limit" min="0" max="3000" step="1" value="${Number(c.monthlyLimit ?? 100)}" inputmode="numeric"></label>
             <button type="submit" class="ghost">Salvar</button>
@@ -222,18 +224,28 @@
     const button = form.querySelector("button");
     button.disabled = true;
     try {
-      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.captadorLimit, monthlyLimit: Number(form.limit.value) }) });
+      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: form.dataset.captadorLimit, monthlyLimit: Number(form.limit.value), audience: form.closest(".captador-row")?.dataset.audience }) });
       button.textContent = "Salvo!";
       setTimeout(loadAccess, 900);
     } catch { button.disabled = false; button.textContent = "Erro, tente de novo"; }
   });
 
   document.addEventListener("change", async event => {
+    const pf = event.target.closest?.("[data-captador-pf]");
+    if (pf) {
+      pf.disabled = true;
+      try {
+        await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: pf.dataset.captadorPf, audience: pf.checked ? "pessoas" : "empresas" }) });
+      } catch { pf.checked = !pf.checked; }
+      pf.disabled = false;
+      loadAccess();
+      return;
+    }
     const input = event.target.closest?.("[data-captador-client]");
     if (!input) return;
     input.disabled = true;
     try {
-      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.captadorClient, enabled: input.checked }) });
+      await call(API + "/captador/access", { method: "POST", body: JSON.stringify({ clientId: input.dataset.captadorClient, enabled: input.checked, audience: input.closest(".captador-row")?.dataset.audience }) });
     } catch { input.checked = !input.checked; }
     input.disabled = false;
     loadAccess();
@@ -245,10 +257,12 @@
     if (!box) return;
     try {
       const data = await call(API + "/ai-images/access");
-      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row">
+      box.innerHTML = (data.clients || []).length ? data.clients.map(c => `<div class="captador-row" data-audience="${c.audience === "pessoas" ? "pessoas" : "empresas"}">
           <label><input type="checkbox" data-ai-client="${esc(c.id)}" ${c.enabled ? "checked" : ""}>
           <span><b>${esc(c.name)}</b><small>${c.artSource === "ai" ? "Escolheu: criar com IA" : c.artSource === "own" ? "Escolheu: artes prontas" : "Ainda não escolheu"}</small></span>
-          <em>${c.enabled ? "Ligado" : "Desligado"}</em></label>
+          <em>${c.enabled ? "Ligado" : c.audience === "pessoas" ? "Escondido" : "Desligado"}</em></label>
+          <label class="captador-pf"><input type="checkbox" data-captador-pf="${esc(c.id)}" ${c.audience === "pessoas" ? "checked" : ""}>
+          <span>Vende para pessoa física <small>(só Instagram: a aba Buscar some do painel)</small></span></label>
           <p class="captador-limit"><small>${Number(c.campaignLimit) ? `Usou ${Number(c.usedCampaign || 0)} de ${Number(c.campaignLimit)} da campanha` : "Sem campanha salva"}</small></p>
         </div>`).join("") : '<p class="muted">Nenhum cliente cadastrado.</p>';
     } catch (error) {

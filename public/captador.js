@@ -221,11 +221,33 @@
     if (DEMO) { data = { enabled: false }; render(); return; }
     try {
       data = await call("/api/portal/captador?status=" + encodeURIComponent(status === "novo" ? "enviado" : status));
+      if (data?.hidden) { audienceChecked = true; hideSearchTab(); return; }
       render();
     } catch (error) {
       box.innerHTML = `<div class="empty"><strong>Não consegui abrir o Captador</strong>${esc(error.message)}</div>`;
     }
   }
+
+  // Quem vende para pessoa física (24/10) não usa a busca: a aba "Buscar" some do painel.
+  let audienceChecked = false;
+  function hideSearchTab() {
+    document.querySelectorAll('[data-tab="buscar"]').forEach(button => { button.hidden = true; });
+    const section = $("#tab-buscar");
+    if (section && !section.hidden) {
+      section.hidden = true;
+      document.querySelector('.tabbar [data-tab="inicio"]')?.click();
+    }
+  }
+  async function checkAudience() {
+    if (DEMO || audienceChecked) return;
+    try {
+      const info = await call("/api/portal/captador?status=enviado");
+      audienceChecked = true;
+      if (info?.hidden) hideSearchTab();
+    } catch { /* antes do login: tenta de novo no próximo toque no menu */ }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", checkAudience);
+  else checkAudience();
 
   function alertLine(text) {
     note = text;
@@ -348,6 +370,7 @@
   document.addEventListener("click", async event => {
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
+    if (!audienceChecked && target.closest(".tabbar, .more-menu")) checkAudience();
     if (target.closest('.tabbar [data-tab="buscar"]')) { load(); return; }
     const tab = target.closest("[data-cap-tab]");
     if (tab) { status = tab.dataset.capTab; note = ""; load(); return; }

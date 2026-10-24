@@ -120,10 +120,22 @@ async function writeState(env, clientId, key, value) {
   ).bind(key, clientId, JSON.stringify(value)).run();
 }
 
-async function readAccess(env, clientId) {
+// Para quem o cliente vende (24/10, pedido do Rodrigo): "empresas" ou "pessoas" (pessoa física).
+// Quem vende para pessoa física (ex.: despachante de CAC) recebe só o Instagram:
+// a aba "Buscar" some do painel dele, porque a busca só traz empresas.
+export const AUDIENCES = Object.freeze(["empresas", "pessoas"]);
+const PESSOA_FISICA_HINT = /despachante|\bcacs?\b|atirador|\barmas?\b|pessoa f[ií]sica|consumidor final/i;
+
+export function defaultAudience(client = {}) {
+  const text = [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
+  return PESSOA_FISICA_HINT.test(text) ? "pessoas" : "empresas";
+}
+
+async function readAccess(env, clientId, client = null) {
   const access = await readState(env, String(clientId || ""), "access", { enabled: false });
   const limit = Math.round(Number(access.monthlyLimit));
-  return { enabled: access.enabled === true, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT };
+  const audience = AUDIENCES.includes(access.audience) ? access.audience : defaultAudience(client || {});
+  return { enabled: access.enabled === true, monthlyLimit: Number.isFinite(limit) && limit >= 0 ? limit : CAPTADOR_MONTHLY_LIMIT, audience };
 }
 
 export async function captadorEnabled(env, clientId) {
@@ -137,18 +149,20 @@ export async function captadorUsage(env, clientId) {
 }
 
 // Liga/desliga e, se vier, muda o limite do mês daquele cliente.
-export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit) {
+export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit, audience) {
   const id = String(clientId || "").trim();
   if (!id) throw new Error("client_id_required");
   const current = await readAccess(env, id);
+  if (audience !== undefined && audience !== null && audience !== "" && !AUDIENCES.includes(audience)) throw new Error("audience_invalid");
+  const who = AUDIENCES.includes(audience) ? audience : current.audience;
   let limit = current.monthlyLimit;
   if (monthlyLimit !== undefined && monthlyLimit !== null && monthlyLimit !== "") {
     limit = Math.round(Number(monthlyLimit));
     if (!Number.isFinite(limit) || limit < 0 || limit > CAPTADOR_MAX_LIMIT) throw new Error("limit_invalid");
   }
   const on = enabled === undefined ? current.enabled : Boolean(enabled);
-  await writeState(env, id, "access", { enabled: on, monthlyLimit: limit, updatedAt: new Date().toISOString() });
-  return { ok: true, clientId: id, enabled: on, monthlyLimit: limit };
+  await writeState(env, id, "access", { enabled: on, monthlyLimit: limit, audience: who, updatedAt: new Date().toISOString() });
+  return { ok: true, clientId: id, enabled: on, monthlyLimit: limit, audience: who };
 }
 
 export function defaultConfig(client = {}) {
@@ -478,8 +492,10 @@ export async function skipCaptadorLead(env, client, id) {
 }
 
 export async function captadorView(env, client, status = "enviado") {
-  const enabled = await captadorEnabled(env, client.id);
-  if (!enabled) return { ok: true, enabled: false, price: CAPTADOR_PRICE };
+  const access = await readAccess(env, client.id, client);
+  const enabled = access.enabled;
+  if (!enabled && access.audience === "pessoas") return { ok: true, enabled: false, hidden: true, audience: "pessoas" };
+  if (!enabled) return { ok: true, enabled: false, price: CAPTADOR_PRICE, audience: access.audience };
   await ensureCaptadorSchema(env);
   const filter = CAP_STATUSES.includes(status) && status !== "novo" ? status : "enviado";
   const config = await captadorConfig(env, client);
@@ -627,14 +643,14 @@ export async function handleCaptadorMaster(request, env, url, listClients) {
       for (const client of clients) {
         const id = String(client?.id || "");
         if (!id) continue;
-        const access = await readAccess(env, id);
-        rows.push({ id, name: String(client.name || id), enabled: access.enabled, monthlyLimit: access.monthlyLimit, usedMonth: await captadorUsage(env, id) });
+        const access = await readAccess(env, id, client);
+        rows.push({ id, name: String(client.name || id), enabled: access.enabled, monthlyLimit: access.monthlyLimit, audience: access.audience, usedMonth: await captadorUsage(env, id) });
       }
       return send({ ok: true, price: CAPTADOR_PRICE, defaultLimit: CAPTADOR_MONTHLY_LIMIT, clients: rows });
     }
     if (request.method === "POST") {
       const body = await request.json().catch(() => ({}));
-      return send(await setCaptadorAccess(env, body.clientId, typeof body.enabled === "boolean" ? body.enabled : undefined, body.monthlyLimit));
+      return send(await setCaptadorAccess(env, body.clientId, typeof body.enabled === "boolean" ? body.enabled : undefined, body.monthlyLimit, body.audience));
     }
   } catch (error) {
     return send({ ok: false, error: String(error?.message || error).slice(0, 80) }, 400);
