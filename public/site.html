@@ -89,34 +89,72 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero .tag i{width:8px;height:8px;border-radius:50%;background:var(--whats);box-shadow:0 0 0 4px rgba(34,184,102,.25)}
 @media (min-width:980px){.hero{padding-block:88px 110px}.hero .wrap{grid-template-columns:1.05fr .95fr}}
 
-/* A tela do Captador (desenhada em HTML, sem imagem de IA) */
-.app{width:100%;max-width:520px;justify-self:center;border-radius:22px;background:#0D1A3D;border:1px solid #2A3F7A;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 6px rgba(47,116,255,.08);overflow:hidden}
-.app-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #22356A;background:#0A1533}
-.app-bar img{width:26px;height:26px}
-.app-bar b{color:var(--white);font-size:1rem}
-.app-bar span{margin-left:auto;font-size:.82rem;color:var(--muted)}
-.app-search{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 18px}
-.field{border-radius:12px;background:#081127;border:1px solid #263B73;padding:8px 12px;min-width:0}
-.field small{display:block;font-size:.75rem;color:var(--muted)}
-.field b{display:block;color:var(--white);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.app-count{padding:0 18px 10px;font-size:.9rem;color:#9BE7BC;font-weight:700}
-.leads{list-style:none;margin:0;padding:0 10px 12px;display:grid;gap:8px}
-.lead-row{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#0A1636;border:1px solid #1D2F62}
-.lead-row .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font:700 1rem var(--serif);color:var(--white);background:linear-gradient(150deg,#2B4FB0,#16295E)}
-.lead-row div{min-width:0}
-.lead-row b{display:block;color:var(--white);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lead-row small{display:block;color:var(--muted);font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lead-row .wa{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--whats);color:#04140B;font-weight:700;font-size:.85rem;white-space:nowrap}
-.lead-row .wa svg{width:15px;height:15px}
-.app-msg{margin:4px 18px 18px;padding:12px 14px;border-radius:14px;background:#0F2A1D;border:1px solid #1F5C3B;color:#CDEFD9;font-size:.9rem;line-height:1.5}
-.app-msg small{display:block;color:#7FD3A3;font-weight:700;margin-bottom:4px}
-.field b.typing::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:var(--glow);animation:pisca .8s steps(1) infinite}
+/* A tela do Captador: igual ao painel do cliente no celular (24/10, pedido do Rodrigo).
+   Desenhada em HTML, sem imagem de IA. Mesmas cores do painel (client-lite.css). */
+.app{width:100%;max-width:400px;justify-self:center;border-radius:36px;padding:10px;background:#05080F;border:1px solid #2A3F7A;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 6px rgba(47,116,255,.08)}
+.ph{border-radius:28px;overflow:hidden;background:#F4F6FA;color:#16233F;font-family:"Atkinson Hyperlegible",system-ui,sans-serif;display:flex;flex-direction:column;height:660px}
+.ph-top{background:#0F1E3D;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.ph-top b{display:block;font-size:1.15rem}
+.ph-top small{display:flex;align-items:center;gap:7px;color:#C8D4F0;font-size:.82rem}
+.ph-top small i{width:9px;height:9px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.2)}
+.ph-top span{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:1rem}
+.ph-body{flex:1;overflow:hidden;padding:12px 14px 0;position:relative}
+.ph-body::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(transparent,#F4F6FA)}
+.ph-title{font-size:1.15rem;font-weight:700;margin:0 0 8px}
+.ph-search{background:#fff;border:1px solid #D5DCE8;border-radius:14px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field{min-width:0}
+.field small{display:block;font-size:.78rem;font-weight:700;color:#16233F;margin-bottom:3px}
+.field b{display:block;border:1.5px solid #D5DCE8;border-radius:9px;padding:6px 9px;font-size:.86rem;font-weight:400;min-height:33px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff}
+.ph-go{grid-column:1/-1;border-radius:999px;background:#2B63F0;color:#fff;text-align:center;font-weight:700;padding:7px;font-size:.88rem}
+.app-count{margin:8px 0 0;font-size:.85rem;color:#17895E;font-weight:700}
+.app-count.busca{color:#2B63F0}
+.ph-tabs{display:flex;gap:6px;margin:8px 0;overflow:hidden}
+.ph-tabs span{flex:none;border:1.5px solid #D5DCE8;background:#fff;color:#5B6680;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700}
+.ph-tabs .on{background:#E6EDFF;color:#0F1E3D;border-color:#2B63F0}
+.leads{list-style:none;margin:0;padding:0 0 12px;display:grid;gap:8px;transition:opacity .35s}
+.leads.sai{opacity:0}
+.lead-row{background:#fff;border:1px solid #D5DCE8;border-radius:9px;padding:11px 12px;display:grid;gap:3px}
+.lead-row header{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.lead-row strong{font-size:.98rem}
+.lead-row .sc{flex:none;background:#E3F4EC;color:#17895E;font-weight:700;border-radius:999px;padding:2px 9px;font-size:.8rem}
+.lead-row p{margin:0;color:#5B6680;font-size:.82rem}
+.lead-row .hr{color:#15803d;font-weight:600}
+.lead-row u{color:#2B63F0;text-decoration:none;font-weight:700}
+.lead-row .msg{margin:4px 0 2px;padding:8px 10px;border-radius:9px;background:#F4F6FA;font-size:.82rem;color:#16233F;line-height:1.45}
+.lead-row .msg em{display:block;font-style:normal;font-weight:700;color:#2B63F0;margin-bottom:2px}
+.lead-row .wa{margin-top:5px;border-radius:999px;background:#128C4B;color:#fff;text-align:center;font-weight:700;padding:9px;font-size:.9rem}
+.ph-nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid #D5DCE8;height:56px}
+.ph-nav span{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#5B6680;gap:1px}
+.ph-nav span b{font-size:1rem;line-height:1}
+.ph-nav .on{color:#2B63F0}
+.field b.typing::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:#2B63F0;animation:pisca .8s steps(1) infinite}
 @keyframes pisca{50%{opacity:0}}
-.app-count.busca{color:var(--glow)}
-.leads,.app-msg{transition:opacity .35s}
-.leads.sai,.app-msg.sai{opacity:0}
-.leads{min-height:300px}
+.ph{position:relative}
+.lead-row .wa.press{transform:scale(.95);filter:brightness(.88);transition:transform .15s,filter .15s}
+.tap{position:absolute;z-index:5;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,255,255,.55);border:2px solid rgba(15,30,61,.55);box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:left .6s ease,top .6s ease,opacity .25s}
+.tap.on{opacity:1}
+.tap.hit{animation:toque .45s ease}
+@keyframes toque{40%{transform:scale(.7)}100%{transform:scale(1)}}
+.wz{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;background:#ECE5DD;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.wz.on{transform:none}
+.wz-top{background:#075E54;color:#fff;display:flex;align-items:center;gap:10px;padding:14px 14px}
+.wz-top i{flex:none;width:38px;height:38px;border-radius:50%;background:var(--av,#FFFFFF);display:grid;place-items:center;font-style:normal;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+.wz-top i svg{width:26px;height:26px}
+.wz-top b{display:block;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.wz-top small{font-size:.75rem;color:#CFE9E4}
+.wz-chat{flex:1;padding:14px 12px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
+.wz-day{align-self:center;background:#E1F2FB;color:#4A5A66;font-size:.72rem;border-radius:8px;padding:3px 10px}
+.wz-bubble{align-self:flex-end;max-width:84%;background:#DCF8C6;color:#111B21;border-radius:10px 2px 10px 10px;padding:8px 10px 18px;font-size:.88rem;line-height:1.4;position:relative;box-shadow:0 1px 1px rgba(0,0,0,.12);opacity:0;transform:translateY(12px) scale(.96);transition:opacity .3s,transform .3s}
+.wz-bubble.on{opacity:1;transform:none}
+.wz-bubble small{position:absolute;right:8px;bottom:3px;font-size:.68rem;color:#667781}
+.wz-bubble small b{color:#8696A0;font-weight:700;transition:color .3s}
+.wz-bubble small b.lido{color:#34B7F1}
+.wz-bar{display:flex;gap:8px;align-items:flex-end;padding:8px 10px 12px}
+.wz-in{flex:1;background:#fff;border-radius:20px;padding:9px 14px;font-size:.84rem;color:#111B21;line-height:1.35;max-height:96px;overflow:hidden}
+.wz-in:empty::before{content:"Mensagem";color:#8696A0}
+.wz-send{flex:none;width:42px;height:42px;border-radius:50%;background:#00A884;color:#fff;display:grid;place-items:center;font-size:1.05rem}
 .app-note{text-align:center;font-size:.82rem;color:var(--muted);margin-top:12px}
+@media (max-width:420px){.ph{height:620px}}
 /* A única animação: as empresas chegam na lista uma por uma */
 .fx .lead-row{opacity:0;transform:translateY(10px)}
 .fx.go .lead-row{animation:chega .5s cubic-bezier(.2,.9,.3,1.2) forwards;animation-delay:calc(.5s + var(--i)*.45s)}
@@ -267,20 +305,32 @@ footer a{color:var(--silver);text-decoration:none}
       </div>
 
       <div>
-        <figure class="app" aria-label="Exemplo da tela do Captador de clientes">
-          <div class="app-bar"><img src="/brand/flowarts-symbol.webp" alt=""><b>Captador de clientes</b><span>hoje</span></div>
-          <div class="app-search">
-            <div class="field"><small>Tipo de empresa</small><b id="cap-tipo">Construtoras</b></div>
-            <div class="field"><small>Cidade</small><b id="cap-cidade">Belo Horizonte MG</b></div>
+        <figure class="app" aria-label="Exemplo da tela do Captador no painel do cliente, no celular">
+          <div class="ph">
+            <div class="ph-top"><div><b>Olá, Carlos</b><small><i></i>Busca diária ligada</small></div><span aria-hidden="true">↻</span></div>
+            <div class="ph-body">
+              <p class="ph-title">Buscar clientes</p>
+              <div class="ph-search">
+                <div class="field"><small>Tipo de negócio</small><b id="cap-tipo">Construtoras</b></div>
+                <div class="field"><small>Cidade</small><b id="cap-cidade">Belo Horizonte MG</b></div>
+                <div class="ph-go">Buscar empresas</div>
+              </div>
+              <p class="app-count" id="cap-status">✓ 3 empresas com WhatsApp</p>
+              <div class="ph-tabs" aria-hidden="true"><span class="on">Novos (3)</span><span>Separadas hoje (10)</span><span>Mandei mensagem</span></div>
+              <ul class="leads" id="cap-leads">
+                <li class="lead-row" style="--i:0"><header><strong>Construtora Pedra Alta</strong><span class="sc">9/10</span></header><p>Construtoras · Savassi, Belo Horizonte</p><p class="hr">● Aberto agora · até 18h</p><p>Celular · nota 4,8 no Google · <u>Ver no Maps</u></p><div class="msg"><em>Mensagem pronta</em><span id="cap-msg">Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?</span></div><div class="wa">Abrir no WhatsApp</div></li>
+                <li class="lead-row" style="--i:1"><header><strong>Engeforte Obras</strong><span class="sc">8/10</span></header><p>Construtoras · Pampulha, Belo Horizonte</p><p class="hr">● Aberto agora · até 17h30</p><p>Celular · nota 4,6 no Google · <u>Ver no Maps</u></p><div class="wa">Abrir no WhatsApp</div></li>
+                <li class="lead-row" style="--i:2"><header><strong>Mineira Empreiteira</strong><span class="sc">8/10</span></header><p>Construtoras · Barreiro, Belo Horizonte</p><p class="hr">● Aberto agora · até 18h</p><p>Celular · nota 4,5 no Google · <u>Ver no Maps</u></p><div class="wa">Abrir no WhatsApp</div></li>
+              </ul>
+            </div>
+            <div class="wz" id="wz" aria-hidden="true">
+              <div class="wz-top"><span>←</span><i id="wz-ini"><svg viewBox="0 0 24 24" stroke="#1B2A44" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 16.5V15a7.5 7.5 0 0 1 15 0v1.5z" fill="#F2A900"/><path d="M10 8.2V6.5h4v1.7" fill="#F2A900"/><path d="M12 6.5v6" fill="none"/><path d="M2.5 16.5h19a.5.5 0 0 1 0 2h-19a.5.5 0 0 1 0-2z" fill="#F2A900"/></svg></i><div><b id="wz-nome">Construtora Pedra Alta</b><small>online</small></div></div>
+              <div class="wz-chat"><span class="wz-day">HOJE</span><div class="wz-bubble" id="wz-bolha"><span id="wz-texto"></span><small>09:14 <b id="wz-check">✓✓</b></small></div></div>
+              <div class="wz-bar"><div class="wz-in" id="wz-campo"></div><div class="wz-send" id="wz-enviar">➤</div></div>
+            </div>
+            <span class="tap" id="tap" aria-hidden="true"></span>
+            <div class="ph-nav" aria-hidden="true"><span><b>⌂</b>Início</span><span><b>▦</b>Posts</span><span><b>◷</b>Campanha</span><span class="on"><b>⌕</b>Buscar</span><span><b>⋯</b>Mais</span></div>
           </div>
-          <p class="app-count" id="cap-status">✓ Só empresas com WhatsApp</p>
-          <ul class="leads" id="cap-leads">
-            <li class="lead-row" style="--i:0"><span class="ico" aria-hidden="true">C</span><div><b>Construtora Pedra Alta</b><small>Savassi · nota 4,8 no Google</small></div><span class="wa">WhatsApp</span></li>
-            <li class="lead-row" style="--i:1"><span class="ico" aria-hidden="true">E</span><div><b>Engeforte Obras</b><small>Pampulha · obra em andamento</small></div><span class="wa">WhatsApp</span></li>
-            <li class="lead-row" style="--i:2"><span class="ico" aria-hidden="true">M</span><div><b>Mineira Empreiteira</b><small>Barreiro · nota 4,6 no Google</small></div><span class="wa">WhatsApp</span></li>
-            <li class="lead-row" style="--i:3"><span class="ico" aria-hidden="true">R</span><div><b>Rocha &amp; Filhos Construções</b><small>Contagem · 12 anos no mapa</small></div><span class="wa">WhatsApp</span></li>
-          </ul>
-          <div class="app-msg"><small>Mensagem pronta</small><span id="cap-msg">Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?</span></div>
         </figure>
         <p class="app-note">Tela de exemplo. Os nomes são ilustrativos.</p>
       </div>
@@ -504,61 +554,108 @@ footer a{color:var(--silver);text-decoration:none}
 })();
 </script>
 <script>
-/* Painel do Captador no topo: troca de busca sozinho (tipo de empresa e cidade de vários estados).
-   Nomes ilustrativos. Para quem pediu menos movimento, fica parado na primeira busca. */
+/* Painel do Captador no topo: igual ao painel do cliente no celular. Troca de busca sozinho
+   (tipo de empresa e cidade de vários estados). Nomes ilustrativos. Para quem pediu menos movimento, fica parado. */
 (function () {
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var tipo = document.getElementById("cap-tipo"), cidade = document.getElementById("cap-cidade"), status = document.getElementById("cap-status"),
-      list = document.getElementById("cap-leads"), msg = document.getElementById("cap-msg"), box = msg && msg.parentNode;
+      list = document.getElementById("cap-leads");
   if (!tipo || !list) return;
+  // r: [empresa, bairro, nota de 0 a 10, nota no Google, fecha às]
   var B = [
-    { t: "Construtoras", c: "Belo Horizonte MG", m: "Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?",
-      r: [["C","Construtora Pedra Alta","Savassi · nota 4,8 no Google"],["E","Engeforte Obras","Pampulha · obra em andamento"],["M","Mineira Empreiteira","Barreiro · nota 4,6 no Google"],["R","Rocha & Filhos Construções","Contagem · 12 anos no mapa"]] },
-    { t: "Distribuidoras", c: "Campinas SP", m: "Olá! Represento uma linha de produtos de limpeza com entrega na região. Posso mandar o catálogo e a tabela de revenda?",
-      r: [["D","Distribuidora Barão","Barão Geraldo · nota 4,7 no Google"],["P","Paulista Atacado","Cambuí · 9 anos no mapa"],["V","Viracopos Distribuição","Jardim Itatinga · nota 4,5"],["A","Atacadão Taquaral","Taquaral · nota 4,6 no Google"]] },
-    { t: "Galpões e indústrias", c: "Curitiba PR", m: "Olá! Trabalho com energia solar para empresas. Posso fazer uma simulação de economia para o telhado do galpão de vocês?",
-      r: [["I","Indústria Pinhais","CIC · nota 4,6 no Google"],["L","Logística Araucária","Boqueirão · galpão de 3.000 m²"],["M","Metalúrgica Iguaçu","Cidade Industrial · nota 4,4"],["T","Têxtil Boa Vista","Boa Vista · 15 anos no mapa"]] },
-    { t: "Transportadoras", c: "Goiânia GO", m: "Olá! Sou corretor de seguros e trabalho com seguro de frota. Posso mandar uma cotação para os caminhões de vocês?",
-      r: [["T","Transportes Cerrado","Setor Bueno · nota 4,7 no Google"],["R","Rodoviário Anhanguera","Setor Campinas · frota própria"],["G","Goiás Cargas","Jardim Goiás · nota 4,5"],["L","Log Express Centro-Oeste","Setor Marista · 8 anos no mapa"]] },
-    { t: "Lojas de materiais", c: "Recife PE", m: "Olá! Sou representante de uma marca de tintas e ferramentas. Posso passar na loja de vocês com o mostruário esta semana?",
-      r: [["C","Casa do Construtor Boa Viagem","Boa Viagem · nota 4,8 no Google"],["M","Materiais Capibaribe","Madalena · 20 anos no mapa"],["R","Recife Ferragens","Casa Amarela · nota 4,6"],["T","Tintas Olinda Norte","Encruzilhada · nota 4,5 no Google"]] }
+    { l: "obra", t: "Construtoras", c: "Belo Horizonte MG", m: "Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?",
+      r: [["Construtora Pedra Alta","Savassi",9,"4,8","18h"],["Engeforte Obras","Pampulha",8,"4,6","17h30"],["Mineira Empreiteira","Barreiro",8,"4,5","18h"]] },
+    { l: "caixa", t: "Distribuidoras", c: "Campinas SP", m: "Olá! Represento uma linha de produtos de limpeza com entrega na região. Posso mandar o catálogo e a tabela de revenda?",
+      r: [["Distribuidora Barão","Barão Geraldo",9,"4,7","18h"],["Paulista Atacado","Cambuí",8,"4,6","17h"],["Atacadão Taquaral","Taquaral",7,"4,5","19h"]] },
+    { l: "fabrica", t: "Galpões e indústrias", c: "Curitiba PR", m: "Olá! Trabalho com energia solar para empresas. Posso fazer uma simulação de economia para o telhado do galpão de vocês?",
+      r: [["Indústria Pinhais","CIC",9,"4,6","17h"],["Logística Araucária","Boqueirão",8,"4,4","18h"],["Têxtil Boa Vista","Boa Vista",7,"4,3","17h30"]] },
+    { l: "caminhao", t: "Transportadoras", c: "Goiânia GO", m: "Olá! Sou corretor de seguros e trabalho com seguro de frota. Posso mandar uma cotação para os caminhões de vocês?",
+      r: [["Transportes Cerrado","Setor Bueno",9,"4,7","18h"],["Goiás Cargas","Jardim Goiás",8,"4,5","18h"],["Log Express Centro-Oeste","Setor Marista",7,"4,4","17h"]] },
+    { l: "ferramenta", t: "Lojas de materiais", c: "Recife PE", m: "Olá! Sou representante de uma marca de tintas e ferramentas. Posso passar na loja de vocês com o mostruário esta semana?",
+      r: [["Casa do Construtor Boa Viagem","Boa Viagem",9,"4,8","18h"],["Materiais Capibaribe","Madalena",8,"4,6","17h"],["Recife Ferragens","Casa Amarela",8,"4,6","18h"]] }
   ];
-  var i = 0, timers = [], visivel = true, rodando = false;
-  function later(f, ms) { timers.push(setTimeout(f, ms)); }
+  // Logo do perfil no WhatsApp, combinando com o ramo da empresa (desenho simples, sem marca real).
+  var LOGO = {
+    obra: ["#FFFFFF", '<svg viewBox="0 0 24 24" stroke="#1B2A44" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4.5 16.5V15a7.5 7.5 0 0 1 15 0v1.5z" fill="#F2A900"/><path d="M10 8.2V6.5h4v1.7" fill="#F2A900"/><path d="M12 6.5v6" fill="none"/><path d="M2.5 16.5h19a.5.5 0 0 1 0 2h-19a.5.5 0 0 1 0-2z" fill="#F2A900"/></svg>'],
+    caixa: ["#2B63F0", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5"/><path d="M12 12v9"/></svg>'],
+    fabrica: ["#5B6680", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V10l5 3V10l5 3V6h4l1 14z"/><path d="M3 20h18"/></svg>'],
+    caminhao: ["#E4572E", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h11v10H2z"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>'],
+    ferramenta: ["#17895E", '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2z"/><path d="M4 20l3-3"/></svg>']
+  };
+  var i = 0, visivel = true, rodando = false;
+  function later(f, ms) { setTimeout(f, ms); }
   function digita(el, txt, done) {
     el.textContent = ""; el.classList.add("typing"); var k = 0;
     (function passo() { if (k <= txt.length) { el.textContent = txt.slice(0, k++); later(passo, 55); } else { el.classList.remove("typing"); done && done(); } })();
   }
-  function linha(r, n) {
-    var li = document.createElement("li"); li.className = "lead-row"; li.style.setProperty("--i", n);
-    var ico = document.createElement("span"); ico.className = "ico"; ico.setAttribute("aria-hidden", "true"); ico.textContent = r[0];
-    var d = document.createElement("div"), b = document.createElement("b"), sm = document.createElement("small"); b.textContent = r[1]; sm.textContent = r[2]; d.appendChild(b); d.appendChild(sm);
-    var wa = document.createElement("span"); wa.className = "wa"; wa.textContent = "WhatsApp";
-    li.appendChild(ico); li.appendChild(d); li.appendChild(wa); return li;
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function cartao(x, r, n) {
+    var li = el("li", "lead-row"); li.style.setProperty("--i", n);
+    var h = el("header"); h.appendChild(el("strong", "", r[0])); h.appendChild(el("span", "sc", r[2] + "/10")); li.appendChild(h);
+    li.appendChild(el("p", "", x.t + " · " + r[1] + ", " + x.c.replace(/ [A-Z]{2}$/, "")));
+    li.appendChild(el("p", "hr", "● Aberto agora · até " + r[4]));
+    var p = el("p", "", "Celular · nota " + r[3] + " no Google · "); p.appendChild(el("u", "", "Ver no Maps")); li.appendChild(p);
+    if (n === 0) { var m = el("div", "msg"); m.appendChild(el("em", "", "Mensagem pronta")); m.appendChild(el("span", "", x.m)); li.appendChild(m); }
+    li.appendChild(el("div", "wa", "Abrir no WhatsApp"));
+    return li;
   }
-  function agenda(ms) { if (rodando) return; rodando = true; later(proxima, ms); }
+  var ph = document.querySelector(".ph"), body = document.querySelector(".ph-body"), tap = document.getElementById("tap"), wz = document.getElementById("wz");
+  function $i(id) { return document.getElementById(id); }
+  // Leva o "dedo" até o elemento e toca nele.
+  function toca(alvo, done) {
+    var a = alvo.getBoundingClientRect(), b = ph.getBoundingClientRect();
+    tap.style.left = (a.left - b.left + a.width / 2) + "px"; tap.style.top = (a.top - b.top + a.height / 2) + "px";
+    tap.classList.add("on");
+    later(function () { tap.classList.remove("hit"); void tap.offsetWidth; tap.classList.add("hit"); alvo.classList.add("press");
+      later(function () { alvo.classList.remove("press"); done && done(); }, 300); }, 700);
+  }
+  // Toque no botão verde → abre o WhatsApp com a mensagem pronta → toca em enviar → entregue e lida.
+  function enviar() {
+    if (!visivel || document.hidden) { rodando = false; return; }
+    var x = B[i], card = list.querySelector(".lead-row"), btn = card && card.querySelector(".wa");
+    if (!btn) { later(proxima, 3000); return; }
+    body.scrollTo({ top: Math.max(0, card.offsetTop + card.offsetHeight - body.clientHeight + 24), behavior: "smooth" });
+    later(function () {
+      tap.style.transition = "none"; tap.style.left = "75%"; tap.style.top = "88%"; void tap.offsetWidth; tap.style.transition = "";
+      toca(btn, function () {
+        $i("wz-nome").textContent = x.r[0][0]; var lg = LOGO[x.l] || LOGO.obra; $i("wz-ini").style.setProperty("--av", lg[0]); $i("wz-ini").innerHTML = lg[1];
+        $i("wz-campo").textContent = x.m; $i("wz-texto").textContent = x.m;
+        $i("wz-bolha").classList.remove("on"); $i("wz-check").classList.remove("lido");
+        tap.classList.remove("on"); wz.classList.add("on");
+        later(function () {
+          toca($i("wz-enviar"), function () {
+            $i("wz-campo").textContent = ""; $i("wz-bolha").classList.add("on");
+            later(function () { $i("wz-check").classList.add("lido"); }, 1100);
+            later(function () { tap.classList.remove("on"); }, 400);
+            later(function () { wz.classList.remove("on"); body.scrollTo({ top: 0, behavior: "smooth" }); later(proxima, 900); }, 3400);
+          });
+        }, 1300);
+      });
+    }, 900);
+  }
+  function agenda(ms) { if (rodando) return; rodando = true; later(enviar, ms); }
   function proxima() {
     if (!visivel || document.hidden) { rodando = false; return; }
     i = (i + 1) % B.length; var x = B[i];
-    list.classList.add("sai"); box.classList.add("sai");
+    list.classList.add("sai");
     later(function () {
       list.innerHTML = ""; status.textContent = "Buscando…"; status.classList.add("busca");
       digita(tipo, x.t, function () { digita(cidade, x.c, function () {
         later(function () {
-          status.textContent = "✓ Só empresas com WhatsApp"; status.classList.remove("busca");
-          x.r.forEach(function (r, n) { list.appendChild(linha(r, n)); });
-          list.classList.remove("sai"); msg.textContent = x.m; box.classList.remove("sai");
-          later(proxima, 5200);
+          status.textContent = "✓ " + x.r.length + " empresas com WhatsApp"; status.classList.remove("busca");
+          x.r.forEach(function (r, n) { list.appendChild(cartao(x, r, n)); });
+          list.classList.remove("sai");
+          later(enviar, 3200);
         }, 500);
       }); });
     }, 380);
   }
   var hero = document.querySelector(".hero");
   if ("IntersectionObserver" in window && hero) new IntersectionObserver(function (es) {
-    visivel = es[0].isIntersecting; if (visivel) agenda(4200);
+    visivel = es[0].isIntersecting; if (visivel) agenda(3800);
   }, { threshold: .25 }).observe(hero);
   document.addEventListener("visibilitychange", function () { if (!document.hidden && visivel) agenda(1500); });
-  if (!("IntersectionObserver" in window)) agenda(4200);
+  if (!("IntersectionObserver" in window)) agenda(3800);
 })();
 </script>
 <script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){var nb=function(o){navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{type:"text/plain"}))};nb({p:location.pathname,r:document.referrer,d:(location.search.match(/[?&]de=([a-z]+)/)||[])[1]});document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({p:location.pathname,e:"whatsapp"})},true)}}catch(e){}</script>
