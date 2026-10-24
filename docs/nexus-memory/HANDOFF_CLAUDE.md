@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-24 08h00 BRT — Site: vídeos com som e Captador animado no topo (PR #406)
+- **Pedido do Rodrigo:** continuar as alterações do site flowarts.com.br.
+- **Feito (branch `site-som-captador`, `public/site.html` e 2 vídeos):** vídeos da obra e do Reel com som (começam mudos; a pessoa liga). O painel do Captador no topo troca de busca sozinho: 5 exemplos (construtoras BH, distribuidoras Campinas, galpões Curitiba, transportadoras Goiânia, lojas de materiais Recife), cada um com mensagem pronta. Nomes ilustrativos. Parado para quem pede menos movimento; pausa fora da tela.
+- **Testes:** 593/593, sobre a `main` 5dde3bc.
+- **Ainda falta (decisão do Rodrigo):** pacote só de Instagram para quem vende a pessoa física (ex.: Maskara), sem a busca de leads no painel.
+- **Estado:** PR #406 aguardando o OK do Rodrigo; o merge publica o site.
+
 ## 2026-10-23 20h50 BRT — Site novo: público agora é VENDEDOR e REPRESENTANTE
 - **Decisão do Rodrigo (voz, 23/10):** comida/cafeteria não trouxe cliente. O público da Flow Arts passa a ser quem vive de prospectar empresa (aluguel de equipamentos, representante comercial, energia solar, seguro, consórcio). A busca de leads é o produto principal; o Instagram é o cartão de visita. Pessoa física (ex.: Maskara) fica num pacote só de Instagram, sem a busca no painel (ainda não feito).
 - **Feito (branch `site-vendedores`, `public/site.html`):** título "Novos clientes todo dia no seu WhatsApp.", vídeos de vendedor (topo, Reel, obra) no lugar da cafeteria, comparação "Procurar cliente no Google cansa.", lista de perfis no lugar das portas de nicho, rodapé sem links de comida (as páginas de nicho continuam no ar e no sitemap). Saiu o vídeo da cafeteria com bug. Testes de site ajustados; 593/593.

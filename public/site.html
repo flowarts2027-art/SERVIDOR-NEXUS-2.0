@@ -110,6 +110,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .lead-row .wa svg{width:15px;height:15px}
 .app-msg{margin:4px 18px 18px;padding:12px 14px;border-radius:14px;background:#0F2A1D;border:1px solid #1F5C3B;color:#CDEFD9;font-size:.9rem;line-height:1.5}
 .app-msg small{display:block;color:#7FD3A3;font-weight:700;margin-bottom:4px}
+.field b.typing::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:var(--glow);animation:pisca .8s steps(1) infinite}
+@keyframes pisca{50%{opacity:0}}
+.app-count.busca{color:var(--glow)}
+.leads,.app-msg{transition:opacity .35s}
+.leads.sai,.app-msg.sai{opacity:0}
+.leads{min-height:300px}
 .app-note{text-align:center;font-size:.82rem;color:var(--muted);margin-top:12px}
 /* A única animação: as empresas chegam na lista uma por uma */
 .fx .lead-row{opacity:0;transform:translateY(10px)}
@@ -258,17 +264,17 @@ footer a{color:var(--silver);text-decoration:none}
         <figure class="app" aria-label="Exemplo da tela do Captador de clientes">
           <div class="app-bar"><img src="/brand/flowarts-symbol.webp" alt=""><b>Captador de clientes</b><span>hoje</span></div>
           <div class="app-search">
-            <div class="field"><small>Tipo de empresa</small><b>Construtoras</b></div>
-            <div class="field"><small>Cidade</small><b>Belo Horizonte MG</b></div>
+            <div class="field"><small>Tipo de empresa</small><b id="cap-tipo">Construtoras</b></div>
+            <div class="field"><small>Cidade</small><b id="cap-cidade">Belo Horizonte MG</b></div>
           </div>
-          <p class="app-count">✓ Só empresas com WhatsApp</p>
-          <ul class="leads">
+          <p class="app-count" id="cap-status">✓ Só empresas com WhatsApp</p>
+          <ul class="leads" id="cap-leads">
             <li class="lead-row" style="--i:0"><span class="ico" aria-hidden="true">C</span><div><b>Construtora Pedra Alta</b><small>Savassi · nota 4,8 no Google</small></div><span class="wa">WhatsApp</span></li>
             <li class="lead-row" style="--i:1"><span class="ico" aria-hidden="true">E</span><div><b>Engeforte Obras</b><small>Pampulha · obra em andamento</small></div><span class="wa">WhatsApp</span></li>
             <li class="lead-row" style="--i:2"><span class="ico" aria-hidden="true">M</span><div><b>Mineira Empreiteira</b><small>Barreiro · nota 4,6 no Google</small></div><span class="wa">WhatsApp</span></li>
             <li class="lead-row" style="--i:3"><span class="ico" aria-hidden="true">R</span><div><b>Rocha &amp; Filhos Construções</b><small>Contagem · 12 anos no mapa</small></div><span class="wa">WhatsApp</span></li>
           </ul>
-          <div class="app-msg"><small>Mensagem pronta</small>Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?</div>
+          <div class="app-msg"><small>Mensagem pronta</small><span id="cap-msg">Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?</span></div>
         </figure>
         <p class="app-note">Tela de exemplo. Os nomes são ilustrativos.</p>
       </div>
@@ -484,6 +490,64 @@ footer a{color:var(--silver);text-decoration:none}
     var t = false;
     addEventListener("scroll", function () { if (t) return; t = true; requestAnimationFrame(function () { t = false; bar.classList.toggle("on", scrollY > 560); }); }, { passive: true });
   }
+})();
+</script>
+<script>
+/* Painel do Captador no topo: troca de busca sozinho (tipo de empresa e cidade de vários estados).
+   Nomes ilustrativos. Para quem pediu menos movimento, fica parado na primeira busca. */
+(function () {
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var tipo = document.getElementById("cap-tipo"), cidade = document.getElementById("cap-cidade"), status = document.getElementById("cap-status"),
+      list = document.getElementById("cap-leads"), msg = document.getElementById("cap-msg"), box = msg && msg.parentNode;
+  if (!tipo || !list) return;
+  var B = [
+    { t: "Construtoras", c: "Belo Horizonte MG", m: "Olá! Sou da locação de equipamentos aqui da região. Vi a obra de vocês e posso mandar a tabela de betoneira e andaime?",
+      r: [["C","Construtora Pedra Alta","Savassi · nota 4,8 no Google"],["E","Engeforte Obras","Pampulha · obra em andamento"],["M","Mineira Empreiteira","Barreiro · nota 4,6 no Google"],["R","Rocha & Filhos Construções","Contagem · 12 anos no mapa"]] },
+    { t: "Distribuidoras", c: "Campinas SP", m: "Olá! Represento uma linha de produtos de limpeza com entrega na região. Posso mandar o catálogo e a tabela de revenda?",
+      r: [["D","Distribuidora Barão","Barão Geraldo · nota 4,7 no Google"],["P","Paulista Atacado","Cambuí · 9 anos no mapa"],["V","Viracopos Distribuição","Jardim Itatinga · nota 4,5"],["A","Atacadão Taquaral","Taquaral · nota 4,6 no Google"]] },
+    { t: "Galpões e indústrias", c: "Curitiba PR", m: "Olá! Trabalho com energia solar para empresas. Posso fazer uma simulação de economia para o telhado do galpão de vocês?",
+      r: [["I","Indústria Pinhais","CIC · nota 4,6 no Google"],["L","Logística Araucária","Boqueirão · galpão de 3.000 m²"],["M","Metalúrgica Iguaçu","Cidade Industrial · nota 4,4"],["T","Têxtil Boa Vista","Boa Vista · 15 anos no mapa"]] },
+    { t: "Transportadoras", c: "Goiânia GO", m: "Olá! Sou corretor de seguros e trabalho com seguro de frota. Posso mandar uma cotação para os caminhões de vocês?",
+      r: [["T","Transportes Cerrado","Setor Bueno · nota 4,7 no Google"],["R","Rodoviário Anhanguera","Setor Campinas · frota própria"],["G","Goiás Cargas","Jardim Goiás · nota 4,5"],["L","Log Express Centro-Oeste","Setor Marista · 8 anos no mapa"]] },
+    { t: "Lojas de materiais", c: "Recife PE", m: "Olá! Sou representante de uma marca de tintas e ferramentas. Posso passar na loja de vocês com o mostruário esta semana?",
+      r: [["C","Casa do Construtor Boa Viagem","Boa Viagem · nota 4,8 no Google"],["M","Materiais Capibaribe","Madalena · 20 anos no mapa"],["R","Recife Ferragens","Casa Amarela · nota 4,6"],["T","Tintas Olinda Norte","Encruzilhada · nota 4,5 no Google"]] }
+  ];
+  var i = 0, timers = [], visivel = true, rodando = false;
+  function later(f, ms) { timers.push(setTimeout(f, ms)); }
+  function digita(el, txt, done) {
+    el.textContent = ""; el.classList.add("typing"); var k = 0;
+    (function passo() { if (k <= txt.length) { el.textContent = txt.slice(0, k++); later(passo, 55); } else { el.classList.remove("typing"); done && done(); } })();
+  }
+  function linha(r, n) {
+    var li = document.createElement("li"); li.className = "lead-row"; li.style.setProperty("--i", n);
+    var ico = document.createElement("span"); ico.className = "ico"; ico.setAttribute("aria-hidden", "true"); ico.textContent = r[0];
+    var d = document.createElement("div"), b = document.createElement("b"), sm = document.createElement("small"); b.textContent = r[1]; sm.textContent = r[2]; d.appendChild(b); d.appendChild(sm);
+    var wa = document.createElement("span"); wa.className = "wa"; wa.textContent = "WhatsApp";
+    li.appendChild(ico); li.appendChild(d); li.appendChild(wa); return li;
+  }
+  function agenda(ms) { if (rodando) return; rodando = true; later(proxima, ms); }
+  function proxima() {
+    if (!visivel || document.hidden) { rodando = false; return; }
+    i = (i + 1) % B.length; var x = B[i];
+    list.classList.add("sai"); box.classList.add("sai");
+    later(function () {
+      list.innerHTML = ""; status.textContent = "Buscando…"; status.classList.add("busca");
+      digita(tipo, x.t, function () { digita(cidade, x.c, function () {
+        later(function () {
+          status.textContent = "✓ Só empresas com WhatsApp"; status.classList.remove("busca");
+          x.r.forEach(function (r, n) { list.appendChild(linha(r, n)); });
+          list.classList.remove("sai"); msg.textContent = x.m; box.classList.remove("sai");
+          later(proxima, 5200);
+        }, 500);
+      }); });
+    }, 380);
+  }
+  var hero = document.querySelector(".hero");
+  if ("IntersectionObserver" in window && hero) new IntersectionObserver(function (es) {
+    visivel = es[0].isIntersecting; if (visivel) agenda(4200);
+  }, { threshold: .25 }).observe(hero);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && visivel) agenda(1500); });
+  if (!("IntersectionObserver" in window)) agenda(4200);
 })();
 </script>
 <script>/* Contador de visitas da Flow Arts: só a página, de onde veio e cliques no WhatsApp, sem dados pessoais. Abrir o site com ?eu=1 para de contar as visitas deste aparelho. */try{var nk="flowarts-nao-contar";if(/[?&]eu=1(&|$)/.test(location.search))localStorage.setItem(nk,"1");if(!localStorage.getItem(nk)&&navigator.sendBeacon){var nb=function(o){navigator.sendBeacon("/api/site/hit",new Blob([JSON.stringify(o)],{type:"text/plain"}))};nb({p:location.pathname,r:document.referrer,d:(location.search.match(/[?&]de=([a-z]+)/)||[])[1]});document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a)nb({p:location.pathname,e:"whatsapp"})},true)}}catch(e){}</script>
