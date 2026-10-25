@@ -642,6 +642,7 @@ function renderPlan() {
 function renderAccount() {
   try { renderPlan(); } catch (error) { console.error("painel: plano", error); }
   const ig = state.connection || {};
+  const expectedUsername = String(state.client?.instagram || "").trim().replace(/^@/, "");
   if (ig.demo) {
     $("#instagram-box").innerHTML = `<h2>Instagram</h2>
       <p class="muted" style="margin:8px 0 0">Conta de exemplo. Na demonstração, nada é publicado no Instagram.</p>`;
@@ -656,9 +657,14 @@ function renderAccount() {
         <p class="muted" style="margin:2px 0 0">${ig.connected
           ? (ig.expiresAt ? "Conexão válida até " + escapeHtml(formatDate(ig.expiresAt, false)) : "Conectado")
           : "Conecte para os agentes postarem por você."}</p>
+        ${!ig.connected && expectedUsername ? `<p class="muted" style="margin:4px 0 0">Conta cadastrada: @${escapeHtml(expectedUsername)}</p>` : ""}
       </div>
       <button type="button" class="btn ${ig.connected ? "btn-soft" : "btn-primary"}" data-connect>${ig.connected ? "Reconectar" : "Conectar Instagram"}</button>
-    </div>`;
+    </div>
+    ${!ig.connected ? `<details class="ig-help" style="margin-top:14px">
+      <summary>Não consegue entrar no Instagram?</summary>
+      <p class="muted" style="margin-top:8px">Entre com o usuário e a senha do Instagram profissional${expectedUsername ? " @" + escapeHtml(expectedUsername) : ""} (sem digitar @ no login), nunca com a senha da Flow Arts. Se aparecer “Usuário não encontrado”, confirme primeiro se consegue acessar <a href="https://www.instagram.com/accounts/login/" target="_blank" rel="noopener noreferrer">instagram.com</a>. Se funcionar fora do painel, peça ao suporte para conferir a liberação desta conta no aplicativo da Meta (testador ou acesso aprovado). Não envie senhas ao suporte.</p>
+    </details>` : ""}`;
   const link = $("#support-link");
   if (state.contact) { link.href = state.contact; link.hidden = false; } else { link.hidden = true; }
 }
@@ -972,7 +978,8 @@ async function boot() {
     const params = new URLSearchParams(window.location.search);
     showTab(params.get("tab") === "instagram" ? "conta" : params.get("tab") === "crm" ? "crm" : "inicio");
     if (params.get("oauth") === "success") toast("Instagram conectado com sucesso.");
-    else if (params.get("oauth")) toast("A conexão com o Instagram não terminou. Tente de novo.");
+    else if (params.get("oauth") === "account_mismatch") toast("Você entrou em outra conta do Instagram. Confira o @ cadastrado na aba Conta.");
+    else if (params.get("oauth")) toast("A Meta não concluiu a autorização. Confira o login do Instagram e a liberação da conta no aplicativo Meta.");
     if (params.has("oauth") || params.has("tab")) history.replaceState({}, "", window.location.pathname);
     await loadAll();
   } catch {
