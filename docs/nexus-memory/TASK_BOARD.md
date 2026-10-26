@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-26 — Artes diárias em revisão
+Rascunhos locais preparados para Flow Arts e Maskara; Quatree Dog está em mockup e precisa de validação com packshots oficiais. Luciana Carvalho segue sem briefing verificável. **Não houve upload ao painel nesta execução**; os binários não foram gravados na branch. Próximo passo: revisão e transferência segura dos arquivos.
+
+
 ## 2026-10-23 — MASKARA: campanha anterior apagada; refação fotográfica em andamento
 Rodrigo reprovou as artes didáticas.42posts antigos removidos do painel, zero restantes (Actions39948848202). Arquivos retirados. Nova ordem: imagens realistas de armas de fogo, estande de tiro e material tático, texto curto para captar clientes do serviço documental. Nenhuma nova campanha reenviada ainda. A confirmação anterior de42uploads é histórica e foi substituída por esta retirada.
 
