@@ -1,5 +1,14 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-26 07h — Artes diárias preparadas para revisão (não enviadas)
+- Pedido: criar conteúdo do dia para Flow Arts, Maskara e Quatree Dog; verificar Luciana Carvalho sem inventar briefing.
+- Produção local: Flow Arts — carrossel de 5 cartões, Reel de 12s, feed e 3 stories; Maskara — 3 feeds + 3 stories com CTA QUERO nos comentários; Quatree Dog — carrossel de 6 cartões + 3 stories com CTA TABELA.
+- QA local: feeds 1080×1350; stories/Reel 1080×1920; Reel H.264/AAC de 12s; imagens distintas entre formatos, exceto capa técnica do próprio Reel.
+- Bloqueios: os arquivos foram criados apenas no ambiente desta sessão e não foram transferidos para a branch/painel. Quatree usa mockups de embalagem gerados por IA; não enviar até validar/substituir por packshots oficiais. Não foi encontrado briefing verificável para Luciana.
+- Estado: rascunhos locais prontos para revisão; nenhum conteúdo aprovado ou publicado. O repositório não contém os binários desta produção.
+- Próximo passo: revisar as artes, validar packshots Quatree e transferir os arquivos à branch agendamentos para ingestão ao painel.
+
+
 ## 2026-10-23 — Quatree Dog: artes inéditas de 24/10 preparadas para aprovação
 - Pedido de Rodrigo: começar as artes de amanhã, nunca repetir arte. Produzidos 3 feeds e 3 stories inéditos para 24/10, 09h/12h/19h. Esta entrega de artes não contém Reel e não comprova cumprimento da grade regular de vídeo.
 - Produto: Supreme Natural cães adultos de raças pequenas; referência de embalagem obtida do site oficial https://www.quatreepet.com.br/nova-supreme/qsarp . Mesma embalagem em cenas/composições novas; não reutilizadas imagens de 23/10. Fotografias ilustrativas de IA, sem alegação de loja/parceria real, sem preços ou condições inventadas.
