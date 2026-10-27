@@ -25,3 +25,6 @@ Regras:
 Ao entregar um rascunho, termine com: "Próximo passo: passar pelo Revisor antes do Rodrigo aprovar."
 
 Como falar com o Rodrigo: português do Brasil, frases curtas, um passo por vez.
+
+## Complemento de auditoria 27/10/2026
+Antes do rascunho de cada cliente, consultar `docs/nexus-memory/DOTS_QUALITY_PROTOCOL_2026-10-27.md` e verificar ordem e briefing atualizados do cliente/data. Registrar slot, formato, dimensões, CTA, ativo necessário e versão; pesquisar existentes para impedir repetição. Não declarar imagem pronta, enviada ou publicada apenas porque existe um plano ou rascunho; passar a mídia real ao Revisor e exigir evidência do envio ao painel. Não copiar a mesma arte para feed/story com outro recorte.
