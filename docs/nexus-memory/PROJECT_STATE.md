@@ -1,5 +1,10 @@
 # Estado do Nexus 2.0
 
+## 2026-10-27 20h52 BRT — Painel do cliente redesenhado localmente
+- O shell visual do painel foi aproximado das referências do Nexus: sidebar desktop, topo responsivo, hero, cards, calendário e conexão Meta com maior destaque.
+- Arquivos alterados: `public/portal.html` e `public/client-lite.css`. Fluxos existentes de posts, aprovação, calendário, conta e CRM foram preservados.
+- Estado de publicação: apenas local; não houve commit, push ou deploy. Próximo passo é revisão visual autenticada em Preview antes de qualquer publicação.
+
 ## 2026-10-22 18:34 BRT — Vitrine 21 artes 2× 2 implantada
 PR #367 + ajustes `900fec9`; deploy 39858182963 success. Master/CRM/páginas suportam imagem única, migração 21 versionada e uploads posteriores. Navegador confirmou 21 páginas do domínio público e 21 JPEG carregados 1080× 1350; layout 4:5 corrigido. Master autenticado não inspecionado (login necessário). Detalhes e limitações no topo do HANDOFF_CHATGPT.
 

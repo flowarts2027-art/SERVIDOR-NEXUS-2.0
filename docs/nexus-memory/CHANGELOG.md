@@ -1,5 +1,11 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-27 20h52 BRT — Painel do cliente: refresh visual local
+- `public/portal.html`: identidade Nexus no shell, topo com contexto do painel e card editorial na navegação.
+- `public/client-lite.css`: sidebar escura no desktop, topo responsivo, hero de início, stats, conteúdos em grade, abas de filtro, calendário, conta Meta e login com nova hierarquia visual.
+- Escopo funcional preservado; referências do RAR não foram copiadas para o repositório. Sem commit, push ou deploy.
+- Validação: 600/600 testes Worker e `npm run check` aprovados; warnings do Wrangler são preexistentes.
+
 ## 2026-10-23 15h50 BRT — Caçador: só WhatsApp
 - Busca manual do Caçador (Google e mapa) descarta telefone fixo. Entram só celular, link wa.me/api.whatsapp.com no site ou `contact:whatsapp` do mapa. Procura celular em todos os campos de telefone. 593/593 testes. Branch `fix/cacador-so-whatsapp`.
 
@@ -1130,4 +1136,3 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Painel do cliente: Aprovar só depois de copyChief e designer aprovados.
 - 404 testes passando. Geração de imagens segue PAUSADA.
 - PRÓXIMO: conferir o deploy; com OK do Rodrigo religar só o Designer e gerar 1 imagem de teste.
-

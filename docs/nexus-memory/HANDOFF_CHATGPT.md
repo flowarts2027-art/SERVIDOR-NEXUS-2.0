@@ -1,5 +1,12 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-27 20h52 BRT — Redesign visual do painel do cliente
+- Pedido: aproximar o painel das referências enviadas em `Downloads.rar`, com visual mais chamativo e orientação SaaS/editorial.
+- Alterado apenas o front-end do portal: `public/portal.html` ganhou marca Nexus, microcopy do topo e card de destaque da navegação; `public/client-lite.css` ganhou sidebar escura no desktop, topo claro, hero em degradê, cartões com hierarquia, abas editoriais, calendário refinado, conta Meta destacada e responsividade mobile preservada.
+- Contratos mantidos: nenhum ID, rota, evento de aprovação, conexão Meta ou regra de publicação foi alterado. As imagens do RAR foram usadas só como referência e não foram adicionadas ao repositório.
+- Validação comprovada: `node --check public/client-lite.js`, parse HTML, `git diff --check`, `npm run check` e suíte Worker `600/600` aprovados. O dry-run do Wrangler registrou apenas avisos preexistentes de chaves duplicadas.
+- Estado: mudanças locais em `public/portal.html` e `public/client-lite.css`; sem commit, push, deploy ou publicação real. Próximo passo: abrir o painel em Preview/navegador, conferir desktop/mobile e só então pedir autorização para publicar.
+
 ## 2026-10-23 — Liberação documental de imagens (opção 2)
 - Rodrigo confirmou a opção 2: permitir artes, referências, fotos de produto e fotos de clientes para posts na memória/repositório público, com as exclusões descritas no BRIDGE_PROTOCOL.
 - Alterados BRIDGE_PROTOCOL.md e DECISIONS.md na branch docs/liberar-imagens-memoria-20261023; commits 199f72a e 62646c4.

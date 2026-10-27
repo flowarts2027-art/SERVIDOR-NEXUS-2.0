@@ -1,5 +1,12 @@
 # Testes e evidências
 
+## 2026-10-27 20h52 BRT — Redesign visual do painel do cliente
+- `node --check public/client-lite.js`: aprovado.
+- Parse básico de `public/portal.html` e `git diff --check`: aprovados.
+- `npm run check`: Wrangler dry-run aprovado; 206 assets lidos. Permanecem somente os avisos preexistentes de chaves duplicadas em `master.js`, `portal.js` e `posts.js`.
+- `node --test test/*.test.mjs`: **600/600 pass**, 0 falhas, 0 cancelados, 0 skipped.
+- Não houve navegador autenticado, deploy, push ou publicação real nesta sessão.
+
 ## 2026-10-22 18:34 BRT — Integração artes 2× 2
 - Worker:561/561, incluindo UI Master/CRM; repetidos após correção CSS.
 - QA controlado:21 downloads pelo CRM com nomes e bytes corretos, sem envio; Master 21/21 e upload único.

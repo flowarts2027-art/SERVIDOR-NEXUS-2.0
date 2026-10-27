@@ -1,5 +1,10 @@
 # Próximas ações
 
+## 2026-10-27 — Redesign visual do painel do cliente
+1. Abrir `/portal` em Preview/navegador e conferir o shell em desktop e celular.
+2. Conferir com sessão autenticada o início, conteúdos, calendário e Conta/Meta.
+3. Se aprovado pelo Rodrigo, criar commit/PR e só então publicar; esta sessão não fez deploy.
+
 ## 2026-10-19 — Caçador 10 por dia — NO AR (main 975ffff, 14h1x, Deploy NEXUS Cloudflare success)
 1. FEITO: Rodrigo pediu "já publica" às 14h11; PR #303 juntado e deploy ok.
 2. No primeiro ciclo depois do deploy, quem não respondeu sai do CRM sozinho.
@@ -520,4 +525,3 @@ Concluir revisão e implantação do botão Baixar no PC + ZIP auxiliar. Confirm
 
 ## 2026-10-16 — Depois do deploy
 - Religar SÓ o Designer (com OK do Rodrigo), gerar 1 imagem e mostrar a ele; conferir símbolo em foto escura e custo no Master. Só então religar Creator e Format Builder.
-

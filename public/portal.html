@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=128">
+  <link rel="stylesheet" href="/client-lite.css?v=129">
   <link rel="stylesheet" href="/flow-crm.css?v=3">
   <script src="/client-lite.js?v=128" defer></script>
   <script src="/captador.js?v=11" defer></script>
@@ -42,15 +42,25 @@
   <div id="app" class="app" hidden>
     <header class="top">
       <div class="top-inner">
-        <div>
+        <div class="top-copy">
+          <p class="top-kicker">PAINEL DO CLIENTE</p>
           <p class="hello" id="hello">Olá</p>
           <p class="status" id="agent-status"><span class="dot"></span><span>Carregando…</span></p>
         </div>
-        <button id="refresh" class="icon-btn" type="button" aria-label="Atualizar">↻</button>
+        <div class="top-actions">
+          <span class="top-chip"><i></i> NEXUS ativo</span>
+          <button id="refresh" class="icon-btn" type="button" aria-label="Atualizar">↻</button>
+        </div>
       </div>
     </header>
 
     <nav class="tabbar" aria-label="Seções do painel">
+      <a class="nav-brand" href="/portal" aria-label="Nexus by Flow Arts">
+        <img src="/assets/nexus-mark-blue.svg" alt="">
+        <span><strong>NEXUS</strong><small>by Flow Arts</small></span>
+      </a>
+      <p class="nav-caption">Conteúdo que conecta</p>
+      <p class="nav-section-label">NAVEGAÇÃO</p>
       <button type="button" data-tab="inicio" class="active"><span aria-hidden="true">⌂</span>Início</button>
       <button type="button" data-tab="posts"><span aria-hidden="true">▦</span>Posts<b class="badge" id="badge-posts" hidden></b></button>
       <button type="button" data-tab="numeros" class="more-tab"><span aria-hidden="true">↗</span>Números</button>
@@ -69,6 +79,11 @@
           <button type="button" data-tab="negocio"><span aria-hidden="true">▣</span>Meu negócio</button>
           <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
         </div>
+      </div>
+      <div class="nav-spotlight" aria-hidden="true">
+        <span class="nav-spotlight-icon">✦</span>
+        <strong>Conteúdo que aproxima marcas e pessoas.</strong>
+        <small>Planeje. Aprove. Evolua.</small>
       </div>
     </nav>
 
