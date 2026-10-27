@@ -37,24 +37,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Materializar mídias temporárias da campanha
-        shell: bash
-        run: |
-          set -euo pipefail
-          shopt -s globstar nullglob
-          # Permite ingestão de mídias via texto Base64 quando o envio binário direto não está disponível.
-          for src in .media-staging/**/*.b64; do
-            rel="${src#.media-staging/}"
-            target="agendamentos/${rel%.b64}"
-            mkdir -p "$(dirname "$target")"
-            base64 --decode "$src" > "$target"
-          done
-          for src in .media-staging/**/legenda.txt; do
-            rel="${src#.media-staging/}"
-            target="agendamentos/$rel"
-            mkdir -p "$(dirname "$target")"
-            cp "$src" "$target"
-          done
       - name: Achar os posts novos
         id: slots
         shell: bash
