@@ -32,3 +32,7 @@ agendamentos/2026-10-22/1900/
 
 ## Story no mesmo horário do feed (ordem do Rodrigo, 22/10)
 Use `HHMM-story/story.jpg` para story e `HHMM/` para feed, carrossel ou Reel. A deduplicação distingue story dos outros formatos. Cada perfil recebe stories próprios às 09h, 12h e 19h. Nunca repetir uma imagem entre formatos; não usar espelhamento automático.
+
+## Envio sem Work (Flow Arts / primeiro-teste)
+
+O cliente Flow Arts usa o ID interno `primeiro-teste`, mas as pastas **deste cliente** ficam na raiz `agendamentos/AAAA-MM-DD/HHMM/`, e **não** em `agendamentos/clientes/primeiro-teste/`. Veja o passo a passo em [GUIA-FLOW-ARTS-SEM-WORK.md](GUIA-FLOW-ARTS-SEM-WORK.md). Antes de alegar envio, conferir ID no GitHub Actions e o conteúdo na fila de aprovação do painel. Fazer merge de instruções sem os arquivos de imagem não envia campanha alguma.
