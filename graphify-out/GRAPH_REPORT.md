@@ -1,7 +1,7 @@
 # Graph Report - SERVIDOR-NEXUS-2.0  (2026-10-27)
 
 ## Corpus Check
-- 399 files · ~395,574 words
+- 399 files · ~395,738 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 28 file(s) not represented in the graph (top: .xml 6, .css 6, (none) 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e9044eea`
+- Built from commit: `474811c2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -854,7 +854,7 @@ Nodes (23): CALLBACK_TOKEN, CALLBACK_URL, CLIENT_ID, DURATION, POST_ID, SOURCE_I
 
 ### Community 178 - "steps"
 Cohesion: 0.09
-Nodes (21): concurrency, cancel-in-progress, group, jobs, testes, name, permissions, contents (+13 more)
+Nodes (21): concurrency, cancel-in-progress, group, jobs, testes, name, on, pull_request (+13 more)
 
 ### Community 179 - "env"
 Cohesion: 0.10
@@ -870,11 +870,11 @@ Nodes (7): backgroundTasks, db, env, evidence, MEDIA, objects, server
 
 ### Community 182 - "steps"
 Cohesion: 0.11
-Nodes (17): NEXUS_HEALTH_URL, jobs, snapshot, name, contents, branches, paths, permissions (+9 more)
+Nodes (17): NEXUS_HEALTH_URL, jobs, snapshot, name, on, push, workflow_dispatch, contents (+9 more)
 
 ### Community 183 - "steps"
 Cohesion: 0.12
-Nodes (16): jobs, smoke, name, paths, runs-on, steps, timeout-minutes, name (+8 more)
+Nodes (16): jobs, smoke, name, on, push, workflow_dispatch, paths, runs-on (+8 more)
 
 ### Community 184 - "video-related-library.js"
 Cohesion: 0.47
