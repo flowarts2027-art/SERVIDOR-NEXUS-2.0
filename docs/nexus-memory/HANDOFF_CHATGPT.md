@@ -1,3 +1,14 @@
+## 2026-10-28 07:03 BRT — Artes diárias preparadas para revisão (não enviadas)
+
+- Pedido: preparar as artes do dia para Flow Arts, Maskara Assessoria, Quatree Dog (cadastro confirmado; não “4Dog”) e verificar Luciana Carvalho sem inventar briefing.
+- Produção local desta execução: 29 imagens inéditas, com SHA-256 distintos — Flow Arts: 5 cartões de carrossel às 09h, 1 feed às 12h, 1 feed às 19h e 3 Stories (10 imagens); Maskara: carrossel de 4 cartões às 09h, carrossel de 3 às 12h, 1 feed às 19h e 3 Stories (11 imagens); Quatree Dog: carrossel de 5 cartões às 09h e 3 Stories (8 imagens).
+- QA local: feed 1080×1350 (20 imagens); Stories 1080×1920 (9 imagens); legendas salvas em texto; nenhum arquivo de imagem repetido.
+- Direções aplicadas: Flow Arts — prospecção B2B para representantes comerciais conforme a orientação mais recente do contexto de trabalho; Maskara — assessoria documental, sem venda de armas/munições, preço ou promessa de aprovação/prazo, CTA QUERO conforme pedido atual; Quatree Dog — merchandising para pet shop, sem inventar packshots de embalagem.
+- Divergências/pendências: o material antigo do repositório ainda descreve a Flow Arts focada em pequenos negócios de comida, divergindo da direção B2B mais recente; reconciliar a memória. A campanha Maskara antiga ainda cita DOCUMENTOS, mas o pedido atual exige QUERO. Para Quatree, as imagens são conceituais com embalagens genéricas sem marca; substituir/validar com packshots oficiais antes de publicar. Luciana Carvalho não foi encontrada na árvore de clientes e não há briefing verificável.
+- Limitação desta execução: as imagens e legendas foram criadas somente no ambiente local da sessão; não foram transferidas para a branch `agendamentos` nem para o painel. Nenhum conteúdo foi aprovado ou publicado. O ZIP local de entrega contém as peças, prévias e relatório.
+- Próximo passo: transferir os binários das imagens para a estrutura de pastas por cliente/data, executar o workflow de ingestão e verificar nos logs que cada peça chegou ao painel aguardando aprovação; obter/validar packshots Quatree e atualizar a diretriz de Flow Arts antes de futuras produções.
+
+
 # Passagem de trabalho — ChatGPT → Claude Code
 
 ## 2026-10-26 07h — Artes diárias preparadas para revisão (não enviadas)
