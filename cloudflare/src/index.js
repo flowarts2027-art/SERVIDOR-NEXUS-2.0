@@ -35,6 +35,7 @@ import { canonicalSiteRedirect } from "./site-host.js";
 import { handleCrmSendRoute } from "./crm-send.js";
 import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
 import { handleViralRadarRoute, handleFacebookCallback, runViralRadar } from "./viral-radar.js";
+import { handleFacebookPageRoute, runFacebookCrosspostQueue } from "./facebook-page.js";
 import { handlePushRoute } from "./push.js";
 import { handleCaptadorMaster } from "./captador.js";
 import { handleAdsMaster } from "./ads.js";
@@ -552,6 +553,10 @@ export default {
       ctx.waitUntil(runQueuedCampaigns(env).catch(error =>
         console.warn("gemini_queue_failed", String(error?.message || error).slice(0, 140))
       ));
+      // Fila do Facebook (28/10): um post por minuto vai para a Página, depois de sair no Instagram.
+      ctx.waitUntil(runFacebookCrosspostQueue(env).catch(error =>
+        console.warn("facebook_crosspost_failed", String(error?.message || error).slice(0, 140))
+      ));
       ctx.waitUntil(runGiftInbox(env, at).catch(error =>
         console.warn("gift_inbox_failed", String(error?.message || error).slice(0, 140))
       ));
@@ -682,6 +687,14 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleViralRadarRoute(request, env, url);
+      if (response) return response;
+    }
+
+    // Página do Facebook: o que sai no Instagram vai também para o Facebook (28/10). Só com login do Master.
+    if (url.pathname.startsWith("/api/master/facebook-page")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const response = await handleFacebookPageRoute(request, env, url);
       if (response) return response;
     }
 

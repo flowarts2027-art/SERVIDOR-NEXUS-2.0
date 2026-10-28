@@ -654,3 +654,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Seção nova "Oportunidades de hoje" logo abaixo do início: filtros por ramo (Construção, Mercados e atacados, Transportadoras, Indústrias, Clínicas e escritórios) com 6 anúncios cada.
 - Nomes de exemplo e telefones mascarados no código (só DDD + ••••-••••), com aviso "ilustrativos". Vídeo de fundo (marca d'água, 1920x1080) já estava no ar pelo PR #448.
 - Testes: 630/630. Conferido em 1440px e 390px. Pendente: merge do Rodrigo.
+
+## 2026-10-28 — Postar no Facebook junto com o Instagram
+- Pedido do Rodrigo: "todo dia, postagem que for pro Instagram, quero que vá pro Facebook também". O Instagram da Flow Arts já está ligado à Página do Facebook (ele conferiu).
+- Diagnóstico: o Nexus publica pelo login do Instagram (`graph.instagram.com`), que não posta no Facebook. O login do Facebook já existia (Radar e Tráfego, retorno `/api/oauth/facebook/callback`).
+- Feito: `cloudflare/src/facebook-page.js` (novo). Conecta a Página pelo login do Facebook com `pages_manage_posts`, guarda a chave da Página criptografada (`facebook-page/connection/<cliente>`). Depois que post, carrossel ou Reel sai no Instagram, `publishInstagramPost` só anota na fila `facebook-crosspost`; o cron de 1 minuto publica um item por vez na Página (foto, carrossel com `attached_media`, Reel como vídeo). Stories não vão. Erro da Meta: tenta 3 vezes e guarda o último erro. Nunca derruba nem atrasa o Instagram.
+- Master › Integrações › "Postar no Facebook": botão Conectar Página e Pausar/Ligar (`public/facebook-page.js`). Desligar tudo: `NEXUS_FACEBOOK=off` na Cloudflare.
+- Testes: 637/637 (7 novos em `test/facebook-page.test.mjs`). Nada publicado de verdade.
+- Pendente: merge do Rodrigo; depois ele toca em Conectar Página no Master e autoriza a Página da Flow Arts. Para clientes que não são admins do app, a Meta precisa aprovar `pages_manage_posts` na análise do app.

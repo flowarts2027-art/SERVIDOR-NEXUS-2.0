@@ -1,5 +1,6 @@
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { brandProfileVersion } from "./client-brand.js";
+import { queueFacebookCrosspost } from "./facebook-page.js";
 
 // Contas antigas de streaming desligadas em 2026-10-10 a pedido do proprietário.
 // Nenhuma publicação no Instagram pode sair para elas, por nenhum caminho.
@@ -256,21 +257,31 @@ async function withAutoStory(env, clientId, target, result) {
   }
 }
 
-export async function publishInstagramPost(env, clientId, payload = {}, caption = "") {
+// 28/10/2026: o que sai no Instagram (post, carrossel, Reel) entra na fila da Página do Facebook.
+// Só anota na fila; quem publica é o cron. Nunca derruba nem atrasa o Instagram.
+async function withFacebook(env, clientId, target, caption, result, queue) {
+  const queued = await queue(env, clientId, target, caption, result?.mediaId || "").catch(() => ({ queued: false }));
+  return queued?.queued ? { ...result, facebookQueued: true } : result;
+}
+
+export async function publishInstagramPost(env, clientId, payload = {}, caption = "", queue = queueFacebookCrosspost) {
   const target = instagramPublishTarget(payload);
   if (!target.ok) throw new Error(target.error);
+  const text = String(caption || "");
 
   if (target.kind === "carousel") {
-    return withAutoStory(env, clientId, target, await publishInstagramCarousel(env, clientId, target.carouselUrls, String(caption || "")));
+    return withFacebook(env, clientId, target, text,
+      await withAutoStory(env, clientId, target, await publishInstagramCarousel(env, clientId, target.carouselUrls, text)), queue);
   }
   if (target.kind === "reel") {
-    return publishInstagramVideo(env, clientId, target.videoUrl, String(caption || ""));
+    return withFacebook(env, clientId, target, text, await publishInstagramVideo(env, clientId, target.videoUrl, text), queue);
   }
   if (target.kind === "story") {
     const story = await publishInstagramStory(env, clientId, target.imageUrl || "", graphRequest, target.videoUrl || "");
     return { mediaId: story.storyMediaId, kind: "story" };
   }
-  return withAutoStory(env, clientId, target, await publishInstagramImage(env, clientId, target.imageUrl, String(caption || "")));
+  return withFacebook(env, clientId, target, text,
+    await withAutoStory(env, clientId, target, await publishInstagramImage(env, clientId, target.imageUrl, text)), queue);
 }
 
 

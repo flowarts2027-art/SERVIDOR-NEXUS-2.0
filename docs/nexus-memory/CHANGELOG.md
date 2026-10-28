@@ -1,5 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-28 20h BRT — Facebook junto com o Instagram
+- `cloudflare/src/facebook-page.js` novo: post, carrossel e Reel que saem no Instagram entram numa fila e o cron de 1 minuto publica na Página do Facebook. Conexão da Página no Master (Integrações › Postar no Facebook). 637/637 testes. Aguardando merge do Rodrigo.
+
 ## 2026-10-28 18h30 BRT — Site novo da Flow Arts
 - `public/site.html` refeito: tema clean nas cores da logo, globo 3D, contador, cartões de clientes, abas de pacotes, FAQ em `<details>`. Sem vídeo. Páginas antigas ligadas numa aba discreta do rodapé. 630/630 testes. Aguardando merge do Rodrigo.
 
