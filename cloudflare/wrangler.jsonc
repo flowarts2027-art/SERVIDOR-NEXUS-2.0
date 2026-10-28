@@ -21,7 +21,7 @@
   },
   "vars": {
     "APP_NAME": "Servidor Nexus",
-    "GEMINI_DAILY_CLIENTS": "giltec",
+    "GEMINI_DAILY_CLIENTS": "",
     "GEMINI_MONTHLY_LIMIT_USD": "20",
     "NEXUS_FREE_IMAGE_PROVIDER": "cloudflare",
     "NEXUS_AUTO_STORY": "false",

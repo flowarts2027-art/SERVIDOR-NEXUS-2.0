@@ -188,3 +188,18 @@ test("Cloudflare grÃ¡tis: roda sem chave do Google, sem custo e com legendas grÃ
   const caps = await cloudflareCaptions({ AI: fakeAI() }, "primeiro-teste", dailyPlan("primeiro-teste", "2026-10-29"));
   assert.match(caps["1200"], /QUERO/);
 });
+
+test("fila do Master: pedido guardado, cron de 1 minuto gera e grava o resultado", async () => {
+  const { queueCampaign, runQueuedCampaigns, campaignStatus } = await import("../src/gemini-campaign.js");
+  const env = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI() });
+  await queueCampaign(env, "primeiro-teste", "2026-10-29");
+  assert.equal((await campaignStatus(env, "primeiro-teste", "2026-10-29")).manual.startedAt, "");
+  let n = 0;
+  const r = await runQueuedCampaigns(env, new Date("2026-10-28T11:00:00Z"), { compose, githubCaptions: async () => ({}), upload: async () => { n++; } });
+  assert.equal(r.ran, true);
+  assert.equal(n, 6);
+  const st = await campaignStatus(env, "primeiro-teste", "2026-10-29");
+  assert.equal(st.manual.result.sent.length, 6);
+  assert.ok(st.manual.finishedAt);
+  assert.equal((await runQueuedCampaigns(env)).ran, false, "fila vazia");
+});

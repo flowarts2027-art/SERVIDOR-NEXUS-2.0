@@ -246,6 +246,8 @@ export function imageProvider(env) {
   return env?.AI ? "cloudflare" : "gemini";
 }
 
+const withTimeout = (promise, ms, code) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(code)), ms))]);
+
 export async function cloudflareImage(env, prompt, aspect) {
   if (!env?.AI) throw new Error("workers_ai_unavailable");
   const [width, height] = CF_SIZES[aspect] || CF_SIZES["4:5"];
@@ -256,16 +258,16 @@ export async function cloudflareImage(env, prompt, aspect) {
     form.append("width", String(width));
     form.append("height", String(height));
     const packed = new Response(form);
-    const out = await env.AI.run(String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL), {
+    const out = await withTimeout(env.AI.run(String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL), {
       multipart: { body: packed.body, contentType: packed.headers.get("content-type") }
-    });
+    }), 90000, "timeout_90s");
     if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/png", model: "flux-2-klein-4b" };
     errors.push("klein_sem_imagem");
   } catch (error) {
     errors.push("klein:" + String(error?.message || error).slice(0, 60));
   }
   try {
-    const out = await env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8, seed: Math.floor(Math.random() * 1e9) });
+    const out = await withTimeout(env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8, seed: Math.floor(Math.random() * 1e9) }), 60000, "timeout_60s");
     if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/jpeg", model: "flux-1-schnell" };
     errors.push("schnell_sem_imagem");
   } catch (error) {
@@ -331,10 +333,10 @@ export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
 export async function cloudflareCaptions(env, clientId, plan) {
   if (!env?.AI) throw new Error("workers_ai_unavailable");
   const { posts, text } = captionRequest(clientId, plan);
-  const out = await env.AI.run(String(env.NEXUS_CF_TEXT_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast"), {
+  const out = await withTimeout(env.AI.run(String(env.NEXUS_CF_TEXT_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast"), {
     messages: [{ role: "system", content: "Você é redator de Instagram. Responda apenas com JSON válido." }, { role: "user", content: text }],
     max_tokens: 1800, temperature: 0.7
-  });
+  }), 60000, "timeout_60s");
   const raw = typeof out?.response === "string" ? out.response : JSON.stringify(out?.response || {});
   return parseCaptions(posts, raw);
 }
@@ -483,4 +485,63 @@ export async function runGeminiDaily(env, at = new Date(), deps = {}) {
     results.push(r);
   }
   return { ran: true, results };
+}
+
+// Rota manual do Master: roda em segundo plano e grava o andamento para o GET mostrar.
+export async function runCampaignInBackground(env, clientId, date, deps = {}) {
+  const startedAt = new Date().toISOString();
+  const cur = await readState(env, "gemini-daily", date, clientId);
+  await writeState(env, "gemini-daily", date, clientId, { ...cur, manual: { startedAt, finishedAt: "", result: null, error: "" } });
+  try {
+    const result = await runGeminiCampaign(env, clientId, date, deps);
+    const after = await readState(env, "gemini-daily", date, clientId);
+    await writeState(env, "gemini-daily", date, clientId, { ...after, manual: { startedAt, finishedAt: new Date().toISOString(), result, error: "" } });
+    return result;
+  } catch (error) {
+    const after = await readState(env, "gemini-daily", date, clientId);
+    await writeState(env, "gemini-daily", date, clientId, { ...after, manual: { startedAt, finishedAt: new Date().toISOString(), result: null, error: String(error?.message || error).slice(0, 160) } });
+    throw error;
+  }
+}
+
+export async function campaignStatus(env, clientId, date) {
+  const state = await readState(env, "gemini-daily", date, clientId);
+  return { provider: imageProvider(env), done: state.done || [], last: state.last || null, manual: state.manual || null, updatedAt: state.updatedAt || null };
+}
+
+// Teste rápido: 1 imagem, sem enviar ao painel. Mostra o modelo, o tempo e o erro, se houver.
+export async function testOneImage(env, aspect = "4:5") {
+  const t0 = Date.now();
+  try {
+    const img = await generateImage(env, "FORMAT: vertical photo. SCENE: a small bakery counter in the morning with fresh bread, natural light. " + COMMON_RULES, aspect === "9:16" ? "9:16" : "4:5");
+    return { ok: true, provider: imageProvider(env), model: img.model || "", bytes: img.bytes.byteLength, ms: Date.now() - t0 };
+  } catch (error) {
+    return { ok: false, provider: imageProvider(env), error: String(error?.message || error).slice(0, 200), ms: Date.now() - t0 };
+  }
+}
+
+// Fila do Master: o pedido fica guardado e o cron de 1 minuto executa (um por vez).
+export async function queueCampaign(env, clientId, date) {
+  const q = await readState(env, "gemini-queue", "pending", "*");
+  const items = (Array.isArray(q.items) ? q.items : []).filter(i => !(i.clientId === clientId && i.date === date));
+  items.push({ clientId, date, queuedAt: new Date().toISOString() });
+  await writeState(env, "gemini-queue", "pending", "*", { items: items.slice(-10), running: q.running || "" });
+  const cur = await readState(env, "gemini-daily", date, clientId);
+  await writeState(env, "gemini-daily", date, clientId, { ...cur, manual: { queuedAt: new Date().toISOString(), startedAt: "", finishedAt: "", result: null, error: "" } });
+}
+
+export async function runQueuedCampaigns(env, now = new Date(), deps = {}) {
+  const q = await readState(env, "gemini-queue", "pending", "*");
+  const items = Array.isArray(q.items) ? q.items : [];
+  if (!items.length) return { ran: false };
+  const runningAt = Date.parse(q.running || "");
+  if (Number.isFinite(runningAt) && now.getTime() - runningAt < 14 * 60000) return { ran: false, reason: "ocupado" };
+  const [job, ...rest] = items;
+  await writeState(env, "gemini-queue", "pending", "*", { items: rest, running: now.toISOString() });
+  try {
+    return { ran: true, result: await runCampaignInBackground(env, job.clientId, job.date, deps) };
+  } finally {
+    const after = await readState(env, "gemini-queue", "pending", "*");
+    await writeState(env, "gemini-queue", "pending", "*", { items: after.items || [], running: "" });
+  }
 }
