@@ -598,3 +598,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Cores da Maskara (escuro + dourado) são sugestão: o Rodrigo ainda não deu as cores oficiais.
 - O Gemini do app lê uma cópia da branch no momento da importação e não escreve no GitHub.
 - Próximo passo: Rodrigo aprova o PR; testar com a GILTEC no Gemini.
+
+## 2026-10-28 — Botão da Biblioteca de artes no Master
+- Pedido do Rodrigo: ele não achava a Biblioteca no Master (era um link azul fino em Postagens).
+- Mudança: `public/index.html` — o link virou um botão grande verde, com letra branca e forte, logo abaixo de "Enviar artes do dia".
+- Testes do Worker: 624/624 passando.
+- Próximo passo: Rodrigo sobe as artes da GILTEC (30/10 a 01/11) pela Biblioteca, um envio por grupo (cartões do carrossel juntos, posts juntos, stories juntos).
