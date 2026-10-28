@@ -71,6 +71,9 @@ jobs:
           code="$(curl -s -o /tmp/d1.json -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database?per_page=5")"
           echo "::notice::Token usado: $src. Lista de bancos D1: HTTP $code, $(jq -c '{success, errors: [.errors[]?.code]}' /tmp/d1.json 2>/dev/null)"
+      - name: Preparar conferência das artes
+        if: steps.slots.outputs.list != ''
+        run: python3 -m pip install --quiet --break-system-packages pillow || python3 -m pip install --quiet pillow || true
       - name: Subir para o painel (esperando aprovação)
         if: steps.slots.outputs.list != ''
         working-directory: cloudflare

@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-27 23h20 BRT — GILTEC: imagens repetidas e carrossel cortado
+- **Pedido do Rodrigo:** a campanha da GILTEC só tem betoneira; o ChatGPT repete mesmo orientado. Corrigir o possível.
+- **Visto nas artes de 28/10 (`agendamentos/clientes/giltec/2026-10-28/`):** betoneira em 3 peças; compactador, martelete e gerador repetidos entre carrossel e stories. Os 5 cartões do carrossel são tiras estreitas e borradas no meio de um fundo azul liso (imagem larga cortada). O print do painel do Rodrigo mostrou o mesmo post "Soluções em locação" duas vezes e tudo como "Aprovado · será publicado".
+- **Feito (branch `fix/giltec-artes-qualidade`):** `.github/scripts/checar-arte.py` + chamada em `agendar-pasta.sh`: recusa arte com faixa vazia de cor lisa nas laterais ou em cima/embaixo (os 5 cartões da GILTEC seriam recusados; 56 exemplos de nicho, Quatree e os outros posts passam). Workflow instala Pillow. Regras novas em `CAMPANHA_GILTEC.md` (um equipamento por peça, betoneira no máximo 1 por dia, rodízio de cenas, cartões inteiros); ponteiros em `AGENTS.md` e `BRIDGE_PROTOCOL.md`.
+- **Não feito:** cancelar no painel (a sessão não tem login de Master). Os 3 stories da GILTEC de 28/10 **não** foram reenviados (repetem equipamento do carrossel).
+- **Próximo passo:** Rodrigo cancelar no painel o carrossel das 09h de 28/10 e o post repetido; ChatGPT refazer o carrossel e as peças seguindo `CAMPANHA_GILTEC.md`; Rodrigo dizer quais outros equipamentos a GILTEC aluga.
+
 ## 2026-10-27 23h BRT — GILTEC: Captador de construção, 10 por dia com WhatsApp, mensagem da Rose
 - **Origem → destino:** Claude → ChatGPT
 - **Pedido do Rodrigo:** a GILTEC aluga equipamentos de construção civil. O CRM/Captador do painel dela deve buscar construtoras, obras em rodovias, reformas e tudo ligado a construção; colocar 10 contatos com WhatsApp por dia no painel; mensagem pronta da vendedora **Rose**, da **GILTEC Locações**.
