@@ -558,3 +558,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Legendas: Gemini (se a chave responder) → senão Llama 3.3 no Cloudflare (grátis) → senão legenda pronta do nicho. Sempre com QUERO.
 - Variável `NEXUS_FREE_IMAGE_PROVIDER=cloudflare` (troca para `gemini` se um dia houver plano pago). O nome do módulo continua `gemini-campaign.js`.
 - Risco: o token de deploy precisa aceitar o binding `ai`; conferir o deploy depois do merge.
+
+## 2026-10-28 (08h10) — Geração manual em fila + diagnóstico; resposta automática da GILTEC
+- Depois do deploy do Cloudflare Workers AI (PR #433), a rota manual da Flow Arts (29/10) ficou mais de 4 minutos sem responder e nada chegou ao painel. Sem acesso aos logs da Cloudflare nesta sessão.
+- Correção: o POST `/api/master/gemini-campanha` só coloca o pedido numa fila; o cron de 1 minuto (até 15 min de execução) gera. GET na mesma rota mostra andamento, resultado e erro. Nova rota `POST /api/master/gemini-teste` gera 1 imagem sem enviar e mostra modelo, tempo e erro. Tempo máximo por chamada de IA: 90 s (imagem), 60 s (reserva e legenda).
+- Resposta automática da GILTEC (@rose.giltec3): verificado pelo Master que está DESLIGADA no painel da GILTEC (`enabled:false`), nunca rodou, e a GILTEC não tem WhatsApp cadastrado em "Meu negócio". Por isso o comentário QUERO não recebe direct. Falta: número de WhatsApp da Rose e ligar a resposta automática (com o OK do Rodrigo). O webhook da Meta está chegando para outras contas.

@@ -1,5 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
-import { runGeminiDaily, runGeminiCampaign, geminiDailyClients } from "./gemini-campaign.js";
+import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
@@ -545,6 +545,10 @@ export default {
     const at = new Date(event.scheduledTime || Date.now());
     // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
     if (String(event.cron || "") === MINUTE_CRON) {
+      // Campanhas pedidas pelo Master (fila): roda aqui porque o cron aguenta até 15 minutos.
+      ctx.waitUntil(runQueuedCampaigns(env).catch(error =>
+        console.warn("gemini_queue_failed", String(error?.message || error).slice(0, 140))
+      ));
       ctx.waitUntil(runGiftInbox(env, at).catch(error =>
         console.warn("gift_inbox_failed", String(error?.message || error).slice(0, 140))
       ));
@@ -702,18 +706,24 @@ export default {
     }
 
     // Gerar agora a campanha do dia com o Gemini (botão do Master / teste). Só com login do Master.
-    if (url.pathname === "/api/master/gemini-campanha" && request.method === "POST") {
+    // Gerar a campanha do dia (botão do Master / teste). Roda em segundo plano e grava o andamento;
+    // GET na mesma rota mostra o resultado. POST .../gemini-teste gera 1 imagem e mostra o tempo e o erro.
+    if (url.pathname === "/api/master/gemini-campanha" || url.pathname === "/api/master/gemini-teste") {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
-      const body = await request.json().catch(() => ({}));
-      const clientId = String(body.clientId || "");
-      const date = String(body.date || "");
-      if (!geminiDailyClients({ GEMINI_DAILY_CLIENTS: clientId }).length || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ ok: false, error: "cliente_ou_data_invalido" }, 400);
-      try {
-        return json({ ok: true, ...(await runGeminiCampaign(env, clientId, date)) });
-      } catch (error) {
-        return json({ ok: false, error: String(error?.message || error).slice(0, 80) }, 400);
+      if (url.pathname === "/api/master/gemini-teste" && request.method === "POST") {
+        const body = await request.json().catch(() => ({}));
+        return json(await testOneImage(env, String(body.aspect || "4:5")));
       }
+      const params = request.method === "POST" ? await request.json().catch(() => ({})) : Object.fromEntries(url.searchParams);
+      const clientId = String(params.clientId || "");
+      const date = String(params.date || "");
+      if (!geminiDailyClients({ GEMINI_DAILY_CLIENTS: clientId }).length || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ ok: false, error: "cliente_ou_data_invalido" }, 400);
+      if (request.method === "GET") return json({ ok: true, ...(await campaignStatus(env, clientId, date)) });
+      // A requisição do navegador só segura 30 s de trabalho em segundo plano; o cron de 1 minuto
+      // (até 15 min) pega o pedido da fila e gera.
+      await queueCampaign(env, clientId, date);
+      return json({ ok: true, queued: true, clientId, date, message: "Na fila: começa em até 1 minuto. Veja o andamento com GET nesta rota." });
     }
 
     // Subir conteúdo pronto do cliente (post, carrossel, Reels, Stories) com legenda pronta por nicho. Só com login do Master.
