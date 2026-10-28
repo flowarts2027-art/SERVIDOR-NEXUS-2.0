@@ -267,7 +267,7 @@ export async function cloudflareImage(env, prompt, aspect) {
     errors.push("klein:" + String(error?.message || error).slice(0, 60));
   }
   try {
-    const out = await withTimeout(env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8, seed: Math.floor(Math.random() * 1e9) }), 60000, "timeout_60s");
+    const out = await withTimeout(env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8 }), 60000, "timeout_60s");
     if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/jpeg", model: "flux-1-schnell" };
     errors.push("schnell_sem_imagem");
   } catch (error) {
