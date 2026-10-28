@@ -140,7 +140,8 @@ async function mediaResponse(request, env, url) {
   if (protectedMatch) {
     const clientId = String(protectedMatch[1] || "");
     const portal = await resolvePortalSession(env, request).catch(() => null);
-    const master = portal ? null : await resolveMasterSession(env, request).catch(() => null);
+    // Quem está logado no Master e também num painel de cliente (outro cliente) continua vendo as imagens.
+    const master = portal?.clientId === clientId ? null : await resolveMasterSession(env, request).catch(() => null);
     if ((!portal || portal.clientId !== clientId) && !master) {
       return json({ error: "unauthorized" }, 401);
     }

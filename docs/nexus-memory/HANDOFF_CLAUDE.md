@@ -604,3 +604,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Mudança: `public/index.html` — o link virou um botão grande verde, com letra branca e forte, logo abaixo de "Enviar artes do dia".
 - Testes do Worker: 624/624 passando.
 - Próximo passo: Rodrigo sobe as artes da GILTEC (30/10 a 01/11) pela Biblioteca, um envio por grupo (cartões do carrossel juntos, posts juntos, stories juntos).
+
+## 2026-10-28 — Miniaturas da Biblioteca apareciam quebradas no Master
+- Causa comprovada no navegador do Rodrigo: ele estava logado no Master e no painel da Flow Arts ao mesmo tempo. Em `/media/library/<cliente>/...` o Nexus achava a sessão do painel (outro cliente) e nem conferia a do Master → 401.
+- Correção: `cloudflare/src/index.js` (mediaResponse) passa a conferir o Master quando a sessão do painel é de outro cliente. Testes 624/624.
+- Ponto em aberto: a Biblioteca programa no próximo horário livre, inclusive hoje (um post da GILTEC caiu em 28/10 19h, e o Rodrigo queria a partir de 30/10).
