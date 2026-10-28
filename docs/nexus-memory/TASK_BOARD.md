@@ -87,3 +87,5 @@ Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, n
 - Incluído na mesma branch fix/crm-direct-mensagem: seletor Instagram | WhatsApp, preferência local, texto por nicho revisável e download do modelo. 541 testes + bundle + Chromium com destinos simulados aprovados; aguardando publicação manual, sem envios reais.
 
 - [x] 2026-10-28 GILTEC: 3 posts (1 carrossel) + 3 stories com logo enviados ao painel pelo Claude, esperando aprovação do cliente (ver HANDOFF_CLAUDE 28/10 07h).
+
+- [ ] 2026-10-28 Gemini gera a campanha diária da GILTEC sozinho (6h–8h), logo automática, esperando aprovação — PR aberto pelo Claude, falta o OK do Rodrigo.

@@ -522,3 +522,17 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
   - Stories 09:00 (obra de casa), 12:00 (reforma), 19:00 (rodovia)
 - Estado: no painel da GILTEC esperando aprovação do cliente. Nada aprovado nem publicado pelo Claude. Imagens NÃO foram gravadas em `agendamentos/` (evitar reenvio duplicado).
 - Próximo passo: cliente aprova no painel. Amanhã: ChatGPT cria só os posts do dia, com a logo, sem repetir o equipamento principal no mesmo horário.
+
+## 2026-10-28 (07h30) — Campanha diária com o Gemini (PR aberto, aguardando OK do Rodrigo)
+- Pedido do Rodrigo: o ChatGPT Work e os chats têm limite diário; ele quer que o Nexus gere as artes sozinho com o Gemini. Ele criou a chave no Google AI Studio e gravou o segredo `GEMINI_API_KEY` no Worker `servidor-nexus` (Cloudflare). A chave nunca passou pelo chat nem pelo repositório.
+- Código novo: `cloudflare/src/gemini-campaign.js` + `cloudflare/src/client-logos.js` (logo original da GILTEC embutida, sem redesenho).
+  - Cron de 15 min: entre 6h e 8h de Brasília gera o pacote do dia de cada cliente em `GEMINI_DAILY_CLIENTS` (começa só com `giltec`).
+  - Pacote GILTEC: carrossel 09h (2 cartões), post 12h, post 19h e 3 stories (09h, 12h, 19h). Ciclo de 4 dias: 4 equipamentos confirmados, um por peça; mesmo horário nunca repete o equipamento do dia anterior; betoneira alterna carrossel/post.
+  - Imagens: `gemini-2.5-flash-image` (Nano Banana), 4:5 e 9:16, sem texto. Logo aplicada por cima (canto superior direito) via binding IMAGES.
+  - Legendas: primeiro as do GitHub (`agendamentos/clientes/giltec/...`), senão o Gemini escreve (`gemini-2.5-flash`), sempre com QUERO; senão a legenda pronta do nicho.
+  - Envio pelo mesmo caminho do Master (`masterUpload`), `approval=cliente`, `noDuplicate=1`: tudo fica ESPERANDO APROVAÇÃO.
+  - Limite de gasto: `GEMINI_MONTHLY_LIMIT_USD=20` (para de gerar ao chegar). Custo estimado US$ 0,039/imagem (`GEMINI_IMAGE_COST_USD`).
+  - Botão/rota manual: `POST /api/master/gemini-campanha` {clientId, date} com login do Master.
+- Testes: 614/614 na suíte (7 novos em `test/gemini-campaign.test.mjs`). Dry-run do wrangler não rodou na nuvem (sem rede para npm); o deploy do GitHub confere.
+- Não altera a pausa da OpenAI (`NEXUS_IMAGE_GENERATION` continua desligada).
+- Próximo passo: Rodrigo aprova o PR → deploy automático → amanhã (29/10) às 6h o Nexus gera a GILTEC sozinho. Conferir no painel às 8h. Depois: logo automática também na página Enviar artes e outros clientes.
