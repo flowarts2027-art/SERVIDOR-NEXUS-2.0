@@ -26,6 +26,8 @@ Comprovado em 27/10: Quatree Dog e GILTEC subiram assim (execuções 40597414392
 1. O ChatGPT mostra as artes na conversa e grava **só as legendas** (`.../HHMM/legenda.txt`). Pasta só com legenda não dá erro.
 2. O Rodrigo salva as imagens no celular e abre **Enviar artes** (`/artes.html`, botão no topo de "Subir conteúdo do cliente" no Master), escolhe cliente, dia e as imagens. A legenda aparece sozinha. Tudo entra **esperando aprovação**.
 
+**GILTEC:** antes de criar, ler `CAMPANHA_GILTEC.md` (um equipamento diferente por peça; betoneira no máximo 1 por dia; cada cartão do carrossel inteiro, nunca cortado de imagem larga).
+
 Nos dois jeitos: **não** subir imagem em Base64, **não** criar `.media-staging/`, **não** mexer em workflows.
 
 ## Permissão do ChatGPT (Rodrigo, 27/10/2026)

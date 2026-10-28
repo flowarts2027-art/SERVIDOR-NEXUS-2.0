@@ -158,6 +158,16 @@ process_slot() {
   # Regra do Rodrigo (22/10): nunca a mesma imagem em dois posts, stories ou cartões.
   repeated_image "$dir" "$CLIENT_ID" && return
 
+  # 27/10 (GILTEC): cartão encolhido no meio de um fundo liso (cortado de imagem larga) não sobe.
+  local imgs=() bad
+  mapfile -t imgs < <(find "$dir" -maxdepth 1 -type f -iregex '.*\.\(jpg\|jpeg\|png\|webp\)' | sort)
+  if [ "${#imgs[@]}" -gt 0 ] && command -v python3 >/dev/null; then
+    if ! bad="$(python3 "$(dirname "${BASH_SOURCE[0]}")/checar-arte.py" "${imgs[@]}")"; then
+      while IFS= read -r line; do [ -n "$line" ] && fail "${slot}: ${line##*/}"; done <<< "$bad"
+      return
+    fi
+  fi
+
   if [ "$type" != story ]; then
     [ -s "$caption" ] || { fail "$slot: falta legenda.txt"; return; }
     args+=(-F "caption=<$caption")
