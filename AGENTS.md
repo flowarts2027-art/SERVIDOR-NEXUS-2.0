@@ -27,6 +27,10 @@ Além dos sete arquivos obrigatórios, no início de **cada sessão com acesso a
 
 Antes de começar, leia a **última passagem do outro assistente** e confira branches/PRs para evitar refazer trabalho. Ao terminar, registre no seu arquivo de handoff o que foi **realmente feito**, testes/links/pendências e próximo passo. ChatGPT escreve em `HANDOFF_CHATGPT.md`; Claude escreve em `HANDOFF_CLAUDE.md`; mantenha `TASK_BOARD.md` coerente com evidências. Esta memória fica em repositório **público**: não grave transcrições completas, dados pessoais, contatos de clientes, tokens, senhas ou prompts confidenciais. Acesso às conversas um do outro **não é automático**. Nenhuma mudança em produção ou gasto é autorizado por esta instrução.
 
+## Padrão fixo das artes (Rodrigo, 28/10/2026)
+
+**Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC e da Flow Arts é feita por `.github/workflows/nexus-campanha-diaria.yml`.
+
 ## Revisão de campanhas e DOTs (proposta de 27/10/2026)
 
 Para tarefas envolvendo os oito DOTs de marketing (Dante, Lia, Maya, Caio, Ravi, Bento, Nilo e Clara), consultar também `docs/nexus-memory/DOTS_QUALITY_PROTOCOL_2026-10-27.md` e `docs/nexus-memory/DOTS_MARKETING_TRANSFERENCIA.md`. Estas instruções são protocolo de trabalho, **não** prova de instalação dos oito agentes. Verificar disponibilidade real das skills em cada ambiente.

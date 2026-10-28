@@ -45,7 +45,7 @@ TEMAS = {
 REGRAS_FOTO = (
     "Realistic professional photograph, natural light, true colors, real place in Brazil. "
     "Absolutely no text, letters, numbers, signs with writing, logos, symbols, brand names, stickers or watermarks anywhere. "
-    "One single photo filling the whole frame, no borders, no collage. Sharp main subject in the center of the frame. "
+    "One single photo filling the whole frame, no borders, no collage. Wide horizontal-friendly composition: the main subject and any people stay in the middle band of the frame, with free space above their heads and nothing important at the very top or bottom. "
     "Faces are not needed (seen from behind, from the side or at a distance); anatomically correct hands. "
     "If a phone or laptop appears, its screen faces the person using it, never the viewer. No neon, no robots, no blue color cast."
 )
@@ -189,50 +189,108 @@ def colar_logo(img, tema, x, y):
     img.alpha_composite(logo, (x, y))
 
 
+# ---------- PADRÃO DAS ARTES (docs/nexus-memory/PADRAO_ARTES.md, Rodrigo 28/10) ----------
+# 1. O texto NUNCA fica em cima de pessoa: título numa faixa própria em cima, vantagens e botão
+#    numa faixa própria embaixo; a foto fica só no meio, começando abaixo do título.
+# 2. Fonte Montserrat ExtraBold (a das artes azuis aprovadas); sem contorno; todas as linhas do
+#    título no mesmo tamanho; a 3ª linha na cor de destaque.
+# 3. Uma logo só (a verdadeira), no canto de cima à esquerda. Story: nada nos 14% de cima e nos 20% de baixo.
+F_MONT = os.environ.get("FONTE_MONTSERRAT", os.path.join(FONTES, "Montserrat[wght].ttf"))
+
+
+def fonte_titulo(tamanho, peso=800):
+    if os.path.isfile(F_MONT):
+        f = ImageFont.truetype(F_MONT, tamanho)
+        try:
+            f.set_variation_by_axes([peso])
+        except Exception:
+            pass
+        return f
+    return fonte(F_TITULO if peso >= 800 else F_NEGRITO, tamanho)
+
+
+def cabe(texto, peso, maximo, largura, minimo=30):
+    tam = maximo
+    while tam > minimo:
+        if fonte_titulo(tam, peso).getlength(texto) <= largura:
+            return tam
+        tam -= 2
+    return minimo
+
+
+def faixa_foto(img, foto, topo, base, cor, fade=90):
+    """Cola a foto só entre topo e base, com bordas que somem suavemente no fundo."""
+    W = img.width
+    alt = base - topo
+    pedaco = cobrir(foto, W, alt).convert("RGBA")
+    mascara = Image.new("L", (W, alt), 255)
+    dm = ImageDraw.Draw(mascara)
+    for k in range(fade):
+        a = int(255 * (k / fade) ** 1.4)
+        dm.line([(0, k), (W, k)], fill=a)
+        dm.line([(0, alt - 1 - k), (W, alt - 1 - k)], fill=a)
+    img.paste(pedaco, (0, topo), mascara)
+
+
 def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     W, H = (1080, 1920) if story else (1080, 1350)
-    img = cobrir(foto, W, H).convert("RGBA")
     fundo, dest, txt = tema["fundo"], tema["destaque"], tema["texto"]
-    # Story: os 14% de cima e os 20% de baixo ficam atrás dos botões do Instagram; nada importante lá.
-    topo = 290 if story else 52
-    degrade(img, 0, int(H * (0.62 if story else 0.55)), fundo, 248, 0)
-    degrade(img, int(H * (0.55 if story else 0.64)), H, fundo, 0, 245)
+    # Fundo das faixas: a própria foto bem desfocada e escurecida na cor do cliente (sem faixa lisa e
+    # sem ninguém reconhecível atrás do texto).
+    img = cobrir(foto, W, H).filter(ImageFilter.GaussianBlur(18)).convert("RGBA")
+    img.alpha_composite(Image.new("RGBA", (W, H), fundo + (190,)))
     d = ImageDraw.Draw(img)
-    colar_logo(img, tema, 64, topo)
-    if numero:
-        d.rectangle([W - 136, topo + 18, W - 64, topo + 90], fill=dest)
-        f = fonte(F_TITULO, 50)
-        d.text((W - 100, topo + 54), str(numero), font=f, fill=tema["botao_texto"], anchor="mm")
+    margem = 64
+    topo = 270 if story else 48           # story: abaixo dos 14% de cima
+    logo_alt = 112 if story else 104
+    tema_logo = dict(tema, logo_alt=logo_alt)
+
+    # --- faixa de cima: logo + título ---
     l1, l2, l3 = [t.upper() for t in cartao["titulo"]]
-    larg = W - 128
-    tam = min(fonte_que_cabe(t, F_TITULO, 104, larg).size for t in (l1, l2, l3))
-    f = fonte(F_TITULO, tam)
-    y = topo + tema["logo_alt"] + 70
+    larg = W - 2 * margem
+    tam = min(cabe(t, 800, 92 if story else 86, larg) for t in (l1, l2, l3))
+    f = fonte_titulo(tam, 800)
+    y = topo + logo_alt + 34
+    altura_linha = int(tam * 1.1)
     for linha, cor in ((l1, txt), (l2, txt), (l3, dest)):
-        d.text((64, y), linha, font=f, fill=cor, stroke_width=2, stroke_fill=fundo)
-        y += int(tam * 1.06)
-    # 3 vantagens com ícone
-    base_botao = H - (430 if story else 150)
-    yv = base_botao - 210
-    fv = fonte(F_NEGRITO, 32)
+        d.text((margem, y), linha, font=f, fill=cor)
+        y += altura_linha
+    fim_titulo = y + 24
+
+    # --- faixa de baixo: 3 vantagens + botão ---
+    bh = 96
+    base_botao = (H - int(H * 0.20) - bh - 24) if story else (H - bh - 44)
+    yv = base_botao - 150                 # centro dos ícones
+    inicio_rodape = yv - 62               # começo da faixa de baixo
+
+    # --- foto só no meio, nunca atrás do texto ---
+    faixa_foto(img, foto, fim_titulo - 20, inicio_rodape + 20, fundo)
+    d = ImageDraw.Draw(img)
+
+    colar_logo(img, tema_logo, margem, topo)
+    if numero:
+        d.rounded_rectangle([W - margem - 68, topo + 18, W - margem, topo + 86], radius=12, fill=dest)
+        d.text((W - margem - 34, topo + 52), str(numero), font=fonte_titulo(44, 800), fill=tema["botao_texto"], anchor="mm")
+
+    cor_icone = fundo if tema is TEMAS["giltec"] else (255, 255, 255)
     for i, v in enumerate(cartao["vantagens"][:3]):
         cx = int(W * (0.19 + 0.31 * i))
-        icone(d, cx, yv, 42, i, dest, fundo if tema is TEMAS["giltec"] else (255, 255, 255))
+        icone(d, cx, yv, 34, i, dest, cor_icone)
         palavras = v.upper().split()
         meio = (len(palavras) + 1) // 2
         linhas = [" ".join(palavras[:meio]), " ".join(palavras[meio:])] if len(palavras) > 1 else [v.upper()]
         for k, ln in enumerate(linhas):
-            fl = fonte_que_cabe(ln, F_NEGRITO, 32, 300, 22)
-            d.text((cx, yv + 70 + k * 38), ln, font=fl, fill=txt, anchor="mt")
-    # botão
-    bw, bh = (760 if story else 620), 104
+            fl = fonte_titulo(cabe(ln, 700, 27, 290, 18), 700)
+            d.text((cx, yv + 50 + k * 32), ln, font=fl, fill=txt, anchor="mt")
+
+    bw = 760 if story else 600
     bx = (W - bw) // 2
-    d.rounded_rectangle([bx, base_botao, bx + bw, base_botao + bh], radius=52, fill=dest)
+    d.rounded_rectangle([bx, base_botao, bx + bw, base_botao + bh], radius=bh // 2, fill=dest)
     # Story não aceita comentário: lá o botão pede o QUERO no direct (FORMATOS_POSTAGENS.md).
     chamada = "MANDE QUERO NO DIRECT" if story else "COMENTE QUERO"
-    d.text((W // 2, base_botao + bh // 2), chamada, font=fonte_que_cabe(chamada, F_TITULO, 54, bw - 60), fill=tema["botao_texto"], anchor="mm")
+    d.text((W // 2, base_botao + bh // 2), chamada, font=fonte_titulo(cabe(chamada, 800, 48, bw - 70), 800), fill=tema["botao_texto"], anchor="mm")
     if story and rodape:
-        d.text((W // 2, base_botao + bh + 46), rodape, font=fonte(F_NEGRITO, 34), fill=txt, anchor="mt")
+        d.text((W // 2, base_botao + bh + 30), rodape, font=fonte_titulo(30, 600), fill=txt, anchor="mt")
     return img.convert("RGB")
 
 
