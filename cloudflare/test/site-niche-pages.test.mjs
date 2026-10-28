@@ -52,7 +52,10 @@ test("site novo (28/10): tema clean, globo 3D e movimento que para com 'reduzir 
   assert.match(home, /Novos clientes todo dia no seu <em>WhatsApp\.<\/em>/);
   assert.match(home, /id="globe"/);
   assert.match(home, /prefers-reduced-motion: reduce/);
-  assert.doesNotMatch(home, /<video/, "o vídeo do celular saiu do site");
+  assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/, "vídeo de fundo como marca d'água");
+  assert.equal((home.match(/<video/g) || []).length, 1, "só o vídeo de fundo do início");
+  const size = fs.statSync(new URL("../../public/video/fundo-vendedor.mp4", import.meta.url)).size;
+  assert.ok(size > 10000 && size < 2_000_000, "vídeo leve: " + size);
   assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
 });
 
