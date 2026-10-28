@@ -14,14 +14,28 @@ const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
 const DEFAULT_TEXT_MODEL = "gemini-2.5-flash";
 const DAY_MS = 86400000;
 
+// Regras de formato de TODAS as artes (FORMATOS_POSTAGENS.md, REGRA_POSTS_DIARIOS.md, CAMPANHA_GILTEC.md,
+// DOTS_QUALITY_PROTOCOL): foto realista, sem texto, sem borda, cada peça inédita, espaço para a logo.
 const COMMON_RULES = [
-  "Photorealistic photograph, natural light, real place in Brazil.",
-  "Absolutely no text, letters, numbers, signs with writing, logos, brand names or watermarks anywhere in the image.",
-  "Full-bleed image filling the whole frame, no borders, no plain colored background bands.",
-  "Keep the top-right corner visually calm (sky or plain wall) because a logo is placed there later.",
-  "Workers wear hard hat, high-visibility vest, gloves and boots; faces do not need to be visible.",
-  "No equipment brand marks, no invented machines."
+  "STYLE: realistic professional photograph (not illustration, not 3D render, not cartoon), natural light and true colors, real place in Brazil.",
+  "NO TEXT: absolutely no text, letters, numbers, captions, signs with writing, logos, brand names, stickers or watermarks anywhere in the image, including on clothes, machines, trucks and walls.",
+  "FRAME: the photo fills the entire frame edge to edge; no borders, no frames, no plain colored bands on the sides, top or bottom, no collage, no split screen, one single photo.",
+  "LOGO SPACE: keep the top-right corner visually calm and uncluttered (sky or plain wall), because the company logo is placed there afterwards.",
+  "SUBJECT: one clear subject, sharp focus, well lit, centered in the middle of the frame; nothing important in the bottom 20% of the image.",
+  "PEOPLE: workers wear hard hat, high-visibility vest, gloves and safety boots; faces are not needed (seen from behind, from the side or at a distance); anatomically correct hands and bodies.",
+  "OBJECTS: equipment and tools are realistic, complete and used the right way; no invented machines, no brand marks, no phones with screens facing the viewer.",
+  "QUALITY: no deformed objects, no duplicated limbs, no warped perspective, no blur, no heavy filters, no neon, no blue color cast."
 ].join(" ");
+
+// Ângulos de câmera: cada peça do dia sai com um enquadramento diferente (nada de foto repetida).
+const ANGLES = [
+  "wide establishing shot at eye level",
+  "low angle shot from near the ground",
+  "three-quarter view at medium distance",
+  "over-the-shoulder view from behind the worker",
+  "elevated view from a slab or scaffold looking down",
+  "close medium shot showing the equipment in use"
+];
 
 // GILTEC Locações (CAMPANHA_GILTEC.md): só os 4 equipamentos confirmados; um diferente por peça.
 const GILTEC = Object.freeze({
@@ -85,14 +99,17 @@ export function dailyPlan(clientId, date) {
   const scene = i => cfg.scenes[(d * 3 + i) % cfg.scenes.length];
   const light = i => cfg.light[(d + i) % cfg.light.length];
   const story = i => cfg.storyScenes[(d * 3 + i) % cfg.storyScenes.length];
-  const feed = (i, e) => ({ equipment: e.id, aspect: "4:5", prompt: `${e.en}, at ${scene(i)}, ${light(i)}. The equipment is the clear main subject, sharp and well framed. ${COMMON_RULES}` });
+  const angle = i => ANGLES[(d * 2 + i) % ANGLES.length];
+  // Feed e carrossel: 4:5 (1080x1350), cada cartão gerado separado (nunca cortado de uma imagem larga).
+  const feed = (i, e) => ({ equipment: e.id, aspect: "4:5", prompt: `FORMAT: vertical 4:5 Instagram feed photo (1080x1350). SCENE: ${e.en}, at ${scene(i)}, ${light(i)}, ${angle(i)}. The equipment is the clear main subject, complete in the frame, sharp and well framed. ${COMMON_RULES}` });
   return [
     { key: "0900", type: "carousel", time: "09:00", cards: [feed(0, eq(0)), feed(1, eq(1))] },
     { key: "1200", type: "post", time: "12:00", cards: [feed(2, eq(2))] },
     { key: "1900", type: "post", time: "19:00", cards: [feed(3, eq(3))] },
     ...["09:00", "12:00", "19:00"].map((time, i) => ({
       key: time.replace(":", "") + "-story", type: "story", time,
-      cards: [{ equipment: "", aspect: "9:16", prompt: `Vertical photo: ${story(i)}, ${light(i + 1)}. No single machine as the main subject. ${COMMON_RULES}` }]
+      // Story: 9:16 (1080x1920); os 14% de cima e os 20% de baixo ficam atrás dos botões do Instagram.
+      cards: [{ equipment: "", aspect: "9:16", prompt: `FORMAT: vertical 9:16 Instagram story photo (1080x1920). Keep the top 14% and the bottom 20% free of important details (Instagram buttons cover them); main subject in the middle band. SCENE: ${story(i)}, ${light(i + 1)}, ${angle(i + 4)}. Different scene from the feed posts; no single machine as the main subject. ${COMMON_RULES}` }]
     }))
   ];
 }
@@ -161,12 +178,13 @@ export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
   return out;
 }
 
-// Ajusta para 1080x1350 (feed) ou 1080x1920 (story) e põe a logo original no canto superior direito.
+// Ajusta para 1080x1350 (feed) ou 1080x1920 (story) e põe a logo original no canto superior direito
+// (no story, abaixo dos 14% de cima, que ficam atrás da barra do Instagram).
 export async function composeWithLogo(env, bytes, clientId, aspect) {
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const logo = CLIENT_LOGOS[clientId];
   let canvas = env.IMAGES.input(new Blob([bytes]).stream()).transform({ width: 1080, height: aspect === "9:16" ? 1920 : 1350, fit: "cover" });
-  if (logo) canvas = canvas.draw(env.IMAGES.input(new Blob([b64ToBytes(logo.png)]).stream()), { right: 40, top: aspect === "9:16" ? 140 : 40 });
+  if (logo) canvas = canvas.draw(env.IMAGES.input(new Blob([b64ToBytes(logo.png)]).stream()), { right: 40, top: aspect === "9:16" ? 290 : 40 });
   const response = await (await canvas.output({ format: "image/jpeg", quality: 90 })).response();
   if (!response.ok) throw new Error("images_compose_http_" + response.status);
   const out = new Uint8Array(await response.arrayBuffer());
