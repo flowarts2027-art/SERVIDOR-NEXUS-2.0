@@ -1,0 +1,36 @@
+# Copia a pasta gemini/ da main para a branch "gemini" (pequena, só fichas e logos).
+# O Rodrigo importa essa branch no app do Gemini (Importar código) para criar as artes de cada cliente.
+# Pedido do Rodrigo em 28/10/2026.
+name: Gemini — fichas dos clientes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "gemini/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gemini-fichas
+  cancel-in-progress: true
+
+jobs:
+  copiar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publicar a pasta gemini/ na branch gemini
+        run: |
+          set -e
+          git config user.name "nexus-bot"
+          git config user.email "nexus-bot@users.noreply.github.com"
+          cp -r gemini /tmp/fichas
+          git checkout --orphan gemini-novo
+          git rm -rf . -q
+          cp -r /tmp/fichas/. .
+          git add -A
+          git commit -q -m "Fichas do Gemini (de main ${GITHUB_SHA::7})"
+          git push -f origin gemini-novo:gemini
