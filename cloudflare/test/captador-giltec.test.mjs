@@ -26,7 +26,7 @@ const firm = phone => ({ type: "node", id: ++n, tags: { name: "Construtora " + n
 
 test("GILTEC: tipos de construção, busca diária ligada, só WhatsApp e Captador ligado", async () => {
   const env = fakeEnv();
-  const niches = ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"];
+  const niches = ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora", "incorporadora", "empreiteira", "saneamento", "andaimes"];
   assert.deepEqual(suggestedNiches(giltec), niches);
   assert.deepEqual(clientNiches(giltec), niches);
   for (const k of niches) assert.ok(CAPTADOR_ALL_NICHES[k], k);
@@ -94,9 +94,42 @@ test("GILTEC: loja de material fica de fora e a lista antiga salva é trocada um
   await env.DB.prepare("INSERT INTO nexus_state(namespace,item_key,client_id,value_json,updated_at) VALUES('captador','daily','giltec',?1,CURRENT_TIMESTAMP)")
     .bind(JSON.stringify({ enabled: true, niches: ["construtora", "material"], cities: ["Niterói"] })).run();
   const old = await clientDailySettings(env, giltec);
-  assert.deepEqual(old.niches, ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"]);
+  assert.deepEqual(old.niches, ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora", "incorporadora", "empreiteira", "saneamento", "andaimes"]);
   assert.equal(old.enabled, true);
   await saveClientDailySettings(env, giltec, { enabled: true, niches: ["construtora", "reforma"], cities: "Niterói" });
   const saved = await clientDailySettings(env, giltec);
   assert.deepEqual(saved.niches, ["construtora", "reforma"], "depois de salvo na versão nova, respeita a escolha");
+});
+
+test("GILTEC: Casa do Construtor (locadora) fica; lojas de material saem", async () => {
+  const { isMaterialStore } = await import("../src/captador.js");
+  assert.equal(isMaterialStore("locadora", "Casa do Construtor Niterói"), false);
+  assert.equal(isMaterialStore("construtora", "Casa da Construção Friburgo"), true);
+  assert.equal(isMaterialStore("reforma", "Mat. de Construção Silva"), true);
+  assert.equal(isMaterialStore("construtora", "Telhas e Cerâmica Rio"), true);
+  assert.equal(isMaterialStore("pavimentacao", "Pavimentação Serrana"), false);
+  assert.equal(isMaterialStore("andaimes", "Loja X", "building_materials_store"), true);
+});
+
+test("CRM de busca: sem mensagem há 2 dias sai (e não volta); loja de material sai; enviado fica", async () => {
+  const { cleanupLeads, ensureCaptadorSchema } = await import("../src/captador.js");
+  const { DatabaseSync } = await import("node:sqlite");
+  const db = new DatabaseSync(":memory:");
+  db.exec("CREATE TABLE nexus_state(namespace TEXT, item_key TEXT, client_id TEXT, value_json TEXT, updated_at TEXT, PRIMARY KEY(namespace,item_key,client_id))");
+  const DB = { prepare(sql) { const wrap = args => {
+    const p = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
+    return { first: async () => db.prepare(sql).get(p) || null, all: async () => ({ results: db.prepare(sql).all(p) }), run: async () => ({ meta: { changes: Number(db.prepare(sql).run(p).changes) } }) };
+  }; return { ...wrap([]), bind: (...a) => wrap(a) }; } };
+  const env = { DB };
+  await ensureCaptadorSchema(env);
+  const add = (id, name, niche, status, created) => db.exec(`INSERT INTO captador_leads(client_id,id,name,niche,city,phone,maps_url,status,created_at) VALUES('giltec','${id}','${name}','${niche}','Rio','1','x','${status}','${created}')`);
+  add("velho", "Construtora A", "construtora", "hoje", "2026-10-25 12:00:00");
+  add("novo", "Construtora B", "construtora", "hoje", "2026-10-28 10:00:00");
+  add("loja", "Casa da Construção", "construtora", "hoje", "2026-10-28 10:00:00");
+  add("enviado", "Construtora C", "construtora", "enviado", "2026-10-20 10:00:00");
+  add("depois", "Construtora D", "construtora", "depois", "2026-10-20 10:00:00");
+  const r = await cleanupLeads(env, { id: "giltec" }, new Date("2026-10-28T15:00:00Z"));
+  assert.equal(r.removed, 2);
+  assert.deepEqual(db.prepare("SELECT id FROM captador_leads ORDER BY id").all().map(x => x.id), ["depois", "enviado", "novo"]);
+  assert.deepEqual(db.prepare("SELECT id FROM captador_skips ORDER BY id").all().map(x => x.id), ["loja", "velho"]);
 });

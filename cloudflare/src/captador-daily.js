@@ -7,7 +7,7 @@
 
 import {
   CAPTADOR_ALL_NICHES as CAPTADOR_NICHES, captadorEnabled, captadorUsage, ensureCaptadorSchema,
-  searchCaptadorOSM, captadorLeadOSM, captadorConfig, captadorPreset
+  searchCaptadorOSM, captadorLeadOSM, captadorConfig, captadorPreset, cleanupLeads
 } from "./captador.js";
 import { hoursStatus } from "./business-hours.js";
 
@@ -24,12 +24,13 @@ const NICHE_HINTS = [
   [/ra[cç][aã]o|pet ?food|distribuidora pet|produtos? pet/i, ["pet", "racao", "agropecuaria", "veterinario"]],
   // 27/10 (GILTEC): quem aluga equipamento ou vende para obra busca construtoras, obras em rodovias e reformas.
   [/constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|andaime|betoneira|terraplen|giltec/i,
-    ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"]]
+    ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora", "incorporadora", "empreiteira", "saneamento", "andaimes"]]
 ];
 
 // 28/10 (Rodrigo): construção tirou "loja de material" e ganhou "locadoras de equipamentos".
 // Quem salvou a lista antiga recebe a nova uma vez (a versão fica gravada ao salvar).
-const NICHES_VERSION = "2026-10-28";
+// 28/10 tarde: + incorporadoras, empreiteiras, saneamento e andaimes.
+const NICHES_VERSION = "2026-10-28b";
 
 // Ramos em que o cliente quer só empresas com celular (WhatsApp) na busca diária.
 const WHATSAPP_HINT = /constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|giltec/i;
@@ -131,6 +132,8 @@ async function saveToday(env, clientId, lead, now) {
 export async function runClientDaily(env, client, now = new Date(), fetcher = fetch, { force = false } = {}) {
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id, client))) return { ok: true, skipped: "captador_disabled" };
+  // Antes de buscar, tira quem ficou 2 dias sem mensagem e loja de material (cleanupLeads).
+  await cleanupLeads(env, client, now).catch(() => null);
   const s = await clientDailySettings(env, client);
   if (!s.enabled && !force) return { ok: true, skipped: "disabled" };
   if (!s.niches.length || !s.cities.length) return { ok: true, skipped: "not_configured" };
