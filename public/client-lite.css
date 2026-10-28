@@ -723,3 +723,15 @@ body { background: var(--paper); }
 @media (prefers-reduced-motion: reduce) {
   .btn, .post, .cal-day, .tabbar > button { transition: none; }
 }
+
+/* Correção de contenção do shell desktop: evita overflow da sidebar e abas fantasmas. */
+@media (min-width: 900px) {
+  .app { min-width: 0; }
+  .top { min-width: 0; min-height: 112px; }
+  .top-inner, .top-copy { min-width: 0; }
+  .top-copy { overflow-wrap: anywhere; }
+  .tabbar { width: 100%; min-width: 0; max-width: 242px; overflow: hidden; }
+  .nav-spotlight { width: calc(100% - 12px); min-width: 0; max-width: 100%; box-sizing: border-box; overflow: hidden; }
+  .content { min-width: 0; overflow: hidden; }
+  .content > .tab[hidden] { display: none !important; }
+}
