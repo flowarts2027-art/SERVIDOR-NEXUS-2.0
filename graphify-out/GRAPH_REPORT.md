@@ -1,17 +1,17 @@
 # Graph Report - SERVIDOR-NEXUS-2.0  (2026-10-28)
 
 ## Corpus Check
-- 413 files · ~421,257 words
+- 417 files · ~426,004 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 29 file(s) not represented in the graph (top: .css 7, .xml 6, (none) 5)
 
 ## Summary
-- 4112 nodes · 8912 edges · 200 communities (172 shown, 28 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 134 edges (avg confidence: 0.89)
+- 4149 nodes · 9004 edges · 212 communities (182 shown, 30 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 134 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ec7bc6f6`
+- Built from commit: `b2b99c82`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,7 +29,7 @@
 - scheduler.js
 - github-video-render.js
 - portal.js
-- instagram.js
+- getClient
 - gift.js
 - campaign-copy.js
 - auth.js
@@ -38,8 +38,8 @@
 - client-campaign.js
 - build_promo_card.py
 - flowarts-campaign.js
-- agent-core.js
-- src/viral-radar.js
+- art-library.js
+- src/animated-reel.js
 - Histórico de alterações feitas pelo Work
 - auto-reel.js
 - src/ads.js
@@ -47,7 +47,7 @@
 - public/ads.js
 - video-catalog.js
 - gift-dm.js
-- secrets.js
+- instagram-credentials.js
 - test_auto_cinematic_cut.py
 - env
 - whatsapp-agent.js
@@ -58,7 +58,7 @@
 - gemini-campaign.js
 - post-learning.js
 - Próximas ações
-- client-brand.js
+- emergency-publisher.js
 - public/crm.js
 - test_premium_editor_browser.cjs
 - HelperTests
@@ -66,24 +66,24 @@
 - master-workspace.js
 - campanha_diaria.py
 - make_handler
-- client-autoreply.js
+- clientBrand
 - nexus-autofix.mjs
 - Instalar o Nexus no HD novo (Windows)
 - Fontes originais integrais
 - executor.js
 - scripts
-- gift-materials.js
+- caption-polish.js
 - main.py
-- publishing-policy.js
+- business-hours.js
 - Estado do Nexus 2.0
 - Grade de formatos — Flow Arts e Quatree Dog
 - helper.py
 - public/captador.js
 - video-overlay-ui.js
-- test_clean_trailer_background.py
+- verify_portuguese_trailer.py
 - json
 - nexus-audit.mjs
-- os
+- src/manual-reel.js
 - 2026-10-21 BRT — TAREFA PARA O CHATGPT: criar os 3 posts de hoje da Flow Arts (09h, 12h e 19h)
 - Testes e evidências
 - public/master-upload.js
@@ -95,14 +95,14 @@
 - Problemas conhecidos
 - DOTs de marketing — transferência para outra conta
 - Campanha de 30 dias — Quatree Dog (@ericsson_quatree)
-- lead-hunter.js
+- landing.js
 - Decisões e limites
 - Auditoria @flowarts2026 — 2026-10-22 22h (Claude + departamentos Marketing, Vendas, Revisor e CEO; perfil público, só leitura)
-- master-openai.js
+- dm-keyword-reply.js
 - Product Marketing Context — Flow Arts
 - nexus-core-autonomy.mjs
 - PADRÃO FIXO DAS ARTES — vale para todos os clientes (Rodrigo, 28/10/2026)
-- reschedule-today.test.mjs
+- BLOCKED_PUBLISH_CLIENTS
 - steps
 - package.json
 - 2026-10-21 BRT — REGRAS NOVAS PARA OS POSTS DA FLOW ARTS (auditoria do Instagram) — vale para TODO post a partir de hoje
@@ -133,7 +133,7 @@
 - Passagem de trabalho — ChatGPT → Claude Code
 - Standup Flow Arts — 2026-10-11
 - Quadro compartilhado de tarefas — Flow Arts / Nexus
-- showcase.js
+- ref_node_fs
 - Servidor Nexus — Cloudflare
 - Implantação do Agente WhatsApp
 - steps
@@ -167,10 +167,10 @@
 - steps
 - extended-agents.js
 - steps
-- Arquitetura observada
+- visual-review.js
 - master.js
 - REGRA FIXA — ChatGPT cria 3 posts por dia da Flow Arts e envia ao painel
-- push.js
+- runStrategist
 - steps
 - site-analytics.test.mjs
 - steps
@@ -184,67 +184,79 @@
 - daily-prospects.js
 - steps
 - steps
+- crm-instagram-ui.test.mjs
+- emergency-publisher-diagnostic.js
 - test-client-workspace.mjs
 - posts.js
+- client-uploads.test.mjs
 - services
 - Campanha GILTEC Locações — regras das artes (Rodrigo, 27/10/2026)
+- client-logos.js
+- site-host.test.mjs
 - planos.js
-- video-overlay-core.js
+- test_video_overlay_core.cjs
 - DOTs Flow Arts — protocolo de qualidade e desempenho (proposta 27/10/2026)
 - Gemini — regras das imagens (Rodrigo, 28/10/2026)
 - render_carousel.py
 - upgrades-master.js
 - src/manual-carousel.js
 - business-profile.js
+- direct-instagram-oauth-owner-ui.test.mjs
 - video-related-library.js
+- issue100-production.test.mjs
+- biblioteca.js
 - content-policy.js
+- client-panel.test.mjs
+- master-instagram-connection-status.test.mjs
+- Agente de marketing do carrossel (Flow Arts)
 - achar-slots.sh
+- MANUS_REGRA.md
 - GILTEC Locações — cadastro documental
 
 ## God Nodes (most connected - your core abstractions)
 1. `Histórico de alterações feitas pelo Work` - 163 edges
-2. `handlePortalApi()` - 95 edges
+2. `handlePortalApi()` - 96 edges
 3. `Próximas ações` - 86 edges
-4. `fetch()` - 70 edges
-5. `Passagem de trabalho — Claude Code → ChatGPT` - 62 edges
+4. `fetch()` - 71 edges
+5. `Passagem de trabalho — Claude Code → ChatGPT` - 63 edges
 6. `Estado do Nexus 2.0` - 62 edges
 7. `handleMaster()` - 56 edges
-8. `clientBrand()` - 47 edges
+8. `clientBrand()` - 49 edges
 9. `brandProfileVersion()` - 47 edges
-10. `getClient()` - 45 edges
+10. `getClient()` - 46 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `2026-09-27 — Pool de mídia Ragnar` --references--> `postingProfile()`  [INFERRED]
-  docs/nexus-memory/CHANGELOG.md → cloudflare/src/agent-runtime.js
-- `2026-09-28 — priorizar recuperação de postagem Ragnar vencida (preparado)` --references--> `postingProfile()`  [INFERRED]
-  docs/nexus-memory/CHANGELOG.md → cloudflare/src/agent-runtime.js
-- `2026-10-19 ~11h BRT — Auditoria (chat) + correção do Creator (branch, sem deploy)` --references--> `runCreator()`  [INFERRED]
-  docs/nexus-memory/CHANGELOG.md → cloudflare/src/agent-runtime.js
 - `2026-10-19 ~13h40 BRT — Caçador: 10 por dia, limpeza de quem não respondeu, sempre com exemplo (branch, sem deploy)` --references--> `clearNoReply()`  [INFERRED]
   docs/nexus-memory/CHANGELOG.md → cloudflare/src/daily-prospects.js
-- `2026-10-13 — Hook Lab colocava frase de filme em todos os clientes` --references--> `runHookLab()`  [INFERRED]
-  docs/nexus-memory/CHANGELOG.md → cloudflare/src/extended-agents.js
+- `Campanha de 30 dias (2026-10-10, `cloudflare/src/flowarts-campaign.js`)` --references--> `flowArtsCampaignForDay()`  [INFERRED]
+  docs/nexus-memory/AUDITORIA-FLOW-ARTS.md → cloudflare/src/flowarts-campaign.js
+- `2026-10-08 — Regressão: bloqueio preventivo impediu download` --references--> `startYouTubeVideoIngest()`  [INFERRED]
+  docs/nexus-memory/TEST_RESULTS.md → cloudflare/src/github-video-render.js
+- `2026-10-18 — Imagens por IA pausadas até ter mais clientes` --references--> `generateOriginalMedia()`  [INFERRED]
+  docs/nexus-memory/DECISIONS.md → cloudflare/src/media-generation.js
+- `Quebrado ou insuficiente conforme código` --references--> `publishInstagramImage()`  [INFERRED]
+  docs/nexus-memory/PROJECT_STATE.md → cloudflare/src/publisher.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (200 total, 28 thin omitted)
+## Communities (212 total, 30 thin omitted)
 
 ### Community 0 - "client-lite.js"
 Cohesion: 0.09
 Nodes (66): actionsButtonsHtml(), actionsHtml(), api(), autoReviewed(), boot(), bootDemo(), calendarPostsByDay(), cancelPost() (+58 more)
 
 ### Community 1 - "signup.js"
-Cohesion: 0.14
-Nodes (30): insertPortalUserRecord(), portalUsernameTaken(), newManagedClientConfig(), slugify(), THEME_COLORS, firstPayment(), founderOpen(), publicPlans() (+22 more)
+Cohesion: 0.15
+Nodes (27): insertPortalUserRecord(), portalUsernameTaken(), slugify(), firstPayment(), founderOpen(), publicPlans(), approveSignupRequest(), clean() (+19 more)
 
 ### Community 2 - "app.js"
 Cohesion: 0.08
 Nodes (57): agentCoreAuto, agentCoreClient, agentCoreRefresh, agentCoreRunAll, agentCoreSave, agentCoreStatusMeta(), api(), assumeClient() (+49 more)
 
 ### Community 3 - "ref_node_assert"
-Cohesion: 0.03
-Nodes (55): canonicalSiteRedirect(), SITE_ORIGIN, app, master, runtime, css, html, js (+47 more)
+Cohesion: 0.05
+Nodes (33): filterMasterGuidance(), app, master, runtime, runtime, row, now, options (+25 more)
 
 ### Community 4 - "steps"
 Cohesion: 0.04
@@ -252,63 +264,63 @@ Nodes (44): env, runs-on, steps, timeout-minutes, default, description, required
 
 ### Community 5 - "src/crm.js"
 Cohesion: 0.11
-Nodes (54): readWeek(), addFromProspect(), addFromWhatsApp(), addHistory(), addProspectLater(), archiveContact(), brasiliaClock(), clean() (+46 more)
+Nodes (55): readWeek(), addFromProspect(), addFromWhatsApp(), addHistory(), addProspectLater(), archiveContact(), brasiliaClock(), brasiliaDay() (+47 more)
 
 ### Community 6 - "agent-runtime.js"
-Cohesion: 0.12
-Nodes (34): clientCreativeReferenceNotes(), finalizeOdinCoordination(), instagramMediaInsights(), instagramSnapshot(), isBudgetError(), ledgerRows(), localDay(), mediaKey() (+26 more)
+Cohesion: 0.17
+Nodes (19): clientCreativeReferenceNotes(), instagramMediaInsights(), isBudgetError(), ledgerRows(), localDay(), mediaKey(), normalizeCreativeText(), parseJson() (+11 more)
 
 ### Community 7 - "brandProfileVersion"
 Cohesion: 0.09
-Nodes (24): brandProfileVersion(), isOutdatedBrandDraft(), text(), FLOWARTS_STYLES, pickFlowArtsStyle(), GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG, brandHeadline() (+16 more)
+Nodes (26): brandProfileVersion(), CLIENT_BRAND_DEFAULTS, GENERATION_PAUSED_CLIENTS, IMAGE_GENERATION_CLIENTS, isOutdatedBrandDraft(), JUNK_THEME_WORDS, text(), usefulThemeTerms() (+18 more)
 
 ### Community 8 - "prospects.js"
-Cohesion: 0.10
-Nodes (46): googleHours(), captadorLead(), captadorLeadOSM(), captadorScore(), isMaterialStore(), alreadyKnown(), CITIES, CITY_POINTS (+38 more)
+Cohesion: 0.12
+Nodes (39): alreadyKnown(), CITIES, CITY_POINTS, cleanCity(), DAILY_SEARCH_LIMIT, ensureProspectSchema(), FIELD_MASK, firstMessage() (+31 more)
 
 ### Community 9 - "src/master-upload.js"
-Cohesion: 0.14
-Nodes (24): captionNiche(), captionVariants(), CTA, EXTRA, GENERIC, N, OPEN, orderCodeLine() (+16 more)
+Cohesion: 0.13
+Nodes (23): captionVariants(), CTA, EXTRA, GENERIC, N, OPEN, orderCodeLine(), phoneLabel() (+15 more)
 
 ### Community 10 - "scheduler.js"
-Cohesion: 0.13
-Nodes (25): runCronIteration(), isD1Emergency(), scheduled(), agentCoreConfig(), due(), enqueue(), expireStalePosts(), minuteBucket() (+17 more)
+Cohesion: 0.06
+Nodes (55): runCronIteration(), collectMetaComments(), defaultConfig(), discardLead(), leadHunterConfig(), leadHunterView(), localQualification(), parseJson() (+47 more)
 
 ### Community 11 - "github-video-render.js"
 Cohesion: 0.11
-Nodes (27): clipKeyPrefix(), failAutoRender(), handleGitHubVideoRenderCallback(), ingestTimeoutDetail(), loadJob(), LOCAL_FALLBACK_NOTICE, LOCAL_HELPER_NO_RESPONSE_MS, LOCAL_HELPER_STALLED_MS (+19 more)
+Nodes (25): clipKeyPrefix(), failAutoRender(), handleGitHubVideoRenderCallback(), loadJob(), LOCAL_FALLBACK_NOTICE, LOCAL_HELPER_NO_RESPONSE_MS, LOCAL_HELPER_STALLED_MS, localHelperStaleReason() (+17 more)
 
 ### Community 12 - "portal.js"
 Cohesion: 0.12
-Nodes (30): clearPortalSessionCookie(), portalClientView(), catalogCandidateScore(), catalogTitleCandidateFromYoutube(), connectionSummary(), demoPanel(), demoPostView(), handlePortalApi() (+22 more)
+Nodes (32): clearPortalSessionCookie(), ingestTimeoutDetail(), catalogCandidateScore(), catalogTitleCandidateFromYoutube(), connectionSummary(), demoPanel(), demoPostView(), handlePortalApi() (+24 more)
 
-### Community 13 - "instagram.js"
-Cohesion: 0.20
-Nodes (22): allowedReturnOrigin(), assertInstagramAllowed(), base64UrlToBytes(), base64UrlToText(), disconnectInstagramUser(), getMasterInstagramSummary(), handleInstagramComplianceRequest(), handleInstagramOAuthCallback() (+14 more)
+### Community 13 - "getClient"
+Cohesion: 0.13
+Nodes (30): getClient(), parseJson(), portalClientView(), rowToClient(), upsertClient(), DEMO_MAX_POSTS, demoClientRecord(), ensureDemoClient() (+22 more)
 
 ### Community 14 - "gift.js"
-Cohesion: 0.13
-Nodes (32): b64url(), escapeHtml(), fromB64url(), GIFT_BUTTON, GIFT_CHECK, GIFT_DM_TEXT, GIFT_GUIDE, GIFT_LEAD (+24 more)
+Cohesion: 0.10
+Nodes (39): b64url(), escapeHtml(), fromB64url(), GIFT_BUTTON, GIFT_CHECK, GIFT_DM_TEXT, GIFT_GUIDE, GIFT_LEAD (+31 more)
 
 ### Community 15 - "campaign-copy.js"
-Cohesion: 0.13
-Nodes (23): brandRules(), consultGrowthAI(), extractText(), localDay(), shouldRefreshGrowthAI(), reviewCopy(), RULES, campaignCopyPrompt() (+15 more)
+Cohesion: 0.12
+Nodes (24): brandRules(), consultGrowthAI(), extractText(), localDay(), shouldRefreshGrowthAI(), reviewCopy(), RULES, campaignCopyPrompt() (+16 more)
 
 ### Community 16 - "auth.js"
-Cohesion: 0.14
-Nodes (38): AUTH_LOGIN_MAX_ATTEMPTS, AUTH_LOGIN_WINDOW_SECONDS, authenticatePortalUser(), authPepper(), bytesToBase64Url(), bytesToHex(), cleanConfiguredValue(), configuredCredentialMatches() (+30 more)
+Cohesion: 0.12
+Nodes (42): AUTH_LOGIN_MAX_ATTEMPTS, AUTH_LOGIN_WINDOW_SECONDS, authenticatePortalUser(), authPepper(), authRateKey(), bytesToBase64Url(), bytesToHex(), cleanConfiguredValue() (+34 more)
 
 ### Community 17 - "upgrades.js"
-Cohesion: 0.16
-Nodes (30): captadorAudience(), ascii(), brl(), crc16(), field(), findPlan(), FOUNDER, PIX_CITY (+22 more)
+Cohesion: 0.14
+Nodes (32): setAdsAccess(), captadorAudience(), ascii(), brl(), crc16(), field(), findPlan(), FOUNDER (+24 more)
 
 ### Community 18 - "comment-autoreply.js"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (30): clientForInstagramUser(), commentAutoReplyStatus(), commentsFromWebhook(), dmText(), ensureWebhookSubscription(), graph(), handleInstagramWebhook(), hexOf() (+22 more)
 
 ### Community 19 - "client-campaign.js"
-Cohesion: 0.14
-Nodes (33): nextMedia(), stageOwnInstagramImage(), addDays(), AI_IMAGES_MONTH_CAP, aiImagesAccess(), ART_TYPES, CAMPAIGN_DAYS, CAMPAIGN_POSTS_PER_DAY (+25 more)
+Cohesion: 0.15
+Nodes (32): nextMedia(), addDays(), AI_IMAGES_MONTH_CAP, aiImagesAccess(), ART_TYPES, CAMPAIGN_DAYS, CAMPAIGN_POSTS_PER_DAY, campaignActiveOn() (+24 more)
 
 ### Community 20 - "build_promo_card.py"
 Cohesion: 0.19
@@ -318,29 +330,29 @@ Nodes (30): add_logo(), circle_image(), clean(), contain(), draw_cast_scene(), l
 Cohesion: 0.21
 Nodes (12): CAMPAIGN_CLIENTS, campaignCalendar(), campaignDayIndex(), CTA, DAYS, FLOW_ARTS_CAMPAIGN_DAYS, FLOWARTS_REAL_VIDEO_REELS, flowArtsCampaignForDay() (+4 more)
 
-### Community 22 - "agent-core.js"
-Cohesion: 0.24
-Nodes (11): AGENT_CORE_MODULES, agentCoreClientView(), agentCoreDashboard(), agentExecutions(), dayKey(), NEXUS_COORDINATOR_ID, NEXUS_WORKER_MODULES, normalizeAgentCoreConfig() (+3 more)
+### Community 22 - "art-library.js"
+Cohesion: 0.16
+Nodes (24): addDays(), addToLibrary(), brasiliaDay(), bytesToBase64(), captionPrompt(), formatFor(), freeSlots(), handleLibrary() (+16 more)
 
-### Community 23 - "src/viral-radar.js"
-Cohesion: 0.13
-Nodes (28): finishAdsConnect(), nicheHashtags(), getState(), putState(), activeRadarNiches(), BLOCKED, FB_SCOPES, graph() (+20 more)
+### Community 23 - "src/animated-reel.js"
+Cohesion: 0.15
+Nodes (16): ANIMATED_REEL_FAIL_PATH, ANIMATED_REEL_SCENES, ANIMATED_REEL_TEMPLATE, ANIMATED_REEL_UPLOAD_PATH, animatedReelStatus(), clean(), createAnimatedReel(), handleAnimatedReelCallback() (+8 more)
 
 ### Community 24 - "Histórico de alterações feitas pelo Work"
 Cohesion: 0.01
-Nodes (151): 2026-09-27 — Auditoria inicial, 2026-09-27 — Autorrecuperação de post sem mídia, 2026-09-27 — captação observável (local, aguardando deploy), 2026-09-27 — Destravamento do agendador/publicador, 2026-09-27 — Diagnóstico de acesso ao D1, 2026-09-27 — Fechamento uniforme do Publisher, 2026-09-27 — Pool de mídia Ragnar, 2026-09-28 — diagnóstico limitado de revisão antiga (preparado) (+143 more)
+Nodes (147): 2026-09-27 — Auditoria inicial, 2026-09-27 — Autorrecuperação de post sem mídia, 2026-09-27 — captação observável (local, aguardando deploy), 2026-09-27 — Destravamento do agendador/publicador, 2026-09-27 — Diagnóstico de acesso ao D1, 2026-09-27 — Fechamento uniforme do Publisher, 2026-09-28 — diagnóstico limitado de revisão antiga (preparado), 2026-09-28 — diagnóstico objetivo do bloqueio visual (preparado) (+139 more)
 
 ### Community 25 - "auto-reel.js"
-Cohesion: 0.08
-Nodes (40): ANIMATED_REEL_FAIL_PATH, ANIMATED_REEL_SCENES, ANIMATED_REEL_TEMPLATE, ANIMATED_REEL_UPLOAD_PATH, animatedReelEnabled(), animatedReelStatus(), clean(), createAnimatedReel() (+32 more)
+Cohesion: 0.14
+Nodes (24): animatedReelEnabled(), startAnimatedReel(), validateReelScenes(), AUTO_REEL_SOURCE, autoReelCaption(), autoReelClientAllowed(), DEFAULTS, handleAutoReelMaster() (+16 more)
 
 ### Community 26 - "src/ads.js"
-Cohesion: 0.13
-Nodes (34): ADS_MAX_DAILY, ADS_MAX_DAYS, ADS_MIN_DAILY, ADS_NS, ADS_PLAN_ID, ADS_RADIUS, ADS_SCOPES, adsLive() (+26 more)
+Cohesion: 0.05
+Nodes (79): ADS_MAX_DAILY, ADS_MAX_DAYS, ADS_MIN_DAILY, ADS_NS, ADS_PLAN_ID, ADS_RADIUS, ADS_SCOPES, adsLive() (+71 more)
 
 ### Community 27 - "src/captador.js"
 Cohesion: 0.05
-Nodes (83): alreadyKnown(), AUDIENCES, CAP_STATUSES, CAPTADOR_ALL_NICHES, CAPTADOR_EXTRA_NICHES, CAPTADOR_MAX_LIMIT, CAPTADOR_MONTHLY_LIMIT, CAPTADOR_NICHES (+75 more)
+Nodes (87): alreadyKnown(), AUDIENCES, CAP_STATUSES, CAPTADOR_ALL_NICHES, CAPTADOR_EXTRA_NICHES, CAPTADOR_MAX_LIMIT, CAPTADOR_MONTHLY_LIMIT, CAPTADOR_OSM_TAGS (+79 more)
 
 ### Community 28 - "public/ads.js"
 Cohesion: 0.39
@@ -352,11 +364,11 @@ Nodes (24): inferCatalogMetadataFromUpload(), uploadCatalogQuery(), catalogItemB
 
 ### Community 30 - "gift-dm.js"
 Cohesion: 0.14
-Nodes (26): messageBuilder(), checkFollows(), ASK_TEXT, askMessage(), DOWNLOAD_TITLE, downloadMessage(), FOLLOWED_PATTERN, FOLLOWED_TITLE (+18 more)
+Nodes (25): checkFollows(), ASK_TEXT, askMessage(), DOWNLOAD_TITLE, downloadMessage(), FOLLOWED_PATTERN, FOLLOWED_TITLE, followedFromWebhook() (+17 more)
 
-### Community 31 - "secrets.js"
-Cohesion: 0.38
-Nodes (6): base64UrlToBytes(), bytesToBase64Url(), decoder, decryptSecret(), encoder, encryptionKey()
+### Community 31 - "instagram-credentials.js"
+Cohesion: 0.24
+Nodes (12): coreSecretPair(), d1OAuthPair(), parseJson(), refreshInstagramTokenIfNeeded(), base64UrlToBytes(), bytesToBase64Url(), decoder, decryptSecret() (+4 more)
 
 ### Community 32 - "test_auto_cinematic_cut.py"
 Cohesion: 0.16
@@ -367,16 +379,16 @@ Cohesion: 0.05
 Nodes (40): concurrency, cancel-in-progress, group, CALLBACK_TOKEN, CLIENT_ID, COMPOSITION_JSON, CREATION_MODE, EDIT_STYLE (+32 more)
 
 ### Community 34 - "whatsapp-agent.js"
-Cohesion: 0.12
-Nodes (35): autoReply(), autoReplyEnabled(), buildDraft(), bytesToHex(), cleanPhone(), configStatus(), ensureWhatsAppSchema(), equalHex() (+27 more)
+Cohesion: 0.10
+Nodes (37): autoReply(), autoReplyEnabled(), buildDraft(), bytesToHex(), cleanPhone(), configStatus(), ensureWhatsAppSchema(), equalHex() (+29 more)
 
 ### Community 35 - "pathlib"
-Cohesion: 0.08
-Nodes (5): main(), preparar(), FakeReply, TestPortraits, RelatedTitleArtworkTests
+Cohesion: 0.07
+Nodes (9): main(), preparar(), FakeReply, TestPortraits, CleanTrailerBackgroundTests, diff_mean(), run_ffmpeg(), workflow_fullscreen_graph() (+1 more)
 
 ### Community 36 - "openai.js"
-Cohesion: 0.14
-Nodes (18): ensureRuntimeStatusTable(), estimateLunaCost(), openAIResponses(), recordUsage(), runtimeStatus(), saoPauloDay(), setRuntimeStatus(), tokenUsageToday() (+10 more)
+Cohesion: 0.30
+Nodes (11): ensureRuntimeStatusTable(), estimateLunaCost(), openAIResponses(), recordUsage(), openAIKeyForClient(), openAIKeyStatus(), runtimeStatus(), saoPauloDay() (+3 more)
 
 ### Community 37 - "video-metadata-enrichment.js"
 Cohesion: 0.18
@@ -384,11 +396,11 @@ Nodes (16): norm(), officialMovieFromTrailer(), SPIDER_BRAND_NEW_DAY, verifyOffi
 
 ### Community 38 - "format-builder.js"
 Cohesion: 0.08
-Nodes (50): CAROUSEL_AGENT_VERSION, CAROUSEL_CARD_COUNT, CAROUSEL_ROLES, charCount(), clean(), extractText(), FOOTER_MAX, FORBIDDEN (+42 more)
+Nodes (45): CAROUSEL_AGENT_VERSION, CAROUSEL_CARD_COUNT, CAROUSEL_ROLES, charCount(), clean(), extractText(), FOOTER_MAX, FORBIDDEN (+37 more)
 
 ### Community 39 - "gemini-campaign.js"
-Cohesion: 0.09
-Nodes (40): CLIENT_LOGOS, FLOW_MARK_PNG, FLOW_MARK_WIDTH, addSpend(), ANGLES, b64ToBytes(), brasiliaParts(), callGemini() (+32 more)
+Cohesion: 0.11
+Nodes (35): addSpend(), ANGLES, b64ToBytes(), brasiliaParts(), callGemini(), captionRequest(), CF_SIZES, cloudflareCaptions() (+27 more)
 
 ### Community 40 - "post-learning.js"
 Cohesion: 0.31
@@ -398,9 +410,9 @@ Nodes (9): CHECKPOINTS, dueMetricCheckpoints(), ensureLearningSchema(), featureS
 Cohesion: 0.02
 Nodes (86): 2026-09-28, incidente de publicação, 2026-10-02 — correção implantada e abertura confirmada, 2026-10-02 — próximo passo do painel de cliente, 2026-10-02 — retomada desktop, 2026-10-03 — ampliação autorizada do modelo, 2026-10-03 — confirmação do original e validação do painel, 2026-10-03 — evidência atual e pendências reais, 2026-10-03 — implantação e teste autenticado (+78 more)
 
-### Community 42 - "client-brand.js"
+### Community 42 - "emergency-publisher.js"
 Cohesion: 0.24
-Nodes (5): CLIENT_BRAND_DEFAULTS, DEMO_CLIENT_ID, GENERATION_PAUSED_CLIENTS, IMAGE_GENERATION_CLIENTS, JUNK_THEME_WORDS
+Nodes (15): CLIENTS, dayKey(), emergencyCaption(), emergencyCarousel(), emergencyImage(), emergencyPublisherStatus(), loadState(), localHour() (+7 more)
 
 ### Community 43 - "public/crm.js"
 Cohesion: 0.19
@@ -426,9 +438,9 @@ Nodes (17): e(), outros_links(), pagina(), cabe(), cobrir(), colar_logo(), desen
 Cohesion: 0.47
 Nodes (8): make_handler(), do_GET(), do_OPTIONS(), do_POST(), host_valid(), origin(), send(), session()
 
-### Community 50 - "client-autoreply.js"
-Cohesion: 0.11
-Nodes (33): buildDm(), buildDmMessage(), clean(), clientAutoReplyConfig(), defaultDm(), defaultKeywords(), defaultWaText(), DOCS_WORDS (+25 more)
+### Community 50 - "clientBrand"
+Cohesion: 0.18
+Nodes (25): buildDm(), buildDmMessage(), clean(), clientAutoReplyConfig(), defaultDm(), defaultKeywords(), defaultWaText(), DOCS_WORDS (+17 more)
 
 ### Community 51 - "nexus-autofix.mjs"
 Cohesion: 0.18
@@ -443,24 +455,24 @@ Cohesion: 0.20
 Nodes (10): Bento, Caio, Clara, Dante, DOT_ATELIER, Fontes originais integrais, Lia, Maya (+2 more)
 
 ### Community 54 - "executor.js"
-Cohesion: 0.25
-Nodes (15): automationEnabled(), canPublishInSweep(), compareDueJobs(), duePosts(), isStoryPost(), JOB_KIND_PRIORITY, parseJson(), processDueJobs() (+7 more)
+Cohesion: 0.13
+Nodes (24): automationEnabled(), canPublishInSweep(), compareDueJobs(), duePosts(), isStoryPost(), JOB_KIND_PRIORITY, parseJson(), processDueJobs() (+16 more)
 
 ### Community 55 - "scripts"
 Cohesion: 0.13
 Nodes (15): devDependencies, wrangler@^4.45.0, name, private, scripts, check, d1:migrations:apply, d1:migrations:apply:local (+7 more)
 
-### Community 56 - "gift-materials.js"
-Cohesion: 0.13
-Nodes (18): ensureGiftCta(), FIRST_LINE_MAX, limitHashtags(), MAX_HASHTAGS, OTHER_ASK_LINE, polishCaption(), QUERO_PATTERN, shortenFirstLine() (+10 more)
+### Community 56 - "caption-polish.js"
+Cohesion: 0.24
+Nodes (11): ensureGiftCta(), FIRST_LINE_MAX, limitHashtags(), MAX_HASHTAGS, OTHER_ASK_LINE, polishCaption(), QUERO_PATTERN, shortenFirstLine() (+3 more)
 
 ### Community 57 - "main.py"
 Cohesion: 0.23
 Nodes (7): _auth(), _download_and_upload(), health(), ingest(), IngestRequest, _report_failure(), _safe_name()
 
-### Community 58 - "publishing-policy.js"
-Cohesion: 0.42
-Nodes (7): isPublishingWindow(), parts(), PUBLISHING_POLICY, publishingGate(), sameSaoPauloDay(), saoPauloDay(), shouldExpireDraft()
+### Community 58 - "business-hours.js"
+Cohesion: 0.23
+Nodes (14): clock(), COMMERCIAL_WEEK, DAY_NAMES, dayList(), empty(), googleHours(), hm(), hoursStatus() (+6 more)
 
 ### Community 59 - "Estado do Nexus 2.0"
 Cohesion: 0.03
@@ -482,21 +494,21 @@ Nodes (15): call(), checkAudience(), configForm(), dailyBlock(), hideSearchTab()
 Cohesion: 0.35
 Nodes (12): add(), buildPremiumLayout(), change(), controls(), field(), notify(), render(), renderTimeline() (+4 more)
 
-### Community 64 - "test_clean_trailer_background.py"
-Cohesion: 0.15
-Nodes (8): CleanTrailerBackgroundTests, diff_mean(), run_ffmpeg(), workflow_fullscreen_graph(), VerificationTests, clean(), reject(), verify()
+### Community 64 - "verify_portuguese_trailer.py"
+Cohesion: 0.23
+Nodes (4): VerificationTests, clean(), reject(), verify()
 
 ### Community 65 - "json"
-Cohesion: 0.12
-Nodes (10): main(), post_progress(), seconds(), error(), load_metadata(), send(), ArtworkParser, main() (+2 more)
+Cohesion: 0.13
+Nodes (9): main(), post_progress(), seconds(), error(), send(), ArtworkParser, main(), get() (+1 more)
 
 ### Community 66 - "nexus-audit.mjs"
 Cohesion: 0.15
 Nodes (8): c, clients, e, j, n, o, p, u
 
-### Community 67 - "os"
-Cohesion: 0.27
-Nodes (9): draw_fit(), extract_reference_frame(), font(), make_background(), materialize_metadata(), prepare_template(), render_fixed(), safe_image() (+1 more)
+### Community 67 - "src/manual-reel.js"
+Cohesion: 0.20
+Nodes (13): brasiliaToIso(), COVER_TYPES, createManualReel(), handleManualReelMaster(), isMp4(), MANUAL_REEL_MAX_BYTES, MESSAGES, send() (+5 more)
 
 ### Community 68 - "2026-10-21 BRT — TAREFA PARA O CHATGPT: criar os 3 posts de hoje da Flow Arts (09h, 12h e 19h)"
 Cohesion: 0.29
@@ -527,8 +539,8 @@ Cohesion: 0.33
 Nodes (7): clientInsights(), num(), parseJson(), readCache(), summarizeSnapshot(), writeCache(), snapshot
 
 ### Community 75 - "subprocess"
-Cohesion: 0.12
-Nodes (15): check(), flat(), bounded(), build_manifest(), format_number(), main(), prepare_image(), main() (+7 more)
+Cohesion: 0.09
+Nodes (25): check(), flat(), bounded(), build_manifest(), format_number(), main(), prepare_image(), draw_fit() (+17 more)
 
 ### Community 76 - "Problemas conhecidos"
 Cohesion: 0.05
@@ -542,9 +554,9 @@ Nodes (4): Como recuperar, DOTs de marketing — transferência para outra conta
 Cohesion: 0.14
 Nodes (13): 10. Falta do cliente / do Rodrigo, 1. Auditoria da conta (perfil público, 22/10/2026, só leitura), 2. Ajustes do perfil (o cliente faz no celular, antes do Dia 1), 3. Objetivo e público, 4. Ritmo, 5. Calendário dos 30 dias (feed, 09h), 6. Busca de clientes (10 por dia, no painel dele), 7. Artes: material do cliente primeiro (+5 more)
 
-### Community 79 - "lead-hunter.js"
-Cohesion: 0.12
-Nodes (28): clean(), handleLandingLead(), json(), LANDING_CLIENT_ID, LANDING_SEGMENTS, validateLandingLead(), collectMetaComments(), defaultConfig() (+20 more)
+### Community 79 - "landing.js"
+Cohesion: 0.27
+Nodes (9): loginRateLimitStatus(), recordLoginFailure(), clean(), handleLandingLead(), json(), LANDING_CLIENT_ID, LANDING_SEGMENTS, validateLandingLead() (+1 more)
 
 ### Community 80 - "Decisões e limites"
 Cohesion: 0.06
@@ -554,9 +566,9 @@ Nodes (30): 2026-10-02 — decisão atual sobre vídeo no painel, 2026-10-03 —
 Cohesion: 0.07
 Nodes (29): Auditoria do Instagram @flowarts2026 — 2026-10-10, Auditoria do Instagram @flowarts2026 — 2026-10-15 (prints do Rodrigo às 21h07–21h08), Auditoria do Instagram @flowarts2026 — 2026-10-16 (feita direto no Chrome do Rodrigo, só leitura), Auditoria do Instagram @flowarts2026 — 2026-10-21 (Claude, perfil público sem login, só leitura), Auditoria @flowarts2026 — 2026-10-22 22h (Claude + departamentos Marketing, Vendas, Revisor e CEO; perfil público, só leitura), Campanha de 30 dias (2026-10-10, `cloudflare/src/flowarts-campaign.js`), Continua errado, Decisões pendentes do Rodrigo (recomendação do CEO) (+21 more)
 
-### Community 82 - "master-openai.js"
-Cohesion: 0.24
-Nodes (17): adminKey(), b64ToBytes(), bytesToB64(), costReport(), cryptoKey(), decryptSecret(), encryptSecret(), fetchCosts() (+9 more)
+### Community 82 - "dm-keyword-reply.js"
+Cohesion: 0.22
+Nodes (9): fold(), matchesKeyword(), parseJson(), processWebhookDmKeywords(), readState(), sendDm(), writeState(), giftButtonMessage() (+1 more)
 
 ### Community 83 - "Product Marketing Context — Flow Arts"
 Cohesion: 0.13
@@ -570,9 +582,9 @@ Nodes (9): currentRunId, DOTS, dryRun, fetchHealth(), gh(), healthIncidents(), m
 Cohesion: 0.22
 Nodes (8): 1. Texto nunca em cima de pessoa, 2. Texto escrito por código, nunca pela IA, 3. Fonte e tamanho, 4. Logo, 5. Formatos, 6. Cores por cliente, 7. Conteúdo, PADRÃO FIXO DAS ARTES — vale para todos os clientes (Rodrigo, 28/10/2026)
 
-### Community 86 - "reschedule-today.test.mjs"
-Cohesion: 0.36
-Nodes (7): hhmm(), localMinutes(), parse(), rescheduleMissedToday(), STUCK_ERRORS, todaySlots(), ready
+### Community 86 - "BLOCKED_PUBLISH_CLIENTS"
+Cohesion: 0.22
+Nodes (9): DEMO_CLIENT_ID, BLOCKED_PUBLISH_CLIENTS, hhmm(), localMinutes(), parse(), rescheduleMissedToday(), STUCK_ERRORS, todaySlots() (+1 more)
 
 ### Community 87 - "steps"
 Cohesion: 0.05
@@ -631,8 +643,8 @@ Cohesion: 0.29
 Nodes (6): Campanha comercial de 30 dias — Maskara Assessoria (@maskara.silva), Checklist de entrega, Diretriz visual e comercial, Grade diária (30 dias), Histórico da versão cancelada, Status operacional verificado
 
 ### Community 101 - "publisher.js"
-Cohesion: 0.08
-Nodes (37): CLIENTS, dayKey(), CLIENTS, emergencyPublisherDiagnostic(), isoTime(), reply(), emergencyCaption(), emergencyCarousel() (+29 more)
+Cohesion: 0.25
+Nodes (14): resolveInstagramCredentials(), assertClientMayPublish(), findRecentMediaByCaption(), graphRequest(), instagramPublishTarget(), publishInstagramCarousel(), publishInstagramImage(), publishInstagramPost() (+6 more)
 
 ### Community 102 - "agent-blueprint-v3.js"
 Cohesion: 0.33
@@ -659,8 +671,8 @@ Cohesion: 0.28
 Nodes (12): diversifyHashtags(), diversifyHook(), diversifyScene(), GRAMMARS, HASHTAG_SETS, hashtagOverlap(), HOOKS, norm() (+4 more)
 
 ### Community 109 - "index.js"
-Cohesion: 0.18
-Nodes (23): handleAnimatedReelMaster(), authRateKey(), clearLoginFailures(), loginRateLimitStatus(), masterSessionCookie(), portalSessionCookie(), recordLoginFailure(), requestIp() (+15 more)
+Cohesion: 0.19
+Nodes (20): handleAnimatedReelMaster(), isD1Emergency(), campaignStatus(), geminiDailyClients(), asset(), authorized(), autonomyHealth(), fetch() (+12 more)
 
 ### Community 110 - "poll"
 Cohesion: 1.00
@@ -686,9 +698,9 @@ Nodes (9): Dados que faltam, Marketing, O que precisa da aprovação do Rodrigo,
 Cohesion: 0.12
 Nodes (17): 2026-10-20 — Canal manual do CRM, 2026-10-20 — CRM Direct, 2026-10-21 — Correção de estado (Claude), 2026-10-22 23h24 BRT — Campanhas de 23/10 concluídas no envio, 2026-10-23 07h05 BRT — Quatree de hoje refeito e reenviado, 2026-10-23 08h43 BRT — MASKARA-7D-001: 42 conteúdos no painel, 2026-10-23 12h30 BRT — MASKARA-24-10: seis conteúdos corrigidos no painel, 2026-10-23 — DOTs de marketing: transferência para outra conta (+9 more)
 
-### Community 130 - "showcase.js"
-Cohesion: 0.12
-Nodes (30): BUNDLED_NICHES, BUNDLED_ORIGIN, BUNDLED_VERSION, bundledExample(), BUNDLED_EXAMPLES, seedBundledExamples(), esc(), EXAMPLE_MESSAGES (+22 more)
+### Community 130 - "ref_node_fs"
+Cohesion: 0.11
+Nodes (31): BUNDLED_NICHES, BUNDLED_ORIGIN, BUNDLED_VERSION, bundledExample(), BUNDLED_EXAMPLES, seedBundledExamples(), CAPTADOR_NICHES, esc() (+23 more)
 
 ### Community 131 - "Servidor Nexus — Cloudflare"
 Cohesion: 0.22
@@ -703,8 +715,8 @@ Cohesion: 0.06
 Nodes (34): concurrency, cancel-in-progress, group, env, runs-on, steps, timeout-minutes, EMERGENCY_TRIGGER_TOKEN (+26 more)
 
 ### Community 134 - "Passagem de trabalho — Claude Code → ChatGPT"
-Cohesion: 0.04
-Nodes (56): 2026-10-21 19h30 BRT — CRM: 14 contatos parados há mais de 24 h arquivados, 2026-10-21 19h30 BRT — REGRA FIXA: ChatGPT cria 3 posts por dia e envia ao painel, 2026-10-21 19h BRT — Envio da pasta `agendamentos` para o painel funcionou (correção em PR), 2026-10-21 20h30 BRT — SEO técnico do site e foto da consultora removida (PR, aguarda OK), 2026-10-21 20h BRT — Planos com mais conteúdos no site (PR, depende de merge), 2026-10-21 21h30 BRT — PLANO DE CRESCIMENTO e standup automático do CEO, 2026-10-21 21h BRT — Auditoria do site flowarts.com.br e painel "Está dando resultado?", 2026-10-21 22h30 BRT — Posicionamento contra apps de agendamento (PR, aguarda OK) (+48 more)
+Cohesion: 0.03
+Nodes (57): 2026-10-21 19h30 BRT — CRM: 14 contatos parados há mais de 24 h arquivados, 2026-10-21 19h30 BRT — REGRA FIXA: ChatGPT cria 3 posts por dia e envia ao painel, 2026-10-21 19h BRT — Envio da pasta `agendamentos` para o painel funcionou (correção em PR), 2026-10-21 20h30 BRT — SEO técnico do site e foto da consultora removida (PR, aguarda OK), 2026-10-21 20h BRT — Planos com mais conteúdos no site (PR, depende de merge), 2026-10-21 21h30 BRT — PLANO DE CRESCIMENTO e standup automático do CEO, 2026-10-21 21h BRT — Auditoria do site flowarts.com.br e painel "Está dando resultado?", 2026-10-21 22h30 BRT — Posicionamento contra apps de agendamento (PR, aguarda OK) (+49 more)
 
 ### Community 135 - "Ponte de trabalho — ChatGPT ↔ Claude (Nexus / Flow Arts)"
 Cohesion: 0.13
@@ -791,28 +803,28 @@ Cohesion: 0.07
 Nodes (28): concurrency, cancel-in-progress, group, env, runs-on, steps, timeout-minutes, CALLBACK_TOKEN (+20 more)
 
 ### Community 164 - "extended-agents.js"
-Cohesion: 0.17
-Nodes (30): agentCoreState(), patchAgentCoreState(), recordAgentExecution(), BUSINESS_HOOKS, clamp(), compactWords(), ledgerRows(), parseJson() (+22 more)
+Cohesion: 0.15
+Nodes (38): agentCoreState(), normalizeAgentCoreConfig(), patchAgentCoreState(), recordAgentExecution(), finalizeOdinCoordination(), instagramSnapshot(), median(), prepareOdinCoordination() (+30 more)
 
 ### Community 165 - "steps"
 Cohesion: 0.07
 Nodes (27): concurrency, cancel-in-progress, group, runs-on, steps, timeout-minutes, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN (+19 more)
 
-### Community 167 - "Arquitetura observada"
-Cohesion: 0.15
-Nodes (12): 2026-10-02 — entrega do portal e vídeo do cliente, 2026-10-03 — ampliação autorizada do modelo, 2026-10-03 — confirmação do original e validação do painel, 2026-10-03 — evidência atual e pendências reais, 2026-10-03 — modelo completo Michael, preparado localmente, 2026-10-03 — trailers oficiais em português e WhatsApp, 2026-10-04 — YouTube primeiro no PC, 2026-10-09 — deploy de referências e falha real do teste controlado (+4 more)
+### Community 167 - "visual-review.js"
+Cohesion: 0.24
+Nodes (8): boundedScore(), requiredChecks, REVIEWED_CLIENTS, reviewImage(), scoreFields, VISUAL_REVIEW_POLICY, client, verdict
 
 ### Community 168 - "master.js"
-Cohesion: 0.16
-Nodes (25): queueManualAgentRun(), clearMasterSessionCookie(), getClient(), listClients(), parseJson(), rowToClient(), upsertClient(), DEMO_MAX_POSTS (+17 more)
+Cohesion: 0.12
+Nodes (30): AGENT_CORE_MODULES, agentCoreClientView(), agentCoreDashboard(), agentExecutions(), dayKey(), NEXUS_COORDINATOR_ID, NEXUS_WORKER_MODULES, parseJson() (+22 more)
 
 ### Community 169 - "REGRA FIXA — ChatGPT cria 3 posts por dia da Flow Arts e envia ao painel"
 Cohesion: 0.13
 Nodes (14): Arquivos de cada pasta, Conferir antes de salvar (os 3 posts), DOIS JEITOS DE ENVIAR AS IMAGENS — Rodrigo, 27/10/2026 (vale para TODOS os clientes), GRADE NOVA (Rodrigo, 22/10/2026, 22h59): 5 por dia com Reel e stories, Jeito 1 — ChatGPT no modo Work/agente sobe tudo sozinho (preferido), Jeito 2 — sem Work: página Enviar artes, NUNCA REPETIR IMAGEM (Rodrigo, 22/10/2026), Oferta nova (Rodrigo, 22/10/2026) — vale a partir de agora (+6 more)
 
-### Community 170 - "push.js"
-Cohesion: 0.41
-Nodes (11): b64url(), enc, ensurePushSchema(), fromB64url(), handlePushRoute(), pushPublicKey(), removeSubscription(), saveSubscription() (+3 more)
+### Community 170 - "runStrategist"
+Cohesion: 0.36
+Nodes (8): runStrategist(), auditCategory(), DAYS, GLOBAL_PLAY_AUDIT_BASELINE, globalPlayCampaignForDay(), globalPlayCampaignStrategy(), HOOKS, ragnarCampaignForDay()
 
 ### Community 171 - "steps"
 Cohesion: 0.07
@@ -855,8 +867,8 @@ Cohesion: 0.67
 Nodes (3): 2026-10-21 BRT — ROTINA DIÁRIA DO CHATGPT: 3 posts por dia direto no painel, O que fazer todo dia (até umas 08h de Brasília), Se não conseguir salvar imagens no GitHub
 
 ### Community 181 - "daily-prospects.js"
-Cohesion: 0.13
-Nodes (26): clock(), COMMERCIAL_WEEK, DAY_NAMES, dayList(), empty(), hm(), hoursStatus(), local() (+18 more)
+Cohesion: 0.17
+Nodes (23): clearNoReply(), DAILY_TARGET, dailySettings(), FOCUS_NICHES, handleDailyRoute(), nicheOrder(), readState(), runDailyProspects() (+15 more)
 
 ### Community 182 - "steps"
 Cohesion: 0.11
@@ -865,6 +877,14 @@ Nodes (17): NEXUS_HEALTH_URL, jobs, snapshot, name, on, push, workflow_dispatch,
 ### Community 183 - "steps"
 Cohesion: 0.12
 Nodes (16): jobs, smoke, name, on, push, workflow_dispatch, paths, runs-on (+8 more)
+
+### Community 184 - "crm-instagram-ui.test.mjs"
+Cohesion: 0.20
+Nodes (3): base, assetSource, context
+
+### Community 185 - "emergency-publisher-diagnostic.js"
+Cohesion: 0.36
+Nodes (4): CLIENTS, emergencyPublisherDiagnostic(), isoTime(), reply()
 
 ### Community 186 - "test-client-workspace.mjs"
 Cohesion: 0.18
@@ -882,9 +902,21 @@ Nodes (12): generateValue, key, value, services, dockerContext, dockerfilePath, 
 Cohesion: 0.22
 Nodes (8): 2026-10-28 — Regra permanente da logo oficial GILTEC, Campanha GILTEC Locações — regras das artes (Rodrigo, 27/10/2026), Conferência automática (GitHub), Equipamentos confirmados (nas legendas da GILTEC), Problemas da campanha de 28/10 (não repetir), Regra 1 — um equipamento diferente em cada peça do dia, Regra 2 — variar a cena, não só o equipamento, Regra 3 — formato
 
+### Community 191 - "client-logos.js"
+Cohesion: 0.60
+Nodes (3): CLIENT_LOGOS, FLOW_MARK_PNG, FLOW_MARK_WIDTH
+
+### Community 192 - "site-host.test.mjs"
+Cohesion: 0.60
+Nodes (3): canonicalSiteRedirect(), SITE_ORIGIN, go()
+
 ### Community 193 - "planos.js"
 Cohesion: 0.48
 Nodes (5): box(), call(), card(), load(), render()
+
+### Community 194 - "test_video_overlay_core.cjs"
+Cohesion: 0.22
+Nodes (4): previewFontPixels(), renderLayer(), assert, { test }
 
 ### Community 195 - "DOTs Flow Arts — protocolo de qualidade e desempenho (proposta 27/10/2026)"
 Cohesion: 0.20
@@ -899,20 +931,40 @@ Cohesion: 0.35
 Nodes (8): cabecalho(), colar_foto(), fonte(), fonte_que_cabe(), main(), montar(), seta(), texto_com_halo()
 
 ### Community 199 - "src/manual-carousel.js"
-Cohesion: 0.08
-Nodes (31): checkImage(), checkVideo(), CLIENT_UPLOAD_MESSAGES, createClientUpload(), files(), IMAGE_TYPES, isMp4(), UPLOAD_TYPES (+23 more)
+Cohesion: 0.16
+Nodes (16): checkImage(), checkVideo(), CLIENT_UPLOAD_MESSAGES, createClientUpload(), files(), IMAGE_TYPES, isMp4(), UPLOAD_TYPES (+8 more)
 
 ### Community 200 - "business-profile.js"
-Cohesion: 0.26
+Cohesion: 0.25
 Nodes (11): BUSINESS_FIELDS, businessProfileView(), clean(), handleBusinessProfilePortal(), MESSAGES, normalizeBusinessProfile(), normalizeOrderCode(), saveBusinessProfile() (+3 more)
+
+### Community 201 - "direct-instagram-oauth-owner-ui.test.mjs"
+Cohesion: 0.40
+Nodes (4): app, html, instagram, master
 
 ### Community 202 - "video-related-library.js"
 Cohesion: 0.47
 Nodes (6): key(), norm(), readRelatedTitles(), rememberRelatedTitles(), safeArtwork(), safeRelated()
 
+### Community 203 - "issue100-production.test.mjs"
+Cohesion: 0.40
+Nodes (4): agents, ci, health, scheduler
+
+### Community 204 - "biblioteca.js"
+Cohesion: 0.60
+Nodes (3): call(), load(), render()
+
 ### Community 205 - "content-policy.js"
+Cohesion: 0.31
+Nodes (9): postingProfile(), COMMERCIAL_CLIENTS, commercialContentPolicy(), commercialCopyAllowed(), commercialPromptGuard(), hasResellerOffer(), isCommercialClient(), 2026-09-27 — Pool de mídia Ragnar (+1 more)
+
+### Community 206 - "client-panel.test.mjs"
 Cohesion: 0.50
-Nodes (6): COMMERCIAL_CLIENTS, commercialContentPolicy(), commercialCopyAllowed(), commercialPromptGuard(), hasResellerOffer(), isCommercialClient()
+Nodes (3): css, html, js
+
+### Community 207 - "master-instagram-connection-status.test.mjs"
+Cohesion: 0.50
+Nodes (3): app, html, master
 
 ### Community 216 - "GILTEC Locações — cadastro documental"
 Cohesion: 0.50
@@ -920,23 +972,23 @@ Nodes (3): 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts 
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `CLIENT_OK`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1822 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1833 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **30 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `startGitHubVideoRender()` connect `github-video-render.js` to `video-metadata-enrichment.js`, `video-related-library.js`, `portal.js`, `helper.py`, `video-catalog.js`, `video-demand-catalog.js`?**
-  _High betweenness centrality (0.089) - this node is a cross-community bridge._
+  _High betweenness centrality (0.108) - this node is a cross-community bridge._
 - **What connects `CLIENT_OK` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `client-lite.js` be split into smaller, more focused modules?**
   _Cohesion score 0.09043020193151888 - nodes in this community are weakly interconnected._
 - **Why does `Current known failure` connect `helper.py` to `github-video-render.js`?**
-  _High betweenness centrality (0.089) - this node is a cross-community bridge._
-- **Should `signup.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.13513513513513514 - nodes in this community are weakly interconnected._
-- **Why does `upload_to_nexus()` connect `helper.py` to `json`, `pathlib`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
 - **Should `app.js` be split into smaller, more focused modules?**
   _Cohesion score 0.0768361581920904 - nodes in this community are weakly interconnected._
+- **Why does `upload_to_nexus()` connect `helper.py` to `json`, `pathlib`?**
+  _High betweenness centrality (0.098) - this node is a cross-community bridge._
+- **Should `ref_node_assert` be split into smaller, more focused modules?**
+  _Cohesion score 0.046992481203007516 - nodes in this community are weakly interconnected._
