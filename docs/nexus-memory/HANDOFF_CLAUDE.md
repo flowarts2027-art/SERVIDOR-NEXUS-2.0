@@ -544,3 +544,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
   - A lista antiga salva no painel da GILTEC é trocada uma vez pela nova (versão 2026-10-28); depois respeita o que o cliente salvar.
   - Contatos de loja de material que já estavam na lista continuam lá; o cliente pode pular.
 - Testes: suíte completa verde (ver PR). Falta o merge do Rodrigo.
+
+## 2026-10-28 (08h) — Painel: artes GILTEC movidas; Gemini ganha a Flow Arts
+- Achado no painel: 6 artes da GILTEC (tema azul com título, ícones e "COMENTE QUERO") estavam no painel da **Flow Arts**, já aprovadas para sair às 9h no @flowarts2026. Com o OK do Rodrigo: excluídas da Flow Arts e reenviadas ao painel da GILTEC (carrossel 09h com 5 cartões, posts 12h e 19h, 3 stories), esperando aprovação, com as mesmas legendas. As 6 "só foto" que o Claude subiu às 7h na GILTEC foram excluídas (sem duplicar horário).
+- Atenção: o carrossel movido tem cartões estreitos no meio de fundo azul (o defeito da Regra 3 do CAMPANHA_GILTEC). Rodrigo avisado.
+- Rodrigo gostou do tema dessas artes para a GILTEC, mas pediu mais variedade de equipamento (betoneira demais). Próximo trabalho: o Nexus montar título, ícones e botão por cima da foto do Gemini, sem a IA escrever texto.
+- Gemini: novo plano da **Flow Arts** (`primeiro-teste`), tema da agência e sem equipamentos da GILTEC; 3 temas em rodízio (Captador de clientes; "App de agendar post não cria post"; Instagram como cartão de visita). Carrossel 09h com 5 cartões, posts 12h e 19h, 3 stories; símbolo da Flow Arts pequeno embaixo. A Flow Arts NÃO está no automático das 6h (só pela rota manual do Master), para não brigar com o ChatGPT.
+- Regras de obra (EPI) agora só nas artes da GILTEC.

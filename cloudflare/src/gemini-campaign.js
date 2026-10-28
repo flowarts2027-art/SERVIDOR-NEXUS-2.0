@@ -22,10 +22,13 @@ const COMMON_RULES = [
   "FRAME: the photo fills the entire frame edge to edge; no borders, no frames, no plain colored bands on the sides, top or bottom, no collage, no split screen, one single photo.",
   "LOGO SPACE: keep the top-right corner visually calm and uncluttered (sky or plain wall), because the company logo is placed there afterwards.",
   "SUBJECT: one clear subject, sharp focus, well lit, centered in the middle of the frame; nothing important in the bottom 20% of the image.",
-  "PEOPLE: workers wear hard hat, high-visibility vest, gloves and safety boots; faces are not needed (seen from behind, from the side or at a distance); anatomically correct hands and bodies.",
+  "PEOPLE: faces are not needed (seen from behind, from the side, over the shoulder or at a distance); anatomically correct hands and bodies.",
   "OBJECTS: equipment and tools are realistic, complete and used the right way; no invented machines, no brand marks, no phones with screens facing the viewer.",
   "QUALITY: no deformed objects, no duplicated limbs, no warped perspective, no blur, no heavy filters, no neon, no blue color cast."
 ].join(" ");
+
+// Obra (GILTEC): EPI em todo trabalhador.
+const CONSTRUCTION_RULES = "SAFETY: every worker wears hard hat, high-visibility vest, gloves and safety boots.";
 
 // Ângulos de câmera: cada peça do dia sai com um enquadramento diferente (nada de foto repetida).
 const ANGLES = [
@@ -76,7 +79,90 @@ const GILTEC = Object.freeze({
     + "Termine com 5 a 7 hashtags do RJ (#GILTEC #ConstrucaoCivilRJ #ObrasRJ ...). Sem preço, sem número de telefone, sem prazo prometido, sem inventar outros equipamentos."
 });
 
-export const GEMINI_CAMPAIGNS = Object.freeze({ giltec: GILTEC });
+
+// Flow Arts (@flowarts2026, id primeiro-teste), pedido do Rodrigo em 28/10: tema da própria agência,
+// sem os equipamentos da GILTEC. Público: donos de pequenos negócios e vendedores que precisam de clientes.
+// Regras da marca (REGRA_POSTS_DIARIOS.md): foto realista de pequeno negócio, sem azul, sem robô/neon,
+// celular nunca com a tela virada para quem vê, sem preço. Logo: símbolo pequeno embaixo, no centro.
+const FLOW_RULES = "BRAND LOOK: warm natural colors of a real small business (wood, plants, daylight); no blue tint, no robots, no holograms, no neon, no futuristic or sci-fi elements. If a phone or laptop appears, the screen faces the person using it, never the viewer (use an over-the-shoulder view). Keep the bottom-center area calm because a small brand symbol goes there.";
+const FLOW_DAYS = Object.freeze([
+  Object.freeze({
+    topic: "Captador de clientes: como achar empresas novas para vender todo dia",
+    carousel: Object.freeze([
+      "a small business owner at a wooden desk in the morning writing a short list of potential customers in an open notebook, coffee cup beside",
+      "a street of local shops and offices in a Brazilian town in the morning, seen at eye level, potential customers to visit",
+      "a salesperson chatting in front of a shop counter with a business owner, friendly handshake, seen from the side",
+      "over-the-shoulder view of a person typing a short message on a laptop at a small office, screen facing the person",
+      "a hand ticking items on a printed contact list next to a phone lying face down on the table"
+    ]),
+    post1200: "a business owner closing a deal with a customer at the counter of a small shop, handshake, warm afternoon light",
+    post1900: "a small business owner sitting at the counter after closing time, thinking, notebook and pen in hand, dusk light through the window",
+    stories: Object.freeze([
+      "a shop owner opening the front door of a small business early in the morning",
+      "hands packing an order into a kraft paper box on a wooden counter",
+      "a small team of two people talking around a table in a simple office at the end of the day"
+    ])
+  }),
+  Object.freeze({
+    topic: "App de agendar post não cria post. A Flow Arts cria, e você só aprova.",
+    carousel: Object.freeze([
+      "a tired small business owner late at night in an empty shop holding a phone, screen facing the owner",
+      "a messy table with a phone, product samples and a ring light, owner trying to photograph a product",
+      "a beautiful professional photo session of a product on a wooden table with natural window light",
+      "over-the-shoulder view of an owner smiling while approving something on a phone, screen facing the owner",
+      "an owner serving a customer at the counter instead of using the phone, relaxed and focused"
+    ]),
+    post1200: "over-the-shoulder view of a shop owner relaxed with a coffee, glancing at a phone, screen facing the owner, busy shop behind",
+    post1900: "a small business owner leaning on the counter at dusk, looking at the empty street, thoughtful",
+    stories: Object.freeze([
+      "a bakery or shop counter in the morning with fresh products being arranged",
+      "a person writing post ideas on sticky notes on a wall in a small office",
+      "a shop owner turning the sign light off at night, warm interior light"
+    ])
+  }),
+  Object.freeze({
+    topic: "Instagram como cartão de visita: o cliente olha o perfil antes de chamar",
+    carousel: Object.freeze([
+      "over-the-shoulder view of a customer scrolling a business profile on a phone in a café, screen facing the customer",
+      "a well organized shop window with products in natural light",
+      "a business owner photographing a product with a phone in good daylight, phone screen facing the owner",
+      "a customer entering a small shop and being greeted at the door",
+      "a happy owner holding a delivery bag at the counter ready for a customer"
+    ]),
+    post1200: "a small shop with a customer at the counter and the owner smiling, lively midday light",
+    post1900: "a quiet small office at dusk with a notebook open and a cup of coffee, ready to plan tomorrow",
+    stories: Object.freeze([
+      "morning light over a street of small shops in a Brazilian neighborhood",
+      "close view of hands writing a to-do list in a notebook",
+      "a closed shop at night with warm lights inside"
+    ])
+  })
+]);
+
+function flowPlan(cfg, d) {
+  const day = FLOW_DAYS[((d % FLOW_DAYS.length) + FLOW_DAYS.length) % FLOW_DAYS.length];
+  const angle = i => ANGLES[(d * 2 + i) % ANGLES.length];
+  const feed = (scene, i) => ({ equipment: "", topic: day.topic, aspect: "4:5", prompt: `FORMAT: vertical 4:5 Instagram feed photo (1080x1350). SCENE: ${scene}, ${angle(i)}. ${FLOW_RULES} ${COMMON_RULES}` });
+  const story = (scene, i) => ({ equipment: "", topic: day.topic, aspect: "9:16", prompt: `FORMAT: vertical 9:16 Instagram story photo (1080x1920). Keep the top 14% and the bottom 20% free of important details; main subject in the middle band. SCENE: ${scene}, ${angle(i + 3)}. ${FLOW_RULES} ${COMMON_RULES}` });
+  return [
+    { key: "0900", type: "carousel", time: "09:00", cards: day.carousel.map((scene, i) => feed(scene, i)) },
+    { key: "1200", type: "post", time: "12:00", cards: [feed(day.post1200, 5)] },
+    { key: "1900", type: "post", time: "19:00", cards: [feed(day.post1900, 6)] },
+    ...["09:00", "12:00", "19:00"].map((time, i) => ({ key: time.replace(":", "") + "-story", type: "story", time, cards: [story(day.stories[i], i)] }))
+  ];
+}
+
+const FLOWARTS = Object.freeze({
+  plan: flowPlan,
+  captionBrief: "Flow Arts é uma agência de marketing e automação com IA para pequenos negócios do Brasil, atendidos online. "
+    + "Ela cria os posts do Instagram (o dono só aprova) e tem o Captador, que encontra empresas novas para o cliente vender todo dia. "
+    + "Público: donos de pequenos negócios e vendedores que precisam de clientes. Tom próximo, direto e prático. "
+    + "Cada legenda: primeira linha forte, 2 ou 3 parágrafos curtos sobre o tema do dia, e no fim a frase 'Comente QUERO e receba 3 posts grátis para o seu negócio.' "
+    + "O carrossel das 09h ensina algo para salvar; o post das 12h usa a mensagem 'App de agendar post não cria post. A Flow Arts cria, e você só aprova.'; o post das 19h faz uma pergunta para responder nos comentários. "
+    + "Termine com 4 ou 5 hashtags (#FlowArts #MarketingDigital #PequenosNegocios ...). Sem preço, sem nome de concorrente, sem número ou depoimento inventado, sem prometer vendas."
+});
+
+export const GEMINI_CAMPAIGNS = Object.freeze({ giltec: Object.freeze({ ...GILTEC, plan: giltecPlan }), "primeiro-teste": FLOWARTS });
 
 export function geminiDailyClients(env) {
   return String(env?.GEMINI_DAILY_CLIENTS || "").split(/[\s,]+/).map(s => s.trim()).filter(id => id && GEMINI_CAMPAIGNS[id]);
@@ -92,7 +178,10 @@ function dayIndex(date) {
 export function dailyPlan(clientId, date) {
   const cfg = GEMINI_CAMPAIGNS[clientId];
   if (!cfg) return [];
-  const d = dayIndex(date);
+  return cfg.plan(cfg, dayIndex(date));
+}
+
+function giltecPlan(cfg, d) {
   const byId = Object.fromEntries(cfg.equipment.map(e => [e.id, e]));
   const order = cfg.cycle[((d % cfg.cycle.length) + cfg.cycle.length) % cfg.cycle.length];
   const eq = i => byId[order[i]];
@@ -101,7 +190,7 @@ export function dailyPlan(clientId, date) {
   const story = i => cfg.storyScenes[(d * 3 + i) % cfg.storyScenes.length];
   const angle = i => ANGLES[(d * 2 + i) % ANGLES.length];
   // Feed e carrossel: 4:5 (1080x1350), cada cartão gerado separado (nunca cortado de uma imagem larga).
-  const feed = (i, e) => ({ equipment: e.id, aspect: "4:5", prompt: `FORMAT: vertical 4:5 Instagram feed photo (1080x1350). SCENE: ${e.en}, at ${scene(i)}, ${light(i)}, ${angle(i)}. The equipment is the clear main subject, complete in the frame, sharp and well framed. ${COMMON_RULES}` });
+  const feed = (i, e) => ({ equipment: e.id, aspect: "4:5", prompt: `FORMAT: vertical 4:5 Instagram feed photo (1080x1350). SCENE: ${e.en}, at ${scene(i)}, ${light(i)}, ${angle(i)}. The equipment is the clear main subject, complete in the frame, sharp and well framed. ${CONSTRUCTION_RULES} ${COMMON_RULES}`, topic: e.id });
   return [
     { key: "0900", type: "carousel", time: "09:00", cards: [feed(0, eq(0)), feed(1, eq(1))] },
     { key: "1200", type: "post", time: "12:00", cards: [feed(2, eq(2))] },
@@ -109,7 +198,7 @@ export function dailyPlan(clientId, date) {
     ...["09:00", "12:00", "19:00"].map((time, i) => ({
       key: time.replace(":", "") + "-story", type: "story", time,
       // Story: 9:16 (1080x1920); os 14% de cima e os 20% de baixo ficam atrás dos botões do Instagram.
-      cards: [{ equipment: "", aspect: "9:16", prompt: `FORMAT: vertical 9:16 Instagram story photo (1080x1920). Keep the top 14% and the bottom 20% free of important details (Instagram buttons cover them); main subject in the middle band. SCENE: ${story(i)}, ${light(i + 1)}, ${angle(i + 4)}. Different scene from the feed posts; no single machine as the main subject. ${COMMON_RULES}` }]
+      cards: [{ equipment: "", aspect: "9:16", prompt: `FORMAT: vertical 9:16 Instagram story photo (1080x1920). Keep the top 14% and the bottom 20% free of important details (Instagram buttons cover them); main subject in the middle band. SCENE: ${story(i)}, ${light(i + 1)}, ${angle(i + 4)}. Different scene from the feed posts; no single machine as the main subject. ${CONSTRUCTION_RULES} ${COMMON_RULES}` }]
     }))
   ];
 }
@@ -161,7 +250,7 @@ export async function geminiImage(env, prompt, aspect, fetcher = fetch) {
 export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
   const cfg = GEMINI_CAMPAIGNS[clientId];
   const posts = plan.filter(p => p.type !== "story");
-  const list = posts.map(p => `${p.key}: ${p.type === "carousel" ? "carrossel com " : "post com "}${p.cards.map(c => c.equipment).join(" e ")}`).join("\n");
+  const list = posts.map(p => `${p.key}: ${p.type === "carousel" ? "carrossel sobre " : "post sobre "}${[...new Set(p.cards.map(c => c.topic || c.equipment).filter(Boolean))].join(" e ")}`).join("\n");
   const data = await callGemini(env, String(env?.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL), {
     contents: [{ role: "user", parts: [{ text: `${cfg.captionBrief}\nEscreva em português do Brasil uma legenda de Instagram para cada post abaixo. Responda só em JSON, com as chaves ${posts.map(p => '"' + p.key + '"').join(", ")}.\n${list}` }] }],
     generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
@@ -184,7 +273,12 @@ export async function composeWithLogo(env, bytes, clientId, aspect) {
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const logo = CLIENT_LOGOS[clientId];
   let canvas = env.IMAGES.input(new Blob([bytes]).stream()).transform({ width: 1080, height: aspect === "9:16" ? 1920 : 1350, fit: "cover" });
-  if (logo) canvas = canvas.draw(env.IMAGES.input(new Blob([b64ToBytes(logo.png)]).stream()), { right: 40, top: aspect === "9:16" ? 290 : 40 });
+  if (logo) {
+    const place = logo.position === "bottom-center"
+      ? { left: Math.round((1080 - logo.width) / 2), bottom: aspect === "9:16" ? 400 : 56 }
+      : { right: 40, top: aspect === "9:16" ? 290 : 40 };
+    canvas = canvas.draw(env.IMAGES.input(new Blob([b64ToBytes(logo.png)]).stream()), place);
+  }
   const response = await (await canvas.output({ format: "image/jpeg", quality: 90 })).response();
   if (!response.ok) throw new Error("images_compose_http_" + response.status);
   const out = new Uint8Array(await response.arrayBuffer());
