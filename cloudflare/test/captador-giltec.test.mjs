@@ -26,7 +26,7 @@ const firm = phone => ({ type: "node", id: ++n, tags: { name: "Construtora " + n
 
 test("GILTEC: tipos de construção, busca diária ligada, só WhatsApp e Captador ligado", async () => {
   const env = fakeEnv();
-  const niches = ["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "material"];
+  const niches = ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"];
   assert.deepEqual(suggestedNiches(giltec), niches);
   assert.deepEqual(clientNiches(giltec), niches);
   for (const k of niches) assert.ok(CAPTADOR_ALL_NICHES[k], k);
@@ -72,4 +72,31 @@ test("outros clientes continuam como antes (sem filtro de WhatsApp por padrão)"
   assert.equal(s.enabled, false);
   assert.equal(s.onlyWhatsapp, false);
   assert.equal(await captadorEnabled(env, cafe.id, cafe), false);
+});
+
+// 28/10 (Rodrigo): GILTEC não vende para loja de material; locadoras de equipamentos entram.
+test("GILTEC: loja de material fica de fora e a lista antiga salva é trocada uma vez", async () => {
+  const { isMaterialStore, captadorLeadOSM } = await import("../src/captador.js");
+  assert.equal(isMaterialStore("construtora", "Casa das Construções Materiais"), true);
+  assert.equal(isMaterialStore("reforma", "Depósito São Jorge"), true);
+  assert.equal(isMaterialStore("construtora", "Construtora Serra Verde"), false);
+  assert.equal(isMaterialStore("locadora", "Loja X", "hardware"), true);
+  assert.equal(isMaterialStore("pet", "Ferragens"), false, "só vale para os tipos de construção");
+  assert.equal(captadorLeadOSM({ type: "node", id: 1, tags: { name: "Ferragens Rio", phone: "21 99999-0000" } }, "construtora", "Niterói"), null);
+  assert.ok(captadorLeadOSM({ type: "node", id: 2, tags: { name: "Locadora Obra Fácil", phone: "21 99999-0001" } }, "locadora", "Niterói"));
+  assert.match(captadorOverpassQuery("locadora", "Niterói"), /tool_hire/);
+  assert.ok(clientNiches(giltec).includes("locadora"));
+  assert.ok(!clientNiches(giltec).includes("material"));
+
+  const env = fakeEnv();
+  const { clientDailySettings, saveClientDailySettings } = await import("../src/captador-daily.js");
+  // Lista salva em 27/10 (sem versão, com "material"): vira a lista nova.
+  await env.DB.prepare("INSERT INTO nexus_state(namespace,item_key,client_id,value_json,updated_at) VALUES('captador','daily','giltec',?1,CURRENT_TIMESTAMP)")
+    .bind(JSON.stringify({ enabled: true, niches: ["construtora", "material"], cities: ["Niterói"] })).run();
+  const old = await clientDailySettings(env, giltec);
+  assert.deepEqual(old.niches, ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"]);
+  assert.equal(old.enabled, true);
+  await saveClientDailySettings(env, giltec, { enabled: true, niches: ["construtora", "reforma"], cities: "Niterói" });
+  const saved = await clientDailySettings(env, giltec);
+  assert.deepEqual(saved.niches, ["construtora", "reforma"], "depois de salvo na versão nova, respeita a escolha");
 });

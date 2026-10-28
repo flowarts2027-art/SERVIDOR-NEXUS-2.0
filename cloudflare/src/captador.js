@@ -54,8 +54,20 @@ export const CAPTADOR_EXTRA_NICHES = {
   engenharia: { label: "Engenharia civil", query: "empresa de engenharia civil" },
   terraplenagem: { label: "Terraplenagem", query: "terraplenagem" },
   pavimentacao: { label: "Pavimentação e obras em rodovias", query: "pavimentação asfáltica" },
-  reforma: { label: "Reformas e empreiteiras", query: "empresa de reformas" }
+  reforma: { label: "Reformas e empreiteiras", query: "empresa de reformas" },
+  // 28/10 (Rodrigo): outras locadoras de equipamentos também são clientes da GILTEC (sublocação/parceria).
+  locadora: { label: "Locadoras de equipamentos", query: "locação de equipamentos para construção" }
 };
+
+// 28/10 (Rodrigo): a GILTEC não vende para loja de material de construção. Nos tipos de construção,
+// loja de material, ferragem, depósito e home center ficam de fora da busca.
+const CONSTRUCTION_NICHES = new Set(["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "locadora"]);
+const MATERIAL_STORE_NAME = /materia(l|is)|ferrag|home ?center|dep[oó]sito|madeireira|tintas|casa d[aoe]s? constru|constru[cç][aã]o e acabamento|acabamentos/i;
+const MATERIAL_STORE_TYPES = /hardware|home_improvement|home_goods|paint|furniture/i;
+export function isMaterialStore(nicheKey, name = "", kind = "") {
+  if (!CONSTRUCTION_NICHES.has(String(nicheKey))) return false;
+  return MATERIAL_STORE_NAME.test(String(name)) || MATERIAL_STORE_TYPES.test(String(kind));
+}
 // Todos os tipos que o Captador do cliente aceita (vitrine + extras).
 export const CAPTADOR_ALL_NICHES = { ...CAPTADOR_NICHES, ...CAPTADOR_EXTRA_NICHES };
 
@@ -74,7 +86,8 @@ export const CAPTADOR_OSM_TAGS = {
   engenharia: [["office", "engineer"], ["name~", "engenharia"]],
   terraplenagem: [["name~", "terraplen|escava[cç]|movimenta[cç][aã]o de terra"]],
   pavimentacao: [["name~", "paviment|asfalt|rodovi|saneamento"]],
-  reforma: [["craft", "builder"], ["craft", "tiler"], ["craft", "plasterer"], ["name~", "reforma|empreiteira|empreiteiro"]]
+  reforma: [["craft", "builder"], ["craft", "tiler"], ["craft", "plasterer"], ["name~", "reforma|empreiteira|empreiteiro"]],
+  locadora: [["shop", "tool_hire"], ["name~", "locadora|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|aluguel de (equipamento|m[aá]quina)|andaime"]]
 };
 const OSM_ID = /^osm:(node|way|relation)\/\d+$/;
 
@@ -349,6 +362,7 @@ export function captadorLead(place, nicheKey, city, onlyNoSite = false) {
   if (place.businessStatus && place.businessStatus !== "OPERATIONAL") return null;
   const name = clean(place.displayName?.text, 120);
   if (!name) return null;
+  if (isMaterialStore(nicheKey, name, [place.primaryType, ...(Array.isArray(place.types) ? place.types : [])].join(" "))) return null;
   const site = siteInfo(place.websiteUri);
   if (onlyNoSite && site.hasOwnSite) return null;
   const { phone, mobile } = phoneInfo(place.nationalPhoneNumber || place.internationalPhoneNumber);
@@ -415,6 +429,7 @@ export function captadorLeadOSM(element, nicheKey, city, onlyNoSite = false) {
   if (!OSM_ID.test(id)) return null;
   const name = clean(tags.name, 120);
   if (!name || tags.disused || tags.brand || tags["brand:wikidata"]) return null;
+  if (isMaterialStore(nicheKey, name, tags.shop || "")) return null;
   const { phone, mobile } = phoneInfo(String(tags["contact:whatsapp"] || tags["contact:mobile"] || tags.mobile || tags.phone || tags["contact:phone"] || "").split(/[;,]/)[0]);
   // 23/10: o mapa grátis quase nunca tem telefone. Sem telefone, a empresa entra assim mesmo,
   // com o botão "Ver no Maps" para o cliente pegar o número (antes era descartada).
