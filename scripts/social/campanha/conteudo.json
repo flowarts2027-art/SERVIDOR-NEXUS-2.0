@@ -662,5 +662,359 @@
       }
     ],
     "rodape_story": "ou comente QUERO no post de hoje"
+  },
+  "maskara-assessoria": {
+    "pasta": "clientes/maskara-assessoria",
+    "tema": "maskara",
+    "dias": [
+      {
+        "post0900": {
+          "foto": "a consultant at a desk organizing folders of documents for a client, seen from the side, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Seu CR",
+            "precisa de",
+            "atenção?"
+          ],
+          "vantagens": [
+            "CR",
+            "CRAF",
+            "Guia de tráfego"
+          ]
+        },
+        "post1200": {
+          "foto": "an indoor sport shooting range with empty lanes and paper targets far away, a person with ear muffs and safety glasses seen from behind, no firearm visible, nobody pointing anything",
+          "titulo": [
+            "Documentação",
+            "CAC",
+            "em dia?"
+          ],
+          "vantagens": [
+            "Assessoria",
+            "Acompanhamento",
+            "Sem complicação"
+          ]
+        },
+        "post1900": {
+          "foto": "a client and a consultant talking across a desk, hands and folders in focus, faces not needed, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Dúvida",
+            "sobre o seu",
+            "processo?"
+          ],
+          "vantagens": [
+            "SIGMA",
+            "SINARM",
+            "Transferências"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "an empty indoor shooting sports club lane with paper targets, dramatic light, no firearm visible, nobody pointing anything",
+            "titulo": [
+              "Bom dia,",
+              "atirador",
+              "esportivo!"
+            ],
+            "vantagens": [
+              "CR",
+              "CRAF",
+              "Guia"
+            ]
+          },
+          {
+            "foto": "a table with ear protection muffs, safety glasses and a closed hard case, dark background, no firearms",
+            "titulo": [
+              "Papelada",
+              "em ordem,",
+              "tiro tranquilo"
+            ],
+            "vantagens": [
+              "Assessoria",
+              "Documental",
+              "Mande QUERO"
+            ]
+          },
+          {
+            "foto": "a consultant typing on a laptop at night, desk lamp, screen facing the consultant, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+            "titulo": [
+              "Fale com",
+              "a Maskara",
+              "hoje"
+            ],
+            "vantagens": [
+              "CR",
+              "CRAF",
+              "SIGMA"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Seu CR precisa de atenção?\n\nA Maskara Assessoria cuida da documentação de CAC com você: CR, CRAF, guia de tráfego e acompanhamento do processo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1200": "Documentação CAC em dia?\n\nOrganizar papel, prazo e sistema toma tempo. A gente faz a assessoria documental e te orienta em cada etapa.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1900": "Ficou com dúvida sobre o seu processo?\n\nSIGMA, SINARM, transferências: a Maskara explica o caminho e acompanha a sua documentação.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+        }
+      },
+      {
+        "post0900": {
+          "foto": "close view of hands sorting printed forms into labeled blank folders on a wooden desk, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Precisa de",
+            "assessoria",
+            "documental?"
+          ],
+          "vantagens": [
+            "CR",
+            "CRAF",
+            "Transferência"
+          ]
+        },
+        "post1200": {
+          "foto": "a shooting sports club reception area with wooden counter and lockers, warm light, no firearm visible, nobody pointing anything",
+          "titulo": [
+            "Seu CRAF",
+            "está",
+            "em dia?"
+          ],
+          "vantagens": [
+            "Renovação",
+            "Acompanhamento",
+            "Orientação"
+          ]
+        },
+        "post1900": {
+          "foto": "a consultant explaining something to a client at a round table, papers between them, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Começou",
+            "agora no",
+            "tiro esportivo?"
+          ],
+          "vantagens": [
+            "Primeiro CR",
+            "Orientação",
+            "Passo certo"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "rows of ear protection muffs hanging on a wall at a sport shooting club, no firearm visible, nobody pointing anything",
+            "titulo": [
+              "Documento",
+              "certo, sem",
+              "dor de cabeça"
+            ],
+            "vantagens": [
+              "CR",
+              "CRAF",
+              "Guia"
+            ]
+          },
+          {
+            "foto": "a desk with a closed laptop, a coffee and neat stacks of folders, morning light, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+            "titulo": [
+              "A gente",
+              "cuida da",
+              "papelada"
+            ],
+            "vantagens": [
+              "Assessoria",
+              "Documental",
+              "Mande QUERO"
+            ]
+          },
+          {
+            "foto": "an indoor shooting range seen from the back of the room, lanes and soft lights, no firearm visible, nobody pointing anything",
+            "titulo": [
+              "Fale com",
+              "a Maskara",
+              "hoje"
+            ],
+            "vantagens": [
+              "SIGMA",
+              "SINARM",
+              "Transferência"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Precisa de assessoria documental?\n\nA Maskara Assessoria organiza a documentação de CAC: CR, CRAF, transferências e guias, sempre com orientação clara.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1200": "Seu CRAF está em dia?\n\nRenovação e acompanhamento da documentação sem você se perder no processo. A gente orienta cada passo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1900": "Começou agora no tiro esportivo?\n\nO primeiro CR tem várias etapas. A Maskara te orienta desde o começo para você fazer tudo do jeito certo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+        }
+      },
+      {
+        "post0900": {
+          "foto": "a consultant reviewing a checklist on a clipboard beside a stack of folders, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Guia de",
+            "tráfego",
+            "em dia?"
+          ],
+          "vantagens": [
+            "Guia",
+            "CRAF",
+            "Orientação"
+          ]
+        },
+        "post1200": {
+          "foto": "a person with ear muffs and safety glasses walking along an empty indoor range, seen from behind, no firearm visible, nobody pointing anything",
+          "titulo": [
+            "Assessoria",
+            "para quem é",
+            "CAC"
+          ],
+          "vantagens": [
+            "CR",
+            "CRAF",
+            "SIGMA"
+          ]
+        },
+        "post1900": {
+          "foto": "two people shaking hands over a desk with folders, faces not needed, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Transferência",
+            "sem",
+            "complicação"
+          ],
+          "vantagens": [
+            "Transferência",
+            "Documentos",
+            "Acompanhamento"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "a closed hard case and ear muffs on a bench at a shooting sports club, morning light, no firearms",
+            "titulo": [
+              "Bom dia,",
+              "atirador",
+              "CAC!"
+            ],
+            "vantagens": [
+              "CR",
+              "CRAF",
+              "Guia"
+            ]
+          },
+          {
+            "foto": "an organized filing cabinet drawer with blank folders, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+            "titulo": [
+              "Tudo",
+              "organizado",
+              "para você"
+            ],
+            "vantagens": [
+              "Assessoria",
+              "Documental",
+              "Mande QUERO"
+            ]
+          },
+          {
+            "foto": "a consultant on the phone at a desk, evening light, seen from the side, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+            "titulo": [
+              "Fale com",
+              "a Maskara",
+              "hoje"
+            ],
+            "vantagens": [
+              "Orientação",
+              "Acompanhamento",
+              "Mande QUERO"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Guia de tráfego em dia?\n\nA Maskara Assessoria cuida da sua documentação de CAC e te orienta sobre guia, CRAF e CR.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1200": "Assessoria para quem é CAC.\n\nCR, CRAF, SIGMA: a gente acompanha a sua documentação e explica cada etapa, sem enrolação.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1900": "Transferência sem complicação.\n\nA Maskara orienta e acompanha a documentação da transferência do começo ao fim.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+        }
+      },
+      {
+        "post0900": {
+          "foto": "a tidy reception desk of a documentation office with folders and a desk plant, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "Fale com",
+            "a Maskara",
+            "hoje"
+          ],
+          "vantagens": [
+            "CR",
+            "CRAF",
+            "Guia de tráfego"
+          ]
+        },
+        "post1200": {
+          "foto": "paper targets on a sport shooting range seen from far, soft focus, dramatic light, no firearm visible, nobody pointing anything",
+          "titulo": [
+            "Tiro esportivo",
+            "com papel",
+            "em ordem"
+          ],
+          "vantagens": [
+            "Assessoria",
+            "Documental",
+            "Orientação"
+          ]
+        },
+        "post1900": {
+          "foto": "a client reading a printed page at a desk while a consultant points to a folder, faces not needed, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+          "titulo": [
+            "O que",
+            "falta no seu",
+            "processo?"
+          ],
+          "vantagens": [
+            "Análise",
+            "Orientação",
+            "Acompanhamento"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "lockers and benches at a sport shooting club, nobody around, warm light, no firearm visible, nobody pointing anything",
+            "titulo": [
+              "Documentação",
+              "CAC",
+              "em dia?"
+            ],
+            "vantagens": [
+              "CR",
+              "CRAF",
+              "Guia"
+            ]
+          },
+          {
+            "foto": "hands stamping a blank page next to folders, in a modern dark office with warm light, no readable text on any paper or screen, no firearms",
+            "titulo": [
+              "Assessoria",
+              "documental",
+              "de verdade"
+            ],
+            "vantagens": [
+              "Assessoria",
+              "Documental",
+              "Mande QUERO"
+            ]
+          },
+          {
+            "foto": "an indoor range at night with lane lights on, empty, seen from the back, no firearm visible, nobody pointing anything",
+            "titulo": [
+              "Fale com",
+              "a Maskara",
+              "hoje"
+            ],
+            "vantagens": [
+              "SIGMA",
+              "SINARM",
+              "Mande QUERO"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Fale com a Maskara hoje.\n\nAssessoria e despachante de documentação de CAC: CR, CRAF, guias e transferências, com acompanhamento.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1200": "Tiro esportivo com papel em ordem.\n\nDeixa a documentação com a gente. A Maskara orienta e acompanha cada etapa do seu processo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "1900": "O que falta no seu processo?\n\nA gente olha a sua documentação de CAC com você e explica o próximo passo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+        }
+      }
+    ]
   }
 }

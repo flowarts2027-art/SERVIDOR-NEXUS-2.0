@@ -29,7 +29,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 ## Padrão fixo das artes (Rodrigo, 28/10/2026)
 
-**Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC e da Flow Arts é feita por `.github/workflows/nexus-campanha-diaria.yml`.
+**Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC, da Flow Arts e da Maskara (desde 28/10) é feita por `.github/workflows/nexus-campanha-diaria.yml`, com fotos da IA grátis do Cloudflare.
 
 ## Revisão de campanhas e DOTs (proposta de 27/10/2026)
 

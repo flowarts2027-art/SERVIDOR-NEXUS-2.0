@@ -35,6 +35,13 @@ TEMAS = {
         "fundo": (4, 16, 44), "destaque": (255, 194, 14), "texto": (255, 255, 255), "botao_texto": (4, 16, 44),
         "logo": os.path.join(RAIZ, "docs", "nexus-memory", "clientes", "giltec", "logo-giltec.png"), "logo_alt": 165,
     },
+    # Maskara (28/10): fundo preto/grafite, destaque dourado, botão dourado com letra preta.
+    # Sem a logo oficial ainda: escreve o nome por código no lugar dela (troca quando o Rodrigo mandar a logo).
+    "maskara": {
+        "fundo": (16, 16, 18), "destaque": (201, 162, 74), "texto": (255, 255, 255), "botao_texto": (12, 12, 12),
+        "logo": None, "nome": ["MASKARA", "ASSESSORIA"], "logo_alt": 104,
+        "botao": "COMENTA QUERO ABAIXO", "icone_cor": (12, 12, 12),
+    },
     # Flow Arts: fundo quase preto, destaque azul da marca, símbolo da Flow Arts.
     "flow": {
         "fundo": (10, 12, 18), "destaque": (64, 120, 255), "texto": (255, 255, 255), "botao_texto": (255, 255, 255),
@@ -102,8 +109,12 @@ def plano(cliente, data, conteudo):
         dia = cfg["dias"][d % len(cfg["dias"])]
         ang = lambda i: ANGULOS[(d * 2 + i) % len(ANGULOS)]
         com = lambda c, i: {**c, "foto": f"{c['foto']}, {ang(i)}."}
+        # Maskara: às 09h é post de 1 imagem (ficha do cliente); os outros têm carrossel.
+        abre = ({"chave": "0900", "tipo": "post", "cartoes": [com(dia["post0900"], 4)], "legenda": dia["legendas"]["0900"]}
+                if "post0900" in dia else
+                {"chave": "0900", "tipo": "carousel", "cartoes": [com(c, i) for i, c in enumerate(dia["carrossel"])], "legenda": dia["legendas"]["0900"]})
         pecas += [
-            {"chave": "0900", "tipo": "carousel", "cartoes": [com(c, i) for i, c in enumerate(dia["carrossel"])], "legenda": dia["legendas"]["0900"]},
+            abre,
             {"chave": "1200", "tipo": "post", "cartoes": [com(dia["post1200"], 5)], "legenda": dia["legendas"]["1200"]},
             {"chave": "1900", "tipo": "post", "cartoes": [com(dia["post1900"], 6)], "legenda": dia["legendas"]["1900"]},
         ]
@@ -183,6 +194,13 @@ def icone(d, cx, cy, r, tipo, cor_fundo, cor):
 
 
 def colar_logo(img, tema, x, y):
+    if not tema.get("logo"):
+        # Sem logo oficial: só o nome do cliente, por código (nunca uma logo inventada).
+        d = ImageDraw.Draw(img)
+        l1, l2 = tema.get("nome", ["", ""])
+        d.text((x, y + 6), l1, font=fonte_titulo(48, 800), fill=tema["destaque"])
+        d.text((x + 2, y + 62), l2, font=fonte_titulo(26, 700), fill=tema["texto"])
+        return
     logo = Image.open(tema["logo"]).convert("RGBA")
     alt = tema["logo_alt"]
     logo = logo.resize((round(logo.width * alt / logo.height), alt), Image.LANCZOS)
@@ -272,7 +290,7 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
         d.rounded_rectangle([W - margem - 68, topo + 18, W - margem, topo + 86], radius=12, fill=dest)
         d.text((W - margem - 34, topo + 52), str(numero), font=fonte_titulo(44, 800), fill=tema["botao_texto"], anchor="mm")
 
-    cor_icone = fundo if tema is TEMAS["giltec"] else (255, 255, 255)
+    cor_icone = tema.get("icone_cor") or (fundo if tema is TEMAS["giltec"] else (255, 255, 255))
     for i, v in enumerate(cartao["vantagens"][:3]):
         cx = int(W * (0.19 + 0.31 * i))
         icone(d, cx, yv, 34, i, dest, cor_icone)
@@ -287,7 +305,7 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     bx = (W - bw) // 2
     d.rounded_rectangle([bx, base_botao, bx + bw, base_botao + bh], radius=bh // 2, fill=dest)
     # Story não aceita comentário: lá o botão pede o QUERO no direct (FORMATOS_POSTAGENS.md).
-    chamada = "MANDE QUERO NO DIRECT" if story else "COMENTE QUERO"
+    chamada = "MANDE QUERO NO DIRECT" if story else tema.get("botao", "COMENTE QUERO")
     d.text((W // 2, base_botao + bh // 2), chamada, font=fonte_titulo(cabe(chamada, 800, 48, bw - 70), 800), fill=tema["botao_texto"], anchor="mm")
     if story and rodape:
         d.text((W // 2, base_botao + bh + 30), rodape, font=fonte_titulo(30, 600), fill=txt, anchor="mt")

@@ -631,3 +631,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Tipos novos para construção: incorporadora, empreiteira, saneamento, andaimes (versão de nichos `2026-10-28b` troca a lista salva da GILTEC uma vez).
 - Mensagem da Rose cita todos os equipamentos e as marcas Buffalo, Toyama, CSM (se a GILTEC salvou outra mensagem no painel, vale a dela).
 - Testes 630/630.
+
+## 2026-10-28 — Maskara na campanha diária automática (Cloudflare)
+- Pedido do Rodrigo: a campanha da Maskara passa a ter imagens automáticas pelo Cloudflare.
+- `scripts/social/campanha/conteudo.json`: cliente `maskara-assessoria` com 4 dias que se alternam (post 09h, 12h, 19h + 3 stories), textos da ficha (CR, CRAF, guia, SIGMA, SINARM), legendas com "Comenta QUERO abaixo" e as hashtags da ficha. Fotos: escritório/documentos e clube de tiro SEM arma à vista.
+- `scripts/social/campanha_diaria.py`: tema "maskara" (preto, dourado, botão "COMENTA QUERO ABAIXO"); post de 1 imagem às 09h quando o dia tem `post0900`. Sem logo oficial: escreve "MASKARA ASSESSORIA" por código no lugar (trocar quando o Rodrigo mandar a logo).
+- Workflow `nexus-campanha-diaria.yml`: clientes padrão agora "giltec primeiro-teste maskara-assessoria" (todo dia 4h17). Tudo vai ao painel ESPERANDO APROVAÇÃO (na Maskara, o próprio cliente aprova e sai sozinho).
+- Testado com fotos falsas (FOTO_FALSA=1): 6 peças geradas, textos certos.

@@ -33,6 +33,7 @@ Código que aplica: `scripts/social/campanha_diaria.py` (função `desenhar`). T
 | --- | --- | --- | --- |
 | GILTEC | azul-marinho | amarelo | amarelo com letra azul |
 | Flow Arts | quase preto | azul da marca | azul com letra branca |
+| Maskara | preto/grafite | dourado | dourado com letra preta ("COMENTA QUERO ABAIXO") |
 
 ## 7. Conteúdo
 - Sem preço, sem prazo prometido, sem telefone na imagem, sem depoimento ou número inventado.
