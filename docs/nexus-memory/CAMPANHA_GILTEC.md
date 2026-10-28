@@ -1,5 +1,15 @@
 # Campanha GILTEC Locações — regras das artes (Rodrigo, 27/10/2026)
 
+## 2026-10-28 — Regra permanente da logo oficial GILTEC
+
+GILTEC: toda arte, de toda campanha, leva a logo oficial (docs/nexus-memory/clientes/giltec/logo-giltec.png). A IA não escreve texto dentro da imagem; a logo é aplicada por cima depois que a imagem fica pronta. Nunca recriar ou redesenhar a logo: usar sempre o arquivo original.
+
+- Aplicar o arquivo original no canto inferior direito ou superior, sem cobrir o equipamento, em tamanho legível e discreto, preservando cores, letras e proporções.
+- Fluxo autorizado por Rodrigo: terminou as imagens com a logo → enviar diretamente ao painel GILTEC, esperando aprovação, sem pedir novamente. Não aprovar nem publicar. Em erro, informar e entregar as imagens para Enviar artes.
+- Campanha diária. Escopo atual: as três imagens de 28/10/2026 (compactador, martelete e gerador), sem gerar campanha de 30 dias.
+- **Estado real:** regra documentada; arquivo original da logo não foi disponibilizado como anexo acessível nesta mensagem. O caminho acima é o destino definido, NÃO comprovação de arquivo salvo. Aplicação da logo e envio das três imagens permanecem pendentes do original. Nenhum upload novo realizado nesta etapa.
+
+
 Cliente: `giltec` (painel próprio). Ramo: **locação de equipamentos para construção civil**.
 Pasta: `agendamentos/clientes/giltec/AAAA-MM-DD/HHMM/` (sempre com a data). Nunca na raiz `agendamentos/AAAA-MM-DD/`, que é o painel da Flow Arts.
 
@@ -27,7 +37,7 @@ Rodízio de cenas: obra de casa · prédio em construção · reforma dentro de 
 ## Regra 3 — formato
 - Post e cartão de carrossel: **1080×1350 cada, arte ocupando a imagem inteira**. Cada cartão é gerado **separado**. Nunca gerar uma imagem larga e cortar em tiras. Nunca colocar a arte pequena no meio de um fundo liso.
 - Story: 1080×1920, também sem bordas lisas.
-- Logo "GILTEC Locações" correta, texto curto, sem erro de português. CTA: **Comente QUERO**.
+- Logo oficial aplicada por composição após gerar a cena, conforme regra permanente de 28/10 abaixo. A IA não gera texto na imagem. CTA **Comente QUERO** na legenda e na camada textual do sistema, quando aplicável.
 - Sem preço, sem promessa de prazo que o Rodrigo não deu.
 
 ## Conferência automática (GitHub)
