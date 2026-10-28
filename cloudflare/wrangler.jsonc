@@ -21,6 +21,8 @@
   },
   "vars": {
     "APP_NAME": "Servidor Nexus",
+    "GEMINI_DAILY_CLIENTS": "giltec",
+    "GEMINI_MONTHLY_LIMIT_USD": "20",
     "NEXUS_AUTO_STORY": "false",
     "RAGNAR_CLIENT_ID": "ragnar-one",
     "CLOUDFLARE_AUTOMATION_ACTIVE": "true",

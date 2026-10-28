@@ -1,4 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
+import { runGeminiDaily, runGeminiCampaign, geminiDailyClients } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
@@ -570,6 +571,10 @@ export default {
     ctx.waitUntil(runAutoReels(env, at).catch(error =>
       console.warn("auto_reel_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Campanha diária com o Gemini (28/10): entre 6h e 8h gera as artes dos clientes ligados e manda ao painel, esperando aprovação.
+    ctx.waitUntil(runGeminiDaily(env, at).catch(error =>
+      console.warn("gemini_daily_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Caçador diário (a partir das 9h): separa empresas para o Rodrigo chamar e avisa o celular. Não envia nada.
     ctx.waitUntil(runDailyProspects(env, at).catch(error =>
       console.warn("daily_prospects_failed", String(error?.message || error).slice(0, 140))
@@ -694,6 +699,21 @@ export default {
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleManualReelMaster(request, env, url);
       if (response) return response;
+    }
+
+    // Gerar agora a campanha do dia com o Gemini (botão do Master / teste). Só com login do Master.
+    if (url.pathname === "/api/master/gemini-campanha" && request.method === "POST") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const body = await request.json().catch(() => ({}));
+      const clientId = String(body.clientId || "");
+      const date = String(body.date || "");
+      if (!geminiDailyClients({ GEMINI_DAILY_CLIENTS: clientId }).length || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ ok: false, error: "cliente_ou_data_invalido" }, 400);
+      try {
+        return json({ ok: true, ...(await runGeminiCampaign(env, clientId, date)) });
+      } catch (error) {
+        return json({ ok: false, error: String(error?.message || error).slice(0, 80) }, 400);
+      }
     }
 
     // Subir conteúdo pronto do cliente (post, carrossel, Reels, Stories) com legenda pronta por nicho. Só com login do Master.
