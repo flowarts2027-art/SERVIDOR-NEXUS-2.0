@@ -511,3 +511,14 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - **Ao assumir:** leia a entrada mais recente em `HANDOFF_CHATGPT.md`, os sete arquivos de memória citados em `AGENTS.md` e o quadro `TASK_BOARD.md`.
 - **Ao terminar:** acrescente no topo uma entrada com data/hora de Brasília, tarefa, decisões, arquivos/commits/PRs efetivamente alterados, testes reais e falhas, status de deploy, pendências e próximo passo para o ChatGPT.
 - **Segurança:** não colar segredos, prompts confidenciais, conversas completas nem dados identificáveis de clientes neste repositório público.
+
+## 2026-10-28 (07h) — GILTEC: 7 artes com logo enviadas ao painel (Claude)
+- Pedido do Rodrigo: o limite do ChatGPT Work acabou; Claude pegou as imagens já prontas e subiu ao painel.
+- Origem: pacote do ChatGPT `GILTEC_2026-10-28_Com_Logo.zip` (biblioteca do ChatGPT), mesmas 7 imagens descritas em `clientes/giltec/README.md`, já com a logo oficial. Conferência visual feita: logo presente nas 7; posts 1080×1350, stories 1080×1920.
+- Envio pela rota do Master `/api/master/upload` (mesma da página Enviar artes), cliente `giltec`, dia 28/10/2026, `approval=cliente`, `noDuplicate=1`. Resposta 200 e `approval: pending` em todos:
+  - Carrossel 09:00 (compactador + betoneira, 2 cartões) com legenda 0900 do GitHub
+  - Post 12:00 martelete com legenda 1200
+  - Post 19:00 gerador com legenda 1900
+  - Stories 09:00 (obra de casa), 12:00 (reforma), 19:00 (rodovia)
+- Estado: no painel da GILTEC esperando aprovação do cliente. Nada aprovado nem publicado pelo Claude. Imagens NÃO foram gravadas em `agendamentos/` (evitar reenvio duplicado).
+- Próximo passo: cliente aprova no painel. Amanhã: ChatGPT cria só os posts do dia, com a logo, sem repetir o equipamento principal no mesmo horário.
