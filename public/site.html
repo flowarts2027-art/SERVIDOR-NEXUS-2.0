@@ -119,33 +119,43 @@ p{margin:0}
 .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 
 .stage-wrap{flex:1 1 480px;min-width:0;display:flex;justify-content:center;position:relative;z-index:1}
-.stage{position:relative;width:520px;height:560px;perspective:1100px;flex:none}
-.tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-12deg);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
-.globe{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
-.fx .globe{animation:spin 36s linear infinite}
-@keyframes spin{to{transform:rotateY(360deg)}}
-.globe i{position:absolute;left:-2.5px;top:-2.5px;width:5px;height:5px;border-radius:50%;background:rgba(10,14,23,.30)}
-.globe i.pin{left:-6px;top:-6px;width:12px;height:12px;background:var(--blue2);box-shadow:0 0 18px 4px rgba(46,107,255,.85)}
-.floor{position:absolute;left:50%;bottom:36px;width:380px;height:60px;margin-left:-190px;border-radius:50%;background:radial-gradient(ellipse,rgba(23,71,230,.14),rgba(0,0,0,0) 70%)}
-.counter{position:absolute;left:50%;top:18px;transform:translateX(-50%);background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:18px;padding:14px 22px;text-align:center;backdrop-filter:blur(10px);min-width:270px}
-.fx .counter{animation:float 6s ease-in-out infinite}
-@keyframes float{50%{transform:translateX(-50%) translateY(-10px)}}
-.counter b{display:block;font:800 2.75rem/1 var(--display)}
-.counter span{display:block;margin-top:6px;font-size:1rem;color:var(--text)}
-.lead-card{position:absolute;width:270px;background:rgba(255,255,255,.9);border:1px solid rgba(10,14,23,.08);backdrop-filter:blur(12px);border-radius:18px;padding:16px 18px;box-shadow:0 24px 60px rgba(10,14,23,.16)}
-.fx .lead-card{opacity:0;animation:card 9s ease-in-out infinite}
-.lc1{left:-10px;top:150px}
-.lc2{right:-14px;top:270px;animation-delay:1.2s!important}
-.lc3{left:20px;top:400px;animation-delay:2.4s!important}
 @keyframes card{0%{opacity:0;transform:translateY(28px) scale(.96)}10%,82%{opacity:1;transform:none}92%,100%{opacity:0;transform:translateY(-14px) scale(.98)}}
-.lead-card .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.lead-card strong{font:800 1.1rem var(--display)}
-.score{background:#E8EEFF;color:#1238B8;font-weight:700;font-size:.9rem;padding:4px 10px;border-radius:999px}
-.lead-card .place{margin-top:6px;font-size:.95rem;color:#4A4D52}
-.ok{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:.9rem;color:#0C5A30;font-weight:700}
-.ok::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--whats)}
 .hero .note{position:absolute;left:max(20px,env(safe-area-inset-left,0px));bottom:24px}
-@media (max-width:820px){.stage{transform:scale(.68);margin:-90px -80px}.hero .wrap{padding-bottom:110px}}
+@media (max-width:820px){.hero .wrap{padding-bottom:110px}}
+/* Mural de classificados (início) */
+.board{position:relative;width:100%;max-width:520px;background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:28px;box-shadow:0 30px 80px rgba(10,14,23,.14);backdrop-filter:blur(12px);overflow:hidden}
+.board-head{padding:22px 24px 18px;border-bottom:1px solid var(--line);background:#fff}
+.board-kicker{display:flex;align-items:center;gap:10px;font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.board-title{margin-top:6px;font:700 1.15rem var(--sans);color:var(--ink)}
+.board-title b{font:800 1.9rem var(--display);color:var(--blue);margin-right:4px}
+.ticker{position:relative;height:440px;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 40px,#000 calc(100% - 60px),transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 40px,#000 calc(100% - 60px),transparent 100%)}
+.ticker-list{list-style:none;margin:0;padding:16px 16px 0;display:grid;gap:12px}
+.fx .ticker-list{animation:tick 38s linear infinite}
+.ticker:hover .ticker-list,.ticker:focus-within .ticker-list{animation-play-state:paused}
+@keyframes tick{to{transform:translateY(-50%)}}
+.ad{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:grid;gap:6px}
+.ad .tags{display:flex;flex-wrap:wrap;gap:6px}
+.ad .t-new{background:#E8EEFF;color:#1238B8;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:999px}
+.ad .t-open{background:#E4F5EA;color:#0C5A30;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:999px}
+.ad h3{font:800 1.15rem var(--display);letter-spacing:0}
+.ad .meta{font-size:.95rem;color:var(--text)}
+.ad .contact{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
+.ad .phone{font:700 1rem var(--sans);color:var(--ink);filter:blur(4px);user-select:none}
+.ad .see{min-height:44px;display:inline-flex;align-items:center;gap:8px;padding:0 16px;border-radius:12px;background:var(--ink);color:#fff;font-weight:700;font-size:.95rem;text-decoration:none}
+.ad .see:hover{background:var(--blue)}
+.ad .see::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--whats)}
+@media (max-width:820px){.ticker{height:380px}}
+
+/* Oportunidades de hoje (classificados por ramo) */
+.ops{background:#fff;border-top:1px solid var(--line)}
+.ops-chips{margin-top:32px}
+.ads{list-style:none;margin:32px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.ads .ad{padding:22px;border-radius:22px;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.ads .ad:hover{transform:translateY(-6px);box-shadow:0 24px 48px rgba(10,14,23,.12)}
+.ads .ad .cat{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ads .ad .when{font-size:.85rem;color:var(--muted)}
+.fx .ads .ad{animation:adIn .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes adIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* Seções que sobem ao rolar */
 .fx .rise{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
@@ -314,17 +324,33 @@ footer a:hover{text-decoration:underline}
       </div>
     </div>
     <div class="stage-wrap">
-      <div class="stage" id="stage">
-        <div class="tilt" id="tilt" aria-hidden="true"><div class="globe" id="globe"></div></div>
-        <div class="floor" aria-hidden="true"></div>
-        <div class="counter" aria-live="polite"><b id="count">147</b><span>empresas com WhatsApp em <span id="city-name" style="display:inline;margin:0">Belo Horizonte</span></span></div>
-        <div class="lead-card lc1"><div class="row"><strong>Construtora Pedra Alta</strong><span class="score">9/10</span></div><p class="place">Construtoras · Savassi</p><p class="ok">Tem WhatsApp · mensagem pronta</p></div>
-        <div class="lead-card lc2"><div class="row"><strong>Engeforte Obras</strong><span class="score">8/10</span></div><p class="place">Construtoras · Pampulha</p><p class="ok">Tem WhatsApp · mensagem pronta</p></div>
-        <div class="lead-card lc3"><div class="row"><strong>Mineira Empreiteira</strong><span class="score">8/10</span></div><p class="place">Construtoras · Barreiro</p><p class="ok">Tem WhatsApp · mensagem pronta</p></div>
+      <div class="board" aria-labelledby="board-title">
+        <div class="board-head">
+          <p class="board-kicker"><span class="dot" aria-hidden="true"></span>Classificados de empresas</p>
+          <p class="board-title" id="board-title"><b id="count">147</b> oportunidades hoje em <span id="city-name">Belo Horizonte</span></p>
+        </div>
+        <div class="ticker"><ul class="ticker-list" id="ticker"></ul></div>
       </div>
     </div>
   </div>
   <p class="note">Tela de exemplo. Os nomes e números são ilustrativos.</p>
+</section>
+
+<section class="band ops" id="oportunidades" aria-labelledby="ops-title">
+  <div class="wrap">
+    <p class="eyebrow rise">Oportunidades de hoje</p>
+    <h2 id="ops-title" class="rise">Empresas esperando o seu contato.</h2>
+    <p class="lead rise" style="max-width:44ch">Escolha o ramo. O Captador mostra quem está na sua cidade, aberto e com WhatsApp.</p>
+    <div class="chips ops-chips rise" role="group" aria-label="Ramo das empresas">
+      <button type="button" class="chip" data-ramo="0" aria-pressed="true">Construção</button>
+      <button type="button" class="chip" data-ramo="1" aria-pressed="false">Mercados e atacados</button>
+      <button type="button" class="chip" data-ramo="2" aria-pressed="false">Transportadoras</button>
+      <button type="button" class="chip" data-ramo="3" aria-pressed="false">Indústrias</button>
+      <button type="button" class="chip" data-ramo="4" aria-pressed="false">Clínicas e escritórios</button>
+    </div>
+    <ul class="ads" id="ads" aria-live="polite"></ul>
+    <p class="note" style="margin-top:20px">Anúncios de exemplo: nomes e telefones são ilustrativos. No seu painel aparecem empresas reais da sua região.</p>
+  </div>
 </section>
 
 <section class="band silver" id="como-funciona" aria-labelledby="how-title">
@@ -533,48 +559,35 @@ footer a:hover{text-decoration:underline}
   var bgv = document.getElementById("bg-video");
   if (bgv && !moving) { bgv.removeAttribute("autoplay"); bgv.pause(); }
 
-  // Globo 3D: pontos numa esfera; os azuis são clientes acendendo
-  var globe = document.getElementById("globe");
-  if (globe) {
-    var pins = { "15,40": 1, "-15,120": 1, "30,220": 1, "0,300": 1, "-30,180": 1, "45,80": 1, "-45,260": 1 };
-    var html = "";
-    for (var lat = -75; lat <= 75; lat += 15) {
-      var step = Math.abs(lat) >= 60 ? 40 : 20;
-      for (var lon = 0; lon < 360; lon += step) {
-        html += '<i' + (pins[lat + "," + lon] ? ' class="pin"' : "") + ' style="transform:rotateY(' + lon + 'deg) rotateX(' + lat + 'deg) translateZ(200px)"></i>';
-      }
-    }
-    globe.innerHTML = html;
+  // Anúncios de exemplo (nomes e telefones ilustrativos)
+  var WA = "https://wa.me/5521964816185?text=";
+  function ad(a, extra) {
+    var msg = encodeURIComponent("Olá! Vi o classificado de " + a[1] + " no site e quero ver os contatos da minha região.");
+    return '<li class="ad">' + (extra || "") +
+      '<div class="tags">' + (a[4] ? '<span class="t-new">Oportunidade nova</span>' : "") + '<span class="t-open">Aberta agora</span></div>' +
+      '<h3>' + a[0] + '</h3><p class="meta">' + a[1] + ' · ' + a[2] + '</p>' +
+      '<div class="contact"><span class="phone" aria-label="Telefone escondido">' + a[3].replace(/\d{4}-\d{4}/, "••••-••••") + '</span>' +
+      '<a class="see" href="' + WA + msg + '">Ver contato</a></div></li>';
   }
-
-  // O globo inclina seguindo o mouse
-  var stage = document.getElementById("stage"), tilt = document.getElementById("tilt");
-  if (stage && tilt && moving) {
-    stage.addEventListener("mousemove", function (e) {
-      var r = stage.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      tilt.style.transform = "rotateX(" + (-12 - y * 22) + "deg) rotateZ(" + (x * 14) + "deg)";
-    });
-    stage.addEventListener("mouseleave", function () { tilt.style.transform = ""; });
-  }
-
-  // Cidades de exemplo: o contador sobe e os cartões trocam (nomes ilustrativos)
+  // [empresa, ramo, bairro/cidade, telefone escondido, nova?]
   var C = [
-    { n: "Belo Horizonte", t: 147, l: [["Construtora Pedra Alta", "9/10", "Construtoras · Savassi"], ["Engeforte Obras", "8/10", "Construtoras · Pampulha"], ["Mineira Empreiteira", "8/10", "Construtoras · Barreiro"]] },
-    { n: "Rio de Janeiro", t: 312, l: [["Obra Certa Reformas", "9/10", "Reformas · Barra da Tijuca"], ["Litoral Engenharia", "8/10", "Construtoras · Recreio"], ["Grupo Atlântico Obras", "8/10", "Construtoras · Tijuca"]] },
-    { n: "Uberlândia", t: 96, l: [["Agro Cerrado Rações", "9/10", "Agropecuárias · Centro"], ["Pet Mundo Distribuidora", "8/10", "Pet shops · Santa Mônica"], ["Casa do Criador", "8/10", "Agropecuárias · Tibery"]] },
-    { n: "Nova Friburgo", t: 58, l: [["Serra Verde Construções", "9/10", "Construtoras · Olaria"], ["Friburgo Locações", "8/10", "Locação · Conselheiro Paulino"], ["Mont Serrat Reformas", "8/10", "Reformas · Centro"]] }
+    { n: "Belo Horizonte", t: 147, l: [["Construtora Pedra Alta","Construtora","Savassi · obra nova","(31) 9 ••••-••••",1],["Engeforte Obras","Construtora","Pampulha","(31) 9 ••••-••••",0],["Atacado Mineiro","Atacadista","Barreiro","(31) 9 ••••-••••",1],["Transportes Serra Azul","Transportadora","Contagem","(31) 9 ••••-••••",0],["Clínica Vida Plena","Clínica","Funcionários","(31) 9 ••••-••••",1],["Mineira Empreiteira","Empreiteira","Barreiro","(31) 9 ••••-••••",0]] },
+    { n: "Rio de Janeiro", t: 312, l: [["Obra Certa Reformas","Reformas","Barra da Tijuca · obra nova","(21) 9 ••••-••••",1],["Litoral Engenharia","Construtora","Recreio","(21) 9 ••••-••••",0],["Supermercado Bom Preço","Mercado","Tijuca","(21) 9 ••••-••••",1],["Log Rio Cargas","Transportadora","Penha","(21) 9 ••••-••••",0],["Indústria Guanabara","Indústria","Duque de Caxias","(21) 9 ••••-••••",1],["Grupo Atlântico Obras","Construtora","Tijuca","(21) 9 ••••-••••",0]] },
+    { n: "Uberlândia", t: 96, l: [["Agro Cerrado Rações","Agropecuária","Centro","(34) 9 ••••-••••",1],["Pet Mundo Distribuidora","Distribuidora","Santa Mônica","(34) 9 ••••-••••",0],["Triângulo Logística","Transportadora","Distrito Industrial","(34) 9 ••••-••••",1],["Casa do Criador","Agropecuária","Tibery","(34) 9 ••••-••••",0],["Construtora Paranaíba","Construtora","Jardim Karaíba · obra nova","(34) 9 ••••-••••",1],["Atacadão do Triângulo","Atacadista","Roosevelt","(34) 9 ••••-••••",0]] },
+    { n: "Nova Friburgo", t: 58, l: [["Serra Verde Construções","Construtora","Olaria · obra nova","(22) 9 ••••-••••",1],["Friburgo Locações","Locação","Conselheiro Paulino","(22) 9 ••••-••••",0],["Malharia Serrana","Indústria","Duas Pedras","(22) 9 ••••-••••",1],["Mercado Alto da Serra","Mercado","Centro","(22) 9 ••••-••••",0],["Mont Serrat Reformas","Reformas","Centro","(22) 9 ••••-••••",1],["Transportes Friburguense","Transportadora","Ponte da Saudade","(22) 9 ••••-••••",0]] }
   ];
-  var count = document.getElementById("count"), cityName = document.getElementById("city-name");
-  var cards = document.querySelectorAll(".lead-card"), timer;
-  function show(i) {
-    var d = C[i];
+  var R = [
+    [["Construtora Horizonte","Construtora","Campinas · SP","(19) 9 ••••-••••",1,"09:14"],["Engenharia Vale Novo","Construtora","Joinville · SC","(47) 9 ••••-••••",1,"09:32"],["Reforma Já","Reformas","Goiânia · GO","(62) 9 ••••-••••",0,"10:05"],["Empreiteira Capital","Empreiteira","Brasília · DF","(61) 9 ••••-••••",1,"10:41"],["Obras do Litoral","Construtora","Santos · SP","(13) 9 ••••-••••",0,"11:02"],["Alicerce Construções","Construtora","Londrina · PR","(43) 9 ••••-••••",1,"11:26"]],
+    [["Atacado Boa Compra","Atacadista","Recife · PE","(81) 9 ••••-••••",1,"08:55"],["Supermercado Família","Mercado","Ribeirão Preto · SP","(16) 9 ••••-••••",0,"09:40"],["Distribuidora Sol Nascente","Distribuidora","Fortaleza · CE","(85) 9 ••••-••••",1,"10:12"],["Mercado Bom Dia","Mercado","Juiz de Fora · MG","(32) 9 ••••-••••",0,"10:58"],["Atacadão Central","Atacadista","Cuiabá · MT","(65) 9 ••••-••••",1,"11:21"],["Empório Serra Gaúcha","Mercado","Caxias do Sul · RS","(54) 9 ••••-••••",0,"11:47"]],
+    [["Transportes Rota Sul","Transportadora","Curitiba · PR","(41) 9 ••••-••••",1,"08:47"],["Log Express Centro-Oeste","Transportadora","Goiânia · GO","(62) 9 ••••-••••",0,"09:18"],["Cargas Nordeste","Transportadora","Salvador · BA","(71) 9 ••••-••••",1,"10:03"],["Frota Paulista","Transportadora","Guarulhos · SP","(11) 9 ••••-••••",1,"10:36"],["Mudanças Minas","Transportadora","Contagem · MG","(31) 9 ••••-••••",0,"11:15"],["Translog Vale","Transportadora","São José dos Campos · SP","(12) 9 ••••-••••",1,"11:52"]],
+    [["Indústria Pinhais","Indústria","Curitiba · PR","(41) 9 ••••-••••",1,"09:02"],["Metalúrgica Aço Forte","Metalúrgica","Betim · MG","(31) 9 ••••-••••",0,"09:44"],["Têxtil Boa Vista","Indústria","Blumenau · SC","(47) 9 ••••-••••",1,"10:20"],["Plásticos Nordeste","Indústria","Camaçari · BA","(71) 9 ••••-••••",0,"10:57"],["Alimentos Serrano","Indústria","Chapecó · SC","(49) 9 ••••-••••",1,"11:33"],["Galpão Logístico Anhanguera","Galpão","Jundiaí · SP","(11) 9 ••••-••••",1,"12:05"]],
+    [["Clínica Sorriso Pleno","Clínica odontológica","Vitória · ES","(27) 9 ••••-••••",1,"08:58"],["Escritório Contábil Exato","Contabilidade","Belém · PA","(91) 9 ••••-••••",0,"09:37"],["Clínica Vida Plena","Clínica","Natal · RN","(84) 9 ••••-••••",1,"10:14"],["Advocacia Prado","Escritório","Florianópolis · SC","(48) 9 ••••-••••",0,"10:49"],["Centro Médico Aliança","Clínica","Campo Grande · MS","(67) 9 ••••-••••",1,"11:20"],["Imobiliária Ponto Certo","Imobiliária","Maceió · AL","(82) 9 ••••-••••",1,"11:55"]]
+  ];
+  var count = document.getElementById("count"), cityName = document.getElementById("city-name"), ticker = document.getElementById("ticker"), timer;
+  function showCity(i) {
+    var d = C[i], html = d.l.map(function (a) { return ad(a); }).join("");
     cityName.textContent = d.n;
-    cards.forEach(function (card, k) {
-      card.querySelector("strong").textContent = d.l[k][0];
-      card.querySelector(".score").textContent = d.l[k][1];
-      card.querySelector(".place").textContent = d.l[k][2];
-    });
+    ticker.innerHTML = moving ? html + html.replace(/<li class="ad">/g, '<li class="ad" aria-hidden="true">').replace(/<a class="see"/g, '<a class="see" tabindex="-1"') : html;
     clearInterval(timer);
     if (!moving) { count.textContent = d.t; return; }
     var n = 0;
@@ -584,13 +597,28 @@ footer a:hover{text-decoration:underline}
       if (n >= d.t) clearInterval(timer);
     }, 45);
   }
-  document.querySelectorAll(".chip").forEach(function (b) {
+  document.querySelectorAll(".cities .chip").forEach(function (b) {
     b.addEventListener("click", function () {
-      document.querySelectorAll(".chip").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
-      show(+b.getAttribute("data-city"));
+      document.querySelectorAll(".cities .chip").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      showCity(+b.getAttribute("data-city"));
     });
   });
-  if (count) show(0);
+  if (ticker) showCity(0);
+
+  var ads = document.getElementById("ads");
+  function showRamo(i) {
+    ads.innerHTML = R[i].map(function (a, k) {
+      var x = ad(a, '<p class="cat">' + a[1] + '</p>');
+      return x.replace('<li class="ad">', '<li class="ad" style="animation-delay:' + (k * 70) + 'ms">').replace('</h3>', '</h3><p class="when">Publicado hoje, ' + a[5] + '</p>');
+    }).join("");
+  }
+  document.querySelectorAll(".ops-chips .chip").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".ops-chips .chip").forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+      showRamo(+b.getAttribute("data-ramo"));
+    });
+  });
+  if (ads) showRamo(0);
 
   // Pacotes: empresas ou pessoa física
   var tabs = [document.getElementById("tab-emp"), document.getElementById("tab-pf")];
