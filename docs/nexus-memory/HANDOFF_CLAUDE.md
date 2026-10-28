@@ -588,3 +588,13 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Regra para o Manus: `docs/nexus-memory/MANUS_REGRA.md` (segue o PADRAO_ARTES e envia pela Biblioteca do Master).
 - 28/10 09h30: Rodrigo excluiu as peças de 29/10 da Flow Arts; pediu a campanha da Flow Arts para HOJE (28/10). Rodada manual 40688399031 (só 12h e 19h e stories; 09h já tinha passado). As 6 peças antigas da GILTEC de 29/10 continuam no painel.
 - Testes: 624/624.
+
+## 2026-10-28 (11h) — Fichas dos clientes para o app do Gemini (fluxo manual)
+- Pedido do Rodrigo: usar a assinatura do Gemini (app, sem API) para gerar as artes de cada cliente, no computador, e subir pelo painel do próprio cliente, até decidir outra solução. Não quer criar documento no Drive para cada cliente.
+- Criada a pasta `gemini/` (PR `feat/gemini-fichas`): `LEIA-PRIMEIRO.md` (papel do Gemini + padrão das artes), `clientes/giltec.md`, `quatree-dog.md`, `maskara-assessoria.md`, `flow-arts.md`, `_MODELO.md` (cliente novo) e `logos/` (GILTEC e Flow Arts).
+- Branch pequena `gemini` (só essas fichas e logos) já publicada, commit `f212bda`. O Rodrigo importa ela no Gemini: + → Importar código → link da branch.
+- Fluxo `.github/workflows/gemini-fichas.yml`: depois do merge, toda mudança em `gemini/` na main recopia a branch `gemini` sozinha.
+- **Diferença do PADRAO_ARTES:** neste fluxo manual não há código para escrever o texto e pôr a logo (a página Enviar artes não faz isso). O Gemini faz a arte completa, seguindo o mesmo layout (faixas em cima e embaixo, texto fora das pessoas). O Rodrigo confere a ortografia e a logo antes de subir.
+- Cores da Maskara (escuro + dourado) são sugestão: o Rodrigo ainda não deu as cores oficiais.
+- O Gemini do app lê uma cópia da branch no momento da importação e não escreve no GitHub.
+- Próximo passo: Rodrigo aprova o PR; testar com a GILTEC no Gemini.

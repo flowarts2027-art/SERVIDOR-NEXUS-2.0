@@ -34,3 +34,8 @@ Código: `cloudflare/src/gemini-campaign.js`. Clientes ligados: variável `GEMIN
 - Ciclo de 4 dias: o mesmo horário nunca repete o equipamento do dia anterior; a betoneira alterna entre carrossel e post.
 - Stories mostram a obra (casa, reforma, rodovia, prédio, terraplenagem, entrega), sem máquina como assunto principal.
 - Legenda: a do GitHub (`agendamentos/clientes/giltec/AAAA-MM-DD/HHMM/legenda.txt`), se existir; senão o Gemini escreve, com WhatsApp da Rose e **Comente QUERO**; sem preço, telefone ou prazo.
+
+## App do Gemini (manual, desde 28/10/2026 11h)
+- Enquanto não há solução automática, o Rodrigo gera as artes no **app do Gemini** (assinatura, sem API), no computador, e sobe pelo painel do cliente.
+- O Gemini lê as fichas da branch `gemini` (cópia da pasta `gemini/` da main, feita pelo `.github/workflows/gemini-fichas.yml`).
+- Cliente novo: criar `gemini/clientes/<cliente>.md` a partir de `_MODELO.md`.
