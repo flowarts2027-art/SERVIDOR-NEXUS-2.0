@@ -10,7 +10,7 @@ import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces,
 import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./showcase-store.js";
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
 import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily, suggestedNiches } from "./captador-daily.js";
-import { clientRegion } from "./captador-regions.js";
+import { clientRegion, RJ_STATE_CITIES } from "./captador-regions.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
 // "hoje" (22/10): separada pela busca diária automática, esperando o cliente mandar.
@@ -204,13 +204,13 @@ export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit, au
 // GILTEC (27/10/2026): locação de equipamentos para construção; a vendedora é a Rose.
 export const CAPTADOR_PRESETS = Object.freeze({
   giltec: Object.freeze({
-    access: { enabled: true, monthlyLimit: 600 },
+    access: { enabled: true, monthlyLimit: 1500 }, // mapa grátis, sem custo; 92 cidades × 6 tipos
     config: {
       myName: "Rose",
       business: "GILTEC Locações",
       offer: "A GILTEC aluga equipamentos para construção civil: compactadores, marteletes, geradores, betoneiras e outros para obras e reformas. Se vocês tiverem alguma obra em andamento, posso mandar a lista de equipamentos e os valores da locação."
     },
-    daily: { enabled: true, onlyWhatsapp: true }
+    daily: { enabled: true, onlyWhatsapp: true, cities: RJ_STATE_CITIES } // estado do RJ inteiro (27/10)
   })
 });
 export const captadorPreset = client => CAPTADOR_PRESETS[String(client?.id || "")] || null;

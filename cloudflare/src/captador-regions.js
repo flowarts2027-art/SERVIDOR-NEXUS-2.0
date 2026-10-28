@@ -31,3 +31,23 @@ export function clientRegion(client = {}, daily = {}) {
   const text = [client?.id, client?.niche, JSON.stringify(client?.config?.agentProfile || {}), (daily?.cities || []).join(" ")].join(" ");
   return /uberl[aâ]ndia|quatree/i.test(text) ? UBERLANDIA_REGION : null;
 }
+
+// Estado do Rio de Janeiro inteiro (pedido do Rodrigo, 27/10/2026: GILTEC). As 92 cidades, das maiores para as menores.
+export const RJ_STATE_CITIES = Object.freeze([
+    "Rio de Janeiro RJ", "São Gonçalo RJ", "Duque de Caxias RJ", "Nova Iguaçu RJ", "Niterói RJ", "Belford Roxo RJ",
+    "Campos dos Goytacazes RJ", "São João de Meriti RJ", "Petrópolis RJ", "Volta Redonda RJ", "Macaé RJ", "Magé RJ",
+    "Itaboraí RJ", "Cabo Frio RJ", "Maricá RJ", "Nova Friburgo RJ", "Barra Mansa RJ", "Angra dos Reis RJ",
+    "Mesquita RJ", "Teresópolis RJ", "Rio das Ostras RJ", "Nilópolis RJ", "Queimados RJ", "Araruama RJ", "Resende RJ",
+    "Itaguaí RJ", "São Pedro da Aldeia RJ", "Itaperuna RJ", "Japeri RJ", "Barra do Piraí RJ", "Saquarema RJ",
+    "Seropédica RJ", "Três Rios RJ", "Valença RJ", "Cachoeiras de Macacu RJ", "Rio Bonito RJ", "Guapimirim RJ",
+    "Casimiro de Abreu RJ", "Paraty RJ", "São Francisco de Itabapoana RJ", "Paracambi RJ", "Paraíba do Sul RJ", "São João da Barra RJ",
+    "Santo Antônio de Pádua RJ", "Mangaratiba RJ", "Armação dos Búzios RJ", "São Fidélis RJ",
+    "Bom Jesus do Itabapoana RJ", "Vassouras RJ", "Tanguá RJ", "Arraial do Cabo RJ", "Itatiaia RJ",
+    "Paty do Alferes RJ", "Bom Jardim RJ", "Iguaba Grande RJ", "Miracema RJ", "Miguel Pereira RJ", "Piraí RJ",
+    "Quissamã RJ", "Cordeiro RJ", "Porciúncula RJ", "Conceição de Macabu RJ", "Silva Jardim RJ", "Cambuci RJ",
+    "Pinheiral RJ", "São José do Vale do Rio Preto RJ", "Sapucaia RJ", "Cantagalo RJ", "Carapebus RJ", "Areal RJ",
+    "Natividade RJ", "Italva RJ", "Porto Real RJ", "Engenheiro Paulo de Frontin RJ", "Rio Claro RJ", "Quatis RJ",
+    "Itaocara RJ", "Mendes RJ", "Cardoso Moreira RJ", "Aperibé RJ", "São Sebastião do Alto RJ", "Varre-Sai RJ",
+    "Laje do Muriaé RJ", "Rio das Flores RJ", "Comendador Levy Gasparian RJ", "Duas Barras RJ", "Sumidouro RJ",
+    "Carmo RJ", "Trajano de Moraes RJ", "Santa Maria Madalena RJ", "São José de Ubá RJ", "Macuco RJ"
+]);

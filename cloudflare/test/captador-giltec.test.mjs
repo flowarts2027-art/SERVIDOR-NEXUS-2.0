@@ -35,7 +35,9 @@ test("GILTEC: tipos de construção, busca diária ligada, só WhatsApp e Captad
   assert.equal(s.enabled, true);
   assert.equal(s.onlyWhatsapp, true);
   assert.equal(s.target, 10);
-  assert.deepEqual(s.cities, ["Nova Friburgo RJ"]);
+  assert.equal(s.cities.length, 92, "estado do RJ inteiro");
+  assert.equal(s.cities[0], "Rio de Janeiro RJ");
+  assert.ok(s.cities.includes("Nova Friburgo RJ") && s.cities.includes("Macuco RJ"));
 });
 
 test("GILTEC: mapa grátis procura também pelo nome (construtora, asfalto, rodovia)", () => {

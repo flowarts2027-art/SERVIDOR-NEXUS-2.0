@@ -17,7 +17,7 @@ const MAX_ATTEMPTS_PER_DAY = 12;
 const MAX_SEARCHES_PER_RUN = 2;
 // Só com WhatsApp (27/10): no mapa grátis poucas empresas têm celular, então busca mais por rodada.
 const MAX_SEARCHES_WHATSAPP = 4;
-const MAX_CITIES = 40; // 23/10: lista pronta de Uberlândia e região (até 40 cidades)
+const MAX_CITIES = 100; // 23/10: Uberlândia e região; 27/10: estado do RJ inteiro (92 cidades)
 
 // Ramo do cliente → tipos de negócio que compram dele. Usado só quando ele ainda não escolheu.
 const NICHE_HINTS = [
@@ -77,7 +77,7 @@ export async function clientDailySettings(env, client) {
     enabled: saved ? saved.enabled === true : preset.enabled === true,
     onlyWhatsapp: typeof saved?.onlyWhatsapp === "boolean" ? saved.onlyWhatsapp : (preset.onlyWhatsapp ?? WHATSAPP_HINT.test(hintText(client))),
     niches,
-    cities: parseCities(saved?.cities ?? region),
+    cities: parseCities(saved?.cities ?? preset.cities ?? region),
     target: Math.max(1, Math.min(CLIENT_DAILY_TARGET, Number(saved?.target) || CLIENT_DAILY_TARGET)),
     run: saved?.run && typeof saved.run === "object" ? saved.run : {}
   };
@@ -141,7 +141,8 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
   run.attempts += 1;
 
   const config = await captadorConfig(env, client);
-  const combos = s.niches.flatMap(n => s.cities.map(c => [n, c]));
+  // Cidade por cidade, todos os tipos em cada uma (27/10): o dia mistura construtora, reforma, rodovia...
+  const combos = s.cities.flatMap(c => s.niches.map(n => [n, c]));
   const added = [];
   let searches = 0;
   let lastError = "";
