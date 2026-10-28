@@ -647,3 +647,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Mantidos: dados do Google (JSON-LD), contador de visitas e cliques no WhatsApp, links de cadastro e WhatsApp. Sitemap: data da página inicial 2026-10-28.
 - Testes: 630/630 (2 testes do vídeo antigo trocados por testes do site novo e da aba discreta). Conferido no navegador (Playwright) em 1440px e 390px, sem rolagem lateral.
 - Pendente: merge do PR pelo Rodrigo (deploy automático). Próximo: atualizar Privacidade e Termos para citar o Captador (LGPD) e, depois, reescrever as páginas antigas como páginas por tipo de vendedor.
+
+## 2026-10-28 — Site: cara de classificado de empresas
+- Pedido do Rodrigo: o site precisa ter cara de oportunidade para o vendedor, como um classificado de empresas. Aprovou trocar o globo por um mural.
+- Início: no lugar do globo, mural "Classificados de empresas" com contador de oportunidades e anúncios subindo devagar (pausa com o mouse), selos "Oportunidade nova" / "Aberta agora", telefone escondido e botão "Ver contato" (abre o WhatsApp da Flow Arts). Botões de cidade trocam o mural.
+- Seção nova "Oportunidades de hoje" logo abaixo do início: filtros por ramo (Construção, Mercados e atacados, Transportadoras, Indústrias, Clínicas e escritórios) com 6 anúncios cada.
+- Nomes de exemplo e telefones mascarados no código (só DDD + ••••-••••), com aviso "ilustrativos". Vídeo de fundo (marca d'água, 1920x1080) já estava no ar pelo PR #448.
+- Testes: 630/630. Conferido em 1440px e 390px. Pendente: merge do Rodrigo.

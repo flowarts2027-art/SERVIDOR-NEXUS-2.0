@@ -47,10 +47,12 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);
 });
 
-test("site novo (28/10): tema clean, globo 3D e movimento que para com 'reduzir movimento'", () => {
+test("site novo (28/10): tema clean, mural de classificados e movimento que para com 'reduzir movimento'", () => {
   const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
   assert.match(home, /Novos clientes todo dia no seu <em>WhatsApp\.<\/em>/);
-  assert.match(home, /id="globe"/);
+  assert.match(home, /Classificados de empresas/);
+  assert.match(home, /id="oportunidades"/);
+  assert.match(home, /Anúncios de exemplo: nomes e telefones são ilustrativos/);
   assert.match(home, /prefers-reduced-motion: reduce/);
   assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/, "vídeo de fundo como marca d'água");
   assert.equal((home.match(/<video/g) || []).length, 1, "só o vídeo de fundo do início");
