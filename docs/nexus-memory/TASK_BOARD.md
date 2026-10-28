@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-28 — GILTEC-DIARIA-001
+**Campanha diária; escopo desta sessão: somente 28/10, nunca 30 dias.** Três feeds novos (compactador, martelete e gerador) gerados um por vez e entregues no chat. Três legendas com WhatsApp da Rose, QUERO e hashtags RJ salvas em `agendamentos/clientes/giltec/2026-10-28/` na main (último commit de legenda `78e4a54`). **Envio das novas imagens ao painel pendente: zero uploads nesta sessão**, Git HTTPS sem autenticação. Rodrigo deve usar /artes.html, cliente GILTEC, dia 28/10, três posts individuais aguardando aprovação. Conferir/cancelar antigas antes de enviar; upload histórico 40594908362 não prova estado atual. Imagens anteriores ausentes em main@6e45290. Detalhes nos handoffs. Nenhuma publicação/aprovação efetuada.
+
+
 ## 2026-10-27 22h BRT — PAINEL-SAIR-001 e ARTES-001 (Claude, PR #425, aguardando OK)
 Botão Sair sempre visível + correções do tema do Manus; página **Enviar artes** (`/artes.html`) para as imagens do ChatGPT. Testes 602/602. Sem deploy até o merge. **ChatGPT: a partir de agora grava só legendas; ver topo de REGRA_POSTS_DIARIOS.md.**
 
