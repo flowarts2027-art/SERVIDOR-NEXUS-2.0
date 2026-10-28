@@ -3,6 +3,9 @@
 Desde 28/10 o próprio Nexus gera as artes diárias com o Gemini (Nano Banana), sem depender de chat.
 Código: `cloudflare/src/gemini-campaign.js`. Clientes ligados: variável `GEMINI_DAILY_CLIENTS` (começa com `giltec`).
 
+## Quem gera
+- Desde 28/10 (08h): Cloudflare Workers AI, grátis (FLUX.2 klein). O Gemini fica de reserva (o plano grátis do Google não gera imagem).
+
 ## Quando roda
 - Todo dia entre 6h e 8h (Brasília), uma vez por cliente. Se uma peça falhar, tenta de novo na rodada seguinte, sem duplicar.
 - Tudo vai ao painel do cliente **esperando aprovação**. Nada é publicado sozinho.
