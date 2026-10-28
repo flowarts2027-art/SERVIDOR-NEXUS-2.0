@@ -536,3 +536,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 614/614 na suíte (7 novos em `test/gemini-campaign.test.mjs`). Dry-run do wrangler não rodou na nuvem (sem rede para npm); o deploy do GitHub confere.
 - Não altera a pausa da OpenAI (`NEXUS_IMAGE_GENERATION` continua desligada).
 - Próximo passo: Rodrigo aprova o PR → deploy automático → amanhã (29/10) às 6h o Nexus gera a GILTEC sozinho. Conferir no painel às 8h. Depois: logo automática também na página Enviar artes e outros clientes.
+
+## 2026-10-28 (07h45) — Mesmo PR #430: regras de formato no Gemini + Captador da GILTEC
+- Regras completas de formato no pedido de cada imagem do Gemini (sem texto, sem borda, espaço da logo, zonas seguras do story, EPI, ângulo diferente por peça). Resumo em `docs/nexus-memory/GEMINI_IMAGENS.md`. Logo do story desceu para baixo dos 14% de cima.
+- Captador da GILTEC (pedido do Rodrigo): o foco não é loja de material de construção. Tipos agora: construtora, reformas/empreiteiras, pavimentação/obras em rodovias, terraplenagem, engenharia civil e **locadoras de equipamentos** (novo). "Material de construção" saiu.
+  - Nos tipos de construção, loja de material, ferragem, depósito, madeireira e home center são descartados da busca (Google e mapa grátis).
+  - A lista antiga salva no painel da GILTEC é trocada uma vez pela nova (versão 2026-10-28); depois respeita o que o cliente salvar.
+  - Contatos de loja de material que já estavam na lista continuam lá; o cliente pode pular.
+- Testes: suíte completa verde (ver PR). Falta o merge do Rodrigo.

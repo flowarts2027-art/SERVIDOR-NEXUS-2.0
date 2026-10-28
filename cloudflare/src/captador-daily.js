@@ -24,8 +24,12 @@ const NICHE_HINTS = [
   [/ra[cç][aã]o|pet ?food|distribuidora pet|produtos? pet/i, ["pet", "racao", "agropecuaria", "veterinario"]],
   // 27/10 (GILTEC): quem aluga equipamento ou vende para obra busca construtoras, obras em rodovias e reformas.
   [/constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|andaime|betoneira|terraplen|giltec/i,
-    ["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "material"]]
+    ["construtora", "reforma", "pavimentacao", "terraplenagem", "engenharia", "locadora"]]
 ];
+
+// 28/10 (Rodrigo): construção tirou "loja de material" e ganhou "locadoras de equipamentos".
+// Quem salvou a lista antiga recebe a nova uma vez (a versão fica gravada ao salvar).
+const NICHES_VERSION = "2026-10-28";
 
 // Ramos em que o cliente quer só empresas com celular (WhatsApp) na busca diária.
 const WHATSAPP_HINT = /constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|giltec/i;
@@ -72,7 +76,10 @@ export async function clientDailySettings(env, client) {
   const saved = await readState(env, client.id, "daily", null);
   const preset = captadorPreset(client)?.daily || {};
   const region = client?.config?.agentProfile?.region || "";
-  const niches = (Array.isArray(saved?.niches) ? saved.niches : suggestedNiches(client)).filter(k => CAPTADOR_NICHES[k]);
+  const suggested = suggestedNiches(client);
+  const outdated = suggested.includes("construtora") && saved?.nichesVersion !== NICHES_VERSION;
+  const niches = (Array.isArray(saved?.niches) && !outdated ? saved.niches : suggested.length ? suggested : (saved?.niches || []))
+    .filter(k => CAPTADOR_NICHES[k] && (!suggested.length || suggested.includes(k)));
   return {
     enabled: saved ? saved.enabled === true : preset.enabled === true,
     onlyWhatsapp: typeof saved?.onlyWhatsapp === "boolean" ? saved.onlyWhatsapp : (preset.onlyWhatsapp ?? WHATSAPP_HINT.test(hintText(client))),
@@ -93,7 +100,7 @@ export async function saveClientDailySettings(env, client, body = {}) {
   const onlyWhatsapp = "onlyWhatsapp" in body ? body.onlyWhatsapp === true : current.onlyWhatsapp;
   if (enabled && !niches.length) throw new Error("daily_niches");
   if (enabled && !cities.length) throw new Error("daily_cities");
-  const next = { enabled, onlyWhatsapp, niches, cities, target, run: current.run };
+  const next = { enabled, onlyWhatsapp, niches, cities, target, run: current.run, nichesVersion: NICHES_VERSION };
   await writeState(env, client.id, "daily", next);
   return publicDaily(next);
 }
@@ -167,7 +174,7 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
     }
   }
   if (searches) await writeState(env, client.id, "usage", { month: today.slice(0, 7), count: used + searches });
-  await writeState(env, client.id, "daily", { enabled: s.enabled, onlyWhatsapp: s.onlyWhatsapp, niches: s.niches, cities: s.cities, target: s.target, run });
+  await writeState(env, client.id, "daily", { enabled: s.enabled, onlyWhatsapp: s.onlyWhatsapp, niches: s.niches, cities: s.cities, target: s.target, run, nichesVersion: NICHES_VERSION });
   return { ok: true, picked: run.picked, target: s.target, added, searches, error: lastError || undefined };
 }
 
