@@ -6,8 +6,8 @@
 // Usa só o mapa grátis (OpenStreetMap), porque o Google não permite guardar a lista.
 
 import {
-  CAPTADOR_NICHES, captadorEnabled, captadorUsage, ensureCaptadorSchema,
-  searchCaptadorOSM, captadorLeadOSM, captadorConfig
+  CAPTADOR_ALL_NICHES as CAPTADOR_NICHES, captadorEnabled, captadorUsage, ensureCaptadorSchema,
+  searchCaptadorOSM, captadorLeadOSM, captadorConfig, captadorPreset
 } from "./captador.js";
 import { hoursStatus } from "./business-hours.js";
 
@@ -15,18 +15,27 @@ export const CLIENT_DAILY_TARGET = 10;
 const START_HOUR_BRT = 9;
 const MAX_ATTEMPTS_PER_DAY = 12;
 const MAX_SEARCHES_PER_RUN = 2;
-const MAX_CITIES = 40; // 23/10: lista pronta de Uberlândia e região (até 40 cidades)
+// Só com WhatsApp (27/10): no mapa grátis poucas empresas têm celular, então busca mais por rodada.
+const MAX_SEARCHES_WHATSAPP = 4;
+const MAX_CITIES = 100; // 23/10: Uberlândia e região; 27/10: estado do RJ inteiro (92 cidades)
 
 // Ramo do cliente → tipos de negócio que compram dele. Usado só quando ele ainda não escolheu.
 const NICHE_HINTS = [
-  [/ra[cç][aã]o|pet ?food|distribuidora pet|produtos? pet/i, ["pet", "racao", "agropecuaria", "veterinario"]]
+  [/ra[cç][aã]o|pet ?food|distribuidora pet|produtos? pet/i, ["pet", "racao", "agropecuaria", "veterinario"]],
+  // 27/10 (GILTEC): quem aluga equipamento ou vende para obra busca construtoras, obras em rodovias e reformas.
+  [/constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|andaime|betoneira|terraplen|giltec/i,
+    ["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "material"]]
 ];
+
+// Ramos em que o cliente quer só empresas com celular (WhatsApp) na busca diária.
+const WHATSAPP_HINT = /constru[cç]|obras?\b|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|giltec/i;
+const hintText = client => [client?.id, client?.name, client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
 
 const day = (now = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(now);
 const clean = (value, max) => String(value || "").replace(/[\u0000-\u001f<>"\\]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 
 export function suggestedNiches(client = {}) {
-  const text = [client?.niche, client?.config?.agentProfile?.niche, client?.config?.agentProfile?.offer].filter(Boolean).join(" ");
+  const text = hintText(client);
   for (const [rule, niches] of NICHE_HINTS) if (rule.test(text)) return [...niches];
   return [];
 }
@@ -61,12 +70,14 @@ async function writeState(env, clientId, key, value) {
 // Escolhas do cliente. Sem nada salvo: desligada, com os tipos sugeridos pelo ramo e a cidade do perfil.
 export async function clientDailySettings(env, client) {
   const saved = await readState(env, client.id, "daily", null);
+  const preset = captadorPreset(client)?.daily || {};
   const region = client?.config?.agentProfile?.region || "";
   const niches = (Array.isArray(saved?.niches) ? saved.niches : suggestedNiches(client)).filter(k => CAPTADOR_NICHES[k]);
   return {
-    enabled: saved?.enabled === true,
+    enabled: saved ? saved.enabled === true : preset.enabled === true,
+    onlyWhatsapp: typeof saved?.onlyWhatsapp === "boolean" ? saved.onlyWhatsapp : (preset.onlyWhatsapp ?? WHATSAPP_HINT.test(hintText(client))),
     niches,
-    cities: parseCities(saved?.cities ?? region),
+    cities: parseCities(saved?.cities ?? preset.cities ?? region),
     target: Math.max(1, Math.min(CLIENT_DAILY_TARGET, Number(saved?.target) || CLIENT_DAILY_TARGET)),
     run: saved?.run && typeof saved.run === "object" ? saved.run : {}
   };
@@ -79,15 +90,16 @@ export async function saveClientDailySettings(env, client, body = {}) {
   const cities = "cities" in body ? parseCities(body.cities) : current.cities;
   const target = "target" in body ? Math.max(1, Math.min(CLIENT_DAILY_TARGET, Number(body.target) || CLIENT_DAILY_TARGET)) : current.target;
   const enabled = "enabled" in body ? body.enabled === true : current.enabled;
+  const onlyWhatsapp = "onlyWhatsapp" in body ? body.onlyWhatsapp === true : current.onlyWhatsapp;
   if (enabled && !niches.length) throw new Error("daily_niches");
   if (enabled && !cities.length) throw new Error("daily_cities");
-  const next = { enabled, niches, cities, target, run: current.run };
+  const next = { enabled, onlyWhatsapp, niches, cities, target, run: current.run };
   await writeState(env, client.id, "daily", next);
   return publicDaily(next);
 }
 
 export const publicDaily = s => ({
-  enabled: s.enabled, niches: s.niches, cities: s.cities, target: s.target,
+  enabled: s.enabled, onlyWhatsapp: s.onlyWhatsapp === true, niches: s.niches, cities: s.cities, target: s.target,
   today: s.run?.day === day() ? Number(s.run.picked || 0) : 0
 });
 
@@ -122,25 +134,27 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
   if (run.picked >= s.target) return { ok: true, skipped: "done", picked: run.picked, target: s.target };
   if (run.attempts >= MAX_ATTEMPTS_PER_DAY && !force) return { ok: true, skipped: "attempts", picked: run.picked };
   // Cada rodada gasta buscas do limite do mês, como a busca feita na mão.
-  const access = await readState(env, client.id, "access", {});
+  const access = await readState(env, client.id, "access", { ...(captadorPreset(client)?.access || {}) });
   const limit = Number.isFinite(Number(access.monthlyLimit)) ? Number(access.monthlyLimit) : 100;
   const used = await captadorUsage(env, client.id);
   if (used >= limit) return { ok: true, skipped: "monthly_limit", picked: run.picked };
   run.attempts += 1;
 
   const config = await captadorConfig(env, client);
-  const combos = s.niches.flatMap(n => s.cities.map(c => [n, c]));
+  // Cidade por cidade, todos os tipos em cada uma (27/10): o dia mistura construtora, reforma, rodovia...
+  const combos = s.cities.flatMap(c => s.niches.map(n => [n, c]));
   const added = [];
   let searches = 0;
   let lastError = "";
-  while (searches < MAX_SEARCHES_PER_RUN && run.picked < s.target && used + searches < limit) {
+  const maxSearches = s.onlyWhatsapp ? MAX_SEARCHES_WHATSAPP : MAX_SEARCHES_PER_RUN;
+  while (searches < maxSearches && run.picked < s.target && used + searches < limit) {
     const [niche, city] = combos[Number(run.cursor || 0) % combos.length];
     run.cursor = Number(run.cursor || 0) + 1;
     searches += 1;
     let elements = [];
     try { elements = await searchCaptadorOSM(niche, city, fetcher); } catch (error) { lastError = String(error?.message || error).slice(0, 60); continue; }
     // Celular primeiro (WhatsApp), depois quem tem Instagram; melhor nota primeiro.
-    const leads = elements.map(e => captadorLeadOSM(e, niche, city, config.onlyNoSite)).filter(Boolean)
+    const leads = elements.map(e => captadorLeadOSM(e, niche, city, config.onlyNoSite)).filter(l => l && (!s.onlyWhatsapp || (l.phone && l.mobile)))
       .sort((a, b) => (Boolean(b.phone) - Boolean(a.phone)) || (b.mobile - a.mobile) || (Boolean(b.instagram) - Boolean(a.instagram)) || (b.score - a.score));
     // No máximo 4 de uma mesma busca, para variar tipos e cidades no dia.
     let fromThis = 0;
@@ -153,7 +167,7 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
     }
   }
   if (searches) await writeState(env, client.id, "usage", { month: today.slice(0, 7), count: used + searches });
-  await writeState(env, client.id, "daily", { enabled: s.enabled, niches: s.niches, cities: s.cities, target: s.target, run });
+  await writeState(env, client.id, "daily", { enabled: s.enabled, onlyWhatsapp: s.onlyWhatsapp, niches: s.niches, cities: s.cities, target: s.target, run });
   return { ok: true, picked: run.picked, target: s.target, added, searches, error: lastError || undefined };
 }
 

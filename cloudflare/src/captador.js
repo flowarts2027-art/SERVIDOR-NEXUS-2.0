@@ -10,7 +10,7 @@ import { phoneInfo, siteInfo, mapsSearchLink, STATUSES, placesKey, searchPlaces,
 import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./showcase-store.js";
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
 import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily, suggestedNiches } from "./captador-daily.js";
-import { clientRegion } from "./captador-regions.js";
+import { clientRegion, RJ_STATE_CITIES } from "./captador-regions.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
 // "hoje" (22/10): separada pela busca diária automática, esperando o cliente mandar.
@@ -47,6 +47,18 @@ export const CAPTADOR_NICHES = {
   material: { label: "Material de construção", query: "loja de material de construção" }
 };
 
+// Construção civil (pedido do Rodrigo, 27/10/2026: GILTEC, locação de equipamentos para obra).
+// Só no Captador dos clientes: fica fora dos 21 nichos da vitrine e do Caçador do Master.
+export const CAPTADOR_EXTRA_NICHES = {
+  construtora: { label: "Construtora", query: "construtora" },
+  engenharia: { label: "Engenharia civil", query: "empresa de engenharia civil" },
+  terraplenagem: { label: "Terraplenagem", query: "terraplenagem" },
+  pavimentacao: { label: "Pavimentação e obras em rodovias", query: "pavimentação asfáltica" },
+  reforma: { label: "Reformas e empreiteiras", query: "empresa de reformas" }
+};
+// Todos os tipos que o Captador do cliente aceita (vitrine + extras).
+export const CAPTADOR_ALL_NICHES = { ...CAPTADOR_NICHES, ...CAPTADOR_EXTRA_NICHES };
+
 // Mesmos tipos no mapa grátis (OpenStreetMap), usado quando o Google não responde (17/10).
 export const CAPTADOR_OSM_TAGS = {
   restaurante: [["amenity", "restaurant"]], cafeteria: [["amenity", "cafe"]], lanchonete: [["amenity", "fast_food"]],
@@ -56,7 +68,13 @@ export const CAPTADOR_OSM_TAGS = {
   dentista: [["amenity", "dentist"]], clinica: [["amenity", "clinic"], ["amenity", "doctors"]], farmacia: [["amenity", "pharmacy"]],
   mercado: [["shop", "supermarket"], ["shop", "convenience"]], roupas: [["shop", "clothes"]], oficina: [["shop", "car_repair"]],
   hotel: [["tourism", "hotel"], ["tourism", "guest_house"]], imobiliaria: [["office", "estate_agent"]],
-  contabilidade: [["office", "accountant"]], material: [["shop", "hardware"], ["shop", "doityourself"]]
+  contabilidade: [["office", "accountant"]], material: [["shop", "hardware"], ["shop", "doityourself"]],
+  // "name~" = procura no nome da empresa (27/10): no mapa grátis muita construtora só tem o nome.
+  construtora: [["office", "construction_company"], ["name~", "construtora|constru[cç][oõ]es|incorporadora"]],
+  engenharia: [["office", "engineer"], ["name~", "engenharia"]],
+  terraplenagem: [["name~", "terraplen|escava[cç]|movimenta[cç][aã]o de terra"]],
+  pavimentacao: [["name~", "paviment|asfalt|rodovi|saneamento"]],
+  reforma: [["craft", "builder"], ["craft", "tiler"], ["craft", "plasterer"], ["name~", "reforma|empreiteira|empreiteiro"]]
 };
 const OSM_ID = /^osm:(node|way|relation)\/\d+$/;
 
@@ -70,7 +88,7 @@ const validLeadId = id => GOOGLE_ID.test(id) || OSM_ID.test(id);
 export function clientNiches(client = {}) {
   const only = suggestedNiches(client);
   const keys = only.length ? only : Object.keys(CAPTADOR_NICHES);
-  return keys.filter(key => CAPTADOR_NICHES[key]);
+  return keys.filter(key => CAPTADOR_ALL_NICHES[key]);
 }
 
 export async function ensureCaptadorSchema(env) {
@@ -141,7 +159,8 @@ export function planGivesCaptador(client = {}) {
 }
 
 async function readAccess(env, clientId, client = null) {
-  const access = await readState(env, String(clientId || ""), "access", { enabled: false });
+  const preset = CAPTADOR_PRESETS[String(clientId || "")]?.access || {};
+  const access = await readState(env, String(clientId || ""), "access", { enabled: false, ...preset });
   const limit = Math.round(Number(access.monthlyLimit));
   const audience = AUDIENCES.includes(access.audience) ? access.audience : defaultAudience(client || {});
   const gift = Boolean(client && planGivesCaptador(client) && audience === "empresas" && access.giftOff !== true);
@@ -181,8 +200,23 @@ export async function setCaptadorAccess(env, clientId, enabled, monthlyLimit, au
   return { ok: true, clientId: id, enabled: on, monthlyLimit: limit, audience: who };
 }
 
+// Configuração pronta de um cliente (pedido do Rodrigo). Vale só enquanto o cliente não salvar outra no painel.
+// GILTEC (27/10/2026): locação de equipamentos para construção; a vendedora é a Rose.
+export const CAPTADOR_PRESETS = Object.freeze({
+  giltec: Object.freeze({
+    access: { enabled: true, monthlyLimit: 1500 }, // mapa grátis, sem custo; 92 cidades × 6 tipos
+    config: {
+      myName: "Rose",
+      business: "GILTEC Locações",
+      offer: "A GILTEC aluga equipamentos para construção civil: compactadores, marteletes, geradores, betoneiras e outros para obras e reformas. Se vocês tiverem alguma obra em andamento, posso mandar a lista de equipamentos e os valores da locação."
+    },
+    daily: { enabled: true, onlyWhatsapp: true, cities: RJ_STATE_CITIES } // estado do RJ inteiro (27/10)
+  })
+});
+export const captadorPreset = client => CAPTADOR_PRESETS[String(client?.id || "")] || null;
+
 export function defaultConfig(client = {}) {
-  return { myName: "", business: clean(client.name, 80), offer: "", onlyNoSite: false };
+  return { myName: "", business: clean(client.name, 80), offer: "", onlyNoSite: false, ...(captadorPreset(client)?.config || {}) };
 }
 
 export async function captadorConfig(env, client) {
@@ -343,7 +377,9 @@ export function cityName(city) {
 
 export function captadorOverpassQuery(niche, city) {
   const name = cityName(city);
-  const parts = (CAPTADOR_OSM_TAGS[niche] || []).map(([k, v]) => `nwr["${k}"="${v}"]["name"](area.c);`).join("");
+  const parts = (CAPTADOR_OSM_TAGS[niche] || []).map(([k, v]) => k === "name~"
+    ? `nwr["name"~"${v}",i](area.c);`
+    : `nwr["${k}"="${v}"]["name"](area.c);`).join("");
   return `[out:json][timeout:25];area["boundary"="administrative"]["admin_level"="8"]["name"="${name}"]->.c;(${parts});out tags center 400;`;
 }
 
@@ -366,7 +402,7 @@ export async function searchCaptadorOSM(niche, city, fetcher) {
   }
   // Terceira reserva: Nominatim (mesmo mapa, menos telefones).
   try {
-    return await searchNominatim(CAPTADOR_OSM_TAGS[niche] || [], cityName(city), fetcher);
+    return await searchNominatim((CAPTADOR_OSM_TAGS[niche] || []).filter(([k]) => k !== "name~"), cityName(city), fetcher);
   } catch {
     throw new Error(last);
   }
@@ -402,7 +438,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   await ensureCaptadorSchema(env);
   if (!(await captadorEnabled(env, client.id, client))) throw new Error("captador_disabled");
   const niche = canonicalNiche(body.niche);
-  if (!CAPTADOR_NICHES[niche] || !clientNiches(client).includes(niche)) throw new Error("niche_invalid");
+  if (!CAPTADOR_ALL_NICHES[niche] || !clientNiches(client).includes(niche)) throw new Error("niche_invalid");
   const city = clean(body.city, 60);
   const area = clean(body.area, 60); // bairro (opcional), só na busca do Google
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
@@ -418,7 +454,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   let googleError = key ? "" : "sem_chave";
   if (key) {
     try {
-      const places = await searchPlaces(key, `${CAPTADOR_NICHES[niche].query} em ${area ? area + ", " : ""}${city}`, fetcher);
+      const places = await searchPlaces(key, `${CAPTADOR_ALL_NICHES[niche].query} em ${area ? area + ", " : ""}${city}`, fetcher);
       found = places.length;
       leads = places.map(place => captadorLead(place, niche, city, config.onlyNoSite));
     } catch (error) {
@@ -458,7 +494,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
 export async function saveCaptadorContacted(env, client, body = {}) {
   await ensureCaptadorSchema(env);
   const id = String(body.id || "");
-  if (!validLeadId(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
+  if (!validLeadId(id) || !CAPTADOR_ALL_NICHES[body.niche]) throw new Error("lead_invalid");
   const city = clean(body.city, 60);
   const name = clean(body.name, 120);
   const { phone, mobile } = phoneInfo(body.phone);
@@ -479,7 +515,7 @@ export async function saveCaptadorContacted(env, client, body = {}) {
 export async function saveCaptadorLater(env, client, body = {}, now = new Date()) {
   await ensureCaptadorSchema(env);
   const id = String(body.id || "");
-  if (!validLeadId(id) || !CAPTADOR_NICHES[body.niche]) throw new Error("lead_invalid");
+  if (!validLeadId(id) || !CAPTADOR_ALL_NICHES[body.niche]) throw new Error("lead_invalid");
   const city = clean(body.city, 60);
   const name = clean(body.name, 120);
   const { phone, mobile } = phoneInfo(body.phone);
@@ -530,7 +566,7 @@ export async function captadorView(env, client, status = "enviado") {
   return {
     ok: true, enabled: true, ready: true, config, counts, material, daily,
     usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
-    niches: clientNiches(client).map(key => ({ key, label: CAPTADOR_NICHES[key].label })),
+    niches: clientNiches(client).map(key => ({ key, label: CAPTADOR_ALL_NICHES[key].label })),
     region: clientRegion(client, daily),
     items: rows.map(row => {
       const item = withHours(withMessage(config, row, showcase, material.kind), readWeek(row.hours_json));
