@@ -56,14 +56,20 @@ export const CAPTADOR_EXTRA_NICHES = {
   pavimentacao: { label: "Pavimentação e obras em rodovias", query: "pavimentação asfáltica" },
   reforma: { label: "Reformas e empreiteiras", query: "empresa de reformas" },
   // 28/10 (Rodrigo): outras locadoras de equipamentos também são clientes da GILTEC (sublocação/parceria).
-  locadora: { label: "Locadoras de equipamentos", query: "locação de equipamentos para construção" }
+  locadora: { label: "Locadoras de equipamentos", query: "locação de equipamentos para construção" },
+  // 28/10 (Rodrigo: "capricha, esse cliente é muito importante"): mais quem usa equipamento de obra.
+  incorporadora: { label: "Incorporadoras", query: "incorporadora construtora" },
+  empreiteira: { label: "Empreiteiras de obras", query: "empreiteira de obras" },
+  saneamento: { label: "Saneamento e drenagem", query: "obras de saneamento e drenagem" },
+  andaimes: { label: "Andaimes e máquinas (locadoras)", query: "aluguel de andaimes e máquinas para obra" }
 };
 
 // 28/10 (Rodrigo): a GILTEC não vende para loja de material de construção. Nos tipos de construção,
 // loja de material, ferragem, depósito e home center ficam de fora da busca.
-const CONSTRUCTION_NICHES = new Set(["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "locadora"]);
-const MATERIAL_STORE_NAME = /materia(l|is)|ferrag|home ?center|dep[oó]sito|madeireira|tintas|casa d[aoe]s? constru|constru[cç][aã]o e acabamento|acabamentos/i;
-const MATERIAL_STORE_TYPES = /hardware|home_improvement|home_goods|paint|furniture/i;
+const CONSTRUCTION_NICHES = new Set(["construtora", "engenharia", "terraplenagem", "pavimentacao", "reforma", "locadora", "incorporadora", "empreiteira", "saneamento", "andaimes"]);
+// "Casa do Construtor" é rede de LOCAÇÃO de equipamentos (cliente/parceira da GILTEC), não loja: fica.
+const MATERIAL_STORE_NAME = /materia(l|is)|\bmat\.? ?(de )?constr|ferrag|ferro e a[cç]o|home ?center|dep[oó]sito|madeireira|tintas|casa d[aoe]s? constru(?!tor)|constru[cç][aã]o e acabamento|acabamentos|revestimentos|\bloja\b|cer[aâ]mica|telhas|hidr[aá]ulica e el[eé]trica|el[eé]trica e hidr[aá]ulica|\bareal\b/i;
+const MATERIAL_STORE_TYPES = /hardware|home_improvement|home_goods|building_materials|paint|furniture|doityourself/i;
 export function isMaterialStore(nicheKey, name = "", kind = "") {
   if (!CONSTRUCTION_NICHES.has(String(nicheKey))) return false;
   return MATERIAL_STORE_NAME.test(String(name)) || MATERIAL_STORE_TYPES.test(String(kind));
@@ -87,7 +93,11 @@ export const CAPTADOR_OSM_TAGS = {
   terraplenagem: [["name~", "terraplen|escava[cç]|movimenta[cç][aã]o de terra"]],
   pavimentacao: [["name~", "paviment|asfalt|rodovi|saneamento"]],
   reforma: [["craft", "builder"], ["craft", "tiler"], ["craft", "plasterer"], ["name~", "reforma|empreiteira|empreiteiro"]],
-  locadora: [["shop", "tool_hire"], ["name~", "locadora|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|aluguel de (equipamento|m[aá]quina)|andaime"]]
+  locadora: [["shop", "tool_hire"], ["name~", "locadora|loca[cç][aã]o de (equipamento|m[aá]quina)|loca[cç][oõ]es|aluguel de (equipamento|m[aá]quina)|andaime"]],
+  incorporadora: [["office", "property_developer"], ["name~", "incorporadora|empreendimentos imobili"]],
+  empreiteira: [["name~", "empreiteira|empreiteiro|empreitada"]],
+  saneamento: [["name~", "saneamento|drenagem|esgoto|hidrossanit"]],
+  andaimes: [["shop", "tool_hire"], ["name~", "andaime|aluguel de m[aá]quina|loca[cç][aã]o de m[aá]quina"]]
 };
 const OSM_ID = /^osm:(node|way|relation)\/\d+$/;
 
@@ -221,7 +231,7 @@ export const CAPTADOR_PRESETS = Object.freeze({
     config: {
       myName: "Rose",
       business: "GILTEC Locações",
-      offer: "A GILTEC aluga equipamentos para construção civil: compactadores, marteletes, geradores, betoneiras e outros para obras e reformas. Se vocês tiverem alguma obra em andamento, posso mandar a lista de equipamentos e os valores da locação."
+      offer: "A GILTEC aluga equipamentos para construção civil: compactadores, marteletes, geradores, betoneiras, cortadoras de piso, alisadoras de concreto, guinchos, escoras e torres de iluminação, das marcas Buffalo, Toyama, CSM e outras. Se vocês tiverem alguma obra em andamento, posso mandar a lista de equipamentos e os valores da locação."
     },
     daily: { enabled: true, onlyWhatsapp: true, cities: RJ_STATE_CITIES } // estado do RJ inteiro (27/10)
   })
@@ -564,6 +574,7 @@ export async function captadorView(env, client, status = "enviado") {
   if (!enabled && access.audience === "pessoas") return { ok: true, enabled: false, hidden: true, audience: "pessoas" };
   if (!enabled) return { ok: true, enabled: false, price: CAPTADOR_PRICE, audience: access.audience };
   await ensureCaptadorSchema(env);
+  await cleanupLeads(env, client).catch(() => null);
   const filter = CAP_STATUSES.includes(status) && status !== "novo" ? status : "enviado";
   const config = await captadorConfig(env, client);
   const rows = (await env.DB.prepare(
@@ -603,6 +614,27 @@ export async function setCaptadorStatus(env, client, id, status) {
   ).bind(client.id, String(id || ""), status).run();
   if (!Number(result?.meta?.changes || 0)) throw new Error("lead_not_found");
   return { ok: true };
+}
+
+// Limpeza do CRM de busca (Rodrigo, 28/10/2026), para todos os clientes:
+// 1. contato encontrado e SEM mensagem enviada há 2 dias sai da lista (e não volta nas próximas buscas);
+// 2. nos tipos de construção, loja de material de construção que entrou antes do filtro sai também.
+// Quem já recebeu mensagem, quem está em "depois" (lembrete) e quem fechou ficam.
+export const STALE_LEAD_DAYS = 2;
+export async function cleanupLeads(env, client, now = new Date()) {
+  await ensureCaptadorSchema(env);
+  const id = String(client?.id || "");
+  if (!id) return { removed: 0 };
+  const cutoff = new Date(now.getTime() - STALE_LEAD_DAYS * 86400e3).toISOString().replace("T", " ").slice(0, 19);
+  const rows = (await env.DB.prepare(
+    "SELECT id, name, niche, status, created_at FROM captador_leads WHERE client_id=?1 AND status IN ('hoje','novo')"
+  ).bind(id).all().catch(() => null))?.results || [];
+  const out = rows.filter(r => String(r.created_at || "") < cutoff || isMaterialStore(r.niche, r.name));
+  for (const r of out) {
+    await env.DB.prepare("DELETE FROM captador_leads WHERE client_id=?1 AND id=?2").bind(id, r.id).run();
+    await env.DB.prepare("INSERT OR IGNORE INTO captador_skips(client_id,id) VALUES(?1,?2)").bind(id, r.id).run().catch(() => null);
+  }
+  return { removed: out.length };
 }
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {

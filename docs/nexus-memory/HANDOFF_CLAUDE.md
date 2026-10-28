@@ -624,3 +624,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - GILTEC aluga também cortadora, alisadora, guincho, escoras e torre de iluminação; marcas Buffalo, Toyama, CSM (ficha `gemini/clientes/giltec.md`).
 - Testes 628/628.
 - Pendências pedidas no mesmo dia: Captador da GILTEC ainda traz loja de material de construção; regra para todos: contato do CRM de busca sem mensagem em 2 dias é apagado; campanha da Maskara com imagens automáticas do Cloudflare.
+
+## 2026-10-28 — Captador da GILTEC e limpeza de 2 dias no CRM (todos os clientes)
+- Pedido do Rodrigo: ainda apareciam 2 lojas de material de construção na busca da GILTEC; e regra para todos: contato sem mensagem em 2 dias sai do CRM de busca.
+- `captador.js`: filtro de loja de material mais forte (mat. de construção, cerâmica, telhas, loja, revestimentos, tipo `building_materials`...). "Casa do Construtor" (rede de locação) NÃO é mais cortada. Novo `cleanupLeads`: tira contatos em "hoje"/"novo" criados há mais de 2 dias e lojas de material que entraram antes do filtro; grava em `captador_skips` para não voltarem. Enviado, depois e fechou ficam. Roda ao abrir o Captador e antes de cada busca diária.
+- Tipos novos para construção: incorporadora, empreiteira, saneamento, andaimes (versão de nichos `2026-10-28b` troca a lista salva da GILTEC uma vez).
+- Mensagem da Rose cita todos os equipamentos e as marcas Buffalo, Toyama, CSM (se a GILTEC salvou outra mensagem no painel, vale a dela).
+- Testes 630/630.
