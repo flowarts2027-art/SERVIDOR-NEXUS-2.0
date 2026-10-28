@@ -112,3 +112,34 @@ test("fila: posts repetidos (mesma imagem) que ainda não saíram são tirados, 
   assert.equal(n, 1);
   assert.deepEqual(removed, ["2"]);
 });
+
+test("trocar imagem de post programado: grava com outro nome e troca o endereço no post", async () => {
+  const { replaceProgrammedImage } = await import("../src/art-library.js");
+  const env = fakeEnv();
+  env.PUBLIC_BASE_URL = "https://x";
+  const now = new Date("2026-10-28T12:30:00Z");
+  const form = new FormData();
+  form.append("images", new File([png(1080, 1350, 1)], "a.png", { type: "image/png" }));
+  form.append("images", new File([png(1080, 1350, 2)], "b.png", { type: "image/png" }));
+  await addToLibrary(env, client, form, now);
+  const forms = [];
+  const res = await organizeLibrary(env, client, now, {
+    upload: async (e, f) => {
+      forms.push(f);
+      const id = "p" + forms.length;
+      const urls = f.getAll("images").map((_, i) => `https://x/media/posts/cli/${id}/${f.get("type") === "carousel" ? "cartao-" + (i + 1) : "imagem"}.jpg`);
+      env.db.exec(`INSERT INTO post_ledger(id, client_id, scheduled_for, status, approval_status, payload_json) VALUES('${id}','cli','2026-10-29T15:00:00.000Z','ready','pending','${JSON.stringify({ imageUrl: urls[0], formatBuild: { carouselUrls: urls } })}')`);
+      return { id };
+    },
+    caption: async () => "Legenda", removeDuplicates: false
+  });
+  const card2 = res.items.filter(i => i.status === "programado").sort((a, b) => a.name.localeCompare(b.name))[1];
+  const out = await replaceProgrammedImage(env, client, card2.id, new File([new Uint8Array([0xff, 0xd8, 1])], "t.jpg", { type: "image/jpeg" }));
+  const rows = env.db.prepare("SELECT payload_json FROM post_ledger").all().map(r => r.payload_json);
+  assert.equal(rows.filter(p => /-texto-/.test(p)).length, 1, "endereço novo só no post certo");
+  assert.ok([...env.store.keys()].some(k => /-texto-/.test(k)), "imagem nova gravada");
+  assert.ok(out.items.find(i => i.id === card2.id).withText);
+  // Post já publicado não muda.
+  env.db.exec("UPDATE post_ledger SET status='published'");
+  await assert.rejects(() => replaceProgrammedImage(env, client, card2.id, new File([new Uint8Array([0xff, 0xd8, 2])], "t.jpg", { type: "image/jpeg" })), /library_already_published/);
+});
