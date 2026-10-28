@@ -691,7 +691,7 @@ function renderAll() {
 }
 
 function showTab(tab) {
-  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "campanha", "negocio", "conta", ...(state.flowCrm ? ["crm"] : [])].includes(tab) ? tab : "inicio";
+  state.tab = ["inicio", "posts", "numeros", "contatos", "buscar", "campanha", "biblioteca", "negocio", "conta", ...(state.flowCrm ? ["crm"] : [])].includes(tab) ? tab : "inicio";
   $$(".tab").forEach(section => { section.hidden = section.id !== "tab-" + state.tab; });
   $$(".tabbar [data-tab]").forEach(btn => {
     const active = btn.dataset.tab === state.tab;
@@ -699,7 +699,7 @@ function showTab(tab) {
     if (active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
   });
   // No celular, "Mais" fica marcado quando a aba aberta está dentro dele.
-  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "negocio", "conta"].includes(state.tab));
+  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "biblioteca", "negocio", "conta"].includes(state.tab));
   toggleMore(false);
   window.scrollTo({ top: 0 });
   // CRM da Flow Arts (22/10): os scripts do CRM carregam quando a aba abre.

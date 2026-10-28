@@ -765,3 +765,13 @@ body { background: var(--paper); }
   .logout-top { min-height: 40px; padding: 0 12px; background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .30); color: #fff; }
   .logout-top:hover { background: rgba(255, 255, 255, .22); }
 }
+
+/* Biblioteca de artes (28/10) */
+.bib .bib-enviar { display:inline-flex; cursor:pointer; margin:8px 8px 8px 0; }
+.bib-grade { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-top:12px; }
+.bib-item { margin:0; border-radius:12px; overflow:hidden; background:rgba(127,127,127,.08); border:2px solid transparent; }
+.bib-item.programado { border-color:#22c55e; }
+.bib-item.erro { border-color:#ef4444; }
+.bib-item img { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; }
+.bib-item figcaption { padding:8px; font-size:15px; display:flex; flex-direction:column; gap:4px; }
+.bib-item .link { background:none; border:0; padding:0; color:inherit; text-decoration:underline; cursor:pointer; text-align:left; font-size:14px; }

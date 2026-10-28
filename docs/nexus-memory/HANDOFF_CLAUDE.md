@@ -577,3 +577,14 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Criado `docs/nexus-memory/PADRAO_ARTES.md` (citado no AGENTS.md): título em faixa própria em cima, vantagens e botão em faixa própria embaixo, foto só no meio; fundo das faixas = a própria foto desfocada e escurecida; Montserrat ExtraBold (o GitHub baixa do google/fonts; reserva Inter); uma logo só.
 - `campanha_diaria.py` reescrito nesse padrão; `checar-arte.py` aprova. Fluxo ganhou o modo **prévia** (não manda ao painel; grava na branch `previa-artes`).
 - Próximo passo: merge → prévia de 29/10 → se o Rodrigo aprovar, trocar as 12 peças de 29/10 no painel pelas novas.
+
+## 2026-10-28 (10h) — Biblioteca de artes (todos os clientes) + regra do Manus
+- Pedido do Rodrigo: subir várias artes de uma vez e o Nexus organizar sozinho (legenda, story/post/carrossel, horários, apagar repetidas), no painel de todos os clientes; e integrar o Manus para gerar as imagens.
+- Código: `cloudflare/src/art-library.js`. Painel do cliente: aba **Biblioteca** (`public/biblioteca.js`, rotas `/api/portal/biblioteca`). Master: `/biblioteca.html` (rotas `/api/master/biblioteca?clientId=`), botão no Master.
+  - Repetida (mesmo arquivo) é descartada na hora. Imagem em pé (altura ≥ 1,5× largura) = story; 2 a 5 imagens do mesmo envio = carrossel das 09h; o resto = post de 12h/19h.
+  - Legenda escrita olhando a imagem (`@cf/meta/llama-4-scout-17b-16e-instruct`, grátis), com o QUERO; se falhar, legenda pronta do ramo.
+  - Programa nos próximos horários livres (7 dias), esperando aprovação. De hora em hora o cron programa o que ficou livre.
+  - Tira da fila posts repetidos (mesma imagem) que ainda não saíram, ficando o primeiro.
+- Regra para o Manus: `docs/nexus-memory/MANUS_REGRA.md` (segue o PADRAO_ARTES e envia pela Biblioteca do Master).
+- 28/10 09h30: Rodrigo excluiu as peças de 29/10 da Flow Arts; pediu a campanha da Flow Arts para HOJE (28/10). Rodada manual 40688399031 (só 12h e 19h e stories; 09h já tinha passado). As 6 peças antigas da GILTEC de 29/10 continuam no painel.
+- Testes: 624/624.

@@ -3,6 +3,7 @@ import { handleCaptadorPortal } from "./captador.js";
 import { handleAdsPortal } from "./ads.js";
 import { handleUpgradesPortal } from "./upgrades.js";
 import { handleClientAutoReplyPortal } from "./client-autoreply.js";
+import { handleLibrary } from "./art-library.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
@@ -688,6 +689,9 @@ export async function handlePortalApi(request, env, url, ctx) {
   const { session, client } = await sessionClient(request, env);
   if (!session || !client) return json({ error: "unauthorized" }, 401);
 
+  // Biblioteca de artes (28/10): sobe várias imagens, o Nexus separa, escreve a legenda e programa.
+  const libraryResponse = await handleLibrary(request, env, url, client, "/api/portal/biblioteca");
+  if (libraryResponse) return libraryResponse;
   // Resposta automática de comentários do próprio cliente (22/10).
   const autoReplyResponse = await handleClientAutoReplyPortal(request, env, url, client);
   if (autoReplyResponse) return autoReplyResponse;
