@@ -609,3 +609,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Causa comprovada no navegador do Rodrigo: ele estava logado no Master e no painel da Flow Arts ao mesmo tempo. Em `/media/library/<cliente>/...` o Nexus achava a sessão do painel (outro cliente) e nem conferia a do Master → 401.
 - Correção: `cloudflare/src/index.js` (mediaResponse) passa a conferir o Master quando a sessão do painel é de outro cliente. Testes 624/624.
 - Ponto em aberto: a Biblioteca programa no próximo horário livre, inclusive hoje (um post da GILTEC caiu em 28/10 19h, e o Rodrigo queria a partir de 30/10).
+
+## 2026-10-28 — Biblioteca pula dia que já tem postagem
+- Pedido do Rodrigo: "se já tiver alguma para o dia, ajusta para o dia seguinte".
+- `cloudflare/src/art-library.js`: `freeSlots` agora conta as postagens desde 00h do dia (Brasília). Dia com qualquer post (feed) fica fora para o feed; dia com story fica fora para story. Posts que a própria Biblioteca programou não fecham o dia (ela continua enchendo os outros horários). Janela passou de 7 para 14 dias.
+- Testes 624/624. Teste novo cobre dia ocupado, dia da própria Biblioteca e story separado.

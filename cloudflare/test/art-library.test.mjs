@@ -85,12 +85,18 @@ test("subir: repetida é descartada; organizar programa tudo esperando aprovaç�
   assert.ok(libraryView(res.items).every(i => i.status === "programado"));
 });
 
-test("horários livres pulam os ocupados e os que já passaram", async () => {
+test("dia que já tem postagem é pulado inteiro; story e feed contam separado", async () => {
   const env = fakeEnv();
-  env.db.exec(`INSERT INTO post_ledger(id, client_id, scheduled_for, status, approval_status, payload_json) VALUES('x','cli','2026-10-28T15:00:00.000Z','ready','pending','{}')`);
-  const s = await freeSlots(env, "cli", new Date("2026-10-28T12:30:00Z"), 1);
-  assert.deepEqual(s.feed.map(x => x.time), ["19:00"]);
-  assert.deepEqual(s.story.map(x => x.time), ["12:00", "19:00"]);
+  // Post das 09h de hoje (já passou) ocupa o dia de hoje para o feed.
+  env.db.exec(`INSERT INTO post_ledger(id, client_id, scheduled_for, status, approval_status, payload_json) VALUES('x','cli','2026-10-28T12:00:00.000Z','published','approved','{}')`);
+  // Amanhã já tem post às 19h: o dia todo fica de fora para o feed.
+  env.db.exec(`INSERT INTO post_ledger(id, client_id, scheduled_for, status, approval_status, payload_json) VALUES('y','cli','2026-10-29T22:00:00.000Z','ready','pending','{}')`);
+  const s = await freeSlots(env, "cli", new Date("2026-10-28T12:30:00Z"), 3);
+  assert.deepEqual(s.feed.map(x => x.day + " " + x.time), ["2026-10-30 09:00", "2026-10-30 12:00", "2026-10-30 19:00"]);
+  assert.deepEqual(s.story.map(x => x.day + " " + x.time).slice(0, 2), ["2026-10-28 12:00", "2026-10-28 19:00"]);
+  // Post que a própria Biblioteca programou não fecha o dia, só o horário dele.
+  const own = await freeSlots(env, "cli", new Date("2026-10-28T12:30:00Z"), 2, new Set(["y"]));
+  assert.deepEqual(own.feed.map(x => x.day + " " + x.time), ["2026-10-29 09:00", "2026-10-29 12:00"]);
 });
 
 test("fila: posts repetidos (mesma imagem) que ainda não saíram são tirados, fica o primeiro", async () => {

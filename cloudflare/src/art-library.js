@@ -135,28 +135,37 @@ function addDays(day, n) {
   return d.toISOString().slice(0, 10);
 }
 
-async function takenSlots(env, clientId, fromIso) {
+async function takenSlots(env, clientId, fromIso, ownIds = new Set()) {
   const rows = await env.DB.prepare(
-    `SELECT scheduled_for, COALESCE(json_extract(payload_json,'$.creativeFeatures.requestedFormat'),'post') AS fmt
+    `SELECT id, scheduled_for, COALESCE(json_extract(payload_json,'$.creativeFeatures.requestedFormat'),'post') AS fmt
      FROM post_ledger WHERE client_id=?1 AND scheduled_for>=?2
      AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'`
   ).bind(String(clientId), fromIso).all().catch(() => ({ results: [] }));
-  const feed = new Set(), story = new Set();
-  for (const r of rows?.results || []) (String(r.fmt) === "story" ? story : feed).add(new Date(r.scheduled_for).toISOString());
-  return { feed, story };
+  const feed = new Set(), story = new Set(), feedDays = new Set(), storyDays = new Set();
+  for (const r of rows?.results || []) {
+    const when = new Date(r.scheduled_for);
+    if (Number.isNaN(when.getTime())) continue;
+    const isStory = String(r.fmt) === "story";
+    (isStory ? story : feed).add(when.toISOString());
+    // Post que a própria Biblioteca programou não fecha o dia: ela continua enchendo os outros horários.
+    if (!ownIds.has(String(r.id))) (isStory ? storyDays : feedDays).add(brasiliaDay(when));
+  }
+  return { feed, story, feedDays, storyDays };
 }
 
-export async function freeSlots(env, clientId, now = new Date(), days = 7) {
+// Pedido do Rodrigo (28/10): se o dia já tem alguma postagem (feito à mão, pelo ChatGPT ou pela
+// Biblioteca), a Biblioteca não mexe nele e passa para o dia seguinte. Vale separado para feed e story.
+export async function freeSlots(env, clientId, now = new Date(), days = 14, ownIds = new Set()) {
   const start = brasiliaDay(now);
-  const taken = await takenSlots(env, clientId, now.toISOString());
+  const taken = await takenSlots(env, clientId, new Date(`${start}T00:00:00-03:00`).toISOString(), ownIds);
   const feed = [], story = [];
   for (let d = 0; d < days; d++) {
     const day = addDays(start, d);
     for (const time of SLOT_TIMES) {
       const iso = new Date(`${day}T${time}:00-03:00`).toISOString();
       if (Date.parse(iso) < now.getTime() + 15 * 60000) continue;
-      if (!taken.feed.has(iso)) feed.push({ day, time, iso });
-      if (!taken.story.has(iso)) story.push({ day, time, iso });
+      if (!taken.feedDays.has(day) && !taken.feed.has(iso)) feed.push({ day, time, iso });
+      if (!taken.storyDays.has(day) && !taken.story.has(iso)) story.push({ day, time, iso });
     }
   }
   return { feed, story };
@@ -235,7 +244,8 @@ export async function writeCaption(env, client, bytes, mime, type) {
 // ---------- 5. organizar e programar ----------
 export async function organizeLibrary(env, client, now = new Date(), options = {}) {
   const items = await readItems(env, client.id);
-  const slots = await freeSlots(env, client.id, now, Number(options.days) || 7);
+  const ownIds = new Set(items.map(i => String(i.postId || "")).filter(Boolean));
+  const slots = await freeSlots(env, client.id, now, Number(options.days) || 14, ownIds);
   const plan = planLibrary(items, slots);
   const upload = options.upload || masterUpload;
   const caption = options.caption || writeCaption;
@@ -304,7 +314,7 @@ export async function removeQueuedDuplicates(env, client, now = new Date(), dele
   return removed;
 }
 
-// Cron: quem tem imagem livre na biblioteca ganha os horários livres dos próximos 7 dias.
+// Cron: quem tem imagem livre na biblioteca ganha os horários livres dos próximos 14 dias.
 export async function runLibraryAutoSchedule(env, clients = [], now = new Date()) {
   const out = {};
   for (const client of clients) {
