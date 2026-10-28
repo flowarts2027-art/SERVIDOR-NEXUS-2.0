@@ -11,6 +11,7 @@
 import { clientBrand } from "./client-brand.js";
 import { masterUpload } from "./master-upload.js";
 import { deletePostFromPanel } from "./posts.js";
+import { handleArtText } from "./art-text.js";
 
 const NAMESPACE = "art-library";
 const MAX_ITEMS = 300;
@@ -81,7 +82,7 @@ export function libraryView(items) {
   const order = { livre: 0, programado: 1, erro: 2 };
   return items.map(it => ({
     id: it.id, url: "/media/" + it.key, format: it.format, width: it.width, height: it.height,
-    status: it.status, when: it.when || null, postType: it.postType || null, error: it.error || "", name: it.name || ""
+    status: it.status, when: it.when || null, postType: it.postType || null, error: it.error || "", name: it.name || "", withText: Boolean(it.withText)
   })).sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
 }
 
@@ -284,6 +285,38 @@ export async function organizeLibrary(env, client, now = new Date(), options = {
   return { ...result, items: libraryView(items) };
 }
 
+// ---------- 6. trocar a imagem de um post já programado (arte que chegou sem texto) ----------
+// O navegador refaz a arte com título, vantagens e botão (biblioteca.js) e manda aqui. O Nexus grava a
+// imagem nova com outro nome (o endereço antigo fica em cache) e troca o endereço no post. Post que já
+// saiu ou está saindo não muda.
+export async function replaceProgrammedImage(env, client, id, file) {
+  if (!env.MEDIA) throw new Error("r2_unavailable");
+  if (!file || typeof file.arrayBuffer !== "function" || String(file.type) !== "image/jpeg" || !file.size || file.size > MAX_BYTES) throw new Error("library_image_invalid");
+  const items = await readItems(env, client.id);
+  const item = items.find(i => i.id === String(id));
+  if (!item || item.status !== "programado" || !item.postId) throw new Error("library_not_found");
+  const row = await env.DB.prepare("SELECT id, status, payload_json FROM post_ledger WHERE id=?1 AND client_id=?2 LIMIT 1")
+    .bind(String(item.postId), String(client.id)).first().catch(() => null);
+  if (!row) throw new Error("library_not_found");
+  if (["published", "publishing"].includes(String(row.status || ""))) throw new Error("library_already_published");
+  const same = items.filter(i => i.postId === item.postId).sort((a, b) => (a.at || "").localeCompare(b.at || "") || a.order - b.order);
+  const name = item.postType === "story" ? "story" : item.postType === "carousel" ? "cartao-" + (same.indexOf(item) + 1) : "imagem";
+  const oldKey = `posts/${client.id}/${item.postId}/${name}.jpg`;
+  const newKey = `posts/${client.id}/${item.postId}/${name}-texto-${Date.now().toString(36)}.jpg`;
+  await env.MEDIA.put(newKey, new Uint8Array(await file.arrayBuffer()), {
+    httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
+    customMetadata: { clientId: String(client.id), postId: String(item.postId), kind: "art-library-text" }
+  });
+  const payload = String(row.payload_json || "");
+  const oldRef = "/media/" + (item.textKey || oldKey);
+  if (!payload.includes(oldRef)) throw new Error("library_not_found");
+  await env.DB.prepare("UPDATE post_ledger SET payload_json=?1, updated_at=CURRENT_TIMESTAMP WHERE id=?2 AND client_id=?3")
+    .bind(payload.split(oldRef).join("/media/" + newKey), String(item.postId), String(client.id)).run();
+  Object.assign(item, { textKey: newKey, key: newKey, withText: true });
+  await writeItems(env, client.id, items);
+  return { ok: true, items: libraryView(items) };
+}
+
 // Posts que ainda não saíram, com a MESMA imagem: fica o primeiro, os outros saem da fila.
 // A comparação é pelo arquivo da imagem guardado no Nexus (mesmo conteúdo = repetido).
 export async function removeQueuedDuplicates(env, client, now = new Date(), deletePost = deletePostFromPanel) {
@@ -329,6 +362,8 @@ export const LIBRARY_MESSAGES = {
   library_empty: "Escolha pelo menos uma imagem.",
   library_count: "Envie no máximo 30 imagens por vez.",
   library_not_found: "Imagem não encontrada.",
+  library_image_invalid: "Não consegui montar a imagem com texto. Tente de novo.",
+  library_already_published: "Esse post já foi publicado, não dá para trocar a imagem.",
   r2_unavailable: "Armazenamento indisponível. Tente de novo."
 };
 
@@ -346,6 +381,13 @@ export async function handleLibrary(request, env, url, client, base) {
       // Já organiza na hora: o cliente vê os posts programados no painel.
       const organized = added.added ? await organizeLibrary(env, client) : null;
       return send({ ok: true, ...added, organized, items: organized?.items || added.items });
+    }
+    // Imagem que chegou com as faixas vazias: diz o assunto e devolve o texto revisado (art-text.js).
+    if (path === "/texto" && request.method === "POST") return send(await handleArtText(env, client, await request.json().catch(() => ({}))));
+    if (path === "/trocar" && request.method === "POST") {
+      const form = await request.formData().catch(() => null);
+      if (!form) throw new Error("library_image_invalid");
+      return send(await replaceProgrammedImage(env, client, form.get("id"), form.get("image")));
     }
     if (path === "/organizar" && request.method === "POST") return send({ ok: true, ...(await organizeLibrary(env, client)) });
     if (path === "/remover" && request.method === "POST") {

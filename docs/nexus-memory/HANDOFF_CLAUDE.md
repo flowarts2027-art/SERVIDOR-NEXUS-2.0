@@ -614,3 +614,13 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Pedido do Rodrigo: "se já tiver alguma para o dia, ajusta para o dia seguinte".
 - `cloudflare/src/art-library.js`: `freeSlots` agora conta as postagens desde 00h do dia (Brasília). Dia com qualquer post (feed) fica fora para o feed; dia com story fica fora para story. Posts que a própria Biblioteca programou não fecham o dia (ela continua enchendo os outros horários). Janela passou de 7 para 14 dias.
 - Testes 624/624. Teste novo cobre dia ocupado, dia da própria Biblioteca e story separado.
+
+## 2026-10-28 — Biblioteca escreve o texto nas artes que chegam sem texto
+- Pedido do Rodrigo: imagens da GILTEC subiram só com a logo e faixas azuis vazias; o Nexus deve escrever o texto.
+- `public/biblioteca.js`: ao subir, mede as faixas de cima e de baixo; se estão vazias, refaz a arte no padrão (PADRAO_ARTES.md) no navegador: logo verdadeira (`public/brand/giltec-logo.png`), título 3 linhas Montserrat ExtraBold, foto só no meio, 3 vantagens e botão. Botão novo "Pôr texto nas artes que estão sem texto" refaz as que já estavam programadas.
+- `cloudflare/src/art-text.js` (rota `/texto`): a IA grátis só diz o assunto (lista fixa); o texto vem de tabela revisada. Só GILTEC tem tabela por enquanto.
+- `art-library.js` `replaceProgrammedImage` (rota `/trocar`): grava a nova imagem com outro nome e troca o endereço no post (post publicado não muda).
+- Testado no Chrome do Rodrigo com as artes reais: 9 de 14 detectadas como vazias e refeitas; as já com texto ficaram de fora. 2 artes vazias não são detectadas (faixa inclinada fina e uma com a cabeça do operário dentro da faixa) e ficam como estão.
+- GILTEC aluga também cortadora, alisadora, guincho, escoras e torre de iluminação; marcas Buffalo, Toyama, CSM (ficha `gemini/clientes/giltec.md`).
+- Testes 628/628.
+- Pendências pedidas no mesmo dia: Captador da GILTEC ainda traz loja de material de construção; regra para todos: contato do CRM de busca sem mensagem em 2 dias é apagado; campanha da Maskara com imagens automáticas do Cloudflare.

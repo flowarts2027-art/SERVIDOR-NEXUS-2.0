@@ -17,11 +17,12 @@
 | 19h | Post de 1 imagem |
 | 09h, 12h, 19h | 3 stories, cada um com cena própria |
 
-## Equipamentos (só estes 4)
-compactador (placa vibratória) · betoneira · martelete / rompedor · gerador
+## Equipamentos (Rodrigo, 28/10: a GILTEC aluga todos estes)
+compactador (placa vibratória ou sapo) · betoneira · martelete / rompedor · gerador · cortadora de piso · alisadora de concreto · guincho de coluna · escoras metálicas · torre de iluminação
+- Marcas que a GILTEC trabalha: **Buffalo, Toyama, CSM** e outras (pode citar na legenda; na imagem, máquina sem marca).
 - **Um equipamento diferente em cada peça de feed** (carrossel e posts).
 - **Betoneira no máximo 1 vez por dia.** Não use betoneira como assunto principal dois dias seguidos.
-- Não invente outro equipamento.
+- Não invente equipamento fora desta lista.
 
 ## Cenas (troque sempre)
 obra de casa · prédio em construção · reforma de loja ou apartamento · obra em estrada · terraplenagem · entrega do equipamento na obra
