@@ -1,5 +1,6 @@
-name: NEXUS Campanha diária com texto (GILTEC e Flow Arts)
+name: NEXUS Campanha diária com texto (GILTEC, Flow Arts e Maskara)
 
+# 28/10 tarde: Maskara entrou também (imagens automáticas do Cloudflare).
 # Pedido do Rodrigo (28/10/2026): sem depender de chat (ChatGPT, Gemini ou Claude) e sem plano pago.
 # Todo dia às 4h17 (Brasília): a IA grátis do Cloudflare faz só as FOTOS; o script
 # scripts/social/campanha_diaria.py escreve logo, título, ícones e botão por código
@@ -16,7 +17,7 @@ on:
       clients:
         description: "Clientes (separados por espaço)"
         required: false
-        default: "giltec primeiro-teste"
+        default: "giltec primeiro-teste maskara-assessoria"
       preview:
         description: "Só prévia (não manda ao painel; guarda na branch previa-artes)"
         type: boolean
@@ -40,7 +41,7 @@ jobs:
       BASE: https://servidor-nexus.diamantehinode2015.workers.dev
       NEXUS_BASE: https://servidor-nexus.diamantehinode2015.workers.dev
       AGENDAMENTOS_DIR: ${{ github.workspace }}/agendamentos
-      CLIENTS: ${{ github.event.inputs.clients || 'giltec primeiro-teste' }}
+      CLIENTS: ${{ github.event.inputs.clients || 'giltec primeiro-teste maskara-assessoria' }}
     steps:
       - uses: actions/checkout@v4
 
