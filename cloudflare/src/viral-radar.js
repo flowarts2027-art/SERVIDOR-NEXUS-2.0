@@ -8,6 +8,7 @@
 import { sha256Hex } from "./auth.js";
 import { encryptSecret, decryptSecret } from "./secrets.js";
 import { getState, putState } from "./storage.js";
+import { finishFacebookPageConnect } from "./facebook-page.js";
 import { captionNiche, nicheHashtags } from "./caption-templates.js";
 import { listClients } from "./clients.js";
 import { finishAdsConnect } from "./ads.js";
@@ -198,6 +199,11 @@ export async function handleFacebookCallback(env, request, url, fetcher = fetch)
     const long = await (await fetcher(graph(env) + "/oauth/access_token?" + lq)).json();
     const token = long?.access_token || short.access_token;
     // Pedido de anúncios do painel do cliente (24/10): mesmo retorno, outro destino.
+    // Página do Facebook para postar junto com o Instagram (28/10): mesmo retorno, outro destino.
+    if (saved.kind === "fbpage") {
+      const done = await finishFacebookPageConnect(env, saved, token, fetcher);
+      return page(done.ok, done.message, back);
+    }
     if (saved.kind === "ads") {
       const done = await finishAdsConnect(env, saved, token, long?.expires_in, fetcher);
       return page(done.ok, done.message, back, "/");
