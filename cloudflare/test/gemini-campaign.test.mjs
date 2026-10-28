@@ -135,3 +135,20 @@ test("cron: só entre 6h e 8h de Brasília, desligado sem chave ou sem cliente",
   await runGeminiDaily(env, new Date("2026-10-28T09:30:00Z"), deps);
   assert.equal(n, 6, "não repete o dia");
 });
+
+test("Flow Arts: tema da agência, sem equipamento da GILTEC, carrossel de 5 e símbolo embaixo", () => {
+  for (let i = 0; i < 6; i++) {
+    const date = new Date(Date.UTC(2026, 9, 29 + i)).toISOString().slice(0, 10);
+    const plan = dailyPlan("primeiro-teste", date);
+    assert.deepEqual(plan.map(p => p.type), ["carousel", "post", "post", "story", "story", "story"]);
+    assert.equal(plan[0].cards.length, 5);
+    const all = plan.flatMap(p => p.cards);
+    assert.equal(new Set(all.map(c => c.prompt)).size, all.length, "nenhuma cena repetida");
+    for (const c of all) {
+      assert.doesNotMatch(c.prompt, /compactor|concrete mixer|jackhammer|generator|hard hat/i);
+      assert.match(c.prompt, /no blue tint/);
+      assert.ok(c.topic);
+    }
+  }
+  assert.equal(CLIENT_LOGOS["primeiro-teste"].position, "bottom-center");
+});
