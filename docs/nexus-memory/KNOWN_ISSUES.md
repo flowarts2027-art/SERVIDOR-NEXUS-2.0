@@ -1,5 +1,11 @@
 # Problemas conhecidos
 
+## 2026-10-27 — ChatGPT não consegue subir imagens ao GitHub
+O conector do GitHub do ChatGPT grava só texto. Imagens não chegam a `agendamentos/`; tentativa com Base64 revertida (ae0a425). Legendas (texto) funcionam. Solução (PR #425): ChatGPT grava só a legenda; imagens pela página `/artes.html`. Não insistir no Base64.
+
+## 2026-10-27 — Tema do Manus escondia o "Sair" (correção em PR `fix/portal-sair-tema-manus`)
+Menu lateral cortado em telas baixas escondia a aba Conta. Detalhes no HANDOFF_CLAUDE de 27/10.
+
 ## 2026-10-22 18:34 BRT — Verificador HTTP opcional das 21 artes recebe 403
 Execuções 39857242396 e 39857618773 publicaram Worker/assets, mas `verify-showcase-2x2.py` recebeu 403 em ambos os hosts. Causa não determinada; não é prova de indisponibilidade para usuários. Navegador real carregou 21/21 páginas e imagens no domínio público. Deploy posterior 900fec9 (39858182963) passou pelos checks normais; verificador opcional não acionado. Não desativar proteção ou afirmar SHA remoto verificado. Sessão Master ainda exige login para revisão visual autenticada.
 

@@ -9,6 +9,16 @@
 3. Confirme se já há código, PR ou tarefa equivalente **antes** de implementar de novo. Diferencie pedido, hipótese, teste local, PR e funcionalidade comprovada em produção.
 4. Escolha **uma tarefa específica** do quadro. Se depender de publicação, custo, envio a terceiros ou acesso adicional, obtenha a autorização pertinente.
 
+## NOVO JEITO DE ENVIAR AS IMAGENS — Rodrigo, 27/10/2026 (vale para TODOS os clientes)
+O conector do GitHub do ChatGPT **só grava texto**. Imagem não sobe (nem em Base64). Por isso:
+1. O ChatGPT cria as artes **na conversa** e mostra ao Rodrigo, na ordem: post 09h, post 12h, post 19h, depois os stories. Carrossel: os cartões em sequência, numerados.
+2. O ChatGPT grava no GitHub **só as legendas**: `agendamentos/AAAA-MM-DD/HHMM/legenda.txt` (Flow Arts) ou `agendamentos/clientes/<id>/AAAA-MM-DD/HHMM/legenda.txt` (outro cliente), HHMM = 0900, 1200 ou 1900. Pasta só com legenda não dá erro.
+3. O Rodrigo salva as imagens no celular e abre **Enviar artes** (`/artes.html`, botão no topo de "Subir conteúdo do cliente" no Master), escolhe cliente, dia e as imagens de uma vez. A legenda do GitHub aparece sozinha. Tudo entra no painel **esperando aprovação**.
+4. **Não** tentar subir imagem em Base64, **não** mexer em workflows para isso, **não** criar `.media-staging/`.
+
+## Permissão do ChatGPT (Rodrigo, 27/10/2026)
+A conta nova do ChatGPT do Rodrigo pode ler este repositório e **escrever** em `docs/nexus-memory/` (memória e `HANDOFF_CHATGPT.md`) e em `agendamentos/` (legendas). Código, workflows e a `main` de `cloudflare/` e `public/` continuam só por PR com o OK do Rodrigo. O acesso técnico é dado pelo próprio Rodrigo, conectando o GitHub na conta do ChatGPT.
+
 ## Regra fixa do ChatGPT: 3 posts por dia
 Todo dia, o ChatGPT cria os posts das 09h, 12h e 19h da Flow Arts e os salva em `agendamentos/` (branch `agendamentos`). Eles sobem ao painel esperando a aprovação do Rodrigo. Passo a passo e padrão da arte: `REGRA_POSTS_DIARIOS.md`.
 

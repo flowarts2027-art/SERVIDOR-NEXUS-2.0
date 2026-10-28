@@ -861,7 +861,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-delete-post], [data-publish-now], [data-connect], [data-discard-lead], #logout")) {
+  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-delete-post], [data-publish-now], [data-connect], [data-discard-lead], [data-logout]")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -937,7 +937,7 @@ async function bootDemo() {
   banner.className = "demo-banner";
   banner.textContent = "Demonstração com um café fictício. Os posts foram criados pelos agentes de IA da Flow Arts.";
   $(".top-inner")?.after(banner);
-  if ($("#logout")) $("#logout").hidden = true;
+  document.querySelectorAll("[data-logout]").forEach(button => { button.hidden = true; });
   showApp({ displayName: "Café Brisa" });
   await loadDemo();
   const link = $("#support-link");
@@ -1033,9 +1033,13 @@ document.addEventListener("DOMContentLoaded", () => {
       button.disabled = false;
     }
   });
-  $("#logout")?.addEventListener("click", async () => {
-    try { await api("/api/portal/logout", { method: "POST" }); } catch {}
-    showLogin();
+  // Sair: botão fixo no topo (sempre visível) e o da aba Conta usam a mesma ação.
+  document.querySelectorAll("[data-logout]").forEach(button => {
+    button.addEventListener("click", async () => {
+      if (!window.confirm("Sair do painel?")) return;
+      try { await api("/api/portal/logout", { method: "POST" }); } catch {}
+      showLogin();
+    });
   });
   $("#refresh")?.addEventListener("click", () => { toast("Atualizando…"); loadAll().then(() => toast("Tudo atualizado.")); });
   boot();

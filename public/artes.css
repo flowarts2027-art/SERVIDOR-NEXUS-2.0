@@ -1,0 +1,62 @@
+/* Página "Enviar artes" (27/10/2026). Letra grande e contraste alto: o Rodrigo é disléxico. */
+:root {
+  --navy: #0b1934; --blue: #1c57ca; --blue-soft: #e6efff; --paper: #f4f6fb; --card: #fff;
+  --ink: #111c33; --muted: #4a5670; --line: #d4dcea; --ok: #0d7a5f; --ok-soft: #e1f6ef;
+  --bad: #a3203f; --bad-soft: #fff0f3; --story: #8a5a00; --story-soft: #fff4dd;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 19px/1.55 "Atkinson Hyperlegible", system-ui, sans-serif; letter-spacing: .01em;
+}
+.top { background: var(--navy); color: #fff; padding: calc(18px + env(safe-area-inset-top)) 18px 22px; }
+.top h1 { margin: 6px 0 4px; font-size: 1.9rem; line-height: 1.15; }
+.top p { margin: 0; color: #cfdcf2; }
+.back { color: #9fc3ff; text-decoration: none; font-weight: 700; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 18px 16px 60px; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 18px; }
+.card h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.35rem; }
+.num { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 1.1rem; }
+label { display: grid; gap: 6px; font-weight: 700; margin-bottom: 14px; }
+select, input[type=date], textarea {
+  font: inherit; color: var(--ink); background: #fff; border: 2px solid var(--line); border-radius: 12px;
+  padding: 12px; min-height: 52px; width: 100%;
+}
+textarea { min-height: 150px; resize: vertical; font-weight: 400; }
+select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.hint { color: var(--muted); margin: 8px 0 0; font-size: 1rem; }
+.alert { background: var(--bad-soft); color: var(--bad); border: 2px solid #f2c4cf; border-radius: 14px; padding: 14px; font-weight: 700; }
+.pick { position: relative; margin: 0; }
+.pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.pick span {
+  display: grid; place-items: center; min-height: 68px; border-radius: 14px; background: var(--blue); color: #fff;
+  font-size: 1.25rem; font-weight: 700;
+}
+.list { display: grid; gap: 12px; margin-top: 16px; }
+.item { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; border: 2px solid var(--line); border-radius: 14px; padding: 10px; }
+.item.is-story { border-color: #e9c77f; background: var(--story-soft); }
+.item.is-skip { opacity: .55; }
+.item.is-dup { border-color: var(--bad); background: var(--bad-soft); }
+.item img { width: 92px; height: 115px; object-fit: cover; border-radius: 10px; background: #e8edf5; }
+.item .side { display: grid; gap: 8px; min-width: 0; }
+.item .name { font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
+.item select { min-height: 48px; padding: 8px 10px; }
+.item .moves { display: flex; gap: 8px; }
+.item .moves button {
+  flex: 1; min-height: 44px; border: 2px solid var(--line); border-radius: 10px; background: #fff;
+  font-family: inherit; font-size: 1.1rem; font-weight: 700; color: var(--ink); cursor: pointer;
+}
+.item .warn { color: var(--bad); font-weight: 700; font-size: .95rem; }
+.cap { margin-bottom: 16px; }
+.cap .tag { display: inline-block; margin-bottom: 6px; padding: 4px 10px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-weight: 700; }
+.cap .src { font-size: .9rem; color: var(--ok); font-weight: 700; margin-left: 6px; }
+.send {
+  width: 100%; min-height: 70px; border: 0; border-radius: 16px; background: var(--ok); color: #fff;
+  font-family: inherit; font-size: 1.3rem; font-weight: 700; cursor: pointer;
+}
+.send:disabled { background: #9aa6bb; cursor: not-allowed; }
+.result { display: grid; gap: 10px; margin-top: 16px; }
+.result p { margin: 0; padding: 12px 14px; border-radius: 12px; font-weight: 700; }
+.result .ok { background: var(--ok-soft); color: var(--ok); }
+.result .bad { background: var(--bad-soft); color: var(--bad); }
+.result .wait { background: var(--blue-soft); color: var(--blue); }

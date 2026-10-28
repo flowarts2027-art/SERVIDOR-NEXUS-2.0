@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { readdirSync, readFileSync } from "node:fs";
 import { readyCaption, captionNiche } from "../src/caption-templates.js";
-import { masterUpload } from "../src/master-upload.js";
+import { masterUpload, legendaPath, githubCaptions } from "../src/master-upload.js";
 
 test("legenda pronta pelo nicho e formato, sem IA, e muda a cada vez", () => {
   const quatree = { id: "quatree-dog", name: "Quatree Dog", niche: "Ração" };
@@ -74,4 +74,26 @@ test("cada postagem do cliente pega um texto diferente (contador por cliente + p
   db.prepare("INSERT INTO post_ledger(id,client_id,status,approval_status,caption,payload_json,created_at) VALUES('p1','quatree-dog','published','approved',?,'{}','2026-10-18 10:00:00')").run(next);
   db.prepare("UPDATE nexus_state SET value_json='{\"turn\":0}' WHERE namespace='caption-rotation' AND item_key='post'").run();
   assert.notEqual(await nextCaption(env, client, "post"), next);
+});
+
+// Página "Enviar artes" (27/10): legendas do ChatGPT lidas do GitHub.
+
+test("legendaPath: Flow Arts na raiz, outro cliente em clientes/<id>", () => {
+  assert.equal(legendaPath("primeiro-teste", "2026-10-28", "0900"), "agendamentos/2026-10-28/0900/legenda.txt");
+  assert.equal(legendaPath("quatree-dog", "2026-10-28", "1900"), "agendamentos/clientes/quatree-dog/2026-10-28/1900/legenda.txt");
+  assert.equal(legendaPath("../x", "2026-10-28", "0900"), "");
+  assert.equal(legendaPath("quatree-dog", "28/10/2026", "0900"), "");
+});
+
+test("githubCaptions: usa a branch agendamentos e cai para a main", async () => {
+  const calls = [];
+  const fake = async url => {
+    calls.push(url);
+    if (url.includes("/agendamentos/agendamentos/2026-10-28/0900/")) return new Response("Legenda 9h");
+    if (url.includes("/main/agendamentos/2026-10-28/1200/")) return new Response("Legenda 12h");
+    return new Response("", { status: 404 });
+  };
+  const out = await githubCaptions("primeiro-teste", "2026-10-28", fake);
+  assert.deepEqual(out, { "0900": "Legenda 9h", "1200": "Legenda 12h", "1900": "" });
+  assert.ok(calls.every(u => u.startsWith("https://raw.githubusercontent.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/")));
 });

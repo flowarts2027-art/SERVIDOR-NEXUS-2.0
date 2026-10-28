@@ -13,9 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=130">
+  <link rel="stylesheet" href="/client-lite.css?v=131">
   <link rel="stylesheet" href="/flow-crm.css?v=3">
-  <script src="/client-lite.js?v=129" defer></script>
+  <script src="/client-lite.js?v=130" defer></script>
   <script src="/captador.js?v=11" defer></script>
   <script src="/ads.js?v=2" defer></script>
   <script src="/planos.js?v=1" defer></script>
@@ -50,6 +50,7 @@
         <div class="top-actions">
           <span class="top-chip"><i></i> NEXUS ativo</span>
           <button id="refresh" class="icon-btn" type="button" aria-label="Atualizar">↻</button>
+          <button id="logout-top" class="logout-top" type="button" data-logout aria-label="Sair do painel"><span aria-hidden="true">⎋</span>Sair</button>
         </div>
       </div>
     </header>
@@ -252,7 +253,7 @@
           <p class="muted">Fale direto com a nossa equipe pelo WhatsApp.</p>
           <a id="support-link" class="btn btn-whats" href="#" target="_blank" rel="noopener">Falar no WhatsApp</a>
         </section>
-        <button id="logout" type="button" class="btn btn-ghost">Sair do painel</button>
+        <button id="logout" type="button" class="btn btn-logout" data-logout>Sair do painel</button>
       </section>
     </main>
   </div>

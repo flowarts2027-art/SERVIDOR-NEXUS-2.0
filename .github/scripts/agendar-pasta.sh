@@ -144,6 +144,8 @@ process_slot() {
     type=story
     args+=(-F "images=@$story;type=$(mime "$story")")
   else
+    # Só legenda (27/10): o ChatGPT deixa o texto e o Rodrigo manda as imagens pela página /artes.html.
+    if [ -s "$caption" ]; then note "$slot: só legenda; as imagens vão pela página Enviar artes (/artes.html)"; return; fi
     fail "$slot: nenhuma arte encontrada (imagem.jpg, 01.jpg..., video.mp4 ou story.jpg)"; return
   fi
 

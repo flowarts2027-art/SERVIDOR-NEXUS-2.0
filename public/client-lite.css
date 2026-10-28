@@ -735,3 +735,33 @@ body { background: var(--paper); }
   .content { min-width: 0; overflow: hidden; }
   .content > .tab[hidden] { display: none !important; }
 }
+
+/* Correção 27/10/2026 (Claude) — depois do tema do Manus:
+   1) botão "Sair" sempre visível no topo; 2) menu lateral rola em telas baixas
+   (antes cortava os últimos itens, inclusive "Conta"); 3) topo sem sobrepor o conteúdo;
+   4) aviso da demonstração legível no topo claro. */
+.logout-top {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
+  border: 1.5px solid #f2c4cf; border-radius: 999px; background: #fff5f7; color: #a3203f;
+  font-family: inherit; font-size: .95rem; font-weight: 700; line-height: 1; cursor: pointer;
+}
+.logout-top span { font-size: 1.05rem; }
+.logout-top:hover { background: #ffe8ee; }
+.logout-top[hidden] { display: none; }
+.btn-logout { width: 100%; margin-top: 12px; background: #fff5f7; color: #a3203f; border: 1.5px solid #f2c4cf; font-weight: 700; }
+.btn-logout[hidden] { display: none; }
+@media (min-width: 900px) {
+  .app { grid-template-rows: auto minmax(0, 1fr) !important; }
+  .top { min-height: 0; }
+  .tabbar { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+  .nav-spotlight { flex: none; margin-top: 18px; }
+  .demo-banner { max-width: none; margin: 10px 0 0; background: var(--blue-soft); color: var(--ink); }
+}
+@media (min-width: 900px) and (max-height: 860px) {
+  .nav-spotlight, .nav-caption { display: none !important; }
+  .tabbar > button { min-height: 44px; padding: 9px 15px !important; }
+}
+@media (max-width: 899px) {
+  .logout-top { min-height: 40px; padding: 0 12px; background: rgba(255, 255, 255, .14); border-color: rgba(255, 255, 255, .30); color: #fff; }
+  .logout-top:hover { background: rgba(255, 255, 255, .22); }
+}
