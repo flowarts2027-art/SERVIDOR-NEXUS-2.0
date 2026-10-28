@@ -1,7 +1,7 @@
 # Problemas conhecidos
 
 ## 2026-10-27 — ChatGPT não consegue subir imagens ao GitHub
-O conector do GitHub do ChatGPT grava só texto. Imagens não chegam a `agendamentos/`; tentativa com Base64 revertida (ae0a425). Legendas (texto) funcionam. Solução (PR #425): ChatGPT grava só a legenda; imagens pela página `/artes.html`. Não insistir no Base64.
+O conector simples do GitHub do ChatGPT grava só texto; o **modo Work** sobe imagens normalmente (comprovado 27/10: Quatree e GILTEC). Os dois jeitos valem: Work sobe as artes nas pastas de `agendamentos/`, ou o Rodrigo usa `/artes.html`. Erros de 27/10: GILTEC foi primeiro para a raiz (painel da Flow Arts) e depois para pasta sem data; desde o PR de 27/10 a pasta errada dá erro visível e um retry confere o dia inteiro. Base64 continua descartado.
 
 ## 2026-10-27 — Tema do Manus escondia o "Sair" (correção em PR `fix/portal-sair-tema-manus`)
 Menu lateral cortado em telas baixas escondia a aba Conta. Detalhes no HANDOFF_CLAUDE de 27/10.

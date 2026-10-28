@@ -95,6 +95,8 @@ repeated_image() {
     case " $seen " in *" $h "*) fail "${dir#$ROOT/}: imagem repetida dentro da pasta ($(basename "$f")). Cada imagem tem que ser diferente."; return 0 ;; esac
     seen="$seen $h"
     while IFS= read -r other; do
+      # Só compara com pastas de post de verdade (AAAA-MM-DD/HHMM). Pasta errada (sem data) não conta (27/10).
+      [[ "$other" =~ /[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-2][0-9][0-5][0-9](-story)?/[^/]+$ ]] || continue
       [ "$(sha256sum "$other" | cut -d' ' -f1)" = "$h" ] || continue
       fail "${dir#$ROOT/}: $(basename "$f") é igual a ${other#$ROOT/}. Regra: nunca repetir imagem; crie uma arte nova."
       return 0

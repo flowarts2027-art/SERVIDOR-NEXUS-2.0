@@ -1,4 +1,6 @@
-# Pasta agendamentos — posts prontos da Flow Arts
+# Pasta agendamentos — posts prontos (Flow Arts e outros clientes)
+
+> **27/10/2026:** o ChatGPT no modo Work pode salvar as imagens aqui e elas vão sozinhas ao painel. Cliente que não é a Flow Arts vai em `agendamentos/clientes/<id>/AAAA-MM-DD/HHMM/`, **sempre com a data**. Pasta errada dá erro no GitHub Actions. Sem Work: legenda aqui e imagens pela página `/artes.html`.
 
 Cada post colocado aqui sobe sozinho para o painel da Flow Arts (`primeiro-teste`) **esperando a aprovação do Rodrigo**.
 Nada é publicado sem esse OK. Quem faz o envio é o fluxo `.github/workflows/nexus-agendar-pasta.yml`.
