@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-28 — SITE-NOVO-001: site novo da Flow Arts
+Claude refez `public/site.html` (tema clean da logo, movimento, pacotes com abas, páginas antigas numa aba discreta do rodapé). 630/630 testes. **Aguardando merge do Rodrigo**; deploy automático depois do merge. Próximo: Privacidade e Termos com o Captador; páginas por tipo de vendedor.
+
 ## 2026-10-28 — GILTEC: logo salva; 3 posts + 3 stories prontos
 
 Pedido corrigido pelo Rodrigo: 3 posts (09h carrossel de 2 cartões, 12h martelete, 19h gerador) + 3 stories exclusivos, total 7 imagens. Logo original salva em docs/nexus-memory/clientes/giltec/logo-giltec.png (commit 14fca668), aplicada sem alterar pixels em todas as artes. Feed 1080×1350, story 1080×1920; revisão visual, hashes distintos e checar-arte.py aprovados. ZIP entregue no chat (libfile_6c06b4b272a08191933f4aff1417e446), com logo e legendas. **ZERO uploads novos confirmados:** /artes.html exige login no Master; entrega manual autorizada. Próximo: enviar pelo cliente GILTEC, data 28/10, dois cartões agrupados e três stories, aguardando aprovação. Conferir antigos para evitar duplicação. HANDOFF_CLAUDE atualizado com evidências. Esta entrada substitui o estado antigo de logo ausente e três feeds apenas. Campanha diária, não 30 dias.

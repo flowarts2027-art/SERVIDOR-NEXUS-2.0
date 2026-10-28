@@ -638,3 +638,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - `scripts/social/campanha_diaria.py`: tema "maskara" (preto, dourado, botão "COMENTA QUERO ABAIXO"); post de 1 imagem às 09h quando o dia tem `post0900`. Sem logo oficial: escreve "MASKARA ASSESSORIA" por código no lugar (trocar quando o Rodrigo mandar a logo).
 - Workflow `nexus-campanha-diaria.yml`: clientes padrão agora "giltec primeiro-teste maskara-assessoria" (todo dia 4h17). Tudo vai ao painel ESPERANDO APROVAÇÃO (na Maskara, o próprio cliente aprova e sai sozinho).
 - Testado com fotos falsas (FOTO_FALSA=1): 6 peças geradas, textos certos.
+
+## 2026-10-28 — Site novo da Flow Arts (flowarts.com.br)
+- Pedido do Rodrigo: refazer o site, mais sofisticado e com movimento; não gostou do vídeo do celular no início nem do azul em excesso. Referências escolhidas: Attio e Igloo. Tema clean nas cores da logo (prata, quase preto, azul elétrico só nos detalhes). Aprovou a prévia e pediu para publicar.
+- `public/site.html` reescrito: topo com globo 3D (pontos azuis = clientes), contador animado, cartões de empresas e botões de cidade (nomes ilustrativos); Como funciona; Instagram como cartão de visita (conversa animada, sem vídeo); comparação; pacotes com abas "empresas / pessoa física"; perguntas em `<details>`; chamada final; rodapé. Fonte Atkinson Hyperlegible + Manrope. Tudo para com "reduzir movimento" ou economia de dados. Botão fixo do WhatsApp no celular sem cobrir o rodapé.
+- Correções da auditoria: selo "Captador de brinde" só no Completo; Tráfego e Completo + Tráfego aparecem como "Em breve" (dependem da Meta); FAQ e dados do Google atualizados ("Como eu pago?" sem "pagamento único").
+- Páginas antigas indexadas (12 `marketing-para-*` e `/exemplo`): continuam no ar e no sitemap e agora ficam ligadas numa aba discreta do rodapé ("Outros segmentos que atendemos"), para o Google e o cliente chegarem ao site novo.
+- Mantidos: dados do Google (JSON-LD), contador de visitas e cliques no WhatsApp, links de cadastro e WhatsApp. Sitemap: data da página inicial 2026-10-28.
+- Testes: 630/630 (2 testes do vídeo antigo trocados por testes do site novo e da aba discreta). Conferido no navegador (Playwright) em 1440px e 390px, sem rolagem lateral.
+- Pendente: merge do PR pelo Rodrigo (deploy automático). Próximo: atualizar Privacidade e Termos para citar o Captador (LGPD) e, depois, reescrever as páginas antigas como páginas por tipo de vendedor.
