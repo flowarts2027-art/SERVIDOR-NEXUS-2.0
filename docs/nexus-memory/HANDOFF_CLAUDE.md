@@ -2,7 +2,7 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
-## 2026-10-27 22h BRT — Auditoria do tema do Manus e botão "Sair" no painel do cliente
+## 2026-10-27 22h BRT — Tema do Manus, botão "Sair" e página "Enviar artes"
 - **Origem → destino:** Claude → ChatGPT / Manus
 - **Pedido do Rodrigo:** corrigir o painel do cliente "sem opção de sair", auditar o tema trocado com o Manus, achar alternativa para o envio de imagens que o ChatGPT não consegue fazer e atualizar esta memória.
 - **Auditoria do tema (commits bd4ae4e e ec8f34f, Manus, direto na `main`, já publicados):**
@@ -14,9 +14,12 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Corrigido (branch `fix/portal-sair-tema-manus`):** botão **Sair** fixo no topo (computador e celular) + botão da aba Conta em destaque, os dois com confirmação; menu lateral com rolagem e versão compacta em telas baixas; topo com altura automática; aviso da demonstração legível. Arquivos: `public/portal.html`, `public/client-lite.css`, `public/client-lite.js` (cache `css v131`, `js v130`). Na demonstração os botões de sair continuam escondidos.
 - **Testes:** `node --test` 600/600; `node --check` ok; conferido em navegador sem interface (1366×620 e 390×844) com a página de demonstração. Painel real com login não testado.
 - **Envio de imagens pelo ChatGPT — diagnóstico:** o conector do GitHub do ChatGPT só grava texto. Imagens (PNG/JPG) não sobem; a tentativa de 27/10 com arquivos `.b64` foi revertida (ae0a425). Não é erro do Nexus.
-- **Regra para o ChatGPT (autorizada pelo Rodrigo):** pode ler e escrever em `docs/nexus-memory/` e em `agendamentos/` (legendas `legenda.txt`). Não tentar mais subir imagem em Base64 nem mexer em workflows para isso. A forma de levar a imagem ao painel está em decisão com o Rodrigo (ver próximo passo).
+- **Decisão do Rodrigo:** página **Enviar artes** (`/artes.html`). Ele salva as imagens do ChatGPT no celular e escolhe todas de uma vez; a página monta posts (09h/12h/19h, 2+ imagens = carrossel) e stories (09h, 10h30, 12h, 16h, 19h), puxa a legenda de `agendamentos/.../HHMM/legenda.txt` no GitHub e envia pela rota já existente `/api/master/upload`, **esperando aprovação**. Bloqueia imagem repetida e horário já ocupado (`noDuplicate`). Converte HEIC/arquivo grande para JPEG no celular.
+- **Servidor:** `GET /api/master/legendas` (só com login do Master) lê as legendas pelo endereço raw do GitHub (branch `agendamentos`, depois `main`). `agendar-pasta.sh`: pasta só com legenda vira aviso, não erro.
+- **Regra nova para o ChatGPT:** em `REGRA_POSTS_DIARIOS.md` e `BRIDGE_PROTOCOL.md` (topo). Permissão: escrever em `docs/nexus-memory/` e `agendamentos/`; código só por PR.
+- **Testes:** suíte 602/602 (2 novos); página testada em navegador sem interface com servidor falso: 8 imagens → 1 carrossel + 2 posts + 3 stories, repetida barrada. Produção não testada.
 - **Deploy:** nenhum. Merge na `main` publica sozinho; só com o OK do Rodrigo.
-- **Próximo passo:** Rodrigo aprovar o PR; depois testar o "Sair" no painel real. Decidir a alternativa de envio de imagens.
+- **Próximo passo:** Rodrigo aprovar o PR #425; depois testar o "Sair" e a página Enviar artes no celular, com um dia de teste.
 
 ## 2026-10-24 10h05 BRT — Combo Completo + Tráfego e upgrade pelo painel do cliente
 - **Decisão do Rodrigo:** combo **Completo + Tráfego por R$ 897/mês** (separado R$ 1.094; economia de R$ 197). A verba do anúncio continua à parte, no cartão do cliente.

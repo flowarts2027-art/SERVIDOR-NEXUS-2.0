@@ -7,6 +7,7 @@ import { getClient } from "./clients.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
+import { brasiliaToIso } from "./manual-reel.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
@@ -46,11 +47,59 @@ async function activeClient(env, id) {
   return client;
 }
 
+// Página "Enviar artes" (27/10): o ChatGPT só grava texto no GitHub, então ele deixa as legendas em
+// agendamentos/[clientes/<id>/]AAAA-MM-DD/HHMM/legenda.txt e o Rodrigo escolhe as imagens no celular.
+// O repositório é público: a leitura é pelo endereço "raw", sem chave.
+export const ARTES_SLOTS = Object.freeze(["0900", "1200", "1900"]);
+const RAW_BASE = "https://raw.githubusercontent.com/flowarts2027-art/SERVIDOR-NEXUS-2.0";
+const ID_RE = /^[a-z0-9][a-z0-9-]{1,48}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export function legendaPath(clientId, date, slot) {
+  const id = String(clientId || "");
+  if (!ID_RE.test(id) || !DATE_RE.test(String(date || "")) || !/^[0-2]\d[0-5]\d$/.test(String(slot || ""))) return "";
+  const folder = id === "primeiro-teste" ? "" : "clientes/" + id + "/";
+  return "agendamentos/" + folder + date + "/" + slot + "/legenda.txt";
+}
+
+export async function githubCaptions(clientId, date, fetcher = fetch) {
+  const out = {};
+  for (const slot of ARTES_SLOTS) {
+    const path = legendaPath(clientId, date, slot);
+    if (!path) throw new Error("client_invalid");
+    out[slot] = "";
+    for (const branch of ["agendamentos", "main"]) {
+      const res = await fetcher(RAW_BASE + "/" + branch + "/" + path, { headers: { "cache-control": "no-cache" } }).catch(() => null);
+      if (!res || !res.ok) continue;
+      const text = String(await res.text().catch(() => "")).trim().slice(0, 2200);
+      if (text) { out[slot] = text; break; }
+    }
+  }
+  return out;
+}
+
+// Já existe post enviado pelo Master neste horário e formato? (mesma regra do agendar-pasta.sh)
+async function slotTaken(env, clientId, scheduledFor, isStory) {
+  const formatFilter = isStory
+    ? "json_extract(payload_json,'$.creativeFeatures.requestedFormat')='story'"
+    : "COALESCE(json_extract(payload_json,'$.creativeFeatures.requestedFormat'),'post')<>'story'";
+  const row = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM post_ledger WHERE client_id=?1 AND scheduled_for=?2
+     AND json_extract(payload_json,'$.source')='master:upload' AND ${formatFilter}
+     AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'`
+  ).bind(String(clientId), String(scheduledFor)).first().catch(() => null);
+  return Number(row?.n || 0) > 0;
+}
+
 export async function masterUpload(env, form, now = new Date()) {
   const client = await activeClient(env, form.get("clientId"));
   const type = TYPES[String(form.get("type") || "").trim()];
   if (!type) throw new Error("type_invalid");
   form.set("type", type);
+  if (String(form.get("noDuplicate") || "") === "1") {
+    const when = brasiliaToIso(form.get("date"), String(form.get("time") || ""));
+    if (when && await slotTaken(env, client.id, when, type === "story")) throw new Error("slot_taken");
+  }
   // Sem legenda escrita: usa a pronta do nicho.
   if (type !== "story" && !String(form.get("caption") || "").trim()) {
     form.set("caption", await nextCaption(env, client, type));
@@ -65,15 +114,21 @@ export async function masterUpload(env, form, now = new Date()) {
   });
 }
 
-const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories." };
+const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories.", slot_taken: "Já tem um post neste horário. Cancele o antigo no painel para trocar." };
 
-// Rotas: GET /api/master/caption e POST /api/master/upload. Quem chama já conferiu o login do Master.
+// Rotas: GET /api/master/caption, GET /api/master/legendas e POST /api/master/upload. Quem chama já conferiu o login do Master.
 export async function handleMasterUpload(request, env, url) {
   try {
     if (url.pathname === "/api/master/caption" && request.method === "GET") {
       const client = await activeClient(env, url.searchParams.get("clientId"));
       const format = String(url.searchParams.get("format") || "post");
       return send({ ok: true, niche: captionNiche(client), caption: await nextCaption(env, client, format) });
+    }
+    if (url.pathname === "/api/master/legendas" && request.method === "GET") {
+      const client = await activeClient(env, url.searchParams.get("clientId"));
+      const date = String(url.searchParams.get("date") || "");
+      if (!DATE_RE.test(date)) throw new Error("schedule_invalid");
+      return send({ ok: true, clientId: client.id, date, captions: await githubCaptions(client.id, date) });
     }
     if (url.pathname === "/api/master/upload" && request.method === "POST") {
       const form = await request.formData().catch(() => null);

@@ -743,7 +743,7 @@ body { background: var(--paper); }
 .logout-top {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
   border: 1.5px solid #f2c4cf; border-radius: 999px; background: #fff5f7; color: #a3203f;
-  font: 700 .95rem/1 inherit; cursor: pointer;
+  font-family: inherit; font-size: .95rem; font-weight: 700; line-height: 1; cursor: pointer;
 }
 .logout-top span { font-size: 1.05rem; }
 .logout-top:hover { background: #ffe8ee; }

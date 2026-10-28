@@ -1,7 +1,7 @@
 # Problemas conhecidos
 
 ## 2026-10-27 — ChatGPT não consegue subir imagens ao GitHub
-O conector do GitHub do ChatGPT grava só texto. Imagens não chegam a `agendamentos/`; tentativa com Base64 revertida (ae0a425). Legendas (texto) funcionam. Alternativa em decisão com o Rodrigo; não insistir no Base64.
+O conector do GitHub do ChatGPT grava só texto. Imagens não chegam a `agendamentos/`; tentativa com Base64 revertida (ae0a425). Legendas (texto) funcionam. Solução (PR #425): ChatGPT grava só a legenda; imagens pela página `/artes.html`. Não insistir no Base64.
 
 ## 2026-10-27 — Tema do Manus escondia o "Sair" (correção em PR `fix/portal-sair-tema-manus`)
 Menu lateral cortado em telas baixas escondia a aba Conta. Detalhes no HANDOFF_CLAUDE de 27/10.
