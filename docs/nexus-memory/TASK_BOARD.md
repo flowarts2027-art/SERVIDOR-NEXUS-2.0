@@ -1,5 +1,15 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-28 — Regra permanente da logo oficial GILTEC
+
+GILTEC: toda arte, de toda campanha, leva a logo oficial (docs/nexus-memory/clientes/giltec/logo-giltec.png). A IA não escreve texto dentro da imagem; a logo é aplicada por cima depois que a imagem fica pronta. Nunca recriar ou redesenhar a logo: usar sempre o arquivo original.
+
+- Aplicar o arquivo original no canto inferior direito ou superior, sem cobrir o equipamento, em tamanho legível e discreto, preservando cores, letras e proporções.
+- Fluxo autorizado por Rodrigo: terminou as imagens com a logo → enviar diretamente ao painel GILTEC, esperando aprovação, sem pedir novamente. Não aprovar nem publicar. Em erro, informar e entregar as imagens para Enviar artes.
+- Campanha diária. Escopo atual: as três imagens de 28/10/2026 (compactador, martelete e gerador), sem gerar campanha de 30 dias.
+- **Estado real:** regra documentada; arquivo original da logo não foi disponibilizado como anexo acessível nesta mensagem. O caminho acima é o destino definido, NÃO comprovação de arquivo salvo. Aplicação da logo e envio das três imagens permanecem pendentes do original. Nenhum upload novo realizado nesta etapa.
+
+
 ## 2026-10-28 — GILTEC-DIARIA-001
 **Campanha diária; escopo desta sessão: somente 28/10, nunca 30 dias.** Três feeds novos (compactador, martelete e gerador) gerados um por vez e entregues no chat. Três legendas com WhatsApp da Rose, QUERO e hashtags RJ salvas em `agendamentos/clientes/giltec/2026-10-28/` na main (último commit de legenda `78e4a54`). **Envio das novas imagens ao painel pendente: zero uploads nesta sessão**, Git HTTPS sem autenticação. Rodrigo deve usar /artes.html, cliente GILTEC, dia 28/10, três posts individuais aguardando aprovação. Conferir/cancelar antigas antes de enviar; upload histórico 40594908362 não prova estado atual. Imagens anteriores ausentes em main@6e45290. Detalhes nos handoffs. Nenhuma publicação/aprovação efetuada.
 
