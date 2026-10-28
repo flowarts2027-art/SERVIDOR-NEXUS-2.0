@@ -551,3 +551,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Rodrigo gostou do tema dessas artes para a GILTEC, mas pediu mais variedade de equipamento (betoneira demais). Próximo trabalho: o Nexus montar título, ícones e botão por cima da foto do Gemini, sem a IA escrever texto.
 - Gemini: novo plano da **Flow Arts** (`primeiro-teste`), tema da agência e sem equipamentos da GILTEC; 3 temas em rodízio (Captador de clientes; "App de agendar post não cria post"; Instagram como cartão de visita). Carrossel 09h com 5 cartões, posts 12h e 19h, 3 stories; símbolo da Flow Arts pequeno embaixo. A Flow Arts NÃO está no automático das 6h (só pela rota manual do Master), para não brigar com o ChatGPT.
 - Regras de obra (EPI) agora só nas artes da GILTEC.
+
+## 2026-10-28 (08h) — Imagens grátis no Cloudflare (sem plano pago)
+- Teste real às 07h43: a rota manual chamou o Gemini e o Google recusou todas as imagens (429 RESOURCE_EXHAUSTED): a chave está no plano grátis, que não gera imagem. Nada gasto, nada enviado. Rodrigo NÃO quer plano pago.
+- Solução: Workers AI do próprio Cloudflare (binding `AI`), cota grátis de 10 mil neurônios por dia. Modelo `@cf/black-forest-labs/flux-2-klein-4b` com tamanho livre (1024×1280 feed, 768×1344 story); reserva `flux-1-schnell`. Custo contado = 0.
+- Legendas: Gemini (se a chave responder) → senão Llama 3.3 no Cloudflare (grátis) → senão legenda pronta do nicho. Sempre com QUERO.
+- Variável `NEXUS_FREE_IMAGE_PROVIDER=cloudflare` (troca para `gemini` se um dia houver plano pago). O nome do módulo continua `gemini-campaign.js`.
+- Risco: o token de deploy precisa aceitar o binding `ai`; conferir o deploy depois do merge.

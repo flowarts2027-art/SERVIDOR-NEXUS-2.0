@@ -204,6 +204,7 @@ function giltecPlan(cfg, d) {
 }
 
 export function imageCostUsd(env) {
+  if (imageProvider(env) === "cloudflare") return 0;
   const n = Number(env?.GEMINI_IMAGE_COST_USD);
   return Number.isFinite(n) && n > 0 ? n : 0.039;
 }
@@ -233,6 +234,52 @@ async function callGemini(env, model, body, fetcher) {
   return data;
 }
 
+// Imagens grátis no próprio Cloudflare (Workers AI, 28/10): o Rodrigo não quer plano pago no Google.
+// FLUX.2 klein 4B com tamanho livre; se falhar, FLUX.1 schnell (quadrado, cortado depois para o formato).
+const CF_IMAGE_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
+const CF_FALLBACK_MODEL = "@cf/black-forest-labs/flux-1-schnell";
+const CF_SIZES = { "4:5": [1024, 1280], "9:16": [768, 1344] };
+
+export function imageProvider(env) {
+  const pick = String(env?.NEXUS_FREE_IMAGE_PROVIDER || "").trim().toLowerCase();
+  if (pick === "gemini") return "gemini";
+  return env?.AI ? "cloudflare" : "gemini";
+}
+
+export async function cloudflareImage(env, prompt, aspect) {
+  if (!env?.AI) throw new Error("workers_ai_unavailable");
+  const [width, height] = CF_SIZES[aspect] || CF_SIZES["4:5"];
+  const errors = [];
+  try {
+    const form = new FormData();
+    form.append("prompt", String(prompt).slice(0, 2000));
+    form.append("width", String(width));
+    form.append("height", String(height));
+    const packed = new Response(form);
+    const out = await env.AI.run(String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL), {
+      multipart: { body: packed.body, contentType: packed.headers.get("content-type") }
+    });
+    if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/png", model: "flux-2-klein-4b" };
+    errors.push("klein_sem_imagem");
+  } catch (error) {
+    errors.push("klein:" + String(error?.message || error).slice(0, 60));
+  }
+  try {
+    const out = await env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8, seed: Math.floor(Math.random() * 1e9) });
+    if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/jpeg", model: "flux-1-schnell" };
+    errors.push("schnell_sem_imagem");
+  } catch (error) {
+    errors.push("schnell:" + String(error?.message || error).slice(0, 60));
+  }
+  throw new Error("cf_image_failed:" + errors.join("|").slice(0, 120));
+}
+
+// Gera com o provedor ligado: Cloudflare (grátis) por padrão; Gemini só se pedido.
+export async function generateImage(env, prompt, aspect, fetcher = fetch) {
+  if (imageProvider(env) === "cloudflare") return cloudflareImage(env, prompt, aspect);
+  return geminiImage(env, prompt, aspect, fetcher);
+}
+
 export async function geminiImage(env, prompt, aspect, fetcher = fetch) {
   const data = await callGemini(env, String(env?.GEMINI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL), {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -247,17 +294,21 @@ export async function geminiImage(env, prompt, aspect, fetcher = fetch) {
   return { bytes, mime: String(inline.mimeType || inline.mime_type || "image/png") };
 }
 
-export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
+function captionRequest(clientId, plan) {
   const cfg = GEMINI_CAMPAIGNS[clientId];
   const posts = plan.filter(p => p.type !== "story");
   const list = posts.map(p => `${p.key}: ${p.type === "carousel" ? "carrossel sobre " : "post sobre "}${[...new Set(p.cards.map(c => c.topic || c.equipment).filter(Boolean))].join(" e ")}`).join("\n");
-  const data = await callGemini(env, String(env?.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL), {
-    contents: [{ role: "user", parts: [{ text: `${cfg.captionBrief}\nEscreva em português do Brasil uma legenda de Instagram para cada post abaixo. Responda só em JSON, com as chaves ${posts.map(p => '"' + p.key + '"').join(", ")}.\n${list}` }] }],
-    generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
-  }, fetcher);
-  const text = (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
+  const text = `${cfg.captionBrief}\nEscreva em português do Brasil uma legenda de Instagram para cada post abaixo. Responda só em JSON, com as chaves ${posts.map(p => '"' + p.key + '"').join(", ")}.\n${list}`;
+  return { posts, text };
+}
+
+function parseCaptions(posts, raw) {
   let parsed = {};
-  try { parsed = JSON.parse(text); } catch { parsed = {}; }
+  const clean = String(raw || "").replace(/^```(json)?/i, "").replace(/```$/, "").trim();
+  try { parsed = JSON.parse(clean); } catch {
+    const m = clean.match(/\{[\s\S]*\}/);
+    try { parsed = m ? JSON.parse(m[0]) : {}; } catch { parsed = {}; }
+  }
   const out = {};
   for (const p of posts) {
     const caption = String(parsed?.[p.key] || "").trim().slice(0, 2200);
@@ -265,6 +316,27 @@ export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
     out[p.key] = caption && /QUERO/.test(caption) ? caption : "";
   }
   return out;
+}
+
+export async function geminiCaptions(env, clientId, plan, fetcher = fetch) {
+  const { posts, text } = captionRequest(clientId, plan);
+  const data = await callGemini(env, String(env?.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL), {
+    contents: [{ role: "user", parts: [{ text }] }],
+    generationConfig: { responseMimeType: "application/json", temperature: 0.8 }
+  }, fetcher);
+  return parseCaptions(posts, (data?.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join(""));
+}
+
+// Legendas grátis no Cloudflare quando o Gemini não responde (plano grátis do Google pode recusar).
+export async function cloudflareCaptions(env, clientId, plan) {
+  if (!env?.AI) throw new Error("workers_ai_unavailable");
+  const { posts, text } = captionRequest(clientId, plan);
+  const out = await env.AI.run(String(env.NEXUS_CF_TEXT_MODEL || "@cf/meta/llama-3.3-70b-instruct-fp8-fast"), {
+    messages: [{ role: "system", content: "Você é redator de Instagram. Responda apenas com JSON válido." }, { role: "user", content: text }],
+    max_tokens: 1800, temperature: 0.7
+  });
+  const raw = typeof out?.response === "string" ? out.response : JSON.stringify(out?.response || {});
+  return parseCaptions(posts, raw);
 }
 
 // Ajusta para 1080x1350 (feed) ou 1080x1920 (story) e põe a logo original no canto superior direito
@@ -332,8 +404,12 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
   if (plan.some(p => p.type !== "story" && !done.has(p.key))) {
     captions = await github(clientId, date).catch(() => ({}));
     if (plan.some(p => p.type !== "story" && !String(captions[p.key] || "").trim())) {
-      const fromGemini = await geminiCaptions(env, clientId, plan, fetcher).catch(() => ({}));
+      const fromGemini = String(env?.GEMINI_API_KEY || "").trim() ? await geminiCaptions(env, clientId, plan, fetcher).catch(() => ({})) : {};
       for (const [k, v] of Object.entries(fromGemini)) if (!String(captions[k] || "").trim()) captions[k] = v;
+      if (plan.some(p => p.type !== "story" && !String(captions[p.key] || "").trim())) {
+        const fromCf = await (deps.cfCaptions || cloudflareCaptions)(env, clientId, plan).catch(() => ({}));
+        for (const [k, v] of Object.entries(fromCf)) if (!String(captions[k] || "").trim()) captions[k] = v;
+      }
     }
   }
 
@@ -346,9 +422,9 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
       const files = [];
       for (let i = 0; i < piece.cards.length; i++) {
         const spent = await monthSpend(env, month);
-        if (spent + cost > limit) throw new Error("limite_mensal");
+        if (cost > 0 && spent + cost > limit) throw new Error("limite_mensal");
         const card = piece.cards[i];
-        const img = await geminiImage(env, card.prompt, card.aspect, fetcher);
+        const img = deps.image ? await deps.image(env, card.prompt, card.aspect) : await generateImage(env, card.prompt, card.aspect, fetcher);
         await addSpend(env, month, cost);
         const jpg = await compose(env, img.bytes, clientId, card.aspect);
         files.push(new File([jpg], `${clientId}-${date}-${piece.key}-${i + 1}.jpg`, { type: "image/jpeg" }));
@@ -374,7 +450,7 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
     } catch (error) {
       const code = String(error?.message || error).slice(0, 80);
       result.failed.push(piece.key + ":" + code);
-      if (code === "limite_mensal" || code === "gemini_key_missing") break;
+      if (code === "limite_mensal" || code === "gemini_key_missing" || code.startsWith("gemini_http_429") || code.startsWith("cf_image_failed:") && code.includes("4006")) break;
     }
   }
   return result;
@@ -389,7 +465,8 @@ function brasiliaParts(at) {
 // Só repete se faltou alguma peça (erro do Google, por exemplo).
 export async function runGeminiDaily(env, at = new Date(), deps = {}) {
   const clients = geminiDailyClients(env);
-  if (!clients.length || !String(env?.GEMINI_API_KEY || "").trim()) return { ran: false, reason: "desligado" };
+  const ready = imageProvider(env) === "cloudflare" || String(env?.GEMINI_API_KEY || "").trim();
+  if (!clients.length || !ready) return { ran: false, reason: "desligado" };
   const { date, hour } = brasiliaParts(at);
   if (hour < 6 || hour >= 8) return { ran: false, reason: "fora_do_horario" };
   const results = [];

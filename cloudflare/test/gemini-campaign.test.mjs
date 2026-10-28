@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { readdirSync, readFileSync } from "node:fs";
-import { dailyPlan, geminiImage, geminiDailyClients, runGeminiCampaign, runGeminiDaily, monthSpend } from "../src/gemini-campaign.js";
+import { dailyPlan, geminiImage, geminiDailyClients, runGeminiCampaign, runGeminiDaily, monthSpend, cloudflareImage, imageProvider, cloudflareCaptions } from "../src/gemini-campaign.js";
 import { CLIENT_LOGOS } from "../src/client-logos.js";
 
 function fakeEnv(extra = {}) {
@@ -151,4 +151,40 @@ test("Flow Arts: tema da agência, sem equipamento da GILTEC, carrossel de 5 e s
     }
   }
   assert.equal(CLIENT_LOGOS["primeiro-teste"].position, "bottom-center");
+});
+
+function fakeAI(log = [], { kleinFails = false } = {}) {
+  return { async run(model, input) {
+    log.push({ model, input });
+    if (model.includes("flux-2-klein")) { if (kleinFails) throw new Error("boom"); return { image: PNG }; }
+    if (model.includes("flux-1-schnell")) return { image: PNG };
+    return { response: JSON.stringify({ "0900": "Carrossel. Comente QUERO.", "1200": "Post. Comente QUERO.", "1900": "Pergunta? Comente QUERO." }) };
+  } };
+}
+
+test("Cloudflare grátis: é o padrão quando existe AI, tamanho certo, troca para o schnell se falhar", async () => {
+  assert.equal(imageProvider({ AI: {} }), "cloudflare");
+  assert.equal(imageProvider({ AI: {}, NEXUS_FREE_IMAGE_PROVIDER: "gemini" }), "gemini");
+  assert.equal(imageProvider({}), "gemini");
+  const log = [];
+  const out = await cloudflareImage({ AI: fakeAI(log) }, "cena", "9:16");
+  assert.equal(out.model, "flux-2-klein-4b");
+  assert.ok(log[0].input.multipart.contentType.startsWith("multipart/form-data"));
+  const sent = await new Response(log[0].input.multipart.body, { headers: { "content-type": log[0].input.multipart.contentType } }).formData();
+  assert.equal(sent.get("width"), "768"); assert.equal(sent.get("height"), "1344");
+  const log2 = [];
+  const fb = await cloudflareImage({ AI: fakeAI(log2, { kleinFails: true }) }, "cena", "4:5");
+  assert.equal(fb.model, "flux-1-schnell");
+});
+
+test("Cloudflare grátis: roda sem chave do Google, sem custo e com legendas grátis", async () => {
+  const env = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI(), GEMINI_MONTHLY_LIMIT_USD: "0" });
+  const forms = [];
+  const r = await runGeminiDaily(env, new Date("2026-10-29T09:10:00Z"), { compose, githubCaptions: async () => ({}), upload: async (e, f) => { forms.push(f); } });
+  assert.equal(r.ran, true);
+  assert.equal(forms.length, 6);
+  assert.match(forms[0].get("caption"), /QUERO/);
+  assert.equal(await monthSpend(env, "2026-10"), 0);
+  const caps = await cloudflareCaptions({ AI: fakeAI() }, "primeiro-teste", dailyPlan("primeiro-teste", "2026-10-29"));
+  assert.match(caps["1200"], /QUERO/);
 });
