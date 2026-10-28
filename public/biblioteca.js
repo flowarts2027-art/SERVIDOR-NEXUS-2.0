@@ -28,7 +28,7 @@
     const livres = items.filter(i => i.status === "livre").length;
     box.innerHTML = `
       <section class="block bib">
-        <p class="muted">Suba várias imagens de uma vez. O Nexus <strong>apaga as repetidas</strong>, decide o que é <strong>story</strong> (imagem em pé), <strong>post</strong> ou <strong>carrossel</strong> (imagens enviadas juntas), <strong>escreve a legenda</strong> e coloca nos <strong>próximos horários livres</strong> (9h, 12h e 19h). Tudo fica esperando aprovação.</p>
+        <p class="muted">Suba várias imagens de uma vez. O Nexus <strong>apaga as repetidas</strong>, decide o que é <strong>story</strong> (imagem em pé), <strong>post</strong> ou <strong>carrossel</strong> (imagens enviadas juntas), <strong>escreve a legenda</strong> e coloca nos <strong>próximos dias livres</strong> (9h, 12h e 19h; dia que já tem postagem fica de fora). Tudo fica esperando aprovação.</p>
         <label class="btn bib-enviar">＋ Escolher imagens
           <input type="file" id="bib-files" accept="image/jpeg,image/png,image/webp" multiple hidden>
         </label>
@@ -56,7 +56,7 @@
     if (o) {
       if (o.scheduled?.length) partes.push(`${o.scheduled.length} postagem(ns) programada(s), esperando aprovação`);
       if (o.duplicatesRemoved) partes.push(`${o.duplicatesRemoved} post(s) repetido(s) tirado(s) da fila`);
-      if (o.leftover) partes.push(`${o.leftover} ficaram livres (sem horário nos próximos 7 dias)`);
+      if (o.leftover) partes.push(`${o.leftover} ficaram livres (sem horário nos próximos 14 dias)`);
     }
     return partes.join(" · ") || "Pronto.";
   }
