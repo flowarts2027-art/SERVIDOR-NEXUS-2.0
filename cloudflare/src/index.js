@@ -1,4 +1,6 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
+import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
+import { getClient as getClientById } from "./clients.js";
 import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
 import { openAIKeyStatus } from "./openai-routing.js";
@@ -579,6 +581,14 @@ export default {
     ctx.waitUntil(runGeminiDaily(env, at).catch(error =>
       console.warn("gemini_daily_failed", String(error?.message || error).slice(0, 140))
     ));
+    // Biblioteca de artes (28/10): de hora em hora, imagens livres ganham os horários livres dos próximos 7 dias.
+    if (at.getUTCMinutes() < 15) {
+      ctx.waitUntil((async () => {
+        const rows = await env.DB.prepare("SELECT id, name, niche, instagram, status, config_json FROM clients WHERE status = 'online'").all().catch(() => ({ results: [] }));
+        const list = (rows?.results || []).map(r => { let config = {}; try { config = JSON.parse(r.config_json || "{}"); } catch { config = {}; } return { ...r, config }; });
+        return runLibraryAutoSchedule(env, list, at);
+      })().catch(error => console.warn("art_library_failed", String(error?.message || error).slice(0, 140))));
+    }
     // Caçador diário (a partir das 9h): separa empresas para o Rodrigo chamar e avisa o celular. Não envia nada.
     ctx.waitUntil(runDailyProspects(env, at).catch(error =>
       console.warn("daily_prospects_failed", String(error?.message || error).slice(0, 140))
@@ -706,6 +716,16 @@ export default {
     }
 
     // Gerar agora a campanha do dia com o Gemini (botão do Master / teste). Só com login do Master.
+    // Biblioteca de artes de qualquer cliente pelo Master (?clientId=). Mesmas regras do painel do cliente.
+    if (url.pathname.startsWith("/api/master/biblioteca")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const libClient = await getClientById(env, String(url.searchParams.get("clientId") || "")).catch(() => null);
+      if (!libClient) return json({ ok: false, error: "client_invalid", message: "Escolha um cliente." }, 400);
+      const response = await handleLibrary(request, env, url, libClient, "/api/master/biblioteca");
+      if (response) return response;
+    }
+
     // Foto para a campanha com texto (28/10): o GitHub pede a foto (IA grátis do Cloudflare, sem texto)
     // e escreve título, ícones e botão por código. Só com login do Master (sessão temporária do GitHub).
     if (url.pathname === "/api/master/foto" && request.method === "POST") {
