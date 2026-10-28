@@ -1,5 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
-import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns } from "./gemini-campaign.js";
+import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
@@ -706,6 +706,22 @@ export default {
     }
 
     // Gerar agora a campanha do dia com o Gemini (botão do Master / teste). Só com login do Master.
+    // Foto para a campanha com texto (28/10): o GitHub pede a foto (IA grátis do Cloudflare, sem texto)
+    // e escreve título, ícones e botão por código. Só com login do Master (sessão temporária do GitHub).
+    if (url.pathname === "/api/master/foto" && request.method === "POST") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const body = await request.json().catch(() => ({}));
+      const prompt = String(body.prompt || "").trim().slice(0, 2000);
+      if (!prompt) return json({ ok: false, error: "prompt_missing" }, 400);
+      try {
+        const img = await cloudflareImage(env, prompt, body.aspect === "9:16" ? "9:16" : "4:5");
+        return new Response(img.bytes, { headers: { "content-type": img.mime, "x-nexus-model": img.model || "", "cache-control": "no-store" } });
+      } catch (error) {
+        return json({ ok: false, error: String(error?.message || error).slice(0, 200) }, 502);
+      }
+    }
+
     // Gerar a campanha do dia (botão do Master / teste). Roda em segundo plano e grava o andamento;
     // GET na mesma rota mostra o resultado. POST .../gemini-teste gera 1 imagem e mostra o tempo e o erro.
     if (url.pathname === "/api/master/gemini-campanha" || url.pathname === "/api/master/gemini-teste") {

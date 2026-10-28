@@ -1,0 +1,666 @@
+{
+  "_leia": "Campanha diária com texto escrito por código (Rodrigo, 28/10/2026). Títulos com 3 linhas (a 3ª em destaque), 3 vantagens curtas e legenda. Sem preço, sem prazo prometido, sem telefone na imagem. A IA só faz a foto.",
+  "giltec": {
+    "pasta": "clientes/giltec",
+    "tema": "giltec",
+    "ciclo": [
+      [
+        "compactador",
+        "betoneira",
+        "martelete",
+        "gerador"
+      ],
+      [
+        "martelete",
+        "gerador",
+        "betoneira",
+        "compactador"
+      ],
+      [
+        "betoneira",
+        "compactador",
+        "gerador",
+        "martelete"
+      ],
+      [
+        "gerador",
+        "martelete",
+        "compactador",
+        "betoneira"
+      ]
+    ],
+    "equipamentos": {
+      "compactador": {
+        "foto": "a yellow and black vibratory plate compactor compacting a gravel base, operated by a worker",
+        "titulos": [
+          [
+            "Compactação",
+            "firme para",
+            "sua obra"
+          ],
+          [
+            "Base bem",
+            "compactada",
+            "começa aqui"
+          ],
+          [
+            "Solo firme",
+            "antes do",
+            "piso"
+          ]
+        ],
+        "vantagens": [
+          "Solo firme",
+          "Menos retrabalho",
+          "Orçamento no zap"
+        ],
+        "nome": "compactador (placa vibratória)"
+      },
+      "betoneira": {
+        "foto": "an orange electric concrete mixer mixing concrete, a worker adding sand with a shovel",
+        "titulos": [
+          [
+            "Concreto",
+            "pronto na",
+            "sua obra"
+          ],
+          [
+            "Mistura",
+            "por igual",
+            "toda vez"
+          ],
+          [
+            "Menos braço,",
+            "mais",
+            "concreto"
+          ]
+        ],
+        "vantagens": [
+          "Mistura por igual",
+          "Menos esforço",
+          "Orçamento no zap"
+        ],
+        "nome": "betoneira"
+      },
+      "martelete": {
+        "foto": "a worker using an electric demolition hammer (jackhammer) to break an old concrete floor, dust in the air",
+        "titulos": [
+          [
+            "Quebra",
+            "sem parar",
+            "na sua reforma"
+          ],
+          [
+            "Reforma",
+            "com mais",
+            "força"
+          ],
+          [
+            "Piso velho",
+            "sai mais",
+            "rápido"
+          ]
+        ],
+        "vantagens": [
+          "Pisos e lajes",
+          "Mais força",
+          "Orçamento no zap"
+        ],
+        "nome": "martelete / rompedor"
+      },
+      "gerador": {
+        "foto": "a portable power generator running on a construction site, cables powering work lights and tools",
+        "titulos": [
+          [
+            "Energia",
+            "para a obra",
+            "não parar"
+          ],
+          [
+            "Obra sem",
+            "rede elétrica?",
+            "Tem solução"
+          ],
+          [
+            "Ferramenta",
+            "ligada o dia",
+            "todo"
+          ]
+        ],
+        "vantagens": [
+          "Obra sem rede",
+          "Ferramentas ligadas",
+          "Orçamento no zap"
+        ],
+        "nome": "gerador"
+      }
+    },
+    "cenas": [
+      "a single-family house under construction in a Brazilian neighborhood",
+      "a multi-storey building under construction with concrete pillars and scaffolding",
+      "an apartment or shop interior being renovated, exposed plaster",
+      "highway road works in the state of Rio de Janeiro with orange cones and green mountains",
+      "earthworks site with exposed soil and gravel",
+      "a construction site in the mountain region of Rio de Janeiro with green hills behind"
+    ],
+    "stories": [
+      {
+        "foto": "workers laying bricks on a house under construction, seen from behind, green hills behind",
+        "titulo": [
+          "Sua obra",
+          "no ritmo",
+          "certo"
+        ],
+        "vantagens": [
+          "Construtoras",
+          "Reformas",
+          "Obras em estradas"
+        ]
+      },
+      {
+        "foto": "an empty shop interior being renovated, ladder and drywall, worker measuring a wall",
+        "titulo": [
+          "Reforma",
+          "sem dor de",
+          "cabeça"
+        ],
+        "vantagens": [
+          "Equipamento certo",
+          "Atendimento da Rose",
+          "Orçamento no zap"
+        ]
+      },
+      {
+        "foto": "highway road works with fresh asphalt and orange cones, workers in orange vests at a distance, misty mountains",
+        "titulo": [
+          "Obra em",
+          "estrada?",
+          "A GILTEC atende"
+        ],
+        "vantagens": [
+          "Estado do RJ",
+          "Locação",
+          "Orçamento no zap"
+        ]
+      },
+      {
+        "foto": "a multi-storey concrete structure with scaffolding seen from the ground at golden hour",
+        "titulo": [
+          "Do começo",
+          "ao fim",
+          "da sua obra"
+        ],
+        "vantagens": [
+          "Compactador",
+          "Martelete",
+          "Gerador"
+        ]
+      },
+      {
+        "foto": "earthworks site with leveled soil and survey stakes, a worker checking the ground",
+        "titulo": [
+          "Precisa de",
+          "equipamento",
+          "para a obra?"
+        ],
+        "vantagens": [
+          "Fale com a Rose",
+          "Peça orçamento",
+          "Comente QUERO"
+        ]
+      },
+      {
+        "foto": "construction materials and tools organized at a residential site, morning light",
+        "titulo": [
+          "Alugar",
+          "sem se",
+          "preocupar"
+        ],
+        "vantagens": [
+          "Sem manutenção",
+          "Sem guardar",
+          "Use e devolva"
+        ]
+      }
+    ],
+    "rodape_story": "ou comente QUERO no post de hoje",
+    "seguranca": "every worker wears hard hat, high-visibility vest, gloves and safety boots",
+    "legendas": {
+      "carrossel": "{t1} {t2} {t3}.\n\nVeja duas opções de locação da GILTEC: {e1} e {e2}. Conte o serviço, a cidade da obra no estado do Rio de Janeiro e o período de uso para consultar a disponibilidade.\n\nFale com a Rose pelo WhatsApp e peça seu orçamento. Comente QUERO neste post que a Rose te chama no direct.\n\n#GILTEC #LocacaoDeEquipamentos #ConstrucaoCivilRJ #ObrasRJ #ReformasRJ #RioDeJaneiro",
+      "post": "{t1} {t2} {t3}.\n\nA GILTEC Locações aluga {e1} para obras e reformas no estado do Rio de Janeiro. Conte qual serviço será feito, o local da obra e o período de uso para consultar a opção certa.\n\nFale com a Rose pelo WhatsApp e peça seu orçamento. Comente QUERO neste post que a Rose te chama no direct.\n\n#GILTEC #LocacaoDeEquipamentos #ConstrucaoCivilRJ #ObrasRJ #RioDeJaneiro"
+    }
+  },
+  "primeiro-teste": {
+    "pasta": "",
+    "tema": "flow",
+    "dias": [
+      {
+        "tema": "App de agendar post não cria post",
+        "carrossel": [
+          {
+            "foto": "a tired small business owner late at night in an empty shop, sitting at the counter, thoughtful",
+            "titulo": [
+              "App de agendar",
+              "não cria",
+              "o seu post"
+            ],
+            "vantagens": [
+              "Foto",
+              "Texto",
+              "Ideia"
+            ]
+          },
+          {
+            "foto": "a shop owner trying to photograph a product on a messy table with a phone, phone screen facing the owner",
+            "titulo": [
+              "Alguém precisa",
+              "tirar a foto",
+              "e escrever"
+            ],
+            "vantagens": [
+              "Todo dia",
+              "Toda semana",
+              "Sem folga"
+            ]
+          },
+          {
+            "foto": "a busy small business owner serving a customer at the counter, no time to stop",
+            "titulo": [
+              "Isso toma",
+              "o seu tempo",
+              "todo dia"
+            ],
+            "vantagens": [
+              "Menos tempo",
+              "Mais cansaço",
+              "Post atrasado"
+            ]
+          },
+          {
+            "foto": "a beautiful product photo session on a wooden table with natural window light",
+            "titulo": [
+              "A Flow Arts",
+              "cria os posts",
+              "por você"
+            ],
+            "vantagens": [
+              "Foto pronta",
+              "Texto pronto",
+              "Horário certo"
+            ]
+          },
+          {
+            "foto": "over-the-shoulder view of a smiling shop owner holding a coffee and a phone, screen facing the owner",
+            "titulo": [
+              "Você só",
+              "olha e",
+              "aprova"
+            ],
+            "vantagens": [
+              "1 minuto",
+              "No celular",
+              "Nada sai sem OK"
+            ]
+          }
+        ],
+        "post1200": {
+          "foto": "over-the-shoulder view of a relaxed shop owner with a coffee glancing at a phone, screen facing the owner, busy shop behind",
+          "titulo": [
+            "App agenda.",
+            "A Flow Arts",
+            "cria."
+          ],
+          "vantagens": [
+            "Posts prontos",
+            "Você aprova",
+            "Sem app"
+          ]
+        },
+        "post1900": {
+          "foto": "a small business owner leaning on the counter at dusk, looking at the street, thoughtful",
+          "titulo": [
+            "O que trava",
+            "o seu",
+            "Instagram?"
+          ],
+          "vantagens": [
+            "Tempo",
+            "Ideia",
+            "Foto"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "a shop owner opening the front door of a small business early in the morning",
+            "titulo": [
+              "Bom dia,",
+              "dono de",
+              "negócio!"
+            ],
+            "vantagens": [
+              "Hoje tem post",
+              "Você só aprova",
+              "Comente QUERO"
+            ]
+          },
+          {
+            "foto": "hands packing an order into a kraft paper box on a wooden counter",
+            "titulo": [
+              "Enquanto você",
+              "atende,",
+              "a gente posta"
+            ],
+            "vantagens": [
+              "Posts prontos",
+              "Horário certo",
+              "Sem app"
+            ]
+          },
+          {
+            "foto": "a shop owner turning off the lights at night, warm interior light",
+            "titulo": [
+              "Amanhã",
+              "tem post",
+              "pronto"
+            ],
+            "vantagens": [
+              "Foto",
+              "Texto",
+              "Você aprova"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "App de agendar post não cria post. Ele só marca o horário.\n\nAlguém ainda precisa tirar a foto, escrever o texto e pensar no que postar. Todo dia. Isso toma o tempo de quem devia estar atendendo.\n\nNa Flow Arts a gente cria os posts do seu negócio e você só olha e aprova. Nada sai sem o seu OK.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #Empreendedorismo",
+          "1200": "App de agendar post não cria post. A Flow Arts cria, e você só aprova.\n\nFoto, texto e horário certo, prontos no seu painel. Você abre, olha e aprova em 1 minuto.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #InstagramParaNegocios",
+          "1900": "O que mais trava o seu Instagram hoje: tempo, ideia ou foto?\n\nResponda aqui nos comentários. A gente lê todas.\n\nE se quiser ver como fica sem gastar esse tempo, comente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #Empreendedorismo"
+        }
+      },
+      {
+        "tema": "Captador de clientes",
+        "carrossel": [
+          {
+            "foto": "a salesperson at a wooden desk in the morning writing a list of potential customers in an open notebook, coffee beside",
+            "titulo": [
+              "Cliente novo",
+              "todo dia",
+              "no seu painel"
+            ],
+            "vantagens": [
+              "Empresas",
+              "Da sua região",
+              "Todo dia"
+            ]
+          },
+          {
+            "foto": "a street of local shops and offices in a Brazilian town in the morning, eye level",
+            "titulo": [
+              "O Captador",
+              "procura",
+              "empresas"
+            ],
+            "vantagens": [
+              "Do seu ramo",
+              "Da sua cidade",
+              "Sem planilha"
+            ]
+          },
+          {
+            "foto": "close view of hands holding a phone face down on a desk next to a printed contact list",
+            "titulo": [
+              "Só contatos",
+              "com",
+              "WhatsApp"
+            ],
+            "vantagens": [
+              "Celular",
+              "Pronto para chamar",
+              "Sem fixo"
+            ]
+          },
+          {
+            "foto": "over-the-shoulder view of a person typing a short message on a laptop in a small office, screen facing the person",
+            "titulo": [
+              "Mensagem",
+              "pronta para",
+              "enviar"
+            ],
+            "vantagens": [
+              "Com o seu nome",
+              "Do seu jeito",
+              "Você revisa"
+            ]
+          },
+          {
+            "foto": "a salesperson shaking hands with a business owner at a shop counter, seen from the side",
+            "titulo": [
+              "Você só",
+              "chama e",
+              "vende"
+            ],
+            "vantagens": [
+              "Mais conversas",
+              "Mais pedidos",
+              "Menos procura"
+            ]
+          }
+        ],
+        "post1200": {
+          "foto": "a business owner closing a deal with a customer at the counter of a small shop, warm afternoon light",
+          "titulo": [
+            "Pedido,",
+            "não",
+            "curtida"
+          ],
+          "vantagens": [
+            "Clientes novos",
+            "Todo dia",
+            "No seu painel"
+          ]
+        },
+        "post1900": {
+          "foto": "a small business owner after closing time at the counter with a notebook and pen, dusk light",
+          "titulo": [
+            "Quantos clientes",
+            "novos você",
+            "quer por dia?"
+          ],
+          "vantagens": [
+            "5",
+            "10",
+            "Mais"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "morning light over a street of small shops in a Brazilian neighborhood",
+            "titulo": [
+              "Hoje tem",
+              "cliente novo",
+              "esperando"
+            ],
+            "vantagens": [
+              "Captador",
+              "Todo dia",
+              "Comente QUERO"
+            ]
+          },
+          {
+            "foto": "close view of hands writing a to-do list in a notebook on a wooden desk",
+            "titulo": [
+              "Menos",
+              "procura,",
+              "mais venda"
+            ],
+            "vantagens": [
+              "Lista pronta",
+              "Mensagem pronta",
+              "Você chama"
+            ]
+          },
+          {
+            "foto": "a small team of two people talking around a table in a simple office at the end of the day",
+            "titulo": [
+              "Sua equipe",
+              "vendendo",
+              "mais"
+            ],
+            "vantagens": [
+              "Contatos",
+              "Mensagens",
+              "Pedidos"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Cliente novo todo dia, direto no seu painel.\n\nO Captador da Flow Arts procura empresas do seu ramo na sua região, separa só quem tem WhatsApp e já deixa a mensagem pronta. Você revisa, chama e vende.\n\nSalve este post para mostrar para a sua equipe.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #Vendas #PequenosNegocios #Empreendedorismo",
+          "1200": "Pedido, não curtida.\n\nPost bonito é bom, mas o que paga as contas é cliente chamando. Por isso a Flow Arts cuida do seu Instagram e ainda separa contatos novos para você vender.\n\nApp de agendar post não cria post. A Flow Arts cria, e você só aprova.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #Vendas #PequenosNegocios",
+          "1900": "Quantos clientes novos você gostaria de chamar por dia?\n\nResponda aqui nos comentários: 5, 10 ou mais?\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #Vendas #PequenosNegocios #Empreendedorismo"
+        }
+      },
+      {
+        "tema": "Instagram como cartão de visita",
+        "carrossel": [
+          {
+            "foto": "over-the-shoulder view of a customer in a café scrolling a phone, screen facing the customer",
+            "titulo": [
+              "Seu perfil",
+              "é o seu",
+              "cartão de visita"
+            ],
+            "vantagens": [
+              "Primeira impressão",
+              "Antes de chamar",
+              "Todo dia"
+            ]
+          },
+          {
+            "foto": "a customer standing outside a small shop looking at the window display",
+            "titulo": [
+              "O cliente",
+              "olha antes",
+              "de chamar"
+            ],
+            "vantagens": [
+              "Fotos",
+              "Últimos posts",
+              "Respostas"
+            ]
+          },
+          {
+            "foto": "a dark blurry product photo on a cluttered table, poor lighting",
+            "titulo": [
+              "Foto ruim",
+              "afasta",
+              "cliente"
+            ],
+            "vantagens": [
+              "Escura",
+              "Torta",
+              "Sem capricho"
+            ]
+          },
+          {
+            "foto": "a well organized shop window with products in natural light",
+            "titulo": [
+              "Post todo dia",
+              "mostra que",
+              "está aberto"
+            ],
+            "vantagens": [
+              "Ativo",
+              "Confiável",
+              "Lembrado"
+            ]
+          },
+          {
+            "foto": "a happy owner holding a delivery bag at the counter ready for a customer",
+            "titulo": [
+              "A Flow Arts",
+              "cuida",
+              "disso"
+            ],
+            "vantagens": [
+              "Posts prontos",
+              "Você aprova",
+              "Sem app"
+            ]
+          }
+        ],
+        "post1200": {
+          "foto": "a small shop with a customer at the counter and the owner smiling, lively midday light",
+          "titulo": [
+            "Já pagou social",
+            "media e não",
+            "viu cliente?"
+          ],
+          "vantagens": [
+            "Veja antes",
+            "3 posts grátis",
+            "Sem compromisso"
+          ]
+        },
+        "post1900": {
+          "foto": "a quiet small office at dusk with a notebook open and a cup of coffee",
+          "titulo": [
+            "Seu Instagram",
+            "traz",
+            "clientes?"
+          ],
+          "vantagens": [
+            "Sim",
+            "Às vezes",
+            "Ainda não"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "a café counter in the morning with fresh products being arranged",
+            "titulo": [
+              "Seu perfil",
+              "abriu",
+              "hoje?"
+            ],
+            "vantagens": [
+              "Post novo",
+              "Foto boa",
+              "Comente QUERO"
+            ]
+          },
+          {
+            "foto": "a person writing post ideas on sticky notes on a wall in a small office",
+            "titulo": [
+              "Ideia de post",
+              "todo dia,",
+              "sem esforço"
+            ],
+            "vantagens": [
+              "A gente cria",
+              "Você aprova",
+              "Sai no horário"
+            ]
+          },
+          {
+            "foto": "a closed shop at night with warm lights inside",
+            "titulo": [
+              "Até amanhã!",
+              "O post",
+              "já está pronto"
+            ],
+            "vantagens": [
+              "Foto",
+              "Texto",
+              "Horário"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Seu perfil é o seu cartão de visita.\n\nAntes de chamar, o cliente olha suas fotos e seus últimos posts. Foto escura ou perfil parado faz ele desistir. Post caprichado todo dia mostra que você está aberto e cuida do que faz.\n\nSalve este post para lembrar.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #InstagramParaNegocios",
+          "1200": "Já pagou social media e não viu cliente? Então veja os posts antes de pagar.\n\nApp de agendar post não cria post. A Flow Arts cria, e você só aprova.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #Empreendedorismo",
+          "1900": "Seu Instagram traz clientes hoje? Sim, às vezes ou ainda não?\n\nResponda aqui nos comentários.\n\nComente QUERO e receba 3 posts grátis para o seu negócio.\n\n#FlowArts #MarketingDigital #PequenosNegocios #InstagramParaNegocios"
+        }
+      }
+    ],
+    "rodape_story": "ou comente QUERO no post de hoje"
+  }
+}

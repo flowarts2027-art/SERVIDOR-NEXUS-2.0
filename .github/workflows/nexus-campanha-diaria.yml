@@ -1,0 +1,122 @@
+name: NEXUS Campanha diária com texto (GILTEC e Flow Arts)
+
+# Pedido do Rodrigo (28/10/2026): sem depender de chat (ChatGPT, Gemini ou Claude) e sem plano pago.
+# Todo dia às 4h17 (Brasília): a IA grátis do Cloudflare faz só as FOTOS; o script
+# scripts/social/campanha_diaria.py escreve logo, título, ícones e botão por código
+# (textos fixos em scripts/social/campanha/conteudo.json) e o agendar-pasta.sh sobe tudo
+# para o painel de cada cliente ESPERANDO APROVAÇÃO. Nada é publicado sem aprovação.
+on:
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Dia da campanha, AAAA-MM-DD (vazio = hoje em Brasília)"
+        required: false
+      clients:
+        description: "Clientes (separados por espaço)"
+        required: false
+        default: "giltec primeiro-teste"
+
+concurrency:
+  group: nexus-campanha-diaria
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  campanha:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+      BASE: https://servidor-nexus.diamantehinode2015.workers.dev
+      NEXUS_BASE: https://servidor-nexus.diamantehinode2015.workers.dev
+      AGENDAMENTOS_DIR: ${{ github.workspace }}/agendamentos
+      CLIENTS: ${{ github.event.inputs.clients || 'giltec primeiro-teste' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dia da campanha
+        id: dia
+        shell: bash
+        env:
+          INPUT_DATE: ${{ github.event.inputs.date }}
+        run: |
+          set -euo pipefail
+          day="${INPUT_DATE:-$(TZ=America/Sao_Paulo date +%Y-%m-%d)}"
+          [[ "$day" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::Data inválida"; exit 1; }
+          echo "day=$day" >> "$GITHUB_OUTPUT"
+          echo "::notice::Campanha de $day para: $CLIENTS"
+
+      - name: Preparar Python
+        run: python3 -m pip install --quiet --break-system-packages "pillow==12.3.0" || python3 -m pip install --quiet "pillow==12.3.0"
+
+      - name: Sessão temporária do Master (para pedir as fotos)
+        working-directory: cloudflare
+        shell: bash
+        run: |
+          set -euo pipefail
+          token="$(openssl rand -hex 32)"
+          hash="$(printf '%s' "$token" | sha256sum | cut -d' ' -f1)"
+          exp="$(date -u -d '+40 minutes' +%Y-%m-%dT%H:%M:%S.000Z)"
+          npx --yes wrangler@4 d1 execute servidor-nexus --remote --command "INSERT INTO master_sessions(token_hash, expires_at) VALUES('$hash', '$exp')" >/dev/null
+          echo "::add-mask::$token"
+          echo "NEXUS_MASTER_TOKEN=$token" >> "$GITHUB_ENV"
+          echo "PHOTO_SESSION_HASH=$hash" >> "$GITHUB_ENV"
+
+      - name: Fazer as artes (foto da IA + texto por código)
+        shell: bash
+        run: |
+          set -uo pipefail
+          for c in $CLIENTS; do
+            python3 scripts/social/campanha_diaria.py "$c" "${{ steps.dia.outputs.day }}" agendamentos || echo "::error::$c: falhou ao fazer as artes"
+          done
+          find agendamentos -path "*${{ steps.dia.outputs.day }}*" -type f | sort
+
+      - name: Conferir as artes
+        shell: bash
+        run: |
+          set -uo pipefail
+          files="$(find agendamentos -path "*${{ steps.dia.outputs.day }}*" -name '*.jpg')"
+          [ -z "$files" ] || python3 .github/scripts/checar-arte.py $files
+
+      - name: Subir para o painel (esperando aprovação)
+        working-directory: cloudflare
+        shell: bash
+        run: |
+          set -uo pipefail
+          day="${{ steps.dia.outputs.day }}"
+          slots=""
+          for c in $CLIENTS; do
+            if [ "$c" = primeiro-teste ]; then base="$day"; else base="clientes/$c/$day"; fi
+            [ -d "../agendamentos/$base" ] || continue
+            for d in "../agendamentos/$base"/*/; do
+              slots="$slots $base/$(basename "$d")"
+            done
+          done
+          echo "::notice::Enviando:$slots"
+          [ -z "$slots" ] || bash ../.github/scripts/agendar-pasta.sh $slots
+
+      - name: Guardar as artes na branch agendamentos
+        if: always()
+        shell: bash
+        run: |
+          set -uo pipefail
+          day="${{ steps.dia.outputs.day }}"
+          git config user.name "nexus-campanha"
+          git config user.email "nexus-campanha@users.noreply.github.com"
+          tmp="$(mktemp -d)"
+          find agendamentos -path "*$day*" -type f | while read -r f; do mkdir -p "$tmp/$(dirname "$f")"; cp "$f" "$tmp/$f"; done
+          git fetch --depth 1 origin agendamentos && git checkout -B agendamentos FETCH_HEAD || git checkout --orphan agendamentos
+          cp -r "$tmp/agendamentos" . 2>/dev/null || true
+          git add agendamentos && git commit -qm "Campanha com texto de $day ($CLIENTS)" && git push origin agendamentos || echo "::warning::Não deu para guardar na branch agendamentos (as artes já foram ao painel)."
+
+      - name: Apagar a sessão temporária
+        if: always()
+        working-directory: cloudflare
+        shell: bash
+        run: |
+          [ -z "${PHOTO_SESSION_HASH:-}" ] || npx --yes wrangler@4 d1 execute servidor-nexus --remote --command "DELETE FROM master_sessions WHERE token_hash='$PHOTO_SESSION_HASH'" >/dev/null || true
