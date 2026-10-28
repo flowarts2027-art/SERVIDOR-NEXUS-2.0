@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-28 — GILTEC-HOJE-001
+**Três artes prontas; upload pendente; registro em branch aguardando integração.** Campanha de 30 dias cancelada pelo proprietário. Somente 28/10: 09h compactador, 12h martelete, 19h gerador. JPEGs sem texto 1080×1350 e legendas QUERO entregues em pacote na conversa. Git local sem credencial e /artes sem sessão Master; nenhum upload/aprovação/publicação. Revisão automática recusou atualização direta da main por possível impacto em produção. Próximo: integrar registro e subir as imagens via Enviar artes para GILTEC, aguardando aprovação. Ver HANDOFF_CHATGPT.
+
 ## 2026-10-27 22h BRT — PAINEL-SAIR-001 e ARTES-001 (Claude, PR #425, aguardando OK)
 Botão Sair sempre visível + correções do tema do Manus; página **Enviar artes** (`/artes.html`) para as imagens do ChatGPT. Testes 602/602. Sem deploy até o merge. **ChatGPT: a partir de agora grava só legendas; ver topo de REGRA_POSTS_DIARIOS.md.**
 

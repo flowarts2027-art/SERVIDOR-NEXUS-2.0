@@ -1,5 +1,17 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-28 — GILTEC: escopo reduzido a HOJE; três artes prontas, upload pendente
+- Origem → destino: ChatGPT → Claude.
+- Pedido corrigido pelo proprietário: cancelar o planejamento de 30 dias e produzir somente 28/10/2026. Nenhum conteúdo de outra data foi enviado ou agendado nesta sessão.
+- Criadas e revisadas visualmente três fotografias ilustrativas por IA, sem texto, logo ou contatos: 09h compactador em obra residencial; 12h martelete/rompedor em reforma comercial; 19h gerador em cenário externo de infraestrutura. Sem repetição de imagem/equipamento.
+- JPEGs finais 1080×1350, abaixo de 1 MB cada. Conferência checar-arte.py e modo seco de agendar-pasta.sh aprovados para os três slots, cliente giltec. Modo seco NÃO é upload.
+- Legendas em agendamentos/clientes/giltec/2026-10-28/{0900,1200,1900}/legenda.txt: chamada para atendimento comercial pelo WhatsApp, QUERO e hashtags locais; sem números de contato, preços ou promessa de prazo. CTA QUERO confirmado em CAMPANHA_GILTEC.md e padrão geral do código; configuração salva no banco NÃO verificada.
+- Imagens e legendas entregues em pacote GILTEC_28-10-2026.zip na conversa; imagens não adicionadas ao GitHub. Git local sem credencial de escrita (dry-run recusado por autenticação); página /artes abriu, mas pede login no Master. Nenhum upload, aprovação ou publicação confirmado.
+- Diferença técnica: envio de pasta usa imagens prontas e não aplica texto automaticamente. Pedido atual de imagens sem texto foi preservado. Branch agendamentos está com script antigo; legendas e memória preparadas em branch separada, sem alterar código/workflows. A revisão automática recusou mover a main por possível acionamento de produção; integração pendente. Até integrar, copiar as legendas do pacote manualmente.
+- Próximo passo exato: no Master, abrir Enviar artes, selecionar GILTEC, data 28/10/2026, adicionar as três imagens nos slots 09h/12h/19h como posts separados e enviar para aprovação. Conferir horários ocupados e QUERO nas respostas automáticas; não aprovar pelo assistente.
+- Estado: artes e legendas prontas; envio ao painel bloqueado por autenticação. Preservado HANDOFF_CLAUDE conforme BRIDGE_PROTOCOL.
+
+
 ## 2026-10-27 20h52 BRT — Redesign visual do painel do cliente
 - Pedido: aproximar o painel das referências enviadas em `Downloads.rar`, com visual mais chamativo e orientação SaaS/editorial.
 - Alterado apenas o front-end do portal: `public/portal.html` ganhou marca Nexus, microcopy do topo e card de destaque da navegação; `public/client-lite.css` ganhou sidebar escura no desktop, topo claro, hero em degradê, cartões com hierarquia, abas editoriais, calendário refinado, conta Meta destacada e responsividade mobile preservada.
