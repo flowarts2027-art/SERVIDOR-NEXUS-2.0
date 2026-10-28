@@ -47,16 +47,21 @@ jobs:
           set -euo pipefail
           if [ -n "${INPUT_DATE:-}" ]; then
             [[ "$INPUT_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || { echo "::error::Data inválida"; exit 1; }
-            files="$(git ls-files "agendamentos/$INPUT_DATE" "agendamentos/clientes/*/$INPUT_DATE")"
+            files="$(git ls-files agendamentos | grep -E "^agendamentos/(clientes/[^/]+/)?$INPUT_DATE/" || true)"
           elif [ -n "${BEFORE:-}" ] && ! [[ "$BEFORE" =~ ^0+$ ]] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             files="$(git diff --name-only --diff-filter=d "$BEFORE" "$GITHUB_SHA" -- agendamentos)"
           else
             files="$(git diff --name-only --diff-filter=d "$GITHUB_SHA~1" "$GITHUB_SHA" -- agendamentos 2>/dev/null || git ls-files agendamentos)"
           fi
           # Flow Arts: agendamentos/AAAA-MM-DD/HHMM/ · outro cliente: agendamentos/clientes/<id>/AAAA-MM-DD/HHMM/
-          slots="$(printf '%s\n' "$files" | sed -nE 's#^agendamentos/((clientes/[a-z0-9-]+/)?[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4}(-story)?)/.*#\1#p' | sort -u | tr '\n' ' ')"
-          echo "::notice::Posts a enviar: ${slots:-nenhum}"
+          # achar-slots.sh (27/10): acusa pasta errada e reconfere o dia inteiro do cliente que mudou.
+          res="$(printf '%s\n' "$files" | ROOT=agendamentos bash .github/scripts/achar-slots.sh)"
+          printf '%s\n' "$res" | grep '^::' || true
+          slots="$(printf '%s\n' "$res" | sed -n 's/^slots=//p')"
+          stray="$(printf '%s\n' "$res" | sed -n 's/^stray=//p')"
+          echo "::notice::Posts a conferir: ${slots:-nenhum}"
           echo "list=$slots" >> "$GITHUB_OUTPUT"
+          echo "stray=${stray:-0}" >> "$GITHUB_OUTPUT"
       - name: Conferir o acesso ao banco
         if: steps.slots.outputs.list != ''
         shell: bash
@@ -71,3 +76,9 @@ jobs:
         working-directory: cloudflare
         shell: bash
         run: bash ../.github/scripts/agendar-pasta.sh ${{ steps.slots.outputs.list }}
+      - name: Avisar arquivo em pasta errada
+        if: steps.slots.outputs.stray == '1'
+        shell: bash
+        run: |
+          echo "::error::Algum arquivo foi salvo fora de agendamentos/AAAA-MM-DD/HHMM/ ou agendamentos/clientes/<cliente>/AAAA-MM-DD/HHMM/ e NÃO foi ao painel. Veja os erros acima."
+          exit 1

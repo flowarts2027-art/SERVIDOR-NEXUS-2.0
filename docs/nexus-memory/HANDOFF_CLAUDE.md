@@ -2,6 +2,14 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-27 22h40 BRT — Volta o envio de imagens pelo ChatGPT no modo Work (os dois jeitos valem)
+- **Origem → destino:** Claude → ChatGPT
+- **Pedido do Rodrigo:** o ChatGPT no modo Work criava a campanha e subia as imagens direto para o painel do cliente; manter esse jeito **e** a página Enviar artes.
+- **Diagnóstico (Actions de hoje):** o modo Work SOBE imagens. Quatree Dog 28/10 entrou no painel (execução 40597414392: 1 carrossel + 3 stories, esperando aprovação). GILTEC 28/10: 3 posts entraram (40594908362), mas os **3 stories não**. Erros do envio: (1) GILTEC foi primeiro para a raiz `agendamentos/2026-10-28/`, que é o **painel da Flow Arts** (40592878378: 6 peças da GILTEC entraram no painel da Flow Arts); (2) depois foi para pasta sem data (`clientes/giltec/0900/`), que era ignorada em silêncio e travou os stories como "imagem repetida"; (3) o retry só mexeu nas legendas, então os stories não foram tentados de novo; (4) o reenvio manual por data nunca achava pastas de clientes.
+- **Corrigido (branch `fix/work-envio-imagens`):** `.github/scripts/achar-slots.sh` novo (pasta errada vira erro com o caminho certo; mudou um arquivo de um dia de um cliente → o dia inteiro é conferido, sem duplicar); `agendar-pasta.sh` não compara imagem com pasta errada; reenvio manual por data acha `clientes/<id>/AAAA-MM-DD`. Regras dos dois jeitos no topo de `BRIDGE_PROTOCOL.md` e `REGRA_POSTS_DIARIOS.md`; `KNOWN_ISSUES.md` e `agendamentos/README.md` atualizados.
+- **Testes:** casos reais de hoje simulados (pasta sem data → erro; retry só de legenda → inclui os stories; Quatree → 4 pastas); modo seco do envio ok com cópia em pasta errada; YAML e `bash -n` ok; suíte Worker 602/602.
+- **Pendente (precisa do OK do Rodrigo):** merge do PR; depois reenviar 28/10 (Actions → Run workflow, data 2026-10-28) para os 3 stories da GILTEC; e cancelar no painel da **Flow Arts** as 6 peças da GILTEC que caíram lá por engano.
+
 ## 2026-10-27 22h BRT — Tema do Manus, botão "Sair" e página "Enviar artes"
 - **Origem → destino:** Claude → ChatGPT / Manus
 - **Pedido do Rodrigo:** corrigir o painel do cliente "sem opção de sair", auditar o tema trocado com o Manus, achar alternativa para o envio de imagens que o ChatGPT não consegue fazer e atualizar esta memória.

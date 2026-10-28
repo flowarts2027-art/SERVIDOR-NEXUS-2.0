@@ -1,11 +1,23 @@
 # REGRA FIXA — ChatGPT cria 3 posts por dia da Flow Arts e envia ao painel
 
-## NOVO JEITO DE ENVIAR AS IMAGENS — Rodrigo, 27/10/2026 (vale para TODOS os clientes)
-O conector do GitHub do ChatGPT **só grava texto**. Imagem não sobe (nem em Base64). Por isso:
-1. O ChatGPT cria as artes **na conversa** e mostra ao Rodrigo, na ordem: post 09h, post 12h, post 19h, depois os stories. Carrossel: os cartões em sequência, numerados.
-2. O ChatGPT grava no GitHub **só as legendas**: `agendamentos/AAAA-MM-DD/HHMM/legenda.txt` (Flow Arts) ou `agendamentos/clientes/<id>/AAAA-MM-DD/HHMM/legenda.txt` (outro cliente), HHMM = 0900, 1200 ou 1900. Pasta só com legenda não dá erro.
-3. O Rodrigo salva as imagens no celular e abre **Enviar artes** (`/artes.html`, botão no topo de "Subir conteúdo do cliente" no Master), escolhe cliente, dia e as imagens de uma vez. A legenda do GitHub aparece sozinha. Tudo entra no painel **esperando aprovação**.
-4. **Não** tentar subir imagem em Base64, **não** mexer em workflows para isso, **não** criar `.media-staging/`.
+## DOIS JEITOS DE ENVIAR AS IMAGENS — Rodrigo, 27/10/2026 (vale para TODOS os clientes)
+
+### Jeito 1 — ChatGPT no modo Work/agente sobe tudo sozinho (preferido)
+Comprovado em 27/10: Quatree Dog e GILTEC subiram assim (execuções 40597414392 e 40594908362). O conector simples de texto **não** sobe imagem; o modo Work sobe.
+1. Criar as artes e salvar no repositório, branch `main` ou `agendamentos`, numa pasta por post:
+   - Flow Arts: `agendamentos/AAAA-MM-DD/HHMM/`
+   - Outro cliente: `agendamentos/clientes/<id-do-cliente>/AAAA-MM-DD/HHMM/` (ids: `quatree-dog`, `giltec`, `maskara-assessoria`)
+   - Story: `.../HHMM-story/story.png`
+2. Dentro da pasta: `imagem.png` (post), `01.png 02.png ...` (carrossel), `video.mp4 + capa.png` (Reel) e `legenda.txt` (menos no story).
+3. **Sempre com a DATA na pasta.** Pasta sem data (ex.: `clientes/giltec/0900/`) dá erro e não vai ao painel.
+4. **Cliente que não é a Flow Arts NUNCA vai na raiz `agendamentos/AAAA-MM-DD/`**: a raiz é o painel da Flow Arts.
+5. O GitHub manda sozinho ao painel do cliente, **esperando aprovação**. Conferir em Actions → "NEXUS Agendar conteúdo pronto" se apareceu "enviado ao painel". Se corrigir só a legenda, o dia inteiro daquele cliente é conferido de novo (o que já subiu não duplica).
+
+### Jeito 2 — sem Work: página Enviar artes
+1. O ChatGPT mostra as artes na conversa e grava **só as legendas** (`.../HHMM/legenda.txt`). Pasta só com legenda não dá erro.
+2. O Rodrigo salva as imagens no celular e abre **Enviar artes** (`/artes.html`, botão no topo de "Subir conteúdo do cliente" no Master), escolhe cliente, dia e as imagens. A legenda aparece sozinha. Tudo entra **esperando aprovação**.
+
+Nos dois jeitos: **não** subir imagem em Base64, **não** criar `.media-staging/`, **não** mexer em workflows.
 
 ## ORDEM MAIS RECENTE DE RODRIGO —22/10/2026
 **3stories exclusivos por dia neste perfil, às09h,12h e19h. Nunca repetir a mesma imagem entre feed, carrossel, story e Reel**, nem só mudar corte/formato/texto. Não espelhar feed em stories. Seguir a grade atual de FORMATOS_POSTAGENS.md, que substitui quantidades/horários antigos abaixo. Na Quatree, não reutilizar a imagem do gato do feed em carrossel ou story. Correção de23/10 enviada e validada na execução39891196118; ver HANDOFF_CHATGPT antes de criar/recriar arquivos.
