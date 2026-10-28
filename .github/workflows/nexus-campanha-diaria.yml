@@ -17,6 +17,11 @@ on:
         description: "Clientes (separados por espaço)"
         required: false
         default: "giltec primeiro-teste"
+      preview:
+        description: "Só prévia (não manda ao painel; guarda na branch previa-artes)"
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: nexus-campanha-diaria
@@ -51,8 +56,11 @@ jobs:
           echo "day=$day" >> "$GITHUB_OUTPUT"
           echo "::notice::Campanha de $day para: $CLIENTS"
 
-      - name: Preparar Python
-        run: python3 -m pip install --quiet --break-system-packages "pillow==12.3.0" || python3 -m pip install --quiet "pillow==12.3.0"
+      - name: Preparar Python e a fonte Montserrat (PADRAO_ARTES.md)
+        run: |
+          python3 -m pip install --quiet --break-system-packages "pillow==12.3.0" || python3 -m pip install --quiet "pillow==12.3.0"
+          curl -fsSL -o "scripts/social/fonts/Montserrat[wght].ttf" "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf" \
+            && echo "::notice::Fonte Montserrat pronta" || echo "::warning::Sem Montserrat; usando a Inter"
 
       - name: Sessão temporária do Master (para pedir as fotos)
         working-directory: cloudflare
@@ -83,7 +91,19 @@ jobs:
           files="$(find agendamentos -path "*${{ steps.dia.outputs.day }}*" -name '*.jpg')"
           [ -z "$files" ] || python3 .github/scripts/checar-arte.py $files
 
+      - name: Prévia (não vai ao painel)
+        if: github.event.inputs.preview == 'true'
+        shell: bash
+        run: |
+          set -uo pipefail
+          day="${{ steps.dia.outputs.day }}"
+          git config user.name "nexus-campanha"; git config user.email "nexus-campanha@users.noreply.github.com"
+          tmp="$(mktemp -d)"; find agendamentos -path "*$day*" -type f | while read -r f; do mkdir -p "$tmp/$(dirname "$f")"; cp "$f" "$tmp/$f"; done
+          git checkout --orphan previa-artes && git rm -rq --cached . && rm -rf agendamentos && cp -r "$tmp/agendamentos" . && git add agendamentos && git commit -qm "Prévia $day" && git push -f origin previa-artes
+          echo "::notice::Prévia na branch previa-artes"
+
       - name: Subir para o painel (esperando aprovação)
+        if: github.event.inputs.preview != 'true'
         working-directory: cloudflare
         shell: bash
         run: |
@@ -101,7 +121,7 @@ jobs:
           [ -z "$slots" ] || bash ../.github/scripts/agendar-pasta.sh $slots
 
       - name: Guardar as artes na branch agendamentos
-        if: always()
+        if: always() && github.event.inputs.preview != 'true'
         shell: bash
         run: |
           set -uo pipefail

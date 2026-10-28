@@ -571,3 +571,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Novo fluxo `.github/workflows/nexus-campanha-diaria.yml`, todo dia às 4h17 (Brasília) e manual (workflow_dispatch com dia e clientes): pede as fotos à IA grátis do Cloudflare (`POST /api/master/foto`, sessão temporária do Master), monta as artes com `scripts/social/campanha_diaria.py` (Pillow, fonte Inter), confere com `checar-arte.py` e sobe pelo `agendar-pasta.sh` (esperando aprovação; não duplica horário). Guarda as artes na branch `agendamentos`.
 - Textos fixos em `scripts/social/campanha/conteudo.json` (sem IA no texto): GILTEC com ciclo de 4 equipamentos (um por peça) e 6 stories; Flow Arts com 3 temas em rodízio (App de agendar não cria post; Captador de clientes; Instagram como cartão de visita). Legenda que o ChatGPT deixar na pasta tem prioridade.
 - A geração do Worker (`gemini-campaign.js`, cron das 6h) continua pausada (`GEMINI_DAILY_CLIENTS` vazio).
+
+## 2026-10-28 (09h) — Padrão fixo das artes (texto nunca em cima de pessoa)
+- Campanha de 29/10 (GILTEC e Flow Arts) subiu ao painel às 08h40 pelo fluxo novo (12 peças, esperando aprovação). Rodrigo: imagens da Flow Arts boas, mas o texto passava por cima da cabeça das pessoas e a fonte ficou ruim. Pediu uma regra permanente.
+- Criado `docs/nexus-memory/PADRAO_ARTES.md` (citado no AGENTS.md): título em faixa própria em cima, vantagens e botão em faixa própria embaixo, foto só no meio; fundo das faixas = a própria foto desfocada e escurecida; Montserrat ExtraBold (o GitHub baixa do google/fonts; reserva Inter); uma logo só.
+- `campanha_diaria.py` reescrito nesse padrão; `checar-arte.py` aprova. Fluxo ganhou o modo **prévia** (não manda ao painel; grava na branch `previa-artes`).
+- Próximo passo: merge → prévia de 29/10 → se o Rodrigo aprovar, trocar as 12 peças de 29/10 no painel pelas novas.
