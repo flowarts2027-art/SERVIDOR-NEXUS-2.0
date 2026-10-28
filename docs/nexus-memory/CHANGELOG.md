@@ -1,5 +1,8 @@
 # Histórico de alterações feitas pelo Work
 
+## 2026-10-28 18h30 BRT — Site novo da Flow Arts
+- `public/site.html` refeito: tema clean nas cores da logo, globo 3D, contador, cartões de clientes, abas de pacotes, FAQ em `<details>`. Sem vídeo. Páginas antigas ligadas numa aba discreta do rodapé. 630/630 testes. Aguardando merge do Rodrigo.
+
 ## 2026-10-27 20h52 BRT — Painel do cliente: refresh visual local
 - `public/portal.html`: identidade Nexus no shell, topo com contexto do painel e card editorial na navegação.
 - `public/client-lite.css`: sidebar escura no desktop, topo responsivo, hero de início, stats, conteúdos em grade, abas de filtro, calendário, conta Meta e login com nova hierarquia visual.

@@ -47,22 +47,20 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);
 });
 
-test("site tem vídeo de fundo leve, sem som, e para com menos movimento", () => {
+test("site novo (28/10): tema clean, globo 3D e movimento que para com 'reduzir movimento'", () => {
   const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
-  assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/);
+  assert.match(home, /Novos clientes todo dia no seu <em>WhatsApp\.<\/em>/);
+  assert.match(home, /id="globe"/);
   assert.match(home, /prefers-reduced-motion: reduce/);
-  const size = fs.statSync(new URL("../../public/video/fundo-vendedor.mp4", import.meta.url)).size;
-  assert.ok(size > 10000 && size < 1_000_000, "vídeo leve: " + size);
+  assert.doesNotMatch(home, /<video/, "o vídeo do celular saiu do site");
+  assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
 });
 
-test("site para vendedores (23/10): vídeos de vendedor no lugar da cafeteria", () => {
-  const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
-  assert.match(home, /<video id="reel-demo" src="\/video\/reel-vendedor-2\.mp4" poster="\/video\/reel-vendedor-2\.jpg" muted loop playsinline controls preload="none"/);
-  assert.match(home, /Novos clientes todo dia no seu WhatsApp\./);
-  assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
-  for (const f of ["fundo-vendedor.mp4", "reel-vendedor.mp4", "reel-vendedor-2.mp4", "obra-vendedor.mp4"]) {
-    assert.ok(fs.statSync(new URL("../../public/video/" + f, import.meta.url)).size < 3_000_000, f);
-  }
+test("páginas antigas ficam ligadas numa aba discreta do rodapé (para o Google e o cliente acharem o site)", () => {
+  const home = read("site.html");
+  const segs = home.slice(home.indexOf('class="segs"'));
+  assert.match(segs, /<summary>Outros segmentos que atendemos<\/summary>/);
+  for (const slug of [...pages, "exemplo"]) assert.ok(segs.includes('href="/' + slug + '"'), slug + " fora da aba");
 });
 
 test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e não prometem resultado", () => {
