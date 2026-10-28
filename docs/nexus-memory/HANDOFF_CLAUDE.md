@@ -2,6 +2,13 @@
 
 Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante para o Nexus / Flow Arts. Não é preenchimento automático nem acesso aos prompts privados do Claude. Consulte `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`.
 
+## 2026-10-27 23h BRT — GILTEC: Captador de construção, 10 por dia com WhatsApp, mensagem da Rose
+- **Origem → destino:** Claude → ChatGPT
+- **Pedido do Rodrigo:** a GILTEC aluga equipamentos de construção civil. O CRM/Captador do painel dela deve buscar construtoras, obras em rodovias, reformas e tudo ligado a construção; colocar 10 contatos com WhatsApp por dia no painel; mensagem pronta da vendedora **Rose**, da **GILTEC Locações**.
+- **Feito (branch `feat/giltec-captador-construcao`):** `CAPTADOR_EXTRA_NICHES` em `cloudflare/src/captador.js` (Construtora, Engenharia civil, Terraplenagem, Pavimentação e obras em rodovias, Reformas e empreiteiras), só para o Captador dos clientes (os 21 nichos da vitrine e o Caçador do Master não mudam). No mapa grátis, também procura pelo NOME (construtora, engenharia, terraplenagem, asfalto, rodovia, reforma, empreiteira). Ramo de construção/locação → esses tipos + Material de construção. Busca diária com opção **"Só empresas com WhatsApp (celular)"** (ligada por padrão nesse ramo; 4 buscas por rodada). `CAPTADOR_PRESETS.giltec`: Captador ligado, limite 600 buscas/mês, busca diária ligada, mensagem "Aqui é Rose, da GILTEC Locações" + o que ela aluga + pedido para mandar a lista e os valores. O preset só vale enquanto o cliente não salvar outra coisa no painel.
+- **Testes:** `test/captador-giltec.test.mjs` (5 novos); suíte 607/607. Busca real no mapa grátis não testada daqui (rede da sessão bloqueia).
+- **Limite honesto:** o mapa grátis tem poucas empresas com celular. Em cidade pequena pode dar menos de 10 por dia; mais cidades ajudam.
+- **Pendente:** cidades da GILTEC (sem cidade a busca diária não roda; usa a região do perfil). Merge com o OK do Rodrigo (publica o Worker).
 ## 2026-10-27 22h40 BRT — Volta o envio de imagens pelo ChatGPT no modo Work (os dois jeitos valem)
 - **Origem → destino:** Claude → ChatGPT
 - **Pedido do Rodrigo:** o ChatGPT no modo Work criava a campanha e subia as imagens direto para o painel do cliente; manter esse jeito **e** a página Enviar artes.

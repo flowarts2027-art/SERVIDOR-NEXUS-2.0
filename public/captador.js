@@ -85,6 +85,7 @@
       <p class="muted">Todo dia, a partir das 9h, o Nexus separa empresas novas na aba "Separadas hoje", com a mensagem e o seu material prontos. Você só toca para mandar pelo WhatsApp ou pelo Direct.</p>
       <form id="cap-daily">
         <label class="cap-check"><input type="checkbox" name="enabled" ${d.enabled ? "checked" : ""}> Ligar a busca diária</label>
+        <label class="cap-check"><input type="checkbox" name="onlyWhatsapp" ${d.onlyWhatsapp ? "checked" : ""}> Só empresas com WhatsApp (celular)</label>
         <fieldset class="cap-niches"><legend>Tipos de negócio</legend>${boxes}</fieldset>
         ${regionCities(d)}
         <label>Empresas por dia<input name="target" type="number" min="1" max="10" value="${Number(d.target || 10)}"></label>
@@ -321,7 +322,7 @@
       const fd = new FormData(form);
       try {
         const cities = [...fd.getAll("regionCities").map(String), ...String(fd.get("cities") || "").split(";").map(c => c.trim()).filter(Boolean)];
-        await call("/api/portal/captador/daily", { enabled: fd.get("enabled") === "on", niches: fd.getAll("niches"), cities, target: Number(fd.get("target")) });
+        await call("/api/portal/captador/daily", { enabled: fd.get("enabled") === "on", onlyWhatsapp: fd.get("onlyWhatsapp") === "on", niches: fd.getAll("niches"), cities, target: Number(fd.get("target")) });
         note = "Busca diária salva.";
         await load();
       } catch (error) { alertLine(error.message); }
