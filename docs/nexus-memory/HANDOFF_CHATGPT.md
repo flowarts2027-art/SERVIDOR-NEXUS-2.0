@@ -1,5 +1,17 @@
 # Passagem de trabalho — ChatGPT → Claude Code
 
+## 2026-10-28 — GILTEC diária: três imagens entregues no chat; envio manual pendente
+- Origem: ChatGPT → Claude/Rodrigo. Entrada adicionada pelo ChatGPT a pedido expresso do Rodrigo; histórico preservado.
+- Escopo confirmado: SOMENTE 28/10/2026. Campanha GILTEC é diária; não produzir 30 dias. Pedido atual exige imagens sem texto, com espaço para composição pelo sistema.
+- Continuidade: main consultada em `6e452903bc6385750769daa1ebb65e75a73ba052`, cujo título registra exclusão da campanha GILTEC 28/10 para refação. Pasta GILTEC ausente nessa árvore. O envio histórico Actions 40594908362 foi verificado nos logs: três uploads antigos (09h carrossel, 12h e 19h feeds). Isso NÃO comprova o estado atual do painel nem o cancelamento das peças antigas.
+- Produção desta sessão: 3 imagens novas individuais, geradas sequencialmente e mostradas imediatamente no chat: 09h compactador/placa vibratória em obra viária; 12h martelete/rompedor em reforma interna; 19h gerador em canteiro externo ao fim da tarde. Nenhum story, Reel ou carrossel novo. Grade simplificada para três feeds conforme escopo de posts de hoje e equipamentos confirmados, sem repetir equipamento.
+- Imagens ilustrativas de IA, sem headline/logo incorporada; não são fotografias do estoque real. Dimensões reais 1122×1402, aproximadamente 4:5 (não 1080×1350). Conferência visual realizada; checar-arte.py passou e os três SHA-256 são distintos.
+- Legendas salvas em main: `agendamentos/clientes/giltec/2026-10-28/{0900,1200,1900}/legenda.txt`. Chamada ao WhatsApp da Rose sem inventar número, palavra QUERO conforme CAMPANHA_GILTEC.md e hashtags RJ. Commits: 913f85908164f37a96aebc7b7c586d4da1b788dc, 1275f94a11144479477afd0ed99117af30209f7b, 78e4a54dd57b6b7092c4e1ba7f7219fe5b996d1b.
+- Bloqueio comprovado: `git push --dry-run` falhou por ausência de autenticação HTTPS. Não usar Base64 nem staging, não modificar workflows. Aplicada alternativa expressamente autorizada: imagens entregues no chat para página Enviar artes.
+- Estado: 3 imagens geradas/entregues e 3 legendas gravadas. ZERO imagens novas enviadas ao painel nesta sessão; nenhuma aprovação/publicação realizada. Não afirmar campanha concluída no painel.
+- Próximo passo exato: Rodrigo salvar as três imagens do chat, abrir /artes.html, selecionar GILTEC e 28/10/2026 e enviar como três posts individuais, aguardando aprovação. Conferir primeiro se as peças antigas foram canceladas para evitar duplicação. Horários são slots editoriais; o script recusa horários já passados, sem autorização para transferir a campanha para outro dia.
+
+
 ## 2026-10-27 20h52 BRT — Redesign visual do painel do cliente
 - Pedido: aproximar o painel das referências enviadas em `Downloads.rar`, com visual mais chamativo e orientação SaaS/editorial.
 - Alterado apenas o front-end do portal: `public/portal.html` ganhou marca Nexus, microcopy do topo e card de destaque da navegação; `public/client-lite.css` ganhou sidebar escura no desktop, topo claro, hero em degradê, cartões com hierarquia, abas editoriais, calendário refinado, conta Meta destacada e responsividade mobile preservada.
