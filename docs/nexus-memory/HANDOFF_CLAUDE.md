@@ -672,3 +672,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Master › Integrações › "Postar no Facebook": botão Conectar Página e Pausar/Ligar (`public/facebook-page.js`). Desligar tudo: `NEXUS_FACEBOOK=off` na Cloudflare.
 - Testes: 637/637 (7 novos em `test/facebook-page.test.mjs`). Nada publicado de verdade.
 - Pendente: merge do Rodrigo; depois ele toca em Conectar Página no Master e autoriza a Página da Flow Arts. Para clientes que não são admins do app, a Meta precisa aprovar `pages_manage_posts` na análise do app.
+
+## 2026-10-29 — Conector MCP do Nexus, passo 1 (só leitura)
+- Pedido do Rodrigo: montar um MCP do Nexus para o Claude e o ChatGPT (ideia vista no ChatFyre, que liga o Claude a automação de Instagram). Foco: Flow Arts.
+- Feito: `cloudflare/src/mcp-server.js` (novo) + rota em `src/index.js` + `/mcp*` em `run_worker_first`. MCP "Streamable HTTP" em modo JSON, sem sessão.
+- Ferramentas, TODAS só leitura: `nexus_listar_clientes`, `nexus_ver_agenda` (post_ledger, hora de Brasília), `nexus_ver_metricas` (mesmos números do painel: seguidores, alcance, seguidores ganhos por post). Nada publica, agenda, apaga ou manda mensagem.
+- Acesso: endereço `https://painel.flowarts.com.br/mcp/<chave>`. A chave é o segredo `NEXUS_MCP_TOKEN` (mínimo 24 caracteres) que o Rodrigo cria na Cloudflare. Sem ele o conector responde "desligado". Desligar: apagar o segredo ou `NEXUS_MCP=off`. Quem tiver o link completo consegue LER; por isso o passo 1 é só leitura.
+- Testes: 14 novos em `test/mcp-server.test.mjs`; suíte 652/653. A 1 falha (`gemini-campaign.test.mjs` › "fila do Master") já falha na `main` sem esta mudança.
+- Pendente: merge do Rodrigo; depois ele cria o segredo e adiciona o conector no Claude (Conectores › personalizado) e no ChatGPT.
+- Próximo passo (2): login de verdade (OAuth, como o ChatFyre) no lugar da chave no link, e só então ferramentas de escrita (subir arte na Biblioteca, sempre chegando pendente de aprovação).
