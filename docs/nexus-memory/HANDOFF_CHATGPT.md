@@ -1,3 +1,11 @@
+## 2026-10-29 — Quatree 30/10: produção concluída, imagens para upload manual
+
+- Atualização do pedido: usuário dispensou anexos e autorizou buscar exclusivamente embalagens no site oficial quatreepet.com.br. Download dos PNGs oficiais do CDN Wix concluído; nenhuma embalagem redesenhada. Fotos aplicadas por composição, cenários ilustrativos gerados separadamente, textos em Montserrat por código.
+- Entrega: 10 PNGs distintos — 0900 Life cães adultos médios/grandes; 1200 carrossel de 5 cartões (capa, Select Power cães adultos todas as raças, Gourmet cães adultos médios/grandes, Life gatos adultos, CTA); 1900 Select gato castrado sênior +7. Stories 0900 Premium Carne cães adultos todas as raças; 1200 Gourmet gatos adultos; 1900 Life gatos adultos.
+- Formatos conferidos: 7 PNGs 1080x1350 e 3 PNGs 1080x1920. Revisão visual realizada; corrigida sobreposição do título no story. Embalagens oficiais visíveis, peças de gatos, CTA TABELA. Sem preço ou condição de entrega inventados.
+- Somente as 3 legendas de campanha gravadas na branch agendamentos em agendamentos/clientes/quatree-dog/2026-10-30/{0900,1200,1900}/legenda.txt; conteúdo relido e comparado. Commits 6e30c939f42954a07c675f09c483661969a8101d, 0ecbef817b3afa4830d9b6f2bcc81fa13807d1d9 e 3b2c863d6f946c1371496c5f41416698d7919851.
+- Nenhuma imagem enviada ao GitHub/painel. Nenhuma aprovação/publicação. Próximo passo: Rodrigo baixar PNGs entregues no chat e enviar em Enviar artes, cliente quatree-dog, data 30/10/2026; agrupar 1200-01 a 1200-05 como carrossel. Manter esperando aprovação.
+
 ## 2026-10-29 — Quatree Dog: campanha 30/10 bloqueada antes da produção
 
 - Origem/destino: ChatGPT Work → próxima sessão/Claude. Escopo: somente cliente quatree-dog, 30/10/2026, aguardando aprovação; autorização permanente de envio reconhecida.
