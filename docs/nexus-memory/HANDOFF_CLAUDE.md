@@ -681,3 +681,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 14 novos em `test/mcp-server.test.mjs`; suíte 652/653. A 1 falha (`gemini-campaign.test.mjs` › "fila do Master") já falha na `main` sem esta mudança.
 - Pendente: merge do Rodrigo; depois ele cria o segredo e adiciona o conector no Claude (Conectores › personalizado) e no ChatGPT.
 - Próximo passo (2): login de verdade (OAuth, como o ChatFyre) no lugar da chave no link, e só então ferramentas de escrita (subir arte na Biblioteca, sempre chegando pendente de aprovação).
+
+## 2026-10-29 (17h) — MCP do Nexus no ar e conectado
+- PR #459 com merge e deploy feitos. Segredo `NEXUS_MCP_TOKEN` criado pelo Rodrigo na Cloudflare (a 1ª chave era curta demais; a regra é ter 24+ caracteres).
+- Conferido em produção: `/mcp/<chave errada>` responde 401 (ligado e protegido).
+- Conectado no Claude (conector personalizado) e no ChatGPT (Plugins › Adicionar › "Adicionar servidor MCP personalizado", sem autenticação; aparece como "Nexus2.0"). Rodrigo confirmou que funciona no Claude.
+- Próximo passo: login de verdade (OAuth) no lugar da chave no link; depois ferramentas de escrita sempre pendentes de aprovação.
