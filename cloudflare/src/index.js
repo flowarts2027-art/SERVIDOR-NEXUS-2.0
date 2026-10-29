@@ -3,6 +3,7 @@ import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
 import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
+import { handleMcpRequest } from "./mcp-server.js";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
 import { getState, putState, deleteState } from "./storage.js";
@@ -628,6 +629,12 @@ export default {
     const url = new URL(request.url);
     const siteRedirect = canonicalSiteRedirect(url, request.method);
     if (siteRedirect) return Response.redirect(siteRedirect, 301);
+
+    // Conector MCP (Claude/ChatGPT), só leitura no passo 1. Ver src/mcp-server.js.
+    if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
+      const mcpResponse = await handleMcpRequest(request, env, url);
+      if (mcpResponse) return mcpResponse;
+    }
 
     if (url.pathname === "/" && request.method === "GET") {
       // flowarts.com.br (e www) abre o site da Flow Arts; o painel fica em painel.flowarts.com.br.
