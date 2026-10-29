@@ -37,7 +37,7 @@ function hasRealVideo(payload = {}) {
 }
 
 // Carrossel que chegou pronto (upload do Master, Enviar artes ou painel do cliente).
-const UPLOAD_SOURCES = new Set(["client-upload", "master-upload", "master:upload", "art-library", "manual-carousel"]);
+const UPLOAD_SOURCES = new Set(["client-upload", "portal:client-upload", "master-upload", "master:upload", "art-library", "manual", "manual-carousel", "master:manual-carousel"]);
 
 export function uploadedCarouselCards(payload = {}) {
   const urls = Array.isArray(payload?.formatBuild?.carouselUrls) ? payload.formatBuild.carouselUrls : [];
