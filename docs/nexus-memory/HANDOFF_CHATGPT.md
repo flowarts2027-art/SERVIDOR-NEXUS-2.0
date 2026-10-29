@@ -1,3 +1,11 @@
+## 2026-10-29 — Quatree Dog: campanha 30/10 bloqueada antes da produção
+
+- Origem/destino: ChatGPT Work → próxima sessão/Claude. Escopo: somente cliente quatree-dog, 30/10/2026, aguardando aprovação; autorização permanente de envio reconhecida.
+- Lidos na main: BRIDGE_PROTOCOL, KNOWN_ISSUES (inclusive linha 4), QUATREE_DIRETRIZ_VENDAS, CAMPANHA_QUATREE_30D, PADRAO_ARTES e fim do HANDOFF_CHATGPT.
+- Capacidade efetiva desta sessão: create_file/update_file aceitam texto UTF-8; create_blob aceita UTF-8 ou Base64, sem upload binário por arquivo. Apesar da referência histórica ao Work, não há operação disponível para gravar PNG novo sem Base64. Envio interrompido conforme item 6 do pedido; nenhum git push, Base64 ou acesso a /artes.html usado.
+- Fotos oficiais prometidas pelo usuário ainda não anexadas nesta conversa. Nenhuma arte gerada, nenhuma embalagem inventada, nenhum post enviado/aprovado/publicado e nenhuma execução de envio iniciada. Não há link de execução de campanha a fornecer.
+- Próximo passo: receber fotos oficiais de cães e gatos; criar artes com embalagem original visível em cada peça, pelo menos uma peça de gato e CTA TABELA; entregar no chat para upload manual pelo usuário. Caminho autorizado, se futuramente houver capacidade binária: agendamentos/clientes/quatree-dog/2026-10-30/HHMM/ (stories HHMM-story), branch agendamentos. Nunca usar a raiz da Flow Arts.
+
 ## 2026-10-28 07:03 BRT — Artes diárias preparadas para revisão (não enviadas)
 
 - Pedido: preparar as artes do dia para Flow Arts, Maskara Assessoria, Quatree Dog (cadastro confirmado; não “4Dog”) e verificar Luciana Carvalho sem inventar briefing.
