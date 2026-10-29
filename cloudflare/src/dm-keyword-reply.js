@@ -9,6 +9,7 @@ import { clientBrand, brandProfileVersion } from "./client-brand.js";
 import { clientAutoReplyConfig, buildDmMessage, matchesKeyword } from "./client-autoreply.js";
 import { giftButtonMessage } from "./gift.js";
 import { FOLLOWED_PATTERN } from "./gift-dm.js";
+import { sendInstagramMessage } from "./ig-send.js";
 
 const NAMESPACE = "dm-keyword-reply";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -58,16 +59,9 @@ async function writeState(env, clientId, state) {
   ).bind(NAMESPACE, String(clientId), JSON.stringify({ handled: Object.fromEntries(entries) })).run();
 }
 
-async function sendDm(request, token, igUserId, igsid, message) {
-  const response = await request("https://graph.instagram.com/" + encodeURIComponent(igUserId) + "/messages", {
-    method: "POST",
-    headers: { authorization: "Bearer " + token, accept: "application/json", "content-type": "application/json" },
-    body: JSON.stringify({ recipient: { id: igsid }, message }),
-    signal: AbortSignal.timeout(8000)
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(String(payload?.error?.message || "instagram_" + response.status).slice(0, 200));
-  return payload;
+// 28/10: envio pelo "me/messages" (jeito do ChatbotX), com o caminho antigo de reserva.
+function sendDm(request, token, igUserId, igsid, message) {
+  return sendInstagramMessage({ request, token, igUserId, recipient: { id: igsid }, message });
 }
 
 export async function processWebhookDmKeywords(env, items, { request = fetch, now = new Date(), findClient } = {}) {
