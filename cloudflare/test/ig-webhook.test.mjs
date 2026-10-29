@@ -55,7 +55,7 @@ test("responde QUERO com DM e resposta pública, uma vez só", async () => {
   const ctx = { request, token: "t", igUserId: "17841400000000000", ownUsername: "flowarts2026", state, message: "Oi", now: new Date("2026-10-11T23:00:00Z") };
   const first = await replyToComment(ctx, { id: "c1", text: "eu QUERO", username: "fulano" });
   assert.equal(first.replied, true);
-  assert.ok(calls.some(([u]) => u.endsWith("/17841400000000000/messages")));
+  assert.ok(calls.some(([u]) => u.endsWith("/me/messages")));
   assert.ok(calls.some(([u]) => u.endsWith("/c1/replies")));
   const again = await replyToComment(ctx, { id: "c1", text: "eu QUERO", username: "fulano" });
   assert.equal(again.skipped, "already_handled");

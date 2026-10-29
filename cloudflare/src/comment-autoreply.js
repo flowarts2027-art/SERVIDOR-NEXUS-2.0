@@ -6,6 +6,7 @@
 // Limites: poucos posts e poucas respostas por execução (orçamento de chamadas do Worker).
 
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
+import { sendInstagramMessage } from "./ig-send.js";
 import { clientBrand, brandProfileVersion, whatsappLink } from "./client-brand.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { masterInstagramCredentials } from "./instagram.js";
@@ -126,11 +127,8 @@ export async function replyToComment({ request = fetch, token, igUserId, ownUser
   res.checked = true;
   try {
     const built = typeof message === "function" ? await message(comment, now) : message;
-    const send = body => graph(request, token, encodeURIComponent(igUserId) + "/messages", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ recipient: { comment_id: id }, message: body })
-    });
+    // 28/10: envio pelo "me/messages" (jeito do ChatbotX), com o caminho antigo de reserva.
+    const send = body => sendInstagramMessage({ request, token, igUserId, recipient: { comment_id: id }, message: body });
     if (built && built.kind === "ask") {
       // Frase + botão rápido "Já segui". Se o Instagram recusar, pede para responder SEGUI.
       await send(askMessage(built.text)).catch(async error => {

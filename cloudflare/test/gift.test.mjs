@@ -134,11 +134,11 @@ test("envia o botão; se o Instagram recusar, manda a frase com o link", async (
   assert.equal(r.replied, true);
   assert.equal(JSON.parse(sent[0].body).message.attachment.payload.buttons[0].title, "Baixar conteúdo");
   const sent2 = [];
-  let first = true;
-  const fails = async (url, opts) => { sent2.push(opts?.body); if (first && /messages/.test(url)) { first = false; return new Response(JSON.stringify({ error: { message: "no template" } }), { status: 400 }); } return new Response("{}"); };
+  // O Instagram recusa o botão (nos dois caminhos de envio) e aceita só o texto.
+  const fails = async (url, opts) => { sent2.push(opts?.body); if (/messages/.test(url) && /attachment/.test(String(opts?.body))) return new Response(JSON.stringify({ error: { message: "no template" } }), { status: 400 }); return new Response("{}"); };
   const r2 = await replyToComment({ request: fails, token: "t", igUserId: "1", state: { handled: {} }, message: async () => dm, now: NOW }, { id: "c2", fromId: "9", text: "quero", timestamp: NOW.toISOString() });
   assert.equal(r2.replied, true);
-  assert.equal(JSON.parse(sent2[1]).message.text, "Me siga para receber o conteúdo 🎁 https://x.test/b/AbCdEfGh2");
+  assert.equal(JSON.parse(sent2.at(-2)).message.text, "Me siga para receber o conteúdo 🎁 https://x.test/b/AbCdEfGh2");
 });
 
 test("quem já segue recebe o botão Baixar conteúdo direto no primeiro direct", async () => {

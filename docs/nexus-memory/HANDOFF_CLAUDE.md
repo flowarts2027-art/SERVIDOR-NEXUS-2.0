@@ -662,3 +662,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Master › Integrações › "Postar no Facebook": botão Conectar Página e Pausar/Ligar (`public/facebook-page.js`). Desligar tudo: `NEXUS_FACEBOOK=off` na Cloudflare.
 - Testes: 637/637 (7 novos em `test/facebook-page.test.mjs`). Nada publicado de verdade.
 - Pendente: merge do Rodrigo; depois ele toca em Conectar Página no Master e autoriza a Página da Flow Arts. Para clientes que não são admins do app, a Meta precisa aprovar `pages_manage_posts` na análise do app.
+
+## 2026-10-28 — QUERO no comentário → direct (ideia do ChatbotX)
+- Pedido do Rodrigo: avaliar o ChatbotX (github.com/ChatbotXIO/ChatbotX, MIT) e trazer só o que for bom para o Nexus, de graça. Decisão dele: manter o Nexus e pegar só peças do ChatbotX. A tela do ChatbotX não entra (precisa de PostgreSQL, Redis e servidor 24h; não roda no Cloudflare grátis).
+- Problema atacado: quem comenta QUERO (ex.: GILTEC) não recebe o direct.
+- Diagnóstico (código, sem prova de produção): o Nexus mandava o direct para `graph.instagram.com/{id da conta}/messages`. O ChatbotX usa `me/messages` com o token da conta. O próprio Nexus já registra que o id do login é diferente do id que a Meta manda no aviso, então o caminho por id pode falhar.
+- Feito: `cloudflare/src/ig-send.js` (novo). Todo direct (resposta privada ao comentário, palavra no direct e "Já segui") sai primeiro por `me/messages`; se a Meta responder com erro, tenta o caminho antigo por id. Em falha de rede não repete (evita direct duplicado). Ligado em `comment-autoreply.js`, `dm-keyword-reply.js` e `gift-dm.js`.
+- Testes: 641/641 (4 novos em `test/ig-send.test.mjs`; 3 testes antigos ajustados para o endereço novo). Nada enviado de verdade.
+- Pendente: merge do Rodrigo. Depois, um comentário QUERO de teste num post da GILTEC para conferir em `commentAutoReplyStatus` (lastWebhook/recent). Se ainda falhar, o erro da Meta fica gravado ali.
+- Próximo passo combinado: Caixa de conversas no painel (Instagram + WhatsApp), também com base no ChatbotX.
