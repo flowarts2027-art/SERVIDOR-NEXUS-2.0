@@ -175,3 +175,20 @@ test("falha de leitura da vitrine não sobrescreve o mapa guardado", async () =>
   await assert.rejects(seedBundledExamples(env), /showcase_read_failed/);
   assert.equal(writes, 0);
 });
+
+test("29/10: contato 'Para chamar' sem mensagem há 2 dias sai do CRM; quem recebeu mensagem fica", async () => {
+  const { env } = fakeEnv();
+  const { archiveStaleCrm } = await import("../src/daily-prospects.js");
+  const old = new Date("2026-10-26T12:00:00Z");
+  const a = await createContact(env, { name: "Antigo", phone: "(22) 99811-0001", stage: "chamar", followAt: "2026-10-26" }, old);
+  const b = await createContact(env, { name: "Conversando", phone: "(22) 99811-0002", stage: "contato" }, old);
+  const c = await createContact(env, { name: "Novo", phone: "(22) 99811-0003", stage: "chamar", followAt: "2026-10-29" }, new Date("2026-10-28T12:00:00Z"));
+  const now = new Date("2026-10-29T12:00:00Z");
+  const out = await archiveStaleCrm(env, now);
+  assert.equal(out.archived, 1);
+  const all = (await env.DB.prepare("SELECT id, archived FROM crm_contacts").all()).results;
+  const arch = Object.fromEntries(all.map(r => [r.id, r.archived]));
+  assert.equal(arch[a.contact.id], 1);
+  assert.equal(arch[b.contact.id], 0);
+  assert.equal(arch[c.contact.id], 0);
+});
