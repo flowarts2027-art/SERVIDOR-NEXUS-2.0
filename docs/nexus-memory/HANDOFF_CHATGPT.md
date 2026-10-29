@@ -1,3 +1,11 @@
+## 2026-10-29 — Reel Flow Arts de 30/10 às 12h
+- Pedido: criar campanha de amanhã pelo Nexus. Aplicada auditoria de 29/10: ChatGPT produz somente Reel; demais 5 peças permanecem com campanha automática.
+- Agenda Nexus consultada: itens de 30/10 retornaram cancelados/rejeitados; nenhum Reel ativo retornado.
+- Produzido: vídeo de animação gráfica inédito sobre busca manual, filtros de ramo/cidade, contatos com WhatsApp e CTA QUERO. Exemplos explicitamente ilustrativos; logo original public/brand/flowarts-symbol.webp; fonte Inter Display ExtraBold.
+- Verificado: MP4 H.264, 1080x1920, 30 fps, 12 segundos, AAC silencioso; inspeção visual de abertura, duas cenas intermediárias e encerramento. Capa e legenda entregues no chat junto ao vídeo.
+- Estado: PRODUZIDO e revisão visual amostral realizada. ZERO uploads ao painel nesta tarefa. nexus_enviar_arte disponível aceita apenas imagens, não Reel; mídia não foi gravada na branch agendamentos.
+- Próximo passo: enviar video.mp4, capa.jpg e legenda.txt a agendamentos/2026-10-30/1200/ na branch agendamentos por canal com suporte binário, conferir Actions e agenda, sempre esperando aprovação. Não substituir Reel por foto. Verificar entrega existente antes da execução diária para não recriar.
+
 ## 2026-10-29 06h56 BRT — Rotina diária: Flow Arts e Maskara confirmadas; Quatree pendente de packshot
 
 - Conferida a execução automática [Actions 40840768043](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/40840768043), workflow `.github/workflows/nexus-campanha-diaria.yml`, concluída com sucesso às 05h19 BRT.
