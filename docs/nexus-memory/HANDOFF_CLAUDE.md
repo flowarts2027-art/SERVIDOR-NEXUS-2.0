@@ -704,3 +704,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Nada publicado, aprovado ou enviado. Branch `agendamentos` sem pastas de 30/10 (conferido), então a campanha automática gera tudo amanhã.
 - Pendente: merge do Rodrigo antes das 04h17 de 30/10; merge do PR #454 (QUERO → direct); bio, link `?de=instagram` e destaques no Instagram (ele mesmo).
 - Próximo: em 06/11 o Claude puxa os números pelo Nexus e compara (alcance de Reel × post, seguidores por post).
+
+## 2026-10-29 (18h30) — MCP passo 2: enviar arte ao painel
+- Pedido do Rodrigo: o ChatGPT (modo comum, sem Work) mandar as artes direto ao painel do cliente pelo conector, porque erra muito no caminho atual.
+- Feito: ferramenta `nexus_enviar_arte` em `cloudflare/src/mcp-server.js`. Post (1 imagem), story (1 imagem) ou carrossel (2 a 5, campos `imagem`…`imagem5`). Usa `_meta["openai/fileParams"]` para o ChatGPT passar a imagem da conversa (link temporário), ou `imagens_urls` (https). O Worker baixa, confere se é JPG/PNG/WEBP de até 8 MB e chama a MESMA função do Master (`masterUpload`, agora com `overrides` de origem) com aprovação "cliente": **sempre esperando aprovação**, sem horário repetido (`noDuplicate`). Origem gravada como `mcp:upload`. Limite: 60 envios em 24 h. Desligar só o envio: `NEXUS_MCP_WRITE=off`.
+- Testes: 9 novos (23 no arquivo). Suíte 665/666 (a falha antiga de `gemini-campaign` continua, não é desta mudança).
+- Não confirmado ainda: se o ChatGPT entrega para a ferramenta uma imagem que ele mesmo GEROU (com imagem anexada, o mecanismo é o oficial). Primeiro teste real depois do merge.
+- Recomendado ao Rodrigo: trocar a chave `NEXUS_MCP_TOKEN` (agora o link permite enviar ao painel). Próximo: login de verdade (OAuth) no lugar da chave no link.
