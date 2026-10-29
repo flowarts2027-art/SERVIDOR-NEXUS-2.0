@@ -94,7 +94,7 @@ export async function createAnimatedReel(env, form, fetchImpl = fetch) {
     let photo = "";
     if (scene.photoFile) {
       const key = base + "cena-" + (index + 1) + ".jpg";
-      await env.MEDIA.put(key, await toInstagramJpeg(env, scene.photoFile, { width: 1080, height: 880 }), {
+      await env.MEDIA.put(key, await toInstagramJpeg(env, scene.photoFile, { width: 1080, height: 880 }, { crop: true }), {
         httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
         customMetadata: { clientId, postId: id, kind: "animated-reel-photo", scene: String(index + 1) }
       });

@@ -71,7 +71,7 @@ export const MCP_TOOLS = Object.freeze([
   {
     name: "nexus_enviar_arte",
     title: "Enviar arte ao painel do cliente",
-    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
+    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Mande a FOTO SEM TEXTO: o Nexus escreve sozinho a logo, o título, as vantagens e o botão por cima (padrão das artes). Só use ja_tem_texto=true se a imagem já vier com título e botão escritos. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
     inputSchema: {
       type: "object",
       properties: {
@@ -85,7 +85,8 @@ export const MCP_TOOLS = Object.freeze([
         imagem3: FILE_PARAM,
         imagem4: FILE_PARAM,
         imagem5: FILE_PARAM,
-        imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." }
+        imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." },
+        ja_tem_texto: { type: "boolean", description: "true só se a imagem JÁ tem título e botão escritos. Padrão false: o Nexus escreve o texto por cima." }
       },
       required: ["cliente_id", "formato", "dia", "hora"],
       additionalProperties: false
@@ -124,14 +125,15 @@ function parseJson(raw) {
 }
 
 async function defaultDeps() {
-  const [{ listClients, getClient }, { clientInsights }, { instagramSnapshot }, { masterUpload }] = await Promise.all([
-    import("./clients.js"), import("./insights.js"), import("./agent-runtime.js"), import("./master-upload.js")
+  const [{ listClients, getClient }, { clientInsights }, { instagramSnapshot }, { masterUpload }, frames] = await Promise.all([
+    import("./clients.js"), import("./insights.js"), import("./agent-runtime.js"), import("./master-upload.js"), import("./art-frame.js")
   ]);
   return {
     listClients, getClient,
     metrics: (env, client) => clientInsights(env, client, { fetchSnapshot: instagramSnapshot }),
     upload: masterUpload,
-    download: (url, init) => fetch(url, init)
+    download: (url, init) => fetch(url, init),
+    frames
   };
 }
 
@@ -275,6 +277,30 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   const arquivos = [];
   for (let i = 0; i < links.length; i++) arquivos.push(await baixarImagem(deps, links[i], i + 1));
 
+  // Foto sem texto: o Nexus escreve logo, título, vantagens e botão por cima (PADRAO_ARTES.md).
+  let texto = "a imagem já veio com texto";
+  if (args?.ja_tem_texto !== true) {
+    const meta = deps.frames ? await deps.frames.loadFrames(env) : null;
+    if (meta && deps.frames.hasFrames(meta, client.id)) {
+      const story = tipo === "story";
+      const base = Number(dia.replace(/\D/g, "").slice(-4)) + Number(hora.replace(/\D/g, ""));
+      for (let i = 0; i < arquivos.length; i++) {
+        const frame = deps.frames.pickFrame(meta, client.id, story, base + i);
+        let out;
+        try {
+          out = await deps.frames.composeFramed(env, new Uint8Array(await arquivos[i].arrayBuffer()), frame, { story, numero: tipo === "carousel" ? i + 1 : null });
+        } catch (error) {
+          console.error("mcp_frame_failed", { client: client.id, error: String(error?.message || error) });
+          throw new ToolInputError("Não consegui escrever o texto na imagem " + (i + 1) + ". Nada foi enviado. Tente de novo em instantes.");
+        }
+        arquivos[i] = new File([out], `arte-${i + 1}.jpg`, { type: "image/jpeg" });
+      }
+      texto = "o Nexus escreveu logo, título, vantagens e botão por cima";
+    } else {
+      texto = "este cliente ainda não tem moldura de texto: a imagem foi como veio";
+    }
+  }
+
   const form = new FormData();
   form.set("clientId", client.id);
   form.set("type", tipo === "carousel" ? "carousel" : tipo);
@@ -303,6 +329,7 @@ export async function enviarArte(env, deps, args, now = new Date()) {
     formato: args.formato,
     dia, hora,
     imagens: arquivos.length,
+    texto,
     situacao: "esperando aprovação no painel",
     aviso: "Nada foi publicado. A arte só sai depois de aprovada no painel."
   };
@@ -329,7 +356,7 @@ export async function handleMcpMessage(env, message, deps) {
       protocolVersion: MCP_PROTOCOL_VERSIONS.includes(asked) ? asked : MCP_PROTOCOL_VERSIONS[0],
       capabilities: { tools: { listChanged: false } },
       serverInfo: MCP_SERVER_INFO,
-      instructions: "Conector do Nexus, o sistema de postagem automática da Flow Arts. Lê clientes, agenda e métricas do Instagram e envia artes prontas ao painel do cliente (nexus_enviar_arte), sempre esperando aprovação. Nunca publica nem aprova nada. Antes de enviar, confira a agenda para não repetir horário. Responda ao Rodrigo em português do Brasil, com frases curtas."
+      instructions: "Conector do Nexus, o sistema de postagem automática da Flow Arts. Lê clientes, agenda e métricas do Instagram e envia artes ao painel do cliente (nexus_enviar_arte), sempre esperando aprovação. Mande a foto SEM texto: o Nexus escreve logo, título, vantagens e botão por cima. Nunca publica nem aprova nada. Antes de enviar, confira a agenda para não repetir horário. Responda ao Rodrigo em português do Brasil, com frases curtas."
     });
   }
   if (method === "ping") return rpcResult(id, {});

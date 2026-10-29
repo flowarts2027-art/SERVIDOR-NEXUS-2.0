@@ -711,3 +711,17 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 9 novos (23 no arquivo). Suíte 665/666 (a falha antiga de `gemini-campaign` continua, não é desta mudança).
 - Não confirmado ainda: se o ChatGPT entrega para a ferramenta uma imagem que ele mesmo GEROU (com imagem anexada, o mecanismo é o oficial). Primeiro teste real depois do merge.
 - Recomendado ao Rodrigo: trocar a chave `NEXUS_MCP_TOKEN` (agora o link permite enviar ao painel). Próximo: login de verdade (OAuth) no lugar da chave no link.
+
+## 2026-10-29 (19h) — Texto automático nas artes enviadas pelo conector
+- Problema (Rodrigo, 29/10): o ChatGPT subiu 6 peças do Quatree Dog para 31/10 pelo `nexus_enviar_arte` e elas foram ao painel **sem nada escrito** (foto crua). Antes disso o ChatGPT não via a ferramenta: faltava apertar "Atualizar ferramentas" no plugin Nexus2.0 (feito pelo Claude no Chrome do Rodrigo; o modo de desenvolvedor já estava ligado).
+- Causa: o texto por código só existia na página Biblioteca (no navegador) e só para a GILTEC.
+- Feito: `nexus_enviar_arte` agora escreve logo, título (3 linhas), 3 vantagens e botão em toda foto que chega sem texto, no próprio Worker:
+  - `scripts/social/molduras_upload.py` gera, no deploy, molduras transparentes com o mesmo desenho do `PADRAO_ARTES.md` (Montserrat, faixa de cima e de baixo, foto só no meio) a partir de `scripts/social/campanha/textos_upload.json` (textos revisados por cliente: quatree-dog, giltec, maskara-assessoria, primeiro-teste). Saída em `public/molduras/` (não vai para o git).
+  - `cloudflare/src/art-frame.js` cola com o binding IMAGES: fundo desfocado + véu na cor do cliente + foto no meio (corta no máximo 10% em cima e embaixo) + moldura + número do cartão no carrossel.
+  - Parâmetro novo `ja_tem_texto` (padrão false). Se a montagem falhar, **nada** vai ao painel (erro claro para o ChatGPT). Cliente sem moldura: vai como veio, com aviso.
+  - Tema novo `quatree` em `campanha_diaria.py`: verde-petróleo + laranja, chamada "COMENTE TABELA" / story "RESPONDA TABELA" (QUATREE_DIRETRIZ_VENDAS.md). Sem logo oficial no Nexus: nome escrito por código.
+  - Deploy (`deploy-nexus-cloudflare.yml`) gera as molduras antes de publicar.
+- Testes: 9 novos em `test/art-frame.test.mjs`.
+- Pendente: merge do Rodrigo; depois apagar as 6 peças cruas de 31/10 do Quatree e pedir ao ChatGPT para reenviar as mesmas fotos (agora saem com texto). Logo oficial da Quatree, se o Rodrigo mandar.
+- (19h30) Regra nova pedida pelo Rodrigo depois do post cortado das 11h do Quatree (agentcore, aprovado, saiu às ~17h50): `toInstagramJpeg` não corta mais arte fora do formato; encaixa inteira com fundo desfocado (tolerância 3%). Reel animado continua com corte (`crop: true`). Testes em `test/no-crop.test.mjs`. Imagens que já estavam guardadas no painel antes disso não mudam.
+
