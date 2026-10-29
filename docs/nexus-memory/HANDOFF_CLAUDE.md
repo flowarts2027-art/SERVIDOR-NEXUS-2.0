@@ -662,3 +662,17 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Master › Integrações › "Postar no Facebook": botão Conectar Página e Pausar/Ligar (`public/facebook-page.js`). Desligar tudo: `NEXUS_FACEBOOK=off` na Cloudflare.
 - Testes: 637/637 (7 novos em `test/facebook-page.test.mjs`). Nada publicado de verdade.
 - Pendente: merge do Rodrigo; depois ele toca em Conectar Página no Master e autoriza a Página da Flow Arts. Para clientes que não são admins do app, a Meta precisa aprovar `pages_manage_posts` na análise do app.
+
+## 2026-10-28 (noite) — Alice: atendente do WhatsApp com Gemini (ouve áudio, vê imagem, parece gente)
+- Pedido do Rodrigo: agente humanizada no WhatsApp da Flow Arts, com as informações do site, chamada Alice, que ouve áudio e entende imagem; e os 4 "truques" de atendente quase humana (voz, digitando, mensagens picadas, memória). Sem pagar API.
+- Feito nesta branch (`feat/whatsapp-alice`): `cloudflare/src/whatsapp-alice.js` (novo) e mudanças em `whatsapp-agent.js` e `whatsapp-knowledge.js`.
+  - Com o segredo `GEMINI_API_KEY` (o mesmo das imagens, plano grátis), a resposta passa a ser do Gemini (`gemini-2.5-flash`, troca com `WHATSAPP_GEMINI_MODEL`). Voltar ao ChatGPT: variável `WHATSAPP_AI=openai`. Se o Gemini falhar, cai no caminho antigo (OpenAI → aviso seguro).
+  - Áudio e imagem: baixa o arquivo da Meta com o token e manda direto ao Gemini; o que ela ouviu/viu fica salvo no histórico como "[áudio] ..." / "[imagem] ...".
+  - Jeito de gente: "digitando…" (marca como lida + typing_indicator), pausa de 1 a 4,5 s por mensagem e 1 a 3 mensagens curtas.
+  - Memória por contato: coluna nova `memory_json` em `whatsapp_contacts` (nome, negócio, cidade, vende para, interesse, observação), só com o que a pessoa disse.
+  - Conhecimento atualizado pelo site de 28/10 (Captador R$ 97, Tráfego "em breve", Completo + Tráfego R$ 897, avulsos, links de cadastro). Saiu a "garantia do 1º mês", que não está no site — confirmar com o Rodrigo se ainda vale.
+  - Limite de envio por hora: 30 → 90 (cada resposta pode ter até 3 mensagens).
+- NÃO feito: resposta em ÁUDIO (voz). O Gemini TTS devolve áudio cru (PCM) e o WhatsApp não aceita esse formato; precisa de um conversor para MP3/OGG. O registro de pacotes npm não estava acessível nesta sessão. Fica para o próximo PR.
+- Testes: 9 novos em `test/whatsapp-alice.test.mjs` (Gemini/Meta simulados) + 11 antigos do WhatsApp passando. Nada enviado de verdade.
+- Situação na Meta (print do Rodrigo, 28/10 21h17): aviso "Sua empresa está restrita" — a empresa Rodrigo Carvalho não pode mais integrar clientes à Plataforma do WhatsApp Business (violação de termos/política, segundo a Meta). Rodrigo diz que o número atual só fez o teste e não responde ninguém. Rodrigo quer trocar o número; ainda não feito.
+- Próximo: (1) Rodrigo faz login no navegador para conferir o status do número/token e a restrição; (2) pedir revisão ao suporte da Meta; (3) trocar número e atualizar `WHATSAPP_ACCESS_TOKEN` e `WHATSAPP_PHONE_NUMBER_ID` na Cloudflare; (4) merge do PR e teste com uma mensagem do celular dele.
