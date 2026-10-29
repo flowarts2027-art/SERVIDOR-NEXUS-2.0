@@ -1,17 +1,17 @@
 # Graph Report - SERVIDOR-NEXUS-2.0  (2026-10-29)
 
 ## Corpus Check
-- 439 files · ~450,561 words
+- 439 files · ~450,733 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 29 file(s) not represented in the graph (top: .css 7, .xml 6, (none) 5)
 
 ## Summary
-- 4391 nodes · 9470 edges · 226 communities (195 shown, 31 thin omitted)
+- 4392 nodes · 9471 edges · 226 communities (195 shown, 31 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 149 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `96a88b39`
+- Built from commit: `7c0a81e3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -245,7 +245,7 @@
   docs/nexus-memory/CHANGELOG.md → cloudflare/src/agent-runtime.js
 - `2026-10-19 ~11h BRT — Auditoria (chat) + correção do Creator (branch, sem deploy)` --references--> `runCreator()`  [INFERRED]
   docs/nexus-memory/CHANGELOG.md → cloudflare/src/agent-runtime.js
-- `2026-10-28 — Biblioteca pula dia que já tem postagem` --references--> `freeSlots()`  [INFERRED]
+- `2026-10-28 — Biblioteca escreve o texto nas artes que chegam sem texto` --references--> `replaceProgrammedImage()`  [INFERRED]
   docs/nexus-memory/HANDOFF_CLAUDE.md → cloudflare/src/art-library.js
 - `2026-10-28 — Captador da GILTEC e limpeza de 2 dias no CRM (todos os clientes)` --references--> `cleanupLeads()`  [INFERRED]
   docs/nexus-memory/HANDOFF_CLAUDE.md → cloudflare/src/captador.js
@@ -556,8 +556,8 @@ Cohesion: 0.05
 Nodes (39): 2026-09-28 13h10 — revisão Ragnar esgotada, 2026-09-28 — dois bloqueios de publicação, 2026-09-28 — limite de chamadas externas do Worker gratuito, 2026-09-28 — resposta 400 na revisão Ragnar, 2026-09-28 — três mídias padrão Ragnar inválidas, 2026-10-02 — correção implantada e abertura confirmada, 2026-10-02 — painel de vídeos, 2026-10-02 — redirecionamento circular do portal confirmado (+31 more)
 
 ### Community 77 - "DOTs de marketing — transferência para outra conta"
-Cohesion: 0.25
-Nodes (5): Como recuperar, DOTs de marketing — transferência para outra conta, Inventário, Memória de trabalho disponível, 2026-10-29 06h56 BRT — Rotina diária: Flow Arts e Maskara confirmadas; Quatree pendente de packshot
+Cohesion: 0.22
+Nodes (6): Como recuperar, DOTs de marketing — transferência para outra conta, Inventário, Memória de trabalho disponível, 2026-10-29 06h56 BRT — Rotina diária: Flow Arts e Maskara confirmadas; Quatree pendente de packshot, 2026-10-29 — Reel Flow Arts de 30/10 às 12h
 
 ### Community 78 - "Campanha de 30 dias — Quatree Dog (@ericsson_quatree)"
 Cohesion: 0.14
@@ -1037,7 +1037,7 @@ Nodes (17): campaignStatus(), geminiDailyClients(), asset(), authorized(), auton
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `CLIENT_OK`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1957 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1958 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
