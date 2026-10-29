@@ -2,13 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { handleMcpRequest, handleMcpMessage, MCP_TOOLS, mcpEnabled } from "../src/mcp-server.js";
+import { handleMcpRequest, handleMcpMessage, MCP_TOOLS, mcpEnabled, enviarArte, MCP_DAILY_UPLOAD_LIMIT } from "../src/mcp-server.js";
 
 const TOKEN = "chave-de-teste-bem-comprida-123456";
 
 function setup(extra = {}) {
   const db = new DatabaseSync(":memory:");
-  db.exec(`CREATE TABLE post_ledger(id TEXT PRIMARY KEY, client_id TEXT, scheduled_for TEXT, status TEXT, approval_status TEXT, caption TEXT, payload_json TEXT);`);
+  db.exec(`CREATE TABLE post_ledger(id TEXT PRIMARY KEY, client_id TEXT, scheduled_for TEXT, status TEXT, approval_status TEXT, caption TEXT, payload_json TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);`);
   const DB = { prepare(sql) { const wrap = args => {
     const p = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
     return { first: async () => db.prepare(sql).get(p) || null, all: async () => ({ results: db.prepare(sql).all(p) }),
@@ -84,12 +84,14 @@ test("GET não é aceito (sem SSE)", async () => {
   assert.equal((await handleMcpRequest(req, env, new URL(req.url), deps)).status, 405);
 });
 
-test("passo 1: todas as ferramentas são só leitura", () => {
-  assert.deepEqual(MCP_TOOLS.map(t => t.name), ["nexus_listar_clientes", "nexus_ver_agenda", "nexus_ver_metricas"]);
-  for (const t of MCP_TOOLS) {
-    assert.equal(t.annotations.readOnlyHint, true);
-    assert.equal(t.annotations.destructiveHint, false);
-  }
+test("ferramentas: 3 de leitura e 1 de envio, nenhuma destrutiva", () => {
+  assert.deepEqual(MCP_TOOLS.map(t => t.name), ["nexus_listar_clientes", "nexus_ver_agenda", "nexus_ver_metricas", "nexus_enviar_arte"]);
+  for (const t of MCP_TOOLS) assert.equal(t.annotations.destructiveHint, false);
+  for (const t of MCP_TOOLS.slice(0, 3)) assert.equal(t.annotations.readOnlyHint, true);
+  const envio = MCP_TOOLS[3];
+  assert.equal(envio.annotations.readOnlyHint, false);
+  assert.deepEqual(envio._meta["openai/fileParams"], ["imagem", "imagem2", "imagem3", "imagem4", "imagem5"]);
+  assert.match("2026-10-30", new RegExp(envio.inputSchema.properties.dia.pattern));
 });
 
 test("listar clientes", async () => {
@@ -101,7 +103,7 @@ test("listar clientes", async () => {
 
 test("agenda mostra só o cliente pedido, no período, em hora de Brasília", async () => {
   const { env, deps, db } = setup();
-  const ins = db.prepare("INSERT INTO post_ledger VALUES(?,?,?,?,?,?,?)");
+  const ins = db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json) VALUES(?,?,?,?,?,?,?)");
   ins.run("a", "primeiro-teste", "2026-10-30T12:00:00.000Z", "scheduled", "pending", "Post   das 9h", JSON.stringify({ creativeFeatures: { requestedFormat: "carousel" } }));
   ins.run("b", "primeiro-teste", "2026-12-30T12:00:00.000Z", "scheduled", "pending", "longe", "{}");
   ins.run("c", "giltec", "2026-10-30T12:00:00.000Z", "scheduled", "pending", "outro", "{}");
@@ -139,4 +141,105 @@ test("o Worker encaminha /mcp antes do resto e a Cloudflare não serve arquivo n
   assert.match(index, /handleMcpRequest\(request, env, url\)/);
   const wrangler = readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   assert.match(wrangler, /"\/mcp\*"/);
+});
+
+// ---------- envio de arte ----------
+const JPG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 74, 70, 73, 70, 0, 1]);
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 13, 10, 26, 10, 0, 0, 0, 13]);
+
+function sendSetup(extra = {}, bodies = {}) {
+  const base = setup(extra);
+  const calls = { downloads: [], uploads: [] };
+  base.deps.download = async url => {
+    calls.downloads.push(url);
+    const body = bodies[url] ?? JPG;
+    if (body === 404) return new Response("x", { status: 404 });
+    return new Response(body, { status: 200 });
+  };
+  base.deps.upload = async (env, form, now, overrides) => {
+    calls.uploads.push({ form, overrides });
+    if (bodies.__uploadError) throw new Error(bodies.__uploadError);
+    return { ok: true, id: "upload-x", type: form.get("type"), approval: "pending" };
+  };
+  return { ...base, calls };
+}
+const NOW = new Date("2026-10-29T20:00:00Z");
+const arq = n => ({ download_url: "https://files.oaiusercontent.com/f" + n, file_id: "file_" + n });
+
+test("enviar post: baixa a imagem do ChatGPT e manda ao painel ESPERANDO APROVAÇÃO", async () => {
+  const { env, deps, calls } = sendSetup();
+  const out = await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", legenda: "Oi", imagem: arq(1) }, NOW);
+  assert.equal(out.ok, true);
+  assert.match(out.situacao, /esperando aprovação/);
+  assert.deepEqual(calls.downloads, ["https://files.oaiusercontent.com/f1"]);
+  const { form, overrides } = calls.uploads[0];
+  assert.equal(form.get("approval"), "cliente");
+  assert.equal(form.get("noDuplicate"), "1");
+  assert.equal(form.get("type"), "post");
+  assert.equal(form.get("caption"), "Oi");
+  assert.equal(form.getAll("images").length, 1);
+  assert.equal(form.getAll("images")[0].type, "image/jpeg");
+  assert.equal(overrides.source, "mcp:upload");
+  assert.equal(overrides.approval, undefined);
+});
+
+test("carrossel junta imagem, imagem2... na ordem; story sem legenda", async () => {
+  const { env, deps, calls } = sendSetup({}, { "https://files.oaiusercontent.com/f2": PNG });
+  await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "carrossel", dia: "2026-10-30", hora: "09:00", imagem: arq(1), imagem2: arq(2), imagem3: arq(3) }, NOW);
+  const form = calls.uploads[0].form;
+  assert.equal(form.get("type"), "carousel");
+  assert.deepEqual(form.getAll("images").map(f => f.type), ["image/jpeg", "image/png", "image/jpeg"]);
+  await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "12:00", legenda: "ignorada", imagens_urls: ["https://exemplo.com/s.jpg"] }, NOW);
+  assert.equal(calls.uploads[1].form.get("caption"), null);
+});
+
+test("carrossel com 1 imagem e post com 2 imagens são recusados", async () => {
+  const { env, deps, calls } = sendSetup();
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "carrossel", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /2 a 5/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1), imagem2: arq(2) }, NOW), /1 imagem/);
+  assert.equal(calls.uploads.length, 0);
+});
+
+test("só https, só imagem de verdade, link vencido avisa", async () => {
+  const { env, deps, calls } = sendSetup({}, { "https://x.com/txt": new TextEncoder().encode("não é imagem"), "https://x.com/old": 404 });
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagens_urls: ["http://x.com/a.jpg"] }, NOW), /https/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagens_urls: ["https://x.com/txt"] }, NOW), /JPG, PNG nem WEBP/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagens_urls: ["https://x.com/old"] }, NOW), /vencido/);
+  assert.equal(calls.uploads.length, 0);
+});
+
+test("sem imagem, dia errado ou formato errado: nada é enviado", async () => {
+  const { env, deps, calls } = sendSetup();
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00" }, NOW), /campo imagem/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "30/10", hora: "09:00", imagem: arq(1) }, NOW), /AAAA-MM-DD/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "reel", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /post, story ou carrossel/);
+  assert.equal(calls.downloads.length + calls.uploads.length, 0);
+});
+
+test("horário ocupado vira mensagem clara", async () => {
+  const { env, deps } = sendSetup({}, { __uploadError: "slot_taken" });
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /Já tem um post nesse horário/);
+});
+
+test("NEXUS_MCP_WRITE=off desliga só o envio", async () => {
+  const { env, deps, calls } = sendSetup({ NEXUS_MCP_WRITE: "off" });
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /desligado/);
+  assert.equal(calls.uploads.length, 0);
+  const r = await handleMcpMessage(env, { jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "nexus_listar_clientes", arguments: {} } }, deps);
+  assert.equal(r.result.isError, false);
+});
+
+test("limite de envios em 24 horas", async () => {
+  const { env, deps, db, calls } = sendSetup();
+  const ins = db.prepare("INSERT INTO post_ledger(id,client_id,payload_json) VALUES(?,?,?)");
+  for (let i = 0; i < MCP_DAILY_UPLOAD_LIMIT; i++) ins.run("m" + i, "primeiro-teste", JSON.stringify({ source: "mcp:upload" }));
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /Limite/);
+  assert.equal(calls.downloads.length, 0);
+});
+
+test("pelo protocolo: erro de entrada volta como isError, sem derrubar o servidor", async () => {
+  const { env, deps } = sendSetup();
+  const r = await handleMcpMessage(env, { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "nexus_enviar_arte", arguments: { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) } } }, deps);
+  assert.equal(r.result.isError, false);
+  assert.equal(r.result.structuredContent.situacao, "esperando aprovação no painel");
 });

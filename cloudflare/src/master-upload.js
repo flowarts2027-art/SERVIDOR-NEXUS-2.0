@@ -91,7 +91,7 @@ async function slotTaken(env, clientId, scheduledFor, isStory) {
   return Number(row?.n || 0) > 0;
 }
 
-export async function masterUpload(env, form, now = new Date()) {
+export async function masterUpload(env, form, now = new Date(), overrides = {}) {
   const client = await activeClient(env, form.get("clientId"));
   const type = TYPES[String(form.get("type") || "").trim()];
   if (!type) throw new Error("type_invalid");
@@ -110,7 +110,8 @@ export async function masterUpload(env, form, now = new Date()) {
   return createClientUpload(env, client, form, now, {
     approval, allowClientDate: true,
     source: "master:upload", createdBy: "master", mediaSource: "master-upload",
-    reviewer: "rodrigo", reason: "Conteúdo pronto enviado pelo Rodrigo no Master"
+    reviewer: "rodrigo", reason: "Conteúdo pronto enviado pelo Rodrigo no Master",
+    ...overrides
   });
 }
 
