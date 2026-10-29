@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-10-29 — FLOW-IG-001: auditoria do Instagram e campanha nova (Claude)
+Auditoria em `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md` (15 seguidores; 12 posts somam alcance 10; 0 Reels; QUERO sem direct até o PR #454; 22 de 28 peças recusadas por excesso de fontes). Campanha automática da Flow Arts reescrita para vendedores/representantes e sem post às 12h. **ChatGPT: a partir de 30/10, na Flow Arts faça só o Reel das 12h.** Aguardando merge do Rodrigo (antes das 04h17 de 30/10) e do PR #454.
+
 ## 2026-10-28 — SITE-NOVO-001: site novo da Flow Arts
 Claude refez `public/site.html` (tema clean da logo, movimento, pacotes com abas, páginas antigas numa aba discreta do rodapé). 630/630 testes. **Aguardando merge do Rodrigo**; deploy automático depois do merge. Próximo: Privacidade e Termos com o Captador; páginas por tipo de vendedor.
 

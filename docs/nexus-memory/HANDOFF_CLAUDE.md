@@ -1,5 +1,15 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 — Limpeza de 2 dias também no CRM da Flow Arts (PR aberto)
+
+- Pedido do Rodrigo: limpar do CRM da Flow Arts os contatos que ficaram 2 dias sem mensagem e aplicar a auto limpeza a todos os clientes.
+- Diagnóstico: a regra de 28/10 (`cleanupLeads`, captador.js) já vale para o Captador de todos os clientes, mas o CRM da Flow Arts usa outra tabela (`crm_contacts`, daily-prospects.js) e não tinha a regra; havia contatos "atrasado 8 dias".
+- Correção: `archiveStaleCrm` em `cloudflare/src/daily-prospects.js`, chamada a cada ciclo de `runDailyProspects`. Arquiva (não apaga) contato em "Para chamar" sem mensagem e criado há mais de 2 dias; quem já recebeu mensagem fica. Teste novo em `test/daily-prospects.test.mjs`.
+- Testes: 637/638; a única falha (`gemini-campaign.test.mjs`, fila do Master 4 !== 6) já falha na main sem esta mudança.
+- Também em 29/10: artes da Maskara (9) e da Flow Arts (5) feitas por código no padrão do Nexus e enviadas por Enviar artes para 29/10, esperando aprovação. Nada aprovado nem publicado pelo assistente.
+- Observação: a busca diária da Flow Arts ainda usa `FOCUS_NICHES` de comida (21/10), mas o foco da Flow Arts mudou em 23/10 para vendedores que precisam de leads. Ajuste pendente, depende do Rodrigo.
+- Próximo passo: Rodrigo aprovar o merge do PR; depois do deploy, o próximo ciclo (15 min) arquiva os contatos antigos.
+
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
 
 - Pedido mais recente de Rodrigo corrige o escopo: **3 posts, sendo 1 carrossel, e 3 stories**, somente 28/10/2026. Campanha permanece diária, não mensal.
@@ -671,3 +681,26 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 641/641 (4 novos em `test/ig-send.test.mjs`; 3 testes antigos ajustados para o endereço novo). Nada enviado de verdade.
 - Pendente: merge do Rodrigo. Depois, um comentário QUERO de teste num post da GILTEC para conferir em `commentAutoReplyStatus` (lastWebhook/recent). Se ainda falhar, o erro da Meta fica gravado ali.
 - Próximo passo combinado: Caixa de conversas no painel (Instagram + WhatsApp), também com base no ChatbotX.
+## 2026-10-29 — Conector MCP do Nexus, passo 1 (só leitura)
+- Pedido do Rodrigo: montar um MCP do Nexus para o Claude e o ChatGPT (ideia vista no ChatFyre, que liga o Claude a automação de Instagram). Foco: Flow Arts.
+- Feito: `cloudflare/src/mcp-server.js` (novo) + rota em `src/index.js` + `/mcp*` em `run_worker_first`. MCP "Streamable HTTP" em modo JSON, sem sessão.
+- Ferramentas, TODAS só leitura: `nexus_listar_clientes`, `nexus_ver_agenda` (post_ledger, hora de Brasília), `nexus_ver_metricas` (mesmos números do painel: seguidores, alcance, seguidores ganhos por post). Nada publica, agenda, apaga ou manda mensagem.
+- Acesso: endereço `https://painel.flowarts.com.br/mcp/<chave>`. A chave é o segredo `NEXUS_MCP_TOKEN` (mínimo 24 caracteres) que o Rodrigo cria na Cloudflare. Sem ele o conector responde "desligado". Desligar: apagar o segredo ou `NEXUS_MCP=off`. Quem tiver o link completo consegue LER; por isso o passo 1 é só leitura.
+- Testes: 14 novos em `test/mcp-server.test.mjs`; suíte 652/653. A 1 falha (`gemini-campaign.test.mjs` › "fila do Master") já falha na `main` sem esta mudança.
+- Pendente: merge do Rodrigo; depois ele cria o segredo e adiciona o conector no Claude (Conectores › personalizado) e no ChatGPT.
+- Próximo passo (2): login de verdade (OAuth, como o ChatFyre) no lugar da chave no link, e só então ferramentas de escrita (subir arte na Biblioteca, sempre chegando pendente de aprovação).
+
+## 2026-10-29 (17h) — MCP do Nexus no ar e conectado
+- PR #459 com merge e deploy feitos. Segredo `NEXUS_MCP_TOKEN` criado pelo Rodrigo na Cloudflare (a 1ª chave era curta demais; a regra é ter 24+ caracteres).
+- Conferido em produção: `/mcp/<chave errada>` responde 401 (ligado e protegido).
+- Conectado no Claude (conector personalizado) e no ChatGPT (Plugins › Adicionar › "Adicionar servidor MCP personalizado", sem autenticação; aparece como "Nexus2.0"). Rodrigo confirmou que funciona no Claude.
+- Próximo passo: login de verdade (OAuth) no lugar da chave no link; depois ferramentas de escrita sempre pendentes de aprovação.
+
+## 2026-10-29 (18h) — Auditoria do Instagram da Flow Arts e campanha de 30/10
+- Pedido do Rodrigo: auditoria completa e campanha de amanhã ajustada, com comando para o ChatGPT.
+- Dados: conector MCP do Nexus (métricas e agenda) e perfil no navegador. Resultado em `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md`.
+- Feito: `scripts/social/campanha/conteudo.json` (só `primeiro-teste`): 3 dias novos para vendedores/representantes, sem `post1200`. `campanha_diaria.py`: `post1200` virou opcional (GILTEC e Maskara continuam com o das 12h). Testado com FOTO_FALSA=1 em 30/10, 31/10 e 01/11 (Flow Arts: 5 peças; GILTEC e Maskara: 6 cada). Textos cabem nas artes.
+- Avisos no topo de `REGRA_POSTS_DIARIOS.md` e na seção da Flow Arts de `FORMATOS_POSTAGENS.md`; entrada no `TASK_BOARD.md`.
+- Nada publicado, aprovado ou enviado. Branch `agendamentos` sem pastas de 30/10 (conferido), então a campanha automática gera tudo amanhã.
+- Pendente: merge do Rodrigo antes das 04h17 de 30/10; merge do PR #454 (QUERO → direct); bio, link `?de=instagram` e destaques no Instagram (ele mesmo).
+- Próximo: em 06/11 o Claude puxa os números pelo Nexus e compara (alcance de Reel × post, seguidores por post).

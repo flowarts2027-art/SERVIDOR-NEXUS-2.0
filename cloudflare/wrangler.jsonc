@@ -40,7 +40,7 @@
   "assets": {
     "directory": "../public",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/login", "/portal*", "/client-lite.js", "/client-lite.css", "/master*", "/api/*", "/index.html", "/marketing-para-*", "/exemplo*", "/privacidade*", "/termos*", "/sitemap.xml", "/robots.txt"]
+    "run_worker_first": ["/", "/mcp*", "/login", "/portal*", "/client-lite.js", "/client-lite.css", "/master*", "/api/*", "/index.html", "/marketing-para-*", "/exemplo*", "/privacidade*", "/termos*", "/sitemap.xml", "/robots.txt"]
   },
   "d1_databases": [{
     "binding": "DB",

@@ -17,6 +17,8 @@
 - **O GitHub recusa imagem idêntica** (`agendar-pasta.sh`, desde 23/10): se o Actions mostrar "imagem repetida", crie uma arte nova para aquela pasta.
 
 ## 1. Flow Arts (@flowarts2026) — 6 conteúdos por dia
+> **Desde 30/10/2026:** ver `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md`. Mesma grade, mas o público é vendedor/representante, e só o Reel das 12h é do ChatGPT; o resto sai pela campanha automática.
+
 | Horário | Formato | Pasta | Função |
 | --- | --- | --- | --- |
 | 09:00 | Carrossel, 5–7 cartões 4:5 | `agendamentos/AAAA-MM-DD/0900/` | Conteúdo útil para salvar |

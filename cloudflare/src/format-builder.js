@@ -36,6 +36,20 @@ function hasRealVideo(payload = {}) {
   return /^https:\/\//i.test(String(payload?.formatBuild?.videoUrl || ""));
 }
 
+// Carrossel que chegou pronto (upload do Master, Enviar artes ou painel do cliente).
+const UPLOAD_SOURCES = new Set(["client-upload", "portal:client-upload", "master-upload", "master:upload", "art-library", "manual", "manual-carousel", "master:manual-carousel"]);
+
+export function uploadedCarouselCards(payload = {}) {
+  const urls = Array.isArray(payload?.formatBuild?.carouselUrls) ? payload.formatBuild.carouselUrls : [];
+  return urls.filter(url => /^https:\/\//i.test(String(url || ""))).slice(0, 10);
+}
+
+export function isUploadedCarousel(payload = {}) {
+  const sources = [payload?.formatBuild?.source, payload?.source].map(value => String(value || "").toLowerCase());
+  const uploaded = sources.some(value => UPLOAD_SOURCES.has(value));
+  return uploaded && uploadedCarouselCards(payload).length >= 2;
+}
+
 function requestedFormat(payload = {}) {
   const value = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
   if (value === "carousel") return "carousel";
@@ -472,6 +486,20 @@ export async function runFormatBuilder(env, client, options = {}) {
       await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
       built++;
       items.push({id:row.id,format,status:"approved"});
+      continue;
+    }
+
+    // Carrossel enviado pronto: os cartões já existem, então sai como está, sem gerar
+    // imagem nova por IA. Antes o Nexus tentava completar 4 cartões com a IA pausada
+    // e travava o post (GILTEC, 29/10/2026).
+    if(format==="carousel"&&isUploadedCarousel(payload)){
+      const cards=uploadedCarouselCards(payload);
+      payload.formatBuild={...(payload.formatBuild||{}),status:"approved",kind:"carousel",carouselUrls:cards,cardCount:cards.length,attempts:0,error:"",reused:true,builtAt:new Date().toISOString()};
+      delete payload.formatBuild.failedAt;
+      payload.qualityGates.formatBuilder="approved";
+      await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id,JSON.stringify(payload)).run();
+      built++;
+      items.push({id:row.id,format,status:"approved",uploaded:true});
       continue;
     }
 
