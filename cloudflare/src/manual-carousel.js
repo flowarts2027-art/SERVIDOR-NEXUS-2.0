@@ -15,14 +15,42 @@ const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
 });
 
-// O Instagram só aceita JPEG no carrossel: converte e deixa em 1080x1350 (4:5).
-export async function toInstagramJpeg(env, file, size = { width: 1080, height: 1350 }) {
+// O Instagram só aceita JPEG no carrossel: converte e deixa em 1080x1350 (4:5) ou no tamanho pedido.
+// REGRA FIXA (Rodrigo, 29/10/2026): arte NUNCA é cortada. Se ela não estiver no formato (ex.: quadrada
+// ou deitada), entra inteira no meio, com a própria imagem desfocada preenchendo o resto. Só corta
+// quando a diferença é mínima (até 3%) ou quando quem chama pede crop (foto de cena, não arte).
+export const ASPECT_TOLERANCE = 0.03;
+
+export function needsLetterbox(srcW, srcH, size) {
+  const w = Number(srcW) || 0, h = Number(srcH) || 0;
+  if (!w || !h) return false;
+  const src = w / h, target = size.width / size.height;
+  return Math.abs(src - target) / target > ASPECT_TOLERANCE;
+}
+
+export function containBox(srcW, srcH, size) {
+  const s = Math.min(size.width / srcW, size.height / srcH);
+  const width = Math.min(size.width, Math.round(srcW * s));
+  const height = Math.min(size.height, Math.round(srcH * s));
+  return { width, height, left: Math.round((size.width - width) / 2), top: Math.round((size.height - height) / 2) };
+}
+
+export async function toInstagramJpeg(env, file, size = { width: 1080, height: 1350 }, { crop = false } = {}) {
   const type = String(file.type || "").toLowerCase();
   if (!env.IMAGES) {
     if (type !== "image/jpeg") throw new Error("image_convert_unavailable");
     return file.stream();
   }
-  const out = await env.IMAGES.input(file.stream()).transform({ width: size.width, height: size.height, fit: "cover" }).output({ format: "image/jpeg", quality: 92 });
+  let canvas;
+  const info = crop ? null : await env.IMAGES.info(file.stream()).catch(() => null);
+  if (info && needsLetterbox(info.width, info.height, size)) {
+    const box = containBox(info.width, info.height, size);
+    canvas = env.IMAGES.input(file.stream()).transform({ width: size.width, height: size.height, fit: "cover", blur: 40 })
+      .draw(env.IMAGES.input(file.stream()).transform({ width: box.width, height: box.height, fit: "contain" }), { left: box.left, top: box.top });
+  } else {
+    canvas = env.IMAGES.input(file.stream()).transform({ width: size.width, height: size.height, fit: "cover" });
+  }
+  const out = await canvas.output({ format: "image/jpeg", quality: 92 });
   const response = await out.response();
   if (!response.ok) throw new Error("image_convert_failed");
   return new Uint8Array(await response.arrayBuffer());

@@ -723,3 +723,5 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
   - Deploy (`deploy-nexus-cloudflare.yml`) gera as molduras antes de publicar.
 - Testes: 9 novos em `test/art-frame.test.mjs`.
 - Pendente: merge do Rodrigo; depois apagar as 6 peças cruas de 31/10 do Quatree e pedir ao ChatGPT para reenviar as mesmas fotos (agora saem com texto). Logo oficial da Quatree, se o Rodrigo mandar.
+- (19h30) Regra nova pedida pelo Rodrigo depois do post cortado das 11h do Quatree (agentcore, aprovado, saiu às ~17h50): `toInstagramJpeg` não corta mais arte fora do formato; encaixa inteira com fundo desfocado (tolerância 3%). Reel animado continua com corte (`crop: true`). Testes em `test/no-crop.test.mjs`. Imagens que já estavam guardadas no painel antes disso não mudam.
+

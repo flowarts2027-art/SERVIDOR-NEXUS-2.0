@@ -43,3 +43,8 @@ Código que aplica: `scripts/social/campanha_diaria.py` (função `desenhar`). T
 ## 7. Conteúdo
 - Sem preço, sem prazo prometido, sem telefone na imagem, sem depoimento ou número inventado.
 - Tudo vai ao painel **esperando aprovação**.
+
+## 9. Arte nunca é cortada (Rodrigo, 29/10/2026)
+- Motivo: o post das 11h de 29/10 do Quatree saiu com título e vantagens cortados (arte mais larga que 4:5, cortada para caber).
+- Regra no código (`toInstagramJpeg` em `cloudflare/src/manual-carousel.js`): arte fora do formato entra **inteira** no meio, com a própria imagem desfocada no resto. Só corta se a diferença for de até 3%, ou quando é foto de cena pedida com corte (Reel animado).
+
