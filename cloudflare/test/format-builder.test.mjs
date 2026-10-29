@@ -67,3 +67,15 @@ test("carrossel esperando aprovação é montado antes; ajuste pedido descarta a
   const saved = JSON.parse(db.prepare("SELECT payload_json FROM post_ledger WHERE id='c1'").get().payload_json);
   assert.deepEqual(saved.formatBuild, {});
 });
+
+test("carrossel enviado pronto sai como está, sem gerar imagem por IA (GILTEC 29/10)", async () => {
+  const { isUploadedCarousel, uploadedCarouselCards } = await import("../src/format-builder.js");
+  const enviado = { source:"master:upload", formatBuild:{ status:"failed", kind:"carousel", source:"client-upload", attempts:3, error:"image_generation_paused",
+    carouselUrls:["https://x.workers.dev/a/cartao-1.jpg","https://x.workers.dev/a/cartao-2.jpg"] } };
+  assert.equal(isUploadedCarousel(enviado), true);
+  assert.equal(uploadedCarouselCards(enviado).length, 2);
+  assert.equal(isUploadedCarousel({ source:"agent", formatBuild:{ carouselUrls:["https://a","https://b"] } }), false);
+  assert.equal(isUploadedCarousel({ source:"master:upload", formatBuild:{ carouselUrls:["https://a"] } }), false);
+  const src = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
+  assert.ok(src.indexOf("isUploadedCarousel(payload)") < src.indexOf("formatAttempts>=3"), "upload é liberado antes do limite de tentativas");
+});
