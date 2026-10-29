@@ -1,5 +1,7 @@
 # REGRA FIXA — ChatGPT cria 3 posts por dia da Flow Arts e envia ao painel
 
+> **⚠️ FLOW ARTS DESDE 30/10/2026 — leia antes de tudo `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md`.** Ela vale mais que este arquivo para a Flow Arts: público = **vendedores externos e representantes**; carrossel 09h, post 19h e os 3 stories saem pela **campanha automática**; o **ChatGPT faz só o Reel das 12h** (`agendamentos/AAAA-MM-DD/1200/`). Regra "App de agendar" suspensa na Flow Arts. Quatree, GILTEC e Maskara seguem como abaixo.
+
 ## DOIS JEITOS DE ENVIAR AS IMAGENS — Rodrigo, 27/10/2026 (vale para TODOS os clientes)
 
 ### Jeito 1 — ChatGPT no modo Work/agente sobe tudo sozinho (preferido)

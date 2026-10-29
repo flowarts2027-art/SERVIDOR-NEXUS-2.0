@@ -687,3 +687,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Conferido em produção: `/mcp/<chave errada>` responde 401 (ligado e protegido).
 - Conectado no Claude (conector personalizado) e no ChatGPT (Plugins › Adicionar › "Adicionar servidor MCP personalizado", sem autenticação; aparece como "Nexus2.0"). Rodrigo confirmou que funciona no Claude.
 - Próximo passo: login de verdade (OAuth) no lugar da chave no link; depois ferramentas de escrita sempre pendentes de aprovação.
+
+## 2026-10-29 (18h) — Auditoria do Instagram da Flow Arts e campanha de 30/10
+- Pedido do Rodrigo: auditoria completa e campanha de amanhã ajustada, com comando para o ChatGPT.
+- Dados: conector MCP do Nexus (métricas e agenda) e perfil no navegador. Resultado em `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md`.
+- Feito: `scripts/social/campanha/conteudo.json` (só `primeiro-teste`): 3 dias novos para vendedores/representantes, sem `post1200`. `campanha_diaria.py`: `post1200` virou opcional (GILTEC e Maskara continuam com o das 12h). Testado com FOTO_FALSA=1 em 30/10, 31/10 e 01/11 (Flow Arts: 5 peças; GILTEC e Maskara: 6 cada). Textos cabem nas artes.
+- Avisos no topo de `REGRA_POSTS_DIARIOS.md` e na seção da Flow Arts de `FORMATOS_POSTAGENS.md`; entrada no `TASK_BOARD.md`.
+- Nada publicado, aprovado ou enviado. Branch `agendamentos` sem pastas de 30/10 (conferido), então a campanha automática gera tudo amanhã.
+- Pendente: merge do Rodrigo antes das 04h17 de 30/10; merge do PR #454 (QUERO → direct); bio, link `?de=instagram` e destaques no Instagram (ele mesmo).
+- Próximo: em 06/11 o Claude puxa os números pelo Nexus e compara (alcance de Reel × post, seguidores por post).

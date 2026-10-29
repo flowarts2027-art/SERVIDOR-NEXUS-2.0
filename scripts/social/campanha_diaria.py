@@ -113,11 +113,11 @@ def plano(cliente, data, conteudo):
         abre = ({"chave": "0900", "tipo": "post", "cartoes": [com(dia["post0900"], 4)], "legenda": dia["legendas"]["0900"]}
                 if "post0900" in dia else
                 {"chave": "0900", "tipo": "carousel", "cartoes": [com(c, i) for i, c in enumerate(dia["carrossel"])], "legenda": dia["legendas"]["0900"]})
-        pecas += [
-            abre,
-            {"chave": "1200", "tipo": "post", "cartoes": [com(dia["post1200"], 5)], "legenda": dia["legendas"]["1200"]},
-            {"chave": "1900", "tipo": "post", "cartoes": [com(dia["post1900"], 6)], "legenda": dia["legendas"]["1900"]},
-        ]
+        pecas.append(abre)
+        # Flow Arts (29/10): sem post1200 o horário das 12h fica livre para o Reel do ChatGPT.
+        if "post1200" in dia:
+            pecas.append({"chave": "1200", "tipo": "post", "cartoes": [com(dia["post1200"], 5)], "legenda": dia["legendas"]["1200"]})
+        pecas.append({"chave": "1900", "tipo": "post", "cartoes": [com(dia["post1900"], 6)], "legenda": dia["legendas"]["1900"]})
         for i, hora in enumerate(["0900", "1200", "1900"]):
             pecas.append({"chave": hora + "-story", "tipo": "story", "cartoes": [com(dia["stories"][i], i + 2)]})
     return pecas
