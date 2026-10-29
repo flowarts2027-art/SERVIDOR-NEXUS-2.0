@@ -8,6 +8,9 @@ on:
       - "public/**"
       - "scripts/local-youtube/**"
       - "scripts/build-local-helper-zip.py"
+      - "scripts/social/molduras_upload.py"
+      - "scripts/social/campanha_diaria.py"
+      - "scripts/social/campanha/textos_upload.json"
       - ".github/workflows/deploy-nexus-cloudflare.yml"
   workflow_dispatch:
 
@@ -66,6 +69,18 @@ jobs:
               assert archive.read('helper.py') == Path('scripts/local-youtube/helper.py').read_bytes()
           print('WINDOWS_HELPER_DOWNLOAD_MATCHES_MAIN')
           PY
+
+      # Molduras de texto das artes que chegam sem texto pelo conector (Rodrigo, 29/10/2026).
+      # Feitas aqui porque o Worker não tem Pillow; o Worker só cola (cloudflare/src/art-frame.js).
+      - name: Build text frames for uploaded art
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet --break-system-packages "pillow==12.3.0" || python3 -m pip install --quiet "pillow==12.3.0"
+          curl -fsSL -o "scripts/social/fonts/Montserrat[wght].ttf" "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf" \
+            && echo "::notice::Fonte Montserrat pronta" || echo "::warning::Sem Montserrat; usando a Inter"
+          rm -rf public/molduras
+          python3 scripts/social/molduras_upload.py public/molduras
+          test -s public/molduras/molduras.json
 
       - name: Deploy Worker and public assets
         working-directory: cloudflare

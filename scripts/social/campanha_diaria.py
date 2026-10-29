@@ -42,6 +42,13 @@ TEMAS = {
         "logo": None, "nome": ["MASKARA", "ASSESSORIA"], "logo_alt": 104,
         "botao": "COMENTA QUERO ABAIXO", "icone_cor": (12, 12, 12),
     },
+    # Quatree Dog (29/10): venda de ração para lojista. Chamada é TABELA (QUATREE_DIRETRIZ_VENDAS.md).
+    # Sem a logo oficial no Nexus: escreve o nome por código (nunca uma logo inventada).
+    "quatree": {
+        "fundo": (6, 40, 46), "destaque": (255, 128, 32), "texto": (255, 255, 255), "botao_texto": (6, 30, 34),
+        "logo": None, "nome": ["QUATREE", "REVENDA NA SUA LOJA"], "logo_alt": 104,
+        "botao": "COMENTE TABELA", "botao_story": "RESPONDA TABELA", "icone_cor": (6, 30, 34),
+    },
     # Flow Arts: fundo quase preto, destaque azul da marca, símbolo da Flow Arts.
     "flow": {
         "fundo": (10, 12, 18), "destaque": (64, 120, 255), "texto": (255, 255, 255), "botao_texto": (255, 255, 255),
@@ -305,7 +312,7 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     bx = (W - bw) // 2
     d.rounded_rectangle([bx, base_botao, bx + bw, base_botao + bh], radius=bh // 2, fill=dest)
     # Story não aceita comentário: lá o botão pede o QUERO no direct (FORMATOS_POSTAGENS.md).
-    chamada = "MANDE QUERO NO DIRECT" if story else tema.get("botao", "COMENTE QUERO")
+    chamada = tema.get("botao_story", "MANDE QUERO NO DIRECT") if story else tema.get("botao", "COMENTE QUERO")
     d.text((W // 2, base_botao + bh // 2), chamada, font=fonte_titulo(cabe(chamada, 800, 48, bw - 70), 800), fill=tema["botao_texto"], anchor="mm")
     if story and rodape:
         d.text((W // 2, base_botao + bh + 30), rodape, font=fonte_titulo(30, 600), fill=txt, anchor="mt")

@@ -20,3 +20,6 @@ android/app/build/
 graphify-out/*
 !graphify-out/GRAPH_REPORT.md
 !graphify-out/graph.json
+
+# Molduras de texto: geradas no deploy (scripts/social/molduras_upload.py)
+public/molduras/
