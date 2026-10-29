@@ -76,6 +76,8 @@ test("carrossel enviado pronto sai como está, sem gerar imagem por IA (GILTEC 2
   assert.equal(uploadedCarouselCards(enviado).length, 2);
   assert.equal(isUploadedCarousel({ source:"agent", formatBuild:{ carouselUrls:["https://a","https://b"] } }), false);
   assert.equal(isUploadedCarousel({ source:"master:upload", formatBuild:{ carouselUrls:["https://a"] } }), false);
+  // Carrossel montado na mão pelo Master ("Carrossel manual") também sai como está.
+  assert.equal(isUploadedCarousel({ source:"master:manual-carousel", formatBuild:{ source:"manual", carouselUrls:["https://a","https://b","https://c"] } }), true);
   const src = fs.readFileSync(new URL("../src/format-builder.js", import.meta.url), "utf8");
   assert.ok(src.indexOf("isUploadedCarousel(payload)") < src.indexOf("formatAttempts>=3"), "upload é liberado antes do limite de tentativas");
 });
