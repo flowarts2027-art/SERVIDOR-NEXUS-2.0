@@ -1,5 +1,15 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 — Limpeza de 2 dias também no CRM da Flow Arts (PR aberto)
+
+- Pedido do Rodrigo: limpar do CRM da Flow Arts os contatos que ficaram 2 dias sem mensagem e aplicar a auto limpeza a todos os clientes.
+- Diagnóstico: a regra de 28/10 (`cleanupLeads`, captador.js) já vale para o Captador de todos os clientes, mas o CRM da Flow Arts usa outra tabela (`crm_contacts`, daily-prospects.js) e não tinha a regra; havia contatos "atrasado 8 dias".
+- Correção: `archiveStaleCrm` em `cloudflare/src/daily-prospects.js`, chamada a cada ciclo de `runDailyProspects`. Arquiva (não apaga) contato em "Para chamar" sem mensagem e criado há mais de 2 dias; quem já recebeu mensagem fica. Teste novo em `test/daily-prospects.test.mjs`.
+- Testes: 637/638; a única falha (`gemini-campaign.test.mjs`, fila do Master 4 !== 6) já falha na main sem esta mudança.
+- Também em 29/10: artes da Maskara (9) e da Flow Arts (5) feitas por código no padrão do Nexus e enviadas por Enviar artes para 29/10, esperando aprovação. Nada aprovado nem publicado pelo assistente.
+- Observação: a busca diária da Flow Arts ainda usa `FOCUS_NICHES` de comida (21/10), mas o foco da Flow Arts mudou em 23/10 para vendedores que precisam de leads. Ajuste pendente, depende do Rodrigo.
+- Próximo passo: Rodrigo aprovar o merge do PR; depois do deploy, o próximo ciclo (15 min) arquiva os contatos antigos.
+
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
 
 - Pedido mais recente de Rodrigo corrige o escopo: **3 posts, sendo 1 carrossel, e 3 stories**, somente 28/10/2026. Campanha permanece diária, não mensal.
