@@ -12,12 +12,13 @@ import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHE
 
 const MAX_TRIES = 4;
 
-const OPEN_POSTS_SQL = `SELECT id, client_id, scheduled_for, payload_json FROM post_ledger
+// COALESCE em tudo: no SQL, NULL dentro de NOT(...) some com a linha (bug de 29/10 que deixava os posts novos de fora).
+export const OPEN_POSTS_SQL = `SELECT id, client_id, scheduled_for, payload_json FROM post_ledger
   WHERE COALESCE(status,'') NOT IN ('published','publishing') AND COALESCE(status,'') NOT LIKE 'cancel%'
   AND COALESCE(approval_status,'') <> 'rejected'
   AND (scheduled_for IS NULL OR scheduled_for >= ?1)
   AND COALESCE(json_extract(payload_json,'$.formatBuild.artCheckVersion'),0) < ${TEXT_CHECK_VERSION}
-  AND NOT (json_extract(payload_json,'$.formatBuild.artChecked') = 1 AND json_extract(payload_json,'$.formatBuild.artText') IS NULL)
+  AND NOT (COALESCE(json_extract(payload_json,'$.formatBuild.artChecked'),0) = 1 AND json_extract(payload_json,'$.formatBuild.artText') IS NULL)
   AND instr(COALESCE(json_extract(payload_json,'$.formatBuild.artText'),''),'texto-do-nexus') = 0
   AND json_extract(payload_json,'$.formatBuild.videoUrl') IS NULL
   AND json_extract(payload_json,'$.formatBuild.kind') IN ('post','carousel','story')

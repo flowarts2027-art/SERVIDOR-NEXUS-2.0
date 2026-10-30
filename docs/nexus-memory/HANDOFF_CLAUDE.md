@@ -1,5 +1,11 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 22h25 — Texto nas artes: busca corrigida (PR aberto)
+
+- Conferido em produção depois da v3: nenhum post novo entrava na fila. Causa: no SQL, `NOT (artChecked = 1 AND ...)` com artChecked NULL dá NULL e a linha some. Só o post com artChecked da v1 entrava.
+- Correção: COALESCE na condição. Teste novo roda a busca num SQLite de verdade (`node:sqlite`).
+- Próximo passo: depois do deploy, conferir as 7 peças de 30/10 da Flow Arts (1 passo por minuto, ~15 min).
+
 ## 2026-10-29 22h15 — Cliente nova Daniela Martins: padrão e prompt (PR aberto)
 
 - Auditoria do Instagram @daniela_martins1547 feita no navegador (resumo na ficha).
