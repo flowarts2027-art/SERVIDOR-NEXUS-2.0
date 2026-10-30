@@ -6,6 +6,7 @@
 // Liga por cliente: variável GEMINI_DAILY_CLIENTS (ex.: "giltec"). Chave: segredo GEMINI_API_KEY.
 // Limite de gasto: GEMINI_MONTHLY_LIMIT_USD (padrão 20). Custo por imagem: GEMINI_IMAGE_COST_USD.
 
+import { freeChat, providerOrder } from "./free-llm.js";
 import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 
@@ -341,6 +342,17 @@ export async function cloudflareCaptions(env, clientId, plan) {
   return parseCaptions(posts, raw);
 }
 
+// Legendas pela fila de IAs grátis (Groq, OpenRouter, Mistral, NVIDIA e, por último, Cloudflare).
+// O Gemini fica de fora aqui porque já foi tentado antes.
+export async function freeCaptions(env, clientId, plan, fetcher = fetch) {
+  const { posts, text } = captionRequest(clientId, plan);
+  const out = await freeChat(env, {
+    system: "Você é redator de Instagram. Responda apenas com JSON válido.",
+    user: text, maxTokens: 1800, temperature: 0.7, timeoutMs: 60000
+  }, { fetcher, order: providerOrder(env).filter(name => name !== "gemini") });
+  return parseCaptions(posts, out.text);
+}
+
 // Ajusta para 1080x1350 (feed) ou 1080x1920 (story) e põe a logo original no canto superior direito
 // (no story, abaixo dos 14% de cima, que ficam atrás da barra do Instagram).
 export async function composeWithLogo(env, bytes, clientId, aspect) {
@@ -409,7 +421,7 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
       const fromGemini = String(env?.GEMINI_API_KEY || "").trim() ? await geminiCaptions(env, clientId, plan, fetcher).catch(() => ({})) : {};
       for (const [k, v] of Object.entries(fromGemini)) if (!String(captions[k] || "").trim()) captions[k] = v;
       if (plan.some(p => p.type !== "story" && !String(captions[p.key] || "").trim())) {
-        const fromCf = await (deps.cfCaptions || cloudflareCaptions)(env, clientId, plan).catch(() => ({}));
+        const fromCf = await (deps.cfCaptions || ((e, c, p) => freeCaptions(e, c, p, fetcher)))(env, clientId, plan).catch(() => ({}));
         for (const [k, v] of Object.entries(fromCf)) if (!String(captions[k] || "").trim()) captions[k] = v;
       }
     }

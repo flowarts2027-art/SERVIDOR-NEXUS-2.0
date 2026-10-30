@@ -766,3 +766,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Pendente: merge do Rodrigo; depois apagar as 6 peças cruas de 31/10 do Quatree e pedir ao ChatGPT para reenviar as mesmas fotos (agora saem com texto). Logo oficial da Quatree, se o Rodrigo mandar.
 - (19h30) Regra nova pedida pelo Rodrigo depois do post cortado das 11h do Quatree (agentcore, aprovado, saiu às ~17h50): `toInstagramJpeg` não corta mais arte fora do formato; encaixa inteira com fundo desfocado (tolerância 3%). Reel animado continua com corte (`crop: true`). Testes em `test/no-crop.test.mjs`. Imagens que já estavam guardadas no painel antes disso não mudam.
 
+
+## 2026-10-30 — Roteador de IA grátis (lista awesome-free-llm-apis)
+- **Pedido do Rodrigo:** "implantar" github.com/mnfst/awesome-free-llm-apis no Nexus e no agente do WhatsApp. O repositório é só uma lista de APIs grátis, não um programa.
+- **Feito (branch `feat/ia-gratis-router`):** `cloudflare/src/free-llm.js` tenta, em ordem, Groq → Gemini → OpenRouter (`openrouter/free`) → Mistral → NVIDIA → Workers AI. Pula quem não tem chave; se um falhar ou der limite (429), passa ao próximo. Ordem: `FREE_LLM_ORDER`; modelo: `FREE_LLM_<NOME>_MODEL`. Provedores sem chave que guardam conversas (Kilo, LLM7) ficaram de fora por causa dos dados de clientes.
+- **Ligado em:** legendas da campanha diária (`gemini-campaign.js`): depois do Gemini, usa a fila grátis (antes era só Workers AI).
+- **Testes:** 6 novos passando. Suíte: 691/692; a falha (teste 306, fila do Master) já existia na `main` antes desta mudança.
+- **Não feito:** nenhuma chave cadastrada, nenhum deploy. Sem chaves novas, o comportamento é igual ao de hoje (cai no Workers AI).
+- **Próximo passo:** Rodrigo cria as chaves grátis (Groq, OpenRouter) e cadastra como segredos no Cloudflare; depois do merge do PR #452 (Alice), ligar a Alice nessa fila como reserva do Gemini.
