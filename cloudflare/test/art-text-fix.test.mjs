@@ -47,3 +47,18 @@ test("agente texto nas artes: um passo por rodada (conferir, depois escrever) e 
   assert.deepEqual(last.formatBuild.artText, ["texto-do-nexus"]);
   assert.match(last.imageUrl, /imagem-texto-.*\.jpg$/);
 });
+
+test("agente texto nas artes: a busca pega post novo e pula os já feitos (SQLite de verdade)", async t => {
+  let sqlite;
+  try { sqlite = await import("node:sqlite"); } catch { t.skip("node:sqlite indisponível"); return; }
+  const { OPEN_POSTS_SQL } = await import("../src/art-text-fix.js");
+  const db = new sqlite.DatabaseSync(":memory:");
+  db.exec("CREATE TABLE post_ledger(id, client_id, scheduled_for, status, approval_status, payload_json)");
+  const add = (id, fb) => db.prepare("INSERT INTO post_ledger VALUES(?,?,?,?,?,?)").run(id, "c", "2026-10-30T12:00:00Z", "ready", "pending", JSON.stringify({ formatBuild: fb }));
+  add("novo", { kind: "post" });
+  add("ja-com-texto", { kind: "post", artChecked: true });
+  add("feito", { kind: "post", artChecked: true, artCheckVersion: 2, artText: ["texto-do-nexus"] });
+  add("video", { kind: "reel", videoUrl: "x" });
+  const rows = db.prepare(OPEN_POSTS_SQL).all("2026-10-29T00:00:00Z", 10);
+  assert.deepEqual(rows.map(r => r.id), ["novo"]);
+});
