@@ -90,7 +90,7 @@ test("ferramentas: 3 de leitura e 1 de envio, nenhuma destrutiva", () => {
   for (const t of MCP_TOOLS.slice(0, 3)) assert.equal(t.annotations.readOnlyHint, true);
   const envio = MCP_TOOLS[3];
   assert.equal(envio.annotations.readOnlyHint, false);
-  assert.deepEqual(envio._meta["openai/fileParams"], ["imagem", "imagem2", "imagem3", "imagem4", "imagem5"]);
+  assert.deepEqual(envio._meta["openai/fileParams"], ["imagem", "imagem2", "imagem3", "imagem4", "imagem5", "video"]);
   assert.match("2026-10-30", new RegExp(envio.inputSchema.properties.dia.pattern));
 });
 
@@ -242,4 +242,30 @@ test("pelo protocolo: erro de entrada volta como isError, sem derrubar o servido
   const r = await handleMcpMessage(env, { jsonrpc: "2.0", id: 10, method: "tools/call", params: { name: "nexus_enviar_arte", arguments: { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) } } }, deps);
   assert.equal(r.result.isError, false);
   assert.equal(r.result.structuredContent.situacao, "esperando aprovação no painel");
+});
+
+// ---------- story em vídeo (30/10) ----------
+const MP4 = new Uint8Array([0, 0, 0, 24, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d, 0, 0, 2, 0]);
+
+test("story em vídeo: baixa o MP4, usa a imagem como capa e chega ESPERANDO APROVAÇÃO", async () => {
+  const { env, deps, calls } = sendSetup({}, { "https://exemplo.com/v.mp4": MP4 });
+  const out = await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video_url: "https://exemplo.com/v.mp4", imagem: arq(1) }, NOW);
+  assert.equal(out.video, true);
+  assert.match(out.aviso, /Nada foi publicado/);
+  const form = calls.uploads[0].form;
+  assert.equal(form.get("type"), "story");
+  assert.equal(form.get("approval"), "cliente");
+  assert.equal(form.get("video").type, "video/mp4");
+  assert.equal(form.get("cover").type, "image/jpeg");
+  assert.equal(form.getAll("images").length, 0);
+  assert.equal(form.get("caption"), null);
+});
+
+test("story em vídeo sem capa usa capa lisa; vídeo em post é recusado; arquivo que não é MP4 é recusado", async () => {
+  const { env, deps, calls } = sendSetup({}, { "https://exemplo.com/v.mp4": MP4, "https://exemplo.com/x.mp4": JPG });
+  await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video: { download_url: "https://exemplo.com/v.mp4" } }, NOW);
+  assert.equal(calls.uploads[0].form.get("cover").type, "image/jpeg");
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "21:00", video_url: "https://exemplo.com/v.mp4" }, NOW), /só vale para story/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video_url: "https://exemplo.com/x.mp4" }, NOW), /MP4/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video_url: "http://exemplo.com/v.mp4" }, NOW), /https/);
 });
