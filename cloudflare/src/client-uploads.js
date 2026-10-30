@@ -58,8 +58,8 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   // REGRA FIXA (Rodrigo, 29/10/2026): imagem que chega SEM texto ganha logo, título, vantagens e botão
   // escritos pelo Nexus (moldura do cliente, PADRAO_ARTES.md). Imagem que já tem texto não recebe nada
   // por cima: só entra inteira no formato, sem cortar (toInstagramJpeg). "jaTemTexto=1" pula a checagem.
-  const frames = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1"
-    ? null : await loadFrames(env).catch(() => null);
+  const alreadyText = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1";
+  const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
   const canFrame = Boolean(frames && hasFrames(frames, clientId));
   const textReport = [];
   let frameSeed = Math.floor(now.getTime() / 3600000);
@@ -149,7 +149,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     imageUrl,
     title,
     creativeFeatures: { requestedFormat, hook: title },
-    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString(), ...(textReport.length ? { artText: textReport } : {}) },
+    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString(), ...(textReport.length ? { artText: textReport } : {}), ...(alreadyText ? { artChecked: true } : {}) },
     qualityGates: { copyChief: "approved", designer: "approved", formatBuilder: "approved" },
     visualReview: { version: VISUAL_REVIEW_POLICY.version, media: imageUrl, status: "approved", qualityScore: 100, reviewer: options.reviewer || "client", reason: options.reason || "Conteúdo enviado pronto pelo cliente" },
     intelligence: { format: requestedFormat, plannedFormat: requestedFormat, mediaSource: options.mediaSource || "client-upload" },
