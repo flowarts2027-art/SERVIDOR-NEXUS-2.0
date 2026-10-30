@@ -123,7 +123,7 @@ export async function imageHasText(env, bytes) {
         ] }],
         max_tokens: 5
       }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 20000))
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 15000))
     ]);
     return parseHasText(out?.response ?? out?.result?.response ?? "");
   } catch (error) {

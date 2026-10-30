@@ -49,6 +49,13 @@ TEMAS = {
         "logo": None, "nome": ["QUATREE", "REVENDA NA SUA LOJA"], "logo_alt": 104,
         "botao": "COMENTE TABELA", "botao_story": "RESPONDA TABELA", "icone_cor": (6, 30, 34),
     },
+    # Daniela Martins (29/10): depiladora em Uberlândia. Café escuro + dourado, como as artes que ela já usa.
+    # Sem a logo oficial no Nexus: escreve o nome por código (nunca uma logo inventada).
+    "daniela": {
+        "fundo": (36, 24, 20), "destaque": (214, 172, 98), "texto": (255, 255, 255), "botao_texto": (36, 24, 20),
+        "logo": None, "nome": ["DANIELA MARTINS", "DEPILADORA"], "logo_alt": 104,
+        "botao": "COMENTE QUERO", "botao_story": "MANDE QUERO NO DIRECT", "icone_cor": (36, 24, 20),
+    },
     # Flow Arts: fundo quase preto, destaque azul da marca, símbolo da Flow Arts.
     "flow": {
         "fundo": (10, 12, 18), "destaque": (64, 120, 255), "texto": (255, 255, 255), "botao_texto": (255, 255, 255),
