@@ -308,6 +308,8 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   form.set("time", hora);
   form.set("approval", "cliente"); // sempre esperando aprovação
   form.set("noDuplicate", "1");
+  // O conector já escreveu (ou o usuário disse que já tem texto): o envio não confere de novo.
+  if (args?.ja_tem_texto === true || texto.startsWith("o Nexus escreveu")) form.set("jaTemTexto", "1");
   if (tipo !== "story") form.set("caption", String(args?.legenda || "").slice(0, 2200));
   for (const f of arquivos) form.append("images", f);
 

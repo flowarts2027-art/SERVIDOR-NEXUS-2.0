@@ -7,6 +7,7 @@ import { brandProfileVersion } from "./client-brand.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText } from "./art-frame.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -54,9 +55,34 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const id = "upload-" + type + "-" + crypto.randomUUID();
   const base = "posts/" + clientId + "/" + id + "/";
   const meta = { clientId, postId: id, kind: "client-upload-" + type };
-  const putImage = async (file, name, size) => {
+  // REGRA FIXA (Rodrigo, 29/10/2026): imagem que chega SEM texto ganha logo, título, vantagens e botão
+  // escritos pelo Nexus (moldura do cliente, PADRAO_ARTES.md). Imagem que já tem texto não recebe nada
+  // por cima: só entra inteira no formato, sem cortar (toInstagramJpeg). "jaTemTexto=1" pula a checagem.
+  const alreadyText = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1";
+  const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
+  const canFrame = Boolean(frames && hasFrames(frames, clientId));
+  const textReport = [];
+  let frameSeed = Math.floor(now.getTime() / 3600000);
+  const putImage = async (file, name, size, numero = null) => {
     const key = base + name;
-    await env.MEDIA.put(key, await toInstagramJpeg(env, file, size), {
+    let body = null;
+    if (canFrame) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (await imageHasText(env, bytes)) {
+        textReport.push("ja-tinha-texto");
+      } else {
+        const story = size.height > 1500;
+        const frame = pickFrame(frames, clientId, story, frameSeed++);
+        try {
+          body = await composeFramed(env, bytes, frame, { story, numero });
+          textReport.push("texto-do-nexus");
+        } catch (error) {
+          console.error("upload_frame_failed", { clientId, error: String(error?.message || error) });
+          textReport.push("sem-texto-erro");
+        }
+      }
+    }
+    await env.MEDIA.put(key, body || await toInstagramJpeg(env, file, size), {
       httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" }, customMetadata: meta
     });
     return origin + "/media/" + key;
@@ -65,6 +91,14 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     const key = base + "video.mp4";
     await env.MEDIA.put(key, file.stream(), {
       httpMetadata: { contentType: "video/mp4", cacheControl: "public, max-age=31536000, immutable" }, customMetadata: meta
+    });
+    return origin + "/media/" + key;
+  };
+
+  const toVerticalCover = async cover => {
+    const key = base + "capa.jpg";
+    await env.MEDIA.put(key, await toInstagramJpeg(env, cover, { width: 1080, height: 1920 }), {
+      httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" }, customMetadata: meta
     });
     return origin + "/media/" + key;
   };
@@ -84,7 +118,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     if (images.length < 2 || images.length > 10) throw new Error("images_count");
     images.forEach(checkImage);
     const urls = [];
-    for (let i = 0; i < images.length; i++) urls.push(await putImage(images[i], "cartao-" + (i + 1) + ".jpg", FEED));
+    for (let i = 0; i < images.length; i++) urls.push(await putImage(images[i], "cartao-" + (i + 1) + ".jpg", FEED, i < 5 ? i + 1 : null));
     imageUrl = urls[0];
     formatBuild = { status: "approved", kind: "carousel", carouselUrls: urls, cardCount: urls.length };
   } else {
@@ -98,7 +132,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
       if (!cover) throw new Error("cover_required");
       checkImage(cover);
       const videoUrl = await putVideo(video);
-      imageUrl = await putImage(cover, "capa.jpg", VERTICAL);
+      imageUrl = await toVerticalCover(cover);
       formatBuild = { status: "approved", kind: type, videoUrl, imageUrl };
     } else {
       checkImage(image);
@@ -115,7 +149,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     imageUrl,
     title,
     creativeFeatures: { requestedFormat, hook: title },
-    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString() },
+    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString(), ...(textReport.length ? { artText: textReport } : {}), ...(alreadyText ? { artChecked: true } : {}) },
     qualityGates: { copyChief: "approved", designer: "approved", formatBuilder: "approved" },
     visualReview: { version: VISUAL_REVIEW_POLICY.version, media: imageUrl, status: "approved", qualityScore: 100, reviewer: options.reviewer || "client", reason: options.reason || "Conteúdo enviado pronto pelo cliente" },
     intelligence: { format: requestedFormat, plannedFormat: requestedFormat, mediaSource: options.mediaSource || "client-upload" },
@@ -130,7 +164,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   await env.DB.prepare(
     "INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,?4,'ready',?7,'',?5,'','',0,?6,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)"
   ).bind(id, clientId, scheduledFor, time, caption, JSON.stringify(payload), approval).run();
-  return { ok: true, id, type, scheduledFor, approval };
+  return { ok: true, id, type, scheduledFor, approval, artText: textReport };
 }
 
 export const CLIENT_UPLOAD_MESSAGES = {

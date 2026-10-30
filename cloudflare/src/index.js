@@ -28,6 +28,7 @@ import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autorep
 import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
 import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
+import { fixArtTextInOpenPosts } from "./art-text-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
@@ -579,6 +580,10 @@ export default {
     // Posts prontos sem "Comente QUERO" ganham a chamada do brinde antes de sair.
     ctx.waitUntil(fixGiftCtaInOpenPosts(env).catch(error =>
       console.warn("gift_cta_fix_failed", String(error?.message || error).slice(0, 140))
+    ));
+    // Agente "Texto nas artes" (29/10): imagem sem texto em qualquer painel ganha logo, título e botão do Nexus.
+    ctx.waitUntil(fixArtTextInOpenPosts(env, { now: at, limit: 6 }).catch(error =>
+      console.warn("art_text_fix_failed", String(error?.message || error).slice(0, 140))
     ));
     // Reel automático (desligado por padrão; liga no Master). Só cria rascunho: o cliente aprova.
     ctx.waitUntil(runAutoReels(env, at).catch(error =>

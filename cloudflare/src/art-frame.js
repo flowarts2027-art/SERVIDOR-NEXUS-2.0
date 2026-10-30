@@ -85,3 +85,46 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
   if (!out.byteLength || out.byteLength > 8 * 1024 * 1024) throw new Error("images_compose_invalid");
   return out;
 }
+
+// Regra fixa (Rodrigo, 29/10/2026): toda imagem que sobe para o painel de qualquer cliente passa aqui.
+// A IA grátis do Cloudflare só responde SIM ou NAO: "já tem texto escrito?". Quem escreve é o Nexus.
+// Na dúvida (sem IA, erro ou demora), conta como "já tem texto" para nunca escrever por cima de outro texto.
+const TEXT_CHECK_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
+export const TEXT_CHECK_PROMPT = "Olhe a imagem. Ela tem palavras, letras, números, preço, título, botão ou logotipo com nome escrito? "
+  + "Responda só SIM ou NAO.";
+
+export function parseHasText(answer) {
+  const t = String(answer || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (/^N(AO|O)\b/.test(t)) return false;
+  return true;
+}
+
+function toBase64(bytes) {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+export async function imageHasText(env, bytes) {
+  if (!env?.AI || !env?.IMAGES) return true;
+  try {
+    const small = await (await env.IMAGES.input(stream(bytes)).transform({ width: 512, height: 640, fit: "scale-down" })
+      .output({ format: "image/jpeg", quality: 80 })).response();
+    if (!small.ok) return true;
+    const dataUrl = "data:image/jpeg;base64," + toBase64(new Uint8Array(await small.arrayBuffer()));
+    const out = await Promise.race([
+      env.AI.run(String(env.NEXUS_VISION_MODEL || TEXT_CHECK_MODEL), {
+        messages: [{ role: "user", content: [
+          { type: "text", text: TEXT_CHECK_PROMPT },
+          { type: "image_url", image_url: { url: dataUrl } }
+        ] }],
+        max_tokens: 5
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 20000))
+    ]);
+    return parseHasText(out?.response ?? out?.result?.response ?? "");
+  } catch (error) {
+    console.error("text_check_failed", String(error?.message || error));
+    return true;
+  }
+}

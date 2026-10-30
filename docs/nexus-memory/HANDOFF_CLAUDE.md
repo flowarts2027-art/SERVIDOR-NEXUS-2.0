@@ -1,5 +1,16 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 21h30 — Regra fixa: texto do Nexus em toda imagem enviada sem texto (PR aberto)
+
+- Pedido do Rodrigo: imagens que ele sobe pelo painel do cliente chegavam sem texto; quer que toda imagem enviada ao painel de qualquer cliente receba as frases do Nexus e entre no formato sem cortar.
+- Causa: a moldura de texto (`art-frame.js`) só rodava no conector MCP; o envio pelo painel do cliente e pelo "Enviar artes" do Master (`createClientUpload`) pulava essa etapa.
+- Correção: `createClientUpload` (client-uploads.js) agora, para feed, carrossel e story em imagem: a IA grátis do Cloudflare só responde SIM/NAO "já tem texto?"; se NAO, o Nexus cola a moldura do cliente (logo, título, vantagens, botão, número do cartão no carrossel); se SIM ou na dúvida, não escreve por cima e só ajusta o formato sem cortar. Capa de Reels nunca recebe moldura. `jaTemTexto=1` pula a checagem (o conector já usa).
+- Só vale para clientes com moldura em `scripts/social/campanha/textos_upload.json` (Flow Arts, GILTEC, Maskara, Quatree). Cliente novo precisa ganhar textos lá.
+- Testes: 682/683; a única falha (`gemini-campaign.test.mjs`) já falha na main.
+- Agente novo "Texto nas artes" (`cloudflare/src/art-text-fix.js`, cron de 15 min, 6 posts por rodada): passa em todos os painéis nos posts que ainda não saíram, uma vez por post (`formatBuild.artChecked`), e coloca a moldura nas imagens sem texto que já estavam lá. Assim o Rodrigo não precisa pedir de novo.
+- Também em 29/10: carrossel da Flow Arts de 30/10 às 15h (3 imagens inéditas, texto do Nexus) enviado pelo conector, esperando aprovação. Imagens no ramo `midia-flowarts-2026-10-30`.
+- Próximo passo: Rodrigo aprovar o merge do PR #467; até 15 min depois do deploy, os 6 posts/stories de 30/10 da Flow Arts ganham o texto sozinhos.
+
 ## 2026-10-29 21h — Convite de testador do Instagram no cadastro de cliente (PR aberto)
 
 - Pedido do Rodrigo: ao criar o painel de um cliente novo, já facilitar o convite de testador do Instagram, enquanto o app da Meta não está Live; depois o passo é retirado.
