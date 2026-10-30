@@ -780,3 +780,63 @@ body { background: var(--paper); }
 .tester-steps li::before{content:counter(passo);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#3d9bff;color:#fff;font-weight:800;font-size:18px}
 .tester-steps strong{font-size:19px}
 .tester-steps .btn{justify-self:start;text-decoration:none}
+
+/* ===== Tema da cliente Daniela Martins (30/10/2026) =====
+   Paleta do manual dela: verde-oliva #746E44, dourado em gradiente e branco.
+   Ligado pelo client-lite.js (html[data-client-theme="daniela-martins"]). */
+.client-top-logo { display: none; }
+html[data-client-theme="daniela-martins"] {
+  --navy: #4F4B2E;
+  --navy-2: #625D39;
+  --blue: #746E44;
+  --blue-soft: #F1EFE4;
+  --paper: #F8F7F2;
+  --ink: #2E2C1C;
+  --muted: #6B6852;
+  --line: #E3E0D2;
+  --silver: #D3CFBC;
+  --accent: #B98A45;
+  --violet: #8B5A2B;
+  --gold: #B98A45;
+  --gold-grad: linear-gradient(135deg, #E9C67E 0%, #B98A45 45%, #7A4A22 100%);
+  --shadow-soft: 0 12px 30px rgba(60, 56, 30, .08);
+  --shadow-card: 0 16px 36px rgba(60, 56, 30, .12);
+}
+html[data-client-theme="daniela-martins"] .btn-primary,
+html[data-client-theme="daniela-martins"] .login .btn-primary { background: linear-gradient(135deg, #847D50, #5F5A37); box-shadow: 0 10px 20px rgba(116, 110, 68, .25); }
+html[data-client-theme="daniela-martins"] .page-title::after { background: var(--gold-grad); }
+html[data-client-theme="daniela-martins"] .top-kicker { color: var(--gold); }
+html[data-client-theme="daniela-martins"] .top-chip { background: #F3EBDD; color: #7A4A22; }
+html[data-client-theme="daniela-martins"] .top-chip i { box-shadow: 0 0 0 4px rgba(185, 138, 69, .18); }
+html[data-client-theme="daniela-martins"] .hero { background: radial-gradient(circle at 84% 18%, rgba(255, 255, 255, .9), transparent 28%), linear-gradient(120deg, #F6EFE2 0%, #F4F3EA 54%, #ECEADD 100%); }
+html[data-client-theme="daniela-martins"] .hero-media,
+html[data-client-theme="daniela-martins"] .post-media { background: #4F4B2E; }
+html[data-client-theme="daniela-martins"] .followers { background: radial-gradient(circle at 90% 10%, rgba(233, 198, 126, .35), transparent 30%), linear-gradient(135deg, #4F4B2E, #746E44); }
+html[data-client-theme="daniela-martins"] #instagram-box { background: radial-gradient(circle at 92% 8%, rgba(255, 255, 255, .55), transparent 24%), linear-gradient(135deg, #F4F3EA, #F6EFE2); }
+html[data-client-theme="daniela-martins"] #plan-box { border-color: var(--silver); background: linear-gradient(135deg, #F4F3EA, #fff); }
+html[data-client-theme="daniela-martins"] .cal-nav:hover { border-color: var(--silver); }
+html[data-client-theme="daniela-martins"] .cal-day.is-today { box-shadow: inset 0 0 0 2px rgba(185, 138, 69, .25); }
+html[data-client-theme="daniela-martins"] .upload-box > summary { box-shadow: 0 10px 22px rgba(116, 110, 68, .18); }
+html[data-client-theme="daniela-martins"] .nav-brand { justify-content: center; padding: 4px 4px 0; }
+html[data-client-theme="daniela-martins"] .nav-brand img.client-brand-logo { width: 100%; max-width: 200px; height: auto; }
+html[data-client-theme="daniela-martins"] .nav-caption { color: #E6DDB8; text-align: center; }
+html[data-client-theme="daniela-martins"] .nav-section-label { color: #D9C99A; }
+html[data-client-theme="daniela-martins"] .nav-spotlight { border-color: rgba(233, 198, 126, .3); background: linear-gradient(150deg, rgba(233, 198, 126, .18), rgba(255, 255, 255, .06)); }
+html[data-client-theme="daniela-martins"] .nav-spotlight-icon { color: #E9C67E; }
+html[data-client-theme="daniela-martins"] .nav-spotlight small { color: #E6DDB8; }
+@media (min-width: 900px) {
+  html[data-client-theme="daniela-martins"] .tabbar { background: linear-gradient(180deg, #746E44 0%, #625D39 62%, #4F4B2E 100%) !important; box-shadow: 10px 0 30px rgba(46, 44, 28, .14); }
+  html[data-client-theme="daniela-martins"] .tabbar > button { color: #F1ECD6; }
+  html[data-client-theme="daniela-martins"] .tabbar > button:hover { background: rgba(255, 255, 255, .12); }
+  html[data-client-theme="daniela-martins"] .tabbar > button.active { background: linear-gradient(90deg, rgba(233, 198, 126, .38), rgba(233, 198, 126, .12)); box-shadow: inset 3px 0 #E9C67E, 0 9px 20px rgba(0, 0, 0, .12); }
+  html[data-client-theme="daniela-martins"] .tabbar .badge { background: #B98A45; }
+}
+@media (max-width: 899px) {
+  html[data-client-theme="daniela-martins"] .top { background: radial-gradient(circle at 88% 12%, rgba(233, 198, 126, .30), transparent 26%), linear-gradient(135deg, #746E44, #4F4B2E); }
+  html[data-client-theme="daniela-martins"] .top-kicker { color: #E9C67E; }
+  html[data-client-theme="daniela-martins"] .client-top-logo { display: block; width: 170px; max-width: 60vw; height: auto; margin: 0 0 8px; }
+}
+html[data-client-theme="daniela-martins"] .nav-brand { margin-bottom: 18px; }
+html[data-client-theme="daniela-martins"] .stat::before { background: #EFECDF; color: #746E44; }
+html[data-client-theme="daniela-martins"] .stat:nth-child(2)::before { background: #F6EBDA; color: #8B5A2B; }
+html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { background: #F3EFE6; color: #B98A45; }

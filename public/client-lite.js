@@ -750,7 +750,57 @@ function toggleMore(open) {
   button.setAttribute("aria-expanded", String(show));
 }
 
+/* Marca própria do cliente no painel (30/10/2026).
+   Cliente com tema aqui vê a logo e as cores dele no lugar do NEXUS. */
+const CLIENT_THEMES = {
+  "daniela-martins": {
+    name: "Daniela Martins",
+    tagline: "Epiladora",
+    logo: "/brand/daniela-martins-logo.png",
+    symbol: "/brand/daniela-martins-simbolo.png",
+    themeColor: "#746E44"
+  }
+};
+let defaultBrandHtml = null;
+
+function applyClientTheme(clientId) {
+  const brand = $(".nav-brand");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (brand && defaultBrandHtml === null) defaultBrandHtml = brand.innerHTML;
+  document.querySelectorAll(".client-top-logo").forEach(el => el.remove());
+  const theme = CLIENT_THEMES[clientId];
+  if (!theme) {
+    delete document.documentElement.dataset.clientTheme;
+    if (brand && defaultBrandHtml !== null) {
+      brand.innerHTML = defaultBrandHtml;
+      brand.setAttribute("aria-label", "Nexus by Flow Arts");
+    }
+    if (meta) meta.setAttribute("content", "#0F1E3D");
+    return;
+  }
+  document.documentElement.dataset.clientTheme = clientId;
+  if (meta) meta.setAttribute("content", theme.themeColor);
+  if (brand) {
+    brand.innerHTML = "";
+    const img = document.createElement("img");
+    img.className = "client-brand-logo";
+    img.src = theme.logo;
+    img.alt = `${theme.name} — ${theme.tagline}`;
+    brand.appendChild(img);
+    brand.setAttribute("aria-label", theme.name);
+  }
+  const topCopy = $(".top-copy");
+  if (topCopy) {
+    const small = document.createElement("img");
+    small.className = "client-top-logo";
+    small.src = theme.logo;
+    small.alt = theme.name;
+    topCopy.prepend(small);
+  }
+}
+
 function showLogin(message = "") {
+  applyClientTheme(null);
   $("#app").hidden = true;
   $("#login").hidden = false;
   $("#login-error").textContent = message;
@@ -758,6 +808,7 @@ function showLogin(message = "") {
 
 function showApp(client) {
   state.client = client || state.client;
+  applyClientTheme(DEMO ? null : state.client?.id);
   if (state.client?.flowCrm === true && !DEMO) enableFlowCrm();
   $("#login").hidden = true;
   $("#app").hidden = false;
