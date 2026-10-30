@@ -426,6 +426,7 @@
             <div class="form-grid">
               <label>Empresa / nome<input name="name" required placeholder="Ex.: Loja Alpha"></label>
               <label>Nicho<input name="niche" placeholder="Ex.: Restaurante, loja, salão de beleza"></label>
+              <label>Instagram do cliente<input name="instagram" placeholder="Ex.: @lojaalpha" autocomplete="off"></label>
               
               <label>Usuário do painel<input name="username" placeholder="Gerado automaticamente"></label>
               <label>Senha inicial<input name="password" type="text" minlength="8" placeholder="Gerada automaticamente"></label>
@@ -444,6 +445,12 @@
           <div id="new-client-access" class="access-result" hidden>
             <div><span>ACESSO CRIADO</span><strong id="new-client-user">—</strong><small id="new-client-password">—</small></div>
             <div class="access-actions"><button id="copy-client-access" class="ghost" type="button">Copiar acesso</button><a id="open-client-login" class="primary link-button" href="/login" target="_blank" rel="noopener">Abrir login do cliente</a></div>
+            <div id="tester-invite" class="tester-invite" hidden>
+              <span>CONVITE DE TESTADOR (META)</span>
+              <strong id="tester-invite-handle">—</strong>
+              <small>1. Clique no botão: o @ é copiado e a Meta abre. 2. Escolha o app. 3. Funções do app → Adicionar pessoas → Testador do Instagram. 4. Cole o @ e confirme.</small>
+              <div class="access-actions"><button id="tester-invite-open" class="primary" type="button">Copiar @ e abrir Meta</button></div>
+            </div>
           </div>
         </div>
       </section>
