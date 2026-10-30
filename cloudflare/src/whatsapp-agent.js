@@ -1,6 +1,10 @@
 import { openAIResponses } from "./openai.js";
 import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
 import { addFromWhatsApp } from "./crm.js";
+import {
+  aliceEnabled, aliceReply, buildAliceRequest, downloadMedia, MEDIA_TYPES,
+  mergeMemory, parseMemory, showTyping, sleep, typingDelayMs
+} from "./whatsapp-alice.js";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -131,6 +135,12 @@ export async function ensureWhatsAppSchema(env) {
   } catch {
     // coluna já existe
   }
+  // Memória da Alice sobre cada contato (nome, o que vende, cidade...).
+  try {
+    await env.DB.prepare("ALTER TABLE whatsapp_contacts ADD COLUMN memory_json TEXT NOT NULL DEFAULT '{}'").run();
+  } catch {
+    // coluna já existe
+  }
 
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_contacts_updated ON whatsapp_contacts(client_id, updated_at DESC)").run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_messages_phone ON whatsapp_messages(client_id, wa_id, created_at DESC)").run();
@@ -168,6 +178,7 @@ async function validWebhookSignature(rawBody, signature, appSecret) {
 function messageText(message) {
   if (message?.type === "text") return String(message?.text?.body || "");
   if (message?.type === "button") return String(message?.button?.text || "");
+  if (message?.type === "image") return String(message?.image?.caption || "");
   if (message?.type === "interactive") {
     return String(
       message?.interactive?.button_reply?.title ||
@@ -265,6 +276,51 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
   }
 }
 
+// Alice (Gemini): ouve áudio, vê imagem, lembra do contato e responde em mensagens curtas.
+// Devolve null se não der (sem chave, Gemini fora, áudio que não baixou): aí vale o caminho antigo.
+async function buildAliceDraft(env, clientId, waId, displayName, text, message, rowId) {
+  const type = String(message?.type || "");
+  const fetcher = env.__whatsappFetch || fetch;
+  let media = null;
+  if (MEDIA_TYPES.has(type)) {
+    media = await downloadMedia(env, message?.[type]?.id, fetcher).catch(() => null);
+    if (!media) return null;
+  }
+
+  const historyResult = await env.DB.prepare(
+    `SELECT direction,text,created_at FROM whatsapp_messages
+     WHERE client_id=?1 AND wa_id=?2 AND id<>?3 ORDER BY created_at DESC LIMIT 20`
+  ).bind(clientId, waId, rowId).all();
+  const rows = [...(historyResult?.results || [])].reverse();
+  const alreadyIntroduced = rows.some(row => row.direction === "outbound");
+  const history = rows
+    .map(row => `${row.direction === "outbound" ? "ALICE" : "CLIENTE"}: ${String(row.text || "").slice(0, 500)}`)
+    .join("\n");
+  const contact = await env.DB.prepare(
+    "SELECT memory_json FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2"
+  ).bind(clientId, waId).first();
+  const memory = parseMemory(contact?.memory_json);
+
+  const answer = await aliceReply(env, buildAliceRequest({
+    knowledge: knowledgePrompt(clientId),
+    memory, history, inboundText: text,
+    mediaType: MEDIA_TYPES.has(type) ? type : "",
+    media, displayName, alreadyIntroduced
+  }), fetcher);
+
+  // O que a Alice ouviu/viu fica no histórico (aparece no Master e ajuda a próxima resposta).
+  if (MEDIA_TYPES.has(type)) {
+    const label = type === "audio" ? "[áudio]" : "[imagem]";
+    const seen = [label, answer.understood, text && type === "image" ? `(legenda: ${text})` : ""].filter(Boolean).join(" ");
+    await env.DB.prepare("UPDATE whatsapp_messages SET text=?3 WHERE client_id=?1 AND id=?2")
+      .bind(clientId, rowId, seen.slice(0, 4000)).run();
+  }
+  const learned = mergeMemory(memory, answer.memory);
+  await env.DB.prepare("UPDATE whatsapp_contacts SET memory_json=?3 WHERE client_id=?1 AND wa_id=?2")
+    .bind(clientId, waId, JSON.stringify(learned)).run();
+  return answer;
+}
+
 async function storeInbound(env, clientId, value) {
   const contacts = new Map(
     (Array.isArray(value?.contacts) ? value.contacts : [])
@@ -311,10 +367,17 @@ async function storeInbound(env, clientId, value) {
     // Quem escreve para o número da Flow entra no CRM (ou passa para "conversando").
     await addFromWhatsApp(env, { phone: waId, name: displayName }).catch(() => null);
 
-    const draft = text
-      ? await buildDraft(env, clientId, waId, displayName, text)
-      : { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
-          reply: NON_TEXT_REPLY, reason: `mensagem do tipo ${String(message?.type || "desconhecido")}` };
+    const type = String(message?.type || "");
+    const nonText = { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
+      reply: NON_TEXT_REPLY, reason: `mensagem do tipo ${type || "desconhecido"}` };
+    let draft = null;
+    if (aliceEnabled(env) && whatsappKnowledge(clientId) && (text || MEDIA_TYPES.has(type))) {
+      draft = await buildAliceDraft(env, clientId, waId, displayName, text, message, rowId).catch(() => null);
+    }
+    if (!draft) {
+      draft = text && !MEDIA_TYPES.has(type) ? await buildDraft(env, clientId, waId, displayName, text) : nonText;
+    }
+    draft.inboundMessageId = providerId;
     const draftId = `wa-draft-${providerId || Date.now()}`;
     await env.DB.prepare(
       `INSERT INTO whatsapp_drafts(
@@ -345,7 +408,19 @@ async function autoReply(env, clientId, waId, draft, draftId) {
   ).bind(clientId, waId).first();
   if (Number(contact?.bot_paused || 0)) return { sent: false, reason: "bot_paused" };
   try {
-    await sendAndRecord(env, clientId, waId, draft.reply, { draftId, auto: true });
+    const parts = Array.isArray(draft.messages) && draft.messages.length ? draft.messages : [draft.reply];
+    if (draft.engine === "gemini") {
+      // Jeito de gente: "digitando…", uma pausa por mensagem e 1 a 3 mensagens curtas.
+      const fetcher = env.__whatsappFetch || fetch;
+      for (let i = 0; i < parts.length; i += 1) {
+        await showTyping(env, draft.inboundMessageId, fetcher);
+        await sleep(typingDelayMs(parts[i], env), env);
+        const last = i === parts.length - 1;
+        await sendAndRecord(env, clientId, waId, parts[i], { draftId: last ? draftId : "", auto: true });
+      }
+    } else {
+      await sendAndRecord(env, clientId, waId, draft.reply, { draftId, auto: true });
+    }
   } catch (error) {
     await env.DB.prepare(
       "UPDATE whatsapp_drafts SET status='auto_failed',reason=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2"

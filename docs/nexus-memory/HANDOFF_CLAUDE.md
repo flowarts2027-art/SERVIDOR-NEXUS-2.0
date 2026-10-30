@@ -714,6 +714,20 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 637/637 (7 novos em `test/facebook-page.test.mjs`). Nada publicado de verdade.
 - Pendente: merge do Rodrigo; depois ele toca em Conectar Página no Master e autoriza a Página da Flow Arts. Para clientes que não são admins do app, a Meta precisa aprovar `pages_manage_posts` na análise do app.
 
+## 2026-10-28 (noite) — Alice: atendente do WhatsApp com Gemini (ouve áudio, vê imagem, parece gente)
+- Pedido do Rodrigo: agente humanizada no WhatsApp da Flow Arts, com as informações do site, chamada Alice, que ouve áudio e entende imagem; e os 4 "truques" de atendente quase humana (voz, digitando, mensagens picadas, memória). Sem pagar API.
+- Feito nesta branch (`feat/whatsapp-alice`): `cloudflare/src/whatsapp-alice.js` (novo) e mudanças em `whatsapp-agent.js` e `whatsapp-knowledge.js`.
+  - Com o segredo `GEMINI_API_KEY` (o mesmo das imagens, plano grátis), a resposta passa a ser do Gemini (`gemini-2.5-flash`, troca com `WHATSAPP_GEMINI_MODEL`). Voltar ao ChatGPT: variável `WHATSAPP_AI=openai`. Se o Gemini falhar, cai no caminho antigo (OpenAI → aviso seguro).
+  - Áudio e imagem: baixa o arquivo da Meta com o token e manda direto ao Gemini; o que ela ouviu/viu fica salvo no histórico como "[áudio] ..." / "[imagem] ...".
+  - Jeito de gente: "digitando…" (marca como lida + typing_indicator), pausa de 1 a 4,5 s por mensagem e 1 a 3 mensagens curtas.
+  - Memória por contato: coluna nova `memory_json` em `whatsapp_contacts` (nome, negócio, cidade, vende para, interesse, observação), só com o que a pessoa disse.
+  - Conhecimento atualizado pelo site de 28/10 (Captador R$ 97, Tráfego "em breve", Completo + Tráfego R$ 897, avulsos, links de cadastro). Saiu a "garantia do 1º mês", que não está no site — confirmar com o Rodrigo se ainda vale.
+  - Limite de envio por hora: 30 → 90 (cada resposta pode ter até 3 mensagens).
+- NÃO feito: resposta em ÁUDIO (voz). O Gemini TTS devolve áudio cru (PCM) e o WhatsApp não aceita esse formato; precisa de um conversor para MP3/OGG. O registro de pacotes npm não estava acessível nesta sessão. Fica para o próximo PR.
+- Testes: 9 novos em `test/whatsapp-alice.test.mjs` (Gemini/Meta simulados) + 11 antigos do WhatsApp passando. Nada enviado de verdade.
+- Situação na Meta (print do Rodrigo, 28/10 21h17): aviso "Sua empresa está restrita" — a empresa Rodrigo Carvalho não pode mais integrar clientes à Plataforma do WhatsApp Business (violação de termos/política, segundo a Meta). Rodrigo diz que o número atual só fez o teste e não responde ninguém. Rodrigo quer trocar o número; ainda não feito.
+- Próximo: (1) Rodrigo faz login no navegador para conferir o status do número/token e a restrição; (2) pedir revisão ao suporte da Meta; (3) trocar número e atualizar `WHATSAPP_ACCESS_TOKEN` e `WHATSAPP_PHONE_NUMBER_ID` na Cloudflare; (4) merge do PR e teste com uma mensagem do celular dele.
+
 ## 2026-10-28 — QUERO no comentário → direct (ideia do ChatbotX)
 - Pedido do Rodrigo: avaliar o ChatbotX (github.com/ChatbotXIO/ChatbotX, MIT) e trazer só o que for bom para o Nexus, de graça. Decisão dele: manter o Nexus e pegar só peças do ChatbotX. A tela do ChatbotX não entra (precisa de PostgreSQL, Redis e servidor 24h; não roda no Cloudflare grátis).
 - Problema atacado: quem comenta QUERO (ex.: GILTEC) não recebe o direct.
@@ -774,3 +788,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - **Testes:** 6 novos passando. Suíte: 691/692; a falha (teste 306, fila do Master) já existia na `main` antes desta mudança.
 - **Não feito:** nenhuma chave cadastrada, nenhum deploy. Sem chaves novas, o comportamento é igual ao de hoje (cai no Workers AI).
 - **Próximo passo:** Rodrigo cria as chaves grátis (Groq, OpenRouter) e cadastra como segredos no Cloudflare; depois do merge do PR #452 (Alice), ligar a Alice nessa fila como reserva do Gemini.
+
+## 2026-10-30 — Alice com reserva grátis (PR #452)
+- PR #473 (fila de IAs grátis) foi aprovado pelo Rodrigo e o Deploy NEXUS Cloudflare passou. Ele cadastrou o segredo `GROQ_API_KEY` no Cloudflare (dito por ele; não conferido no painel).
+- PR #452 estava com conflito (só no HANDOFF_CLAUDE.md): `main` mesclada na branch, mantendo as duas anotações.
+- Alice: se o Gemini falhar ou der limite, responde pela fila grátis sem o Gemini (Groq primeiro). A reserva só lê texto; com áudio/imagem, pede para a pessoa escrever.
+- Testes: 3 novos. Suíte 703/704; a falha (teste 306, fila do Master) já existia na `main` (CI da main falhando desde 30/10 01h UTC).
+- Próximo passo: Rodrigo aprova o PR #452; depois, investigar o teste 306.
