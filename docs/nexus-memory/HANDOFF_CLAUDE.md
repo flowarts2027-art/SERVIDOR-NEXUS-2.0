@@ -5,6 +5,7 @@
 - Auditoria do Instagram @daniela_martins1547 feita no navegador (resumo na ficha).
 - Padrão: tema `daniela` (café escuro + dourado, nome escrito por código, sem logo oficial ainda) e 5 textos de feed + 2 de story em `textos_upload.json`. Prévia conferida: texto inteiro, sem corte.
 - Ficha: `docs/nexus-memory/clientes/daniela-martins/README.md`. Prompt do ChatGPT: `PROMPT_CHATGPT.md` na mesma pasta.
+- Texto nas artes v3 (mesmo PR): conferido em produção que só 1 das 7 peças de 30/10 da Flow Arts foi feita; a rodada de 1 minuto estourava o tempo e travava a fila. Agora cada rodada faz um passo só (conferir OU escrever uma imagem) e salva em `formatBuild.artSteps`; post que falha 4 vezes é marcado e a fila anda. Testes 684/685.
 - Pendente: ela aceitar o convite de testador e conectar o Instagram no painel; ligar a resposta automática QUERO no painel dela.
 
 ## 2026-10-29 21h55 — Texto nas artes v2 (PR aberto)
