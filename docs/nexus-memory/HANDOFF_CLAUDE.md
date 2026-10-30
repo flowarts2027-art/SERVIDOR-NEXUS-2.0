@@ -1,5 +1,12 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 22h15 — Cliente nova Daniela Martins: padrão e prompt (PR aberto)
+
+- Auditoria do Instagram @daniela_martins1547 feita no navegador (resumo na ficha).
+- Padrão: tema `daniela` (café escuro + dourado, nome escrito por código, sem logo oficial ainda) e 5 textos de feed + 2 de story em `textos_upload.json`. Prévia conferida: texto inteiro, sem corte.
+- Ficha: `docs/nexus-memory/clientes/daniela-martins/README.md`. Prompt do ChatGPT: `PROMPT_CHATGPT.md` na mesma pasta.
+- Pendente: ela aceitar o convite de testador e conectar o Instagram no painel; ligar a resposta automática QUERO no painel dela.
+
 ## 2026-10-29 21h55 — Texto nas artes v2 (PR aberto)
 
 - Conferido em produção (dados do painel da Flow Arts): o agente rodou, mas só 1 post por rodada e a IA marcou a foto do homem na janela como "já tem texto" (letreiros dos prédios). Os outros posts de 30/10 ficaram sem conferir.
