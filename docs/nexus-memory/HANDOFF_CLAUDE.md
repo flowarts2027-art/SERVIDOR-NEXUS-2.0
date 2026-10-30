@@ -788,3 +788,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - **Testes:** 6 novos passando. Suíte: 691/692; a falha (teste 306, fila do Master) já existia na `main` antes desta mudança.
 - **Não feito:** nenhuma chave cadastrada, nenhum deploy. Sem chaves novas, o comportamento é igual ao de hoje (cai no Workers AI).
 - **Próximo passo:** Rodrigo cria as chaves grátis (Groq, OpenRouter) e cadastra como segredos no Cloudflare; depois do merge do PR #452 (Alice), ligar a Alice nessa fila como reserva do Gemini.
+
+## 2026-10-30 — Alice com reserva grátis (PR #452)
+- PR #473 (fila de IAs grátis) foi aprovado pelo Rodrigo e o Deploy NEXUS Cloudflare passou. Ele cadastrou o segredo `GROQ_API_KEY` no Cloudflare (dito por ele; não conferido no painel).
+- PR #452 estava com conflito (só no HANDOFF_CLAUDE.md): `main` mesclada na branch, mantendo as duas anotações.
+- Alice: se o Gemini falhar ou der limite, responde pela fila grátis sem o Gemini (Groq primeiro). A reserva só lê texto; com áudio/imagem, pede para a pessoa escrever.
+- Testes: 3 novos. Suíte 703/704; a falha (teste 306, fila do Master) já existia na `main` (CI da main falhando desde 30/10 01h UTC).
+- Próximo passo: Rodrigo aprova o PR #452; depois, investigar o teste 306.

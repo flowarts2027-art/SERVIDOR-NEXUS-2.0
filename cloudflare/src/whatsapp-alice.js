@@ -1,3 +1,4 @@
+import { freeChat, providerOrder } from "./free-llm.js";
 // Alice: a atendente do WhatsApp com o Gemini (pedido do Rodrigo, 28/10/2026).
 // - Ouve áudio e entende imagem (o Gemini recebe o arquivo direto, sem outra ferramenta).
 // - Parece gente: mostra "digitando…", espera um pouco antes de cada mensagem e manda
@@ -139,7 +140,14 @@ export function buildAliceRequest({ knowledge, memory, history, inboundText, med
 
 export function parseAliceAnswer(data) {
   const text = (data?.candidates?.[0]?.content?.parts || []).map(p => String(p?.text || "")).join("").trim();
-  const raw = text.replace(/^```json\s*/i, "").replace(/```$/i, "");
+  return parseAliceText(text, "gemini");
+}
+
+// Lê a resposta em JSON (do Gemini ou da fila de IAs grátis).
+export function parseAliceText(text, engine = "gemini") {
+  const clean = String(text || "").trim();
+  const start = clean.indexOf("{"), end = clean.lastIndexOf("}");
+  const raw = start >= 0 && end > start ? clean.slice(start, end + 1) : clean;
   let parsed;
   try { parsed = JSON.parse(raw); } catch { return null; }
   if (!parsed || typeof parsed !== "object") return null;
@@ -159,11 +167,45 @@ export function parseAliceAnswer(data) {
     understood: String(parsed.understood || "").trim().slice(0, 1500),
     memory: mergeMemory({}, parsed.memory || {}),
     fallback: false,
-    engine: "gemini"
+    engine
   };
 }
 
-export async function aliceReply(env, request, fetcher = fetch) {
+// Reserva da Alice: se o Gemini falhar ou der limite, responde pela fila de IAs grátis
+// (Groq, OpenRouter, Mistral, NVIDIA, Cloudflare). Essa reserva só lê texto: se chegou
+// áudio ou imagem, ela pede com gentileza para a pessoa escrever.
+export function freeAliceMessages(request) {
+  const rules = String(request?.systemInstruction?.parts?.[0]?.text || "");
+  const parts = request?.contents?.[0]?.parts || [];
+  const context = parts.map(p => String(p?.text || "")).filter(Boolean).join("\n");
+  const hasMedia = parts.some(p => p?.inline_data);
+  const system = [
+    rules,
+    hasMedia ? "- Agora você NÃO consegue ouvir o áudio nem ver a imagem. Peça com gentileza para a pessoa escrever a mensagem. Deixe 'understood' vazio." : "",
+    'Responda SOMENTE com JSON válido, sem texto fora dele, no formato: {"classification":"lead","priority":70,"needsHuman":false,"messages":["..."],"reason":"...","understood":"","memory":{}}'
+  ].filter(Boolean).join("\n");
+  return { system, user: context };
+}
+
+export async function aliceReply(env, request, fetcher = fetch, deps = {}) {
+  try {
+    return await geminiAliceReply(env, request, fetcher);
+  } catch (geminiError) {
+    const chat = deps.freeChat || freeChat;
+    let out;
+    try {
+      out = await chat(env, { ...freeAliceMessages(request), maxTokens: 900, temperature: 0.6, timeoutMs: 20000 },
+        { fetcher, order: providerOrder(env).filter(name => name !== "gemini") });
+    } catch {
+      throw geminiError;
+    }
+    const answer = parseAliceText(out?.text, out?.provider || "free");
+    if (!answer) throw geminiError;
+    return answer;
+  }
+}
+
+async function geminiAliceReply(env, request, fetcher) {
   const key = String(env?.GEMINI_API_KEY || "").trim();
   if (!key) throw new Error("gemini_key_missing");
   const model = String(env?.WHATSAPP_GEMINI_MODEL || DEFAULT_MODEL).trim();

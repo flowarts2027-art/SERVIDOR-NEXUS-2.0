@@ -209,3 +209,47 @@ test("memory merge keeps old facts and delays stay short", () => {
   assert.equal(typingDelayMs("oi", { WHATSAPP_HUMAN_DELAY: "off" }), 0);
   assert.equal(typingDelayMs("x".repeat(5000), {}), 4500);
 });
+
+// Reserva grátis da Alice (Groq e outros) quando o Gemini falha.
+import { aliceReply as aliceReplyReserva, buildAliceRequest as buildReserva } from "../src/whatsapp-alice.js";
+
+const pedidoReserva = (extra = {}) => buildReserva({
+  knowledge: "Flow Arts faz automação de Instagram.", memory: {}, history: "",
+  inboundText: "Oi, quanto custa?", mediaType: "", media: null, displayName: "Ana", alreadyIntroduced: false, ...extra
+});
+
+test("Alice usa a reserva grátis quando o Gemini dá limite", async () => {
+  let pedidoGratis;
+  const env = { GEMINI_API_KEY: "g", GROQ_API_KEY: "q" };
+  const fetcher = async () => new Response(JSON.stringify({ error: { status: "RESOURCE_EXHAUSTED" } }), { status: 429 });
+  const answer = await aliceReplyReserva(env, pedidoReserva(), fetcher, {
+    freeChat: async (_env, req, opts) => {
+      pedidoGratis = { req, opts };
+      return { provider: "groq", text: '{"classification":"lead","priority":70,"needsHuman":false,"messages":["Oi, Ana! Sou a Alice."],"reason":"r","understood":"","memory":{"nome":"Ana"}}' };
+    }
+  });
+  assert.equal(answer.engine, "groq");
+  assert.deepEqual(answer.messages, ["Oi, Ana! Sou a Alice."]);
+  assert.ok(!pedidoGratis.opts.order.includes("gemini"));
+  assert.match(pedidoGratis.req.user, /quanto custa/);
+});
+
+test("reserva da Alice pede para escrever quando chega áudio", async () => {
+  let system = "";
+  const env = { GEMINI_API_KEY: "g" };
+  const fetcher = async () => new Response("{}", { status: 503 });
+  const req = pedidoReserva({ mediaType: "audio", media: { mimeType: "audio/ogg", data: "AAAA" }, inboundText: "" });
+  await aliceReplyReserva(env, req, fetcher, {
+    freeChat: async (_env, r) => { system = r.system; return { provider: "groq", text: '{"messages":["Pode escrever, por favor?"]}' }; }
+  });
+  assert.match(system, /NÃO consegue ouvir/);
+});
+
+test("se a reserva também falhar, devolve o erro do Gemini", async () => {
+  const env = { GEMINI_API_KEY: "g" };
+  const fetcher = async () => new Response("{}", { status: 500 });
+  await assert.rejects(
+    aliceReplyReserva(env, pedidoReserva(), fetcher, { freeChat: async () => { throw new Error("free_llm_all_failed"); } }),
+    /gemini_http_500/
+  );
+});
