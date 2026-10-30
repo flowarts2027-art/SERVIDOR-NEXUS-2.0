@@ -795,3 +795,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Alice: se o Gemini falhar ou der limite, responde pela fila grátis sem o Gemini (Groq primeiro). A reserva só lê texto; com áudio/imagem, pede para a pessoa escrever.
 - Testes: 3 novos. Suíte 703/704; a falha (teste 306, fila do Master) já existia na `main` (CI da main falhando desde 30/10 01h UTC).
 - Próximo passo: Rodrigo aprova o PR #452; depois, investigar o teste 306.
+
+## 2026-10-30 (08h20) — Painel da Daniela Martins com a marca dela
+- Pedido do Rodrigo: trocar as cores do painel da cliente `daniela-martins` pela paleta do manual dela (verde-oliva #746E44, dourado em gradiente, branco) e mostrar a logo dela no lugar do NEXUS quando ela entra.
+- Feito (branch `feat/painel-tema-daniela`): `CLIENT_THEMES` + `applyClientTheme()` em `public/client-lite.js` (liga pelo id do cliente depois do login; volta ao padrão ao sair). Tema em `public/client-lite.css` (`html[data-client-theme="daniela-martins"]`). Logo e símbolo com fundo transparente em `public/brand/daniela-martins-logo.png` e `-simbolo.png`, tirados do PDF de apresentação da marca. Celular: logo no topo verde. Computador: menu lateral verde-oliva com a logo.
+- Conferido em navegador sem tela (modo demonstração com o tema forçado). Outros clientes não mudam.
+- Testes: 703/704; a falha é a antiga (teste 306, fila do Master).
+- Próximo passo: Rodrigo aprova o PR; depois conferir no painel real da Daniela.
