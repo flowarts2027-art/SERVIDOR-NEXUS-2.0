@@ -244,3 +244,15 @@ Este arquivo contém **resumos de projeto aprovados para o GitHub público**, n�
 - **Situação verificada antes deste PR:** `lead-hunter.js` prioriza comentários recebidos no Instagram; outros módulos existentes (`crm.js`, `daily-prospects.js`, segundo changelog) devem ser inspecionados antes de construir alternativa duplicada. Nenhum novo buscador foi implementado nesta passagem.
 - **Próxima ação para Claude / Work:** primeiro auditar o Caçador/CRM que já existe e os PRs abertos; depois propor o menor conjunto de mudanças necessário para qualificação e contato manual. Testar, registrar custo, evitar duplicatas; não implantar sem aprovação do proprietário.
 - **Evidência desta passagem:** alterações apenas documentais em branch de integração, aguardando PR/revisão. Nenhuma execução de busca, envio, publicação ou deploy por esta tarefa.
+
+
+## 2026-10-30 06h55 BRT — Rotina diária de artes (execução ChatGPT)
+
+- Lidas as regras de AGENTS.md, FORMATOS_POSTAGENS.md, PADRAO_ARTES.md, BRIDGE_PROTOCOL.md e AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md.
+- Flow Arts: a regra vigente a partir de 30/10 atribui ao ChatGPT somente o Reel 9:16 das 12h; carrossel de 09h, feed das 19h e stories são da campanha automática. Criei localmente um Reel de 8,8 s, 1080×1920, H.264/AAC, 30 fps, 3 cenas inéditas sem rosto, texto aplicado por código e CTA “COMENTE QUERO”. Legenda salva na branch agendamentos em agendamentos/2026-10-30/1200/legenda.txt (commit c2c1aaf31e646b1ce5a1f0b808c055cd5ebdf4ed). O vídeo/capa não foram enviados ao GitHub/painel; pacote local entregue no chat.
+- Falha de automação confirmada: run https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/41025152820 “NEXUS Campanha diária com texto” terminou em failure na etapa “Conferir as artes”; a etapa de envio ao painel foi pulada. A tentativa posterior de guardar arte na branch também encontrou conflito non-fast-forward. Portanto, não afirmar que os conteúdos automáticos de Flow Arts/Maskara chegaram ao painel.
+- Flow Arts: os arquivos de 09h (carrossel de 5 cartões), story de 09h, feed de 19h e stories de 12h/19h já existem na branch agendamentos; não os recriei. O diretório 1200 estava ausente, então foi criada somente a legenda do Reel.
+- Maskara Assessoria: a árvore da branch já contém três feeds (09h/12h/19h), três stories e suas legendas para 30/10. Não dupliquei esses arquivos. Upload ao painel não confirmado devido à falha do workflow.
+- Quatree Dog: o HANDOFF_CLAUDE registra 10 PNGs distintos com packshots oficiais produzidos para 30/10 e três legendas gravadas na branch. Os binários da produção anterior não estavam acessíveis no ambiente desta execução; não inventei embalagens nem os declarei enviados.
+- Luciana Carvalho: busca na árvore de clientes não encontrou cadastro/briefing verificável. Faltam segmento, oferta/serviços, público, identidade visual e CTA.
+- Nenhuma aprovação ou publicação realizada. Próximo passo: corrigir a etapa de QA do workflow diário e confirmar upload ao painel; enviar manualmente o Reel de Flow Arts via Enviar artes, cliente Flow Arts, data 30/10, horário 12h, aguardando aprovação. Não aprovar/publicar automaticamente.
