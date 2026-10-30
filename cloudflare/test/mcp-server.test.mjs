@@ -274,3 +274,34 @@ test("story em vídeo sem capa usa capa lisa; vídeo em post é recusado; arquiv
   await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video_url: "https://exemplo.com/x.mp4" }, NOW), /MP4/);
   await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "story", dia: "2026-10-30", hora: "21:00", video_url: "http://exemplo.com/v.mp4" }, NOW), /https/);
 });
+
+for (const formato of ["post", "story", "carrossel"]) {
+  test("arte pronta preservada por padrão: " + formato, async () => {
+    for (const flag of [undefined, true]) {
+      const { env, deps, calls } = sendSetup();
+      deps.frames = { loadFrames: async () => { throw new Error("Não deve carregar moldura"); } };
+      const args = { cliente_id: "primeiro-teste", formato, dia: "2026-10-31", hora: "09:00", imagem: arq(1) };
+      if (flag !== undefined) args.ja_tem_texto = flag;
+      if (formato === "carrossel") args.imagem2 = arq(2);
+      const out = await enviarArte(env, deps, args, NOW);
+      assert.equal(out.ok, true);
+      const form = calls.uploads[0].form;
+      assert.equal(form.get("jaTemTexto"), "1");
+      assert.equal(form.get("approval"), "cliente");
+      for (const file of form.getAll("images"))
+        assert.deepEqual(new Uint8Array(await file.arrayBuffer()), JPG);
+    }
+  });
+}
+test("moldura somente com solicitação explícita ja_tem_texto=false", async () => {
+  const { env, deps, calls } = sendSetup();
+  let compositions = 0;
+  deps.frames = {
+    loadFrames: async () => ({}), hasFrames: () => true, pickFrame: () => ({}),
+    composeFramed: async () => { compositions++; return PNG; }
+  };
+  await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: arq(1), ja_tem_texto: false }, NOW);
+  assert.equal(compositions, 1);
+  assert.equal(calls.uploads[0].form.get("jaTemTexto"), "1");
+  assert.equal(calls.uploads[0].form.get("approval"), "cliente");
+});
