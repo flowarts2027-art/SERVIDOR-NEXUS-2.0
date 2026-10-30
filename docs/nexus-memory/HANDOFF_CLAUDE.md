@@ -802,3 +802,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Conferido em navegador sem tela (modo demonstração com o tema forçado). Outros clientes não mudam.
 - Testes: 703/704; a falha é a antiga (teste 306, fila do Master).
 - Próximo passo: Rodrigo aprova o PR; depois conferir no painel real da Daniela.
+
+## 2026-10-30 (14h50) — Conector MCP aceita story em VÍDEO (PR feat/mcp-story-video)
+- Pedido do Rodrigo: subir pelo conector um vídeo (story) e postar nos stories 3 vezes por dia.
+- Feito: `nexus_enviar_arte` ganhou os campos `video` / `video_url` (MP4 até 50 MB, só formato story). A imagem, se vier, vira a capa; sem imagem usa uma capa lisa só para a miniatura. O vídeo vai como está (sem texto por cima) e chega SEMPRE esperando aprovação. O servidor já publicava story em vídeo (`publishInstagramStory` com `videoUrl`); só faltava a porta do conector.
+- Testes: 705 de 706 passam; a única falha (`fila do Master: ... cron de 1 minuto`) já falhava na `main` antes desta mudança.
+- Limite do Instagram: a API oficial NÃO coloca figurinha de link (WhatsApp) no story. Story com link clicável só postando pelo app.
+- Próximo passo: Rodrigo aprova o merge; depois do deploy, programar o vídeo 3x por dia em horários livres (09h, 12h e 19h já têm stories).

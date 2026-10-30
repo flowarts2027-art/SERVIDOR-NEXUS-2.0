@@ -3,6 +3,7 @@
 //
 // PASSO 1 (29/10): LEITURA — nexus_listar_clientes, nexus_ver_agenda, nexus_ver_metricas.
 // PASSO 2 (29/10): nexus_enviar_arte — manda imagem pronta ao painel do cliente, SEMPRE esperando aprovação.
+// PASSO 3 (30/10): story em VÍDEO pelo conector (campo video ou video_url; a imagem vira a capa).
 //   Nada aqui publica, aprova, apaga ou manda mensagem. Desligar só o envio: NEXUS_MCP_WRITE=off.
 //
 // Endereço: https://painel.flowarts.com.br/mcp/<chave>
@@ -13,7 +14,7 @@
 
 import { sha256Hex } from "./auth.js";
 
-export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.2.0" });
+export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.3.0" });
 export const MCP_PROTOCOL_VERSIONS = Object.freeze(["2025-11-25", "2025-06-18", "2025-03-26"]);
 const AGENDA_MAX_DIAS = 31;
 
@@ -31,6 +32,12 @@ const FILE_PARAM = Object.freeze({
   },
   required: ["download_url"],
   additionalProperties: false
+});
+
+// Vídeo do story (pedido do Rodrigo, 30/10): MP4 até 50 MB.
+const VIDEO_PARAM = Object.freeze({
+  ...FILE_PARAM,
+  description: "Vídeo do story (MP4, vertical 9:16, até 50 MB). Só para formato story. A imagem vira a capa (opcional)."
 });
 
 export const MCP_TOOLS = Object.freeze([
@@ -71,7 +78,7 @@ export const MCP_TOOLS = Object.freeze([
   {
     name: "nexus_enviar_arte",
     title: "Enviar arte ao painel do cliente",
-    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Mande a FOTO SEM TEXTO: o Nexus escreve sozinho a logo, o título, as vantagens e o botão por cima (padrão das artes). Só use ja_tem_texto=true se a imagem já vier com título e botão escritos. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
+    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16, OU um vídeo MP4 no campo video/video_url) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Mande a FOTO SEM TEXTO: o Nexus escreve sozinho a logo, o título, as vantagens e o botão por cima (padrão das artes). Só use ja_tem_texto=true se a imagem já vier com título e botão escritos. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
     inputSchema: {
       type: "object",
       properties: {
@@ -86,13 +93,15 @@ export const MCP_TOOLS = Object.freeze([
         imagem4: FILE_PARAM,
         imagem5: FILE_PARAM,
         imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." },
+        video: VIDEO_PARAM,
+        video_url: { type: "string", format: "uri", description: "Opcional: link https do vídeo MP4 do story, no lugar do campo video." },
         ja_tem_texto: { type: "boolean", description: "true só se a imagem JÁ tem título e botão escritos. Padrão false: o Nexus escreve o texto por cima." }
       },
       required: ["cliente_id", "formato", "dia", "hora"],
       additionalProperties: false
     },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-    _meta: { "openai/fileParams": ["imagem", "imagem2", "imagem3", "imagem4", "imagem5"] }
+    _meta: { "openai/fileParams": ["imagem", "imagem2", "imagem3", "imagem4", "imagem5", "video"] }
   }
 ]);
 
@@ -238,6 +247,27 @@ async function baixarImagem(deps, url, posicao) {
   return new File([bytes], `imagem-${posicao}.${IMAGE_MIME[mime]}`, { type: mime });
 }
 
+const VIDEO_MAX_BYTES = 50 * 1024 * 1024;
+
+function isMp4(bytes) {
+  return bytes.length > 12 && String.fromCharCode(...bytes.slice(4, 8)) === "ftyp";
+}
+
+async function baixarVideo(deps, url) {
+  let parsed;
+  try { parsed = new URL(String(url || "")); } catch { throw new ToolInputError("O vídeo não tem um link válido."); }
+  if (parsed.protocol !== "https:") throw new ToolInputError("O vídeo precisa de um link https.");
+  const response = await deps.download(parsed.toString(), { redirect: "follow", signal: AbortSignal.timeout(60000) })
+    .catch(() => { throw new ToolInputError("Não consegui baixar o vídeo. Tente de novo."); });
+  if (!response.ok) throw new ToolInputError(`Não consegui baixar o vídeo (erro ${response.status}). O link pode ter vencido: tente de novo.`);
+  const declared = Number(response.headers.get("content-length") || 0);
+  if (declared > VIDEO_MAX_BYTES) throw new ToolInputError("O vídeo passa de 50 MB.");
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (!bytes.length || bytes.length > VIDEO_MAX_BYTES) throw new ToolInputError("O vídeo está vazio ou passa de 50 MB.");
+  if (!isMp4(bytes)) throw new ToolInputError("O vídeo precisa ser MP4.");
+  return new File([bytes], "story.mp4", { type: "video/mp4" });
+}
+
 async function uploadsHoje(env) {
   const row = await env.DB.prepare(
     "SELECT COUNT(*) AS n FROM post_ledger WHERE json_extract(payload_json,'$.source')='mcp:upload' AND created_at >= datetime('now','-1 day')"
@@ -253,7 +283,10 @@ const UPLOAD_ERRORS = {
   image_type: "A imagem precisa ser JPG, PNG ou WEBP.",
   image_size: "A imagem passa de 8 MB.",
   images_count: "O carrossel precisa de 2 a 5 imagens.",
-  caption_required: "Escreva a legenda."
+  caption_required: "Escreva a legenda.",
+  video_type: "O vídeo precisa ser MP4.",
+  video_size: "O vídeo passa do limite de tamanho.",
+  cover_required: "Faltou a capa do vídeo."
 };
 
 export async function enviarArte(env, deps, args, now = new Date()) {
@@ -265,17 +298,23 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   const hora = String(args?.hora || "");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || !/^\d{2}:\d{2}$/.test(hora)) throw new ToolInputError(UPLOAD_ERRORS.schedule_invalid);
 
+  const videoLink = String(args?.video?.download_url || args?.video_url || "").trim();
+  if (videoLink && tipo !== "story") throw new ToolInputError("Vídeo pelo conector só vale para story.");
+
   const links = ["imagem", "imagem2", "imagem3", "imagem4", "imagem5"]
     .map(k => args?.[k]?.download_url).filter(Boolean);
   if (!links.length && Array.isArray(args?.imagens_urls)) links.push(...args.imagens_urls.slice(0, 5));
-  if (!links.length) throw new ToolInputError("Mande a imagem no campo imagem (ou o link em imagens_urls).");
+  if (!links.length && !videoLink) throw new ToolInputError("Mande a imagem no campo imagem (ou o link em imagens_urls).");
   if (tipo === "carousel" && (links.length < 2 || links.length > 5)) throw new ToolInputError(UPLOAD_ERRORS.images_count);
-  if (tipo !== "carousel" && links.length !== 1) throw new ToolInputError("Post e story levam 1 imagem só. Para várias, use carrossel.");
+  if (tipo !== "carousel" && links.length > 1) throw new ToolInputError("Post e story levam 1 imagem só. Para várias, use carrossel.");
 
   if (await uploadsHoje(env) >= MCP_DAILY_UPLOAD_LIMIT) throw new ToolInputError("Limite de envios pelo conector nas últimas 24 horas atingido. Tente mais tarde.");
 
+  const video = videoLink ? await baixarVideo(deps, videoLink) : null;
   const arquivos = [];
   for (let i = 0; i < links.length; i++) arquivos.push(await baixarImagem(deps, links[i], i + 1));
+
+  if (video) return enviarStoryVideo(env, deps, client, args, dia, hora, video, arquivos[0] || null, now);
 
   // Foto sem texto: o Nexus escreve logo, título, vantagens e botão por cima (PADRAO_ARTES.md).
   let texto = "a imagem já veio com texto";
@@ -334,6 +373,49 @@ export async function enviarArte(env, deps, args, now = new Date()) {
     texto,
     situacao: "esperando aprovação no painel",
     aviso: "Nada foi publicado. A arte só sai depois de aprovada no painel."
+  };
+}
+
+// Story em vídeo: vai como está (o Nexus não escreve texto por cima de vídeo).
+// Sem imagem de capa, usa uma capa lisa da marca só para a miniatura do painel; o Instagram usa o próprio vídeo.
+const CAPA_LISA = (() => {
+  // JPEG 8x8 cinza-escuro (válido) — miniatura do painel quando não vem capa.
+  const b64 = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/yQALCAAIAAgBAREA/8wABgAQEAX/2gAIAQEAAD8A0s8g/9k=";
+  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+})();
+
+async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa, now) {
+  const form = new FormData();
+  form.set("clientId", client.id);
+  form.set("type", "story");
+  form.set("date", dia);
+  form.set("time", hora);
+  form.set("approval", "cliente"); // sempre esperando aprovação
+  form.set("noDuplicate", "1");
+  form.set("jaTemTexto", "1");
+  form.append("video", video);
+  form.append("cover", capa || new File([CAPA_LISA], "capa.jpg", { type: "image/jpeg" }));
+  let result;
+  try {
+    result = await deps.upload(env, form, now, {
+      source: "mcp:upload", createdBy: "mcp", mediaSource: "mcp-upload",
+      reviewer: "mcp", reason: "Story em vídeo enviado pelo conector MCP (Claude/ChatGPT)"
+    });
+  } catch (error) {
+    const code = String(error?.message || "");
+    if (UPLOAD_ERRORS[code]) throw new ToolInputError(UPLOAD_ERRORS[code]);
+    throw error;
+  }
+  return {
+    ok: true,
+    id: result.id,
+    cliente: { id: client.id, nome: client.name },
+    formato: "story (vídeo)",
+    dia, hora,
+    video: true,
+    texto: "vídeo enviado como está",
+    situacao: "esperando aprovação no painel",
+    aviso: "Nada foi publicado. O story só sai depois de aprovado no painel."
   };
 }
 
