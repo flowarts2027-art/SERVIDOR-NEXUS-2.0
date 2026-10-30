@@ -1,5 +1,13 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 21h30 — Regra fixa: texto do Nexus em toda imagem enviada sem texto (PR aberto)
+
+- Pedido do Rodrigo: imagens que ele sobe pelo painel do cliente chegavam sem texto; quer que toda imagem enviada ao painel de qualquer cliente receba as frases do Nexus e entre no formato sem cortar.
+- Causa: a moldura de texto (`art-frame.js`) só rodava no conector MCP; o envio pelo painel do cliente e pelo "Enviar artes" do Master (`createClientUpload`) pulava essa etapa.
+- Correção: `createClientUpload` (client-uploads.js) agora, para feed, carrossel e story em imagem: a IA grátis do Cloudflare só responde SIM/NAO "já tem texto?"; se NAO, o Nexus cola a moldura do cliente (logo, título, vantagens, botão, número do cartão no carrossel); se SIM ou na dúvida, não escreve por cima e só ajusta o formato sem cortar. Capa de Reels nunca recebe moldura. `jaTemTexto=1` pula a checagem (o conector já usa).
+- Só vale para clientes com moldura em `scripts/social/campanha/textos_upload.json` (Flow Arts, GILTEC, Maskara, Quatree). Cliente novo precisa ganhar textos lá.
+- Testes: 682/683; a única falha (`gemini-campaign.test.mjs`) já falha na main.
+
 ## 2026-10-29 21h — Convite de testador do Instagram no cadastro de cliente (PR aberto)
 
 - Pedido do Rodrigo: ao criar o painel de um cliente novo, já facilitar o convite de testador do Instagram, enquanto o app da Meta não está Live; depois o passo é retirado.
