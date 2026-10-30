@@ -256,3 +256,7 @@ Este arquivo contém **resumos de projeto aprovados para o GitHub público**, n�
 - Quatree Dog: o HANDOFF_CLAUDE registra 10 PNGs distintos com packshots oficiais produzidos para 30/10 e três legendas gravadas na branch. Os binários da produção anterior não estavam acessíveis no ambiente desta execução; não inventei embalagens nem os declarei enviados.
 - Luciana Carvalho: busca na árvore de clientes não encontrou cadastro/briefing verificável. Faltam segmento, oferta/serviços, público, identidade visual e CTA.
 - Nenhuma aprovação ou publicação realizada. Próximo passo: corrigir a etapa de QA do workflow diário e confirmar upload ao painel; enviar manualmente o Reel de Flow Arts via Enviar artes, cliente Flow Arts, data 30/10, horário 12h, aguardando aprovação. Não aprovar/publicar automaticamente.
+
+
+## 2026-10-30 — Remoção do limite diário de envio MCP
+Pedido: remover teto de uploads ao painel. Causa confirmada em mcp-server.js: MCP_DAILY_UPLOAD_LIMIT=60, contagem global de mcp:upload em 24h. Removidos constante, consulta e bloqueio; aprovação manual e validações preservadas. Teste com 120 registros de dois clientes reproduziu o bloqueio antes e passou após a correção. Suite MCP local: 25/25 aprovados (Node 24). Branch fix/remover-limite-envios-mcp-20261030. Implantação e upload real após deploy ainda pendentes; nenhum post publicado. Próximo: revisar/mesclar PR, confirmar deploy e validar envio autorizado.

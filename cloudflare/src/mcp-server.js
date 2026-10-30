@@ -215,7 +215,6 @@ export async function verMetricas(env, deps, args) {
 }
 
 // ---------- envio de arte (passo 2) ----------
-export const MCP_DAILY_UPLOAD_LIMIT = 60;
 const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 const IMAGE_MIME = { "image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png", "image/webp": "webp" };
 const FORMATS = { post: "post", story: "story", carrossel: "carousel" };
@@ -268,13 +267,6 @@ async function baixarVideo(deps, url) {
   return new File([bytes], "story.mp4", { type: "video/mp4" });
 }
 
-async function uploadsHoje(env) {
-  const row = await env.DB.prepare(
-    "SELECT COUNT(*) AS n FROM post_ledger WHERE json_extract(payload_json,'$.source')='mcp:upload' AND created_at >= datetime('now','-1 day')"
-  ).first().catch(() => null);
-  return Number(row?.n || 0);
-}
-
 const UPLOAD_ERRORS = {
   schedule_invalid: "Dia ou hora inválidos. Use AAAA-MM-DD e HH:MM (Brasília).",
   schedule_too_soon: "Escolha um horário pelo menos 10 minutos à frente.",
@@ -307,8 +299,6 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   if (!links.length && !videoLink) throw new ToolInputError("Mande a imagem no campo imagem (ou o link em imagens_urls).");
   if (tipo === "carousel" && (links.length < 2 || links.length > 5)) throw new ToolInputError(UPLOAD_ERRORS.images_count);
   if (tipo !== "carousel" && links.length > 1) throw new ToolInputError("Post e story levam 1 imagem só. Para várias, use carrossel.");
-
-  if (await uploadsHoje(env) >= MCP_DAILY_UPLOAD_LIMIT) throw new ToolInputError("Limite de envios pelo conector nas últimas 24 horas atingido. Tente mais tarde.");
 
   const video = videoLink ? await baixarVideo(deps, videoLink) : null;
   const arquivos = [];
