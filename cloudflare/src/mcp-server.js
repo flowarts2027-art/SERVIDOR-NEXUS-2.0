@@ -14,7 +14,7 @@
 
 import { sha256Hex } from "./auth.js";
 
-export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.3.0" });
+export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.3.1" });
 export const MCP_PROTOCOL_VERSIONS = Object.freeze(["2025-11-25", "2025-06-18", "2025-03-26"]);
 const AGENDA_MAX_DIAS = 31;
 
@@ -78,7 +78,7 @@ export const MCP_TOOLS = Object.freeze([
   {
     name: "nexus_enviar_arte",
     title: "Enviar arte ao painel do cliente",
-    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16, OU um vídeo MP4 no campo video/video_url) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Mande a FOTO SEM TEXTO: o Nexus escreve sozinho a logo, o título, as vantagens e o botão por cima (padrão das artes). Só use ja_tem_texto=true se a imagem já vier com título e botão escritos. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
+    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16, OU um vídeo MP4 no campo video/video_url) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Por padrão preserva a arte recebida, sem acrescentar texto ou logo. Só use ja_tem_texto=false quando houver pedido explícito para aplicar a moldura a uma foto sem texto. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
     inputSchema: {
       type: "object",
       properties: {
@@ -95,7 +95,7 @@ export const MCP_TOOLS = Object.freeze([
         imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." },
         video: VIDEO_PARAM,
         video_url: { type: "string", format: "uri", description: "Opcional: link https do vídeo MP4 do story, no lugar do campo video." },
-        ja_tem_texto: { type: "boolean", description: "true só se a imagem JÁ tem título e botão escritos. Padrão false: o Nexus escreve o texto por cima." }
+        ja_tem_texto: { type: "boolean", description: "Padrão true: preserva a arte sem acrescentar texto ou logo, inclusive quando o campo é omitido. false somente para solicitar explicitamente a moldura numa foto sem texto." }
       },
       required: ["cliente_id", "formato", "dia", "hora"],
       additionalProperties: false
@@ -306,9 +306,9 @@ export async function enviarArte(env, deps, args, now = new Date()) {
 
   if (video) return enviarStoryVideo(env, deps, client, args, dia, hora, video, arquivos[0] || null, now);
 
-  // Foto sem texto: o Nexus escreve logo, título, vantagens e botão por cima (PADRAO_ARTES.md).
-  let texto = "a imagem já veio com texto";
-  if (args?.ja_tem_texto !== true) {
+  // Arte pronta é preservada inclusive em conectores antigos que omitem ja_tem_texto.
+  let texto = "arte preservada, sem acrescentar texto ou logo";
+  if (args?.ja_tem_texto === false) {
     const meta = deps.frames ? await deps.frames.loadFrames(env) : null;
     if (meta && deps.frames.hasFrames(meta, client.id)) {
       const story = tipo === "story";
@@ -338,7 +338,7 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   form.set("approval", "cliente"); // sempre esperando aprovação
   form.set("noDuplicate", "1");
   // O conector já escreveu (ou o usuário disse que já tem texto): o envio não confere de novo.
-  if (args?.ja_tem_texto === true || texto.startsWith("o Nexus escreveu")) form.set("jaTemTexto", "1");
+  if (args?.ja_tem_texto !== false || texto.startsWith("o Nexus escreveu")) form.set("jaTemTexto", "1");
   if (tipo !== "story") form.set("caption", String(args?.legenda || "").slice(0, 2200));
   for (const f of arquivos) form.append("images", f);
 
@@ -430,7 +430,7 @@ export async function handleMcpMessage(env, message, deps) {
       protocolVersion: MCP_PROTOCOL_VERSIONS.includes(asked) ? asked : MCP_PROTOCOL_VERSIONS[0],
       capabilities: { tools: { listChanged: false } },
       serverInfo: MCP_SERVER_INFO,
-      instructions: "Conector do Nexus, o sistema de postagem automática da Flow Arts. Lê clientes, agenda e métricas do Instagram e envia artes ao painel do cliente (nexus_enviar_arte), sempre esperando aprovação. Mande a foto SEM texto: o Nexus escreve logo, título, vantagens e botão por cima. Nunca publica nem aprova nada. Antes de enviar, confira a agenda para não repetir horário. Responda ao Rodrigo em português do Brasil, com frases curtas."
+      instructions: "Conector do Nexus, o sistema de postagem automática da Flow Arts. Lê clientes, agenda e métricas do Instagram e envia artes ao painel do cliente (nexus_enviar_arte), sempre esperando aprovação. Preserve as artes recebidas por padrão. Só use ja_tem_texto=false se houver pedido explícito para acrescentar a moldura numa foto sem texto. Nunca publica nem aprova nada. Antes de enviar, confira a agenda para não repetir horário. Responda ao Rodrigo em português do Brasil, com frases curtas."
     });
   }
   if (method === "ping") return rpcResult(id, {});
