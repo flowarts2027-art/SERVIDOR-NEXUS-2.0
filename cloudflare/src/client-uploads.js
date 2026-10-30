@@ -7,7 +7,7 @@ import { brandProfileVersion } from "./client-brand.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -149,7 +149,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     imageUrl,
     title,
     creativeFeatures: { requestedFormat, hook: title },
-    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString(), ...(textReport.length ? { artText: textReport } : {}), ...(alreadyText ? { artChecked: true } : {}) },
+    formatBuild: { ...formatBuild, source: "client-upload", builtAt: new Date().toISOString(), ...(textReport.length ? { artText: textReport, artChecked: true, artCheckVersion: TEXT_CHECK_VERSION } : {}), ...(alreadyText ? { artChecked: true, artCheckVersion: TEXT_CHECK_VERSION } : {}) },
     qualityGates: { copyChief: "approved", designer: "approved", formatBuilder: "approved" },
     visualReview: { version: VISUAL_REVIEW_POLICY.version, media: imageUrl, status: "approved", qualityScore: 100, reviewer: options.reviewer || "client", reason: options.reason || "Conteúdo enviado pronto pelo cliente" },
     intelligence: { format: requestedFormat, plannedFormat: requestedFormat, mediaSource: options.mediaSource || "client-upload" },

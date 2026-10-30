@@ -1,17 +1,18 @@
 // Agente "Texto nas artes" (pedido do Rodrigo, 29/10/2026: "não quero ficar pedindo todo dia").
-// A cada 15 minutos passa em TODOS os painéis, nos posts que ainda não saíram. Imagem sem texto
+// A cada minuto (1 post por vez, para caber no tempo do cron) passa em TODOS os painéis, nos posts que ainda não saíram. Imagem sem texto
 // ganha a moldura do cliente (logo, título, vantagens e botão), escrita pelo Nexus, sem cortar a foto.
 // Imagem que já tem texto fica como está. Cada post é conferido uma vez só (formatBuild.artChecked).
 // Vídeo e capa de Reels não mudam. Post que já saiu ou está saindo não muda.
 
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
 
 const OPEN_POSTS_SQL = `SELECT id, client_id, scheduled_for, payload_json FROM post_ledger
   WHERE COALESCE(status,'') NOT IN ('published','publishing') AND COALESCE(status,'') NOT LIKE 'cancel%'
   AND COALESCE(approval_status,'') <> 'rejected'
   AND (scheduled_for IS NULL OR scheduled_for >= ?1)
-  AND json_extract(payload_json,'$.formatBuild.artChecked') IS NULL
-  AND json_extract(payload_json,'$.formatBuild.artText') IS NULL
+  AND COALESCE(json_extract(payload_json,'$.formatBuild.artCheckVersion'),0) < ${TEXT_CHECK_VERSION}
+  AND NOT (json_extract(payload_json,'$.formatBuild.artChecked') = 1 AND json_extract(payload_json,'$.formatBuild.artText') IS NULL)
+  AND instr(payload_json,'texto-do-nexus') = 0
   AND json_extract(payload_json,'$.formatBuild.videoUrl') IS NULL
   AND json_extract(payload_json,'$.formatBuild.kind') IN ('post','carousel','story')
   ORDER BY scheduled_for ASC LIMIT ?2`;
@@ -22,13 +23,13 @@ function mediaKey(url) {
 }
 
 async function markChecked(env, row, payload, report) {
-  payload.formatBuild = { ...(payload.formatBuild || {}), artChecked: true, ...(report.length ? { artText: report } : {}) };
+  payload.formatBuild = { ...(payload.formatBuild || {}), artChecked: true, artCheckVersion: TEXT_CHECK_VERSION, ...(report.length ? { artText: report } : {}) };
   await env.DB.prepare(
     "UPDATE post_ledger SET payload_json=?1, updated_at=CURRENT_TIMESTAMP WHERE id=?2 AND COALESCE(status,'') NOT IN ('published','publishing')"
   ).bind(JSON.stringify(payload), String(row.id)).run();
 }
 
-export async function fixArtTextInOpenPosts(env, { now = new Date(), limit = 4 } = {}) {
+export async function fixArtTextInOpenPosts(env, { now = new Date(), limit = 1 } = {}) {
   const result = { checked: 0, framed: 0, keptText: 0, failed: 0 };
   if (!env?.DB || !env?.MEDIA || !env?.IMAGES) return result;
   const frames = await loadFrames(env).catch(() => null);
