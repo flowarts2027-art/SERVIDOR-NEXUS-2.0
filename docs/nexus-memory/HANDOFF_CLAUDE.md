@@ -1,5 +1,56 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 22h25 — Texto nas artes: busca corrigida (PR aberto)
+
+- Conferido em produção depois da v3: nenhum post novo entrava na fila. Causa: no SQL, `NOT (artChecked = 1 AND ...)` com artChecked NULL dá NULL e a linha some. Só o post com artChecked da v1 entrava.
+- Correção: COALESCE na condição. Teste novo roda a busca num SQLite de verdade (`node:sqlite`).
+- Próximo passo: depois do deploy, conferir as 7 peças de 30/10 da Flow Arts (1 passo por minuto, ~15 min).
+
+## 2026-10-29 22h15 — Cliente nova Daniela Martins: padrão e prompt (PR aberto)
+
+- Auditoria do Instagram @daniela_martins1547 feita no navegador (resumo na ficha).
+- Padrão: tema `daniela` (café escuro + dourado, nome escrito por código, sem logo oficial ainda) e 5 textos de feed + 2 de story em `textos_upload.json`. Prévia conferida: texto inteiro, sem corte.
+- Ficha: `docs/nexus-memory/clientes/daniela-martins/README.md`. Prompt do ChatGPT: `PROMPT_CHATGPT.md` na mesma pasta.
+- Texto nas artes v3 (mesmo PR): conferido em produção que só 1 das 7 peças de 30/10 da Flow Arts foi feita; a rodada de 1 minuto estourava o tempo e travava a fila. Agora cada rodada faz um passo só (conferir OU escrever uma imagem) e salva em `formatBuild.artSteps`; post que falha 4 vezes é marcado e a fila anda. Testes 684/685.
+- Pendente: ela aceitar o convite de testador e conectar o Instagram no painel; ligar a resposta automática QUERO no painel dela.
+
+## 2026-10-29 21h55 — Texto nas artes v2 (PR aberto)
+
+- Conferido em produção (dados do painel da Flow Arts): o agente rodou, mas só 1 post por rodada e a IA marcou a foto do homem na janela como "já tem texto" (letreiros dos prédios). Os outros posts de 30/10 ficaram sem conferir.
+- Correção: pergunta nova para a IA (só conta título/frase de arte por cima; letreiro, marca e relógio não contam), `artCheckVersion: 2` para reconferir os posts já marcados pela v1, e o agente passou para o cron de 1 minuto (1 post por vez).
+- Testes: 683/684 (falha antiga em gemini-campaign).
+- Próximo passo: Rodrigo aprovar o merge; em até ~10 minutos os posts de 30/10 da Flow Arts ganham o texto. Conferir no painel.
+
+## 2026-10-29 21h30 — Regra fixa: texto do Nexus em toda imagem enviada sem texto (PR aberto)
+
+- Pedido do Rodrigo: imagens que ele sobe pelo painel do cliente chegavam sem texto; quer que toda imagem enviada ao painel de qualquer cliente receba as frases do Nexus e entre no formato sem cortar.
+- Causa: a moldura de texto (`art-frame.js`) só rodava no conector MCP; o envio pelo painel do cliente e pelo "Enviar artes" do Master (`createClientUpload`) pulava essa etapa.
+- Correção: `createClientUpload` (client-uploads.js) agora, para feed, carrossel e story em imagem: a IA grátis do Cloudflare só responde SIM/NAO "já tem texto?"; se NAO, o Nexus cola a moldura do cliente (logo, título, vantagens, botão, número do cartão no carrossel); se SIM ou na dúvida, não escreve por cima e só ajusta o formato sem cortar. Capa de Reels nunca recebe moldura. `jaTemTexto=1` pula a checagem (o conector já usa).
+- Só vale para clientes com moldura em `scripts/social/campanha/textos_upload.json` (Flow Arts, GILTEC, Maskara, Quatree). Cliente novo precisa ganhar textos lá.
+- Testes: 682/683; a única falha (`gemini-campaign.test.mjs`) já falha na main.
+- Agente novo "Texto nas artes" (`cloudflare/src/art-text-fix.js`, cron de 15 min, 6 posts por rodada): passa em todos os painéis nos posts que ainda não saíram, uma vez por post (`formatBuild.artChecked`), e coloca a moldura nas imagens sem texto que já estavam lá. Assim o Rodrigo não precisa pedir de novo.
+- Também em 29/10: carrossel da Flow Arts de 30/10 às 15h (3 imagens inéditas, texto do Nexus) enviado pelo conector, esperando aprovação. Imagens no ramo `midia-flowarts-2026-10-30`.
+- Próximo passo: Rodrigo aprovar o merge do PR #467; até 15 min depois do deploy, os 6 posts/stories de 30/10 da Flow Arts ganham o texto sozinhos.
+
+## 2026-10-29 21h — Convite de testador do Instagram no cadastro de cliente (PR aberto)
+
+- Pedido do Rodrigo: ao criar o painel de um cliente novo, já facilitar o convite de testador do Instagram, enquanto o app da Meta não está Live; depois o passo é retirado.
+- Limite real: a Meta não tem API pública para adicionar testador do Instagram nem para ler se o convite está pendente. Adicionar o @ continua sendo um clique manual do Rodrigo na Meta. Decisão do Rodrigo: opção semiautomática (sem robô de navegador).
+- Master (Novo cliente): campo novo "Instagram do cliente"; o @ é salvo em `clients.instagram` (validado em `cloudflare/src/master.js`). Depois de criar, aparece o cartão "Convite de testador (Meta)" com o botão "Copiar @ e abrir Meta". O texto de "Copiar acesso" ganha a linha para aceitar o convite.
+- Painel do cliente (`public/client-lite.js`): quando não conectado, mostra 2 passos grandes: 1) Abrir convite (instagram.com/accounts/manage_access, aba Convites de testador) e 2) Conectar Instagram. Chave `MODO_TESTE_META = true`; quando o app ficar Live, mudar para false e o passo 1 some.
+- Testes: 680/681; a única falha (`gemini-campaign.test.mjs`, fila do Master) já falha na main sem esta mudança.
+- Próximo passo: Rodrigo aprovar o merge; criar a cliente nova pelo Master com o @ dela.
+
+## 2026-10-29 — Limpeza de 2 dias também no CRM da Flow Arts (PR aberto)
+
+- Pedido do Rodrigo: limpar do CRM da Flow Arts os contatos que ficaram 2 dias sem mensagem e aplicar a auto limpeza a todos os clientes.
+- Diagnóstico: a regra de 28/10 (`cleanupLeads`, captador.js) já vale para o Captador de todos os clientes, mas o CRM da Flow Arts usa outra tabela (`crm_contacts`, daily-prospects.js) e não tinha a regra; havia contatos "atrasado 8 dias".
+- Correção: `archiveStaleCrm` em `cloudflare/src/daily-prospects.js`, chamada a cada ciclo de `runDailyProspects`. Arquiva (não apaga) contato em "Para chamar" sem mensagem e criado há mais de 2 dias; quem já recebeu mensagem fica. Teste novo em `test/daily-prospects.test.mjs`.
+- Testes: 637/638; a única falha (`gemini-campaign.test.mjs`, fila do Master 4 !== 6) já falha na main sem esta mudança.
+- Também em 29/10: artes da Maskara (9) e da Flow Arts (5) feitas por código no padrão do Nexus e enviadas por Enviar artes para 29/10, esperando aprovação. Nada aprovado nem publicado pelo assistente.
+- Observação: a busca diária da Flow Arts ainda usa `FOCUS_NICHES` de comida (21/10), mas o foco da Flow Arts mudou em 23/10 para vendedores que precisam de leads. Ajuste pendente, depende do Rodrigo.
+- Próximo passo: Rodrigo aprovar o merge do PR; depois do deploy, o próximo ciclo (15 min) arquiva os contatos antigos.
+
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
 
 - Pedido mais recente de Rodrigo corrige o escopo: **3 posts, sendo 1 carrossel, e 3 stories**, somente 28/10/2026. Campanha permanece diária, não mensal.
@@ -676,3 +727,64 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 9 novos em `test/whatsapp-alice.test.mjs` (Gemini/Meta simulados) + 11 antigos do WhatsApp passando. Nada enviado de verdade.
 - Situação na Meta (print do Rodrigo, 28/10 21h17): aviso "Sua empresa está restrita" — a empresa Rodrigo Carvalho não pode mais integrar clientes à Plataforma do WhatsApp Business (violação de termos/política, segundo a Meta). Rodrigo diz que o número atual só fez o teste e não responde ninguém. Rodrigo quer trocar o número; ainda não feito.
 - Próximo: (1) Rodrigo faz login no navegador para conferir o status do número/token e a restrição; (2) pedir revisão ao suporte da Meta; (3) trocar número e atualizar `WHATSAPP_ACCESS_TOKEN` e `WHATSAPP_PHONE_NUMBER_ID` na Cloudflare; (4) merge do PR e teste com uma mensagem do celular dele.
+
+## 2026-10-28 — QUERO no comentário → direct (ideia do ChatbotX)
+- Pedido do Rodrigo: avaliar o ChatbotX (github.com/ChatbotXIO/ChatbotX, MIT) e trazer só o que for bom para o Nexus, de graça. Decisão dele: manter o Nexus e pegar só peças do ChatbotX. A tela do ChatbotX não entra (precisa de PostgreSQL, Redis e servidor 24h; não roda no Cloudflare grátis).
+- Problema atacado: quem comenta QUERO (ex.: GILTEC) não recebe o direct.
+- Diagnóstico (código, sem prova de produção): o Nexus mandava o direct para `graph.instagram.com/{id da conta}/messages`. O ChatbotX usa `me/messages` com o token da conta. O próprio Nexus já registra que o id do login é diferente do id que a Meta manda no aviso, então o caminho por id pode falhar.
+- Feito: `cloudflare/src/ig-send.js` (novo). Todo direct (resposta privada ao comentário, palavra no direct e "Já segui") sai primeiro por `me/messages`; se a Meta responder com erro, tenta o caminho antigo por id. Em falha de rede não repete (evita direct duplicado). Ligado em `comment-autoreply.js`, `dm-keyword-reply.js` e `gift-dm.js`.
+- Testes: 641/641 (4 novos em `test/ig-send.test.mjs`; 3 testes antigos ajustados para o endereço novo). Nada enviado de verdade.
+- Pendente: merge do Rodrigo. Depois, um comentário QUERO de teste num post da GILTEC para conferir em `commentAutoReplyStatus` (lastWebhook/recent). Se ainda falhar, o erro da Meta fica gravado ali.
+- Próximo passo combinado: Caixa de conversas no painel (Instagram + WhatsApp), também com base no ChatbotX.
+## 2026-10-29 — Conector MCP do Nexus, passo 1 (só leitura)
+- Pedido do Rodrigo: montar um MCP do Nexus para o Claude e o ChatGPT (ideia vista no ChatFyre, que liga o Claude a automação de Instagram). Foco: Flow Arts.
+- Feito: `cloudflare/src/mcp-server.js` (novo) + rota em `src/index.js` + `/mcp*` em `run_worker_first`. MCP "Streamable HTTP" em modo JSON, sem sessão.
+- Ferramentas, TODAS só leitura: `nexus_listar_clientes`, `nexus_ver_agenda` (post_ledger, hora de Brasília), `nexus_ver_metricas` (mesmos números do painel: seguidores, alcance, seguidores ganhos por post). Nada publica, agenda, apaga ou manda mensagem.
+- Acesso: endereço `https://painel.flowarts.com.br/mcp/<chave>`. A chave é o segredo `NEXUS_MCP_TOKEN` (mínimo 24 caracteres) que o Rodrigo cria na Cloudflare. Sem ele o conector responde "desligado". Desligar: apagar o segredo ou `NEXUS_MCP=off`. Quem tiver o link completo consegue LER; por isso o passo 1 é só leitura.
+- Testes: 14 novos em `test/mcp-server.test.mjs`; suíte 652/653. A 1 falha (`gemini-campaign.test.mjs` › "fila do Master") já falha na `main` sem esta mudança.
+- Pendente: merge do Rodrigo; depois ele cria o segredo e adiciona o conector no Claude (Conectores › personalizado) e no ChatGPT.
+- Próximo passo (2): login de verdade (OAuth, como o ChatFyre) no lugar da chave no link, e só então ferramentas de escrita (subir arte na Biblioteca, sempre chegando pendente de aprovação).
+
+## 2026-10-29 (17h) — MCP do Nexus no ar e conectado
+- PR #459 com merge e deploy feitos. Segredo `NEXUS_MCP_TOKEN` criado pelo Rodrigo na Cloudflare (a 1ª chave era curta demais; a regra é ter 24+ caracteres).
+- Conferido em produção: `/mcp/<chave errada>` responde 401 (ligado e protegido).
+- Conectado no Claude (conector personalizado) e no ChatGPT (Plugins › Adicionar › "Adicionar servidor MCP personalizado", sem autenticação; aparece como "Nexus2.0"). Rodrigo confirmou que funciona no Claude.
+- Próximo passo: login de verdade (OAuth) no lugar da chave no link; depois ferramentas de escrita sempre pendentes de aprovação.
+
+## 2026-10-29 (18h) — Auditoria do Instagram da Flow Arts e campanha de 30/10
+- Pedido do Rodrigo: auditoria completa e campanha de amanhã ajustada, com comando para o ChatGPT.
+- Dados: conector MCP do Nexus (métricas e agenda) e perfil no navegador. Resultado em `AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md`.
+- Feito: `scripts/social/campanha/conteudo.json` (só `primeiro-teste`): 3 dias novos para vendedores/representantes, sem `post1200`. `campanha_diaria.py`: `post1200` virou opcional (GILTEC e Maskara continuam com o das 12h). Testado com FOTO_FALSA=1 em 30/10, 31/10 e 01/11 (Flow Arts: 5 peças; GILTEC e Maskara: 6 cada). Textos cabem nas artes.
+- Avisos no topo de `REGRA_POSTS_DIARIOS.md` e na seção da Flow Arts de `FORMATOS_POSTAGENS.md`; entrada no `TASK_BOARD.md`.
+- Nada publicado, aprovado ou enviado. Branch `agendamentos` sem pastas de 30/10 (conferido), então a campanha automática gera tudo amanhã.
+- Pendente: merge do Rodrigo antes das 04h17 de 30/10; merge do PR #454 (QUERO → direct); bio, link `?de=instagram` e destaques no Instagram (ele mesmo).
+- Próximo: em 06/11 o Claude puxa os números pelo Nexus e compara (alcance de Reel × post, seguidores por post).
+
+## 2026-10-29 (18h30) — MCP passo 2: enviar arte ao painel
+- Pedido do Rodrigo: o ChatGPT (modo comum, sem Work) mandar as artes direto ao painel do cliente pelo conector, porque erra muito no caminho atual.
+- Feito: ferramenta `nexus_enviar_arte` em `cloudflare/src/mcp-server.js`. Post (1 imagem), story (1 imagem) ou carrossel (2 a 5, campos `imagem`…`imagem5`). Usa `_meta["openai/fileParams"]` para o ChatGPT passar a imagem da conversa (link temporário), ou `imagens_urls` (https). O Worker baixa, confere se é JPG/PNG/WEBP de até 8 MB e chama a MESMA função do Master (`masterUpload`, agora com `overrides` de origem) com aprovação "cliente": **sempre esperando aprovação**, sem horário repetido (`noDuplicate`). Origem gravada como `mcp:upload`. Limite: 60 envios em 24 h. Desligar só o envio: `NEXUS_MCP_WRITE=off`.
+- Testes: 9 novos (23 no arquivo). Suíte 665/666 (a falha antiga de `gemini-campaign` continua, não é desta mudança).
+- Não confirmado ainda: se o ChatGPT entrega para a ferramenta uma imagem que ele mesmo GEROU (com imagem anexada, o mecanismo é o oficial). Primeiro teste real depois do merge.
+- Recomendado ao Rodrigo: trocar a chave `NEXUS_MCP_TOKEN` (agora o link permite enviar ao painel). Próximo: login de verdade (OAuth) no lugar da chave no link.
+
+## 2026-10-29 (19h) — Texto automático nas artes enviadas pelo conector
+- Problema (Rodrigo, 29/10): o ChatGPT subiu 6 peças do Quatree Dog para 31/10 pelo `nexus_enviar_arte` e elas foram ao painel **sem nada escrito** (foto crua). Antes disso o ChatGPT não via a ferramenta: faltava apertar "Atualizar ferramentas" no plugin Nexus2.0 (feito pelo Claude no Chrome do Rodrigo; o modo de desenvolvedor já estava ligado).
+- Causa: o texto por código só existia na página Biblioteca (no navegador) e só para a GILTEC.
+- Feito: `nexus_enviar_arte` agora escreve logo, título (3 linhas), 3 vantagens e botão em toda foto que chega sem texto, no próprio Worker:
+  - `scripts/social/molduras_upload.py` gera, no deploy, molduras transparentes com o mesmo desenho do `PADRAO_ARTES.md` (Montserrat, faixa de cima e de baixo, foto só no meio) a partir de `scripts/social/campanha/textos_upload.json` (textos revisados por cliente: quatree-dog, giltec, maskara-assessoria, primeiro-teste). Saída em `public/molduras/` (não vai para o git).
+  - `cloudflare/src/art-frame.js` cola com o binding IMAGES: fundo desfocado + véu na cor do cliente + foto no meio (corta no máximo 10% em cima e embaixo) + moldura + número do cartão no carrossel.
+  - Parâmetro novo `ja_tem_texto` (padrão false). Se a montagem falhar, **nada** vai ao painel (erro claro para o ChatGPT). Cliente sem moldura: vai como veio, com aviso.
+  - Tema novo `quatree` em `campanha_diaria.py`: verde-petróleo + laranja, chamada "COMENTE TABELA" / story "RESPONDA TABELA" (QUATREE_DIRETRIZ_VENDAS.md). Sem logo oficial no Nexus: nome escrito por código.
+  - Deploy (`deploy-nexus-cloudflare.yml`) gera as molduras antes de publicar.
+- Testes: 9 novos em `test/art-frame.test.mjs`.
+- Pendente: merge do Rodrigo; depois apagar as 6 peças cruas de 31/10 do Quatree e pedir ao ChatGPT para reenviar as mesmas fotos (agora saem com texto). Logo oficial da Quatree, se o Rodrigo mandar.
+- (19h30) Regra nova pedida pelo Rodrigo depois do post cortado das 11h do Quatree (agentcore, aprovado, saiu às ~17h50): `toInstagramJpeg` não corta mais arte fora do formato; encaixa inteira com fundo desfocado (tolerância 3%). Reel animado continua com corte (`crop: true`). Testes em `test/no-crop.test.mjs`. Imagens que já estavam guardadas no painel antes disso não mudam.
+
+
+## 2026-10-30 — Roteador de IA grátis (lista awesome-free-llm-apis)
+- **Pedido do Rodrigo:** "implantar" github.com/mnfst/awesome-free-llm-apis no Nexus e no agente do WhatsApp. O repositório é só uma lista de APIs grátis, não um programa.
+- **Feito (branch `feat/ia-gratis-router`):** `cloudflare/src/free-llm.js` tenta, em ordem, Groq → Gemini → OpenRouter (`openrouter/free`) → Mistral → NVIDIA → Workers AI. Pula quem não tem chave; se um falhar ou der limite (429), passa ao próximo. Ordem: `FREE_LLM_ORDER`; modelo: `FREE_LLM_<NOME>_MODEL`. Provedores sem chave que guardam conversas (Kilo, LLM7) ficaram de fora por causa dos dados de clientes.
+- **Ligado em:** legendas da campanha diária (`gemini-campaign.js`): depois do Gemini, usa a fila grátis (antes era só Workers AI).
+- **Testes:** 6 novos passando. Suíte: 691/692; a falha (teste 306, fila do Master) já existia na `main` antes desta mudança.
+- **Não feito:** nenhuma chave cadastrada, nenhum deploy. Sem chaves novas, o comportamento é igual ao de hoje (cai no Workers AI).
+- **Próximo passo:** Rodrigo cria as chaves grátis (Groq, OpenRouter) e cadastra como segredos no Cloudflare; depois do merge do PR #452 (Alice), ligar a Alice nessa fila como reserva do Gemini.

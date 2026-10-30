@@ -3,6 +3,7 @@ import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
 import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
+import { handleMcpRequest } from "./mcp-server.js";
 import { openAIKeyStatus } from "./openai-routing.js";
 import { openAIResponses, tokenUsageToday } from "./openai.js";
 import { getState, putState, deleteState } from "./storage.js";
@@ -27,6 +28,7 @@ import { runCommentAutoReplies, handleInstagramWebhook } from "./comment-autorep
 import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
 import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
+import { fixArtTextInOpenPosts } from "./art-text-fix.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
@@ -557,6 +559,10 @@ export default {
       ctx.waitUntil(runFacebookCrosspostQueue(env).catch(error =>
         console.warn("facebook_crosspost_failed", String(error?.message || error).slice(0, 140))
       ));
+      // Agente "Texto nas artes" (29/10): 1 post por minuto; imagem sem texto ganha logo, título e botão do Nexus.
+      ctx.waitUntil(fixArtTextInOpenPosts(env, { now: at, limit: 1 }).catch(error =>
+        console.warn("art_text_fix_failed", String(error?.message || error).slice(0, 140))
+      ));
       ctx.waitUntil(runGiftInbox(env, at).catch(error =>
         console.warn("gift_inbox_failed", String(error?.message || error).slice(0, 140))
       ));
@@ -628,6 +634,12 @@ export default {
     const url = new URL(request.url);
     const siteRedirect = canonicalSiteRedirect(url, request.method);
     if (siteRedirect) return Response.redirect(siteRedirect, 301);
+
+    // Conector MCP (Claude/ChatGPT), só leitura no passo 1. Ver src/mcp-server.js.
+    if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
+      const mcpResponse = await handleMcpRequest(request, env, url);
+      if (mcpResponse) return mcpResponse;
+    }
 
     if (url.pathname === "/" && request.method === "GET") {
       // flowarts.com.br (e www) abre o site da Flow Arts; o painel fica em painel.flowarts.com.br.

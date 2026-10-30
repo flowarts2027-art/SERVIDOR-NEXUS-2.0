@@ -16,6 +16,15 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
 
+## ChatbotX
+
+O envio de direct do Instagram por `me/messages` (`cloudflare/src/ig-send.js`) segue a forma usada em:
+
+- Project: ChatbotX
+- Repository: https://github.com/ChatbotXIO/ChatbotX (integrations/instagram)
+- License: MIT
+- Copyright (c) ChatbotX contributors
+
 ## Inter (fonte dos títulos do carrossel)
 
 - Arquivos: `scripts/social/fonts/InterDisplay-*.otf`

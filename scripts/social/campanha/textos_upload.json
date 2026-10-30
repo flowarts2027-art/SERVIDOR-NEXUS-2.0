@@ -1,0 +1,295 @@
+{
+  "_obs": "Textos revisados que o Nexus escreve por cima das artes que chegam SEM texto (conector do ChatGPT/Claude). Pedido do Rodrigo, 29/10/2026. Título em 3 linhas curtas; 3 vantagens de 1 a 3 palavras. Nada de preço, prazo, telefone ou promessa. Mudou aqui: o deploy refaz as molduras sozinho.",
+  "quatree-dog": {
+    "tema": "quatree",
+    "feed": [
+      {
+        "titulo": [
+          "Ração",
+          "Quatree na",
+          "sua loja"
+        ],
+        "vantagens": [
+          "Cães e gatos",
+          "Para revenda",
+          "Peça a tabela"
+        ]
+      },
+      {
+        "titulo": [
+          "Abasteça",
+          "a prateleira",
+          "com Quatree"
+        ],
+        "vantagens": [
+          "Cães e gatos",
+          "Para revenda",
+          "Peça a tabela"
+        ]
+      },
+      {
+        "titulo": [
+          "Revenda",
+          "Quatree na",
+          "sua região"
+        ],
+        "vantagens": [
+          "Pet shop",
+          "Agropecuária",
+          "Casa de ração"
+        ]
+      },
+      {
+        "titulo": [
+          "Seu cliente",
+          "pede, você",
+          "tem Quatree"
+        ],
+        "vantagens": [
+          "Cães e gatos",
+          "Para revenda",
+          "Peça a tabela"
+        ]
+      },
+      {
+        "titulo": [
+          "Faça o",
+          "seu pedido",
+          "Quatree"
+        ],
+        "vantagens": [
+          "Pet shop",
+          "Agropecuária",
+          "Casa de ração"
+        ]
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Quatree",
+          "na sua",
+          "prateleira"
+        ],
+        "vantagens": [
+          "Cães e gatos",
+          "Para revenda",
+          "Peça a tabela"
+        ]
+      },
+      {
+        "titulo": [
+          "Quer a",
+          "tabela de",
+          "revenda?"
+        ],
+        "vantagens": [
+          "Pet shop",
+          "Agropecuária",
+          "Casa de ração"
+        ]
+      },
+      {
+        "titulo": [
+          "Chegou",
+          "ração",
+          "Quatree"
+        ],
+        "vantagens": [
+          "Cães e gatos",
+          "Para revenda",
+          "Peça a tabela"
+        ]
+      }
+    ]
+  },
+  "giltec": {
+    "tema": "giltec",
+    "feed": [
+      {
+        "titulo": [
+          "Sua obra",
+          "no ritmo",
+          "certo"
+        ],
+        "vantagens": [
+          "Construção",
+          "Reforma",
+          "Orçamento no zap"
+        ]
+      },
+      {
+        "titulo": [
+          "Sua obra",
+          "não pode",
+          "parar"
+        ],
+        "vantagens": [
+          "Construção",
+          "Reforma",
+          "Orçamento no zap"
+        ]
+      },
+      {
+        "titulo": [
+          "Equipamento",
+          "certo para",
+          "sua obra"
+        ],
+        "vantagens": [
+          "Construção",
+          "Reforma",
+          "Orçamento no zap"
+        ]
+      },
+      {
+        "titulo": [
+          "Da fundação",
+          "ao",
+          "acabamento"
+        ],
+        "vantagens": [
+          "Construção",
+          "Reforma",
+          "Orçamento no zap"
+        ]
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Sua obra",
+          "no ritmo",
+          "certo"
+        ],
+        "vantagens": [
+          "Construtoras",
+          "Reformas",
+          "Obras em estradas"
+        ]
+      },
+      {
+        "titulo": [
+          "Reforma",
+          "sem dor de",
+          "cabeça"
+        ],
+        "vantagens": [
+          "Equipamento certo",
+          "Atendimento da Rose",
+          "Orçamento no zap"
+        ]
+      }
+    ]
+  },
+  "maskara-assessoria": {
+    "tema": "maskara",
+    "feed": [
+      {
+        "titulo": [
+          "Seu CR",
+          "precisa de",
+          "atenção?"
+        ],
+        "vantagens": [
+          "CR",
+          "CRAF",
+          "Guia de tráfego"
+        ]
+      },
+      {
+        "titulo": [
+          "Documentação",
+          "CAC",
+          "em dia?"
+        ],
+        "vantagens": [
+          "Assessoria",
+          "Acompanhamento",
+          "Sem complicação"
+        ]
+      },
+      {
+        "titulo": [
+          "Dúvida",
+          "sobre o seu",
+          "processo?"
+        ],
+        "vantagens": [
+          "SIGMA",
+          "SINARM",
+          "Transferências"
+        ]
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Papelada",
+          "em ordem,",
+          "tiro tranquilo"
+        ],
+        "vantagens": [
+          "Assessoria",
+          "Documental",
+          "Mande QUERO"
+        ]
+      }
+    ]
+  },
+  "primeiro-teste": {
+    "tema": "flow",
+    "feed": [
+      {
+        "titulo": [
+          "Escolha",
+          "o ramo",
+          "e a cidade"
+        ],
+        "vantagens": [
+          "Mercado",
+          "Oficina",
+          "Construtora"
+        ]
+      },
+      {
+        "titulo": [
+          "Mensagem",
+          "pronta, com",
+          "o seu nome"
+        ],
+        "vantagens": [
+          "Você revisa",
+          "Do seu jeito",
+          "Você envia"
+        ]
+      },
+      {
+        "titulo": [
+          "Visita",
+          "com quem",
+          "pode comprar"
+        ],
+        "vantagens": [
+          "Rota melhor",
+          "Mais pedidos",
+          "Menos km"
+        ]
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Rota",
+          "nova",
+          "hoje?"
+        ],
+        "vantagens": [
+          "Novos clientes",
+          "Todo dia",
+          "Sem planilha"
+        ]
+      }
+    ]
+  }
+}

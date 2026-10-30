@@ -42,6 +42,20 @@ TEMAS = {
         "logo": None, "nome": ["MASKARA", "ASSESSORIA"], "logo_alt": 104,
         "botao": "COMENTA QUERO ABAIXO", "icone_cor": (12, 12, 12),
     },
+    # Quatree Dog (29/10): venda de ração para lojista. Chamada é TABELA (QUATREE_DIRETRIZ_VENDAS.md).
+    # Sem a logo oficial no Nexus: escreve o nome por código (nunca uma logo inventada).
+    "quatree": {
+        "fundo": (6, 40, 46), "destaque": (255, 128, 32), "texto": (255, 255, 255), "botao_texto": (6, 30, 34),
+        "logo": None, "nome": ["QUATREE", "REVENDA NA SUA LOJA"], "logo_alt": 104,
+        "botao": "COMENTE TABELA", "botao_story": "RESPONDA TABELA", "icone_cor": (6, 30, 34),
+    },
+    # Daniela Martins (29/10): depiladora em Uberlândia. Café escuro + dourado, como as artes que ela já usa.
+    # Sem a logo oficial no Nexus: escreve o nome por código (nunca uma logo inventada).
+    "daniela": {
+        "fundo": (36, 24, 20), "destaque": (214, 172, 98), "texto": (255, 255, 255), "botao_texto": (36, 24, 20),
+        "logo": None, "nome": ["DANIELA MARTINS", "DEPILADORA"], "logo_alt": 104,
+        "botao": "COMENTE QUERO", "botao_story": "MANDE QUERO NO DIRECT", "icone_cor": (36, 24, 20),
+    },
     # Flow Arts: fundo quase preto, destaque azul da marca, símbolo da Flow Arts.
     "flow": {
         "fundo": (10, 12, 18), "destaque": (64, 120, 255), "texto": (255, 255, 255), "botao_texto": (255, 255, 255),
@@ -113,11 +127,11 @@ def plano(cliente, data, conteudo):
         abre = ({"chave": "0900", "tipo": "post", "cartoes": [com(dia["post0900"], 4)], "legenda": dia["legendas"]["0900"]}
                 if "post0900" in dia else
                 {"chave": "0900", "tipo": "carousel", "cartoes": [com(c, i) for i, c in enumerate(dia["carrossel"])], "legenda": dia["legendas"]["0900"]})
-        pecas += [
-            abre,
-            {"chave": "1200", "tipo": "post", "cartoes": [com(dia["post1200"], 5)], "legenda": dia["legendas"]["1200"]},
-            {"chave": "1900", "tipo": "post", "cartoes": [com(dia["post1900"], 6)], "legenda": dia["legendas"]["1900"]},
-        ]
+        pecas.append(abre)
+        # Flow Arts (29/10): sem post1200 o horário das 12h fica livre para o Reel do ChatGPT.
+        if "post1200" in dia:
+            pecas.append({"chave": "1200", "tipo": "post", "cartoes": [com(dia["post1200"], 5)], "legenda": dia["legendas"]["1200"]})
+        pecas.append({"chave": "1900", "tipo": "post", "cartoes": [com(dia["post1900"], 6)], "legenda": dia["legendas"]["1900"]})
         for i, hora in enumerate(["0900", "1200", "1900"]):
             pecas.append({"chave": hora + "-story", "tipo": "story", "cartoes": [com(dia["stories"][i], i + 2)]})
     return pecas
@@ -305,7 +319,7 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     bx = (W - bw) // 2
     d.rounded_rectangle([bx, base_botao, bx + bw, base_botao + bh], radius=bh // 2, fill=dest)
     # Story não aceita comentário: lá o botão pede o QUERO no direct (FORMATOS_POSTAGENS.md).
-    chamada = "MANDE QUERO NO DIRECT" if story else tema.get("botao", "COMENTE QUERO")
+    chamada = tema.get("botao_story", "MANDE QUERO NO DIRECT") if story else tema.get("botao", "COMENTE QUERO")
     d.text((W // 2, base_botao + bh // 2), chamada, font=fonte_titulo(cabe(chamada, 800, 48, bw - 70), 800), fill=tema["botao_texto"], anchor="mm")
     if story and rodape:
         d.text((W // 2, base_botao + bh + 30), rodape, font=fonte_titulo(30, 600), fill=txt, anchor="mt")

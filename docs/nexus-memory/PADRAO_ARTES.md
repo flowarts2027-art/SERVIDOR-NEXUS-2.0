@@ -34,7 +34,17 @@ Código que aplica: `scripts/social/campanha_diaria.py` (função `desenhar`). T
 | GILTEC | azul-marinho | amarelo | amarelo com letra azul |
 | Flow Arts | quase preto | azul da marca | azul com letra branca |
 | Maskara | preto/grafite | dourado | dourado com letra preta ("COMENTA QUERO ABAIXO") |
+| Quatree Dog | verde-petróleo | laranja | laranja com letra escura ("COMENTE TABELA"; story "RESPONDA TABELA") |
+
+## 8. Artes que chegam sem texto (conector do ChatGPT/Claude, 29/10/2026)
+- O ChatGPT manda **só a foto**. O Nexus escreve logo, título, vantagens e botão por cima, com os textos de `scripts/social/campanha/textos_upload.json` (molduras feitas no deploy por `scripts/social/molduras_upload.py`).
+- Só use `ja_tem_texto=true` quando a imagem já vier com título e botão.
 
 ## 7. Conteúdo
 - Sem preço, sem prazo prometido, sem telefone na imagem, sem depoimento ou número inventado.
 - Tudo vai ao painel **esperando aprovação**.
+
+## 9. Arte nunca é cortada (Rodrigo, 29/10/2026)
+- Motivo: o post das 11h de 29/10 do Quatree saiu com título e vantagens cortados (arte mais larga que 4:5, cortada para caber).
+- Regra no código (`toInstagramJpeg` em `cloudflare/src/manual-carousel.js`): arte fora do formato entra **inteira** no meio, com a própria imagem desfocada no resto. Só corta se a diferença for de até 3%, ou quando é foto de cena pedida com corte (Reel animado).
+

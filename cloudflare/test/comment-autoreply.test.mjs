@@ -36,7 +36,7 @@ test("responde uma vez por comentário: DM + resposta pública, ignora o própri
   };
   const first = await runCommentAutoReplyForClient(env, flow, { request });
   assert.equal(first.replied, 1);
-  assert.ok(calls.some(([m, u]) => m === "POST" && u.endsWith("/99/messages")));
+  assert.ok(calls.some(([m, u]) => m === "POST" && u.endsWith("/me/messages")));
   assert.ok(calls.some(([m, u]) => m === "POST" && u.endsWith("/c1/replies")));
   const second = await runCommentAutoReplyForClient(env, flow, { request });
   assert.equal(second.replied, 0);

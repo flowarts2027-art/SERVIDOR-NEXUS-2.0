@@ -9,6 +9,7 @@ import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { giftLink, checkFollows } from "./gift.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brandProfileVersion } from "./client-brand.js";
+import { sendInstagramMessage } from "./ig-send.js";
 
 export const ASK_TEXT = "Me siga para receber o conteúdo 🎁";
 export const FOLLOWED_TITLE = "Já segui";
@@ -88,12 +89,9 @@ async function graph(request, token, path, options = {}) {
   return payload;
 }
 
+// 28/10: envio pelo "me/messages" (jeito do ChatbotX), com o caminho antigo de reserva.
 function sendTo(request, token, igUserId, igsid, message) {
-  return graph(request, token, encodeURIComponent(igUserId) + "/messages", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ recipient: { id: igsid }, message })
-  });
+  return sendInstagramMessage({ request, token, igUserId, recipient: { id: igsid }, message });
 }
 
 // Última mensagem da pessoa (não nossa) mais nova que handledUntil e que diz "já segui".

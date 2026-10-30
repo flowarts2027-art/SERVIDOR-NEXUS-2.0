@@ -1,3 +1,21 @@
+## 2026-10-29 — Reel Flow Arts de 30/10 às 12h
+- Pedido: criar campanha de amanhã pelo Nexus. Aplicada auditoria de 29/10: ChatGPT produz somente Reel; demais 5 peças permanecem com campanha automática.
+- Agenda Nexus consultada: itens de 30/10 retornaram cancelados/rejeitados; nenhum Reel ativo retornado.
+- Produzido: vídeo de animação gráfica inédito sobre busca manual, filtros de ramo/cidade, contatos com WhatsApp e CTA QUERO. Exemplos explicitamente ilustrativos; logo original public/brand/flowarts-symbol.webp; fonte Inter Display ExtraBold.
+- Verificado: MP4 H.264, 1080x1920, 30 fps, 12 segundos, AAC silencioso; inspeção visual de abertura, duas cenas intermediárias e encerramento. Capa e legenda entregues no chat junto ao vídeo.
+- Estado: PRODUZIDO e revisão visual amostral realizada. ZERO uploads ao painel nesta tarefa. nexus_enviar_arte disponível aceita apenas imagens, não Reel; mídia não foi gravada na branch agendamentos.
+- Próximo passo: enviar video.mp4, capa.jpg e legenda.txt a agendamentos/2026-10-30/1200/ na branch agendamentos por canal com suporte binário, conferir Actions e agenda, sempre esperando aprovação. Não substituir Reel por foto. Verificar entrega existente antes da execução diária para não recriar.
+
+## 2026-10-29 06h56 BRT — Rotina diária: Flow Arts e Maskara confirmadas; Quatree pendente de packshot
+
+- Conferida a execução automática [Actions 40840768043](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/40840768043), workflow `.github/workflows/nexus-campanha-diaria.yml`, concluída com sucesso às 05h19 BRT.
+- **Flow Arts:** as legendas de hoje estão na branch `agendamentos`, em `agendamentos/2026-10-29/{0900,1200,1900}/legenda.txt`. Os slots já existentes foram preservados pela deduplicação; a execução só confirmou upload novo do story das 09h. Não recriar nem reenviar os demais slots sem conferir o painel.
+- **Maskara Assessoria:** logs da execução confirmam seis uploads novos para 29/10 (feeds 09h/12h/19h e stories 09h/12h/19h), todos esperando aprovação. O CTA continua **COMENTA QUERO ABAIXO** nos posts e **MANDE QUERO NO DIRECT** nos stories. A gravação do pacote na branch `agendamentos` falhou por rejeição non-fast-forward; isso não anulou os uploads confirmados.
+- **Quatree Dog (cadastro canônico `quatree-dog`):** não está incluído no workflow diário atual. O calendário de 29/10 prevê Reel conceitual de entrega chegando à loja; a diretriz prioritária exige embalagem Quatree oficial legível em toda peça e uma peça de gato por dia. Nesta execução não foi possível obter o packshot oficial como arquivo utilizável; **não inventar embalagem nem marcar as artes Quatree como prontas**. Legenda-base possível, sem alegar uma entrega real: “Revenda Quatree: deixe cada linha visível e facilite a escolha do lojista. Quer conhecer as opções para sua loja? Comente TABELA que eu te mando a tabela de revenda no direct 📩 #Quatree #PetShop #CasaDeRacao #Agropecuaria”.
+- **Luciana Carvalho:** o histórico confirma convite de testador pendente, mas não há ficha de campanha completa verificável. Não criar artes sem segmento, oferta e identidade visual.
+- Estado desta execução: não houve nova geração manual nem novos uploads além dos registrados pelo workflow; nenhum conteúdo foi aprovado ou publicado pelo assistente. Próximo passo: obter/selecionar packshot oficial Quatree acessível e produzir os assets restantes sem duplicar os slots Flow Arts/Maskara já existentes.
+- Horários e datas em Brasília. Nenhuma credencial ou dado pessoal acrescentado.
+
 # Passagem de trabalho — ChatGPT → Claude Code
 
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
