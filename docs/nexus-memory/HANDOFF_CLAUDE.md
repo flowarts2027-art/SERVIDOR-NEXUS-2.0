@@ -1,5 +1,12 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 21h55 — Texto nas artes v2 (PR aberto)
+
+- Conferido em produção (dados do painel da Flow Arts): o agente rodou, mas só 1 post por rodada e a IA marcou a foto do homem na janela como "já tem texto" (letreiros dos prédios). Os outros posts de 30/10 ficaram sem conferir.
+- Correção: pergunta nova para a IA (só conta título/frase de arte por cima; letreiro, marca e relógio não contam), `artCheckVersion: 2` para reconferir os posts já marcados pela v1, e o agente passou para o cron de 1 minuto (1 post por vez).
+- Testes: 683/684 (falha antiga em gemini-campaign).
+- Próximo passo: Rodrigo aprovar o merge; em até ~10 minutos os posts de 30/10 da Flow Arts ganham o texto. Conferir no painel.
+
 ## 2026-10-29 21h30 — Regra fixa: texto do Nexus em toda imagem enviada sem texto (PR aberto)
 
 - Pedido do Rodrigo: imagens que ele sobe pelo painel do cliente chegavam sem texto; quer que toda imagem enviada ao painel de qualquer cliente receba as frases do Nexus e entre no formato sem cortar.

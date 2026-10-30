@@ -559,6 +559,10 @@ export default {
       ctx.waitUntil(runFacebookCrosspostQueue(env).catch(error =>
         console.warn("facebook_crosspost_failed", String(error?.message || error).slice(0, 140))
       ));
+      // Agente "Texto nas artes" (29/10): 1 post por minuto; imagem sem texto ganha logo, título e botão do Nexus.
+      ctx.waitUntil(fixArtTextInOpenPosts(env, { now: at, limit: 1 }).catch(error =>
+        console.warn("art_text_fix_failed", String(error?.message || error).slice(0, 140))
+      ));
       ctx.waitUntil(runGiftInbox(env, at).catch(error =>
         console.warn("gift_inbox_failed", String(error?.message || error).slice(0, 140))
       ));
@@ -580,10 +584,6 @@ export default {
     // Posts prontos sem "Comente QUERO" ganham a chamada do brinde antes de sair.
     ctx.waitUntil(fixGiftCtaInOpenPosts(env).catch(error =>
       console.warn("gift_cta_fix_failed", String(error?.message || error).slice(0, 140))
-    ));
-    // Agente "Texto nas artes" (29/10): imagem sem texto em qualquer painel ganha logo, título e botão do Nexus.
-    ctx.waitUntil(fixArtTextInOpenPosts(env, { now: at, limit: 6 }).catch(error =>
-      console.warn("art_text_fix_failed", String(error?.message || error).slice(0, 140))
     ));
     // Reel automático (desligado por padrão; liga no Master). Só cria rascunho: o cliente aprova.
     ctx.waitUntil(runAutoReels(env, at).catch(error =>

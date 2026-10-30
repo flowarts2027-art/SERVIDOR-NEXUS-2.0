@@ -90,8 +90,11 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
 // A IA grátis do Cloudflare só responde SIM ou NAO: "já tem texto escrito?". Quem escreve é o Nexus.
 // Na dúvida (sem IA, erro ou demora), conta como "já tem texto" para nunca escrever por cima de outro texto.
 const TEXT_CHECK_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
-export const TEXT_CHECK_PROMPT = "Olhe a imagem. Ela tem palavras, letras, números, preço, título, botão ou logotipo com nome escrito? "
-  + "Responda só SIM ou NAO.";
+export const TEXT_CHECK_VERSION = 2;
+// v2 (29/10 21h50): a v1 confundia letreiro de prédio e marca de relógio com texto de arte.
+export const TEXT_CHECK_PROMPT = "Esta imagem é uma ARTE DE ANÚNCIO já pronta, com um TÍTULO ou FRASE grande escrita por cima da foto "
+  + "(texto de design, faixa com frase, botão escrito)? Letreiro de loja ou prédio, marca de produto, números de relógio, "
+  + "tela de celular e qualquer texto pequeno que faz parte da cena NÃO contam. Responda só SIM ou NAO.";
 
 export function parseHasText(answer) {
   const t = String(answer || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");

@@ -20,5 +20,6 @@ test("agente texto nas artes: sem molduras, só marca como conferido e não mexe
   assert.equal(result.framed, 0);
   assert.equal(updates.length, 1);
   assert.equal(JSON.parse(updates[0][0]).formatBuild.artChecked, true);
+  assert.equal(JSON.parse(updates[0][0]).formatBuild.artCheckVersion, 2);
   assert.equal(JSON.parse(updates[0][0]).imageUrl, "https://x/media/posts/cliente-x/a/imagem.jpg");
 });
