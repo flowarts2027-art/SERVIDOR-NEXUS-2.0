@@ -260,3 +260,7 @@ Este arquivo contém **resumos de projeto aprovados para o GitHub público**, n�
 
 ## 2026-10-30 — Remoção do limite diário de envio MCP
 Pedido: remover teto de uploads ao painel. Causa confirmada em mcp-server.js: MCP_DAILY_UPLOAD_LIMIT=60, contagem global de mcp:upload em 24h. Removidos constante, consulta e bloqueio; aprovação manual e validações preservadas. Teste com 120 registros de dois clientes reproduziu o bloqueio antes e passou após a correção. Suite MCP local: 25/25 aprovados (Node 24). Branch fix/remover-limite-envios-mcp-20261030. Implantação e upload real após deploy ainda pendentes; nenhum post publicado. Próximo: revisar/mesclar PR, confirmar deploy e validar envio autorizado.
+
+
+## 2026-10-30 — Preservar artes prontas no MCP
+Pedido: impedir nova sobreposição de texto nos uploads. Campo ja_tem_texto ausente agora preserva a arte; somente false explícito solicita moldura. Encaminha jaTemTexto=1 ao upload para impedir segunda composição. Testes reproduziram falha antes; 29 testes MCP passaram após alteração (incluindo post, story, carrossel, bytes preservados e moldura explícita). Branch fix/preservar-artes-mcp-20261030. Integração/deploy pendentes. Após deploy: conferir agenda e retomar carrossel Quatree sábado e stories Maskara domingo; nenhum upload novo nesta correção.
