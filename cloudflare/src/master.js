@@ -632,12 +632,17 @@ export async function handleMaster(request, env, url) {
     }
 
     const config = newManagedClientConfig(id, body);
+    // @ do Instagram do cliente (opcional): o Master usa para o convite de testador da Meta.
+    const instagramHandle = String(body.instagram || "").trim().replace(/^@+/, "").toLowerCase();
+    if (instagramHandle && !/^[a-z0-9._]{1,30}$/.test(instagramHandle)) {
+      return json({ error: "instagram_invalid", message: "O @ do Instagram está inválido. Use só letras, números, ponto e _." }, 400);
+    }
 
     const client = await upsertClient(env, {
       id,
       name: String(body.name || "Novo cliente").trim(),
       niche: String(body.niche || "Outro").trim(),
-      instagram: "",
+      instagram: instagramHandle,
       status: "setup",
       config
     });

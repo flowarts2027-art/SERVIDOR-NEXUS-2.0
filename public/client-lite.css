@@ -775,3 +775,8 @@ body { background: var(--paper); }
 .bib-item img { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; }
 .bib-item figcaption { padding:8px; font-size:15px; display:flex; flex-direction:column; gap:4px; }
 .bib-item .link { background:none; border:0; padding:0; color:inherit; text-decoration:underline; cursor:pointer; text-align:left; font-size:14px; }
+.tester-steps{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:12px;counter-reset:passo}
+.tester-steps li{counter-increment:passo;display:grid;gap:8px;padding:16px 16px 16px 60px;position:relative;border-radius:14px;border:2px solid rgba(61,155,255,.45);background:rgba(61,155,255,.08);font-size:17px;line-height:1.5}
+.tester-steps li::before{content:counter(passo);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#3d9bff;color:#fff;font-weight:800;font-size:18px}
+.tester-steps strong{font-size:19px}
+.tester-steps .btn{justify-self:start;text-decoration:none}

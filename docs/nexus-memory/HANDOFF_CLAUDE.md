@@ -1,5 +1,14 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-10-29 21h — Convite de testador do Instagram no cadastro de cliente (PR aberto)
+
+- Pedido do Rodrigo: ao criar o painel de um cliente novo, já facilitar o convite de testador do Instagram, enquanto o app da Meta não está Live; depois o passo é retirado.
+- Limite real: a Meta não tem API pública para adicionar testador do Instagram nem para ler se o convite está pendente. Adicionar o @ continua sendo um clique manual do Rodrigo na Meta. Decisão do Rodrigo: opção semiautomática (sem robô de navegador).
+- Master (Novo cliente): campo novo "Instagram do cliente"; o @ é salvo em `clients.instagram` (validado em `cloudflare/src/master.js`). Depois de criar, aparece o cartão "Convite de testador (Meta)" com o botão "Copiar @ e abrir Meta". O texto de "Copiar acesso" ganha a linha para aceitar o convite.
+- Painel do cliente (`public/client-lite.js`): quando não conectado, mostra 2 passos grandes: 1) Abrir convite (instagram.com/accounts/manage_access, aba Convites de testador) e 2) Conectar Instagram. Chave `MODO_TESTE_META = true`; quando o app ficar Live, mudar para false e o passo 1 some.
+- Testes: 680/681; a única falha (`gemini-campaign.test.mjs`, fila do Master) já falha na main sem esta mudança.
+- Próximo passo: Rodrigo aprovar o merge; criar a cliente nova pelo Master com o @ dela.
+
 ## 2026-10-29 — Limpeza de 2 dias também no CRM da Flow Arts (PR aberto)
 
 - Pedido do Rodrigo: limpar do CRM da Flow Arts os contatos que ficaram 2 dias sem mensagem e aplicar a auto limpeza a todos os clientes.

@@ -8,6 +8,20 @@ const $$ = selector => Array.from(document.querySelectorAll(selector));
 // Demonstração pública (/demo): negócio fictício, só leitura.
 const DEMO = new URLSearchParams(window.location.search).get("demo") === "1";
 const DEMO_BLOCKED = "Isto é uma demonstração. No painel de verdade, este botão funciona.";
+// Enquanto o app da Meta estiver em teste, o cliente precisa aceitar o convite de testador
+// antes de conectar. Quando o app ficar Live, mude para false e o passo some.
+const MODO_TESTE_META = true;
+const IG_TESTER_INVITES_URL = "https://www.instagram.com/accounts/manage_access/";
+
+function testerStepsHtml(connectLabel = "Conectar Instagram") {
+  if (!MODO_TESTE_META) return `<button type="button" class="btn btn-primary" data-connect>${connectLabel}</button>`;
+  return `<ol class="tester-steps">
+      <li><strong>Aceite o convite</strong><span>Abra, entre na aba <b>Convites de testador</b> e toque em <b>Aceitar</b>.</span>
+        <a class="btn btn-soft" href="${IG_TESTER_INVITES_URL}" target="_blank" rel="noopener">Abrir convite</a></li>
+      <li><strong>Conecte o Instagram</strong><span>Volte aqui e toque no botão.</span>
+        <button type="button" class="btn btn-primary" data-connect>${connectLabel}</button></li>
+    </ol>`;
+}
 
 const state = {
   client: null,
@@ -450,7 +464,7 @@ function renderHome() {
       <p class="muted">${connected
         ? (scheduled ? "O próximo post sai " + escapeHtml(formatDate(scheduled.scheduledFor)) + "." : "Os agentes estão preparando os próximos posts.")
         : "Conecte o seu Instagram para os agentes começarem a criar os posts."}</p>
-      ${connected ? "" : `<button type="button" class="btn btn-primary" data-connect>Conectar Instagram</button>`}
+      ${connected ? "" : testerStepsHtml()}
     </article>`;
   }
 
@@ -657,8 +671,9 @@ function renderAccount() {
           ? (ig.expiresAt ? "Conexão válida até " + escapeHtml(formatDate(ig.expiresAt, false)) : "Conectado")
           : "Conecte para os agentes postarem por você."}</p>
       </div>
-      <button type="button" class="btn ${ig.connected ? "btn-soft" : "btn-primary"}" data-connect>${ig.connected ? "Reconectar" : "Conectar Instagram"}</button>
-    </div>`;
+      ${ig.connected ? `<button type="button" class="btn btn-soft" data-connect>Reconectar</button>` : ""}
+    </div>
+    ${ig.connected ? "" : testerStepsHtml()}`;
   const link = $("#support-link");
   if (state.contact) { link.href = state.contact; link.hidden = false; } else { link.hidden = true; }
 }

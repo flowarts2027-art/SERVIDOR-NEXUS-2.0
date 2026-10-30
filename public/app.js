@@ -960,7 +960,15 @@ $("#client-form").addEventListener("submit", async event => {
     const access = result.portalCredentials || {};
     $("#new-client-user").textContent = "Usuário: " + (access.username || "—");
     $("#new-client-password").textContent = "Senha: " + (access.initialPassword || "—");
-    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + CLIENT_PANEL_URL + "\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "");
+    const igHandle = String(result.client?.instagram || data.instagram || "").trim().replace(/^@+/, "");
+    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + CLIENT_PANEL_URL + "\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "")
+      + (igHandle ? "\n\nAntes de conectar o Instagram: aceite o convite em " + IG_TESTER_INVITES_URL + " (aba Convites de testador)." : "");
+    const tester = $("#tester-invite");
+    if (tester) {
+      tester.dataset.handle = igHandle;
+      $("#tester-invite-handle").textContent = igHandle ? "@" + igHandle : "—";
+      tester.hidden = !igHandle;
+    }
     $("#new-client-access").hidden = false;
     state.portalClientId = result.client?.id || state.portalClientId;
     await load();
@@ -1165,6 +1173,18 @@ setInterval(async()=>{
     renderSupportNotifications(support);
   }catch{}
 },60000);
+
+// Convite de testador: a Meta não tem API para isso. O Master copia o @ e abre a Meta.
+const IG_TESTER_INVITES_URL="https://www.instagram.com/accounts/manage_access/";
+const META_APPS_URL="https://developers.facebook.com/apps/";
+const testerInviteButton=$("#tester-invite-open");
+if(testerInviteButton)testerInviteButton.addEventListener("click",async()=>{
+  const handle=$("#tester-invite")?.dataset.handle||"";
+  window.open(META_APPS_URL,"_blank","noopener");
+  if(!handle)return;
+  try{await navigator.clipboard.writeText(handle);testerInviteButton.textContent="@ copiado";setTimeout(()=>testerInviteButton.textContent="Copiar @ e abrir Meta",2000);}
+  catch{alert("Copie o @: "+handle);}
+});
 
 const copyAccessButton=$("#copy-client-access");
 if(copyAccessButton)copyAccessButton.addEventListener("click",async()=>{

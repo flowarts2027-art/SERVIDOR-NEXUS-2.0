@@ -656,3 +656,4 @@ table.post-ledger-table td{vertical-align:middle}
 @media(min-width:701px){.shell{grid-template-rows:auto 1fr!important;align-content:start}.sidebar{align-self:start}}
 .home-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:700px){.home-tiles{grid-template-columns:1fr}}
+.access-result{flex-wrap:wrap}.tester-invite{flex-basis:100%;display:grid;gap:8px;margin-top:6px;padding:16px;border:2px dashed #3d9bff;border-radius:14px;background:#eef6ff}.tester-invite span{font-size:14px;letter-spacing:.12em;color:#10253c;font-weight:900}.tester-invite strong{font-size:22px;color:#10253c}.tester-invite small{font-size:16px;line-height:1.5;color:#10253c}
