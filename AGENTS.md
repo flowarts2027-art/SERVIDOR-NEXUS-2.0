@@ -36,3 +36,8 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 Para tarefas envolvendo os oito DOTs de marketing (Dante, Lia, Maya, Caio, Ravi, Bento, Nilo e Clara), consultar também `docs/nexus-memory/DOTS_QUALITY_PROTOCOL_2026-10-27.md` e `docs/nexus-memory/DOTS_MARKETING_TRANSFERENCIA.md`. Estas instruções são protocolo de trabalho, **não** prova de instalação dos oito agentes. Verificar disponibilidade real das skills em cada ambiente.
 
 Antes de alegar sucesso, separar geração, revisão visual, upload aceito pelo painel, aprovação do cliente e publicação comprovada. Não inferir publicação a partir de upload nem inferir upload da existência de arquivos. Em conflitos de grade ou CTA, usar o pedido mais recente aplicável ao cliente/data, documentando o conflito. A revisão visual de mídia final deve reprovar imagem repetida, logo incorreta, embalagens sem identificação, texto cortado ou artefato anatômico. Metadados não substituem revisão real.
+
+
+## Quatree Dog — catálogo de referência obrigatório (30/10/2026)
+
+Para TODA campanha da Quatree Dog, antes de planejar, gerar ou revisar artes e legendas, ler `docs/nexus-memory/clientes/quatree/CATALOGO_QUATREE_2026_DIRETRIZ.md` e consultar o PDF original **CATÁLOGO QUATREE 2026.pdf**. O documento define a responsabilidade de Dante, Lia, Maya, Caio, Ravi, Bento, Clara e Nilo, fidelidade de embalagem/produto/SKU e aprovação manual. Se o PDF original não estiver disponível, não afirmar que o consultou nem inventar embalagens. Esta regra não se aplica aos demais clientes.
