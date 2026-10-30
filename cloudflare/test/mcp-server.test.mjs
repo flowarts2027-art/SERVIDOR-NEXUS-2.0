@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { handleMcpRequest, handleMcpMessage, MCP_TOOLS, mcpEnabled, enviarArte, MCP_DAILY_UPLOAD_LIMIT } from "../src/mcp-server.js";
+import { handleMcpRequest, handleMcpMessage, MCP_TOOLS, mcpEnabled, enviarArte } from "../src/mcp-server.js";
 
 const TOKEN = "chave-de-teste-bem-comprida-123456";
 
@@ -229,12 +229,17 @@ test("NEXUS_MCP_WRITE=off desliga só o envio", async () => {
   assert.equal(r.result.isError, false);
 });
 
-test("limite de envios em 24 horas", async () => {
+test("envios acima de 60 em 24 horas continuam permitidos para todos os clientes", async () => {
   const { env, deps, db, calls } = sendSetup();
   const ins = db.prepare("INSERT INTO post_ledger(id,client_id,payload_json) VALUES(?,?,?)");
-  for (let i = 0; i < MCP_DAILY_UPLOAD_LIMIT; i++) ins.run("m" + i, "primeiro-teste", JSON.stringify({ source: "mcp:upload" }));
-  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /Limite/);
-  assert.equal(calls.downloads.length, 0);
+  for (let i = 0; i < 120; i++) ins.run("m" + i, i % 2 ? "giltec" : "primeiro-teste", JSON.stringify({ source: "mcp:upload" }));
+  for (const cliente_id of ["primeiro-teste", "giltec"]) {
+    const out = await enviarArte(env, deps, { cliente_id, formato: "post", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW);
+    assert.equal(out.ok, true);
+    assert.match(out.situacao, /esperando aprovação/);
+  }
+  assert.equal(calls.uploads.length, 2);
+  for (const { form } of calls.uploads) assert.equal(form.get("approval"), "cliente");
 });
 
 test("pelo protocolo: erro de entrada volta como isError, sem derrubar o servidor", async () => {
