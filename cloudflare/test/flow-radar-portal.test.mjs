@@ -11,7 +11,7 @@ function fakeEnv(extra = {}) {
       function exec(args) {
         const stmt = sqlite.prepare(sql);
         const params = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
-        const execute = method => /\\?\\d/.test(sql)
+        const execute = method => /\?\d/.test(sql)
           ? stmt[method](params)
           : stmt[method](...args.map(v => v ?? null));
         return {
