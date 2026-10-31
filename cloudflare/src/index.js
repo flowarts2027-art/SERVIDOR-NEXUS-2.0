@@ -695,6 +695,12 @@ export default {
       return handleSiteHit(request, env).catch(() => new Response(null, { status: 204 }));
     }
 
+    if ((url.pathname === "/commercial-radar" || url.pathname === "/commercial-radar.html") && request.method === "GET") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return asset(env, request, "/commercial-radar.html");
+    }
+
     // CRM exclusivo da Flow Arts, sem rotas de publicação ou ações automáticas.
     if (url.pathname.startsWith("/api/master/commercial-radar")) {
       const master = await resolveMasterSession(env, request).catch(() => null);
