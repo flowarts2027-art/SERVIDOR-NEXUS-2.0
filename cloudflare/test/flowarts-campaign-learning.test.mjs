@@ -9,5 +9,5 @@ test('summarizes authorized metrics without inventing conversions', () => {
 });
 test('report discloses missing style metadata',()=>{
  const report=formatFlowArtsLearningReport({posts:[{tipo:'IMAGE',alcance:1,link:'https://www.instagram.com/p/test/'}]},'2026-10-31');
- assert.match(report,/0\\/1/);assert.match(report,/Aprovação humana obrigatória/);
+ assert.ok(report.includes('0/1'));assert.match(report,/Aprovação humana obrigatória/);
 });
