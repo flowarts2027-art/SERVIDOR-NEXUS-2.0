@@ -734,7 +734,7 @@ function enableFlowCrm() {
   window.NEXUS_API = "/api/portal/flow";
   document.body.classList.add("flow-crm");
   $$(".flow-only").forEach(el => { el.hidden = false; });
-  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2", "/flow-radar.js?v=1"]) {
+  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2", "/flow-radar.js?v=2"]) {
     const script = document.createElement("script");
     script.src = src;
     script.async = false;
