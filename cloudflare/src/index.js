@@ -1,3 +1,4 @@
+import { summarizeFlowArtsPosts, formatFlowArtsLearningReport } from "./flowarts-campaign-learning.js";
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
@@ -711,6 +712,18 @@ export default {
     }
 
     // Resumo das visitas para o painel Master (login do Master).
+    if (url.pathname === "/api/master/flowarts-learning" && request.method === "POST") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const body = await request.json().catch(() => null);
+      if (!body || body.clientId !== "primeiro-teste" || !Array.isArray(body.posts) || body.posts.length > 200) {
+        return json({ error: "flowarts_only_or_invalid_posts" }, 400);
+      }
+      const summary = summarizeFlowArtsPosts(body.posts);
+      const report = formatFlowArtsLearningReport(body, new Date().toISOString());
+      return json({ ok: true, clientId: "primeiro-teste", summary, report, automatedCollection: false });
+    }
+
     if (url.pathname === "/api/master/site-stats" && request.method === "GET") {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
