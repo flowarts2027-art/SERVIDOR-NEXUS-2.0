@@ -195,7 +195,7 @@ test("fila do Master: pedido guardado, cron de 1 minuto gera e grava o resultado
   await queueCampaign(env, "primeiro-teste", "2026-10-29");
   assert.equal((await campaignStatus(env, "primeiro-teste", "2026-10-29")).manual.startedAt, "");
   let n = 0;
-  const r = await runQueuedCampaigns(env, new Date("2026-10-28T11:00:00Z"), { compose, githubCaptions: async () => ({}), upload: async () => { n++; } });
+  const r = await runQueuedCampaigns(env, new Date("2026-10-28T11:00:00Z"), { compose, githubCaptions: async () => ({}), upload: async () => { n++; }, now: new Date("2026-10-28T09:00:00Z") });
   assert.equal(r.ran, true);
   assert.equal(n, 6);
   const st = await campaignStatus(env, "primeiro-teste", "2026-10-29");
