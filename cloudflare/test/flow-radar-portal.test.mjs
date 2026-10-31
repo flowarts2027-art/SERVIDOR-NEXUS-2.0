@@ -11,10 +11,13 @@ function fakeEnv(extra = {}) {
       function exec(args) {
         const stmt = sqlite.prepare(sql);
         const params = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
+        const execute = method => /\\?\\d/.test(sql)
+          ? stmt[method](params)
+          : stmt[method](...args.map(v => v ?? null));
         return {
-          first: async () => stmt.get(params) || null,
-          all: async () => ({ results:stmt.all(params) }),
-          run: async () => ({ meta:{ changes:Number(stmt.run(params).changes) } })
+          first: async () => execute("get") || null,
+          all: async () => ({ results:execute("all") }),
+          run: async () => ({ meta:{ changes:Number(execute("run").changes) } })
         };
       }
       return { ...exec([]), bind:(...args) => exec(args) };
