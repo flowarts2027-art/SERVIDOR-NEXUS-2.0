@@ -101,14 +101,9 @@
   async function refreshStatus() {
     const d = await api("/status");
     const target = $("flow-radar-status");
-    if (target) target.textContent = (d.instagramInspectionReady
-      ? "Meta conectada para inspeção de perfis profissionais. "
-      : "A inspeção oficial de perfis depende da conexão Facebook Radar no Master. ") +
-      (d.feedConfigured
-        ? "Fonte de oportunidades autorizada ativa para busca periódica."
-        : "Sem fonte autorizada para coletar intenções de clientes em comentários de terceiros. Não é possível varrer esses comentários pela API oficial.");
-    const button = $("flow-radar-discover");
-    if (button) { button.disabled = !d.feedConfigured; button.title = d.feedConfigured ? "" : "Configure uma fonte autorizada para ativar esta busca."; }
+    if (target) target.textContent = d.feedConfigured
+      ? "Fonte de oportunidades conectada. Acompanhe os resultados abaixo e, quando a campanha começar, os indicadores de tráfego."
+      : "Radar preparado para a próxima campanha. Os indicadores aparecerão quando a integração de anúncios e os eventos do atendimento estiverem ativos. Nenhuma campanha está sendo medida automaticamente ainda.";
   }
   async function refreshCompetitors() {
     const host = $("flow-radar-competitors"); if (!host) return;
