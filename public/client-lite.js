@@ -714,7 +714,7 @@ function showTab(tab) {
     if (active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
   });
   // No celular, "Mais" fica marcado quando a aba aberta está dentro dele.
-  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "biblioteca", "negocio", "conta"].includes(state.tab));
+  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "biblioteca", "negocio", "conta", "crm", "radar"].includes(state.tab));
   toggleMore(false);
   window.scrollTo({ top: 0 });
   // CRM da Flow Arts (22/10): os scripts do CRM carregam quando a aba abre.
