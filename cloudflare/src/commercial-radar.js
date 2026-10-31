@@ -21,6 +21,22 @@ export async function handleCommercialRadar(request,env,u){
  await ensure(env);
  await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_radar_competitors (instagram TEXT PRIMARY KEY,category TEXT NOT NULL,notes TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
  const path=u.pathname.slice(prefix.length);
+ // O Radar da Flow Arts pode ser aberto tanto pelo Master quanto pela sessão
+ // isolada do próprio cliente Flow Arts; a autorização é feita no roteador.
+ if(path==="/status"&&request.method==="GET"){
+  let feedConfigured=false;
+  try {
+   const source=new URL(String(env.RADAR_FEED_URL||""));
+   feedConfigured=source.protocol==="https:"&&source.hostname===String(env.RADAR_FEED_HOST||"").toLowerCase();
+  }catch{}
+  const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM flow_radar_leads").first();
+  return json({ok:true,leadCount:Number(count?.total||0),feedConfigured,automaticDiscovery:feedConfigured,source:feedConfigured?"authorized_feed":"not_configured",note:feedConfigured?"Busca horária de oportunidades autorizadas ativa.":"O Radar de intenção ainda não possui fonte autorizada. O Caçador de empresas do CRM pode pesquisar pelo OpenStreetMap."});
+ }
+ if(path==="/discover"&&request.method==="POST"){
+  const {runRadarDiscovery}=await import("./radar-discovery-feed.js");
+  const result=await runRadarDiscovery(env);
+  return json(result,result.ok?200:503);
+ }
  if(path==="/competitors"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_competitors ORDER BY created_at DESC LIMIT 100").all();
   return json({ok:true,competitors:rows.results||[]});
