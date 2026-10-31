@@ -840,3 +840,68 @@ html[data-client-theme="daniela-martins"] .nav-brand { margin-bottom: 18px; }
 html[data-client-theme="daniela-martins"] .stat::before { background: #EFECDF; color: #746E44; }
 html[data-client-theme="daniela-martins"] .stat:nth-child(2)::before { background: #F6EBDA; color: #8B5A2B; }
 html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { background: #F3EFE6; color: #B98A45; }
+
+
+/* Navegação móvel global: exatamente cinco destinos visíveis.
+   Mantém a identidade própria de cada cliente via variáveis do tema. */
+@media (max-width: 899px) {
+  :root { --nav-h: 60px; }
+  .tabbar {
+    box-sizing: border-box;
+    width: 100%;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+    gap: 0;
+    padding: 0 max(4px, env(safe-area-inset-left)) env(safe-area-inset-bottom) max(4px, env(safe-area-inset-right));
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+    overflow: visible;
+  }
+  .tabbar > button {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 1px;
+    font-size: clamp(.66rem, 2.7vw, .77rem);
+    line-height: 1.1;
+    letter-spacing: -.015em;
+    overflow: visible;
+    white-space: nowrap;
+    justify-content: center;
+    text-align: center;
+    gap: 3px;
+  }
+  .tabbar > button > span[aria-hidden] {
+    font-size: 1.22rem;
+    line-height: 1;
+    min-height: 20px;
+    display: grid;
+    place-items: center;
+  }
+  .tabbar > button[data-tab="biblioteca"],
+  .tabbar > button[data-tab="crm"],
+  .tabbar > button[data-tab="radar"],
+  .tabbar > .more-tab { display: none !important; }
+  .tabbar > button[data-tab="inicio"],
+  .tabbar > button[data-tab="posts"],
+  .tabbar > button[data-tab="campanha"],
+  .tabbar > button[data-tab="buscar"],
+  .tabbar > #more-btn { display: flex !important; }
+  .more-sheet {
+    box-sizing: border-box;
+    max-height: min(70dvh, 480px);
+    overflow-y: auto;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+  .more-title { margin-bottom: 8px; }
+  .more-grid { gap: 8px; }
+  .tabbar .more-grid button {
+    box-sizing: border-box;
+    min-height: 56px;
+    padding: 8px 6px;
+    font-size: .85rem;
+  }
+  .tabbar .more-grid button[hidden] { display: none !important; }
+  .content { padding-bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom)); }
+  .toast { bottom: calc(var(--nav-h) + 8px + env(safe-area-inset-bottom)); }
+}
