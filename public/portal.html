@@ -234,7 +234,7 @@
 
       <section id="tab-radar" class="tab" hidden>
         <h1 class="page-title">Radar Comercial · Flow Arts</h1>
-        <p class="lead-intro">Encontre oportunidades de sites, automação do Instagram, geração de leads e prospecção B2B. Uso exclusivo da Flow Arts. Nenhuma mensagem é enviada automaticamente.</p>
+        <p class="lead-intro">Instagram em primeiro lugar: analise perfis profissionais e identifique sinais de necessidade de site, automação ou captação de clientes. Uso exclusivo da Flow Arts. Nenhuma mensagem é enviada automaticamente.</p>
         <section class="panel" style="padding:18px;margin:14px 0">
           <h2>Como está a busca</h2>
           <p class="muted" id="flow-radar-status" role="status">Consultando fontes disponíveis…</p>
@@ -244,15 +244,13 @@
           <p class="muted" id="flow-radar-result" role="status"></p>
         </section>
         <section class="panel" style="padding:18px;margin:14px 0">
-          <h2>Caçar empresas com potencial de site</h2>
-          <p class="muted">Busca em dados de empresas do mapa, por exemplo, negócios sem site próprio identificado. Isso é oportunidade de prospecção, não demonstra interesse declarado na compra.</p>
-          <div class="prospect-actions">
-            <label>Segmento<select id="flow-radar-map-niche"><option value="">Segmentos em rodízio</option><option value="material">Materiais de construção</option><option value="imobiliaria">Imobiliárias</option><option value="contabilidade">Contabilidade</option><option value="restaurante">Restaurantes</option><option value="padaria">Padarias</option><option value="pet">Pet shops</option><option value="oficina">Oficinas</option></select></label>
-            <label>Cidade e estado (opcional)<input id="flow-radar-map-city" placeholder="Ex.: Niterói RJ" maxlength="60"></label>
-            <button type="button" class="primary" id="flow-radar-map-search">Encontrar empresas agora</button>
-          </div>
-          <p id="flow-radar-map-status" class="muted" role="status"></p>
-          <div id="flow-radar-map-results"></div>
+          <h2>Verificar perfil do Instagram</h2>
+          <p class="muted">Verifica biografia e site público de contas profissionais pela Meta, quando autorizado. Site não informado no perfil não prova que a empresa não tenha site; site informado não é classificado como ruim sem evidência.</p>
+          <form id="flow-radar-profile-form" class="crm-form">
+            <label>@ da empresa no Instagram<input name="instagram" maxlength="30" required placeholder="@empresa"></label>
+            <button type="submit" class="primary" id="flow-radar-profile-button">Analisar perfil</button>
+          </form>
+          <div id="flow-radar-profile-results" role="status" class="muted"></div>
         </section>
         <section class="panel" style="padding:18px;margin:14px 0">
           <h2>Oportunidades qualificadas</h2>
@@ -283,6 +281,19 @@
           </form>
           <p id="flow-radar-competitor-msg" class="muted" role="status"></p>
           <div id="flow-radar-competitors"></div>
+        </div></details>
+        <details class="fold"><summary><span class="fold-icon">⌖</span><span><strong>Busca alternativa no mapa</strong><small>Secundária: empresas sem site próprio identificado no cadastro</small></span></summary><div class="fold-body">
+        <section class="panel" style="padding:18px;margin:14px 0">
+          <h2>Caçar empresas com potencial de site</h2>
+          <p class="muted">Busca em dados de empresas do mapa, por exemplo, negócios sem site próprio identificado. Isso é oportunidade de prospecção, não demonstra interesse declarado na compra.</p>
+          <div class="prospect-actions">
+            <label>Segmento<select id="flow-radar-map-niche"><option value="">Segmentos em rodízio</option><option value="material">Materiais de construção</option><option value="imobiliaria">Imobiliárias</option><option value="contabilidade">Contabilidade</option><option value="restaurante">Restaurantes</option><option value="padaria">Padarias</option><option value="pet">Pet shops</option><option value="oficina">Oficinas</option></select></label>
+            <label>Cidade e estado (opcional)<input id="flow-radar-map-city" placeholder="Ex.: Niterói RJ" maxlength="60"></label>
+            <button type="button" class="primary" id="flow-radar-map-search">Encontrar empresas agora</button>
+          </div>
+          <p id="flow-radar-map-status" class="muted" role="status"></p>
+          <div id="flow-radar-map-results"></div>
+        </section>
         </div></details>
       </section>
 
