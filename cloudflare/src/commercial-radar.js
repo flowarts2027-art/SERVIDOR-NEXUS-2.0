@@ -19,7 +19,18 @@ export async function handleCommercialRadar(request,env,u){
  const prefix="/api/master/commercial-radar";if(!u.pathname.startsWith(prefix))return null;
  if(request.method!=="GET"&&request.headers.get("origin")&&request.headers.get("origin")!==u.origin)return json({error:"invalid_origin"},403);
  await ensure(env);
+ await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_radar_competitors (instagram TEXT PRIMARY KEY,category TEXT NOT NULL,notes TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
  const path=u.pathname.slice(prefix.length);
+ if(path==="/competitors"&&request.method==="GET"){
+  const rows=await env.DB.prepare("SELECT * FROM flow_radar_competitors ORDER BY created_at DESC LIMIT 100").all();
+  return json({ok:true,competitors:rows.results||[]});
+ }
+ if(path==="/competitors"&&request.method==="POST"){
+  const b=await request.json().catch(()=>({})),ig=handle(b.instagram),category=clean(b.category,25);
+  if(!ig||!categories.includes(category))return json({error:"invalid_competitor"},400);
+  await env.DB.prepare("INSERT OR IGNORE INTO flow_radar_competitors(instagram,category,notes) VALUES(?,?,?)").bind(ig,category,clean(b.notes,300)).run();
+  return json({ok:true,instagram:ig},201);
+ }
  if(path==="/leads"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_leads ORDER BY score DESC,created_at DESC LIMIT 300").all();
   return json({ok:true,categories,stages,leads:(rows.results||[]).map(x=>({...x,whatsapp_link:x.whatsapp&&["aprovado","contatado","negociacao","ganho"].includes(x.status)?"https://wa.me/"+x.whatsapp:null}))});
