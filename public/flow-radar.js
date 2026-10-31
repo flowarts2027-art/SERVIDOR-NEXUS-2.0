@@ -84,6 +84,20 @@
     if(total) total.textContent = String(leads.length);
     if(approved) approved.textContent = String(leads.filter(x=>x.status==="aprovado").length);
   }
+  async function refreshCampaign() {
+    const status = $("flow-radar-campaign-status");
+    try {
+      const data = await api("/campaign-events");
+      const fields = {ad_click:"radar-metric-click",ad_like:"radar-metric-like",form_started:"radar-metric-start",form_submitted:"radar-metric-submit",whatsapp_opened:"radar-metric-whats",qualified_lead:"radar-metric-qualified"};
+      for (const [key,id] of Object.entries(fields)) {
+        const node = $(id);
+        if (node) node.textContent = data.eventCount ? String(data.metrics?.[key] ?? 0) : "—";
+      }
+      if (status) status.textContent = data.note || "Aguardando conexão da campanha.";
+    } catch (error) {
+      if (status) status.textContent = "Métricas indisponíveis: "+error.message;
+    }
+  }
   async function refreshStatus() {
     const d = await api("/status");
     const target = $("flow-radar-status");
@@ -113,7 +127,7 @@
     if (busy) return;
     busy = true;
     try {
-      await Promise.all([refreshStatus(), refreshLeads()]);
+      await Promise.all([refreshStatus(), refreshLeads(), refreshCampaign()]);
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");
