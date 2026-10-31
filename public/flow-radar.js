@@ -1,0 +1,168 @@
+// Radar Comercial exclusivo da sessão do cliente Flow Arts.
+// A API valida a sessão no Worker. Este script nunca publica ou envia mensagens.
+(() => {
+  "use strict";
+  const BASE = "/api/portal/flow/commercial-radar";
+  const $ = id => document.getElementById(id);
+  const statusNames = ["novo","revisao","aprovado","contatado","negociacao","ganho","descartado","nao_contatar","nutricao","convite_seguir","seguidor_confirmado"];
+  const names = { site:"Sites", instagram:"Automação Instagram", leads:"Geração de leads", prospeccao:"Prospecção B2B" };
+  let leads = [];
+  let loaded = false;
+  let busy = false;
+
+  function el(tag, value, cls) {
+    const node = document.createElement(tag);
+    if (value != null) node.textContent = String(value);
+    if (cls) node.className = cls;
+    return node;
+  }
+  function appendLink(target, url, title) {
+    try {
+      const u = new URL(url);
+      if (u.protocol !== "https:") return;
+      const a = el("a", title);
+      a.href = u.href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      target.append(a, el("span", " · "));
+    } catch {}
+  }
+  async function api(path, init = {}) {
+    const r = await fetch(BASE + path, { credentials:"same-origin", ...init });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || data.message || "Erro HTTP " + r.status);
+    return data;
+  }
+  const jsonBody = data => ({ method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(data) });
+
+  function renderLeads() {
+    const host = $("flow-radar-leads"); if (!host) return;
+    host.replaceChildren();
+    const chosen = $("flow-radar-category")?.value || "";
+    const items = leads.filter(x => !chosen || x.category === chosen);
+    if (!items.length) {
+      host.append(el("p", leads.length ? "Nenhuma oportunidade nesta categoria." : "Nenhum lead de intenção registrado. A lista vazia não significa que a busca automática esteja ativa."));
+      return;
+    }
+    for (const row of items) {
+      const card = el("article", null, "radar-item");
+      card.style.cssText = "border-top:1px solid #d4deea;padding:14px 0";
+      card.append(el("h3", (row.business || "Oportunidade") + " · " + (row.instagram ? "@" + row.instagram : "") + " · " + Number(row.score || 0) + "/95"));
+      card.append(el("p", (names[row.category] || row.category) + " · " + row.reason + " · " + row.status));
+      card.append(el("p", "Evidência: " + (row.evidence || "")));
+      const links = el("p");
+      appendLink(links, row.evidence_url, "Ver evidência");
+      if (row.instagram) appendLink(links, "https://www.instagram.com/" + encodeURIComponent(row.instagram) + "/", "Instagram");
+      if (row.website) appendLink(links, row.website, "Site da empresa");
+      if (row.whatsapp_link) appendLink(links, row.whatsapp_link, "Abrir WhatsApp (sem enviar)");
+      card.append(links);
+      const select = el("select");
+      select.setAttribute("aria-label", "Etapa do lead");
+      for (const stage of statusNames) {
+        const option = el("option", stage.replace(/_/g," "));
+        option.value = stage;
+        option.selected = row.status === stage;
+        select.append(option);
+      }
+      const save = el("button", "Atualizar etapa", "ghost");
+      save.type = "button";
+      save.onclick = async () => {
+        save.disabled = true;
+        try {
+          await api("/leads/" + encodeURIComponent(row.id), { method:"PATCH", headers:{"content-type":"application/json"}, body:JSON.stringify({ status:select.value }) });
+          await refreshLeads();
+        } catch (error) { alert(error.message); }
+        finally { save.disabled = false; }
+      };
+      card.append(select, save);
+      host.append(card);
+    }
+  }
+  async function refreshLeads() {
+    const data = await api("/leads");
+    leads = Array.isArray(data.leads) ? data.leads : [];
+    renderLeads();
+    const target = $("flow-radar-count");
+    if (target) target.textContent = leads.length + " oportunidade(s) registradas; " + leads.filter(x=>x.status==="aprovado").length + " aprovada(s) para contato manual.";
+  }
+  async function refreshStatus() {
+    const d = await api("/status");
+    const target = $("flow-radar-status");
+    if (target) target.textContent = d.feedConfigured
+      ? "Fonte autorizada configurada. O Radar consulta essa fonte periodicamente; resultados novos dependem dos dados que ela fornece."
+      : "Coleta automática de comentários de concorrentes indisponível: nenhuma fonte autorizada de intenção está configurada. O Caçador do CRM pode encontrar empresas pelo mapa.";
+    const button = $("flow-radar-discover");
+    if (button) { button.disabled = !d.feedConfigured; button.title = d.feedConfigured ? "" : "Configure uma fonte autorizada para ativar esta busca."; }
+  }
+  async function refreshCompetitors() {
+    const host = $("flow-radar-competitors"); if (!host) return;
+    const data = await api("/competitors");
+    host.replaceChildren();
+    const rows = Array.isArray(data.competitors) ? data.competitors : [];
+    if (!rows.length) { host.append(el("p", "Nenhuma referência cadastrada.")); return; }
+    for (const x of rows) {
+      const line = el("p");
+      appendLink(line, "https://www.instagram.com/" + encodeURIComponent(x.instagram) + "/", "@" + x.instagram);
+      line.append(el("span", names[x.category] || x.category));
+      host.append(line);
+    }
+  }
+  async function load() {
+    if (busy) return;
+    busy = true;
+    try {
+      await Promise.all([refreshStatus(), refreshLeads(), refreshCompetitors()]);
+      loaded = true;
+    } catch (e) {
+      const target = $("flow-radar-status");
+      if (target) target.textContent = "Não foi possível consultar o Radar: " + e.message + ". Isso não confirma ausência de leads.";
+    } finally { busy = false; }
+  }
+  function wire() {
+    if (!$("tab-radar")) return;
+    $("flow-radar-refresh")?.addEventListener("click", load);
+    $("flow-radar-category")?.addEventListener("change", renderLeads);
+    $("flow-radar-crm")?.addEventListener("click", () => {
+      const tab = document.querySelector('.tabbar [data-tab="crm"]');
+      if (tab) tab.click();
+      const fold = $("cacador-fold"); if (fold) { fold.open = true; fold.scrollIntoView({ behavior:"smooth", block:"start" }); }
+    });
+    $("flow-radar-discover")?.addEventListener("click", async event => {
+      const btn = event.currentTarget, msg = $("flow-radar-result");
+      btn.disabled = true;
+      if (msg) msg.textContent = "Consultando fonte autorizada…";
+      try {
+        const out = await api("/discover", jsonBody({}));
+        if (msg) msg.textContent = out.skipped
+          ? "Nenhuma fonte autorizada configurada. Use o Caçador de empresas do CRM."
+          : "Verificados: " + Number(out.scanned||0) + " · Novos: " + Number(out.inserted||0) + " · Repetidos: " + Number(out.duplicates||0) + " · Rejeitados: " + Number(out.rejected||0);
+        await refreshLeads();
+      } catch(e) { if (msg) msg.textContent = "Busca falhou: " + e.message; }
+      finally { await refreshStatus().catch(() => { btn.disabled = true; }); }
+    });
+    $("flow-radar-add")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget, msg = $("flow-radar-add-result");
+      const payload = Object.fromEntries(new FormData(form).entries());
+      try {
+        const data = await api("/leads", jsonBody(payload));
+        if(msg) msg.textContent = "Lead registrado. Pontuação: " + data.qualification.score + ". Contato exige aprovação.";
+        form.reset();
+        await refreshLeads();
+      } catch(e) { if(msg) msg.textContent = "Não foi possível salvar: " + e.message; }
+    });
+    $("flow-radar-competitor-add")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget, msg = $("flow-radar-competitor-msg");
+      try {
+        await api("/competitors", jsonBody(Object.fromEntries(new FormData(form).entries())));
+        if(msg) msg.textContent = "Referência cadastrada. Não há coleta automática de comentários de terceiros.";
+        form.reset();
+        await refreshCompetitors();
+      } catch(e) { if(msg) msg.textContent = "Não foi possível cadastrar: " + e.message; }
+    });
+  }
+  wire();
+  document.addEventListener("nexus:view", e => { if (e.detail === "flow-radar") load(); });
+  if (!$("tab-radar")?.hidden && !loaded) load();
+})();
