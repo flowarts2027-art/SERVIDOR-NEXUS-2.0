@@ -1,4 +1,6 @@
 // Radar Comercial Flow Arts: somente fontes autorizadas, sem scraping ou mensagens automáticas.
+import { inspectInstagramBusiness } from "./instagram-business-discovery.js";
+import { getState } from "./storage.js";
 const clean=(x,n=500)=>String(x??"").replace(/[\u0000-\u001f<>]/g," ").trim().slice(0,n);
 const categories=["site","instagram","leads","prospeccao"];
 const stages=["novo","revisao","aprovado","contatado","negociacao","ganho","descartado","nao_contatar","nutricao","convite_seguir","seguidor_confirmado"];
@@ -7,11 +9,26 @@ const urlOk=x=>{try{const u=new URL(x);return u.protocol==="https:"&&!u.username
 const handle=x=>{const s=clean(x,50).replace(/^@/,"").toLowerCase();return /^[a-z0-9._]{1,30}$/.test(s)?s:"";};
 const number=x=>{let n=String(x??"").replace(/\D/g,"");if(n.length===10||n.length===11)n="55"+n;return /^55\d{10,11}$/.test(n)?n:"";};
 export function qualifyRadarLead(category,evidence,business=""){
- const t=(evidence+" "+business).toLowerCase();
- const relevant=({site:/site|página|landing|loja virtual|wordpress|lento|hospedagem/,instagram:/instagram|direct|automa|robô|bot|manychat/,leads:/lead|clientes|vendas|captar|prospec|contatos/,prospeccao:/empresa|representante|fornecedor|comprador|alug|loca|b2b/}[category]||/$^/).test(t);
- const intent=/quero|preciso|procuro|preço|valor|contratar|não funciona|insatisfeit|alternativa/.test(t);
- return {score:Math.min(95,20+(relevant?35:0)+(intent?30:0)+(business?10:0)),reason:relevant&&intent?"Tema e intenção explícita":relevant?"Tema compatível":"Revisão humana necessária"};
+ const t=(String(evidence||"")+" "+String(business||"")).toLowerCase();
+ const relevant=({site:/site|página|landing|loja virtual|wordpress|lento|hospedagem|dom[ií]nio|link na bio/,instagram:/instagram|direct|automa|robô|bot|manychat|postagem|reels/,leads:/lead|clientes|vendas|captar|prospec|contatos/,prospeccao:/empresa|representante|fornecedor|comprador|alug|loca|b2b/}[category]||/$^/).test(t);
+ const intent=/quero|preciso|procuro|preço|valor|contratar|não funciona|nao funciona|insatisfeit|alternativa|deu problema|parou de funcionar|n[aã]o responde|site (?:lento|ruim|travando|fora do ar)|site n[aã]o abre|site desatualizado/.test(t);
+ const profileOnly=category==="site"&&/site n[aã]o informado no (?:campo|perfil)|campo site n[aã]o informado|n[aã]o h[aá] site informado/i.test(t);
+ const score=Math.min(95,20+(relevant?35:0)+(intent?30:0)+(business?10:0));
+ const reason=profileOnly&&!intent?"Site não informado no perfil; necessidade não confirmada"
+  :relevant&&intent?"Problema ou intenção comercial relatada"
+  :relevant?"Tema compatível; interesse não confirmado":"Revisão humana necessária";
+ return {score,reason,intentConfirmed:Boolean(relevant&&intent),profileOnly};
 }
+export function websiteOpportunity(evidence, website=""){
+ const text=String(evidence||"").toLowerCase();
+ if(/site (?:est[aá] )?(?:lento|ruim|travando|fora do ar)|site n[aã]o abre|site desatualizado|problema (?:com|no) (?:o )?site/.test(text))
+  return {signal:"reported_issue",label:"Problema no site relatado; ainda não auditado"};
+ if(/site n[aã]o informado|sem link de site|perfil sem (?:link|site)|sem site no perfil/.test(text))
+  return {signal:"no_profile_website",label:"Site não informado no perfil; ausência não confirmada"};
+ if(website) return {signal:"site_present",label:"Site informado; qualidade não avaliada"};
+ return {signal:"not_evaluated",label:"Site não avaliado"};
+}
+
 async function ensure(env){
  await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_radar_leads (id TEXT PRIMARY KEY,instagram TEXT NOT NULL,business TEXT NOT NULL DEFAULT '',category TEXT NOT NULL,evidence TEXT NOT NULL,evidence_url TEXT NOT NULL,competitor TEXT NOT NULL DEFAULT '',website TEXT NOT NULL DEFAULT '',whatsapp TEXT NOT NULL DEFAULT '',contact_source TEXT NOT NULL DEFAULT '',source_type TEXT NOT NULL DEFAULT 'manual_public',score INTEGER NOT NULL,reason TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'novo',approved_at TEXT,contacted_at TEXT,notes TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,UNIQUE(instagram,category,evidence_url))").run();
 }
@@ -21,6 +38,39 @@ export async function handleCommercialRadar(request,env,u){
  await ensure(env);
  await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_radar_competitors (instagram TEXT PRIMARY KEY,category TEXT NOT NULL,notes TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
  const path=u.pathname.slice(prefix.length);
+ // O Radar da Flow Arts pode ser aberto tanto pelo Master quanto pela sessão
+ // isolada do próprio cliente Flow Arts; a autorização é feita no roteador.
+ if(path==="/status"&&request.method==="GET"){
+  let feedConfigured=false;
+  try {
+   const source=new URL(String(env.RADAR_FEED_URL||""));
+   feedConfigured=source.protocol==="https:"&&source.hostname===String(env.RADAR_FEED_HOST||"").toLowerCase();
+  }catch{}
+  const conn=(await getState(env,"integration","facebook-radar").catch(()=>null))?.value||{};
+  const instagramInspectionReady=Boolean(conn.token&&conn.igUserId&&(!conn.expiresAt||Date.parse(conn.expiresAt)>Date.now()));
+  const count=await env.DB.prepare("SELECT COUNT(*) AS total FROM flow_radar_leads").first();
+  return json({ok:true,leadCount:Number(count?.total||0),feedConfigured,automaticDiscovery:feedConfigured,instagramInspectionReady,source:feedConfigured?"authorized_feed":"not_configured",note:feedConfigured?"Busca horária de oportunidades autorizadas ativa.":"O Radar de intenção ainda não possui fonte autorizada. O Caçador de empresas do CRM pode pesquisar pelo OpenStreetMap."});
+ }
+ if(path==="/profile-check"&&request.method==="POST"){
+  const b=await request.json().catch(()=>({}));
+  const profile=await inspectInstagramBusiness(env,b.instagram);
+  if(!profile.ok)return json(profile,profile.error==="invalid_instagram_handle"?400:profile.error==="facebook_radar_not_connected"?409:502);
+  if(b.save===true){
+   if(profile.assessment.signal!=="website_not_declared")return json({...profile,saved:false,notice:"Site informado ou possível link na bio. Revisar antes de registrar oportunidade."});
+   const source=profile.profileUrl;
+   const evidence=clean("Perfil profissional consultado via Meta Business Discovery. Campo site não informado no perfil. Biografia: "+profile.biography,900);
+   const q=qualifyRadarLead("site",evidence,profile.name);
+   const id=crypto.randomUUID();
+   const insert=await env.DB.prepare("INSERT OR IGNORE INTO flow_radar_leads(id,instagram,business,category,evidence,evidence_url,competitor,website,whatsapp,contact_source,source_type,score,reason,notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)").bind(id,profile.username,profile.name,"site",evidence,source,"","","","","authorized_import",q.score,q.reason,"Perfil profissional verificado pela API oficial da Meta; não prova que a empresa não tem site ou deseja contratar.").run();
+   return json({...profile,saved:Boolean(insert?.meta?.changes),qualification:q,notice:"Oportunidade para revisão humana; não há interesse de compra confirmado."});
+  }
+  return json(profile);
+ }
+ if(path==="/discover"&&request.method==="POST"){
+  const {runRadarDiscovery}=await import("./radar-discovery-feed.js");
+  const result=await runRadarDiscovery(env);
+  return json(result,result.ok?200:503);
+ }
  if(path==="/competitors"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_competitors ORDER BY created_at DESC LIMIT 100").all();
   return json({ok:true,competitors:rows.results||[]});
@@ -33,7 +83,7 @@ export async function handleCommercialRadar(request,env,u){
  }
  if(path==="/leads"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_leads ORDER BY score DESC,created_at DESC LIMIT 300").all();
-  return json({ok:true,categories,stages,leads:(rows.results||[]).map(x=>({...x,whatsapp_link:x.whatsapp&&["aprovado","contatado","negociacao","ganho"].includes(x.status)?"https://wa.me/"+x.whatsapp:null}))});
+  return json({ok:true,categories,stages,leads:(rows.results||[]).map(x=>({...x,website_opportunity:websiteOpportunity(x.evidence,x.website),whatsapp_link:x.whatsapp&&["aprovado","contatado","negociacao","ganho"].includes(x.status)?"https://wa.me/"+x.whatsapp:null}))});
  }
  if(path==="/leads"&&request.method==="POST"){
   const b=await request.json().catch(()=>({})),ig=handle(b.instagram),category=clean(b.category,25),evidence=clean(b.evidence,900),source=urlOk(b.evidence_url),website=b.website?urlOk(b.website):"",contact=b.contact_source?urlOk(b.contact_source):"",whatsapp=number(b.whatsapp);

@@ -365,8 +365,25 @@ export async function archiveContact(env, id, now = new Date()) {
   return { ok: true, id: String(id) };
 }
 
-export async function listContacts(env, { stage = "", q = "" } = {}, now = new Date()) {
+// Remove da lista, mas preserva o histórico e impede que o Caçador cadastre de novo.
+// Só contatos vindos de buscas automáticas; conversas, propostas, clientes e cadastros
+// manuais não são afetados por esta rotina.
+export async function archiveDormantHunterLeads(env, now = new Date(), staleDays = 2) {
   await ensureCrmSchema(env);
+  const days = Math.max(1, Math.min(30, Number(staleDays) || 2));
+  const cutoff = new Date(now.getTime() - days * 86400000).toISOString();
+  const out = await env.DB.prepare(
+    `UPDATE crm_contacts
+     SET archived=1,updated_at=?1
+     WHERE archived=0 AND source IN ('cacador','cacador-auto')
+       AND ( (stage='chamar' AND last_contact_at IS NULL AND datetime(created_at) < datetime(?2))
+          OR (stage='contato' AND datetime(COALESCE(last_contact_at,created_at)) < datetime(?2)) )`
+  ).bind(now.toISOString(),cutoff).run();
+  return {ok:true,archived:Number(out?.meta?.changes||0),staleDays:days};
+}
+
+export async function listContacts(env, { stage = "", q = "" } = {}, now = new Date()) {
+  await archiveDormantHunterLeads(env, now);
   const today = brasiliaDay(now);
   const rows = (await env.DB.prepare(
     "SELECT * FROM crm_contacts WHERE archived=0 ORDER BY CASE WHEN next_follow_at IS NULL THEN 1 ELSE 0 END, next_follow_at ASC, updated_at DESC LIMIT 500"

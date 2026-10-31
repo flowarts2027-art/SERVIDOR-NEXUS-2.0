@@ -15,7 +15,7 @@ function parseJson(raw, fallback = {}) {
 
 function defaultConfig(client) {
   const niche = String(client?.niche || "streaming").trim();
-  const autonomousAccount = ["globalplay-streaming", "ragnar-one"].includes(String(client?.id || ""));
+  const autonomousAccount = ["globalplay-streaming", "ragnar-one", "primeiro-teste"].includes(String(client?.id || ""));
   return {
     enabled: true,
     // Existing explicit client settings still override this default. The
@@ -27,7 +27,7 @@ function defaultConfig(client) {
     scanIntervalMinutes: 60,
     lookbackDays: 14,
     maxResultsPerRun: 150,
-    minScore: 25,
+    minScore: client?.id === "primeiro-teste" ? 40 : 25,
     targets: [],
     intentTerms: [
       "quero","teste","testar","preço","preco","valor","assinar","comprar","plano","interesse",
@@ -172,6 +172,19 @@ export function localQualification(candidate, config) {
   const temperature = score >= 68 ? "hot" : score >= 38 ? "warm" : "cold";
   const needsHuman = temperature==="hot" || (/\?/.test(message) && score>=38);
   return { ...candidate, score, temperature, intent, needsHuman };
+}
+
+// Na Flow Arts, "QUERO" isolado muitas vezes é pedido de brinde, não intenção
+// de contratar. Mantém a interação, mas não a promove a lead comercial.
+export function qualifyFlowArtsIntent(lead) {
+  const text=String(lead?.message||"").toLowerCase().trim();
+  const hasNeed=/(preciso|procuro|quero (?:criar|melhorar|automatizar|conseguir|captar|vender|contratar)|n[aã]o funciona|insatisfeit|sem site|site (?:ruim|lento))/.test(text);
+  const service=/(site|landing|automa|direct|insta|lead|prospect|cliente|venda|vender|whatsapp)/.test(text);
+  const generic=/^(?:eu\s+)?quero[.!?\s]*$|^(?:manda|link|me chama|interesse)[.!?\s]*$|(?:3|tr[eê]s) posts gr[aá]tis/.test(text);
+  if(generic&&!hasNeed) return {...lead,score:16,temperature:"cold",intent:"interesse em oferta gratuita; compra não confirmada",needsHuman:false};
+  if(!hasNeed||!service)return lead;
+  const score=Math.max(lead.score||0,74);
+  return {...lead,score,temperature:score>=68?"hot":"warm",intent:"necessidade comercial declarada: "+lead.intent,needsHuman:true};
 }
 
 function responseText(data) {
@@ -324,6 +337,7 @@ export async function runLeadHunter(env, clientId, options = {}) {
   raw=unique.slice(0,config.maxResultsPerRun);
   let qualified=raw.map(item=>localQualification(item,config));
   qualified=await qualifyWithAI(env,client,qualified,config);
+  if(client.id==="primeiro-teste")qualified=qualified.map(qualifyFlowArtsIntent);
   const merge=await persistQualified(env,client,qualified,config);
   const newHotLead=merge.newLeads>0&&qualified.some(item=>item.temperature==="hot");
   if(newHotLead){

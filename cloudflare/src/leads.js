@@ -1,4 +1,5 @@
 import { listClients } from "./clients.js";
+import { SHOWCASE_CLIENT } from "./showcase-store.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -81,11 +82,26 @@ function leadView(row, client = null) {
   };
 }
 
+// Somente Flow Arts: não deixar 200 interações antigas sem atendimento no painel.
+// Não apaga o histórico. Um comentário realmente NOVO pode reativar o perfil.
+export async function archiveStaleFlowLeads(env, clientId, now = new Date()) {
+  if(String(clientId)!==SHOWCASE_CLIENT) return {ok:true,hidden:0};
+  await ensureLeadSchema(env);
+  const cutoff=new Date(now.getTime()-2*86400000).toISOString();
+  const result=await env.DB.prepare(
+    `UPDATE leads SET stage='stale_hidden',updated_at=CURRENT_TIMESTAMP
+     WHERE client_id=?1 AND stage='new'
+     AND datetime(COALESCE(last_contact_at,created_at)) < datetime(?2)`
+  ).bind(SHOWCASE_CLIENT,cutoff).run();
+  return {ok:true,hidden:Number(result?.meta?.changes||0)};
+}
+
 export async function leadsForClient(env, clientId, limit = 200) {
   await ensureLeadSchema(env);
+  await archiveStaleFlowLeads(env,clientId);
   const result = await env.DB.prepare(
     `SELECT * FROM leads
-     WHERE client_id = ?1
+     WHERE client_id = ?1 AND stage <> 'stale_hidden'
      ORDER BY score DESC, updated_at DESC
      LIMIT ?2`
   ).bind(String(clientId), Math.max(1, Math.min(1000, Number(limit || 200)))).all();
@@ -129,7 +145,7 @@ export async function masterLeadSummary(env) {
   const chunks = await Promise.all(clients.map(client =>
     env.DB.prepare(
       `SELECT * FROM leads
-       WHERE client_id = ?1
+       WHERE client_id = ?1 AND stage <> 'stale_hidden'
        ORDER BY updated_at DESC
        LIMIT 120`
     ).bind(client.id).all()
@@ -194,7 +210,11 @@ export async function upsertLead(env, client, lead) {
        instagram_user_id=excluded.instagram_user_id,
        temperature=excluded.temperature,
        score=excluded.score,
-       stage=excluded.stage,
+       stage=CASE
+         WHEN leads.stage='stale_hidden'
+           AND datetime(excluded.last_contact_at) <= datetime(leads.last_contact_at)
+         THEN 'stale_hidden'
+         ELSE excluded.stage END,
        intent=excluded.intent,
        needs_human=excluded.needs_human,
        last_message=excluded.last_message,

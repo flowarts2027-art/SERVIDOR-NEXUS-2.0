@@ -192,3 +192,21 @@ test("29/10: contato 'Para chamar' sem mensagem há 2 dias sai do CRM; quem rece
   assert.equal(arch[b.contact.id], 0);
   assert.equal(arch[c.contact.id], 0);
 });
+
+
+test("Flow Arts: após dois dias o caçador arquiva quem não foi chamado ou não respondeu, preservando conversas e contatos manuais", async () => {
+  const {env}=fakeEnv();
+  const old=new Date("2026-10-26T12:00:00Z");
+  const now=new Date("2026-10-29T15:00:00Z");
+  const pending=(await createContact(env,{name:"Nunca chamado",phone:"22981110021",stage:"chamar",source:"cacador-auto",sourceId:"osm:node/10001"},old)).contact;
+  const ignored=(await createContact(env,{name:"Chamado sem resposta",phone:"22981110022",stage:"contato",source:"cacador-auto",sourceId:"osm:node/10002"},old)).contact;
+  await createContact(env,{name:"Respondeu",phone:"22981110023",stage:"conversando",source:"cacador-auto"},old);
+  await createContact(env,{name:"Contato manual",phone:"22981110024",stage:"contato",source:"manual"},old);
+  await createContact(env,{name:"Novo do caçador",phone:"22981110025",stage:"chamar",source:"cacador-auto"},new Date("2026-10-28T15:00:00Z"));
+  const list=await listContacts(env,{},now);
+  assert.equal(list.contacts.length,3);
+  assert.deepEqual(new Set(list.contacts.map(x=>x.name)),new Set(["Respondeu","Contato manual","Novo do caçador"]));
+  const {crmKnows}=await import("../src/crm.js");
+  assert.equal(await crmKnows(env,{sourceId:"osm:node/10001"}),true,"arquivados não voltam como leads novos");
+  assert.ok(pending.id&&ignored.id);
+});

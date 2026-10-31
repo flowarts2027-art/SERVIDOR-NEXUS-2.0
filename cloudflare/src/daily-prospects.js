@@ -8,7 +8,7 @@ import { NICHES, CITIES, searchOSM, osmToProspect, firstMessage } from "./prospe
 import { hoursStatus } from "./business-hours.js";
 import { readShowcase } from "./showcase-store.js";
 import { seedBundledExamples } from "./bundled-examples.js";
-import { brasiliaDay, createContact, crmKnows, ensureCrmSchema, normalizeInstagram } from "./crm.js";
+import { brasiliaDay, createContact, crmKnows, ensureCrmSchema, normalizeInstagram, archiveDormantHunterLeads } from "./crm.js";
 import { sendPushToAll } from "./push.js";
 
 // 19/10 (Rodrigo): 10 empresas por dia (antes 3).
@@ -46,10 +46,11 @@ export const STALE_CRM_DAYS = 2;
 export async function archiveStaleCrm(env, now = new Date()) {
   await ensureCrmSchema(env);
   const cutoff = new Date(now.getTime() - STALE_CRM_DAYS * 86400e3).toISOString();
-  const result = await env.DB.prepare(
-    "UPDATE crm_contacts SET archived=1,updated_at=?1 WHERE archived=0 AND stage='chamar' AND last_contact_at IS NULL AND created_at<?2"
-  ).bind(now.toISOString(), cutoff).run();
-  return { ok: true, archived: Number(result?.meta?.changes || 0) };
+  const old = await env.DB.prepare(
+    "UPDATE crm_contacts SET archived=1,updated_at=?1 WHERE archived=0 AND stage='chamar' AND last_contact_at IS NULL AND datetime(created_at)<datetime(?2)"
+  ).bind(now.toISOString(),cutoff).run();
+  const unanswered = await archiveDormantHunterLeads(env,now,STALE_CRM_DAYS);
+  return {ok:true,archived:Number(old?.meta?.changes||0)+unanswered.archived};
 }
 
 async function writeState(env, state) {
