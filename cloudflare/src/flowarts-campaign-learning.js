@@ -31,5 +31,5 @@ export function formatFlowArtsLearningReport(data, collectedAt) {
     'Posts: '+s.posts+'; alcance somado: '+s.totals.reach+'; visualizações: '+s.totals.views+'; curtidas: '+s.totals.likes+'; compartilhamentos: '+s.totals.shares+'; seguidores atribuídos: '+s.totals.follows+'.',
     'Posts com estilo e arquivo visual identificados: '+s.styleEvidenceReady+'/'+s.posts+'.', '', '## Maiores alcances',
     ...s.topReach.map(p => '- '+p.url+' | '+p.type+' | alcance '+p.reach+' | estilo '+(p.visualStyle || 'não registrado')),
-    '', '## Recomendação', s.recommendation, '', 'Aprovação humana obrigatória; não publicar automaticamente.', ''].join('\\n');
+    '', '## Recomendação', s.recommendation, '', 'Aprovação humana obrigatória; não publicar automaticamente.', ''].join(String.fromCharCode(10));
 }
