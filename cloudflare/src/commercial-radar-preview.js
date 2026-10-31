@@ -1,9 +1,14 @@
 // Preview isolado do Radar: não importa o Worker principal nem executa campanhas.
 // Exige PREVIEW_PASSWORD e banco D1 exclusivo (NUNCA use o D1 de produção).
 import { handleCommercialRadar } from "./commercial-radar.js";
+import { runRadarDiscovery } from "./radar-discovery-feed.js";
 
 const unauthorized=()=>new Response("Acesso restrito ao teste Flow Arts.",{status:401,headers:{"WWW-Authenticate":'Basic realm="Radar Preview"',"Cache-Control":"no-store"}});
 export default {
+ async scheduled(event,env,ctx){
+  if(!env.RADAR_FEED_URL)return;
+  ctx.waitUntil(runRadarDiscovery(env).then(result=>console.log("radar_discovery",JSON.stringify(result))).catch(error=>console.error("radar_discovery_failed",String(error))));
+ },
  async fetch(request,env){
   if(!env.PREVIEW_PASSWORD || !env.DB || !env.ASSETS)return new Response("Preview não configurado.",{status:503});
   const auth=request.headers.get("authorization")||"";
