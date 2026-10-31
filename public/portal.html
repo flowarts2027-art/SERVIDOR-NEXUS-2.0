@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=136">
+  <link rel="stylesheet" href="/client-lite.css?v=137">
   <link rel="stylesheet" href="/flow-crm.css?v=3">
   <script src="/client-lite.js?v=133" defer></script>
   <script src="/captador.js?v=12" defer></script>
@@ -238,16 +238,16 @@
         <header class="radar-hero">
           <span class="radar-eyebrow">FLOW ARTS · EXCLUSIVO</span>
           <h1>Radar Comercial</h1>
-          <p>Oportunidades comerciais encontradas em fontes autorizadas. Você confere o perfil e decide quando entrar em contato.</p>
-          <p id="flow-radar-status" class="radar-source" role="status">Verificando conexão da fonte de oportunidades…</p>
+          <p>Central de oportunidades e contatos da Flow Arts. Consulte a origem de cada lead, aprove o contato e acompanhe os resultados em um só lugar.</p>
+          <p id="flow-radar-status" class="radar-source" role="status">Carregando informações do Radar…</p>
         </header>
         <div class="radar-overview">
           <div class="radar-kpi"><strong id="flow-radar-total">—</strong><span>Oportunidades</span></div>
           <div class="radar-kpi"><strong id="flow-radar-approved">—</strong><span>Aprovadas</span></div>
         </div>
-        <section class="radar-results" aria-label="Funil da campanha">
-          <div class="radar-results-head"><h2>Jornada da campanha</h2><span class="radar-category">Preparação</span></div>
-          <p class="radar-count" id="flow-radar-campaign-status" role="status">Verificando eventos da campanha…</p>
+        <details class="radar-results radar-metrics-fold" aria-label="Métricas futuras de tráfego e atendimento"><summary><strong>Estatísticas de tráfego e atendimento</strong><span class="radar-category">Automático quando conectado</span></summary><div class="radar-fold-content">
+          
+          <p class="radar-count" id="flow-radar-campaign-status" role="status">Verificando eventos disponíveis…</p>
           <div class="radar-funnel">
             <div class="radar-kpi"><strong id="radar-metric-click">—</strong><span>Cliques no anúncio</span></div>
             <div class="radar-kpi"><strong id="radar-metric-like">—</strong><span>Curtidas</span></div>
@@ -256,8 +256,8 @@
             <div class="radar-kpi"><strong id="radar-metric-whats">—</strong><span>Aberturas do WhatsApp</span></div>
             <div class="radar-kpi"><strong id="radar-metric-qualified">—</strong><span>Leads qualificados</span></div>
           </div>
-          <p class="radar-count">Uma abertura do WhatsApp não significa mensagem enviada. Dados de anúncios exigem conexão oficial da Meta.</p>
-        </section>
+          <p class="radar-count">Esta área se preencherá quando as integrações correspondentes estiverem ativas. Abrir o WhatsApp não confirma que houve conversa.</p>
+        </div></details>
         <section class="radar-results" aria-label="Oportunidades verificadas">
           <div class="radar-results-head">
             <h2>Oportunidades encontradas</h2>
