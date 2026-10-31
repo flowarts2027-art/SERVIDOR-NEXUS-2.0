@@ -53,7 +53,7 @@
       if (row.evidence) card.append(el("p", "Evidência: "+row.evidence, "radar-evidence"));
       const actions = el("div", null, "radar-lead-actions");
       if (row.instagram && /^[a-zA-Z0-9._]{1,30}$/.test(row.instagram.replace(/^@/,""))) appendLink(actions, "https://www.instagram.com/"+encodeURIComponent(row.instagram.replace(/^@/,""))+"/", "Abrir Instagram");
-      if (row.whatsapp_link && row.status === "aprovado") appendLink(actions, row.whatsapp_link, "Conversar no WhatsApp");
+      if (row.whatsapp_link && ["aprovado","contatado","negociacao","ganho"].includes(row.status)) appendLink(actions, row.whatsapp_link, "Conversar no WhatsApp");
       else if (row.whatsapp_link) actions.append(el("small", "WhatsApp disponível após aprovação manual."));
       if (!row.whatsapp_link) actions.append(el("small", "WhatsApp comercial não verificado."));
       if (row.evidence_url) appendLink(actions, row.evidence_url, "Ver fonte");
