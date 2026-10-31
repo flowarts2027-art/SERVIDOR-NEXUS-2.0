@@ -245,6 +245,14 @@
           <div class="radar-kpi"><strong id="flow-radar-total">—</strong><span>Oportunidades</span></div>
           <div class="radar-kpi"><strong id="flow-radar-approved">—</strong><span>Aprovadas</span></div>
         </div>
+        <section class="radar-results" aria-label="Oportunidades verificadas">
+          <div class="radar-results-head">
+            <h2>Oportunidades encontradas</h2>
+            <button type="button" class="radar-refresh" id="flow-radar-refresh" aria-label="Atualizar oportunidades">↻ Atualizar</button>
+          </div>
+          <p class="radar-count" id="flow-radar-count" role="status">Carregando oportunidades…</p>
+          <div id="flow-radar-leads" class="radar-grid" role="region" aria-label="Leads do Radar"></div>
+        </section>
         <details class="radar-results radar-metrics-fold" aria-label="Métricas futuras de tráfego e atendimento"><summary><strong>Estatísticas de tráfego e atendimento</strong><span class="radar-category">Automático quando conectado</span></summary><div class="radar-fold-content">
           
           <p class="radar-count" id="flow-radar-campaign-status" role="status">Verificando eventos disponíveis…</p>
@@ -258,14 +266,6 @@
           </div>
           <p class="radar-count">Esta área se preencherá quando as integrações correspondentes estiverem ativas. Abrir o WhatsApp não confirma que houve conversa.</p>
         </div></details>
-        <section class="radar-results" aria-label="Oportunidades verificadas">
-          <div class="radar-results-head">
-            <h2>Oportunidades encontradas</h2>
-            <button type="button" class="radar-refresh" id="flow-radar-refresh" aria-label="Atualizar oportunidades">↻ Atualizar</button>
-          </div>
-          <p class="radar-count" id="flow-radar-count" role="status">Carregando oportunidades…</p>
-          <div id="flow-radar-leads" class="radar-grid" role="region" aria-label="Leads do Radar"></div>
-        </section>
       </section>
 
       <section id="tab-buscar" class="tab" hidden>
