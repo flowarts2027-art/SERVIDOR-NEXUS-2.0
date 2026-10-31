@@ -22,7 +22,7 @@ export async function handleCommercialRadar(request,env,u){
  const path=u.pathname.slice(prefix.length);
  if(path==="/leads"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_leads ORDER BY score DESC,created_at DESC LIMIT 300").all();
-  return json({ok:true,categories,stages,leads:(rows.results||[]).map(x=>({...x,whatsapp_link:x.whatsapp&&["aprovado","contatado","negociacao"].includes(x.status)?"https://wa.me/"+x.whatsapp:null}))});
+  return json({ok:true,categories,stages,leads:(rows.results||[]).map(x=>({...x,whatsapp_link:x.whatsapp&&["aprovado","contatado","negociacao","ganho"].includes(x.status)?"https://wa.me/"+x.whatsapp:null}))});
  }
  if(path==="/leads"&&request.method==="POST"){
   const b=await request.json().catch(()=>({})),ig=handle(b.instagram),category=clean(b.category,25),evidence=clean(b.evidence,900),source=urlOk(b.evidence_url),website=b.website?urlOk(b.website):"",contact=b.contact_source?urlOk(b.contact_source):"",whatsapp=number(b.whatsapp);
@@ -40,7 +40,8 @@ export async function handleCommercialRadar(request,env,u){
   if(!/^[a-f0-9-]{36}$/.test(id)||!stages.includes(stage))return json({error:"invalid_stage"},400);
   const row=await env.DB.prepare("SELECT id,status FROM flow_radar_leads WHERE id=?").bind(id).first();
   if(!row)return json({error:"not_found"},404);
-  if(stage==="contatado"&&row.status!=="aprovado")return json({error:"approve_first"},409);
+  if(["contatado","negociacao","ganho"].includes(stage)&&!["aprovado","contatado","negociacao","ganho"].includes(row.status))return json({error:"approve_first"},409);
+  if(row.status==="nao_contatar"&&stage!=="nao_contatar")return json({error:"do_not_contact_locked"},409);
   await env.DB.prepare("UPDATE flow_radar_leads SET status=?,approved_at=CASE WHEN ?='aprovado' THEN CURRENT_TIMESTAMP ELSE approved_at END,contacted_at=CASE WHEN ?='contatado' THEN CURRENT_TIMESTAMP ELSE contacted_at END,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(stage,stage,stage,id).run();
   return json({ok:true,status:stage});
  }
