@@ -1,7 +1,7 @@
 // Radar Comercial Flow Arts: somente fontes autorizadas, sem scraping ou mensagens automáticas.
 const clean=(x,n=500)=>String(x??"").replace(/[\u0000-\u001f<>]/g," ").trim().slice(0,n);
 const categories=["site","instagram","leads","prospeccao"];
-const stages=["novo","revisao","aprovado","contatado","negociacao","ganho","descartado","nao_contatar"];
+const stages=["novo","revisao","aprovado","contatado","negociacao","ganho","descartado","nao_contatar","nutricao","convite_seguir","seguidor_confirmado"];
 const json=(x,status=200)=>new Response(JSON.stringify(x),{status,headers:{"content-type":"application/json","cache-control":"no-store"}});
 const urlOk=x=>{try{const u=new URL(x);return u.protocol==="https:"&&!u.username&&!u.password&&u.hostname.includes(".")&&!/^(localhost|127\.|10\.|192\.168\.)/i.test(u.hostname)?u.toString().slice(0,500):"";}catch{return "";}};
 const handle=x=>{const s=clean(x,50).replace(/^@/,"").toLowerCase();return /^[a-z0-9._]{1,30}$/.test(s)?s:"";};
@@ -41,6 +41,8 @@ export async function handleCommercialRadar(request,env,u){
   const row=await env.DB.prepare("SELECT id,status FROM flow_radar_leads WHERE id=?").bind(id).first();
   if(!row)return json({error:"not_found"},404);
   if(["contatado","negociacao","ganho"].includes(stage)&&!["aprovado","contatado","negociacao","ganho"].includes(row.status))return json({error:"approve_first"},409);
+  if(stage==="convite_seguir"&&!["aprovado","contatado","negociacao","convite_seguir"].includes(row.status))return json({error:"approve_first"},409);
+  if(stage==="seguidor_confirmado"&&row.status!=="convite_seguir"&&row.status!=="seguidor_confirmado")return json({error:"confirm_invite_first"},409);
   if(row.status==="nao_contatar"&&stage!=="nao_contatar")return json({error:"do_not_contact_locked"},409);
   await env.DB.prepare("UPDATE flow_radar_leads SET status=?,approved_at=CASE WHEN ?='aprovado' THEN CURRENT_TIMESTAMP ELSE approved_at END,contacted_at=CASE WHEN ?='contatado' THEN CURRENT_TIMESTAMP ELSE contacted_at END,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(stage,stage,stage,id).run();
   return json({ok:true,status:stage});
