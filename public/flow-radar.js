@@ -118,9 +118,49 @@
       if (target) target.textContent = "Não foi possível consultar o Radar: " + e.message + ". Isso não confirma ausência de leads.";
     } finally { busy = false; }
   }
+  // Prospecção real, usando a busca existente de OSM / Google Places do CRM.
+  // Resultados são empresas a verificar, não comentários com intenção explícita.
+  async function searchBusinesses() {
+    const btn = $("flow-radar-map-search"), msg = $("flow-radar-map-status"), host = $("flow-radar-map-results");
+    if (!btn || !msg || !host) return;
+    btn.disabled = true;
+    msg.textContent = "Procurando empresas nas fontes do mapa…";
+    host.replaceChildren();
+    try {
+      const result = await fetch("/api/portal/flow/prospects/search", {
+        credentials:"same-origin",
+        ...jsonBody({
+          calls:1,
+          niche:$("flow-radar-map-niche")?.value || "",
+          city:$("flow-radar-map-city")?.value?.trim() || ""
+        })
+      });
+      const data = await result.json().catch(() => ({}));
+      if (!result.ok || data.ok === false) throw new Error(data.message || data.error || "Busca indisponível");
+      const items = Array.isArray(data.items) ? data.items : [];
+      msg.textContent = "Fonte: " + (data.provider === "osm" ? "OpenStreetMap" : "Google Places") +
+        " · Analisadas: " + Number(data.found || 0) + " · Oportunidades nesta busca: " + items.length +
+        ". A análise do site é uma indicação baseada no cadastro público, sujeita a confirmação.";
+      if (!items.length) { host.append(el("p", "Nenhuma empresa elegível nesta rodada. Altere o segmento ou a cidade.")); return; }
+      for (const item of items.slice(0, 20)) {
+        const card = el("article");
+        card.style.cssText = "border-top:1px solid #d4deea;padding:12px 0";
+        card.append(el("h3", item.name || "Empresa"));
+        card.append(el("p", (item.city || "") + " · " + (item.niche || "") + " · site próprio não identificado"));
+        const links = el("p");
+        if (item.maps_url) appendLink(links, item.maps_url, "Conferir mapa");
+        if (item.instagram) appendLink(links, "https://www.instagram.com/" + encodeURIComponent(item.instagram) + "/", "Instagram");
+        if (item.whatsapp) appendLink(links, item.whatsapp, "Abrir WhatsApp (envio manual)");
+        card.append(links);
+        host.append(card);
+      }
+    } catch(e) { msg.textContent = "Busca não concluída: " + e.message + ". Isso não significa que não existam empresas."; }
+    finally { btn.disabled = false; }
+  }
   function wire() {
     if (!$("tab-radar")) return;
     $("flow-radar-refresh")?.addEventListener("click", load);
+    $("flow-radar-map-search")?.addEventListener("click", searchBusinesses);
     $("flow-radar-category")?.addEventListener("change", renderLeads);
     $("flow-radar-crm")?.addEventListener("click", () => {
       const tab = document.querySelector('.tabbar [data-tab="crm"]');
