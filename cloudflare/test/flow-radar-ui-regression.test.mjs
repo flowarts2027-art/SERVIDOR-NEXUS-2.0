@@ -19,7 +19,7 @@ test("radar only shows measured campaign events, not mocked leads",()=>{
   for (const id of ["flow-radar-leads","flow-radar-campaign-status","radar-metric-click","radar-metric-whats"]) assert.ok(html.includes('id="'+id+'"'),id);
   assert.match(radar,/api\("\/campaign-events"\)/);
   assert.match(radar,/data\.eventCount\s*\?/);
-  assert.match(radar,/row\.status\s*===\s*"aprovado"/);
+  assert.match(radar,/\["aprovado","contatado","negociacao","ganho"\]\.includes\(row\.status\)/);
   assert.doesNotMatch(html,/id="flow-radar-profile-form"/);
   assert.doesNotMatch(html,/id="flow-radar-own-run"/);
 });
