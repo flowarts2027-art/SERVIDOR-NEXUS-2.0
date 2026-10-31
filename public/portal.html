@@ -70,6 +70,7 @@
       <button type="button" data-tab="campanha"><span aria-hidden="true">◷</span>Campanha</button>
       <button type="button" data-tab="biblioteca"><span aria-hidden="true">▤</span>Biblioteca</button>
       <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true">☺</span>CRM</button>
+      <button type="button" data-tab="radar" class="flow-only" hidden><span aria-hidden="true">◎</span>Radar Comercial</button>
       <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
       <button type="button" data-tab="negocio" class="more-tab"><span aria-hidden="true">▣</span>Meu negócio</button>
       <button type="button" data-tab="conta" class="more-tab"><span aria-hidden="true">⚙</span>Conta</button>
@@ -228,6 +229,49 @@
           <div class="panel-head"><div><h2>Exemplos por nicho</h2><p class="muted">Uma arte com quatro cenas em 2×2 para cada tipo de negócio. Use o exemplo na apresentação comercial e baixe pelo CRM para anexar manualmente. Estes modelos não são posts e não vão para o Instagram.</p></div></div>
           <div id="examples-list" class="examples-list"><p class="muted">Carregando…</p></div>
         </section>
+        </div></details>
+      </section>
+
+      <section id="tab-radar" class="tab" hidden>
+        <h1 class="page-title">Radar Comercial · Flow Arts</h1>
+        <p class="lead-intro">Encontre oportunidades de sites, automação do Instagram, geração de leads e prospecção B2B. Uso exclusivo da Flow Arts. Nenhuma mensagem é enviada automaticamente.</p>
+        <section class="panel" style="padding:18px;margin:14px 0">
+          <h2>Como está a busca</h2>
+          <p class="muted" id="flow-radar-status" role="status">Consultando fontes disponíveis…</p>
+          <p class="muted" id="flow-radar-count"></p>
+          <button type="button" class="primary" id="flow-radar-discover">Buscar oportunidades autorizadas agora</button>
+          <button type="button" class="ghost" id="flow-radar-crm">Abrir Caçador de empresas do CRM</button>
+          <p class="muted" id="flow-radar-result" role="status"></p>
+        </section>
+        <section class="panel" style="padding:18px;margin:14px 0">
+          <h2>Oportunidades qualificadas</h2>
+          <label>Tipo de serviço <select id="flow-radar-category"><option value="">Todos</option><option value="site">Criação e melhoria de sites</option><option value="instagram">Automação do Instagram</option><option value="leads">Captação de leads</option><option value="prospeccao">Prospecção B2B</option></select></label>
+          <button type="button" class="ghost" id="flow-radar-refresh">Atualizar</button>
+          <div id="flow-radar-leads" role="region" aria-label="Leads do Radar">Carregando…</div>
+        </section>
+        <details class="fold"><summary><span class="fold-icon">＋</span><span><strong>Registrar oportunidade pública</strong><small>Evidência verificável e aprovação manual</small></span></summary><div class="fold-body">
+          <form id="flow-radar-add" class="crm-form">
+            <label>@ Instagram<input name="instagram" required maxlength="30" placeholder="@empresa"></label>
+            <label>Empresa<input name="business" maxlength="120"></label>
+            <label>Serviço<select name="category"><option value="site">Site</option><option value="instagram">Automação Instagram</option><option value="leads">Leads</option><option value="prospeccao">Prospecção B2B</option></select></label>
+            <label>Comentário / evidência<textarea name="evidence" maxlength="900" required></textarea></label>
+            <label>URL da evidência<input name="evidence_url" type="url" required placeholder="https://"></label>
+            <label>@ do concorrente (opcional)<input name="competitor" maxlength="30"></label>
+            <label>Site comercial (opcional)<input name="website" type="url"></label>
+            <label>WhatsApp comercial público (opcional)<input name="whatsapp" inputmode="tel"></label>
+            <label>URL pública que comprova o WhatsApp (obrigatória se informar número)<input name="contact_source" type="url"></label>
+            <button type="submit" class="primary">Salvar e qualificar</button>
+          </form>
+          <p class="muted" id="flow-radar-add-result" role="status"></p>
+        </div></details>
+        <details class="fold"><summary><span class="fold-icon">◎</span><span><strong>Concorrentes de referência</strong><small>Cadastro manual, sem coleta indevida de comentários</small></span></summary><div class="fold-body">
+          <form id="flow-radar-competitor-add" class="crm-form">
+            <label>@ do concorrente<input name="instagram" required maxlength="30" placeholder="@concorrente"></label>
+            <label>Serviço<select name="category"><option value="site">Sites</option><option value="instagram">Automação Instagram</option><option value="leads">Geração de leads</option><option value="prospeccao">Prospecção B2B</option></select></label>
+            <button type="submit" class="primary">Adicionar referência</button>
+          </form>
+          <p id="flow-radar-competitor-msg" class="muted" role="status"></p>
+          <div id="flow-radar-competitors"></div>
         </div></details>
       </section>
 
