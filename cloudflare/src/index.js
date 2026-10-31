@@ -33,6 +33,7 @@ import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
+import { handleCommercialRadar } from "./commercial-radar.js";
 import { canonicalSiteRedirect } from "./site-host.js";
 import { handleCrmSendRoute } from "./crm-send.js";
 import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
@@ -692,6 +693,13 @@ export default {
     // Contador de visitas do site (público, sem dados pessoais).
     if (url.pathname === "/api/site/hit" && request.method === "POST") {
       return handleSiteHit(request, env).catch(() => new Response(null, { status: 204 }));
+    }
+
+    // CRM exclusivo da Flow Arts, sem rotas de publicação ou ações automáticas.
+    if (url.pathname.startsWith("/api/master/commercial-radar")) {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return handleCommercialRadar(request, env, url);
     }
 
     // Radar de virais (ganchos que bombam no nicho de cada cliente). Só com login do Master.
