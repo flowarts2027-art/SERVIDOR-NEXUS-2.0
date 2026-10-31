@@ -313,7 +313,14 @@ export async function handleMaster(request, env, url) {
     if (!await requireMaster(request, env)) {
       return redirect("/api/master/access");
     }
-    return asset(env, request, "/index.html");
+    const original = await asset(env, request, "/index.html");
+    if (!original.ok || !String(original.headers.get("content-type") || "").includes("text/html")) return original;
+    const banner = `<aside id="nexus-error-alert" style="position:fixed;right:12px;bottom:12px;z-index:2147483000;background:#7f1d1d;color:white;padding:12px;border-radius:10px;box-shadow:0 4px 20px #0008;display:none;max-width:280px;font:600 14px system-ui"><a href="/api/master/error-center" style="color:white;text-decoration:underline">⚠ Erros no Nexus — abrir diagnóstico</a></aside><script>(function(){const el=document.getElementById("nexus-error-alert");async function check(){try{const r=await fetch("/api/master/error-center/data",{credentials:"same-origin",cache:"no-store"});if(!r.ok){el.style.display="block";return}const d=await r.json();el.style.display=(d.error||d.posts?.length||d.jobs?.length)?"block":"none";}catch(e){el.style.display="block"}}check();setInterval(check,60000)})();</script>`;
+    const html = (await original.text()).replace(/<\/body>/i, banner + "</body>");
+    const headers = new Headers(original.headers);
+    headers.delete("content-length");
+    headers.set("cache-control", "no-store");
+    return new Response(html, { status: original.status, headers });
   }
 
   if (url.pathname === "/master-login" && request.method === "POST") {
