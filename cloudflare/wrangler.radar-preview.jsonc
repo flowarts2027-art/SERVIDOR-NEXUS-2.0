@@ -10,7 +10,7 @@
   },
   "d1_databases": [{
     "binding": "DB",
-    "database_name": "nexus-radar-preview",
-    "database_id": "REPLACE_WITH_NEW_PREVIEW_D1_DATABASE_ID"
+    "database_name": "flowarts-radar",
+    "database_id": "1709cd97-454c-44c3-bc38-74531fb6076a"
   }]
 }
