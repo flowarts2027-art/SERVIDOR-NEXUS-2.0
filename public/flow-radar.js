@@ -49,6 +49,7 @@
       card.style.cssText = "border-top:1px solid #d4deea;padding:14px 0";
       card.append(el("h3", (row.business || "Oportunidade") + " · " + (row.instagram ? "@" + row.instagram : "") + " · " + Number(row.score || 0) + "/95"));
       card.append(el("p", (names[row.category] || row.category) + " · " + row.reason + " · " + row.status));
+      if (row.website_opportunity?.label && row.category==="site") card.append(el("p", "Diagnóstico de site: " + row.website_opportunity.label));
       card.append(el("p", "Evidência: " + (row.evidence || "")));
       const links = el("p");
       appendLink(links, row.evidence_url, "Ver evidência");
@@ -88,9 +89,12 @@
   async function refreshStatus() {
     const d = await api("/status");
     const target = $("flow-radar-status");
-    if (target) target.textContent = d.feedConfigured
-      ? "Fonte autorizada configurada. O Radar consulta essa fonte periodicamente; resultados novos dependem dos dados que ela fornece."
-      : "Coleta automática de comentários de concorrentes indisponível: nenhuma fonte autorizada de intenção está configurada. O Caçador do CRM pode encontrar empresas pelo mapa.";
+    if (target) target.textContent = (d.instagramInspectionReady
+      ? "Meta conectada para inspeção de perfis profissionais. "
+      : "A inspeção oficial de perfis depende da conexão Facebook Radar no Master. ") +
+      (d.feedConfigured
+        ? "Fonte de oportunidades autorizada ativa para busca periódica."
+        : "Sem fonte autorizada para coletar intenções de clientes em comentários de terceiros. Não é possível varrer esses comentários pela API oficial.");
     const button = $("flow-radar-discover");
     if (button) { button.disabled = !d.feedConfigured; button.title = d.feedConfigured ? "" : "Configure uma fonte autorizada para ativar esta busca."; }
   }
@@ -117,6 +121,55 @@
       const target = $("flow-radar-status");
       if (target) target.textContent = "Não foi possível consultar o Radar: " + e.message + ". Isso não confirma ausência de leads.";
     } finally { busy = false; }
+  }
+  function showProfile(profile) {
+    const host=$("flow-radar-profile-results"); if(!host) return;
+    host.replaceChildren();
+    host.append(el("h3", (profile.name || "Perfil profissional") + " · @" + profile.username));
+    host.append(el("p", "Biografia: " + (profile.biography || "Não informada")));
+    host.append(el("p", profile.assessment?.label || "Site não avaliado"));
+    const links=el("p");
+    appendLink(links,profile.profileUrl,"Abrir perfil");
+    if(profile.website) appendLink(links,profile.website,"Abrir site informado");
+    host.append(links);
+    if(profile.assessment?.signal==="website_not_declared") {
+      host.append(el("p", "É uma pista para prospecção, não um pedido de contratação."));
+      const save=el("button","Registrar para revisão","ghost");
+      save.type="button";
+      save.onclick=async()=>{
+        save.disabled=true;
+        try {
+          const d=await api("/profile-check",jsonBody({instagram:profile.username,save:true}));
+          host.append(el("p", d.saved?"Perfil registrado como oportunidade. Revise antes de contatar.":"Esse perfil já estava registrado ou precisa de revisão."));
+          await refreshLeads();
+        }catch(e){host.append(el("p","Falha ao salvar: "+e.message));}
+        finally{save.disabled=false;}
+      };
+      host.append(save);
+    } else {
+      host.append(el("p","Não foi detectada ausência de site no campo público. A qualidade do site não foi auditada."));
+    }
+  }
+  async function inspectProfile(event) {
+    event.preventDefault();
+    const form=event.currentTarget,host=$("flow-radar-profile-results"),button=$("flow-radar-profile-button");
+    if(!host||!button)return;
+    const username=String(new FormData(form).get("instagram")||"").trim();
+    button.disabled=true;
+    host.replaceChildren(el("p","Consultando dados públicos oficiais da Meta…"));
+    try {
+      const d=await api("/profile-check",jsonBody({instagram:username}));
+      showProfile(d);
+    }catch(e){
+      const labels={
+        facebook_radar_not_connected:"A conta profissional da Flow Arts ainda precisa estar conectada ao Facebook Radar do Master.",
+        facebook_radar_token_expired:"A conexão da Meta expirou; é necessário reconectar no Master.",
+        profile_not_accessible:"A Meta não disponibilizou esse perfil. A consulta oficial é restrita a contas profissionais.",
+        meta_business_discovery_unavailable:"A Meta recusou a consulta ou a permissão do app ainda não permite acessar esse perfil."
+      };
+      const msg=String(e.message||"");
+      host.replaceChildren(el("p",labels[msg]||("Não foi possível verificar esse perfil: "+msg)));
+    }finally{button.disabled=false;}
   }
   // Prospecção real, usando a busca existente de OSM / Google Places do CRM.
   // Resultados são empresas a verificar, não comentários com intenção explícita.
@@ -161,6 +214,7 @@
     if (!$("tab-radar")) return;
     $("flow-radar-refresh")?.addEventListener("click", load);
     $("flow-radar-map-search")?.addEventListener("click", searchBusinesses);
+    $("flow-radar-profile-form")?.addEventListener("submit", inspectProfile);
     $("flow-radar-category")?.addEventListener("change", renderLeads);
     $("flow-radar-crm")?.addEventListener("click", () => {
       const tab = document.querySelector('.tabbar [data-tab="crm"]');
