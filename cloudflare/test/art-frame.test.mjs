@@ -123,7 +123,7 @@ const img = n => ({ download_url: "https://files.oaiusercontent.com/f" + n });
 
 test("conector: foto sem texto ganha a moldura antes de ir ao painel", async () => {
   const { env, deps, uploads, fake } = connectorSetup();
-  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "carrossel", dia: "2026-10-31", hora: "12:00", imagem: img(1), imagem2: img(2), imagem3: img(3) });
+  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "carrossel", dia: "2026-10-31", hora: "12:00", imagem: img(1), imagem2: img(2), imagem3: img(3), ja_tem_texto: false });
   assert.match(out.texto, /escreveu/);
   assert.equal(fake.log.length, 3);
   const files = uploads[0].getAll("images");
@@ -137,19 +137,19 @@ test("conector: ja_tem_texto=true manda a imagem como veio", async () => {
   const { env, deps, uploads, fake } = connectorSetup();
   const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: true });
   assert.equal(fake.log.length, 0);
-  assert.match(out.texto, /já veio com texto/);
+  assert.match(out.texto, /arte preservada/);
   assert.equal(uploads.length, 1);
 });
 
 test("conector: se não der para escrever o texto, nada vai ao painel", async () => {
   const { env, deps, uploads } = connectorSetup({ fail: true });
-  await assert.rejects(enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1) }), /Nada foi enviado/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false }), /Nada foi enviado/);
   assert.equal(uploads.length, 0);
 });
 
 test("conector: cliente sem moldura recebe a imagem como veio, com aviso", async () => {
   const { env, deps, uploads } = connectorSetup();
-  const out = await enviarArte(env, deps, { cliente_id: "demo-cafe", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1) });
+  const out = await enviarArte(env, deps, { cliente_id: "demo-cafe", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
   assert.match(out.texto, /ainda não tem moldura/);
   assert.equal(uploads.length, 1);
 });
