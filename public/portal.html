@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=135">
+  <link rel="stylesheet" href="/client-lite.css?v=136">
   <link rel="stylesheet" href="/flow-crm.css?v=3">
   <script src="/client-lite.js?v=133" defer></script>
   <script src="/captador.js?v=12" defer></script>
@@ -245,6 +245,19 @@
           <div class="radar-kpi"><strong id="flow-radar-total">—</strong><span>Oportunidades</span></div>
           <div class="radar-kpi"><strong id="flow-radar-approved">—</strong><span>Aprovadas</span></div>
         </div>
+        <section class="radar-results" aria-label="Funil da campanha">
+          <div class="radar-results-head"><h2>Jornada da campanha</h2><span class="radar-category">Preparação</span></div>
+          <p class="radar-count" id="flow-radar-campaign-status" role="status">Verificando eventos da campanha…</p>
+          <div class="radar-funnel">
+            <div class="radar-kpi"><strong id="radar-metric-click">—</strong><span>Cliques no anúncio</span></div>
+            <div class="radar-kpi"><strong id="radar-metric-like">—</strong><span>Curtidas</span></div>
+            <div class="radar-kpi"><strong id="radar-metric-start">—</strong><span>Inícios de formulário</span></div>
+            <div class="radar-kpi"><strong id="radar-metric-submit">—</strong><span>Formulários enviados</span></div>
+            <div class="radar-kpi"><strong id="radar-metric-whats">—</strong><span>Aberturas do WhatsApp</span></div>
+            <div class="radar-kpi"><strong id="radar-metric-qualified">—</strong><span>Leads qualificados</span></div>
+          </div>
+          <p class="radar-count">Uma abertura do WhatsApp não significa mensagem enviada. Dados de anúncios exigem conexão oficial da Meta.</p>
+        </section>
         <section class="radar-results" aria-label="Oportunidades verificadas">
           <div class="radar-results-head">
             <h2>Oportunidades encontradas</h2>
