@@ -941,3 +941,21 @@ html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { backgroun
 
 /* Apenas clientes autorizados veem módulos exclusivos, inclusive no desktop. */
 .flow-only[hidden], .tabbar .flow-only[hidden] { display:none !important; }
+
+
+/* Funnel do Radar: cards compactos, sem cortar no celular. */
+.radar-dashboard .radar-results + .radar-results { margin-top: 14px; }
+.radar-funnel { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:14px 0; }
+.radar-funnel .radar-kpi { min-width:0; padding:12px; box-shadow:none; }
+.radar-funnel .radar-kpi strong { font-size:1.55rem; }
+.radar-funnel .radar-kpi span { font-size:.75rem; line-height:1.3; overflow-wrap:anywhere; }
+@media(max-width:540px) { .radar-funnel { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Estatísticas são secundárias; oportunidades devem permanecer em destaque. */
+.radar-metrics-fold { margin: 0 0 14px; }
+.radar-metrics-fold > summary { cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; list-style:none; min-height:44px; }
+.radar-metrics-fold > summary::-webkit-details-marker { display:none; }
+.radar-metrics-fold > summary:before { content:"▸"; margin-right:6px; color:var(--blue); }
+.radar-metrics-fold[open] > summary:before { content:"▾"; }
+.radar-fold-content { padding-top:14px; }
+@media(max-width:450px) { .radar-metrics-fold > summary { flex-wrap:wrap; } }

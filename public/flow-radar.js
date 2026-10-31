@@ -53,7 +53,7 @@
       if (row.evidence) card.append(el("p", "Evidência: "+row.evidence, "radar-evidence"));
       const actions = el("div", null, "radar-lead-actions");
       if (row.instagram && /^[a-zA-Z0-9._]{1,30}$/.test(row.instagram.replace(/^@/,""))) appendLink(actions, "https://www.instagram.com/"+encodeURIComponent(row.instagram.replace(/^@/,""))+"/", "Abrir Instagram");
-      if (row.whatsapp_link && row.status === "aprovado") appendLink(actions, row.whatsapp_link, "Conversar no WhatsApp");
+      if (row.whatsapp_link && ["aprovado","contatado","negociacao","ganho"].includes(row.status)) appendLink(actions, row.whatsapp_link, "Conversar no WhatsApp");
       else if (row.whatsapp_link) actions.append(el("small", "WhatsApp disponível após aprovação manual."));
       if (!row.whatsapp_link) actions.append(el("small", "WhatsApp comercial não verificado."));
       if (row.evidence_url) appendLink(actions, row.evidence_url, "Ver fonte");
@@ -84,17 +84,26 @@
     if(total) total.textContent = String(leads.length);
     if(approved) approved.textContent = String(leads.filter(x=>x.status==="aprovado").length);
   }
+  async function refreshCampaign() {
+    const status = $("flow-radar-campaign-status");
+    try {
+      const data = await api("/campaign-events");
+      const fields = {ad_click:"radar-metric-click",ad_like:"radar-metric-like",form_started:"radar-metric-start",form_submitted:"radar-metric-submit",whatsapp_opened:"radar-metric-whats",qualified_lead:"radar-metric-qualified"};
+      for (const [key,id] of Object.entries(fields)) {
+        const node = $(id);
+        if (node) node.textContent = data.eventCount ? String(data.metrics?.[key] ?? 0) : "—";
+      }
+      if (status) status.textContent = data.note || "Aguardando conexão da campanha.";
+    } catch (error) {
+      if (status) status.textContent = "Métricas indisponíveis: "+error.message;
+    }
+  }
   async function refreshStatus() {
     const d = await api("/status");
     const target = $("flow-radar-status");
-    if (target) target.textContent = (d.instagramInspectionReady
-      ? "Meta conectada para inspeção de perfis profissionais. "
-      : "A inspeção oficial de perfis depende da conexão Facebook Radar no Master. ") +
-      (d.feedConfigured
-        ? "Fonte de oportunidades autorizada ativa para busca periódica."
-        : "Sem fonte autorizada para coletar intenções de clientes em comentários de terceiros. Não é possível varrer esses comentários pela API oficial.");
-    const button = $("flow-radar-discover");
-    if (button) { button.disabled = !d.feedConfigured; button.title = d.feedConfigured ? "" : "Configure uma fonte autorizada para ativar esta busca."; }
+    if (target) target.textContent = d.feedConfigured
+      ? "Fonte de oportunidades conectada. Acompanhe os resultados abaixo e, quando a campanha começar, os indicadores de tráfego."
+      : "Radar preparado para a próxima campanha. Os indicadores aparecerão quando a integração de anúncios e os eventos do atendimento estiverem ativos. Nenhuma campanha está sendo medida automaticamente ainda.";
   }
   async function refreshCompetitors() {
     const host = $("flow-radar-competitors"); if (!host) return;
@@ -113,7 +122,7 @@
     if (busy) return;
     busy = true;
     try {
-      await Promise.all([refreshStatus(), refreshLeads()]);
+      await Promise.all([refreshStatus(), refreshLeads(), refreshCampaign()]);
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");
