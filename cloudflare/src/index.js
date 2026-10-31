@@ -10,6 +10,7 @@ import { getState, putState, deleteState } from "./storage.js";
 import { handlePortalApi } from "./portal.js";
 import { handleGitHubVideoRenderCallback } from "./github-video-render.js";
 import { handleMaster, masterLoginPage } from "./master.js";
+import { handleErrorCenter } from "./error-center.js";
 import { runSchedulerTick, recordSchedulerFailure } from "./scheduler.js";
 import { runCronIteration } from "./cron-runtime.js";
 import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
@@ -671,6 +672,11 @@ export default {
 
     // Keep the Master access page independent from D1 and every downstream
     // integration. This route must remain usable during database quota/outage.
+    if (url.pathname === "/api/master/error-center" || url.pathname === "/api/master/error-center/data") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return handleErrorCenter(request, env, url);
+    }
     if (url.pathname === "/api/master/access" && request.method === "GET") {
       return new Response(masterLoginPage(false, "/api/master/access"), {
         status: 200,
