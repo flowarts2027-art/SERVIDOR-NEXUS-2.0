@@ -115,7 +115,7 @@
     if (busy) return;
     busy = true;
     try {
-      await Promise.all([refreshStatus(), refreshLeads(), refreshCompetitors()]);
+      await Promise.all([refreshStatus(), refreshLeads(), refreshCompetitors(), refreshOwnLeads().catch(() => null)]);
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");
@@ -171,6 +171,61 @@
       host.replaceChildren(el("p",labels[msg]||("Não foi possível verificar esse perfil: "+msg)));
     }finally{button.disabled=false;}
   }
+  async function portalApi(path,options={}) {
+    const r=await fetch("/api/portal/"+path,{credentials:"same-origin",...options});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.ok===false)throw new Error(d.message||d.error||"Operação indisponível");
+    return d;
+  }
+  async function refreshOwnLeads() {
+    const status=$("flow-radar-own-status"),host=$("flow-radar-own-leads");
+    if(!host||!status)return;
+    try {
+      const [data,run]=await Promise.all([portalApi("leads"),portalApi("lead-hunter")]);
+      const entries=Array.isArray(data.leads)?data.leads:[];
+      const strong=entries.filter(x=>Number(x.score||0)>=68);
+      const active=Boolean(run.config?.enabled&&run.config?.autoRun&&run.config?.metaComments);
+      status.textContent="Varredura de comentários próprios: "+(active?"automática ligada":"automática desligada")+
+        " · Leads ativos: "+entries.length+" · Sinais fortes: "+strong.length+
+        (run.summary?.lastRunAt?" · Última busca: "+String(run.summary.lastRunAt).slice(0,16).replace("T"," "):"");
+      host.replaceChildren();
+      if(!strong.length) {
+        host.append(el("p","Nenhum pedido específico com alta pontuação registrado nos comentários próprios."));
+      } else {
+        for(const lead of strong.slice(0,15)) {
+          const card=el("article");card.style.cssText="border-top:1px solid #d4deea;padding:10px 0";
+          card.append(el("strong","@"+(lead.instagramUsername||"perfil")+" · "+Number(lead.score||0)+"/100"));
+          card.append(el("p",lead.lastMessage||lead.intent||"Interação"));
+          const links=el("p");
+          if(lead.sourceUrl)appendLink(links,lead.sourceUrl,"Ver comentário");
+          if(lead.instagramUsername)appendLink(links,"https://www.instagram.com/"+encodeURIComponent(lead.instagramUsername)+"/","Instagram");
+          card.append(links);host.append(card);
+        }
+      }
+      const autoBtn=$("flow-radar-own-enable");
+      if(autoBtn) {autoBtn.disabled=active;autoBtn.textContent=active?"Varredura automática ativa":"Ativar varredura automática";}
+    }catch(e){status.textContent="Não foi possível consultar comentários próprios: "+e.message;}
+  }
+  async function scanOwnComments(event) {
+    const btn=event.currentTarget,desc=$("flow-radar-own-status");
+    btn.disabled=true;if(desc)desc.textContent="Consultando comentários pela Meta…";
+    try {
+      const d=await portalApi("lead-hunter/run",jsonBody({}));
+      const errors=d.run?.errors||[];
+      if(desc)desc.textContent=(d.run?"Comentários analisados: "+Number(d.run.analyzed||0)+" · Novos leads: "+Number(d.run.newLeads||0)+". ":"")
+        +(errors.length?"Avisos: "+errors.join("; ").slice(0,230):"");
+      await refreshOwnLeads();
+    }catch(e){if(desc)desc.textContent="Não foi possível fazer a varredura: "+e.message;}
+    finally{btn.disabled=false;}
+  }
+  async function enableOwnScanner(event) {
+    const btn=event.currentTarget,desc=$("flow-radar-own-status");
+    btn.disabled=true;
+    try {
+      await portalApi("lead-hunter/config",jsonBody({enabled:true,autoRun:true,metaComments:true,minScore:40}));
+      await refreshOwnLeads();
+    }catch(e){if(desc)desc.textContent="Não foi possível ativar: "+e.message;btn.disabled=false;}
+  }
   // Prospecção real, usando a busca existente de OSM / Google Places do CRM.
   // Resultados são empresas a verificar, não comentários com intenção explícita.
   async function searchBusinesses() {
@@ -215,6 +270,8 @@
     $("flow-radar-refresh")?.addEventListener("click", load);
     $("flow-radar-map-search")?.addEventListener("click", searchBusinesses);
     $("flow-radar-profile-form")?.addEventListener("submit", inspectProfile);
+    $("flow-radar-own-run")?.addEventListener("click", scanOwnComments);
+    $("flow-radar-own-enable")?.addEventListener("click", enableOwnScanner);
     $("flow-radar-category")?.addEventListener("change", renderLeads);
     $("flow-radar-crm")?.addEventListener("click", () => {
       const tab = document.querySelector('.tabbar [data-tab="crm"]');
