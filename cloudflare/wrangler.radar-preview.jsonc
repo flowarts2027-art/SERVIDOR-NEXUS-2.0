@@ -1,0 +1,24 @@
+{
+  "name": "nexus-radar-preview",
+  "main": "src/commercial-radar-preview.js",
+  "compatibility_date": "2026-09-24",
+  "workers_dev": true,
+  "assets": {
+    "directory": "../public",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "flowarts-radar",
+      "database_id": "1709cd97-454c-44c3-bc38-74531fb6076a"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "0 12 * * *"
+    ]
+  }
+}
