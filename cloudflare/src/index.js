@@ -35,6 +35,7 @@ import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
 import { handleCommercialRadar } from "./commercial-radar.js";
+import { runRadarDiscovery } from "./radar-discovery-feed.js";
 import { canonicalSiteRedirect } from "./site-host.js";
 import { handleCrmSendRoute } from "./crm-send.js";
 import { handleDailyRoute, runDailyProspects } from "./daily-prospects.js";
@@ -553,6 +554,10 @@ export default {
     const at = new Date(event.scheduledTime || Date.now());
     // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
     if (String(event.cron || "") === MINUTE_CRON) {
+      // Flow Arts only: authorized feed, hourly and disabled unless configured.
+      if (at.getUTCMinutes() === 0 && env.RADAR_FEED_URL && env.RADAR_FEED_HOST) {
+        ctx.waitUntil(runRadarDiscovery(env).then(out => console.log("flow_radar_discovery", JSON.stringify(out))).catch(error => console.warn("flow_radar_discovery_failed", String(error?.message || error).slice(0, 120))));
+      }
       // Campanhas pedidas pelo Master (fila): roda aqui porque o cron aguenta até 15 minutos.
       ctx.waitUntil(runQueuedCampaigns(env).catch(error =>
         console.warn("gemini_queue_failed", String(error?.message || error).slice(0, 140))
@@ -871,7 +876,7 @@ export default {
       const portal = await resolvePortalSession(env, request).catch(() => null);
       if (!portal || portal.clientId !== SHOWCASE_CLIENT) return json({ error: "unauthorized" }, 401);
       const rest = url.pathname.slice("/api/portal/flow/".length);
-      if (!/^(crm|prospects|showcase|push)(\/|$)/.test(rest)) return json({ error: "not_found" }, 404);
+      if (!/^(crm|prospects|showcase|push|commercial-radar)(\/|$)/.test(rest)) return json({ error: "not_found" }, 404);
       const inner = new URL(url);
       inner.pathname = "/api/master/" + rest;
       const req = new Request(inner, request);
@@ -880,6 +885,7 @@ export default {
       else if (rest.startsWith("prospects")) response = await handleProspectsRoute(req, env, inner);
       else if (rest.startsWith("showcase")) response = (await handleShowcaseExtras(req, env, inner)) || (await handleShowcaseMaster(req, env, inner));
       else if (rest.startsWith("push")) response = await handlePushRoute(req, env, inner);
+      else if (rest.startsWith("commercial-radar")) response = await handleCommercialRadar(req, env, inner);
       return response || json({ error: "not_found" }, 404);
     }
 
