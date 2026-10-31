@@ -38,6 +38,27 @@ export async function handleCommercialRadar(request,env,u){
  await ensure(env);
  await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_radar_competitors (instagram TEXT PRIMARY KEY,category TEXT NOT NULL,notes TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
  const path=u.pathname.slice(prefix.length);
+ // Eventos de campanha recebidos de integrações verificadas. Nunca inferir curtidas ou cliques.
+ // Endpoint de escrita protegido pela sessão Flow Arts/Master do roteador.
+ if(path==="/campaign-events" && request.method==="GET"){
+   await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_campaign_events (id TEXT PRIMARY KEY,campaign TEXT NOT NULL,event_type TEXT NOT NULL,source TEXT NOT NULL,occurred_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
+   const rows=await env.DB.prepare("SELECT event_type,COUNT(*) AS total FROM flow_campaign_events GROUP BY event_type").all();
+   const metrics={ad_click:0,ad_like:0,form_started:0,form_submitted:0,whatsapp_opened:0,qualified_lead:0};
+   for(const row of rows.results||[])if(Object.hasOwn(metrics,row.event_type))metrics[row.event_type]=Number(row.total||0);
+   const count=Object.values(metrics).reduce((a,b)=>a+b,0);
+   return json({ok:true,metrics,eventCount:count,tracking:count?"partial":"awaiting_integration",note:count?"Eventos registrados por integrações verificadas; não representam necessariamente pessoas únicas.":"Aguardando integração da campanha. Nenhuma estatística foi inventada.",limitations:"Cliques e curtidas de anúncios dependem de dados oficiais da Meta; início de formulário e WhatsApp exigem eventos instrumentados. Abertura do WhatsApp não prova conversa."});
+ }
+ if(path==="/campaign-events" && request.method==="POST"){
+   const b=await request.json().catch(()=>({}));
+   const types=["ad_click","ad_like","form_started","form_submitted","whatsapp_opened","qualified_lead"];
+   const campaign=clean(b.campaign,100),event=clean(b.event_type,40),source=clean(b.source,30);
+   const id=clean(b.event_id,120);
+   if(!campaign || !types.includes(event) || !["meta_ads","nexus_form","nexus_whatsapp","nexus_crm"].includes(source) || !/^[a-zA-Z0-9:_.-]{8,120}$/.test(id))return json({error:"invalid_verified_event"},400);
+   // Requer integrador autenticado; não há endpoint público de ingestão.
+   await env.DB.prepare("CREATE TABLE IF NOT EXISTS flow_campaign_events (id TEXT PRIMARY KEY,campaign TEXT NOT NULL,event_type TEXT NOT NULL,source TEXT NOT NULL,occurred_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
+   const out=await env.DB.prepare("INSERT OR IGNORE INTO flow_campaign_events(id,campaign,event_type,source) VALUES(?,?,?,?)").bind(id,campaign,event,source).run();
+   return json({ok:true,created:Boolean(out.meta?.changes)});
+ }
  // O Radar da Flow Arts pode ser aberto tanto pelo Master quanto pela sessão
  // isolada do próprio cliente Flow Arts; a autorização é feita no roteador.
  if(path==="/status"&&request.method==="GET"){
