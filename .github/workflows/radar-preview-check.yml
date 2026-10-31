@@ -1,0 +1,37 @@
+name: Radar Comercial Preview CI
+
+# Validação isolada. Não publica Worker, não aplica migrations, não modifica produção.
+on:
+  pull_request:
+    paths:
+      - "cloudflare/src/commercial-radar*.js"
+      - "cloudflare/test/commercial-radar*.test.mjs"
+      - "cloudflare/wrangler.radar-preview.jsonc"
+      - "cloudflare/package.json"
+      - "cloudflare/package-lock.json"
+      - "public/commercial-radar*"
+      - ".github/workflows/radar-preview-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  radar-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax and isolated Radar tests
+        run: |
+          node --check cloudflare/src/commercial-radar.js
+          node --check cloudflare/src/commercial-radar-preview.js
+          node --check public/commercial-radar.js
+          node --test cloudflare/test/commercial-radar.test.mjs cloudflare/test/commercial-radar-preview.test.mjs
+      - name: Cloudflare preview bundle validation only
+        working-directory: cloudflare
+        run: |
+          npm install --no-audit --no-fund
+          npx wrangler deploy --config wrangler.radar-preview.jsonc --dry-run --outdir .wrangler-radar-dry-run
