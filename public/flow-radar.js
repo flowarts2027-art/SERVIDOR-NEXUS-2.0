@@ -38,44 +38,39 @@
   function renderLeads() {
     const host = $("flow-radar-leads"); if (!host) return;
     host.replaceChildren();
-    const chosen = $("flow-radar-category")?.value || "";
-    const items = leads.filter(x => !chosen || x.category === chosen);
-    if (!items.length) {
-      host.append(el("p", leads.length ? "Nenhuma oportunidade nesta categoria." : "Nenhum lead de intenção registrado. A lista vazia não significa que a busca automática esteja ativa."));
+    if (!leads.length) {
+      host.append(el("p", "Ainda não há oportunidades verificadas. O painel não inventa resultados nem faz buscas em comentários de terceiros sem fonte autorizada.", "radar-empty"));
       return;
     }
-    for (const row of items) {
-      const card = el("article", null, "radar-item");
-      card.style.cssText = "border-top:1px solid #d4deea;padding:14px 0";
-      card.append(el("h3", (row.business || "Oportunidade") + " · " + (row.instagram ? "@" + row.instagram : "") + " · " + Number(row.score || 0) + "/95"));
-      card.append(el("p", (names[row.category] || row.category) + " · " + row.reason + " · " + row.status));
-      if (row.website_opportunity?.label && row.category==="site") card.append(el("p", "Diagnóstico de site: " + row.website_opportunity.label));
-      card.append(el("p", "Evidência: " + (row.evidence || "")));
-      const links = el("p");
-      appendLink(links, row.evidence_url, "Ver evidência");
-      if (row.instagram) appendLink(links, "https://www.instagram.com/" + encodeURIComponent(row.instagram) + "/", "Instagram");
-      if (row.website) appendLink(links, row.website, "Site da empresa");
-      if (row.whatsapp_link) appendLink(links, row.whatsapp_link, "Abrir WhatsApp (sem enviar)");
-      card.append(links);
-      const select = el("select");
-      select.setAttribute("aria-label", "Etapa do lead");
-      for (const stage of statusNames) {
-        const option = el("option", stage.replace(/_/g," "));
-        option.value = stage;
-        option.selected = row.status === stage;
-        select.append(option);
-      }
-      const save = el("button", "Atualizar etapa", "ghost");
-      save.type = "button";
-      save.onclick = async () => {
-        save.disabled = true;
-        try {
-          await api("/leads/" + encodeURIComponent(row.id), { method:"PATCH", headers:{"content-type":"application/json"}, body:JSON.stringify({ status:select.value }) });
-          await refreshLeads();
-        } catch (error) { alert(error.message); }
-        finally { save.disabled = false; }
-      };
-      card.append(select, save);
+    for (const row of leads) {
+      const card = el("article", null, "radar-lead-card");
+      const head = el("div", null, "radar-lead-heading");
+      head.append(el("h3", row.business || (row.instagram ? "@"+row.instagram : "Empresa")));
+      head.append(el("span", names[row.category] || row.category || "Oportunidade", "radar-category"));
+      card.append(head);
+      if (row.instagram) card.append(el("p", "@"+row.instagram, "radar-handle"));
+      card.append(el("p", row.reason || row.evidence || "Consulte a evidência para verificar esta oportunidade.", "radar-reason"));
+      if (row.evidence) card.append(el("p", "Evidência: "+row.evidence, "radar-evidence"));
+      const actions = el("div", null, "radar-lead-actions");
+      if (row.instagram && /^[a-zA-Z0-9._]{1,30}$/.test(row.instagram.replace(/^@/,""))) appendLink(actions, "https://www.instagram.com/"+encodeURIComponent(row.instagram.replace(/^@/,""))+"/", "Abrir Instagram");
+      if (row.whatsapp_link && ["aprovado","contatado","negociacao","ganho"].includes(row.status)) appendLink(actions, row.whatsapp_link, "Conversar no WhatsApp");
+      else if (row.whatsapp_link) actions.append(el("small", "WhatsApp disponível após aprovação manual."));
+      if (!row.whatsapp_link) actions.append(el("small", "WhatsApp comercial não verificado."));
+      if (row.evidence_url) appendLink(actions, row.evidence_url, "Ver fonte");
+      card.append(actions);
+      if (row.status === "novo" || row.status === "revisao") {
+        const approve = el("button", "Aprovar contato", "radar-approve");
+        approve.type = "button";
+        approve.onclick = async () => {
+          if (!confirm("Você revisou a fonte e deseja aprovar este contato?")) return;
+          approve.disabled = true;
+          try {
+            await api("/leads/" + encodeURIComponent(row.id), {method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify({status:"aprovado"})});
+            await refreshLeads();
+          } catch(error) { alert(error.message); approve.disabled = false; }
+        };
+        card.append(approve);
+      } else card.append(el("p", "Situação: "+row.status.replace(/_/g," "), "radar-stage"));
       host.append(card);
     }
   }
@@ -84,19 +79,31 @@
     leads = Array.isArray(data.leads) ? data.leads : [];
     renderLeads();
     const target = $("flow-radar-count");
-    if (target) target.textContent = leads.length + " oportunidade(s) registradas; " + leads.filter(x=>x.status==="aprovado").length + " aprovada(s) para contato manual.";
+    if (target) target.textContent = "Resultados registrados em fontes autorizadas; confirme a evidência antes de contatar.";
+    const total = $("flow-radar-total"), approved = $("flow-radar-approved");
+    if(total) total.textContent = String(leads.length);
+    if(approved) approved.textContent = String(leads.filter(x=>x.status==="aprovado").length);
+  }
+  async function refreshCampaign() {
+    const status = $("flow-radar-campaign-status");
+    try {
+      const data = await api("/campaign-events");
+      const fields = {ad_click:"radar-metric-click",ad_like:"radar-metric-like",form_started:"radar-metric-start",form_submitted:"radar-metric-submit",whatsapp_opened:"radar-metric-whats",qualified_lead:"radar-metric-qualified"};
+      for (const [key,id] of Object.entries(fields)) {
+        const node = $(id);
+        if (node) node.textContent = data.eventCount ? String(data.metrics?.[key] ?? 0) : "—";
+      }
+      if (status) status.textContent = data.note || "Aguardando conexão da campanha.";
+    } catch (error) {
+      if (status) status.textContent = "Métricas indisponíveis: "+error.message;
+    }
   }
   async function refreshStatus() {
     const d = await api("/status");
     const target = $("flow-radar-status");
-    if (target) target.textContent = (d.instagramInspectionReady
-      ? "Meta conectada para inspeção de perfis profissionais. "
-      : "A inspeção oficial de perfis depende da conexão Facebook Radar no Master. ") +
-      (d.feedConfigured
-        ? "Fonte de oportunidades autorizada ativa para busca periódica."
-        : "Sem fonte autorizada para coletar intenções de clientes em comentários de terceiros. Não é possível varrer esses comentários pela API oficial.");
-    const button = $("flow-radar-discover");
-    if (button) { button.disabled = !d.feedConfigured; button.title = d.feedConfigured ? "" : "Configure uma fonte autorizada para ativar esta busca."; }
+    if (target) target.textContent = d.feedConfigured
+      ? "Fonte de oportunidades conectada. Acompanhe os resultados abaixo e, quando a campanha começar, os indicadores de tráfego."
+      : "Radar preparado para a próxima campanha. Os indicadores aparecerão quando a integração de anúncios e os eventos do atendimento estiverem ativos. Nenhuma campanha está sendo medida automaticamente ainda.";
   }
   async function refreshCompetitors() {
     const host = $("flow-radar-competitors"); if (!host) return;
@@ -115,7 +122,7 @@
     if (busy) return;
     busy = true;
     try {
-      await Promise.all([refreshStatus(), refreshLeads(), refreshCompetitors(), refreshOwnLeads().catch(() => null)]);
+      await Promise.all([refreshStatus(), refreshLeads(), refreshCampaign()]);
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");

@@ -714,7 +714,7 @@ function showTab(tab) {
     if (active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
   });
   // No celular, "Mais" fica marcado quando a aba aberta está dentro dele.
-  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "biblioteca", "negocio", "conta"].includes(state.tab));
+  $("#more-btn")?.classList.toggle("active", ["numeros", "contatos", "biblioteca", "negocio", "conta", "crm", "radar"].includes(state.tab));
   toggleMore(false);
   window.scrollTo({ top: 0 });
   // CRM da Flow Arts (22/10): os scripts do CRM carregam quando a aba abre.
@@ -734,7 +734,7 @@ function enableFlowCrm() {
   window.NEXUS_API = "/api/portal/flow";
   document.body.classList.add("flow-crm");
   $$(".flow-only").forEach(el => { el.hidden = false; });
-  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2", "/flow-radar.js?v=1"]) {
+  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2", "/flow-radar.js?v=3"]) {
     const script = document.createElement("script");
     script.src = src;
     script.async = false;
