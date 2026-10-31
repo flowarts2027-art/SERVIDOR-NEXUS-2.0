@@ -35,3 +35,13 @@ test("Flow Arts oculta interações antigas de 2 dias, não mexe nos outros clie
   await upsertLead(env,flow,{id:"flow-old",instagramUsername:"leadvelho",lastContactAt:recent,stage:"new",score:80});
   assert.equal((await env.DB.prepare("SELECT stage FROM leads WHERE id='flow-old'").first()).stage,"new");
 });
+
+import { qualifyFlowArtsIntent } from "../src/lead-hunter.js";
+test("Flow Arts: QUERO isolado não supera pedido específico de site ou automação",()=>{
+  const generic=qualifyFlowArtsIntent({message:"QUERO",score:95,temperature:"hot",intent:"QUERO"});
+  assert.equal(generic.score,16);
+  assert.equal(generic.needsHuman,false);
+  const specific=qualifyFlowArtsIntent({message:"Preciso automatizar o direct do meu Instagram",score:40,temperature:"warm",intent:"dúvida"});
+  assert.ok(specific.score>=74);
+  assert.equal(specific.needsHuman,true);
+});
