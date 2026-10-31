@@ -840,3 +840,37 @@ html[data-client-theme="daniela-martins"] .nav-brand { margin-bottom: 18px; }
 html[data-client-theme="daniela-martins"] .stat::before { background: #EFECDF; color: #746E44; }
 html[data-client-theme="daniela-martins"] .stat:nth-child(2)::before { background: #F6EBDA; color: #8B5A2B; }
 html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { background: #F3EFE6; color: #B98A45; }
+
+
+/* Flow Arts Radar: painel concentrado em resultados, sem menus de busca manual. */
+.radar-dashboard { --radar-glow: #66e0ff; }
+.radar-hero { position:relative; overflow:hidden; padding:clamp(20px,5vw,38px); border-radius:22px; color:#f2f8ff; background:radial-gradient(ellipse at 85% 5%,rgba(77,180,255,.36),transparent 48%),radial-gradient(ellipse at 0 100%,rgba(23,225,204,.17),transparent 48%),linear-gradient(140deg,#08172e,#143466 75%,#0d274b); border:1px solid rgba(133,213,255,.3); box-shadow:inset 0 1px rgba(255,255,255,.16),0 15px 35px rgba(7,22,49,.17); }
+.radar-hero:after { content:""; position:absolute; right:-55px; top:-100px; width:240px; height:240px; border:1px solid rgba(113,219,255,.35); border-radius:50%; box-shadow:0 0 0 28px rgba(113,219,255,.045),0 0 0 64px rgba(113,219,255,.035); pointer-events:none; }
+.radar-hero h1 { color:#fff; font-size:clamp(1.8rem,5vw,2.6rem); margin:6px 0 12px; }
+.radar-hero p { max-width:650px; line-height:1.5; }
+.radar-eyebrow { letter-spacing:.14em; font-size:.75rem; font-weight:800; color:#98eaff; }
+.radar-source { background:rgba(9,20,46,.55); border:1px solid rgba(153,221,255,.24); border-radius:12px; padding:12px; font-size:.9rem; }
+.radar-overview { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:16px 0; }
+.radar-kpi { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:5px; box-shadow:0 9px 25px rgba(12,35,72,.06); }
+.radar-kpi strong { color:var(--blue); font-size:clamp(1.6rem,5vw,2.3rem); font-variant-numeric:tabular-nums; }
+.radar-kpi span { color:var(--muted); font-size:.87rem; }
+.radar-results { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:clamp(12px,3vw,24px); }
+.radar-results-head { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.radar-results-head h2 { margin:0; font-size:1.15rem; }
+.radar-refresh { border:1px solid var(--line); border-radius:12px; padding:10px; background:var(--card); color:var(--ink); cursor:pointer; }
+.radar-count,.radar-evidence,.radar-stage { font-size:.85rem; color:var(--muted); }
+.radar-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr)); gap:12px; margin-top:16px; }
+.radar-lead-card { background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px; min-width:0; }
+.radar-lead-heading { display:flex; gap:8px; align-items:start; flex-wrap:wrap; justify-content:space-between; }
+.radar-lead-heading h3 { margin:0; font-size:1.02rem; overflow-wrap:anywhere; }
+.radar-category { border-radius:99px; background:var(--blue-soft); color:var(--blue); font-size:.75rem; padding:5px 9px; font-weight:700; }
+.radar-handle { color:var(--blue); margin:6px 0; }
+.radar-reason { line-height:1.4; }
+.radar-lead-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.radar-lead-actions a,.radar-approve { display:inline-flex; align-items:center; justify-content:center; min-height:44px; text-decoration:none; padding:9px 12px; background:var(--blue); border:0; border-radius:11px; color:#fff; font-size:.86rem; font-weight:700; cursor:pointer; }
+.radar-lead-actions a:last-of-type { background:transparent; border:1px solid var(--line); color:var(--ink); }
+.radar-lead-actions small { color:var(--muted); }
+.radar-approve { background:var(--card); border:1px solid var(--blue); color:var(--blue); margin-top:12px; }
+.radar-approve:disabled { opacity:.6; }
+.radar-empty { grid-column:1/-1; padding:24px 12px; color:var(--muted); text-align:center; }
+@media(max-width:420px) { .radar-hero { padding:20px 16px; } .radar-kpi { padding:13px; } .radar-results-head { align-items:start; } }
