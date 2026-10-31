@@ -244,6 +244,17 @@
           <p class="muted" id="flow-radar-result" role="status"></p>
         </section>
         <section class="panel" style="padding:18px;margin:14px 0">
+          <h2>Caçar empresas com potencial de site</h2>
+          <p class="muted">Busca em dados de empresas do mapa, por exemplo, negócios sem site próprio identificado. Isso é oportunidade de prospecção, não demonstra interesse declarado na compra.</p>
+          <div class="prospect-actions">
+            <label>Segmento<select id="flow-radar-map-niche"><option value="">Segmentos em rodízio</option><option value="material">Materiais de construção</option><option value="imobiliaria">Imobiliárias</option><option value="contabilidade">Contabilidade</option><option value="restaurante">Restaurantes</option><option value="padaria">Padarias</option><option value="pet">Pet shops</option><option value="oficina">Oficinas</option></select></label>
+            <label>Cidade e estado (opcional)<input id="flow-radar-map-city" placeholder="Ex.: Niterói RJ" maxlength="60"></label>
+            <button type="button" class="primary" id="flow-radar-map-search">Encontrar empresas agora</button>
+          </div>
+          <p id="flow-radar-map-status" class="muted" role="status"></p>
+          <div id="flow-radar-map-results"></div>
+        </section>
+        <section class="panel" style="padding:18px;margin:14px 0">
           <h2>Oportunidades qualificadas</h2>
           <label>Tipo de serviço <select id="flow-radar-category"><option value="">Todos</option><option value="site">Criação e melhoria de sites</option><option value="instagram">Automação do Instagram</option><option value="leads">Captação de leads</option><option value="prospeccao">Prospecção B2B</option></select></label>
           <button type="button" class="ghost" id="flow-radar-refresh">Atualizar</button>
