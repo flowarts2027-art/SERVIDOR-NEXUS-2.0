@@ -1,5 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
-import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch } from "./maestro-store.js";
+import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch, completePersistedMaestroImage, recoverPersistedMaestroCampaign } from "./maestro-store.js";
 import { maestroProgress } from "./maestro-continuity.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
@@ -681,6 +681,15 @@ export default {
             // No paid image executor wired yet; never claim tasks unless explicitly configured.
             const batch = await claimPersistedMaestroBatch(env,{...body,executorAvailable:false});
             return json({ok:true,claimed:batch.claimed,progress:batch.progress,reason:batch.reason});
+          }
+          if (body.action === "recover") {
+            const result = await recoverPersistedMaestroCampaign(env,body);
+            return json({ok:true,...result});
+          }
+          // Receipt-only operation: accepts audited external images, never generates or publishes.
+          if (body.action === "complete") {
+            const result = await completePersistedMaestroImage(env,body);
+            return json({ok:true,accepted:result.accepted,progress:result.progress});
           }
           return json({error:"invalid_action"},400);
         }
