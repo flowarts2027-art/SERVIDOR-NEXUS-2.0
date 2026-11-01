@@ -8,25 +8,57 @@
         "compactador",
         "betoneira",
         "martelete",
-        "gerador"
+        "gerador",
+        "motobomba",
+        "compressor"
       ],
       [
-        "martelete",
-        "gerador",
-        "betoneira",
-        "compactador"
+        "vibrador",
+        "andaime",
+        "torre",
+        "escora",
+        "guincho",
+        "alisadora"
       ],
       [
-        "betoneira",
-        "compactador",
-        "gerador",
-        "martelete"
+        "retro",
+        "rolo",
+        "nivel",
+        "serra",
+        "placa",
+        "mangote"
       ],
       [
-        "gerador",
-        "martelete",
-        "compactador",
-        "betoneira"
+        "gerador25",
+        "gerador60",
+        "gerador250",
+        "bombaauto",
+        "argamassa",
+        "corte"
+      ],
+      [
+        "furadeira",
+        "impacto",
+        "parafusadeira",
+        "condutor",
+        "martelo",
+        "bombaSub"
+      ],
+      [
+        "guinchoLaje",
+        "regua",
+        "motobombaDiesel",
+        "esmerilhadeira",
+        "talha",
+        "lavadora"
+      ],
+      [
+        "perfurador",
+        "policorte",
+        "serraCircular",
+        "andaimeTubular",
+        "bombaMangote",
+        "carrinho"
       ]
     ],
     "equipamentos": {
@@ -133,6 +165,994 @@
           "Orçamento no zap"
         ],
         "nome": "gerador"
+      },
+      "motobomba": {
+        "foto": "industrial unbranded water pump pumping water on construction site",
+        "titulos": [
+          [
+            "Motobomba de drenagem",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Motobomba de drenagem",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Motobomba de drenagem"
+      },
+      "compressor": {
+        "foto": "unbranded portable diesel air compressor trailer in construction site",
+        "titulos": [
+          [
+            "Compressor a diesel",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Compressor a diesel",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Compressor a diesel"
+      },
+      "vibrador": {
+        "foto": "gasoline concrete immersion vibrator with flexible shaft next to concrete pour",
+        "titulos": [
+          [
+            "Vibrador de concreto",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Vibrador de concreto",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Vibrador de concreto"
+      },
+      "andaime": {
+        "foto": "facade scaffolding installed at construction site",
+        "titulos": [
+          [
+            "Andaime fachadeiro",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Andaime fachadeiro",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Andaime fachadeiro"
+      },
+      "torre": {
+        "foto": "mobile diesel light tower at nighttime construction site",
+        "titulos": [
+          [
+            "Torre de iluminação",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Torre de iluminação",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Torre de iluminação"
+      },
+      "escora": {
+        "foto": "adjustable steel props holding concrete slab formwork",
+        "titulos": [
+          [
+            "Escora metálica",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Escora metálica",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Escora metálica"
+      },
+      "guincho": {
+        "foto": "column material hoist at a building construction site",
+        "titulos": [
+          [
+            "Guincho de coluna",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Guincho de coluna",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Guincho de coluna"
+      },
+      "alisadora": {
+        "foto": "gasoline walk-behind concrete power trowel on new concrete floor",
+        "titulos": [
+          [
+            "Alisadora de piso",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Alisadora de piso",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Alisadora de piso"
+      },
+      "retro": {
+        "foto": "backhoe loader at Brazilian construction site",
+        "titulos": [
+          [
+            "Retroescavadeira",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Retroescavadeira",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Retroescavadeira"
+      },
+      "rolo": {
+        "foto": "road roller on road construction site",
+        "titulos": [
+          [
+            "Rolo compactador",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Rolo compactador",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Rolo compactador"
+      },
+      "nivel": {
+        "foto": "laser level tripod at construction site",
+        "titulos": [
+          [
+            "Nível a laser",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Nível a laser",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Nível a laser"
+      },
+      "serra": {
+        "foto": "masonry saw on construction site",
+        "titulos": [
+          [
+            "Serra mármore",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Serra mármore",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Serra mármore"
+      },
+      "placa": {
+        "foto": "vibratory compactor plate on gravel at construction site",
+        "titulos": [
+          [
+            "Placa vibratória",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Placa vibratória",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Placa vibratória"
+      },
+      "mangote": {
+        "foto": "concrete vibrator flexible shaft in concrete slab",
+        "titulos": [
+          [
+            "Mangote vibrador",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Mangote vibrador",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Mangote vibrador"
+      },
+      "gerador25": {
+        "foto": "unbranded enclosed industrial generator at construction site",
+        "titulos": [
+          [
+            "Gerador 25 kVA",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Gerador 25 kVA",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Gerador 25 kVA"
+      },
+      "gerador60": {
+        "foto": "unbranded enclosed diesel generator at construction site",
+        "titulos": [
+          [
+            "Gerador 60 kVA",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Gerador 60 kVA",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Gerador 60 kVA"
+      },
+      "gerador250": {
+        "foto": "large industrial enclosed generator at construction site",
+        "titulos": [
+          [
+            "Gerador 250 kVA",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Gerador 250 kVA",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Gerador 250 kVA"
+      },
+      "bombaauto": {
+        "foto": "large auto priming pumping unit removing water from excavation",
+        "titulos": [
+          [
+            "Bomba autoaspirante",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Bomba autoaspirante",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Bomba autoaspirante"
+      },
+      "argamassa": {
+        "foto": "mortar mixer at construction site",
+        "titulos": [
+          [
+            "Argamassadeira",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Argamassadeira",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Argamassadeira"
+      },
+      "corte": {
+        "foto": "concrete floor cutter on construction site",
+        "titulos": [
+          [
+            "Cortadora de piso",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Cortadora de piso",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Cortadora de piso"
+      },
+      "furadeira": {
+        "foto": "hand held power drill on carpentry construction bench",
+        "titulos": [
+          [
+            "Furadeira",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Furadeira",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Furadeira"
+      },
+      "impacto": {
+        "foto": "impact wrench on construction materials bench",
+        "titulos": [
+          [
+            "Chave de impacto",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Chave de impacto",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Chave de impacto"
+      },
+      "parafusadeira": {
+        "foto": "cordless screwdriver at construction workshop",
+        "titulos": [
+          [
+            "Parafusadeira",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Parafusadeira",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Parafusadeira"
+      },
+      "condutor": {
+        "foto": "construction debris chute hanging from scaffold",
+        "titulos": [
+          [
+            "Condutor de resíduos",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Condutor de resíduos",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Condutor de resíduos"
+      },
+      "martelo": {
+        "foto": "electric demolition hammer at concrete renovation",
+        "titulos": [
+          [
+            "Martelo demolidor",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Martelo demolidor",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Martelo demolidor"
+      },
+      "bombaSub": {
+        "foto": "submersible pump dewatering deep construction pit",
+        "titulos": [
+          [
+            "Bomba submersível",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Bomba submersível",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Bomba submersível"
+      },
+      "guinchoLaje": {
+        "foto": "construction material hoist at slab edge",
+        "titulos": [
+          [
+            "Guincho de laje",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Guincho de laje",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Guincho de laje"
+      },
+      "regua": {
+        "foto": "concrete vibrating screed on freshly laid slab",
+        "titulos": [
+          [
+            "Régua vibratória",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Régua vibratória",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Régua vibratória"
+      },
+      "motobombaDiesel": {
+        "foto": "large diesel high-flow water pump removing water at jobsite",
+        "titulos": [
+          [
+            "Motobomba diesel",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Motobomba diesel",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Motobomba diesel"
+      },
+      "esmerilhadeira": {
+        "foto": "angle grinder on steel cutting workstation",
+        "titulos": [
+          [
+            "Esmerilhadeira",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Esmerilhadeira",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Esmerilhadeira"
+      },
+      "talha": {
+        "foto": "chain hoist at construction lift point",
+        "titulos": [
+          [
+            "Talha de corrente",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Talha de corrente",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Talha de corrente"
+      },
+      "lavadora": {
+        "foto": "industrial pressure washer cleaning construction area",
+        "titulos": [
+          [
+            "Lavadora de alta pressão",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Lavadora de alta pressão",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Lavadora de alta pressão"
+      },
+      "perfurador": {
+        "foto": "gasoline earth auger drilling ground for construction",
+        "titulos": [
+          [
+            "Perfurador de solo",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Perfurador de solo",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Perfurador de solo"
+      },
+      "policorte": {
+        "foto": "abrasive cutoff saw on safe construction workshop bench",
+        "titulos": [
+          [
+            "Policorte",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Policorte",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Policorte"
+      },
+      "serraCircular": {
+        "foto": "circular saw on timber construction bench",
+        "titulos": [
+          [
+            "Serra circular",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Serra circular",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Serra circular"
+      },
+      "andaimeTubular": {
+        "foto": "tubular steel scaffold on building work",
+        "titulos": [
+          [
+            "Andaime tubular",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Andaime tubular",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Andaime tubular"
+      },
+      "bombaMangote": {
+        "foto": "flexible shaft drainage pump with gasoline motor in waterlogged site",
+        "titulos": [
+          [
+            "Bomba mangote",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Bomba mangote",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Bomba mangote"
+      },
+      "carrinho": {
+        "foto": "heavy duty steel wheelbarrow on masonry building site",
+        "titulos": [
+          [
+            "Carrinho de mão",
+            "para sua",
+            "obra"
+          ],
+          [
+            "Locação de",
+            "Carrinho de mão",
+            "na GILTEC"
+          ],
+          [
+            "Equipamento",
+            "para sua",
+            "obra"
+          ]
+        ],
+        "vantagens": [
+          "Consulte opções",
+          "Para obras",
+          "Peça orçamento"
+        ],
+        "nome": "Carrinho de mão"
       }
     },
     "cenas": [
@@ -358,8 +1378,8 @@
           }
         ],
         "legendas": {
-          "0900": "Representante comercial: sua carteira cresce ou só roda?\n\nVocê escolhe o ramo e a cidade. O Captador da Flow Arts procura as empresas, separa só quem tem WhatsApp e deixa a primeira mensagem pronta, com o seu nome. Você revisa e envia.\n\nSalve e mande para um representante que vive na estrada.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArts",
-          "1900": "Pergunta rápida: qual ramo você mais quer atender? Comércio, indústria ou obras?\n\nResponde nos comentários.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArts"
+          "1900": "Pergunta rápida: qual ramo você mais quer atender? Comércio, indústria ou obras?\n\nResponde nos comentários.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArts",
+          "0900": "Representante comercial: sua carteira cresce ou só roda?\n\nVocê escolhe o ramo e a cidade. O Captador da Flow Arts procura as empresas, separa só quem tem WhatsApp e deixa a primeira mensagem pronta, com o seu nome. Você revisa e envia.\n\nSalve e mande para um representante que vive na estrada.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArts"
         }
       },
       {
@@ -486,8 +1506,8 @@
           }
         ],
         "legendas": {
-          "0900": "Vendedor e dono de negócio: antes de te responder, o cliente olha o seu Instagram.\n\nPerfil parado parece empresa fechada. A Flow Arts deixa o post pronto no seu painel, com foto, texto e horário. Você olha, aprova e volta a vender. Nada sai sem o seu OK.\n\nSalve para lembrar.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArts",
-          "1900": "Sinceridade: hoje o seu perfil ajuda ou atrapalha a venda?\n\nResponde aqui embaixo: ajuda, atrapalha ou nem sei.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArts"
+          "1900": "Sinceridade: hoje o seu perfil ajuda ou atrapalha a venda?\n\nResponde aqui embaixo: ajuda, atrapalha ou nem sei.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArts",
+          "0900": "Vendedor e dono de negócio: antes de te responder, o cliente olha o seu Instagram.\n\nPerfil parado parece empresa fechada. A Flow Arts deixa o post pronto no seu painel, com foto, texto e horário. Você olha, aprova e volta a vender. Nada sai sem o seu OK.\n\nSalve para lembrar.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArts"
         }
       },
       {
@@ -614,8 +1634,8 @@
           }
         ],
         "legendas": {
-          "0900": "Vendas externas: quanto do seu dia vai embora procurando cliente?\n\nGoogle, planilha, telefone fixo que ninguém atende. Quando você acha alguém para chamar, a manhã já foi.\n\nO Captador da Flow Arts procura empresas do seu ramo na sua cidade e deixa no seu painel só quem tem WhatsApp, com a mensagem pronta. Você revisa e chama.\n\nSalve para lembrar e mande para um colega vendedor.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArts",
-          "1900": "Vendedor, responde aqui: quanto tempo por dia você gasta procurando cliente novo?\n\n1 hora, 2 horas ou o dia todo? A gente lê todas as respostas.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArts"
+          "1900": "Vendedor, responde aqui: quanto tempo por dia você gasta procurando cliente novo?\n\n1 hora, 2 horas ou o dia todo? A gente lê todas as respostas.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArts",
+          "0900": "Vendas externas: quanto do seu dia vai embora procurando cliente?\n\nGoogle, planilha, telefone fixo que ninguém atende. Quando você acha alguém para chamar, a manhã já foi.\n\nO Captador da Flow Arts procura empresas do seu ramo na sua cidade e deixa no seu painel só quem tem WhatsApp, com a mensagem pronta. Você revisa e chama.\n\nSalve para lembrar e mande para um colega vendedor.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArts"
         }
       }
     ],
@@ -708,9 +1728,9 @@
           }
         ],
         "legendas": {
-          "0900": "Seu CR precisa de atenção?\n\nA Maskara Assessoria cuida da documentação de CAC com você: CR, CRAF, guia de tráfego e acompanhamento do processo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
           "1200": "Documentação CAC em dia?\n\nOrganizar papel, prazo e sistema toma tempo. A gente faz a assessoria documental e te orienta em cada etapa.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
-          "1900": "Ficou com dúvida sobre o seu processo?\n\nSIGMA, SINARM, transferências: a Maskara explica o caminho e acompanha a sua documentação.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+          "1900": "Ficou com dúvida sobre o seu processo?\n\nSIGMA, SINARM, transferências: a Maskara explica o caminho e acompanha a sua documentação.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "0900": "Seu CR precisa de atenção?\n\nA Maskara Assessoria cuida da documentação de CAC com você: CR, CRAF, guia de tráfego e acompanhamento do processo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
         }
       },
       {
@@ -795,9 +1815,9 @@
           }
         ],
         "legendas": {
-          "0900": "Precisa de assessoria documental?\n\nA Maskara Assessoria organiza a documentação de CAC: CR, CRAF, transferências e guias, sempre com orientação clara.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
           "1200": "Seu CRAF está em dia?\n\nRenovação e acompanhamento da documentação sem você se perder no processo. A gente orienta cada passo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
-          "1900": "Começou agora no tiro esportivo?\n\nO primeiro CR tem várias etapas. A Maskara te orienta desde o começo para você fazer tudo do jeito certo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+          "1900": "Começou agora no tiro esportivo?\n\nO primeiro CR tem várias etapas. A Maskara te orienta desde o começo para você fazer tudo do jeito certo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "0900": "Precisa de assessoria documental?\n\nA Maskara Assessoria organiza a documentação de CAC: CR, CRAF, transferências e guias, sempre com orientação clara.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
         }
       },
       {
@@ -882,9 +1902,9 @@
           }
         ],
         "legendas": {
-          "0900": "Guia de tráfego em dia?\n\nA Maskara Assessoria cuida da sua documentação de CAC e te orienta sobre guia, CRAF e CR.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
           "1200": "Assessoria para quem é CAC.\n\nCR, CRAF, SIGMA: a gente acompanha a sua documentação e explica cada etapa, sem enrolação.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
-          "1900": "Transferência sem complicação.\n\nA Maskara orienta e acompanha a documentação da transferência do começo ao fim.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+          "1900": "Transferência sem complicação.\n\nA Maskara orienta e acompanha a documentação da transferência do começo ao fim.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "0900": "Guia de tráfego em dia?\n\nA Maskara Assessoria cuida da sua documentação de CAC e te orienta sobre guia, CRAF e CR.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
         }
       },
       {
@@ -969,9 +1989,9 @@
           }
         ],
         "legendas": {
-          "0900": "Fale com a Maskara hoje.\n\nAssessoria e despachante de documentação de CAC: CR, CRAF, guias e transferências, com acompanhamento.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
           "1200": "Tiro esportivo com papel em ordem.\n\nDeixa a documentação com a gente. A Maskara orienta e acompanha cada etapa do seu processo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
-          "1900": "O que falta no seu processo?\n\nA gente olha a sua documentação de CAC com você e explica o próximo passo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
+          "1900": "O que falta no seu processo?\n\nA gente olha a sua documentação de CAC com você e explica o próximo passo.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF",
+          "0900": "Fale com a Maskara hoje.\n\nAssessoria e despachante de documentação de CAC: CR, CRAF, guias e transferências, com acompanhamento.\n\nComenta QUERO abaixo que a gente te chama.\n\n#CAC #Despachante #AssessoriaDocumental #CR #CRAF"
         }
       }
     ]
