@@ -31,3 +31,20 @@ export async function claimPersistedMaestroBatch(env,{clientId,campaignId,size=6
  if(batch.claimed.length)await saveMaestroCampaign(env,batch.campaign,campaign.version);
  return {...batch,progress:maestroProgress(batch.campaign)};
 }
+
+export async function completePersistedMaestroImage(env,{clientId,campaignId,id,sha256,width,height,qaApproved=false,referenceVerified=false}) {
+ const campaign=await loadMaestroCampaign(env,clientId,campaignId);
+ if(!campaign)throw new Error("campaign_not_found");
+ const {completeMaestroImage}=await import("./maestro-continuity.js");
+ const result=completeMaestroImage(campaign,{id,sha256,width,height,qaApproved,referenceVerified});
+ await saveMaestroCampaign(env,result.campaign,campaign.version);
+ return {...result,progress:maestroProgress(result.campaign)};
+}
+export async function recoverPersistedMaestroCampaign(env,{clientId,campaignId,now=Date.now()}) {
+ const campaign=await loadMaestroCampaign(env,clientId,campaignId);
+ if(!campaign)throw new Error("campaign_not_found");
+ const {recoverExpiredMaestroTasks}=await import("./maestro-continuity.js");
+ const next=recoverExpiredMaestroTasks(campaign,now);
+ if(JSON.stringify(next.tasks)!==JSON.stringify(campaign.tasks)) await saveMaestroCampaign(env,next,campaign.version);
+ return {campaign:next,progress:maestroProgress(next)};
+}
