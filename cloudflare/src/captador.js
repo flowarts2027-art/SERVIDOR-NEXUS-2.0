@@ -199,9 +199,10 @@ export async function captadorEnabled(env, clientId, client = null) {
 }
 
 // Buscas já feitas pelo cliente neste mês.
-export async function captadorUsage(env, clientId) {
+export async function captadorUsage(env, clientId, now = new Date()) {
   const usage = await readState(env, String(clientId || ""), "usage", { month: "", count: 0 });
-  return usage.month === thisMonth() ? Number(usage.count || 0) : 0;
+  const month = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit" }).format(now instanceof Date ? now : new Date(now));
+  return usage.month === month ? Number(usage.count || 0) : 0;
 }
 
 // Liga/desliga e, se vier, muda o limite do mês daquele cliente.
