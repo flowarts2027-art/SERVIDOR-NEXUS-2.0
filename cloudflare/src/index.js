@@ -1,4 +1,6 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
+import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch } from "./maestro-store.js";
+import { maestroProgress } from "./maestro-continuity.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
 import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
@@ -657,6 +659,33 @@ export default {
       // flowarts.com.br (e www) abre o site da Flow Arts; o painel fica em painel.flowarts.com.br.
       if (/^(www\.)?flowarts\.com\.br$/i.test(url.hostname)) return asset(env, request, "/site.html");
       return redirect("/login");
+    }
+
+    // Maestro: authenticated master-only campaign ledger. Does not generate or publish media.
+    if (url.pathname === "/api/master/maestro") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({error:"unauthorized"},401);
+      try {
+        if (request.method === "GET") {
+          const clientId = url.searchParams.get("clientId"), campaignId = url.searchParams.get("campaignId");
+          const campaign = await loadMaestroCampaign(env,clientId,campaignId);
+          return campaign ? json({ok:true,campaign,progress:maestroProgress(campaign)}) : json({error:"not_found"},404);
+        }
+        if (request.method === "POST") {
+          const body = await request.json();
+          if (body.action === "create") {
+            const campaign = await startMaestroCampaign(env,body);
+            return json({ok:true,campaign,progress:maestroProgress(campaign)});
+          }
+          if (body.action === "claim") {
+            // No paid image executor wired yet; never claim tasks unless explicitly configured.
+            const batch = await claimPersistedMaestroBatch(env,{...body,executorAvailable:false});
+            return json({ok:true,claimed:batch.claimed,progress:batch.progress,reason:batch.reason});
+          }
+          return json({error:"invalid_action"},400);
+        }
+        return json({error:"method_not_allowed"},405);
+      } catch (error) {return json({error:String(error?.message||"maestro_failed")},400);}
     }
 
     if (url.pathname === "/api/emergency-publisher-diagnostic" && request.method === "GET") {

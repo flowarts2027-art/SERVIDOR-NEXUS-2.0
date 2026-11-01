@@ -44,7 +44,7 @@ test("busca diária separa empresas em 'hoje', sem repetir, e só com o Captador
   const list = [shop(), shop(), shop({ "contact:instagram": "petdois" }), shop({ brand: "Rede" })];
   const r = await runClientDaily(env, client, at10, fetcherWith(list));
   assert.equal(r.picked, 3); // a de rede (brand) fica fora
-  assert.equal(await captadorUsage(env, client.id), 2); // até 2 buscas por rodada, cada uma conta no mês
+  assert.equal(await captadorUsage(env, client.id, at10), 2); // até 2 buscas por rodada, cada uma conta no mês
   const again = await runClientDaily(env, client, new Date(at10.getTime() + 600e3), fetcherWith(list));
   assert.equal(again.picked, 3, "mesma empresa não entra duas vezes");
   const view = await captadorView(env, client, "hoje");

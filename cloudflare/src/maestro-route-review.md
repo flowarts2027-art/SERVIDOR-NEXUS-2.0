@@ -1,0 +1,1 @@
+Route /api/master/maestro wired to persisted D1 campaign ledger (Master session required); creation, read, claim unavailability. No executor and no publishing. Follow-up: workers and complete/review flow.
