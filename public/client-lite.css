@@ -992,3 +992,7 @@ html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { backgroun
 @media (min-width: 900px) {
   .tabbar > button > .nav-ico { width:22px; flex-basis:22px; }
 }
+
+/* 01/11: botões "Atualizar" e "Olhar agora" sem quebrar a palavra no celular. */
+.radar-results-head h2 { min-width: 0; }
+.radar-refresh { white-space: nowrap; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-weight: 700; }

@@ -17,14 +17,15 @@ function envDb() {
     return {...run([]),bind:(...args)=>run(args)};
   }} };
 }
-test("Flow Arts oculta interações antigas de 2 dias, não mexe nos outros clientes e preserva reativação com comentário novo",async()=>{
+test("Flow Arts oculta interações sem resposta há 24 horas, não mexe nos outros clientes e preserva reativação com comentário novo",async()=>{
   const env=envDb(),flow={id:"primeiro-teste",name:"Flow Arts"},other={id:"outro",name:"Outro"};
-  const old="2026-10-25T10:00:00.000Z",recent="2026-10-31T10:00:00.000Z";
+  // Relativo ao relógio: leadsForClient roda a limpeza com a hora atual.
+  const nowMs=Date.now(),old=new Date(nowMs-3*86400000).toISOString(),recent=new Date(nowMs-2*3600000).toISOString();
   await upsertLead(env,flow,{id:"flow-old",instagramUsername:"leadvelho",lastContactAt:old,stage:"new",score:80});
   await upsertLead(env,flow,{id:"flow-active",instagramUsername:"clienteativo",lastContactAt:old,stage:"conversando",score:95});
   await upsertLead(env,flow,{id:"flow-new",instagramUsername:"recente",lastContactAt:recent,stage:"new",score:90});
   await upsertLead(env,other,{id:"other-old",instagramUsername:"outro",lastContactAt:old,stage:"new",score:85});
-  const now=new Date("2026-10-31T12:00:00.000Z");
+  const now=new Date(nowMs);
   assert.equal((await archiveStaleFlowLeads(env,flow.id,now)).hidden,1);
   assert.equal((await archiveStaleFlowLeads(env,other.id,now)).hidden,0);
   assert.deepEqual((await leadsForClient(env,flow.id)).map(x=>x.id),["flow-active","flow-new"]);

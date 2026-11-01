@@ -368,9 +368,9 @@ export async function archiveContact(env, id, now = new Date()) {
 // Remove da lista, mas preserva o histórico e impede que o Caçador cadastre de novo.
 // Só contatos vindos de buscas automáticas; conversas, propostas, clientes e cadastros
 // manuais não são afetados por esta rotina.
-export async function archiveDormantHunterLeads(env, now = new Date(), staleDays = 2) {
+export async function archiveDormantHunterLeads(env, now = new Date(), staleDays = 1) {
   await ensureCrmSchema(env);
-  const days = Math.max(1, Math.min(30, Number(staleDays) || 2));
+  const days = Math.max(1, Math.min(30, Number(staleDays) || 1));
   const cutoff = new Date(now.getTime() - days * 86400000).toISOString();
   const out = await env.DB.prepare(
     `UPDATE crm_contacts

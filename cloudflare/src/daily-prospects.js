@@ -42,7 +42,8 @@ export async function clearNoReply(env, now = new Date()) {
 // 29/10 (Rodrigo): mesma regra do Captador dos clientes (captador.js cleanupLeads) no CRM da Flow Arts.
 // Contato achado e SEM mensagem enviada há 2 dias sai da lista. Arquiva (não apaga): o Nexus
 // lembra do número e não traz a mesma empresa de novo. Quem já recebeu mensagem fica.
-export const STALE_CRM_DAYS = 2;
+// 01/11 (Rodrigo): o prazo passou de 2 dias para 24 horas.
+export const STALE_CRM_DAYS = 1;
 export async function archiveStaleCrm(env, now = new Date()) {
   await ensureCrmSchema(env);
   const cutoff = new Date(now.getTime() - STALE_CRM_DAYS * 86400e3).toISOString();
@@ -85,7 +86,7 @@ export async function runDailyProspects(env, now = new Date(), fetcher = fetch, 
     state.cleaned1019 = 1 + (await clearNoReply(env, now)).archived;
     await writeState(env, state);
   }
-  // A cada ciclo: tira quem ficou 2 dias sem mensagem (regra de 29/10, igual à dos clientes).
+  // A cada ciclo: tira quem ficou 24 horas sem mensagem (regra de 29/10, igual à dos clientes).
   await archiveStaleCrm(env, now).catch(() => null);
   // Exemplos que vieram junto com o site (bar, dentista…) entram na vitrine, se o nicho ainda não tiver.
   await seedBundledExamples(env, now).catch(() => null);

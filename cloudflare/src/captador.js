@@ -620,7 +620,8 @@ export async function setCaptadorStatus(env, client, id, status) {
 // 1. contato encontrado e SEM mensagem enviada há 2 dias sai da lista (e não volta nas próximas buscas);
 // 2. nos tipos de construção, loja de material de construção que entrou antes do filtro sai também.
 // Quem já recebeu mensagem, quem está em "depois" (lembrete) e quem fechou ficam.
-export const STALE_LEAD_DAYS = 2;
+// 01/11 (Rodrigo): 24 horas sem mensagem já sai da lista.
+export const STALE_LEAD_DAYS = 1;
 export async function cleanupLeads(env, client, now = new Date()) {
   await ensureCaptadorSchema(env);
   const id = String(client?.id || "");
@@ -629,7 +630,9 @@ export async function cleanupLeads(env, client, now = new Date()) {
   const rows = (await env.DB.prepare(
     "SELECT id, name, niche, status, created_at FROM captador_leads WHERE client_id=?1 AND status IN ('hoje','novo')"
   ).bind(id).all().catch(() => null))?.results || [];
-  const out = rows.filter(r => String(r.created_at || "") < cutoff || isMaterialStore(r.niche, r.name));
+  const cutoffMs = Date.parse(cutoff.replace(" ", "T") + "Z");
+  const createdMs = v => { const s = String(v || "").trim().replace(" ", "T"); return Date.parse(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + "Z"); };
+  const out = rows.filter(r => createdMs(r.created_at) < cutoffMs || isMaterialStore(r.niche, r.name));
   for (const r of out) {
     await env.DB.prepare("DELETE FROM captador_leads WHERE client_id=?1 AND id=?2").bind(id, r.id).run();
     await env.DB.prepare("INSERT OR IGNORE INTO captador_skips(client_id,id) VALUES(?1,?2)").bind(id, r.id).run().catch(() => null);

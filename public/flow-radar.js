@@ -99,11 +99,12 @@
     }
   }
   async function refreshStatus() {
+    // 01/11 (Rodrigo): sem o aviso de campanha no topo. A caixa só aparece quando tem algo útil.
     const d = await api("/status");
     const target = $("flow-radar-status");
-    if (target) target.textContent = d.feedConfigured
-      ? "Fonte de oportunidades conectada. Acompanhe os resultados abaixo e, quando a campanha começar, os indicadores de tráfego."
-      : "Radar preparado para a próxima campanha. Os indicadores aparecerão quando a integração de anúncios e os eventos do atendimento estiverem ativos. Nenhuma campanha está sendo medida automaticamente ainda.";
+    if (!target) return;
+    target.textContent = d.feedConfigured ? "Fonte de oportunidades conectada." : "";
+    target.hidden = !d.feedConfigured;
   }
   async function refreshCompetitors() {
     const host = $("flow-radar-competitors"); if (!host) return;
@@ -200,7 +201,7 @@
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");
-      if (target) target.textContent = "Não foi possível consultar o Radar: " + e.message + ". Isso não confirma ausência de leads.";
+      if (target) { target.hidden = false; target.textContent = "Não foi possível consultar o Radar: " + e.message + ". Isso não confirma ausência de leads."; }
     } finally { busy = false; }
   }
   function showProfile(profile) {
