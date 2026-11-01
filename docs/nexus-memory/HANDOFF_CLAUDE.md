@@ -831,3 +831,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Teste `flow-lead-stale` usava data fixa e quebraria com o relógio; agora usa a hora atual.
 - **Não conferido:** quantos contatos existem hoje no banco de produção (sem acesso ao D1 daqui). A limpeza roda no cron junto do Caçador diário; após o deploy, o próximo ciclo deve arquivar os antigos.
 - **Próximo passo:** Rodrigo aprova o PR; depois abrir o CRM e confirmar que sumiram os contatos com mais de 24 horas sem mensagem.
+
+## 2026-11-01 — Atendente do WhatsApp passa a se chamar David
+- Pedido do Rodrigo: trocar o nome da atendente virtual do WhatsApp (Alice) por um nome masculino; escolheu **David**. Só o nome muda, o resto já estava configurado.
+- Mudado: `cloudflare/src/whatsapp-knowledge.js` (agentName e persona no masculino) e a frase de apresentação em `cloudflare/src/whatsapp-alice.js`; testes de `whatsapp-alice.test.mjs` atualizados (12/12 passam). Nomes internos das funções (alice*) ficaram iguais.
+- Testes: 743/744. A falha é em `captador-daily.test.mjs` e já falha na `main` sem esta mudança (não relacionada).
+- Estado: branch `claude/atendente-david`, PR aberto, esperando o OK do Rodrigo para o merge (deploy só depois do merge na `main`).
+- Pendente à parte: o número novo do WhatsApp (+55 21 9648x-xxxx) já está conectado na Meta, mas o servidor ainda usa o número antigo; trocar o Phone Number ID e o token nos segredos da Cloudflare (o Rodrigo digita o token).

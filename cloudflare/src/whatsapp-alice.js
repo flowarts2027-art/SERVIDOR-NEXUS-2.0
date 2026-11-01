@@ -100,7 +100,7 @@ export function buildAliceRequest({ knowledge, memory, history, inboundText, med
     "COMO RESPONDER:",
     alreadyIntroduced
       ? "- Você já se apresentou nesta conversa; não se apresente de novo."
-      : "- Esta é a primeira resposta da conversa: apresente-se como a Alice, assistente virtual da Flow Arts.",
+      : "- Esta é a primeira resposta da conversa: apresente-se como o David, assistente virtual da Flow Arts.",
     "- 'messages' tem de 1 a 3 mensagens curtas (cada uma com 1 a 3 linhas), como uma pessoa digitando no WhatsApp. Só 1 pergunta no total.",
     "- Use SOMENTE as informações acima. Nunca invente preço, prazo, desconto, resultado ou cliente.",
     "- 'understood': se chegou ÁUDIO, escreva o que a pessoa falou (transcrição fiel, curta); se chegou IMAGEM, descreva em 1 frase o que ela mostra. Para texto, deixe vazio.",

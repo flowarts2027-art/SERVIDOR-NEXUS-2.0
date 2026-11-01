@@ -96,13 +96,13 @@ function fixture({ answers = [], geminiFails = false } = {}) {
 
 const hello = {
   classification: "lead", priority: 70, needsHuman: false,
-  messages: ["Oi, Carlos! Aqui é a Alice, assistente virtual da Flow Arts 😊", "Me conta: o que você vende e em qual cidade atende?"],
+  messages: ["Oi, Carlos! Aqui é o David, assistente virtual da Flow Arts 😊", "Me conta: o que você vende e em qual cidade atende?"],
   reason: "primeiro contato", understood: "", memory: { nome: "Carlos" }
 };
 
 test("Alice persona and site facts are in the knowledge prompt", () => {
   const prompt = knowledgePrompt(CLIENT);
-  assert.match(prompt, /Alice/);
+  assert.match(prompt, /David/);
   assert.match(prompt, /Captador \(de clientes\): R\$ 97 por mês/);
   assert.match(prompt, /Completo \+ Tráfego: R\$ 897/);
   assert.match(prompt, /AINDA NÃO LANÇADO/);
@@ -122,7 +122,7 @@ test("text: typing indicator, human pause and short messages in order", async ()
     await f.call("/api/whatsapp/settings", "POST", { autoReply: true });
     await f.receive({ type: "text", text: { body: "Oi, quanto custa?" } });
     assert.equal(f.gemini.length, 1);
-    assert.match(f.gemini[0].systemInstruction.parts[0].text, /Alice/);
+    assert.match(f.gemini[0].systemInstruction.parts[0].text, /David/);
     assert.match(f.gemini[0].systemInstruction.parts[0].text, /primeira resposta/);
     assert.equal(f.gemini[0].generationConfig.responseMimeType, "application/json");
     assert.deepEqual(f.sent.map(m => m.text.body), hello.messages);
@@ -200,7 +200,7 @@ test("auto-reply OFF: Alice only drafts, nothing is sent", async () => {
     assert.equal(f.typing.length, 0);
     const draft = f.db.prepare("SELECT status,reply_text FROM whatsapp_drafts").get();
     assert.equal(draft.status, "pending");
-    assert.match(draft.reply_text, /Alice/);
+    assert.match(draft.reply_text, /David/);
   } finally { f.close(); }
 });
 
@@ -225,11 +225,11 @@ test("Alice usa a reserva grátis quando o Gemini dá limite", async () => {
   const answer = await aliceReplyReserva(env, pedidoReserva(), fetcher, {
     freeChat: async (_env, req, opts) => {
       pedidoGratis = { req, opts };
-      return { provider: "groq", text: '{"classification":"lead","priority":70,"needsHuman":false,"messages":["Oi, Ana! Sou a Alice."],"reason":"r","understood":"","memory":{"nome":"Ana"}}' };
+      return { provider: "groq", text: '{"classification":"lead","priority":70,"needsHuman":false,"messages":["Oi, Ana! Sou o David."],"reason":"r","understood":"","memory":{"nome":"Ana"}}' };
     }
   });
   assert.equal(answer.engine, "groq");
-  assert.deepEqual(answer.messages, ["Oi, Ana! Sou a Alice."]);
+  assert.deepEqual(answer.messages, ["Oi, Ana! Sou o David."]);
   assert.ok(!pedidoGratis.opts.order.includes("gemini"));
   assert.match(pedidoGratis.req.user, /quanto custa/);
 });
