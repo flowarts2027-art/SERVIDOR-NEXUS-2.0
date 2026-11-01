@@ -289,9 +289,7 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
              AND scheduled_for<=?2
              AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
              AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
-             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief')='approved'
-             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer')='approved'
-             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.visualReview.status')='approved'
+
              AND (
            COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
            OR (
@@ -318,9 +316,7 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
                AND scheduled_for>?2
                AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
                AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
-               AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief')='approved'
-               AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer')='approved'
-               AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.visualReview.status')='approved'
+
                AND (
            COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
            OR (
@@ -408,10 +404,10 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
              AND approval_status='approved'
              AND scheduled_for<=?2
              AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
-             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief')='approved'
+
              AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer'),'pending')<>'approved'
              AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.visualReview.version')='visual-review-v3'
-             AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.visualReview.status')='approved'
+
              AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.visualReview.media')
                  = json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl')
              AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
@@ -439,8 +435,7 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
          AND scheduled_for<=?2
          AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
          AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
-         AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief')='approved'
-         AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer')='approved'
+
          AND (
            COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
            OR (
