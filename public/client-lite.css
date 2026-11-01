@@ -959,3 +959,36 @@ html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { backgroun
 .radar-metrics-fold[open] > summary:before { content:"▾"; }
 .radar-fold-content { padding-top:14px; }
 @media(max-width:450px) { .radar-metrics-fold > summary { flex-wrap:wrap; } }
+
+
+/* Vigia de concorrentes (01/11): letras grandes e toque fácil no Android. */
+.radar-watch { margin-top: 14px; }
+.radar-inline-form { display:flex; flex-direction:column; gap:8px; margin:12px 0 4px; }
+.radar-inline-form label { font-weight:700; font-size:1rem; }
+.radar-inline-form input { min-height:48px; font-size:1.05rem; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--paper); color:var(--ink); min-width:0; }
+.radar-inline-row { display:flex; gap:8px; }
+.radar-inline-row input { flex:1; }
+.radar-inline-form .radar-approve { margin-top:0; min-height:48px; font-size:1rem; font-weight:700; }
+.radar-chips { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 4px; }
+.radar-chip { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); border-radius:99px; padding:6px 6px 6px 12px; background:var(--paper); font-size:1rem; }
+.radar-chip a { color:var(--blue); text-decoration:none; font-weight:700; }
+.radar-chip button { min-width:36px; min-height:36px; border:0; border-radius:99px; background:transparent; color:var(--muted); font-size:1.1rem; cursor:pointer; }
+.radar-subtitle { margin:18px 0 0; font-size:1.05rem; }
+.radar-hot-count { font-weight:800; color:var(--blue); font-size:1.05rem; }
+.radar-paste { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+.radar-paste > summary { cursor:pointer; min-height:44px; display:flex; align-items:center; font-weight:700; color:var(--blue); }
+@media(max-width:420px) { .radar-inline-row { flex-direction:column; } }
+
+/* Ícones do menu (01/11/2026): desenho SVG do mesmo tamanho em todo celular.
+   Os símbolos de texto antigos (⌂ ▦ ◷ ⌕ ☰) mudavam de altura conforme a fonte do aparelho. */
+.tabbar .nav-ico { width:24px; height:24px; flex:0 0 24px; display:inline-grid !important; place-items:center; font-size:0 !important; line-height:0 !important; min-height:0 !important; }
+.tabbar .nav-ico svg { width:22px; height:22px; display:block; }
+@media (max-width: 899px) {
+  .tabbar > button { flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center; }
+  .tabbar > button > .nav-ico { margin: 0 auto; }
+  .tabbar > button .badge { left: 50%; margin-left: 6px; top: 4px; }
+  .tabbar .more-grid button { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+}
+@media (min-width: 900px) {
+  .tabbar > button > .nav-ico { width:22px; flex-basis:22px; }
+}
