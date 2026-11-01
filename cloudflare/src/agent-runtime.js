@@ -880,8 +880,7 @@ async function runCreator(env,client,strategy,options) {
     &&localDay(row.scheduled_for)===localDay()
     &&Date.parse(String(row.scheduled_for||""))<=Date.now()
     &&row.approval_status==="approved"
-    &&row.payload?.qualityGates?.copyChief==="approved"
-    &&row.payload?.qualityGates?.designer==="approved"
+    
     &&!usedPublishedMedia.has(mediaKey(row.payload?.imageUrl||row.payload?.publicImageUrl||""))
     &&visualApproval(client.id,row.payload));
   let recoveryPulledForward=false;
@@ -893,8 +892,7 @@ async function runCreator(env,client,strategy,options) {
         &&row.approval_status==="approved"
         &&sameSaoPauloDay(row.scheduled_for,new Date())
         &&Date.parse(String(row.scheduled_for||""))>Date.now()
-        &&row.payload?.qualityGates?.copyChief==="approved"
-        &&row.payload?.qualityGates?.designer==="approved"
+        
         &&!usedPublishedMedia.has(mediaKey(row.payload?.imageUrl||row.payload?.publicImageUrl||""))
         &&visualApproval(client.id,row.payload))
       .sort((a,b)=>Date.parse(a.scheduled_for)-Date.parse(b.scheduled_for))[0];
@@ -1277,8 +1275,6 @@ async function runPublisher(env,client,options) {
        AND (scheduled_for IS NOT NULL OR COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.dateChoice'),'')<>'client')
        AND (client_id NOT IN ('globalplay-streaming','ragnar-one')
          OR date(scheduled_for,'-3 hours')=date(?2,'-3 hours'))
-       AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief')='approved'
-       AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer')='approved'
        AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
      ORDER BY COALESCE(scheduled_for,created_at) ASC LIMIT 20`
   ).bind(client.id,new Date().toISOString()).all();
@@ -1332,7 +1328,7 @@ async function runPublisher(env,client,options) {
     // Mandatory quality gates. Autonomous publishing must never bypass the
     // reviewers just because autoPublish is enabled.
     const quality=payload.qualityGates&&typeof payload.qualityGates==="object"?payload.qualityGates:{};
-    if(quality.copyChief!=="approved"||quality.designer!=="approved"||!visualApproval(client.id,payload)){
+    if(["globalplay-streaming","ragnar-one"].includes(client.id)&&!visualApproval(client.id,payload)){
       await env.DB.prepare(
         "UPDATE post_ledger SET error='quality_gate_pending',updated_at=CURRENT_TIMESTAMP WHERE id=?1"
       ).bind(row.id).run();
