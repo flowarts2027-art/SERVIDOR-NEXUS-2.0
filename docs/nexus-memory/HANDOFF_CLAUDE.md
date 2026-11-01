@@ -1,5 +1,14 @@
 # Passagem de trabalho — Claude Code → ChatGPT
 
+## 2026-11-01 — Quatree Dog: campanha de carrosséis por linha (7 dias) passada ao ChatGPT
+
+- Pedido do Rodrigo: 3 carrosséis por dia, 2 imagens cada, 7 dias, um produto real por carrossel, uma linha de ração por dia, **igual à imagem de referência** que ele mandou.
+- Regras e plano em `docs/nexus-memory/clientes/quatree/CARROSSEL_LINHAS_7D.md`.
+- Claude fez 1 carrossel de teste (Supreme), mas não ficou igual ao modelo. Gerador de imagem do Claude sem créditos. **Produção fica com o ChatGPT.**
+- A imagem de referência e o PDF do catálogo **não estão no repositório**: o Rodrigo anexa no chat do ChatGPT.
+- Nada enviado ao painel. Próximo passo: ChatGPT faz o Dia 1 (3 carrosséis Supreme), mostra ao Rodrigo e envia ao painel `quatree-dog` esperando aprovação.
+
+
 ## 2026-10-29 22h25 — Texto nas artes: busca corrigida (PR aberto)
 
 - Conferido em produção depois da v3: nenhum post novo entrava na fila. Causa: no SQL, `NOT (artChecked = 1 AND ...)` com artChecked NULL dá NULL e a linha some. Só o post com artChecked da v1 entrava.
