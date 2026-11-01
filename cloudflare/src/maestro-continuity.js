@@ -29,6 +29,26 @@ export function claimMaestroBatch(campaign, {now = Date.now(),size=6,leaseMs=180
   cloned.version+=1;
   return {campaign:cloned,claimed,reason:claimed.length?"claimed":"nothing_pending"};
 }
+export function retryMaestroRejected(campaign, id, maxAttempts = 3) {
+  const cloned = structuredClone(campaign);
+  const task = cloned.tasks.find(t => t.id === id);
+  if (!task || task.status !== MAESTRO_STATES.REJECTED) throw new Error("task_not_rejected");
+  task.status = task.attempts >= maxAttempts ? MAESTRO_STATES.BLOCKED : MAESTRO_STATES.RETRY;
+  task.sha256 = null;
+  task.reviewed = false;
+  cloned.version++;
+  return cloned;
+}
+export function recoverExpiredMaestroTasks(campaign, now = Date.now(), maxAttempts = 3) {
+  const cloned = structuredClone(campaign);
+  for (const task of cloned.tasks) {
+    if (task.status !== MAESTRO_STATES.RUNNING || !Number.isFinite(Number(task.leaseUntil)) || Number(task.leaseUntil)>now) continue;
+    task.status = task.attempts >= maxAttempts ? MAESTRO_STATES.BLOCKED : MAESTRO_STATES.RETRY;
+    task.leaseUntil = null;
+  }
+  cloned.version++;
+  return cloned;
+}
 export function completeMaestroImage(campaign,{id,sha256,width,height,qaApproved=false,referenceVerified=false}) {
   const cloned=structuredClone(campaign),task=cloned.tasks.find(t=>t.id===id);
   if(!task || task.status!==MAESTRO_STATES.RUNNING) throw new Error("task_not_claimed");
