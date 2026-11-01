@@ -87,7 +87,7 @@ function leadView(row, client = null) {
 export async function archiveStaleFlowLeads(env, clientId, now = new Date()) {
   if(String(clientId)!==SHOWCASE_CLIENT) return {ok:true,hidden:0};
   await ensureLeadSchema(env);
-  const cutoff=new Date(now.getTime()-2*86400000).toISOString();
+  const cutoff=new Date(now.getTime()-1*86400000).toISOString(); // 01/11: 24 horas
   const result=await env.DB.prepare(
     `UPDATE leads SET stage='stale_hidden',updated_at=CURRENT_TIMESTAMP
      WHERE client_id=?1 AND stage='new'

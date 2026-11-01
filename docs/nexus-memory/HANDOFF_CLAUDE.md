@@ -822,3 +822,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - **Testes:** 7 novos. Suíte 743/744; a falha (`captador-daily`, "busca diária separa empresas em 'hoje'") também falha na `main` sem esta mudança.
 - **Depende de:** conexão "facebook-radar" da Flow Arts ativa no Master (a mesma do Radar de virais). Sem ela, o Vigia mostra o aviso e não inventa resultado. Perfil pessoal/privado não aparece na Business Discovery.
 - **Próximo passo:** Rodrigo aprova o PR; depois cadastra no Radar os 3 perfis que ele segue e toca "Olhar agora". Fonte da Receita Federal (empresas novas) ficou para depois.
+
+## 2026-11-01 (07h35) — Ajustes pedidos depois do merge do PR #496 (branch `fix/radar-aviso-menu-20261101`)
+- **Menu de baixo da Flow Arts com sobra à direita:** causa real era `public/flow-crm.css` forçando 6 colunas no celular (`.flow-crm .tabbar`), com só 5 botões visíveis. Agora 5 colunas. Conferido em foto 360 px com a classe `flow-crm`.
+- **Aviso de campanha no topo do Radar** ("Radar preparado para a próxima campanha…"): removido a pedido do Rodrigo. A caixa só aparece se a fonte automática estiver ligada ou se der erro.
+- Botões "Atualizar" e "Olhar agora" não quebram mais a palavra no celular.
+- **CRM: regra de limpeza passou de 2 dias para 24 horas** (pedido do Rodrigo): `STALE_CRM_DAYS` (CRM da Flow Arts), `archiveDormantHunterLeads` (contatos do Caçador sem resposta), `STALE_LEAD_DAYS` (Captador de todos os clientes) e `archiveStaleFlowLeads` (interações). Continua arquivando (o Nexus não traz a mesma empresa de novo); quem já recebeu mensagem, conversa ou cadastro manual fica. O Captador agora compara a data de verdade (antes comparava texto, e datas com "T" escapavam no mesmo dia).
+- Teste `flow-lead-stale` usava data fixa e quebraria com o relógio; agora usa a hora atual.
+- **Não conferido:** quantos contatos existem hoje no banco de produção (sem acesso ao D1 daqui). A limpeza roda no cron junto do Caçador diário; após o deploy, o próximo ciclo deve arquivar os antigos.
+- **Próximo passo:** Rodrigo aprova o PR; depois abrir o CRM e confirmar que sumiram os contatos com mais de 24 horas sem mensagem.
