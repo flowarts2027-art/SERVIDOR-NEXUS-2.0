@@ -1,3 +1,10 @@
+## 2026-11-01 — Campanhas diárias conferidas; dois slots complementados localmente
+- Flow Arts, Giltec e Maskara já têm os conjuntos principais do dia na branch `agendamentos`; 22 imagens existentes, 22 hashes Git distintos. Maskara mantém CTA de comentar QUERO.
+- Criada localmente uma nova arte 4:5 + legenda para Flow Arts 12h, preenchendo o slot ausente.
+- Quatree Dog (ID correto; não “4Dog”) tem calendário de domingo para 1 feed 09h. Rascunho 4:5 + legenda criado, mas é ilustrativo; a campanha exige foto real do representante na Pet Village. Não enviar/publicar até substituir pela foto autorizada.
+- Giltec é cliente adicional encontrado na árvore ativa. Luciana Carvalho não foi localizada com cadastro/briefing verificável.
+- Nenhum upload ao painel foi confirmado: não há run do workflow para o commit do dia; binários novos permanecem no pacote local. Nenhuma aprovação/publicação.
+
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
 ## 2026-10-26 — Artes diárias em revisão
