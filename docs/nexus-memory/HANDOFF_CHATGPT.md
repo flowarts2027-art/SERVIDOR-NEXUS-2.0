@@ -1,3 +1,14 @@
+## 2026-11-01 07h BRT — artes diárias revisadas e complementadas
+
+- Pedido: preparar as artes de todos os clientes cadastrados, conferir Quatree Dog (não existe ID 4Dog), incluir Flow Arts e Maskara, e verificar Luciana sem inventar briefing.
+- Cadastro/árvore consultada na branch `agendamentos`: Flow Arts usa a raiz `agendamentos/AAAA-MM-DD/`; clientes adicionais encontrados: `giltec`, `maskara-assessoria` e `quatree-dog`. Luciana Carvalho não aparece na árvore de clientes nem em briefing verificável.
+- Conteúdo já existente em 01/11: Flow Arts — carrossel 09h (5 cartões), feed 19h e Stories 09h/12h/19h; Giltec — carrossel 09h (2 cartões), feeds 12h/19h e Stories 09h/12h/19h; Maskara — feeds 09h/12h/19h e Stories 09h/12h/19h. CTA QUERO confirmado nas três legendas de feed da Maskara. Os 22 arquivos de imagem existentes nesses três conjuntos têm 22 Git blob SHAs distintos.
+- Produção local desta execução: Flow Arts — feed 12h novo, 1080x1350, foto inédita, checklist B2B e legenda; Quatree Dog — rascunho de feed 09h, 1080x1350, legenda preparada e cena marcada explicitamente como ilustrativa. Os dois arquivos locais têm dimensões corretas e hashes diferentes.
+- Bloqueio Quatree: o calendário oficial de 01/11 pede foto real do representante na Pet Village. Nenhuma foto autorizada foi localizada/fornecida; o rascunho ilustrativo não deve ser enviado como prova real nem publicado antes da substituição pela foto verdadeira.
+- Evidência de envio: commit de campanha `2c74f996b83e98cce9cf9a70a76d63e9d19adbc7` existe na branch, mas não há execução do workflow `NEXUS Agendar conteúdo pronto` associada ao commit. A última execução listada é a de 30/10 (41038242715), com falha. Os novos binários desta execução ficaram apenas no pacote local entregue na conversa; não foram gravados na branch nem enviados ao painel. Nenhum post aprovado ou publicado.
+- Pacote local: `artes_diarias_2026-11-01_parcial.zip` (Flow Arts 12h, rascunho Quatree 09h, legendas, prévia, QA e relatório). Não colocar os binários em repositório público sem transferência explícita/adequada.
+- Próximo passo: receber a foto real autorizada do representante na Pet Village; depois transferir os binários para os diretórios por cliente e executar/confirmar a ingestão no painel, mantendo aprovação humana. Atualizar o briefing de Luciana somente quando o cadastro e a identidade visual forem fornecidos.
+
 ## 2026-10-29 — Quatree 30/10: produção concluída, imagens para upload manual
 
 - Atualização do pedido: usuário dispensou anexos e autorizou buscar exclusivamente embalagens no site oficial quatreepet.com.br. Download dos PNGs oficiais do CDN Wix concluído; nenhuma embalagem redesenhada. Fotos aplicadas por composição, cenários ilustrativos gerados separadamente, textos em Montserrat por código.
