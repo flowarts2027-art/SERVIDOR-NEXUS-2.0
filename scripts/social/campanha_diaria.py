@@ -109,9 +109,9 @@ def plano(cliente, data, conteudo):
         L = cfg["legendas"]
         leg = lambda modelo, t, e1, e2="": L[modelo].format(t1=t[0], t2=t[1], t3=t[2], e1=e1, e2=e2)
         pecas += [
-            {"chave": "0900", "tipo": "carousel", "cartoes": [c1, c2], "legenda": leg("carrossel", c1["titulo"], c1["nome"], c2["nome"])},
-            {"chave": "1200", "tipo": "post", "cartoes": [p12], "legenda": leg("post", p12["titulo"], p12["nome"])},
-            {"chave": "1900", "tipo": "post", "cartoes": [p19], "legenda": leg("post", p19["titulo"], p19["nome"])},
+            {"chave": "0900", "tipo": "post", "cartoes": [c1], "legenda": leg("post", c1["titulo"], c1["nome"])},
+            {"chave": "1200", "tipo": "post", "cartoes": [c2], "legenda": leg("post", c2["titulo"], c2["nome"])},
+            {"chave": "1900", "tipo": "post", "cartoes": [p12], "legenda": leg("post", p12["titulo"], p12["nome"])},
         ]
         st = cfg["stories"]
         for i, hora in enumerate(["0900", "1200", "1900"]):
@@ -164,7 +164,12 @@ def pedir_foto(prompt, aspecto, semente):
             "content-type": "application/json", "cookie": "nexus_master=" + token, "user-agent": "FlowArtsNexus-campanha/1.0"})
         try:
             with urllib.request.urlopen(req, timeout=180) as r:
-                return Image.open(io.BytesIO(r.read())).convert("RGB")
+                imagem = Image.open(io.BytesIO(r.read())).convert("RGB")
+                alvo = 4 / 5 if aspecto == "4:5" else 9 / 16
+                razao = imagem.width / imagem.height
+                if abs(razao - alvo) / alvo > 0.035:
+                    raise ValueError(f"ATLAS: proporcao invalida {imagem.width}x{imagem.height}; esperado {aspecto}. Possivel mosaico.")
+                return imagem
         except Exception as e:  # a IA às vezes recusa uma foto ("flagged"): tenta de novo
             erro = str(getattr(e, "read", lambda: b"")() or e)[:200]
             time.sleep(3)
@@ -330,9 +335,17 @@ def gerar(cliente, data, saida_raiz):
     conteudo = json.load(open(CONTEUDO, encoding="utf-8"))
     cfg = conteudo[cliente]
     tema = TEMAS[cfg["tema"]]
+    if cfg["tema"] == "giltec" and not os.path.isfile(tema["logo"]):
+        raise RuntimeError("ATLAS: logo oficial GILTEC ausente, producao bloqueada")
     base = os.path.join(saida_raiz, cfg["pasta"], data) if cfg["pasta"] else os.path.join(saida_raiz, data)
     feitos, erros = [], []
-    for peca in plano(cliente, data, conteudo):
+    pecas = plano(cliente, data, conteudo)
+    if cfg["tema"] == "giltec":
+        if len(pecas) != 6 or sum(p["tipo"] == "post" for p in pecas) != 3 or sum(p["tipo"] == "story" for p in pecas) != 3:
+            raise RuntimeError("ATLAS: lote deve conter 3 posts individuais e 3 stories")
+        if any(len(p["cartoes"]) != 1 for p in pecas):
+            raise RuntimeError("ATLAS: mosaico/carrossel bloqueado no plano")
+    for peca in pecas:
         pasta = os.path.join(base, peca["chave"])
         # Já tem arte nesta pasta (de outro dia de execução ou do ChatGPT): não refaz.
         if os.path.isdir(pasta) and any(n.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".mp4")) for n in os.listdir(pasta)):
@@ -345,6 +358,11 @@ def gerar(cliente, data, saida_raiz):
                 foto = pedir_foto(c["foto"], "9:16" if story else "4:5", f"{cliente}{data}{peca['chave']}{i}")
                 num = i + 1 if peca["tipo"] == "carousel" else None
                 imagens.append(desenhar(foto, c, tema, story=story, numero=num, rodape=cfg.get("rodape_story", "")))
+            esperado = (1080, 1920) if story else (1080, 1350)
+            if len(imagens) != 1 and cfg["tema"] == "giltec":
+                raise RuntimeError("ATLAS: mais de uma imagem na mesma peca")
+            if any(im.size != esperado for im in imagens):
+                raise RuntimeError("ATLAS: dimensoes finais invalidas")
             os.makedirs(pasta, exist_ok=True)
             if story:
                 imagens[0].save(os.path.join(pasta, "story.jpg"), quality=90)
