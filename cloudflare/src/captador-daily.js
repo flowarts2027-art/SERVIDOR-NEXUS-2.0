@@ -146,7 +146,7 @@ export async function runClientDaily(env, client, now = new Date(), fetcher = fe
   // Cada rodada gasta buscas do limite do mês, como a busca feita na mão.
   const access = await readState(env, client.id, "access", { ...(captadorPreset(client)?.access || {}) });
   const limit = Number.isFinite(Number(access.monthlyLimit)) ? Number(access.monthlyLimit) : 100;
-  const used = await captadorUsage(env, client.id);
+  const used = await captadorUsage(env, client.id, now);
   if (used >= limit) return { ok: true, skipped: "monthly_limit", picked: run.picked };
   run.attempts += 1;
 
