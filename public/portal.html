@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=137">
+  <link rel="stylesheet" href="/client-lite.css?v=139">
   <link rel="stylesheet" href="/flow-crm.css?v=3">
   <script src="/client-lite.js?v=133" defer></script>
   <script src="/captador.js?v=12" defer></script>
@@ -63,28 +63,28 @@
       </a>
       <p class="nav-caption">Conteúdo que conecta</p>
       <p class="nav-section-label">NAVEGAÇÃO</p>
-      <button type="button" data-tab="inicio" class="active"><span aria-hidden="true">⌂</span>Início</button>
-      <button type="button" data-tab="posts"><span aria-hidden="true">▦</span>Posts<b class="badge" id="badge-posts" hidden></b></button>
-      <button type="button" data-tab="numeros" class="more-tab"><span aria-hidden="true">↗</span>Números</button>
-      <button type="button" data-tab="contatos" class="more-tab"><span aria-hidden="true">☺</span>Contatos</button>
-      <button type="button" data-tab="campanha"><span aria-hidden="true">◷</span>Campanha</button>
-      <button type="button" data-tab="biblioteca"><span aria-hidden="true">▤</span>Biblioteca</button>
-      <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true">☺</span>CRM</button>
-      <button type="button" data-tab="radar" class="flow-only" hidden><span aria-hidden="true">◎</span>Radar Comercial</button>
-      <button type="button" data-tab="buscar"><span aria-hidden="true">⌕</span>Buscar</button>
-      <button type="button" data-tab="negocio" class="more-tab"><span aria-hidden="true">▣</span>Meu negócio</button>
-      <button type="button" data-tab="conta" class="more-tab"><span aria-hidden="true">⚙</span>Conta</button>
-      <button type="button" id="more-btn" class="more-btn" aria-expanded="false" aria-controls="more-sheet"><span aria-hidden="true">☰</span>Mais</button>
+      <button type="button" data-tab="inicio" class="active"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg></span>Início</button>
+      <button type="button" data-tab="posts"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Posts<b class="badge" id="badge-posts" hidden></b></button>
+      <button type="button" data-tab="numeros" class="more-tab"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>Números</button>
+      <button type="button" data-tab="contatos" class="more-tab"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M16 4.1a4 4 0 0 1 0 7.8"/><path d="M22 21c0-3.2-2-5.9-5-6.7"/></svg></span>Contatos</button>
+      <button type="button" data-tab="campanha"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4.5" width="18" height="17" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span>Campanha</button>
+      <button type="button" data-tab="biblioteca"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg></span>Biblioteca</button>
+      <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5 18c.6-2 2-3 4-3s3.4 1 4 3M15 9h3M15 13h3"/></svg></span>CRM</button>
+      <button type="button" data-tab="radar" class="flow-only" hidden><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/><path d="M12 12 18.5 5.5"/></svg></span>Radar Comercial</button>
+      <button type="button" data-tab="buscar"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/></svg></span>Buscar</button>
+      <button type="button" data-tab="negocio" class="more-tab"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 9.5 4.5 4h15L21 9.5"/><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M10 20v-5h4v5"/></svg></span>Meu negócio</button>
+      <button type="button" data-tab="conta" class="more-tab"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Conta</button>
+      <button type="button" id="more-btn" class="more-btn" aria-expanded="false" aria-controls="more-sheet"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>Mais</button>
       <div id="more-sheet" class="more-sheet" hidden>
         <p class="more-title">Mais opções</p>
         <div class="more-grid">
-          <button type="button" data-tab="numeros"><span aria-hidden="true">↗</span>Números</button>
-          <button type="button" data-tab="contatos"><span aria-hidden="true">☺</span>Contatos</button>
-          <button type="button" data-tab="biblioteca"><span aria-hidden="true">▤</span>Biblioteca</button>
-          <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true">◈</span>CRM</button>
-          <button type="button" data-tab="radar" class="flow-only" hidden><span aria-hidden="true">◎</span>Radar</button>
-          <button type="button" data-tab="negocio"><span aria-hidden="true">▣</span>Meu negócio</button>
-          <button type="button" data-tab="conta"><span aria-hidden="true">⚙</span>Conta</button>
+          <button type="button" data-tab="numeros"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>Números</button>
+          <button type="button" data-tab="contatos"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M16 4.1a4 4 0 0 1 0 7.8"/><path d="M22 21c0-3.2-2-5.9-5-6.7"/></svg></span>Contatos</button>
+          <button type="button" data-tab="biblioteca"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg></span>Biblioteca</button>
+          <button type="button" data-tab="crm" class="flow-only" hidden><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5 18c.6-2 2-3 4-3s3.4 1 4 3M15 9h3M15 13h3"/></svg></span>CRM</button>
+          <button type="button" data-tab="radar" class="flow-only" hidden><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/><path d="M12 12 18.5 5.5"/></svg></span>Radar</button>
+          <button type="button" data-tab="negocio"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 9.5 4.5 4h15L21 9.5"/><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M10 20v-5h4v5"/></svg></span>Meu negócio</button>
+          <button type="button" data-tab="conta"><span aria-hidden="true" class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Conta</button>
         </div>
       </div>
       <div class="nav-spotlight" aria-hidden="true">
@@ -252,6 +252,37 @@
           </div>
           <p class="radar-count" id="flow-radar-count" role="status">Carregando oportunidades…</p>
           <div id="flow-radar-leads" class="radar-grid" role="region" aria-label="Leads do Radar"></div>
+        </section>
+        <section class="radar-results radar-watch" aria-label="Vigia de concorrentes">
+          <div class="radar-results-head">
+            <h2>Vigia de concorrentes</h2>
+            <button type="button" class="radar-refresh" id="flow-radar-watch-run">↻ Olhar agora</button>
+          </div>
+          <p class="radar-count" id="flow-radar-watch-status" role="status">Carregando…</p>
+          <form id="flow-radar-competitor-add" class="radar-inline-form">
+            <label for="flow-radar-competitor-input">@ ou link do perfil para vigiar</label>
+            <div class="radar-inline-row">
+              <input id="flow-radar-competitor-input" name="instagram" placeholder="@perfil" autocomplete="off" autocapitalize="none" required>
+              <button type="submit" class="radar-approve">Vigiar</button>
+            </div>
+          </form>
+          <p class="radar-count" id="flow-radar-competitor-msg" role="status"></p>
+          <div id="flow-radar-competitors" class="radar-chips"></div>
+          <h3 class="radar-subtitle">Posts que bombaram</h3>
+          <div id="flow-radar-hot-posts" class="radar-grid"></div>
+          <details class="radar-paste">
+            <summary>Viu alguém comentando em outro post?</summary>
+            <form id="flow-radar-paste-form" class="radar-inline-form">
+              <label for="flow-radar-paste-post">Link do post</label>
+              <input id="flow-radar-paste-post" name="post_url" placeholder="https://www.instagram.com/p/…" autocomplete="off" required>
+              <label for="flow-radar-paste-user">@ de quem comentou</label>
+              <input id="flow-radar-paste-user" name="instagram" placeholder="@pessoa" autocomplete="off" autocapitalize="none" required>
+              <label for="flow-radar-paste-text">O que a pessoa escreveu (se quiser)</label>
+              <input id="flow-radar-paste-text" name="comment" placeholder="ex.: quero um site" autocomplete="off">
+              <button type="submit" class="radar-approve">Salvar no Radar</button>
+            </form>
+            <p class="radar-count" id="flow-radar-paste-msg" role="status"></p>
+          </details>
         </section>
         <details class="radar-results radar-metrics-fold" aria-label="Métricas futuras de tráfego e atendimento"><summary><strong>Estatísticas de tráfego e atendimento</strong><span class="radar-category">Automático quando conectado</span></summary><div class="radar-fold-content">
           

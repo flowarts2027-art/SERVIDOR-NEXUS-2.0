@@ -809,3 +809,16 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 705 de 706 passam; a única falha (`fila do Master: ... cron de 1 minuto`) já falhava na `main` antes desta mudança.
 - Limite do Instagram: a API oficial NÃO coloca figurinha de link (WhatsApp) no story. Story com link clicável só postando pelo app.
 - Próximo passo: Rodrigo aprova o merge; depois do deploy, programar o vídeo 3x por dia em horários livres (09h, 12h e 19h já têm stories).
+
+## 2026-11-01 (07h) — Radar Comercial: auditoria + Vigia de concorrentes + ícones do menu (branch `feat/radar-vigia-concorrentes-20261101`)
+- **Auditoria (main `e48f2ba`):** o painel do Radar está pronto (leads em D1, nota, aprovação manual, WhatsApp só após aprovar, POST de métricas de campanha bloqueado). Testes do Radar 18/18. **Mas a busca automática não traz ninguém:** ela depende de `RADAR_FEED_URL`/`RADAR_FEED_HOST`, e nenhuma fonte (feed) foi criada. O segredo fica no Cloudflare e não foi conferido daqui.
+- **Pedido do Rodrigo:** achar clientes no Instagram pelos comentários dos posts de concorrentes. A Meta NÃO entrega quem comentou nem a lista de seguidores de outra conta; scraping arriscaria a conta @flowarts2026. Decisão dele: fazer as 3 formas permitidas abaixo.
+- **Feito (código, não publicado):**
+  1. *Colar o @* — `POST …/commercial-radar/commenter-lead`: ele lê o comentário público, cola o @ (e o link do post); o lead entra como `novo` com o post como prova; consulta opcional pela Business Discovery para pegar o nome.
+  2. *Vigia* — `radar-competitor-watch.js`: todo dia 09h07 BRT (ou botão "Olhar agora") olha pela Business Discovery os posts dos perfis cadastrados e marca os que tiveram muitos comentários (≥15 e ≥2× a mediana, últimos 45 dias). Guarda só quantidade, nunca quem comentou. Não cria lead sozinho.
+  3. *Isca* — `comment-autoreply.js`: comentário com palavra de interesse num post da **própria** Flow Arts também vira lead no Radar (só cliente `primeiro-teste`). Nada de DM nova: a resposta do brinde continua como antes.
+  - Tela: bloco "Vigia de concorrentes" no Radar (campo @/link, lista com ×, cards "Posts que bombaram" com campo para colar o @, e "Viu alguém comentando em outro post?").
+  - **Menu de baixo de todos os painéis:** ícones de texto (⌂ ▦ ◷ ⌕ ☰) trocados por SVG do mesmo tamanho; conferido em foto 390 px (barra e janela "Mais").
+- **Testes:** 7 novos. Suíte 743/744; a falha (`captador-daily`, "busca diária separa empresas em 'hoje'") também falha na `main` sem esta mudança.
+- **Depende de:** conexão "facebook-radar" da Flow Arts ativa no Master (a mesma do Radar de virais). Sem ela, o Vigia mostra o aviso e não inventa resultado. Perfil pessoal/privado não aparece na Business Discovery.
+- **Próximo passo:** Rodrigo aprova o PR; depois cadastra no Radar os 3 perfis que ele segue e toca "Olhar agora". Fonte da Receita Federal (empresas novas) ficou para depois.

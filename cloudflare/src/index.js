@@ -35,6 +35,7 @@ import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
 import { handleCrmRoute } from "./crm.js";
 import { handleCommercialRadar } from "./commercial-radar.js";
+import { runCompetitorWatch } from "./radar-competitor-watch.js";
 import { runRadarDiscovery } from "./radar-discovery-feed.js";
 import { canonicalSiteRedirect } from "./site-host.js";
 import { handleCrmSendRoute } from "./crm-send.js";
@@ -557,6 +558,10 @@ export default {
       // Flow Arts only: authorized feed, hourly and disabled unless configured.
       if (at.getUTCMinutes() === 0 && env.RADAR_FEED_URL && env.RADAR_FEED_HOST) {
         ctx.waitUntil(runRadarDiscovery(env).then(out => console.log("flow_radar_discovery", JSON.stringify(out))).catch(error => console.warn("flow_radar_discovery_failed", String(error?.message || error).slice(0, 120))));
+      }
+      // Vigia de concorrentes do Radar Flow Arts (01/11): uma vez por dia, 09:07 de Brasília.
+      if (at.getUTCHours() === 12 && at.getUTCMinutes() === 7) {
+        ctx.waitUntil(runCompetitorWatch(env, at).then(out => console.log("flow_radar_competitor_watch", JSON.stringify({ ok: out.ok, error: out.error || "", posts: out.posts?.length || 0, skipped: out.skipped || "" }))).catch(error => console.warn("flow_radar_competitor_watch_failed", String(error?.message || error).slice(0, 120))));
       }
       // Campanhas pedidas pelo Master (fila): roda aqui porque o cron aguenta até 15 minutos.
       ctx.waitUntil(runQueuedCampaigns(env).catch(error =>

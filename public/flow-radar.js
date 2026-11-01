@@ -110,19 +110,93 @@
     const data = await api("/competitors");
     host.replaceChildren();
     const rows = Array.isArray(data.competitors) ? data.competitors : [];
-    if (!rows.length) { host.append(el("p", "Nenhuma referência cadastrada.")); return; }
+    if (!rows.length) { host.append(el("p", "Nenhum perfil vigiado ainda. Cole um @ acima.", "radar-count")); return; }
     for (const x of rows) {
-      const line = el("p");
-      appendLink(line, "https://www.instagram.com/" + encodeURIComponent(x.instagram) + "/", "@" + x.instagram);
-      line.append(el("span", names[x.category] || x.category));
-      host.append(line);
+      const chip = el("span", null, "radar-chip");
+      const a = el("a", "@" + x.instagram);
+      a.href = "https://www.instagram.com/" + encodeURIComponent(x.instagram) + "/";
+      a.target = "_blank"; a.rel = "noopener noreferrer";
+      const del = el("button", "×");
+      del.type = "button";
+      del.setAttribute("aria-label", "Parar de vigiar @" + x.instagram);
+      del.onclick = async () => {
+        if (!confirm("Parar de vigiar @" + x.instagram + "?")) return;
+        del.disabled = true;
+        try { await api("/competitors/" + encodeURIComponent(x.instagram), { method:"DELETE" }); await refreshCompetitors(); }
+        catch (e) { alert(e.message); del.disabled = false; }
+      };
+      chip.append(a, del);
+      host.append(chip);
     }
+  }
+  const watchErrors = {
+    facebook_radar_not_connected: "Falta conectar a conta da Flow Arts ao Facebook (Radar de virais no Master).",
+    facebook_radar_token_expired: "A conexão com o Facebook venceu. Reconecte no Master.",
+    facebook_radar_token_unavailable: "A conexão com o Facebook precisa ser refeita no Master.",
+    meta_business_discovery_unavailable: "A Meta recusou a consulta desse perfil.",
+    profile_not_accessible: "Perfil pessoal ou privado: a Meta só mostra contas profissionais.",
+    meta_request_failed: "A Meta não respondeu agora. Tente mais tarde."
+  };
+  function renderHotPost(post) {
+    const card = el("article", null, "radar-lead-card");
+    const head = el("div", null, "radar-lead-heading");
+    head.append(el("h3", "@" + post.competitor));
+    head.append(el("span", "💬 " + Number(post.comments || 0) + " comentários", "radar-hot-count"));
+    card.append(head);
+    if (post.caption) card.append(el("p", post.caption, "radar-reason"));
+    card.append(el("p", "Média do perfil: " + Number(post.median || 0) + " comentários por post." + (post.at ? " Postado em " + String(post.at).slice(0,10).split("-").reverse().join("/") + "." : ""), "radar-evidence"));
+    const actions = el("div", null, "radar-lead-actions");
+    appendLink(actions, post.url, "Abrir post e ler os comentários");
+    card.append(actions);
+    const form = el("form", null, "radar-inline-form");
+    const label = el("label", "Achou alguém interessado? Cole o @");
+    const row = el("div", null, "radar-inline-row");
+    const input = el("input"); input.name = "instagram"; input.placeholder = "@pessoa"; input.required = true; input.autocomplete = "off"; input.setAttribute("autocapitalize","none");
+    const btn = el("button", "Salvar", "radar-approve"); btn.type = "submit";
+    row.append(input, btn);
+    const note = el("p", "", "radar-count");
+    form.append(label, row, note);
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      btn.disabled = true;
+      try {
+        const d = await api("/commenter-lead", jsonBody({ instagram: input.value, post_url: post.url, competitor: post.competitor }));
+        note.textContent = d.saved ? "Salvo no Radar. Revise e aprove antes de falar com a pessoa." : "Essa pessoa já estava no Radar com este post.";
+        input.value = "";
+        await refreshLeads();
+      } catch (e) { note.textContent = e.message === "invalid_instagram_handle" ? "Esse @ não parece válido." : e.message === "same_as_competitor" ? "Esse é o próprio concorrente." : "Não foi possível salvar: " + e.message; }
+      finally { btn.disabled = false; }
+    });
+    card.append(form);
+    return card;
+  }
+  async function refreshWatch() {
+    const status = $("flow-radar-watch-status"), host = $("flow-radar-hot-posts");
+    if (!status || !host) return;
+    const d = await api("/competitor-posts");
+    const latest = d.latest;
+    host.replaceChildren();
+    if (!latest) { status.textContent = "Ainda não olhamos nenhum perfil. O Nexus olha sozinho todo dia às 9h, ou toque em Olhar agora."; return; }
+    const when = String(latest.at || "").slice(0,16).replace("T"," ");
+    if (latest.error) { status.textContent = (watchErrors[latest.error] || "Não foi possível olhar os perfis: " + latest.error) + (when ? " (última tentativa: " + when + " UTC)" : ""); return; }
+    const profiles = Array.isArray(latest.profiles) ? latest.profiles : [];
+    const failed = profiles.filter(p => !p.ok);
+    status.textContent = "Última olhada: " + when + " UTC · Perfis vistos: " + profiles.filter(p => p.ok).length +
+      (failed.length ? " · Sem acesso: " + failed.map(p => "@" + p.instagram + " (" + (watchErrors[p.error] || p.error) + ")").join("; ") : "") +
+      ". A Meta mostra quantos comentaram, não quem.";
+    const posts = Array.isArray(latest.posts) ? latest.posts : [];
+    if (!posts.length) { host.append(el("p", latest.note === "no_competitors" ? "Cadastre um perfil para começar." : "Nenhum post com muitos comentários nos últimos 45 dias.", "radar-empty")); return; }
+    for (const post of posts.slice(0, 12)) host.append(renderHotPost(post));
   }
   async function load() {
     if (busy) return;
     busy = true;
     try {
       await Promise.all([refreshStatus(), refreshLeads(), refreshCampaign()]);
+      // O Vigia não pode derrubar o resto do painel se falhar.
+      await Promise.all([refreshCompetitors(), refreshWatch()]).catch(e => {
+        const t = $("flow-radar-watch-status"); if (t) t.textContent = "Vigia indisponível agora: " + e.message;
+      });
       loaded = true;
     } catch (e) {
       const target = $("flow-radar-status");
@@ -314,13 +388,36 @@
       const form = event.currentTarget, msg = $("flow-radar-competitor-msg");
       try {
         await api("/competitors", jsonBody(Object.fromEntries(new FormData(form).entries())));
-        if(msg) msg.textContent = "Referência cadastrada. Não há coleta automática de comentários de terceiros.";
+        if(msg) msg.textContent = "Perfil adicionado. O Nexus olha os posts dele todo dia às 9h.";
         form.reset();
         await refreshCompetitors();
       } catch(e) { if(msg) msg.textContent = "Não foi possível cadastrar: " + e.message; }
     });
   }
+  function wireWatch() {
+    $("flow-radar-watch-run")?.addEventListener("click", async event => {
+      const btn = event.currentTarget, status = $("flow-radar-watch-status");
+      btn.disabled = true;
+      if (status) status.textContent = "Olhando os perfis pela Meta…";
+      try { await api("/competitor-watch", jsonBody({})); }
+      catch (e) { /* o erro também fica guardado e aparece abaixo */ }
+      finally { await refreshWatch().catch(() => {}); btn.disabled = false; }
+    });
+    $("flow-radar-paste-form")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.currentTarget, msg = $("flow-radar-paste-msg");
+      try {
+        const d = await api("/commenter-lead", jsonBody(Object.fromEntries(new FormData(form).entries())));
+        if (msg) msg.textContent = d.saved ? "Salvo no Radar. Revise e aprove antes de falar com a pessoa." : "Essa pessoa já estava no Radar com este post.";
+        form.reset();
+        await refreshLeads();
+      } catch (e) {
+        if (msg) msg.textContent = e.message === "invalid_post_url" ? "Cole o link de um post do Instagram (instagram.com/p/… ou /reel/…)." : e.message === "invalid_instagram_handle" ? "Esse @ não parece válido." : "Não foi possível salvar: " + e.message;
+      }
+    });
+  }
   wire();
+  wireWatch();
   document.addEventListener("nexus:view", e => { if (e.detail === "flow-radar") load(); });
   if (!$("tab-radar")?.hidden && !loaded) load();
 })();

@@ -41,3 +41,10 @@ Campanha paga **não é pré-requisito** para o Radar. Quando ocorrer, eventos p
 - Clara: testes, LGPD, experiência mobile e revisão antes de liberar.
 
 **Esta memória registra o trabalho e objetivo compartilhado; o estado real de implantação permanece sujeito à auditoria.**
+
+## Atualização Claude — 01/11/2026 (07h)
+- **Estado real auditado:** sem fonte em `RADAR_FEED_URL`, a descoberta automática de terceiros não traz leads. O painel não inventa números (correto).
+- **Regra confirmada com o proprietário:** não existe forma oficial de ler quem comenta nos posts de concorrentes nem a lista de seguidores de outra conta. Não fazer scraping.
+- **Três caminhos permitidos (PR do Claude):** (1) colar o @ de quem comentou, com o link do post como prova; (2) Vigia diário dos perfis cadastrados pela Business Discovery, mostrando os posts com mais comentários (só a quantidade); (3) isca: comentários de interesse nos posts da própria Flow Arts entram no Radar sozinhos.
+- **Para os DOTs:** Maya/Caio/Ravi usam os "posts que bombaram" como ideia de tema para a isca da Flow Arts (nunca copiar texto). Nilo não conta quantidade de comentários de concorrente como lead. Clara confere que todo lead entra como `novo` e só é contatado após aprovação.
+- **Pendente:** fonte de empresas novas (dados abertos de CNPJ) como feed autorizado.

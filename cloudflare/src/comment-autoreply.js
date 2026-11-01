@@ -14,6 +14,8 @@ import { giftStatus, giftButtonMessage, giftLink, checkFollows } from "./gift.js
 import { materialForComment } from "./gift-materials.js";
 import { clientAutoReplyConfig, buildDmMessage, matchesKeyword } from "./client-autoreply.js";
 import { dmTextsFromWebhook, processWebhookDmKeywords } from "./dm-keyword-reply.js";
+import { recordOwnCommentLead } from "./radar-competitor-watch.js";
+import { qualifyRadarLead } from "./commercial-radar.js";
 import { ASK_TEXT, READY_TEXT, DOWNLOAD_TITLE, askMessage, markGiftAsked, markGiftDone, readGiftDmState, followedFromWebhook, processWebhookFollowed } from "./gift-dm.js";
 
 const NAMESPACE = "comment-autoreply";
@@ -111,6 +113,13 @@ async function graph(request, token, path, options = {}) {
 // Responde UM comentário (DM privada + resposta pública), uma vez por comentário.
 // Usado pela leitura a cada 15 min e pelo webhook da Meta (aviso na hora).
 // matches/publicText (22/10): resposta automática de outros clientes, com as palavras e a frase escolhidas no painel.
+// Isca (01/11): comentário com palavra de interesse num post da Flow Arts também vira oportunidade no Radar.
+const NOT_INTEREST = new Set(["incomplete", "own_comment", "no_interest_word"]);
+async function radarFromComment(env, client, comment, result, ownUsername, permalink = "") {
+  if (!result || NOT_INTEREST.has(result.skipped)) return;
+  await recordOwnCommentLead(env, client, comment, { qualify: qualifyRadarLead, ownUsername, permalink }).catch(() => false);
+}
+
 export async function replyToComment({ request = fetch, token, igUserId, ownUsername = "", state, message, now = new Date(), matches = null, publicText = "Te chamei no direct! 📩" }, comment = {}) {
   const res = { checked: false, replied: false, errors: [], skipped: "" };
   const id = String(comment.id || "");
@@ -191,7 +200,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
   await ensureWebhookSubscription(request, token, state, now);
   let media = { data: [] };
   try {
-    media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp,comments_count&limit=" + MAX_MEDIA);
+    media = await graph(request, token, encodeURIComponent(igUserId) + "/media?fields=id,timestamp,comments_count,permalink&limit=" + MAX_MEDIA);
   } catch (error) {
     out.errors.push("media:" + error.message);
   }
@@ -213,6 +222,7 @@ export async function runCommentAutoReplyForClient(env, client, { request = fetc
     for (const comment of comments) {
       if (out.replied >= MAX_REPLIES_PER_RUN) break;
       const result = await replyToComment({ request, token, igUserId, ownUsername, state, message, now, ...extra }, comment);
+      await radarFromComment(env, client, comment, result, ownUsername, item.permalink);
       if (result.checked) out.checked += 1;
       if (result.replied) out.replied += 1;
       out.errors.push(...result.errors);
@@ -379,6 +389,7 @@ export async function processWebhookComments(env, items, { request = fetch, now 
       message: custom ? buildDmMessage(client, custom) : messageBuilder(env, client, own, { token: String(conn.accessToken || ""), request }),
       ...(custom ? { matches: text => matchesKeyword(text, custom.keywords), publicText: custom.publicReply } : {})
     }, comment);
+    await radarFromComment(env, client, comment, res, own);
     state.lastWebhook = { at: now.toISOString(), comment: comment.id, replied: res.replied, skipped: res.skipped, errors: res.errors.slice(0, 3) };
     await writeState(env, client.id, state).catch(() => null);
     results.push({ comment: comment.id, replied: res.replied, skipped: res.skipped });

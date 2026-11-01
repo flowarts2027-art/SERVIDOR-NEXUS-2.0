@@ -1,6 +1,7 @@
 // Radar Comercial Flow Arts: somente fontes autorizadas, sem scraping ou mensagens automáticas.
 import { inspectInstagramBusiness } from "./instagram-business-discovery.js";
 import { getState } from "./storage.js";
+import { goodHandle, runCompetitorWatch, competitorWatchResult, saveCommenterLead } from "./radar-competitor-watch.js";
 const clean=(x,n=500)=>String(x??"").replace(/[\u0000-\u001f<>]/g," ").trim().slice(0,n);
 const categories=["site","instagram","leads","prospeccao"];
 const stages=["novo","revisao","aprovado","contatado","negociacao","ganho","descartado","nao_contatar","nutricao","convite_seguir","seguidor_confirmado"];
@@ -91,10 +92,33 @@ export async function handleCommercialRadar(request,env,u){
   return json({ok:true,competitors:rows.results||[]});
  }
  if(path==="/competitors"&&request.method==="POST"){
-  const b=await request.json().catch(()=>({})),ig=handle(b.instagram),category=clean(b.category,25);
+  // 01/11: aceita @ ou link do perfil; sem categoria escolhida, vale "instagram" (automação).
+  const b=await request.json().catch(()=>({})),ig=goodHandle(b.instagram),category=clean(b.category,25)||"instagram";
   if(!ig||!categories.includes(category))return json({error:"invalid_competitor"},400);
   await env.DB.prepare("INSERT OR IGNORE INTO flow_radar_competitors(instagram,category,notes) VALUES(?,?,?)").bind(ig,category,clean(b.notes,300)).run();
   return json({ok:true,instagram:ig},201);
+ }
+ if(path.startsWith("/competitors/")&&request.method==="DELETE"){
+  const ig=goodHandle(decodeURIComponent(path.slice(13)));
+  if(!ig)return json({error:"invalid_competitor"},400);
+  await env.DB.prepare("DELETE FROM flow_radar_competitors WHERE instagram=?").bind(ig).run();
+  return json({ok:true});
+ }
+ // Vigia (forma 2): resultado guardado da última olhada nos posts dos concorrentes.
+ if(path==="/competitor-posts"&&request.method==="GET"){
+  const latest=await competitorWatchResult(env);
+  return json({ok:true,latest,note:"A Meta informa só a quantidade de comentários dos concorrentes, nunca quem comentou."});
+ }
+ if(path==="/competitor-watch"&&request.method==="POST"){
+  const out=await runCompetitorWatch(env,new Date(),fetch,{force:true});
+  return json(out,out.ok?200:409);
+ }
+ // Colar o @ (forma 1): o Rodrigo leu o comentário público e guarda a pessoa com o post como prova.
+ if(path==="/commenter-lead"&&request.method==="POST"){
+  const b=await request.json().catch(()=>({}));
+  const out=await saveCommenterLead(env,b,{qualify:qualifyRadarLead});
+  const {status,...rest}=out;
+  return json(rest,status);
  }
  if(path==="/leads"&&request.method==="GET"){
   const rows=await env.DB.prepare("SELECT * FROM flow_radar_leads ORDER BY score DESC,created_at DESC LIMIT 300").all();
