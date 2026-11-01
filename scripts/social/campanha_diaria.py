@@ -66,7 +66,7 @@ TEMAS = {
 REGRAS_FOTO = (
     "Realistic professional photograph, natural light, true colors, real place in Brazil. "
     "Absolutely no text, letters, numbers, signs with writing, logos, symbols, brand names, stickers or watermarks anywhere. "
-    "One single photo filling the whole frame, no borders, no collage. Wide horizontal-friendly composition: the main subject and any people stay in the middle band of the frame, with free space above their heads and nothing important at the very top or bottom. "
+    "Exactly ONE photographic scene with ONE equipment, full frame. No collage, grids, mosaics, separate panels or contact sheets. Wide horizontal-friendly composition: the main subject and any people stay in the middle band of the frame, with free space above their heads and nothing important at the very top or bottom. "
     "Faces are not needed (seen from behind, from the side or at a distance); anatomically correct hands. "
     "If a phone or laptop appears, its screen faces the person using it, never the viewer. No neon, no robots, no blue color cast."
 )
@@ -105,7 +105,7 @@ def plano(cliente, data, conteudo):
         foto = lambda e, i: f"{e['foto']}, at {cena(i)}, {ANGULOS[(d * 2 + i) % len(ANGULOS)]}. The equipment is complete in the frame. {cfg['seguranca']}."
         titulo = lambda e, i: e["titulos"][(d + i) % len(e["titulos"])]
         cartao = lambda e, i: {"foto": foto(e, i), "titulo": titulo(e, i), "vantagens": e["vantagens"], "nome": e["nome"]}
-        c1, c2, p12, p19 = cartao(eq[0], 0), cartao(eq[1], 1), cartao(eq[2], 2), cartao(eq[3], 3)
+        c1, c2, p12 = cartao(eq[0], 0), cartao(eq[1], 1), cartao(eq[2], 2)
         L = cfg["legendas"]
         leg = lambda modelo, t, e1, e2="": L[modelo].format(t1=t[0], t2=t[1], t3=t[2], e1=e1, e2=e2)
         pecas += [
@@ -116,9 +116,10 @@ def plano(cliente, data, conteudo):
         st = cfg["stories"]
         for i, hora in enumerate(["0900", "1200", "1900"]):
             s = st[(d * 3 + i) % len(st)]
+            equipamento = eq[i + 3]
             pecas.append({"chave": hora + "-story", "tipo": "story", "cartoes": [{
-                "foto": f"{s['foto']}, {ANGULOS[(d + i + 3) % len(ANGULOS)]}. {cfg['seguranca']}.",
-                "titulo": s["titulo"], "vantagens": s["vantagens"]}]})
+                "foto": f"{equipamento['foto']}, {s['foto']}, {ANGULOS[(d + i + 3) % len(ANGULOS)]}. {cfg['seguranca']}.",
+                "titulo": s["titulo"], "vantagens": s["vantagens"], "nome": equipamento["nome"]}]})
     else:
         dia = cfg["dias"][d % len(cfg["dias"])]
         ang = lambda i: ANGULOS[(d * 2 + i) % len(ANGULOS)]
@@ -341,6 +342,9 @@ def gerar(cliente, data, saida_raiz):
     feitos, erros = [], []
     pecas = plano(cliente, data, conteudo)
     if cfg["tema"] == "giltec":
+        ordem = cfg["ciclo"][dia_numero(data) % len(cfg["ciclo"])]
+        if len(ordem) != 6 or len(set(ordem)) != 6 or any(x not in cfg["equipamentos"] for x in ordem):
+            raise RuntimeError("ATLAS: devem existir seis equipamentos cadastrados e diferentes")
         if len(pecas) != 6 or sum(p["tipo"] == "post" for p in pecas) != 3 or sum(p["tipo"] == "story" for p in pecas) != 3:
             raise RuntimeError("ATLAS: lote deve conter 3 posts individuais e 3 stories")
         if any(len(p["cartoes"]) != 1 for p in pecas):
