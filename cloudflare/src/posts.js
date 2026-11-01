@@ -416,10 +416,12 @@ export async function publishPostNow(env, client, postId) {
     error.post = current;
     throw error;
   }
-  if (quality.copyChief !== "approved" || quality.designer !== "approved" || !visualApproval(client.id, payload)) {
+  // The client's explicit approval is the editorial decision. Do not reopen
+  // copy/design/emoji checks after approval. Keep technical media checks below.
+  if (!visualApproval(client.id, payload) && ["globalplay-streaming","ragnar-one"].includes(client.id)) {
     const error = new Error("quality_gate_pending");
     error.status = 409;
-    error.messageForUser = "O NEXUS bloqueou o envio porque Copy Chief e Designer ainda não aprovaram o conteúdo.";
+    error.messageForUser = "A revisão visual obrigatória desta conta ainda está pendente.";
     error.post = current;
     throw error;
   }
