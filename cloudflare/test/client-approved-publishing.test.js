@@ -11,10 +11,10 @@ test('client approval remains mandatory across publish paths',()=>{
 test('approved items do not require copy/designer sign-off again in publish query',()=>{
  const scheduler=source('scheduler.js');
  const portion=scheduler.slice(scheduler.indexOf('const ready = await env.DB.prepare('));
- assert.doesNotMatch(portion,/qualityGates\\.copyChief/);
- assert.doesNotMatch(portion,/qualityGates\\.designer/);
+ assert.doesNotMatch(portion,/qualityGates\.copyChief/);
+ assert.doesNotMatch(portion,/qualityGates\.designer/);
  const runtime=source('agent-runtime.js');
- assert.doesNotMatch(runtime,/quality\\.copyChief!==\"approved\"\\|\\|quality\\.designer/);
+ assert.doesNotMatch(runtime,/quality\.copyChief!==\"approved\"\|\|quality\.designer/);
 });
 test('revision request revokes approval and blocks publication',()=>{
  const posts=source('posts.js');
