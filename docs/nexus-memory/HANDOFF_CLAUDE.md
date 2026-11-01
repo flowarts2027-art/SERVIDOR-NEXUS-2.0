@@ -838,3 +838,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 743/744. A falha é em `captador-daily.test.mjs` e já falha na `main` sem esta mudança (não relacionada).
 - Estado: branch `claude/atendente-david`, PR aberto, esperando o OK do Rodrigo para o merge (deploy só depois do merge na `main`).
 - Pendente à parte: o número novo do WhatsApp (+55 21 9648x-xxxx) já está conectado na Meta, mas o servidor ainda usa o número antigo; trocar o Phone Number ID e o token nos segredos da Cloudflare (o Rodrigo digita o token).
+
+## 2026-11-01 (manhã) — WhatsApp do David e Radar de virais: estado real
+- Radar de virais: Página "Flow Arts Marketing" estava ligada ao Instagram da Global Play; foi religada ao @flowarts2026 e o Radar reconectado (callback do Nexus confirmou @flowarts2026). `instagram_basic` adicionada para teste no app NEXUS IA CENTRAL. Pendente: a busca por hashtag exige o recurso "Instagram Public Content Access" aprovado na análise do app (erro #10); Rodrigo decidiu deixar para depois.
+- Atendente renomeada Alice → David (PR #498, aprovado e no ar).
+- WhatsApp: a Meta desativou em 31/10/2026 o portfólio "Rodrigo Carvalho" e suas contas do WhatsApp (Termos de Uso Aceitável, "permanente"). Por isso nenhum número pode ser adicionado lá. Pedido de análise enviado em 01/11 às ~08:40 (resposta em 24–48 h por e-mail/Gerenciador).
+- O segredo WHATSAPP_PHONE_NUMBER_ID foi trocado pelo Rodrigo para o número que fica no portfólio Global Play; o token atual NÃO tem acesso a ele (erro 100/33 no /api/whatsapp/number-check). Ou seja, o David está sem número funcionando até a revisão.
+- Decisão do Rodrigo: esperar a revisão; não usar o portfólio Global Play para contornar (risco de ser visto como evasão do bloqueio).
+- Próximo passo: quando a Meta responder, se reativar, adicionar o número novo na conta do WhatsApp do portfólio Rodrigo Carvalho (o usuário do sistema nexus-whatsapp já tem acesso) e voltar o WHATSAPP_PHONE_NUMBER_ID para o novo número.
