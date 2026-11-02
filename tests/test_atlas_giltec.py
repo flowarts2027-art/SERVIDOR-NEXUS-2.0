@@ -4,6 +4,7 @@ import importlib.util
 import json
 import pathlib
 import unittest
+from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/social/campanha_diaria.py"
@@ -36,6 +37,16 @@ class AtlasGiltecTests(unittest.TestCase):
         original = Image.new("RGB", (1080, 1920))
         self.assertEqual(self.mod.cobrir(original, 1080, 1920).size, (1080, 1920))
         self.assertEqual(self.mod.cobrir(original, 1080, 1350).size, (1080, 1350))
+
+    def test_missing_credentials_must_not_produce_fake_photo(self):
+        with patch.dict("os.environ", {"NEXUS_BASE": "", "NEXUS_MASTER_TOKEN": "", "FOTO_FALSA": "0"}):
+            with self.assertRaisesRegex(RuntimeError, "foto real indisponível"):
+                self.mod.pedir_foto("construction equipment", "4:5", 17)
+
+    def test_fake_photo_only_with_explicit_test_flag(self):
+        with patch.dict("os.environ", {"NEXUS_BASE": "", "NEXUS_MASTER_TOKEN": "", "FOTO_FALSA": "1"}):
+            image = self.mod.pedir_foto("construction equipment", "4:5", 17)
+            self.assertEqual(image.size, (1024, 1280))
 
 
 if __name__ == "__main__":
