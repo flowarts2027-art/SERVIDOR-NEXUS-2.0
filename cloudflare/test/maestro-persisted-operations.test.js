@@ -19,7 +19,7 @@ test('Maestro preserves asset review and resumes from the next pending slide',as
  assert.equal(v.accepted,true);
  }
  const next=await claimPersistedMaestroBatch(env,{clientId:'quatree',campaignId:'quatree7',size:2,executorAvailable:true,now:2000});
- assert.equal(next.claimed[0],'quatree7/2/1/1');
+ assert.equal(next.claimed[0],'quatree7/1/2/1'); // one-day campaign: next slot, not nonexistent day 2
  assert.equal(next.progress.completed,2);
 });
 test('Maestro duplicate or wrong size blocked and timed-out jobs recovered',async()=>{
