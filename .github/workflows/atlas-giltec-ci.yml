@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'scripts/social/campanha_diaria.py'
+      - 'scripts/social/carimbador.py'
       - 'scripts/social/campanha/conteudo.json'
       - 'tests/test_atlas_giltec.py'
       - '.github/workflows/atlas-giltec-ci.yml'
