@@ -80,10 +80,12 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
+          failed=0
           for c in $CLIENTS; do
-            python3 scripts/social/campanha_diaria.py "$c" "${{ steps.dia.outputs.day }}" agendamentos || echo "::error::$c: falhou ao fazer as artes"
+            python3 scripts/social/campanha_diaria.py "$c" "${{ steps.dia.outputs.day }}" agendamentos || { echo "::error::$c: lote incompleto, envio bloqueado"; failed=1; }
           done
           find agendamentos -path "*${{ steps.dia.outputs.day }}*" -type f | sort
+          if [ "$failed" -ne 0 ]; then exit 1; fi
 
       - name: Conferir as artes
         shell: bash
