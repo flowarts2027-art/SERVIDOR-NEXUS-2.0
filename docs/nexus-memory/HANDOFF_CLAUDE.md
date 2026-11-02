@@ -864,3 +864,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 6 novos (`client-approval-notify.test.mjs`). Suíte completa 750/750.
 - Bloqueio: contas do WhatsApp do portfólio Rodrigo Carvalho desativadas pela Meta (revisão pedida em 01/11). Sem número funcionando, nada sai mesmo ligado.
 - Próximo passo: Rodrigo aprova o PR (fica desligado). Quando a Meta reativar: pedir o modelo, conferir o número de cada cliente no cadastro e ligar as duas variáveis.
+
+## 2026-11-02 — SEO: páginas antigas de nicho fora do Google (branch seo/paginas-antigas-noindex)
+- Pedido do Rodrigo (auditoria de SEO): o Google ainda via o site como "comida/comércio local". Escolheu a opção de esconder, não redirecionar.
+- Feito: as 13 páginas `public/marketing-para-*.html` agora têm `noindex,follow`; saíram do `sitemap.xml`; o bloco "Outros segmentos que atendemos" saiu do rodapé de `public/site.html`.
+- Mantido de propósito: as páginas continuam abrindo, porque o Captador (`cloudflare/src/prospects.js`) manda esses links como exemplo de site. `/exemplo` continua no sitemap.
+- Testes: 750/750. Aguardando o merge do Rodrigo; deploy automático depois.
+- Próximo passo: título da home com "Flow Arts Marketing" + frases de busca (ex.: "lista de empresas com WhatsApp"); depois Search Console.

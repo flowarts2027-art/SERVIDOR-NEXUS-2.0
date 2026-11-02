@@ -5,7 +5,7 @@ import fs from "node:fs";
 const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
 const pages = ["marketing-para-cafeteria", "marketing-para-salao-de-beleza", "marketing-para-lanchonete", ...["barbearia", "pet-shop", "restaurante", "academia", "loja-de-roupas", "padaria", "confeitaria", "oficina-mecanica", "floricultura"].map(n => "marketing-para-" + n)];
 
-test("páginas de nicho existem e estão no sitemap (saíram do rodapé com o site para vendedores, 23/10)", () => {
+test("páginas de nicho continuam abrindo (link do Captador), mas fora do Google e do sitemap (02/11)", () => {
   const sitemap = read("sitemap.xml");
   const site = read("site.html");
   for (const slug of pages) {
@@ -13,7 +13,8 @@ test("páginas de nicho existem e estão no sitemap (saíram do rodapé com o si
     assert.match(html, new RegExp('<link rel="canonical" href="https://flowarts.com.br/' + slug + '">'));
     assert.match(html, /<title>[^<]*Flow Arts Marketing<\/title>/);
     assert.match(html, /"@type": "FAQPage"/);
-    assert.ok(sitemap.includes("https://flowarts.com.br/" + slug + "<"), slug + " fora do sitemap");
+    assert.match(html, /<meta name="robots" content="noindex,follow">/, slug + " sem noindex");
+    assert.ok(!sitemap.includes("https://flowarts.com.br/" + slug + "<"), slug + " ainda no sitemap");
   }
 });
 
@@ -61,11 +62,10 @@ test("site novo (28/10): tema clean, mural de classificados e movimento que para
   assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
 });
 
-test("páginas antigas ficam ligadas numa aba discreta do rodapé (para o Google e o cliente acharem o site)", () => {
+test("rodapé do site para vendedores não liga mais as páginas antigas de nicho (02/11)", () => {
   const home = read("site.html");
-  const segs = home.slice(home.indexOf('class="segs"'));
-  assert.match(segs, /<summary>Outros segmentos que atendemos<\/summary>/);
-  for (const slug of [...pages, "exemplo"]) assert.ok(segs.includes('href="/' + slug + '"'), slug + " fora da aba");
+  assert.doesNotMatch(home, /Outros segmentos que atendemos|class="segs"/);
+  for (const slug of pages) assert.ok(!home.includes('href="/' + slug + '"'), slug + " ainda no rodapé");
 });
 
 test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e não prometem resultado", () => {
