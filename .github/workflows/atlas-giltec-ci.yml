@@ -1,0 +1,21 @@
+name: Atlas GILTEC CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/social/campanha_diaria.py'
+      - 'scripts/social/campanha/conteudo.json'
+      - 'tests/test_atlas_giltec.py'
+      - '.github/workflows/atlas-giltec-ci.yml'
+  workflow_dispatch:
+jobs:
+  atlas-giltec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install pillow
+      - run: python -m py_compile scripts/social/campanha_diaria.py
+      - run: python -m json.tool scripts/social/campanha/conteudo.json > /dev/null
+      - run: python -m unittest discover -s tests -p 'test_atlas_giltec.py' -v
