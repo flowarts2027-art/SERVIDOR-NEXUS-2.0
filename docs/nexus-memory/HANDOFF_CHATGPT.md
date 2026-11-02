@@ -1,3 +1,13 @@
+## 2026-11-02 — Correção dos DOTs de campanha em PR #521
+- Código criado na branch fix/dots-campaign-qa-20261102, ainda sem merge ou deploy confirmado.
+- Maestro: slotPlan e formatos mistos; SHA-256, comparação visual perceptual opcional, registro Clara para aprovação posterior.
+- Carimbador: módulo independente com ativos oficiais GILTEC, Flow Arts (logo completo) e Daniela, SHA de blob conferido.
+- GILTEC: carrinho de mão proibido removido da programação e substituído por soprador de mochila; gerador impede itens proibidos.
+- Lote parcial agora retorna falha; workflow bloqueia envio após erro; CI inclui testes Maestro JS e Atlas inclui Carimbador.
+- Consulta ao Nexus antes do PR identificou falhas em publicações 02/11 para GILTEC e Daniela, correções pendentes na publicação real.
+- PENDENTE: esperar CI do PR, merge pelo Rodrigo, validar deploy, testar campanha piloto e conectar executor real/Nilo/QA visual independente.
+- Evidências e limites detalhados em docs/nexus-memory/DOTS_QA_IMPLEMENTACAO_2026-11-02.md.
+
 ## 2026-10-29 — Reel Flow Arts de 30/10 às 12h
 - Pedido: criar campanha de amanhã pelo Nexus. Aplicada auditoria de 29/10: ChatGPT produz somente Reel; demais 5 peças permanecem com campanha automática.
 - Agenda Nexus consultada: itens de 30/10 retornaram cancelados/rejeitados; nenhum Reel ativo retornado.

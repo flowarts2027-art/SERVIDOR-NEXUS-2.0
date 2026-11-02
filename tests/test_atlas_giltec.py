@@ -3,12 +3,15 @@ import datetime
 import importlib.util
 import json
 import pathlib
+import sys
 import unittest
 from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/social/campanha_diaria.py"
 DATA = ROOT / "scripts/social/campanha/conteudo.json"
+sys.path.insert(0, str(SCRIPT.parent))
+from carimbador import carimbar_logo, verificar_logo
 
 
 class AtlasGiltecTests(unittest.TestCase):
@@ -31,6 +34,31 @@ class AtlasGiltecTests(unittest.TestCase):
             self.assertEqual(sum(p["tipo"] == "story" for p in pieces), 3)
             self.assertTrue(all(len(p["cartoes"]) == 1 for p in pieces))
             self.assertEqual(len({p["cartoes"][0]["nome"] for p in pieces}), 6)
+
+    def test_no_forbidden_equipment_in_giltec_campaign(self):
+        cfg = self.content["giltec"]
+        self.assertNotIn("carrinho", cfg["equipamentos"])
+        self.assertNotIn("carrinho", sum(cfg["ciclo"], []))
+        for key in sum(cfg["ciclo"], []):
+            nome = cfg["equipamentos"][key]["nome"].lower()
+            self.assertNotIn("carrinho de mão", nome)
+            self.assertNotIn("plataforma elevatória", nome)
+        self.assertEqual(cfg["equipamentos"]["soprador"]["nome"], "Soprador de folhas a gasolina (mochila)")
+
+    def test_carimbador_applies_verifiable_original_logo(self):
+        from PIL import Image
+        for brand in ("giltec", "flow", "daniela"):
+            self.assertTrue(verificar_logo(brand).is_file())
+            img = Image.new("RGBA", (1080, 1350), (0, 0, 0, 255))
+            size = carimbar_logo(img, brand, 64, 48, 104)
+            self.assertGreater(size[0], 30)
+            self.assertLessEqual(size[0] + 64, 1080)
+            self.assertLessEqual(size[1] + 48, 1350)
+
+    def test_carimbador_refuses_unknown_brand(self):
+        from PIL import Image
+        with self.assertRaisesRegex(RuntimeError, "não cadastrado"):
+            carimbar_logo(Image.new("RGBA", (1080, 1350)), "fake", 64, 48, 104)
 
     def test_correct_story_and_post_dimensions(self):
         from PIL import Image

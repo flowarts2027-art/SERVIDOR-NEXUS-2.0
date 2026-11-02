@@ -1,5 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
-import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch, completePersistedMaestroImage, recoverPersistedMaestroCampaign } from "./maestro-store.js";
+import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch, completePersistedMaestroImage, reviewPersistedMaestroImage, recoverPersistedMaestroCampaign } from "./maestro-store.js";
 import { maestroProgress } from "./maestro-continuity.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
@@ -694,6 +694,10 @@ export default {
           // Receipt-only operation: accepts audited external images, never generates or publishes.
           if (body.action === "complete") {
             const result = await completePersistedMaestroImage(env,body);
+            return json({ok:true,accepted:result.accepted,reason:result.reason,progress:result.progress});
+          }
+          if (body.action === "review") {
+            const result = await reviewPersistedMaestroImage(env,body);
             return json({ok:true,accepted:result.accepted,progress:result.progress});
           }
           return json({error:"invalid_action"},400);

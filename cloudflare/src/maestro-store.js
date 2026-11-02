@@ -10,9 +10,9 @@ export async function loadMaestroCampaign(env,clientId,campaignId){
  .bind(NS,campaignId,clientId).first();
  return row?.value_json?JSON.parse(row.value_json):null;
 }
-export async function startMaestroCampaign(env,{clientId,campaignId,days=7,slotsPerDay=3,slidesPerSlot=2}){
+export async function startMaestroCampaign(env,{clientId,campaignId,days=7,slotsPerDay=3,slidesPerSlot=2,slotPlan=null}){
  if(!valid(clientId)||!valid(campaignId))throw new Error("invalid_identifier");
- const snapshot=createMaestroCampaign({campaignId,clientId,days,slotsPerDay,slidesPerSlot});
+ const snapshot=createMaestroCampaign({campaignId,clientId,days,slotsPerDay,slidesPerSlot,slotPlan});
  await env.DB.prepare("INSERT OR IGNORE INTO nexus_state(namespace,item_key,client_id,value_json,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP)")
  .bind(NS,campaignId,clientId,JSON.stringify(snapshot)).run();
  return loadMaestroCampaign(env,clientId,campaignId);
@@ -32,11 +32,19 @@ export async function claimPersistedMaestroBatch(env,{clientId,campaignId,size=6
  return {...batch,progress:maestroProgress(batch.campaign)};
 }
 
-export async function completePersistedMaestroImage(env,{clientId,campaignId,id,sha256,width,height,qaApproved=false,referenceVerified=false}) {
+export async function completePersistedMaestroImage(env,{clientId,campaignId,id,sha256,width,height,perceptualHash=null,qaApproved=false,referenceVerified=false,qaEvidence=null}) {
  const campaign=await loadMaestroCampaign(env,clientId,campaignId);
  if(!campaign)throw new Error("campaign_not_found");
  const {completeMaestroImage}=await import("./maestro-continuity.js");
- const result=completeMaestroImage(campaign,{id,sha256,width,height,qaApproved,referenceVerified});
+ const result=completeMaestroImage(campaign,{id,sha256,width,height,perceptualHash,qaApproved,referenceVerified,qaEvidence});
+ await saveMaestroCampaign(env,result.campaign,campaign.version);
+ return {...result,progress:maestroProgress(result.campaign)};
+}
+export async function reviewPersistedMaestroImage(env,{clientId,campaignId,id,qaApproved=false,qaEvidence=null,reason=""}) {
+ const campaign=await loadMaestroCampaign(env,clientId,campaignId);
+ if(!campaign)throw new Error("campaign_not_found");
+ const {reviewMaestroImage}=await import("./maestro-continuity.js");
+ const result=reviewMaestroImage(campaign,{id,qaApproved,qaEvidence,reason});
  await saveMaestroCampaign(env,result.campaign,campaign.version);
  return {...result,progress:maestroProgress(result.campaign)};
 }
