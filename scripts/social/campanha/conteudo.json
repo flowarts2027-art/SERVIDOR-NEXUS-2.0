@@ -58,7 +58,7 @@
         "serraCircular",
         "andaimeTubular",
         "bombaMangote",
-        "carrinho"
+        "soprador"
       ]
     ],
     "equipamentos": {
@@ -1128,31 +1128,31 @@
         ],
         "nome": "Bomba mangote"
       },
-      "carrinho": {
-        "foto": "heavy duty steel wheelbarrow on masonry building site",
+      "soprador": {
+        "foto": "a worker using a gasoline powered backpack leaf blower for outdoor site cleanup in Brazil, complete fuel tank and blower tube clearly visible, no equipment logos or text",
         "titulos": [
           [
-            "Carrinho de mão",
-            "para sua",
-            "obra"
+            "Soprador de folhas",
+            "a gasolina para",
+            "área externa"
           ],
           [
-            "Locação de",
-            "Carrinho de mão",
-            "na GILTEC"
+            "Limpeza de",
+            "área externa",
+            "com eficiência"
           ],
           [
-            "Equipamento",
+            "Soprador mochila",
             "para sua",
-            "obra"
+            "manutenção"
           ]
         ],
         "vantagens": [
-          "Consulte opções",
-          "Para obras",
+          "Soprador mochila",
+          "A gasolina",
           "Peça orçamento"
         ],
-        "nome": "Carrinho de mão"
+        "nome": "Soprador de folhas a gasolina (mochila)"
       }
     },
     "cenas": [
