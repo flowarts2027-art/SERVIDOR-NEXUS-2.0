@@ -47,6 +47,8 @@ jobs:
 
       - name: Worker tests
         run: node --test cloudflare/test/*.test.mjs
+      - name: Maestro persistence and QA tests
+        run: node --test cloudflare/test/maestro-*.test.js
 
       - name: Video overlay render tests
         shell: bash
