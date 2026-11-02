@@ -156,8 +156,10 @@ def foto_falsa(larg, alt, semente):
 def pedir_foto(prompt, aspecto, semente):
     base = os.environ.get("NEXUS_BASE", "").rstrip("/")
     token = os.environ.get("NEXUS_MASTER_TOKEN", "")
-    if os.environ.get("FOTO_FALSA") == "1" or not base or not token:
+    if os.environ.get("FOTO_FALSA") == "1":
         return foto_falsa(1024, 1280 if aspecto == "4:5" else 1344, semente)
+    if not base or not token:
+        raise RuntimeError("ATLAS: foto real indisponível; NEXUS_BASE e NEXUS_MASTER_TOKEN obrigatórios. Não usar foto falsa em produção.")
     corpo = json.dumps({"prompt": prompt + " " + REGRAS_FOTO, "aspect": aspecto}).encode()
     erro = ""
     for tentativa in range(3):
@@ -275,8 +277,10 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     fundo, dest, txt = tema["fundo"], tema["destaque"], tema["texto"]
     # Fundo das faixas: a própria foto bem desfocada e escurecida na cor do cliente (sem faixa lisa e
     # sem ninguém reconhecível atrás do texto).
-    img = cobrir(foto, W, H).filter(ImageFilter.GaussianBlur(18)).convert("RGBA")
-    img.alpha_composite(Image.new("RGBA", (W, H), fundo + (190,)))
+    img = (Image.new("RGBA", (W, H), fundo + (255,)) if tema is TEMAS["giltec"]
+           else cobrir(foto, W, H).filter(ImageFilter.GaussianBlur(18)).convert("RGBA"))
+    if tema is not TEMAS["giltec"]:
+        img.alpha_composite(Image.new("RGBA", (W, H), fundo + (190,)))
     d = ImageDraw.Draw(img)
     margem = 64
     topo = 270 if story else 48           # story: abaixo dos 14% de cima
@@ -302,7 +306,7 @@ def desenhar(foto, cartao, tema, story=False, numero=None, rodape=""):
     inicio_rodape = yv - 62               # começo da faixa de baixo
 
     # --- foto só no meio, nunca atrás do texto ---
-    faixa_foto(img, foto, fim_titulo - 20, inicio_rodape + 20, fundo)
+    faixa_foto(img, foto, fim_titulo - 20, inicio_rodape + 20, fundo, fade=0 if tema is TEMAS["giltec"] else 90)
     d = ImageDraw.Draw(img)
 
     colar_logo(img, tema_logo, margem, topo)
