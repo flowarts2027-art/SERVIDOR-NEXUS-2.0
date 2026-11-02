@@ -111,6 +111,26 @@ export function completeMaestroImage(campaign,{id,sha256,width,height,perceptual
   cloned.version++;
   return {campaign:cloned,accepted:task.reviewed,reason:task.reviewed?"approved":"awaiting_independent_review"};
 }
+// Final editorial review can arrive after image generation, without regenerating.
+export function reviewMaestroImage(campaign,{id,qaApproved=false,qaEvidence=null,reason=""}) {
+  const cloned=structuredClone(campaign),task=cloned.tasks.find(t=>t.id===id);
+  if(!task||task.status!==MAESTRO_STATES.REVIEW||!task.sha256)throw new Error("task_not_awaiting_review");
+  if(!qaApproved) {
+    task.status=MAESTRO_STATES.REJECTED;
+    task.rejectionReason=String(reason||"rejected_by_clara").slice(0,200);
+    task.reviewed=false;task.qaEvidence=null;
+  } else {
+    if(!qaEvidence||qaEvidence.reviewer!=="clara"||qaEvidence.assetSha256!==task.sha256||
+      !/^[0-9a-f]{64}$/i.test(String(qaEvidence.referenceSha256||""))||
+      !Number.isFinite(Date.parse(qaEvidence.reviewedAt)))throw new Error("invalid_qa_receipt");
+    task.status=MAESTRO_STATES.APPROVED;task.reviewed=true;
+    task.qaEvidence={reviewer:"clara",assetSha256:task.sha256,
+      referenceSha256:qaEvidence.referenceSha256,reviewedAt:qaEvidence.reviewedAt};
+    task.rejectionReason=null;
+  }
+  cloned.version++;
+  return {campaign:cloned,accepted:task.reviewed};
+}
 export function maestroProgress(campaign) {
   const counts={};
   for (const t of campaign.tasks) counts[t.status]=(counts[t.status]||0)+1;
