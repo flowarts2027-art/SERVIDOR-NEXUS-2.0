@@ -21,6 +21,7 @@ import time
 import urllib.request
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from carimbador import carimbar_logo, verificar_logo
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(os.path.dirname(AQUI))
@@ -33,7 +34,7 @@ TEMAS = {
     # GILTEC: o estilo azul-marinho e amarelo que o Rodrigo aprovou em 28/10.
     "giltec": {
         "fundo": (4, 16, 44), "destaque": (255, 194, 14), "texto": (255, 255, 255), "botao_texto": (4, 16, 44),
-        "logo": os.path.join(RAIZ, "docs", "nexus-memory", "clientes", "giltec", "logo-giltec.png"), "logo_alt": 165,
+        "logo": os.path.join(RAIZ, "docs", "nexus-memory", "clientes", "giltec", "logo-giltec.png"), "logo_alt": 165, "carimbador": "giltec",
     },
     # Maskara (28/10): fundo preto/grafite, destaque dourado, botão dourado com letra preta.
     # Sem a logo oficial ainda: escreve o nome por código no lugar dela (troca quando o Rodrigo mandar a logo).
@@ -53,13 +54,13 @@ TEMAS = {
     # Sem a logo oficial no Nexus: escreve o nome por código (nunca uma logo inventada).
     "daniela": {
         "fundo": (36, 24, 20), "destaque": (214, 172, 98), "texto": (255, 255, 255), "botao_texto": (36, 24, 20),
-        "logo": None, "nome": ["DANIELA MARTINS", "DEPILADORA"], "logo_alt": 104,
+        "logo": os.path.join(RAIZ, "public", "brand", "daniela-martins-logo.png"), "logo_alt": 104, "carimbador": "daniela",
         "botao": "COMENTE QUERO", "botao_story": "MANDE QUERO NO DIRECT", "icone_cor": (36, 24, 20),
     },
     # Flow Arts: fundo quase preto, destaque azul da marca, símbolo da Flow Arts.
     "flow": {
         "fundo": (10, 12, 18), "destaque": (64, 120, 255), "texto": (255, 255, 255), "botao_texto": (255, 255, 255),
-        "logo": os.path.join(RAIZ, "public", "brand", "flowarts-symbol.webp"), "logo_alt": 120,
+        "logo": os.path.join(RAIZ, "public", "brand", "flowarts-logo.webp"), "logo_alt": 120, "carimbador": "flow",
     },
 }
 
@@ -186,6 +187,17 @@ def cobrir(foto, larg, alt):
     return foto.crop((x, y, x + larg, y + alt))
 
 
+def hash_perceptual(foto):
+    """dHash de 64 bits na foto original, antes de faixas, texto e logo."""
+    escala = foto.convert("L").resize((9, 8), Image.Resampling.LANCZOS)
+    pixels = list(escala.getdata())
+    valor = 0
+    for linha in range(8):
+        for coluna in range(8):
+            valor = (valor << 1) | int(pixels[linha * 9 + coluna] > pixels[linha * 9 + coluna + 1])
+    return valor
+
+
 # ---------- desenho ----------
 
 def degrade(img, topo, base, cor, a0, a1):
@@ -223,10 +235,7 @@ def colar_logo(img, tema, x, y):
         d.text((x, y + 6), l1, font=fonte_titulo(48, 800), fill=tema["destaque"])
         d.text((x + 2, y + 62), l2, font=fonte_titulo(26, 700), fill=tema["texto"])
         return
-    logo = Image.open(tema["logo"]).convert("RGBA")
-    alt = tema["logo_alt"]
-    logo = logo.resize((round(logo.width * alt / logo.height), alt), Image.LANCZOS)
-    img.alpha_composite(logo, (x, y))
+    carimbar_logo(img, tema["carimbador"], x, y, tema["logo_alt"], largura_maxima=900)
 
 
 # ---------- PADRÃO DAS ARTES (docs/nexus-memory/PADRAO_ARTES.md, Rodrigo 28/10) ----------
@@ -340,15 +349,23 @@ def gerar(cliente, data, saida_raiz):
     conteudo = json.load(open(CONTEUDO, encoding="utf-8"))
     cfg = conteudo[cliente]
     tema = TEMAS[cfg["tema"]]
-    if cfg["tema"] == "giltec" and not os.path.isfile(tema["logo"]):
-        raise RuntimeError("ATLAS: logo oficial GILTEC ausente, producao bloqueada")
+    if tema.get("logo"):
+        verificar_logo(tema["carimbador"])
+    elif cfg["tema"] in {"quatree", "daniela", "flow", "giltec"}:
+        raise RuntimeError("CARIMBADOR: logo oficial obrigatório ausente")
     base = os.path.join(saida_raiz, cfg["pasta"], data) if cfg["pasta"] else os.path.join(saida_raiz, data)
     feitos, erros = [], []
+    hashes_fotos = []
     pecas = plano(cliente, data, conteudo)
     if cfg["tema"] == "giltec":
         ordem = cfg["ciclo"][dia_numero(data) % len(cfg["ciclo"])]
         if len(ordem) != 6 or len(set(ordem)) != 6 or any(x not in cfg["equipamentos"] for x in ordem):
             raise RuntimeError("ATLAS: devem existir seis equipamentos cadastrados e diferentes")
+        proibidos = ("carrinho de mão", "plataforma elevatória", "locação de capacete")
+        for chave in ordem:
+            nome = cfg["equipamentos"][chave]["nome"].lower()
+            if any(proibido in nome for proibido in proibidos):
+                raise RuntimeError(f"ATLAS: equipamento não oferecido pela GILTEC: {nome}")
         if len(pecas) != 6 or sum(p["tipo"] == "post" for p in pecas) != 3 or sum(p["tipo"] == "story" for p in pecas) != 3:
             raise RuntimeError("ATLAS: lote deve conter 3 posts individuais e 3 stories")
         if any(len(p["cartoes"]) != 1 for p in pecas):
@@ -363,7 +380,14 @@ def gerar(cliente, data, saida_raiz):
             story = peca["tipo"] == "story"
             imagens = []
             for i, c in enumerate(peca["cartoes"]):
-                foto = pedir_foto(c["foto"], "9:16" if story else "4:5", f"{cliente}{data}{peca['chave']}{i}")
+                for tentativa in range(3):
+                    foto = pedir_foto(c["foto"], "9:16" if story else "4:5", f"{cliente}{data}{peca['chave']}{i}-{tentativa}")
+                    assinatura = hash_perceptual(foto)
+                    if all((assinatura ^ outro).bit_count() > 4 for outro in hashes_fotos):
+                        hashes_fotos.append(assinatura)
+                        break
+                else:
+                    raise RuntimeError("CLARA: foto repetida ou visualmente muito semelhante")
                 num = i + 1 if peca["tipo"] == "carousel" else None
                 imagens.append(desenhar(foto, c, tema, story=story, numero=num, rodape=cfg.get("rodape_story", "")))
             esperado = (1080, 1920) if story else (1080, 1350)
@@ -398,4 +422,4 @@ if __name__ == "__main__":
         print("::notice::feito " + f)
     for e in erros:
         print("::error::" + e)
-    sys.exit(1 if erros and not feitos else 0)
+    sys.exit(1 if erros else 0)
