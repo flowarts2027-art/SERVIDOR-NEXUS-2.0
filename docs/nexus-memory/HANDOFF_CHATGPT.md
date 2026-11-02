@@ -1,3 +1,15 @@
+## 2026-11-02 07:20 BRT — artes diárias e envio ao painel
+- Origem → destino: ChatGPT → branch `agendamentos` / painéis de aprovação.
+- Clientes verificados: Flow Arts, Giltec, Maskara Assessoria, Quatree Dog; Daniela Martins também consta ativa na `main` (id `daniela-martins`). Luciana Carvalho não foi localizada.
+- Flow Arts: carrossel 09h, feed 19h e Stories 09h/12h/19h já existentes; novo feed 12h (1080×1350) criado localmente, tema “Personalize antes de chamar”, CTA COMENTE QUERO e legenda pronta. Ainda não foi gravado no GitHub nem enviado ao painel.
+- Painel: workflow 41427014134 enviou Flow Arts 19h; workflow 41427233073 enviou 16 slots (Flow Arts carrossel 09h + 3 Stories; Giltec 3 feeds + 3 Stories; Maskara 3 feeds + 3 Stories), todos aguardando aprovação. Workflow 41427405902 confirmou que Giltec Story 19h já existia e não duplicou. Nenhuma peça aprovada ou publicada.
+- Maskara: CTA “Comenta QUERO abaixo que a gente te chama” conferido nas 3 legendas.
+- Quatree Dog: id correto `quatree-dog`, não existe `4Dog`. Calendário 02/11 = carrossel 09h “O que o dono de pet mais pergunta no balcão” + 3 Stories (09h/12h/19h). Não criado: `QUATREE_DIRETRIZ_VENDAS.md` exige embalagem real visível em toda peça/cartão; os arquivos locais encontrados são mockups IA com rótulos inconsistentes. Falta packshot/banner original do cliente ou arquivo original baixável do site oficial.
+- Daniela Martins: ficha ativa na main, grade 1 post (09h ou 12h) + 2 Stories (09h e 19h); não produzida porque a ficha exige `nexus_ver_agenda` para evitar horário/imagem repetidos, e a ferramenta/pasta diária não estão disponíveis nesta execução.
+- Luciana Carvalho: sem cadastro/briefing verificável; nenhuma arte inventada.
+- Evidência de duplicação: 21 imagens do commit inicial do dia tinham 21 Git blob SHAs distintos; inspeção visual pixel a pixel não foi possível para os binários do GitHub.
+- Próximo passo exato: inserir o feed Flow Arts 12h local na pasta diária via fluxo Work/painel; obter packshot oficial Quatree; consultar agenda da Daniela antes de escolher slot; cadastrar briefing da Luciana quando existir.
+
 ## 2026-11-01 07h BRT — artes diárias revisadas e complementadas
 
 - Pedido: preparar as artes de todos os clientes cadastrados, conferir Quatree Dog (não existe ID 4Dog), incluir Flow Arts e Maskara, e verificar Luciana sem inventar briefing.
