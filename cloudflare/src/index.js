@@ -15,6 +15,7 @@ import { handleMaster, masterLoginPage } from "./master.js";
 import { handleErrorCenter } from "./error-center.js";
 import { runSchedulerTick, recordSchedulerFailure } from "./scheduler.js";
 import { runCronIteration } from "./cron-runtime.js";
+import { runClientApprovalNotices } from "./client-approval-notify.js";
 import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs } from "./executor.js";
@@ -626,6 +627,10 @@ export default {
     // Radar de virais: 1 vez por semana olha as hashtags dos nichos (só se o Facebook estiver conectado).
     ctx.waitUntil(runViralRadar(env, at).catch(error =>
       console.warn("viral_radar_failed", String(error?.message || error).slice(0, 140))
+    ));
+    // Aviso no WhatsApp do cliente: arte nova esperando aprovação (02/11). Desligado até CLIENT_APPROVAL_WHATSAPP=on.
+    ctx.waitUntil(runClientApprovalNotices(env, at).then(out => { if (!out.skipped) console.log("client_approval_notices", JSON.stringify(out)); }).catch(error =>
+      console.warn("client_approval_notices_failed", String(error?.message || error).slice(0, 140))
     ));
     // Auto-responder de comentários (funil QUERO/EXEMPLO → WhatsApp).
     ctx.waitUntil(runCommentAutoReplies(env, at).catch(error =>
