@@ -871,3 +871,4 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Mantido de propósito: as páginas continuam abrindo, porque o Captador (`cloudflare/src/prospects.js`) manda esses links como exemplo de site. `/exemplo` continua no sitemap.
 - Testes: 750/750. Aguardando o merge do Rodrigo; deploy automático depois.
 - Próximo passo: título da home com "Flow Arts Marketing" + frases de busca (ex.: "lista de empresas com WhatsApp"); depois Search Console.
+- (mesma branch, 02/11) Home `public/site.html`: título "Lista de empresas com WhatsApp para vendedores | Flow Arts Marketing", descrição nova com "achar clientes", og:title e nome no schema = "Flow Arts Marketing" (o nome sozinho "Flow Arts" se confunde com malabarismo no Google). H1 não mudou. 751/751 testes.

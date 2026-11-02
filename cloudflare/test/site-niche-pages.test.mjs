@@ -79,3 +79,15 @@ test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e n�
   }
   assert.equal(seen.size, pages.length);
 });
+
+test("home: título e descrição com a marca completa e o que as pessoas procuram (02/11)", () => {
+  const home = read("site.html");
+  const title = home.match(/<title>([^<]*)<\/title>/)[1];
+  assert.match(title, /Lista de empresas com WhatsApp/);
+  assert.match(title, /Flow Arts Marketing/);
+  assert.ok(title.length <= 75, "título longo: " + title.length);
+  const desc = home.match(/<meta name="description" content="([^"]*)">/)[1];
+  assert.match(desc, /achar clientes/);
+  assert.ok(desc.length <= 160, "descrição longa: " + desc.length);
+  assert.match(home, /"name": "Flow Arts Marketing"/);
+});
