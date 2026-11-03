@@ -872,3 +872,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 750/750. Aguardando o merge do Rodrigo; deploy automático depois.
 - Próximo passo: título da home com "Flow Arts Marketing" + frases de busca (ex.: "lista de empresas com WhatsApp"); depois Search Console.
 - (mesma branch, 02/11) Home `public/site.html`: título "Lista de empresas com WhatsApp para vendedores | Flow Arts Marketing", descrição nova com "achar clientes", og:title e nome no schema = "Flow Arts Marketing" (o nome sozinho "Flow Arts" se confunde com malabarismo no Google). H1 não mudou. 751/751 testes.
+
+## 2026-11-02 (21h) — Claude: planos novos no cadastro, painéis, robô e site
+- `cloudflare/src/plans.js`: lista nova (postador, resposta, trafego, site, logo). `upgrades.js`: base = postador; adicionais = resposta e trafego; destaque no Postador.
+- `whatsapp-knowledge.js`: robô/David com os preços novos; não oferece Captador nem Reels.
+- `public/site.html`: cartões dos 3 planos (sem abas empresa/pessoa física), FAQ e schema com preços novos; avulsos só Site e Logo. 12 páginas `marketing-para-*` com a lista nova. Master: Tráfego R$ 297 e Captador "fora da venda".
+- Testes: 751/751. Falta (próximo passo): reescrever o topo do site, que ainda vende o Captador ("Novos clientes todo dia no seu WhatsApp").

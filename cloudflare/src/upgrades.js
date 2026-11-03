@@ -8,8 +8,8 @@ import { getClient, upsertClient } from "./clients.js";
 import { setCaptadorAccess, captadorAudience } from "./captador.js";
 import { setAdsAccess } from "./ads.js";
 
-export const BASE_PLANS = ["essencial", "completo", "completo-trafego"];
-export const ADDON_PLANS = ["captador", "trafego"];
+export const BASE_PLANS = ["postador"];
+export const ADDON_PLANS = ["resposta", "trafego"];
 export const planGroup = id => BASE_PLANS.includes(id) ? "base" : ADDON_PLANS.includes(id) ? "adicional" : "unico";
 
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
@@ -49,14 +49,12 @@ export function catalogFor(client, audience = "empresas") {
     .map(p => {
       const group = planGroup(p.id);
       const amount = Number(p.setup || 0) + Number(p.price || 0);
-      // Quem já tem o Completo vê o combo como "só a diferença no mês".
-      const upgradeNote = current === "completo" && p.id === "completo-trafego"
-        ? "Você paga " + brl(p.price - (findPlan("completo")?.price || 0)) + " a mais por mês e ganha o Tráfego (separado sairia " + brl(findPlan("trafego")?.price || 0) + ")." : "";
+      const upgradeNote = "";
       return {
         id: p.id, name: p.name, kind: p.kind, group, summary: p.summary, includes: [...p.includes],
         priceLine: priceLine(p), amount, amountLabel: brl(amount),
         owned: owned.has(p.id), current: p.id === current, upgradeNote,
-        highlight: p.id === "completo-trafego", pix: pixFor(p.id)
+        highlight: p.id === "postador", pix: pixFor(p.id)
       };
     });
 }

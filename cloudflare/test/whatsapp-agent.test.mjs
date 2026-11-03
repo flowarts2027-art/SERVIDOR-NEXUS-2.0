@@ -24,9 +24,9 @@ test("WhatsApp webhook verifies Meta signature before processing", () => {
 
 test("Flow Arts knowledge has the approved prices and no legacy streaming text", () => {
   const prompt = knowledgePrompt(CLIENT);
-  assert.match(prompt, /R\$ 697 por mês, sem taxa de entrada/);
+  assert.match(prompt, /Postador Automático: .*R\$ 97 por mês/);
   assert.doesNotMatch(prompt, /R\$ 297 de entrada/);
-  assert.match(prompt, /3 primeiros clientes/);
+  assert.doesNotMatch(prompt, /Reels 5/);
   assert.match(prompt, /Global Play/); // aparece só como proibição
   assert.match(prompt, /Nunca citar a Global Play/);
   assert.doesNotMatch(source, /uso próprio ou para revenda/);
@@ -118,7 +118,7 @@ test("auto-reply ON answers with the AI text, records it and the prompt carries 
     assert.equal(f.sent.length, 1);
     assert.equal(f.sent[0].to, "5521999990000");
     assert.match(f.sent[0].text.body, /assistente virtual da Flow Arts/);
-    assert.match(f.aiPrompts[0], /R\$ 697 por mês/);
+    assert.match(f.aiPrompts[0], /R\$ 97 por mês/);
     assert.match(f.aiPrompts[0], /primeira resposta/);
     const out = f.db.prepare("SELECT status FROM whatsapp_messages WHERE direction='outbound'").get();
     assert.equal(out.status, "sent_auto");

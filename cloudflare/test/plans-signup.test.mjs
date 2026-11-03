@@ -35,9 +35,12 @@ test("Pix copia e cola: CRC igual ao exemplo do Banco Central e valor certo", ()
 });
 
 test("planos: nomes curtos, primeiro pagamento e fundador só até 30/11 e 3 vagas", () => {
-  assert.deepEqual(publicPlans().map(p => p.name), ["Essencial", "Completo", "Completo + Tráfego", "Tráfego", "Captador", "Site", "Responde", "Reels 5", "Posts 10", "Logo"]);
-  assert.equal(firstPayment(findPlan("completo")), 69700);
-  assert.equal(firstPayment(findPlan("essencial"), true), 14700);
+  assert.deepEqual(publicPlans().map(p => p.name), ["Postador Automático", "Resposta Automática", "Tráfego Pago", "Site", "Logo"]);
+  assert.equal(firstPayment(findPlan("postador")), 9700);
+  assert.equal(firstPayment(findPlan("resposta")), 3990);
+  assert.equal(firstPayment(findPlan("trafego")), 29700);
+  assert.equal(findPlan("captador"), null, "Captador fora da venda (02/11)");
+  assert.equal(findPlan("completo"), null);
   assert.equal(founderOpen(new Date("2026-11-30T20:00:00Z"), 2), true);
   assert.equal(founderOpen(new Date("2026-12-01T12:00:00Z"), 0), false);
   assert.equal(founderOpen(new Date("2026-11-01T12:00:00Z"), 3), false);
@@ -47,26 +50,26 @@ test("cadastro com plano: o servidor calcula o valor; ao aprovar, o painel mostr
   const { env } = fakeEnv();
   const bad = await createSignupRequest(env, { ...BASE, planId: "nao-existe" });
   assert.equal(bad.error, "plan_invalid");
-  const made = await createSignupRequest(env, { ...BASE, planId: "completo", paidClaimed: true, amount: 1 });
+  const made = await createSignupRequest(env, { ...BASE, planId: "postador", paidClaimed: true, amount: 1 });
   assert.equal(made.ok, true);
-  assert.equal(made.amount, 69700);
+  assert.equal(made.amount, 9700);
   const [row] = await listSignupRequests(env);
-  assert.equal(row.planName, "Completo");
-  assert.equal(row.amountLabel, "R$ 697");
+  assert.equal(row.planName, "Postador Automático");
+  assert.equal(row.amountLabel, "R$ 97");
   assert.equal(row.paidClaimed, true);
   const approved = await approveSignupRequest(env, row.id);
   assert.equal(approved.ok, true);
   const view = portalClientView(await getClient(env, approved.clientId));
-  assert.equal(view.plan.name, "Completo");
-  assert.deepEqual(view.plan.quotas, { feed: 30, reels: 30, stories: 60 });
+  assert.equal(view.plan.name, "Postador Automático");
+  assert.deepEqual(view.plan.quotas, { feed: 60, stories: 60 });
 });
 
 test("rota pública de planos e conferência antes do Pix (não cria pedido)", async () => {
   const { env } = fakeEnv();
   const plans = await (await handlePublicSignup(new Request("https://x/api/signup/plans"), env, new URL("https://x/api/signup/plans"))).json();
-  assert.equal(plans.plans.length, 10);
+  assert.equal(plans.plans.length, 5);
   assert.match(plans.pixKey, /CNPJ/);
-  const req = new Request("https://x/api/signup", { method: "POST", headers: { "content-type": "application/json", "cf-connecting-ip": "9.9.9.9" }, body: JSON.stringify({ ...BASE, planId: "essencial", checkOnly: true }) });
+  const req = new Request("https://x/api/signup", { method: "POST", headers: { "content-type": "application/json", "cf-connecting-ip": "9.9.9.9" }, body: JSON.stringify({ ...BASE, planId: "postador", checkOnly: true }) });
   const res = await handlePublicSignup(req, env, new URL("https://x/api/signup"));
   assert.equal(res.status, 200);
   assert.equal((await listSignupRequests(env)).length, 0);
