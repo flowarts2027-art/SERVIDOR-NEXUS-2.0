@@ -1,12 +1,16 @@
 from pathlib import Path
 from PIL import Image
+import cairosvg
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "public/assets/nexus-logo-azul-oficial.webp"
-source = Image.open(SOURCE).convert("RGBA")
+SOURCE = ROOT / "public/assets/nexus-mark-blue.svg"
+rendered = ROOT / ".tmp-nexus-mark.png"
+cairosvg.svg2png(url=str(SOURCE), write_to=str(rendered), output_width=432, output_height=432)
+source = Image.open(rendered).convert("RGBA")
+rendered.unlink()
 
-# The source is already a square transparent logo. Resize with high-quality
-# filtering for each Android density, preserving the complete artwork.
+# Use only the official blue N mark; the wordmark is intentionally excluded
+# so Android launchers do not crop or display text below the icon.
 icon_sizes = {
     "mipmap-mdpi/ic_launcher.png": 48,
     "mipmap-hdpi/ic_launcher.png": 72,
@@ -22,12 +26,10 @@ for flavor in ("cliente", "master"):
         out.parent.mkdir(parents=True, exist_ok=True)
         source.resize((size, size), Image.Resampling.LANCZOS).save(out, "PNG", optimize=True)
 
-    # Adaptive-icon foreground: keep transparency and use the full official mark.
-    foreground = source.resize((432, 432), Image.Resampling.LANCZOS)
-    foreground.save(base / "drawable-nodpi/ic_launcher_foreground.png", "PNG", optimize=True)
+    # Adaptive-icon foreground: symbol only, with no wordmark.
+    source.save(base / "drawable-nodpi/ic_launcher_foreground.png", "PNG", optimize=True)
 
-    # Splash screen: preserve the existing dark Nexus background and center the
-    # official logo without cropping or changing its proportions.
+    # Splash screen: use the same symbol for a consistent app identity.
     splash = Image.new("RGBA", (288, 288), (15, 39, 71, 255))
     mark = source.resize((192, 192), Image.Resampling.LANCZOS)
     splash.alpha_composite(mark, ((288 - 192) // 2, (288 - 192) // 2))
