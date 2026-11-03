@@ -39,4 +39,4 @@ dono de café ou padaria no balcão · produto bonito na mesa com luz de janela 
 - Fale da dor do dono (falta de tempo, post que não vende) e mostre a solução.
 - Termine com: Comente "QUERO" e receba 3 posts grátis para o seu negócio.
 - Sem preço. Não citar outros clientes nem concorrentes. Não inventar resultados.
-- Hashtags: #FlowArts #MarketingDigital #Automacao #PequenosNegocios #Cafeteria
+- Hashtags: #FlowArtsMarketing #MarketingDigital #Automacao #PequenosNegocios #Cafeteria

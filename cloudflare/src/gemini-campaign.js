@@ -160,7 +160,7 @@ const FLOWARTS = Object.freeze({
     + "Público: donos de pequenos negócios e vendedores que precisam de clientes. Tom próximo, direto e prático. "
     + "Cada legenda: primeira linha forte, 2 ou 3 parágrafos curtos sobre o tema do dia, e no fim a frase 'Comente QUERO e receba 3 posts grátis para o seu negócio.' "
     + "O carrossel das 09h ensina algo para salvar; o post das 12h usa a mensagem 'App de agendar post não cria post. A Flow Arts cria, e você só aprova.'; o post das 19h faz uma pergunta para responder nos comentários. "
-    + "Termine com 4 ou 5 hashtags (#FlowArts #MarketingDigital #PequenosNegocios ...). Sem preço, sem nome de concorrente, sem número ou depoimento inventado, sem prometer vendas."
+    + "Termine com 4 ou 5 hashtags (#FlowArtsMarketing #MarketingDigital #PequenosNegocios ...). Sem preço, sem nome de concorrente, sem número ou depoimento inventado, sem prometer vendas."
 });
 
 export const GEMINI_CAMPAIGNS = Object.freeze({ giltec: Object.freeze({ ...GILTEC, plan: giltecPlan }), "primeiro-teste": FLOWARTS });

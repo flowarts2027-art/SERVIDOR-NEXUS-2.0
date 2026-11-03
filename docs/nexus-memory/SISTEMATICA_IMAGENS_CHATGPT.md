@@ -6,7 +6,7 @@ Motivo: em campanhas grandes (ex.: 7 dias) o ChatGPT se embolava — imagens dup
 ## Novo foco da Flow Arts (02/11/2026)
 - A Flow Arts agora vende **só a automação do Instagram** (postagem automática, aprovação no painel, resposta automática no direct, ida ao WhatsApp).
 - **Não falar mais de busca de leads / lista de empresas / Captador / Radar** nas campanhas da Flow Arts.
-- **Nunca usar a hashtag #flowart** (leva a conteúdo de malabarismo). Usar #flowartsmarketing.
+- **Nunca usar as hashtags #flowart nem #flowarts** (levam a conteúdo de malabarismo). Usar #FlowArtsMarketing.
 
 ## Regra 1 — Uma imagem por vez
 - Cada mensagem gera **UMA única imagem**. Nunca pedir "7 imagens", "3 imagens" ou "uma grade" numa geração só.

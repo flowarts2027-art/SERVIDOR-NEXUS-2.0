@@ -59,7 +59,7 @@ export const CLIENT_BRAND_DEFAULTS = Object.freeze({
     cta: 'Comente "EXEMPLO" e receba um exemplo grátis para o seu negócio.',
     // Todo post termina com o QUERO do brinde (resposta automática → direct → guia).
     giftCta: 'Comente "QUERO" e receba grátis o guia com 10 ideias de post que trazem clientes 🎁',
-    hashtags: "#FlowArts #MarketingDigital #Automacao #InteligenciaArtificial #PequenosNegocios",
+    hashtags: "#FlowArtsMarketing #MarketingDigital #Automacao #InteligenciaArtificial #PequenosNegocios",
     followerCta: "Siga a Flow Arts para ver mais exemplos feitos com IA.",
     contentFocus: "Mostrar como o marketing com IA (sites, fotos e vídeos) ajuda pequenos negócios a vender mais nas redes, com exemplos práticos e antes/depois descritos em texto",
     morningTheme: "Erros de imagem e presença digital que afastam clientes de pequenos negócios",
