@@ -29,13 +29,11 @@ const FLOW_ARTS = Object.freeze({
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo."
   ]),
   offers: Object.freeze([
-    "Captador (de clientes): R$ 97 por mês. Contratar: https://flowarts.com.br/cadastro?plano=captador",
-    "Essencial (Instagram no Automático, antes chamado Básico): todo mês 30 posts no feed (carrosséis e imagens), 12 Reels e 30 stories, postagem automática depois da aprovação e resposta automática que leva ao WhatsApp. R$ 197 por mês, sem taxa de entrada. Fundador: os 3 primeiros clientes pagam R$ 147 por mês nos 3 primeiros meses (até 30/11/2026). Contratar: https://flowarts.com.br/cadastro?plano=essencial",
-    "Completo (Instagram no Automático com Vídeo): todo mês 30 posts no feed, 30 Reels com vídeo de verdade feito com IA e 60 stories, resposta automática e postagem com aprovação. R$ 697 por mês, sem taxa de entrada. Quem vende para empresas ganha o Captador de brinde (vale R$ 97 por mês). Contratar: https://flowarts.com.br/cadastro?plano=completo",
-    "Tráfego (impulsionar no Instagram): R$ 397 por mês de acompanhamento + a verba do anúncio, paga no cartão do cliente direto na Meta (não passa pela Flow Arts). Botão Impulsionar no painel, a partir de R$ 10 por dia. AINDA NÃO LANÇADO: sai assim que a Meta liberar a Flow Arts (análise em andamento). Nunca prometa data.",
-    "Completo + Tráfego: R$ 897 por mês (economiza R$ 197). Também depende da liberação da Meta para o Tráfego. https://flowarts.com.br/cadastro?plano=completo-trafego",
+    "Postador Automático: 2 posts por dia (manhã e tarde) + 2 stories por dia, artes feitas para o negócio e aprovação no painel antes de sair. R$ 97 por mês. Contratar: https://flowarts.com.br/cadastro?plano=postador",
+    "Resposta Automática: quem comenta a palavra (ex.: QUERO) no post recebe a mensagem no Direct na hora. R$ 39,90 por mês. Contratar: https://flowarts.com.br/cadastro?plano=resposta",
+    "Tráfego Pago: R$ 297 por mês, só para quem já é cliente, + a verba do anúncio, paga no cartão do cliente direto na Meta (não passa pela Flow Arts). AINDA NÃO LANÇADO: sai assim que a Meta liberar a Flow Arts. Nunca prometa data.",
     "Site (site do seu negócio): R$ 497, pagamento único. Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. O 1º ano já inclui domínio .com.br, hospedagem e ajustes pequenos. Depois: R$ 297 por ano (ou R$ 29 por mês), já com a renovação do domínio. Tem contrato. https://flowarts.com.br/cadastro?plano=site",
-    "Avulsos (pagamento único): Responde (resposta automática + 10 posts) R$ 197; Reels 5 com IA R$ 147; Posts 10 prontos R$ 97; Logo profissional R$ 67.",
+    "Avulso (pagamento único): Logo profissional R$ 67. A Flow Arts não vende mais Reels nem o Captador.",
     "Qual indicar: vende para empresas → comece pelo Captador; se também quer o Instagram em dia, o Completo já traz o Captador de brinde. Vende para pessoa física → Essencial ou Completo. Quer anúncio → Completo + Tráfego (lembrando que o Tráfego aguarda a Meta).",
     "Todos os planos: https://flowarts.com.br/#pacotes"
   ]),

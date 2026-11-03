@@ -36,11 +36,11 @@ test("impulsionar: desligado até a Meta liberar; plano Tráfego dá acesso", as
   assert.equal((await no.json()).error, "ads_no_access");
 });
 
-test("combo Completo + Tráfego dá anúncios e Captador", async () => {
+test("plano Tráfego Pago (R$ 297) dá anúncios e não dá Captador", async () => {
   const { planGivesCaptador } = await import("../src/captador.js");
   const { findPlan, planRecord } = await import("../src/plans.js");
-  const rec = planRecord(findPlan("completo-trafego"));
-  assert.equal(rec.price, 89700);
+  const rec = planRecord(findPlan("trafego"));
+  assert.equal(rec.price, 29700);
   assert.equal(planGivesAds({ config: { plan: rec } }), true);
-  assert.equal(planGivesCaptador({ config: { plan: rec } }), true);
+  assert.equal(planGivesCaptador({ config: { plan: rec } }), false);
 });

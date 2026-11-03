@@ -22,8 +22,9 @@ test("páginas de nicho usam os mesmos preços da página principal e não citam
   const site = read("site.html");
   for (const slug of pages) {
     const html = read(slug + ".html");
-    assert.match(html, /R\$ 197, pagamento único/);
-    assert.match(site, /R\$ 197 <small>pagamento único<\/small>/);
+    assert.match(html, /R\$ 97 por mês/);
+    assert.match(site, /R\$ 97 <small>por mês/);
+    assert.doesNotMatch(html, /Captador de clientes<\/h3>|5 Reels com IA/);
     assert.doesNotMatch(html, /R\$ 697/);
     assert.doesNotMatch(html, /global ?play|ragnar/i);
   }
@@ -32,17 +33,16 @@ test("páginas de nicho usam os mesmos preços da página principal e não citam
 test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; robô e contrato iguais", async () => {
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   const home = read("site.html");
-  assert.match(home, /Essencial <small>· Instagram no Automático<\/small>[\s\S]{0,80}R\$ 197 <small>por mês, sem entrada/);
-  assert.match(home, /R\$ 147 por mês nos 3 primeiros meses/);
-  assert.doesNotMatch(home, /aviso de 30 dias/);
-  assert.match(home, /Completo <small>[\s\S]{0,80}R\$ 697 <small>por mês, sem entrada/);
-  assert.doesNotMatch(home, /R\$ 297 de entrada|Entrada de R\$ 297/);
+  assert.match(home, /Postador Automático<\/h3>[\s\S]{0,60}R\$ 97 <small>por mês/);
+  assert.match(home, /Resposta Automática<\/h3>[\s\S]{0,60}R\$ 39,90 <small>por mês/);
+  assert.match(home, /Tráfego Pago<\/h3>[\s\S]{0,60}R\$ 297 <small>por mês/);
+  assert.doesNotMatch(home, /plano=(essencial|completo|captador|reels5|posts10|responde)/);
   assert.match(home, /1º ano incluso: domínio \.com\.br/);
   assert.match(home, /R\$ 297 por ano \(ou R\$ 29 por mês\), já com a renovação do domínio/);
   assert.doesNotMatch(home, /Domínio \.com\.br por sua conta/);
   const { knowledgePrompt } = await import("../src/whatsapp-knowledge.js");
   const prompt = knowledgePrompt("primeiro-teste");
-  assert.match(prompt, /Básico[\s\S]{0,400}R\$ 197 por mês, sem taxa de entrada/);
+  assert.match(prompt, /Postador Automático[\s\S]{0,200}R\$ 97 por mês/);
   assert.doesNotMatch(prompt, /aviso de 30 dias/);
   assert.match(prompt, /já com a renovação do domínio/);
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);

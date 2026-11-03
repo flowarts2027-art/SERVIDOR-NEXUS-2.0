@@ -172,3 +172,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Só API oficial da Meta (login pelo Facebook + busca de hashtag). Proibido raspar o Instagram ou usar serviço de scraping (regras do Instagram; risco de bloqueio da conta).
 - Os ganchos achados são só referência de formato para os agentes; nunca copiar frase nem citar o outro perfil.
 
+
+## 2026-11-02 — Tabela nova de planos (Rodrigo)
+- Só 3 planos mensais: Postador Automático R$ 97 (2 posts + 2 stories por dia, sem Reels), Resposta Automática R$ 39,90 (comentou QUERO → Direct, mensagem fixa) e Tráfego Pago R$ 297 (só para quem já é cliente; verba paga pelo cliente direto à Meta).
+- Avulsos que continuam: Site R$ 497 e Logo R$ 67. Saíram: Essencial, Completo, Completo + Tráfego, Captador, Responde, Reels 5, Posts 10 e o preço de fundador.
+- Captador fora da venda: não prometer clientes com ele. O código fica guardado; acesso só liberado na mão pelo Master.
+- Uma campanha de anúncio por plano. Começar vendendo o Postador.

@@ -12,62 +12,37 @@ export const PIX_CITY = "NOVA FRIBURGO";
 export const FOUNDER = Object.freeze({ until: "2026-11-30", slots: 3, months: 3 });
 
 // Valores em centavos. kind: "mensal" (cobrança todo mês) ou "unico" (paga uma vez).
+// Tabela nova (Rodrigo, 02/11/2026): só 3 planos mensais + Site e Logo avulsos.
+// Sem Reels, sem Captador à venda (o código do Captador fica guardado, desligado da venda).
 export const PLANS = Object.freeze([
   {
-    id: "essencial", name: "Essencial", kind: "mensal", price: 19700, setup: 0, founderPrice: 14700,
-    summary: "Instagram no automático com as fotos do seu negócio.",
-    quotas: { feed: 30, reels: 12, stories: 30 },
+    id: "postador", name: "Postador Automático", kind: "mensal", price: 9700, setup: 0,
+    summary: "Seu Instagram postando sozinho todo dia.",
+    quotas: { feed: 60, stories: 60 },
     includes: [
-      "30 posts no feed por mês (carrosséis e imagens)",
-      "12 Reels por mês",
-      "30 stories por mês",
-      "Resposta automática que leva ao seu WhatsApp",
-      "Código de pedido no fim de cada post",
+      "2 posts por dia: um de manhã e um à tarde",
+      "2 stories por dia",
+      "As artes são feitas para o seu negócio",
       "Painel no celular: você aprova antes de sair"
     ]
   },
   {
-    id: "completo", name: "Completo", kind: "mensal", price: 69700, setup: 0,
-    summary: "Tudo do Essencial, com Reels em vídeo de verdade e o Captador de brinde.",
-    quotas: { feed: 30, reels: 30, stories: 60 },
-    gifts: ["captador"],
+    id: "resposta", name: "Resposta Automática", kind: "mensal", price: 3990, setup: 0,
+    summary: "Comentou QUERO, recebe a sua mensagem no Direct.",
     includes: [
-      "30 posts no feed por mês",
-      "30 Reels por mês com vídeo de verdade",
-      "60 stories por mês",
-      "Brinde: Captador de clientes (vale R$ 97 por mês) para quem vende para empresas",
-      "Resposta automática e código de pedido",
-      "Painel no celular: você aprova antes de sair"
+      "A pessoa comenta a palavra no seu post",
+      "Ela recebe a sua mensagem no Direct na hora",
+      "Você escreve a mensagem uma vez e pronto"
     ]
   },
   {
-    id: "completo-trafego", name: "Completo + Tráfego", kind: "mensal", price: 89700, setup: 0,
-    summary: "Tudo do Completo com o Tráfego junto, mais barato que separado (R$ 1.094).",
-    quotas: { feed: 30, reels: 30, stories: 60 },
-    gifts: ["captador", "ads"],
+    id: "trafego", name: "Tráfego Pago", kind: "mensal", price: 29700, setup: 0,
+    summary: "Anúncios do seu Instagram para atrair clientes.",
     includes: [
-      "Tudo do Completo: 30 posts, 30 Reels e 60 stories por mês",
-      "Brinde: Captador de clientes para quem vende para empresas",
-      "Tráfego: botão Impulsionar nos seus posts, com o seu WhatsApp no anúncio",
-      "Economia de R$ 197 por mês em relação aos dois separados",
+      "A Flow Arts cuida dos seus anúncios",
+      "O anúncio leva a pessoa até você",
       "A verba do anúncio é paga no seu cartão, direto na Meta (não está inclusa)"
     ]
-  },
-  {
-    id: "trafego", name: "Tráfego", kind: "mensal", price: 39700, setup: 0,
-    summary: "Impulsione seus posts pelo painel e receba clientes no WhatsApp.",
-    includes: [
-      "Botão Impulsionar nos seus posts, direto no painel",
-      "Você escolhe quanto gastar por dia, os dias e a cidade",
-      "O anúncio leva a pessoa direto para o seu WhatsApp",
-      "Acompanhamento da Flow Arts",
-      "A verba do anúncio é paga no seu cartão, direto na Meta (não está inclusa)"
-    ]
-  },
-  {
-    id: "captador", name: "Captador", kind: "mensal", price: 9700, setup: 0,
-    summary: "Ache empresas da sua cidade para vender.",
-    includes: ["100 buscas por mês no painel", "Empresas com telefone e mensagem pronta para o seu WhatsApp"]
   },
   {
     id: "site", name: "Site", kind: "unico", price: 49700, setup: 0,
@@ -79,13 +54,6 @@ export const PLANS = Object.freeze([
       "Depois do 1º ano: R$ 297 por ano (ou R$ 29 por mês)"
     ]
   },
-  {
-    id: "responde", name: "Responde", kind: "unico", price: 19700, setup: 0,
-    summary: "Resposta automática no Instagram + 10 posts.",
-    includes: ["Resposta automática no direct com o botão do seu WhatsApp", "10 posts prontos"]
-  },
-  { id: "reels5", name: "Reels 5", kind: "unico", price: 14700, setup: 0, summary: "5 Reels com IA, em até 5 dias.", includes: ["5 Reels prontos"] },
-  { id: "posts10", name: "Posts 10", kind: "unico", price: 9700, setup: 0, summary: "10 posts prontos em 24 horas.", includes: ["10 posts prontos"] },
   { id: "logo", name: "Logo", kind: "unico", price: 6700, setup: 0, summary: "3 opções de logo em 24 horas.", includes: ["3 opções de logo"] }
 ].map(Object.freeze));
 
