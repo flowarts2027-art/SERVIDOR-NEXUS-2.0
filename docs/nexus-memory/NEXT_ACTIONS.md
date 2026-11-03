@@ -1,3 +1,8 @@
+## 2026-11-03 — Verificação pós-merge da logo NEXUS
+1. Mesclar PR da branch `feat/nexus-logo-oficial-azul-20261103` e acompanhar deploy Cloudflare.
+2. Conferir Master e Portal cliente em desktop/mobile, incluindo login e logo da Daniela; garantir visual sem distorção ou cache antigo.
+3. Em lote separado, se necessário, gerar ícones PWA de 192/512 px em alta resolução a partir do PNG original (não substituir automaticamente as marcas próprias de clientes).
+
 # Próximas ações
 
 ## 2026-10-27 — Redesign visual do painel do cliente

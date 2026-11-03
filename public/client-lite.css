@@ -996,3 +996,11 @@ html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { backgroun
 /* 01/11: botões "Atualizar" e "Olhar agora" sem quebrar a palavra no celular. */
 .radar-results-head h2 { min-width: 0; }
 .radar-refresh { white-space: nowrap; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-weight: 700; }
+
+/* Identidade oficial NEXUS azul/prata — preserva as marcas próprias dos clientes. */
+.nav-brand img.nexus-official-logo{width:112px;height:112px;object-fit:contain;flex:none}
+.nexus-top-logo{display:none}
+.nexus-login-logo{display:block;margin:0 auto 6px;width:96px;height:96px;object-fit:contain}
+@media (min-width:900px){.tabbar .nav-brand{justify-content:center;margin-bottom:8px;min-height:118px;padding:0}}
+@media (max-width:899px){.top-copy .nexus-top-logo{display:block;width:64px;height:64px;object-fit:contain;margin:0 0 4px}}
+html[data-client-theme="daniela-martins"] .nexus-top-logo{display:none!important}
