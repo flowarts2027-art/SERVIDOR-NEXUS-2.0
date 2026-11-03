@@ -1,16 +1,11 @@
 from pathlib import Path
 from PIL import Image
-import cairosvg
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "public/assets/nexus-mark-blue.svg"
-rendered = ROOT / ".tmp-nexus-mark.png"
-cairosvg.svg2png(url=str(SOURCE), write_to=str(rendered), output_width=432, output_height=432)
-source = Image.open(rendered).convert("RGBA")
-rendered.unlink()
+SOURCE = ROOT / "public/assets/nexus-mark-metal-blue.png"
+source = Image.open(SOURCE).convert("RGBA")
 
-# Use only the official blue N mark; the wordmark is intentionally excluded
-# so Android launchers do not crop or display text below the icon.
+# Use only the supplied metallic blue Nexus mark; no wordmark is included.
 icon_sizes = {
     "mipmap-mdpi/ic_launcher.png": 48,
     "mipmap-hdpi/ic_launcher.png": 72,
@@ -26,13 +21,15 @@ for flavor in ("cliente", "master"):
         out.parent.mkdir(parents=True, exist_ok=True)
         source.resize((size, size), Image.Resampling.LANCZOS).save(out, "PNG", optimize=True)
 
-    # Adaptive-icon foreground: symbol only, with no wordmark.
-    source.save(base / "drawable-nodpi/ic_launcher_foreground.png", "PNG", optimize=True)
+    # Adaptive-icon foreground: the supplied symbol only.
+    source.resize((432, 432), Image.Resampling.LANCZOS).save(
+        base / "drawable-nodpi/ic_launcher_foreground.png", "PNG", optimize=True
+    )
 
-    # Splash screen: use the same symbol for a consistent app identity.
+    # Splash screen: the same supplied symbol over the existing dark background.
     splash = Image.new("RGBA", (288, 288), (15, 39, 71, 255))
-    mark = source.resize((192, 192), Image.Resampling.LANCZOS)
-    splash.alpha_composite(mark, ((288 - 192) // 2, (288 - 192) // 2))
+    mark = source.resize((224, 224), Image.Resampling.LANCZOS)
+    splash.alpha_composite(mark, ((288 - 224) // 2, (288 - 224) // 2))
     splash.convert("RGB").save(base / "drawable-nodpi/splash.png", "PNG", optimize=True)
 
 print("Updated Android branding for cliente and master from", SOURCE)
