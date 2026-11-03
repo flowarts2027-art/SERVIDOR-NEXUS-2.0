@@ -1,3 +1,10 @@
+## 2026-11-02 23h BRT — Sistemática de imagens do ChatGPT + novo foco Flow Arts
+
+- Pedido do Rodrigo: o ChatGPT se embolava em campanhas de 7 dias (imagens duplicadas, mosaico, logo errada).
+- Feito: criado `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md` e aviso no `AGENTS.md`. Só documentação; nenhum código, deploy ou publicação.
+- Decisão do Rodrigo: Flow Arts foca só na automação do Instagram; campanhas sem busca de leads; tirar a hashtag #flowart.
+- Pendente (03/11): tirar #flowart das legendas geradas pelo código dos painéis; repaginar o site (trocar vídeo do fundo).
+
 # Passagem de trabalho — Claude Code → ChatGPT
 
 ## 2026-11-01 — Quatree Dog: campanha de carrosséis por linha (7 dias) passada ao ChatGPT
