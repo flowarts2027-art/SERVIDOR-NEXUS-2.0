@@ -28,6 +28,14 @@
   function card(p) {
     const badge = p.current ? `<span class="tag tag-ok">Seu plano</span>` : p.owned ? `<span class="tag tag-ok">Você já tem</span>`
       : p.highlight ? `<span class="tag tag-wait">➕ Mais vantagem</span>` : "";
+    const combo = p.id === "postador" ? (data?.plans || []).find(x => x.id === "combo") : null;
+    const offer = combo ? `<div class="up-combo-offer">
+      <strong>Inclua o Autoresponder com desconto</strong>
+      <p>Postador R$ 97,00 + Autoresponder R$ 39,99 = <s>R$ 136,99</s></p>
+      <p class="up-combo-total">Combo R$ 119,99/mês · Economize R$ 17,00/mês</p>
+      <p>2 posts e 2 stories por dia + respostas automáticas no Instagram.</p>
+      ${combo.owned ? '<span class="tag tag-ok">Combo contratado</span>' : `<button type="button" class="btn btn-primary" data-plan-pick="${esc(combo.id)}">Quero o combo por R$ 119,99</button>`}
+    </div>` : "";
     const action = p.owned && p.group !== "unico" ? "" : `<button type="button" class="btn ${p.highlight ? "btn-primary" : "btn-soft"}" data-plan-pick="${esc(p.id)}">${p.group === "base" ? "Mudar para este" : "Quero este"}</button>`;
     return `<article class="up-card${p.highlight ? " up-hot" : ""}${p.current ? " up-current" : ""}" data-plan-card="${esc(p.id)}">
       ${badge}
@@ -37,6 +45,7 @@
       ${p.upgradeNote ? `<p class="up-note">${esc(p.upgradeNote)}</p>` : ""}
       <details><summary>O que vem no plano</summary><ul>${p.includes.map(i => `<li>${esc(i)}</li>`).join("")}</ul></details>
       ${action}
+      ${offer}
     </article>`;
   }
 
@@ -49,7 +58,7 @@
       ${pending}
       ${GROUPS.map(([g, title]) => {
         const list = data.plans.filter(p => p.group === g);
-        return list.length ? `<h3 class="up-group">${title}</h3><div class="up-list">${list.map(card).join("")}</div>` : "";
+        return list.length ? `<h3 class="up-group">${title}</h3><div class="up-list">${list.filter(p => p.id !== "combo").map(card).join("")}</div>` : "";
       }).join("")}`;
   }
 
