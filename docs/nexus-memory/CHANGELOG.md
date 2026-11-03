@@ -1,3 +1,9 @@
+## 2026-11-03 — Nova marca NEXUS azul e prata, painéis Master e cliente
+- Pedido explícito: trocar a marca visual padrão de ambos os painéis pela logo NEXUS 3D aprovada no chat (N cromado e azul, órbita, NEXUS abaixo, fundo transparente). Convertida a partir da imagem fornecida/gerada; versão leve 96×96 WebP para exibição pequena na interface. Não foi redesenhada.
+- Arquivo estático em `public/assets/nexus-logo-azul-oficial.webp`; Master: menu superior; Portal: marca da navegação desktop, topo mobile e login; favicon. CSS dimensiona sem esticar. O tema Daniela Martins continua com sua logo própria.
+- Alteração preparada em branch `feat/nexus-logo-oficial-azul-20261103`. Deploy/produção **não confirmados**: exigem merge, CI/deploy e verificação no navegador com cache atualizado. Ícones PWA instalados (`app-master*.png`, `app-cliente*.png`) não foram substituídos neste lote.
+- Nenhuma regra de publicação, clientes ou automação foi alterada.
+
 # Histórico de alterações feitas pelo Work
 
 ## 2026-10-28 20h BRT — Facebook junto com o Instagram
