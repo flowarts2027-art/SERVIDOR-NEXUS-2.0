@@ -27,12 +27,22 @@ export const PLANS = Object.freeze([
     ]
   },
   {
-    id: "resposta", name: "Resposta Automática", kind: "mensal", price: 3990, setup: 0,
+    id: "resposta", name: "Resposta Automática", kind: "mensal", price: 3999, setup: 0,
     summary: "Comentou QUERO, recebe a sua mensagem no Direct.",
     includes: [
       "A pessoa comenta a palavra no seu post",
       "Ela recebe a sua mensagem no Direct na hora",
       "Você escreve a mensagem uma vez e pronto"
+    ]
+  },
+  {
+    id: "combo", name: "Postador + Resposta Automática", kind: "mensal", price: 11999, setup: 0,
+    summary: "2 posts e 2 stories por dia + respostas automáticas no Instagram.",
+    quotas: { feed: 60, stories: 60 },
+    includes: [
+      "2 posts e 2 stories por dia, com artes feitas para seu negócio",
+      "Respostas automáticas no Instagram",
+      "Economia de R$ 17 por mês em comparação aos dois serviços separados"
     ]
   },
   {
