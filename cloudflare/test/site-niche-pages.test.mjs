@@ -48,12 +48,12 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   assert.match(read("contrato-site.html"), /renovação do domínio, a CONTRATANTE paga R\$ 29,00 por mês ou R\$ 297,00 por ano/);
 });
 
-test("site novo (28/10): tema clean, mural de classificados e movimento que para com 'reduzir movimento'", () => {
+test("site (02/11): topo do Postador, sem Captador, e movimento que para com 'reduzir movimento'", () => {
   const home = fs.readFileSync(new URL("../../public/site.html", import.meta.url), "utf8");
-  assert.match(home, /Novos clientes todo dia no seu <em>WhatsApp\.<\/em>/);
-  assert.match(home, /Classificados de empresas/);
-  assert.match(home, /id="oportunidades"/);
-  assert.match(home, /Anúncios de exemplo: nomes e telefones são ilustrativos/);
+  assert.match(home, /Seu Instagram postando sozinho, <em>todo dia\.<\/em>/);
+  assert.match(home, /Agenda do seu Instagram/);
+  assert.doesNotMatch(home, /id="oportunidades"|Classificados de empresas|Novos clientes todo dia/);
+  assert.doesNotMatch(home.replace(/\/\*[^*]*\*\//g, ""), /Captador/);
   assert.match(home, /prefers-reduced-motion: reduce/);
   assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/, "vídeo de fundo como marca d'água");
   assert.equal((home.match(/<video/g) || []).length, 1, "só o vídeo de fundo do início");
@@ -80,14 +80,14 @@ test("páginas de nicho novas têm texto próprio (sem páginas duplicadas) e n�
   assert.equal(seen.size, pages.length);
 });
 
-test("home: título e descrição com a marca completa e o que as pessoas procuram (02/11)", () => {
+test("home: título e descrição falam do Postador (02/11)", () => {
   const home = read("site.html");
   const title = home.match(/<title>([^<]*)<\/title>/)[1];
-  assert.match(title, /Lista de empresas com WhatsApp/);
+  assert.match(title, /Instagram no automático/);
   assert.match(title, /Flow Arts Marketing/);
   assert.ok(title.length <= 75, "título longo: " + title.length);
   const desc = home.match(/<meta name="description" content="([^"]*)">/)[1];
-  assert.match(desc, /achar clientes/);
+  assert.match(desc, /R\$ 97 por mês/);
   assert.ok(desc.length <= 160, "descrição longa: " + desc.length);
   assert.match(home, /"name": "Flow Arts Marketing"/);
 });

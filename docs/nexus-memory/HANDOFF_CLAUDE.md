@@ -878,3 +878,7 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - `whatsapp-knowledge.js`: robô/David com os preços novos; não oferece Captador nem Reels.
 - `public/site.html`: cartões dos 3 planos (sem abas empresa/pessoa física), FAQ e schema com preços novos; avulsos só Site e Logo. 12 páginas `marketing-para-*` com a lista nova. Master: Tráfego R$ 297 e Captador "fora da venda".
 - Testes: 751/751. Falta (próximo passo): reescrever o topo do site, que ainda vende o Captador ("Novos clientes todo dia no seu WhatsApp").
+
+## 2026-11-02 (23h) — Claude: topo do site vende o Postador (sem Captador)
+- `public/site.html`: título/descrição/og falam do Postador (R$ 97); topo novo "Seu Instagram postando sozinho, todo dia." com a "Agenda do seu Instagram" (exemplo de 4 publicações aprovadas); saiu a seção de classificados/oportunidades; 3 passos novos (conte, a Flow Arts cria, você aprova); seção do QUERO virou a Resposta Automática (R$ 39,90); comparação "App de agendar post não cria post"; chamada final pede exemplo grátis; FAQ sem a pergunta da busca de clientes.
+- Testes 751/751. Próximo passo: depois do merge, conferir o site no celular.
