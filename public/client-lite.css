@@ -1008,3 +1008,13 @@ html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { backgroun
 @media (min-width:900px){.tabbar .nav-brand{justify-content:center;margin-bottom:8px;min-height:118px;padding:0}}
 @media (max-width:899px){.top-copy .nexus-top-logo{display:block;width:64px;height:64px;object-fit:contain;margin:0 0 4px}}
 html[data-client-theme="daniela-martins"] .nexus-top-logo{display:none!important}
+
+/* Cartões de planos com diferenciação e combo 03/11 */
+#plans-upgrade .up-list { grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));align-items:start; }
+#plans-upgrade .up-card[data-plan-card="postador"] { border:2px solid #195aab;background:#edf5ff; }
+#plans-upgrade .up-card[data-plan-card="resposta"] { border:2px solid #7952a1;background:#f6f0fc; }
+#plans-upgrade .up-card[data-plan-card="trafego"] { background:#fff6e5; }
+#plans-upgrade .up-combo-offer { display:grid;gap:8px;margin-top:10px;padding:12px;border:2px solid #16764c;border-radius:12px;background:#e8f7ee;color:#173d2c; }
+#plans-upgrade .up-combo-offer p { margin:0;line-height:1.4; }
+#plans-upgrade .up-combo-total {font-weight:800;font-size:1.05rem;}
+#plans-upgrade .up-combo-offer .btn {white-space:normal;text-align:center;}

@@ -8,7 +8,7 @@ import { getClient, upsertClient } from "./clients.js";
 import { setCaptadorAccess, captadorAudience } from "./captador.js";
 import { setAdsAccess } from "./ads.js";
 
-export const BASE_PLANS = ["postador"];
+export const BASE_PLANS = ["postador", "combo"];
 export const ADDON_PLANS = ["resposta", "trafego"];
 export const planGroup = id => BASE_PLANS.includes(id) ? "base" : ADDON_PLANS.includes(id) ? "adicional" : "unico";
 
@@ -36,6 +36,7 @@ export function ownedPlans(client = {}) {
   const owned = new Set();
   if (config.plan?.id) owned.add(String(config.plan.id));
   for (const a of Array.isArray(config.addons) ? config.addons : []) if (a?.id) owned.add(String(a.id));
+  if (owned.has("combo")) { owned.add("postador"); owned.add("resposta"); }
   if (owned.has("completo-trafego")) { owned.add("trafego"); owned.add("captador"); }
   if (owned.has("completo")) owned.add("captador");
   return owned;
@@ -54,7 +55,7 @@ export function catalogFor(client, audience = "empresas") {
         id: p.id, name: p.name, kind: p.kind, group, summary: p.summary, includes: [...p.includes],
         priceLine: priceLine(p), amount, amountLabel: brl(amount),
         owned: owned.has(p.id), current: p.id === current, upgradeNote,
-        highlight: p.id === "postador", pix: pixFor(p.id)
+        highlight: p.id === "postador" || p.id === "combo", pix: pixFor(p.id)
       };
     });
 }
@@ -113,7 +114,13 @@ export async function decideUpgrade(env, id, approve) {
     const group = planGroup(plan.id);
     if (group === "base") {
       if (config.plan?.id) config.planHistory = [...(Array.isArray(config.planHistory) ? config.planHistory : []), { ...config.plan, endedAt: new Date().toISOString() }].slice(-10);
+      if (config.plan?.id === "combo" && plan.id !== "combo") {
+        config.addons = (Array.isArray(config.addons) ? config.addons : []).filter(a => a?.id !== "resposta");
+      }
       config.plan = record;
+      if (plan.id === "combo") {
+        config.addons = [...(Array.isArray(config.addons) ? config.addons : []).filter(a => a?.id !== "resposta"), planRecord(findPlan("resposta"), { paid: 0 })];
+      }
     } else if (group === "adicional") {
       config.addons = [...(Array.isArray(config.addons) ? config.addons : []).filter(a => a?.id !== plan.id), record];
       if (plan.id === "captador") await setCaptadorAccess(env, client.id, true);
