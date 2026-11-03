@@ -36,7 +36,7 @@ android {
             dimension "painel"
             applicationId "br.com.flowarts.nexus.cliente"
             manifestPlaceholders += [
-                appName      : "Flow Arts",
+                appName      : "Nexus",
                 defaultUrl   : "https://${panelHost}/portal"
             ]
         }
