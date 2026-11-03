@@ -106,6 +106,42 @@
     target.textContent = d.feedConfigured ? "Fonte de oportunidades conectada." : "";
     target.hidden = !d.feedConfigured;
   }
+  async function refreshInstagramConnection() {
+    const status = $("flow-radar-connection-status"), badge = $("flow-radar-connection-badge"), button = $("flow-radar-connect-instagram");
+    if (!status || !badge || !button) return;
+    try {
+      const data = await portalApi("connections");
+      const ig = data.connections?.instagram || {};
+      const connected = Boolean(ig.connected);
+      badge.textContent = connected ? "Conectado" : "Não conectado";
+      badge.className = "radar-category " + (connected ? "radar-connection-ok" : "radar-connection-off");
+      status.textContent = connected
+        ? "Instagram conectado" + (ig.username ? " como @" + ig.username : ". A varredura de comentários está disponível.") + "."
+        : "Conecte o Instagram profissional da Flow Arts para o Radar ler os comentários dos seus próprios posts e encontrar interessados.";
+      button.textContent = connected ? "Reconectar Instagram" : "Conectar Instagram";
+      button.disabled = false;
+    } catch (error) {
+      badge.textContent = "Indisponível";
+      badge.className = "radar-category radar-connection-off";
+      status.textContent = "Não foi possível verificar a conexão agora.";
+      button.disabled = false;
+    }
+  }
+  async function connectInstagramFromRadar(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = "Abrindo Meta…";
+    try {
+      const data = await portalApi("instagram/start");
+      if (!data.url) throw new Error("Não foi possível iniciar a autorização.");
+      window.location.href = data.url;
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "Conectar Instagram";
+      const status = $("flow-radar-connection-status");
+      if (status) status.textContent = error.message;
+    }
+  }
   async function refreshCompetitors() {
     const host = $("flow-radar-competitors"); if (!host) return;
     const data = await api("/competitors");
@@ -193,7 +229,7 @@
     if (busy) return;
     busy = true;
     try {
-      await Promise.all([refreshStatus(), refreshLeads(), refreshCampaign()]);
+      await Promise.all([refreshStatus(), refreshInstagramConnection(), refreshLeads(), refreshCampaign()]);
       // O Vigia não pode derrubar o resto do painel se falhar.
       await Promise.all([refreshCompetitors(), refreshWatch()]).catch(e => {
         const t = $("flow-radar-watch-status"); if (t) t.textContent = "Vigia indisponível agora: " + e.message;
@@ -351,6 +387,7 @@
     if (!$("tab-radar")) return;
     $("flow-radar-refresh")?.addEventListener("click", load);
     $("flow-radar-map-search")?.addEventListener("click", searchBusinesses);
+    $("flow-radar-connect-instagram")?.addEventListener("click", connectInstagramFromRadar);
     $("flow-radar-profile-form")?.addEventListener("submit", inspectProfile);
     $("flow-radar-own-run")?.addEventListener("click", scanOwnComments);
     $("flow-radar-own-enable")?.addEventListener("click", enableOwnScanner);

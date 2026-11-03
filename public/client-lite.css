@@ -225,6 +225,10 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .ig-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 #support-link { margin-top: 12px; width: 100%; }
 
+/* Conexão do Instagram dentro do Radar */
+.radar-connection-ok { background: var(--ok-soft); color: var(--ok); }
+.radar-connection-off { background: var(--warm-soft); color: var(--warm); }
+
 /* Aviso */
 .toast {
   position: fixed; left: 16px; right: 16px; bottom: calc(var(--nav-h) + 14px + env(safe-area-inset-bottom));
