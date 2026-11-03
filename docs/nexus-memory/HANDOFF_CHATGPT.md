@@ -1,3 +1,33 @@
+## 2026-11-03 — REPASSE URGENTE PARA CLAUDE: auditoria Nexus + campanhas + publicação automática
+**Pedido expresso de Rodrigo em conversa por voz (03/11/2026). Ações abaixo são exigências PENDENTES de implementação e teste; registrar evidências reais.** Executar em UM PACOTE COESO de correções/PR, não dividir em pequenos merges desnecessários. Consultar primeiro AGENTS.md, os sete arquivos canônicos docs/nexus-memory, BRIDGE_PROTOCOL.md, TASK_BOARD.md, HANDOFF_CLAUDE.md, branches/PRs e estado da produção. Evitar conflitos com trabalho do Mano/Claude.
+
+### 1) Auditoria de mudanças recentes do Nexus
+- Auditar **tudo que mudou recentemente** (GitHub, Cloudflare Workers/D1, interfaces Master e cliente, integrações Meta, scheduler, logs, testes, deploys) e atualizar a documentação/memória para refletir o estado comprovado.
+- **Logo NEXUS** foi trocada por símbolo azul/prateado; verificar arquivo oficial, local de aplicação em Master e Portal, visual em desktop/mobile, cache, favicon, logotipos dos próprios clientes, estado do PR/merge/deploy. Há referência em NEXT_ACTIONS.md a `feat/nexus-logo-oficial-azul-20261103`; não afirmar que está no ar sem confirmação.
+- **Radar** foi modificado pelo Mano: identificar mudanças/PRs e resultado real, conferir segurança, interface, operação e possíveis regressões. O módulo de busca/captação avançada de leads da Flow Arts está **congelado** até autorização da Meta; não voltar a promovê-lo ou religá-lo sem autorização.
+- Checar alterações de outros agentes que ainda não chegaram à memória e reconciliar antes de escrever/subir novas mudanças.
+
+### 2) REGRA PRIORITÁRIA: publicação automática após aprovação de Rodrigo
+- Rodrigo determinou que conteúdo **já aprovado por ele** deve ser publicado automaticamente no horário previsto, mesmo se a aprovação formal do cliente ainda estiver pendente no painel, **desde que o cliente NÃO tenha clicado em 'pedir reajuste/revisão'**. A falta de clique em 'Postar agora' não deve impedir a publicação. Implementar explicitamente a política de autorização no fluxo existente e refletir no painel/status/auditoria.
+- **Exceção obrigatória**: se cliente pedir reajuste/revisão, bloquear publicação automática daquela peça até nova aprovação após a alteração. Não sobrepor recusa/revisão explícita.
+- Se uma publicação elegível falhar (timeout, indisponibilidade da Meta, atraso no scheduler etc.), fazer **reenvio automático seguro**, com backoff, limites de tentativas, idempotência e reconciliação com ID Meta para evitar duplicatas. Não exigir que o cliente clique 'Postar agora'; não republicar mídia já enviada com sucesso. Expor erro, motivo, tentativas, horário programado, último envio e confirmação Meta no painel; emitir alertas para falhas persistentes.
+- Conferir contratos de acesso, tokens válidos, expiração, status do recipiente Meta e tipo de conteúdo; erros permanentes/autorização inválida não devem gerar loop infinito e precisam de alerta. Logar com cuidado para não vazar segredos.
+- **Aplicar a regra em todos os clientes ativos**, salvaguardando solicitações de revisão explícitas, itens rejeitados e conteúdo não aprovado pelo Rodrigo. Testar com mocks e, somente se absolutamente necessário, publicação controlada sob autorização já existente, nunca disparar em massa para 'testar'.
+
+### 3) Auditoria de distribuição e campanhas para todos os clientes
+- Dados consultados 03/11 no Nexus, últimos 12 posts: Flow Arts @flowarts2026 alcance informado 10/26 views/0 interações; GILTEC/Rose @rose.giltec3 alcance 4/14 views; Quatree @ericsson_quatree alcance 31/77 views; Daniela @daniela_martins1547 alcance 170/313 views, 18 likes e 2 comentários. Investigar discrepâncias de alcance=0 com curtidas>0, atraso de atualização e diferenças por formato.
+- **Preservar artes e identidade aprovadas**. Investigar modalidade de publicação, horário programado vs efetivo, elegibilidade para recomendações, alcance de não seguidores, frequência, hashtags e analytics da Meta. Não concluir penalização da API sem evidências. Comparar manual vs automático com controle adequado, se possível.
+- Janelas INICIAIS de teste (Brasília), **não regra universal de viralização**: 12h–14h e 18h–21h; testar por cliente, considerar segmentos e desempenho ao longo de 28 dias, medir 24/72h, otimizar por formato e alcance mediano. Não mudar agendamentos aprovados sem reconciliação de conflitos nem quebrar horário do cliente.
+- Validar hashtags por nicho, evitar #flowart / #flowarts na Flow Arts (confusão com malabarismo). Não prometer que hashtags geram alcance.
+- Maestro/DOTs: monitorar diariamente, alertar Rodrigo proativamente em canal já configurado, identificar alcance baixo e publicação atrasada, recomendar ajustes, emitir painel/relatório por cliente e registrar evidências; não apenas produzir campanhas cegamente.
+- **Flow Arts:** campanhas exclusivamente para automação de postagens Instagram, **sem captação de leads/Radar enquanto congelado**. Oferta informada: R$97/mês 2 posts + 2 stories/dia; resposta automática R$39,99/mês a confirmar antes de anunciar; valores do site/tráfego sujeitos a confirmação. **GILTEC**: equipamentos reais e logo oficial; **Quatree**: embalagens oficiais e catálogo PDF, carrosséis separados, sem números inventados; **Daniela**: padrão original/luvas/serviços reais. Respeitar fichas dos demais clientes; Café Brisa demo sem campanha.
+
+### 4) Critérios de conclusão e handoff
+- Abrir PR único contendo auditoria técnica, correções, testes automatizados, migração/configuração se aplicável, atualização do estado documental e plano de observabilidade.
+- Confirmar **CI, merge e deploy** separadamente, depois verificar fluxo real no painel e na API; registrar o que foi efetivamente feito e o que permanece pendente.
+- Prioridade operacional: confiabilidade de publicação automática (e bloqueio de pedidos de revisão) > auditoria regressiva Logo/Radar/Nexus > métricas e reorientação da distribuição.
+- Esta anotação é um **repasse**, não é evidência de que as modificações foram implantadas. Não declarar regras em produção antes de checar.
+
 ## 2026-11-03 — Nova marca NEXUS azul e prata, painéis Master e cliente
 - Pedido explícito: trocar a marca visual padrão de ambos os painéis pela logo NEXUS 3D aprovada no chat (N cromado e azul, órbita, NEXUS abaixo, fundo transparente). Convertida a partir da imagem fornecida/gerada; versão leve 96×96 WebP para exibição pequena na interface. Não foi redesenhada.
 - Arquivo estático em `public/assets/nexus-logo-azul-oficial.webp`; Master: menu superior; Portal: marca da navegação desktop, topo mobile e login; favicon. CSS dimensiona sem esticar. O tema Daniela Martins continua com sua logo própria.
