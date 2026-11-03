@@ -1,3 +1,10 @@
+## 2026-11-03 10h BRT — Hashtag #FlowArts trocada por #FlowArtsMarketing
+
+- Motivo: #flowarts no Instagram é a hashtag de malabarismo (poi, bambolê). Rodrigo pediu para tirar.
+- Feito: troca em `cloudflare/src/client-brand.js`, `cloudflare/src/gemini-campaign.js`, `gemini/clientes/flow-arts.md` e legendas de `scripts/social/campanha/conteudo.json`. Testes do Worker: 753/753.
+- Atenção: legendas já salvas em `agendamentos/` (branch agendamentos) não foram mexidas; conferir antes de aprovar.
+- Pendente: `conteudo.json` ainda tem legendas falando do Captador/leads; reescrever para o novo foco (só automação do Instagram).
+
 ## 2026-11-02 23h BRT — Sistemática de imagens do ChatGPT + novo foco Flow Arts
 
 - Pedido do Rodrigo: o ChatGPT se embolava em campanhas de 7 dias (imagens duplicadas, mosaico, logo errada).

@@ -29,7 +29,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 ## Sistemática de imagens do ChatGPT e novo foco da Flow Arts (Rodrigo, 02/11/2026)
 
-**Toda campanha feita pelo ChatGPT segue `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md`:** uma imagem por geração (nunca mosaico ou grade), tabela da campanha antes de gerar, um dia por vez, a IA nunca desenha a logo (a logo oficial é carimbada depois). **Flow Arts agora foca só na automação do Instagram — sem busca de leads nas campanhas. Nunca usar #flowart.**
+**Toda campanha feita pelo ChatGPT segue `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md`:** uma imagem por geração (nunca mosaico ou grade), tabela da campanha antes de gerar, um dia por vez, a IA nunca desenha a logo (a logo oficial é carimbada depois). **Flow Arts agora foca só na automação do Instagram — sem busca de leads nas campanhas. Nunca usar #flowart nem #flowarts (malabarismo); usar #FlowArtsMarketing.**
 
 ## Padrão fixo das artes (Rodrigo, 28/10/2026)
 
