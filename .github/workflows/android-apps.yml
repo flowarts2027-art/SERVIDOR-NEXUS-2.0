@@ -121,6 +121,14 @@ jobs:
           EOF
           ls -la saida
 
+      - name: Anexar o APK do Master como artefato para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-master-verde
+          path: saida/nexus-master.apk
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Publicar na Release
         uses: softprops/action-gh-release@v2
         with:
