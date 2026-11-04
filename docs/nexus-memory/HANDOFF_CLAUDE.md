@@ -932,3 +932,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Observado nos rascunhos: o David tratou uma cliente que já é do Nexus como contato novo. Por isso **não ligar o robô** neste número até ele saber quem já é cliente (pendência).
 - Feito: quadro "Rascunho do David" + botão "Usar rascunho" (só preenche a caixa), filtro `phone` em /api/whatsapp/drafts, rascunho usado vira `sent`. Testes 769/769. Branch `feat/whatsapp-rascunho-david`, PR aberto; **merge só com OK do Rodrigo**.
 - Próximo passo: depois do merge, abrir Master › WhatsApp e conferir o quadro numa conversa; depois ensinar o David a reconhecer clientes do Nexus.
+
+- 07:30 BRT: PR #546 (rascunho do David) foi para a main pelo Rodrigo; deploy Cloudflare ok; quadro conferido no Master.
+
+## 2026-11-04 07:45 BRT — David reconhece clientes (Claude)
+- Pedido do Rodrigo: o David deve reconhecer todos os clientes do Master e todo cliente novo, e também os clientes do streaming (recarga do painel e suporte).
+- Clientes do streaming não ficam no Master, então o Rodrigo marca a conversa com o botão "É cliente do streaming".
+- Feito na branch `feat/whatsapp-cliente-conhecido` (PR aberto; merge só com OK do Rodrigo). Robô continua desligado.
+- Próximo passo: depois do merge, marcar as conversas do streaming no Master e conferir os rascunhos novos.

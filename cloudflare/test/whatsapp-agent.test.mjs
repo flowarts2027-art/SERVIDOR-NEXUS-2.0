@@ -239,3 +239,30 @@ test("draft per conversation: robot off shows David's draft; using it marks it s
     assert.equal((await f.call("/api/whatsapp/drafts?status=pending")).body.items.length, 1, "o rascunho da outra conversa continua");
   } finally { f.close(); }
 });
+
+test("known customers: Nexus client from the Master and streaming client marked by Rodrigo", async () => {
+  const f = fixture();
+  try {
+    // Cliente do Nexus cadastrado no Master (número sem o nono dígito, como a Meta às vezes manda).
+    f.db.prepare("INSERT INTO clients(id,name,status,config_json) VALUES('cli-teste','Cliente Teste','online',?1)")
+      .run({ "?1": JSON.stringify({ agentProfile: { brandName: "Studio Teste", niche: "Depilação", whatsapp: "(21) 98888-7777" } }) });
+    await f.receive("Fazer 4 postagens", "552188887777");
+    const nexusPrompt = JSON.stringify(f.aiPrompts.at(-1));
+    assert.match(nexusPrompt, /JÁ É cliente/);
+    assert.match(nexusPrompt, /Studio Teste/);
+    const inbox = await f.call("/api/whatsapp/inbox");
+    assert.equal(inbox.body.items.find(i => i.wa_id === "552188887777").nexus_client, "Studio Teste");
+
+    // Contato comum: nada de "já é cliente".
+    await f.receive("Quanto custa?", "5521977776666");
+    assert.doesNotMatch(JSON.stringify(f.aiPrompts.at(-1)), /JÁ É cliente/);
+
+    // Streaming: o Rodrigo marca no Master; o David passa a chamar ele.
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: "5521977776666", customerType: "xyz" })).status, 400);
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: "5521977776666", customerType: "streaming" })).status, 200);
+    await f.receive("Libera meus créditos?", "5521977776666");
+    assert.match(JSON.stringify(f.aiPrompts.at(-1)), /streaming/);
+    assert.equal(f.contact("5521977776666").customer_type, "streaming");
+    assert.equal(f.sent.length, 0, "robô desligado: ninguém recebe nada sozinho");
+  } finally { f.close(); }
+});
