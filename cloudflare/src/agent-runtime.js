@@ -1258,7 +1258,17 @@ async function runCreator(env,client,strategy,options) {
   return {created,repaired};
 }
 
+export function publisherSkippedForTrigger(trigger=""){
+  return String(trigger||"")==="scheduler";
+}
+
 async function runPublisher(env,client,options) {
+  // 04/11/2026: o ciclo de agentes da rodada de 15 min (trigger "scheduler") não publica mais:
+  // lá o limite de 50 pedidos já acabou e o post falhava com "Too many subrequests".
+  // Quem publica é o minuto próprio (trigger "publisher-sweep") ou o botão do painel.
+  if(publisherSkippedForTrigger(options?.trigger)){
+    return {published:0,failed:0,awaitingApproval:0,awaitingMedia:0,repairedApproval:0,duplicateMediaBlocked:0,duplicateCaptionBlocked:0,blockedReason:"publisher_only_minute"};
+  }
   // Corrige posts presos em "publishing" (servidor parou depois de publicar).
   await import("./executor.js").then(mod=>mod.recoverStuckPublishing(env,client.id,new Date())).catch(()=>null);
   const startedAt=new Date().toISOString();
@@ -1463,7 +1473,8 @@ async function runPublisher(env,client,options) {
       if(key)usedMedia.add(key);
       usedCaptions.push(caption);
     }catch(error){
-      payload.retryCount=Math.max(0,Number(payload.retryCount||0))+1;
+      const workerLimit=/too many subrequests/i.test(String(error?.message||error));
+      payload.retryCount=workerLimit?Math.min(Math.max(0,Number(payload.retryCount||0)),2):Math.max(0,Number(payload.retryCount||0))+1;
       payload.lastPublishAttemptAt=new Date().toISOString();
       await env.DB.prepare("UPDATE post_ledger SET status='failed',error=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
         .bind(row.id,String(error?.message||error).slice(0,900),JSON.stringify(payload)).run();
