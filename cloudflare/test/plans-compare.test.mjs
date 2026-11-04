@@ -36,8 +36,11 @@ test("tabela mostra os 3 planos com os preços do catálogo e cores diferentes",
 
 test("botão Solicitar abre o WhatsApp comercial com o plano escrito; plano atual mostra selo", () => {
   const html = renderCompare(plans);
-  const links = [...html.matchAll(/href="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, "&"));
+  const linksOf = part => [...part.matchAll(/href="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, "&"));
+  const split = html.indexOf('class="cmp-cards"');
+  const links = linksOf(html.slice(0, split));
   assert.equal(links.length, 2); // Postador é o plano atual
+  assert.deepEqual(linksOf(html.slice(split)), links, "cartões do celular têm os mesmos botões da tabela");
   for (const link of links) assert.ok(link.startsWith("https://wa.me/5521964816185?text="));
   assert.match(decodeURIComponent(links[1].split("text=")[1]), /plano Postador \+ Resposta Automática \(R\$ 119,99/);
   assert.match(html, /Seu plano/);

@@ -71,20 +71,32 @@
   function compareHtml() {
     const cols = COMPARE.map(c => ({ ...c, plan: (data?.plans || []).find(p => p.id === c.id) })).filter(c => c.plan);
     if (cols.length < 2) return "";
-    const head = cols.map(c => `<th scope="col" class="${c.color}">${esc(c.plan.name)}${c.id === "combo" ? '<span class="cmp-save">Economize R$ 17,00/mês</span>' : ""}</th>`).join("");
+    // Tabela e cartões saem das mesmas peças: textos e botões nunca ficam diferentes.
+    const saveHtml = c => c.id === "combo" ? '<span class="cmp-save">Economize R$ 17,00/mês</span>' : "";
+    const valueHtml = v => v === "—" ? '<span aria-label="Não inclui">—</span>' : esc(v);
+    const askHtml = c => c.plan.current
+      ? '<span class="tag tag-ok">Seu plano</span>'
+      : `<a class="btn btn-primary cmp-btn" href="${esc(askLink(c.plan))}" target="_blank" rel="noopener">Solicitar este plano</a>`;
+    const head = cols.map(c => `<th scope="col" class="${c.color}">${esc(c.plan.name)}${saveHtml(c)}</th>`).join("");
     const rows = COMPARE_ROWS.map(([label, vals]) => `<tr><th scope="row">${esc(label)}</th>${cols.map(c => {
       const v = vals[c.id] || "—";
-      return `<td class="${c.color}${v === "—" ? " cmp-no" : ""}">${v === "—" ? '<span aria-label="Não inclui">—</span>' : esc(v)}</td>`;
+      return `<td class="${c.color}${v === "—" ? " cmp-no" : ""}">${valueHtml(v)}</td>`;
     }).join("")}</tr>`).join("");
     const price = `<tr class="cmp-price"><th scope="row">Valor</th>${cols.map(c => `<td class="${c.color}"><b>${esc(c.plan.priceLine)}</b></td>`).join("")}</tr>`;
-    const ask = `<tr class="cmp-ask"><th scope="row"><span class="sr-only">Pedir</span></th>${cols.map(c => `<td class="${c.color}">${c.plan.current
-      ? '<span class="tag tag-ok">Seu plano</span>'
-      : `<a class="btn btn-primary cmp-btn" href="${esc(askLink(c.plan))}" target="_blank" rel="noopener">Solicitar este plano</a>`}</td>`).join("")}</tr>`;
+    const ask = `<tr class="cmp-ask"><th scope="row"><span class="sr-only">Pedir</span></th>${cols.map(c => `<td class="${c.color}">${askHtml(c)}</td>`).join("")}</tr>`;
+    // Celular (04/11/2026): um cartão por plano, um embaixo do outro, no lugar da tabela.
+    const cards = cols.map(c => `<article class="cmp-card ${c.color}">
+        <h4>${esc(c.plan.name)}${saveHtml(c)}</h4>
+        <dl>${COMPARE_ROWS.map(([label, vals]) => `<div><dt>${esc(label)}</dt><dd>${valueHtml(vals[c.id] || "—")}</dd></div>`).join("")}
+          <div class="cmp-card-price"><dt>Valor</dt><dd><b>${esc(c.plan.priceLine)}</b></dd></div></dl>
+        ${askHtml(c)}
+      </article>`).join("");
     return `<h3 class="up-group">Compare os planos</h3>
       <div class="cmp-wrap" tabindex="0" aria-label="Tabela comparando os planos">
         <table class="cmp-table"><thead><tr><th scope="col"><span class="sr-only">O que vem</span></th>${head}</tr></thead>
         <tbody>${rows}${price}${ask}</tbody></table>
       </div>
+      <div class="cmp-cards">${cards}</div>
       <p class="muted">O botão abre o WhatsApp da Flow Arts com o plano já escrito. Separados, os dois custam R$ 136,99; no combo, R$ 119,99.</p>`;
   }
 
