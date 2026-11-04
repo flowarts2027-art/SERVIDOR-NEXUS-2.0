@@ -18,7 +18,7 @@ import { runCronIteration } from "./cron-runtime.js";
 import { runClientApprovalNotices } from "./client-approval-notify.js";
 import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
-import { processDueJobs } from "./executor.js";
+import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
 import { instagramCredentialStatus } from "./instagram-credentials.js";
 import { instagramMasterConfigStatus, handleInstagramOAuthCallback, handleInstagramComplianceRequest } from "./instagram.js";
@@ -559,6 +559,14 @@ export default {
     const at = new Date(event.scheduledTime || Date.now());
     // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
     if (String(event.cron || "") === MINUTE_CRON) {
+      // 04/11/2026: postagens falhavam com "Too many subrequests" porque a rodada de 15 min faz tudo junto.
+      // Nos minutos 7, 22, 37 e 52 esta rodada só publica, com o limite do Worker livre.
+      if (isPublisherOnlyMinute(at)) {
+        ctx.waitUntil(processDueJobs(env, at).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
+          console.warn("publisher_only_minute_failed", String(error?.message || error).slice(0, 140))
+        ));
+        return;
+      }
       // Flow Arts only: authorized feed, hourly and disabled unless configured.
       if (at.getUTCMinutes() === 0 && env.RADAR_FEED_URL && env.RADAR_FEED_HOST) {
         ctx.waitUntil(runRadarDiscovery(env).then(out => console.log("flow_radar_discovery", JSON.stringify(out))).catch(error => console.warn("flow_radar_discovery_failed", String(error?.message || error).slice(0, 120))));

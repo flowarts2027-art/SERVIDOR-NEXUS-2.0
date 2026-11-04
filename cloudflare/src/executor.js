@@ -75,12 +75,13 @@ function publishGuard(payload = {}, clientId) {
 async function duePosts(env, clientId, nowIso) {
   const result = await env.DB.prepare(
     `SELECT id, client_id, scheduled_for, status, approval_status, caption,
-            image_object_key, payload_json
+            image_object_key, payload_json, error
      FROM post_ledger
      WHERE client_id = ?1
        AND approval_status = 'approved'
        AND status IN ('ready', 'scheduled', 'failed')
-       AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0) < ${MAX_PUBLISH_RETRIES}
+       AND (COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0) < ${MAX_PUBLISH_RETRIES}
+            OR LOWER(COALESCE(error,'')) LIKE 'too many subrequests%')
        AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief') = 'approved'
        AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer') = 'approved'
        AND scheduled_for IS NOT NULL
@@ -154,6 +155,17 @@ export async function recoverStuckPublishing(env, clientId, now = new Date(), fi
   return out;
 }
 
+// 04/11/2026: "Too many subrequests" é do servidor (a rodada de 15 min faz coisa demais junta),
+// não do post. Esse erro não gasta tentativa, e o post volta para a fila mesmo depois de 3 falhas.
+export function isWorkerLimitError(message = "") {
+  return /too many subrequests/i.test(String(message || ""));
+}
+
+// 04/11/2026: nos minutos 7, 22, 37 e 52 o cron de 1 minuto só publica, com o limite do Worker inteiro livre.
+export function isPublisherOnlyMinute(at = new Date()) {
+  return new Date(at).getUTCMinutes() % 15 === 7;
+}
+
 export function isStoryPost(payload = {}) {
   return String(payload?.creativeFeatures?.requestedFormat || "").toLowerCase() === "story";
 }
@@ -196,6 +208,9 @@ async function runPublisherSweep(env, clientId, now) {
     const payload = parseJson(row.payload_json, {});
     const story = isStoryPost(payload);
     if (!canPublishInSweep({ story, gateOk: gate.ok, done })) continue;
+    if (isWorkerLimitError(row.error) && Number(payload.retryCount || 0) >= MAX_PUBLISH_RETRIES) {
+      payload.retryCount = MAX_PUBLISH_RETRIES - 1;
+    }
     const guard = publishGuard(payload, clientId);
     if (!guard.ok) {
       await savePostResult(env, row, { status: row.status, error: guard.error, payload });
@@ -238,10 +253,14 @@ async function runPublisherSweep(env, clientId, now) {
       summary.published += 1;
       done[story ? "story" : "feed"] += 1;
     } catch (error) {
-      const retries = Math.max(0, Number(payload.retryCount || 0)) + 1;
+      const message = error instanceof Error ? error.message : String(error);
+      // Limite do Worker não é culpa do post: não conta tentativa (e devolve as que esse erro gastou).
+      const retries = isWorkerLimitError(message)
+        ? Math.min(Math.max(0, Number(payload.retryCount || 0)), MAX_PUBLISH_RETRIES - 1)
+        : Math.max(0, Number(payload.retryCount || 0)) + 1;
       await savePostResult(env, row, {
         status: "failed",
-        error: error instanceof Error ? error.message : String(error),
+        error: message,
         payload: {
           ...payload,
           retryCount: retries,

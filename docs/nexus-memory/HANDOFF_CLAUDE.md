@@ -940,3 +940,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Clientes do streaming não ficam no Master, então o Rodrigo marca a conversa com o botão "É cliente do streaming".
 - Feito na branch `feat/whatsapp-cliente-conhecido` (PR aberto; merge só com OK do Rodrigo). Robô continua desligado.
 - Próximo passo: depois do merge, marcar as conversas do streaming no Master e conferir os rascunhos novos.
+
+## 04/11/2026 — postagens falhando com "Too many subrequests" (Claude)
+- Sintoma: desde ~10:30 posts/stories de vários clientes (Flow Arts, Daniela, Nexus AI) ficaram "failed".
+- Causa (lida no ledger via conector, PR #551): `Too many subrequests by single Worker invocation`. A rodada de 15 min roda dezenas de tarefas juntas e a publicação fica sem limite.
+- Correção (PR fix/publicar-sem-limite-subrequests): minutos 7/22/37/52 do cron de 1 min só rodam `processDueJobs`; erro de limite do Worker não gasta tentativa e posts presos por ele voltam à fila. Testes 776/776.
+- Próximo passo: depois do deploy, conferir no `nexus_ver_agenda` se os "failed" com esse erro saíram.
