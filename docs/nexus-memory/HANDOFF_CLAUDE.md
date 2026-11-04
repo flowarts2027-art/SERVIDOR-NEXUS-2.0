@@ -24,6 +24,15 @@
 - Próximo passo: o Rodrigo revisa e faz o merge do PR.
 - Bloqueios / autorização: o merge depende do OK do Rodrigo.
 
+## 2026-11-04 20:05 BRT — Vigia do Instagram por regra, sem lista fixa (Claude)
+- Pedido: vigiar todo cliente ativo com Instagram conectado; novo entra sozinho, arquivado sai sozinho.
+- Executado: `watchedInstagramClients` e `instagramPublishingHealth` em `cloudflare/src/instagram-credentials.js`. Sem lista fixa em `index.js`, `nexus-overnight-regression.yml` e `nexus-autofix-policy.mjs`.
+- Regra: `status='online'` com linha em `connections` (`meta` ou `instagram`). Token vencido continua vigiado, para gerar alerta. Lista vazia ou banco fora do ar dão `ok:false`.
+- Evidência: em produção, antes do merge, os 6 clientes atuais vieram com `ok:true`. Testes com SQLite real.
+- Fora deste PR: `.github/scripts/nexus-audit.mjs` ainda olha só os dois clientes arquivados.
+- Estado: PR aguardando revisão, não implantado.
+- Próximo passo: o Worker e o workflow precisam ir juntos. Depois do deploy, abrir `/api/instagram-publishing-health` e conferir os 6 clientes.
+
 ## 2026-11-04 18:52 BRT — Painel da Quatree Dog com as cores da marca (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido e objetivo: o Rodrigo pediu para mudar só as cores do painel da `quatree-dog`: vermelho #C8102E, vermelho escuro #8B0A1F, prata #B8BCC2, branco e texto #2B2B2B.

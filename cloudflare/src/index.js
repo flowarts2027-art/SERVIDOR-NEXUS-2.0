@@ -20,7 +20,7 @@ import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
-import { instagramCredentialStatus } from "./instagram-credentials.js";
+import { instagramCredentialStatus, instagramPublishingHealth } from "./instagram-credentials.js";
 import { instagramMasterConfigStatus, handleInstagramOAuthCallback, handleInstagramComplianceRequest } from "./instagram.js";
 import { masterCredentialsValid, createMasterSession, authenticatePortalUser, createPortalSession, masterSessionCookie, portalSessionCookie, loginRateLimitStatus, recordLoginFailure, clearLoginFailures, resolvePortalSession, resolveMasterSession } from "./auth.js";
 import { autonomyOverallHealthy } from "./health-policy.js";
@@ -1111,23 +1111,7 @@ export default {
     }
 
     if (url.pathname === "/api/instagram-publishing-health" && request.method === "GET") {
-      const managed = ["daniela-martins", "giltec", "maskara-assessoria", "nexus-ai", "primeiro-teste", "quatree-dog"];
-      const clients = await Promise.all(managed.map(async clientId => {
-        const raw = await instagramCredentialStatus(env, clientId).catch(() => ({
-          connected: false, tokenValid: false, accountMatches: false, validation: "diagnostic_error"
-        }));
-        return {
-          clientId,
-          connected: Boolean(raw.connected),
-          tokenValid: Boolean(raw.tokenValid),
-          accountMatches: Boolean(raw.accountMatches),
-          validation: String(raw.validation || "unknown")
-        };
-      }));
-      return json({
-        ok: clients.length === managed.length && clients.every(item => item.connected && item.tokenValid && item.accountMatches),
-        clients
-      }, 200);
+      return json(await instagramPublishingHealth(env), 200);
     }
 
     if (url.pathname === "/api/autonomy-health" && request.method === "GET") {

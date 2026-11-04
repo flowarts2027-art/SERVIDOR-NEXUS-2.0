@@ -85,11 +85,11 @@ jobs:
           set -euo pipefail
           base="https://servidor-nexus.diamantehinode2015.workers.dev"
           curl --fail --silent --show-error --max-time 25 "$base/api/instagram-publishing-health" > /tmp/instagram-health.json
-          # Presence + explicit account binding prevents empty lists and wrong accounts
-          # from passing the overnight readiness check.
+          # The Worker lists every active client with Instagram connected. An empty list
+          # or a wrong account must not pass the overnight readiness check.
           jq -e '
             .ok == true
-            and ([.clients[]? | .clientId] | sort == ["daniela-martins", "giltec", "maskara-assessoria", "nexus-ai", "primeiro-teste", "quatree-dog"])
+            and ([.clients[]?] | length > 0)
             and ([.clients[]? | .connected == true and .tokenValid == true and .accountMatches == true] | all)
           ' /tmp/instagram-health.json > /dev/null
           jq '{ok, clients: [.clients[] | {clientId, connected, tokenValid, accountMatches, validation}]}' /tmp/instagram-health.json

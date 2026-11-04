@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {recoverableRun,healthIncidents,eligibleCodePatch,scrubLog,incidentKey,INSTAGRAM_CLIENTS} from "./nexus-autofix-policy.mjs";
+import {recoverableRun,healthIncidents,eligibleCodePatch,scrubLog,incidentKey} from "./nexus-autofix-policy.mjs";
+
+const WATCHED=["primeiro-teste","quatree-dog"];
 
 const now=Date.parse("2026-10-08T03:00:00Z");
 const sample={
@@ -22,10 +24,13 @@ test("health watches the active Flow Arts cycle and fails closed on missing prod
     clients:[{clientId:"primeiro-teste",cycleHealth:{status:"success",cycleOverdue:false}}]
   };
   const instagram={
-    clients:INSTAGRAM_CLIENTS.map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))
+    clients:WATCHED.map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))
   };
   assert.deepEqual(healthIncidents(ok,instagram),[]);
-  assert.deepEqual(healthIncidents(ok,{clients:instagram.clients.slice(0,-1)}).map(x=>x.type),["instagram_credentials"]);
+  assert.deepEqual(healthIncidents(ok,{clients:[]}).map(x=>[x.type,x.clientId]),[["instagram_credentials","watchlist"]]);
+  assert.deepEqual(healthIncidents(ok,undefined).map(x=>x.clientId),["watchlist"]);
+  const expired={clients:[...instagram.clients.slice(0,-1),{clientId:"quatree-dog",connected:false,tokenValid:false,accountMatches:false}]};
+  assert.deepEqual(healthIncidents(ok,expired).map(x=>[x.type,x.clientId]),[["instagram_credentials","quatree-dog"]]);
   assert.ok(healthIncidents({...ok,scheduler:{healthy:false}},instagram).some(x=>x.type==="worker_or_cron_unhealthy"));
   assert.deepEqual(healthIncidents({...ok,clients:[]},instagram).map(x=>[x.type,x.clientId]),[["agent_cycle","primeiro-teste"]]);
   for (const cycleHealth of [{status:"failed",cycleOverdue:false},{status:"success",cycleOverdue:true}]) {
@@ -35,7 +40,7 @@ test("health watches the active Flow Arts cycle and fails closed on missing prod
 test("archived clients no longer raise cycle alerts",()=>{
   const data={ok:true,automationActive:true,scheduler:{healthy:true},
     clients:[{clientId:"primeiro-teste",cycleHealth:{status:"success",cycleOverdue:false}}]};
-  const instagram={clients:INSTAGRAM_CLIENTS.map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))};
+  const instagram={clients:WATCHED.map(clientId=>({clientId,connected:true,tokenValid:true,accountMatches:true}))};
   assert.equal(healthIncidents(data,instagram).filter(x=>x.type==="agent_cycle").length,0);
 });
 test("patch safety rejects privileged areas, changes to provider access and ambiguity",()=>{
