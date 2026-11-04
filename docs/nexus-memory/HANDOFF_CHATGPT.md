@@ -1,3 +1,10 @@
+## 2026-11-04 — Nexus AI: 05/11/2026, 9 imagens enviadas ao painel (aprovação pendente)
+- Cliente `nexus-ai` / Instagram `@nexusai_system`. Agenda consultada antes: dia 05/11 estava sem peças.
+- Envio via `nexus_enviar_arte` confirmado e agenda relida: 09:00 carrossel 4 cartões (`upload-carousel-31ed2cc0-3310-4995-bc1b-54826113f2ff`); 12:00 post (`upload-feed-a165be14-2f95-4166-8ea8-ba466730095e`); 19:00 post (`upload-feed-62d9471f-6a5a-42c1-8b1a-ff4da1f37dc4`).
+- Stories também confirmados: 09:00 `upload-story-8a706a4c-9bfe-4955-bd77-75ec54c07ccf`; 12:00 `upload-story-11025b08-9d07-4d4a-9987-e1758d24ff8b`; 19:00 `upload-story-ef6cbcd5-5dc5-4760-a9d2-30b4e3f563be`. Total: 9 imagens em 6 publicações.
+- Imagens ajustadas em cópias locais para feed 1080×1350 e stories 1080×1920, preservando todo o texto visível (sem corte do CTA COMENTE QUERO). Upload confirmou "arte preservada, sem acrescentar texto ou logo".
+- Estado verificado após envio: todas as seis publicações `ready`, `aprovacao=pending`; **nenhuma aprovação ou publicação feita pelo ChatGPT**. Precisa de revisão das artes e eventual confirmação da resposta automática ao comentário QUERO antes da publicação.
+
 
 ## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
 - Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.
