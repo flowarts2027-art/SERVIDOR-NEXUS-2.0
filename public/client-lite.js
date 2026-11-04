@@ -797,10 +797,11 @@ const CLIENT_THEMES = {
     symbol: "/brand/daniela-martins-simbolo.png",
     themeColor: "#746E44"
   },
-  // Só cores: sem "logo" aqui, o cliente continua com a marca do NEXUS.
   "quatree-dog": {
     name: "Quatree Dog",
-    themeColor: "#8B0A1F"
+    tagline: "Ração Pet",
+    logo: "/brand/quatree-logo.png",
+    themeColor: "#88401C"
   }
 };
 let defaultBrandHtml = null;
