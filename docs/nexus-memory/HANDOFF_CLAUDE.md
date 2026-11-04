@@ -1,3 +1,13 @@
+## 2026-11-04 19:45 BRT — Painel da Quatree Dog com a logo e as cores reais (Claude)
+- Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
+- Pedido: logo oficial no menu, igual à Daniela, e cores reais da logo no lugar das do PR #574.
+- Logo: o Rodrigo citou o nome `quatree-logo`; em Downloads só havia `quatreedog.jfif` (447×447, fundo laranja, Q vermelho, nome marrom). Convertido para PNG em `public/brand/quatree-logo.png`, sem alterar a arte.
+- Cores medidas na imagem: laranja #E88400, vermelho #C03C34, marrom #88401C, branco.
+- Decisões: menu marrom com texto branco; item ativo laranja com texto marrom-escuro, porque branco sobre laranja dá 2,6:1. Logo quadrada: 200×100 no menu, com recorte só por CSS (Daniela: 200×85).
+- Evidências: Chrome sem tela, 1280 e 390 px, tema forçado na demonstração: 0 contraste baixo, 0 azul, mesmos botões e abas. Daniela e cliente sem tema continuam iguais.
+- Não conferido: painel real da Quatree. Estado: PR aguardando revisão, não implantado.
+- Próximo passo: depois do merge, abrir o painel real e conferir Início, Posts e Números.
+
 ## 2026-11-04 18:10 BRT — Verificação do Instagram passa a olhar os clientes ativos (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido e objetivo: o Rodrigo pediu para investigar a falha do `NEXUS Overnight Regression` e vigiar só clientes ativos com Instagram conectado.

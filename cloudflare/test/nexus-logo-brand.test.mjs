@@ -27,17 +27,20 @@ test("Arquivo WebP válido e marca personalizada preservada", () => {
   assert.ok(read("client-lite.css").includes('html[data-client-theme="daniela-martins"] .nexus-top-logo'));
 });
 
-test("Tema da Quatree Dog muda só as cores e fica preso ao cliente", () => {
+test("Tema da Quatree Dog usa a logo oficial e as cores dela, preso ao cliente", () => {
   const css = read("client-lite.css");
   const js = read("client-lite.js");
   const block = js.slice(js.indexOf('"quatree-dog": {'), js.indexOf("let defaultBrandHtml"));
-  assert.ok(block.includes('themeColor: "#8B0A1F"'));
-  assert.ok(!block.includes("logo:"), "tema da Quatree não pode trocar a logo");
-  assert.ok(js.includes("if (!theme.logo) return;"));
+  assert.ok(block.includes('logo: "/brand/quatree-logo.png"'));
+  assert.ok(block.includes('themeColor: "#88401C"'));
+  const png = readFileSync(new URL("../../public/brand/quatree-logo.png", import.meta.url));
+  assert.equal(png.toString("hex", 0, 8), "89504e470d0a1a0a", "a logo precisa ser PNG de verdade");
   const start = css.indexOf("/* ===== Tema da cliente Quatree Dog");
   const rules = css.slice(start, css.indexOf("/* Navegação móvel global", start));
   assert.ok(rules.includes('html[data-client-theme="quatree-dog"] {'));
-  assert.ok(!/display\s*:/.test(rules), "tema da Quatree não pode esconder nem mostrar elementos");
+  assert.ok(rules.includes('html[data-client-theme="quatree-dog"] .nexus-top-logo'));
+  for (const color of ["#E88400", "#C03C34", "#88401C"]) assert.ok(rules.includes(color), "falta a cor " + color);
+  for (const old of ["#C8102E", "#8B0A1F", "#B8BCC2"]) assert.ok(!rules.includes(old), "cor antiga: " + old);
   for (const line of rules.split(/\r?\n/)) {
     if (/^\s*[.#]/.test(line)) assert.fail("regra sem o escopo da Quatree: " + line);
   }
