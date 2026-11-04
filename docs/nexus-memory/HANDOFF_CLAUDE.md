@@ -1,3 +1,11 @@
+## 2026-11-03 22h BRT — Publicação automática após 1 hora de silêncio (PR aberto)
+
+- Pedido do Rodrigo (repasse do ChatGPT, item 2): post que ele mandou ao painel sai no horário mesmo sem o cliente clicar; só trava se o cliente pedir reajuste.
+- Feito: agente novo `cloudflare/src/auto-approve.js`, no cron de 1 minuto. Quando falta 1 hora para o horário, post `pending` com `createdBy` master ou mcp (Master, Enviar artes, conector, Biblioteca, campanha Gemini) vira `approved` e ganha `autoApproval.status = "aprovado_por_silencio"`. Publicação, tentativas (retryCount < 3) e trava de duplicar continuam as que já existiam no Publisher.
+- Não aprova: reajuste pedido (`correction_requested`) ou post já refeito por reajuste (`revisionRequestedAt`), cancelado, excluído, reprovado, publicado, post criado pelos agentes de IA, post atrasado mais de 6 horas. Post que chegou com menos de 1 hora de antecedência fica esperando e é marcado `sem_janela`.
+- Testes: 7 novos (SQLite real). Suíte: 754/760; as 6 falhas já falham na main (testes antigos de cor azul do Master, marca, site e planos).
+- Pendente (próximos passos, um por vez): aviso vermelho no topo da arte no painel do cliente; tabela de planos; auditoria logo/Radar/alcance; legendas antigas com Captador.
+
 ## 2026-11-03 10h BRT — Hashtag #FlowArts trocada por #FlowArtsMarketing
 
 - Motivo: #flowarts no Instagram é a hashtag de malabarismo (poi, bambolê). Rodrigo pediu para tirar.
