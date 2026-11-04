@@ -434,7 +434,8 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
          AND status IN ('ready','scheduled','failed') AND approval_status='approved'
          AND scheduled_for<=?2
          AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
-         AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
+         AND (COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
+              OR LOWER(COALESCE(error,'')) LIKE 'too many subrequests%')
 
          AND (
            COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
