@@ -161,8 +161,7 @@ class ToolInputError extends Error {}
 export async function listarClientes(env, deps) {
   const clients = await deps.listClients(env);
   return {
-    clientes: clients.map(c => ({ id: c.id, nome: c.name, instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status })),
-    grupos: groupOptions()
+    clientes: clients.map(c => ({ id: c.id, nome: c.name, instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status }))
   };
 }
 
@@ -364,13 +363,13 @@ export async function enviarArte(env, deps, args, now = new Date()) {
     ok: true,
     id: result.id,
     cliente: { id: client.id, nome: client.name },
-    ...(result.results ? { vendedores: result.results } : {}),
     formato: args.formato,
     dia, hora,
     imagens: arquivos.length,
     texto,
     situacao: "esperando aprovação no painel",
-    aviso: "Nada foi publicado. A arte só sai depois de aprovada no painel."
+    aviso: "Nada foi publicado. A arte só sai depois de aprovada no painel.",
+    ...(result.results ? { vendedores: result.results } : {})
   };
 }
 
@@ -409,17 +408,21 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
     ok: true,
     id: result.id,
     cliente: { id: client.id, nome: client.name },
-    ...(result.results ? { vendedores: result.results } : {}),
     formato: "story (vídeo)",
     dia, hora,
     video: true,
     texto: "vídeo enviado como está",
     situacao: "esperando aprovação no painel",
-    aviso: "Nada foi publicado. O story só sai depois de aprovado no painel."
+    aviso: "Nada foi publicado. O story só sai depois de aprovado no painel.",
+    ...(result.results ? { vendedores: result.results } : {})
   };
 }
 
-const HANDLERS = { nexus_listar_clientes: listarClientes, nexus_ver_agenda: verAgenda, nexus_ver_metricas: verMetricas, nexus_enviar_arte: enviarArte };
+export async function listarClientesEGrupos(env, deps) {
+  return { ...await listarClientes(env, deps), grupos: groupOptions() };
+}
+
+const HANDLERS = { nexus_listar_clientes: listarClientesEGrupos, nexus_ver_agenda: verAgenda, nexus_ver_metricas: verMetricas, nexus_enviar_arte: enviarArte };
 
 // ---------- JSON-RPC ----------
 function rpcResult(id, result) { return { jsonrpc: "2.0", id, result }; }

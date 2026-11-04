@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { CLIENT_GROUPS, clientGroup, portalClientView } from "../src/clients.js";
 import { ensureGroupClients, groupFromTarget, groupOptions, vendorCaption } from "../src/client-groups.js";
 import { masterUpload } from "../src/master-upload.js";
-import { enviarArte, listarClientes } from "../src/mcp-server.js";
+import { enviarArte, listarClientesEGrupos } from "../src/mcp-server.js";
 
 const group = { id: "quatree-dog", ...CLIENT_GROUPS["quatree-dog"] };
 const NOW = new Date("2026-10-18T13:00:00Z");
@@ -151,7 +151,7 @@ test("o conector envia para o grupo e lista os grupos", async () => {
   assert.equal(out.ok, true);
   assert.deepEqual(out.vendedores.map(v => v.vendor), ["Ericsson", "Eduardo"]);
   assert.equal(rows(db).length, 2);
-  assert.deepEqual((await listarClientes(env, deps)).grupos, groupOptions());
+  assert.deepEqual((await listarClientesEGrupos(env, deps)).grupos, groupOptions());
 });
 
 test("painel usa o tema do grupo e mostra o campo Vendedor", () => {
