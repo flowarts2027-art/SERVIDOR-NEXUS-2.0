@@ -1,3 +1,4 @@
+import { knownCustomer, nexusClientIndex, phoneKey, CUSTOMER_TYPES } from "./whatsapp-known.js";
 import { openAIResponses } from "./openai.js";
 import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
 import { addFromWhatsApp } from "./crm.js";
@@ -135,6 +136,12 @@ export async function ensureWhatsAppSchema(env) {
   } catch {
     // coluna já existe
   }
+  // Tipo de cliente marcado pelo Rodrigo no Master ("streaming" ou vazio).
+  try {
+    await env.DB.prepare("ALTER TABLE whatsapp_contacts ADD COLUMN customer_type TEXT NOT NULL DEFAULT ''").run();
+  } catch {
+    // coluna já existe
+  }
   // Memória da Alice sobre cada contato (nome, o que vende, cidade...).
   try {
     await env.DB.prepare("ALTER TABLE whatsapp_contacts ADD COLUMN memory_json TEXT NOT NULL DEFAULT '{}'").run();
@@ -245,6 +252,7 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
     .map(row => `${row.direction === "outbound" ? "EMPRESA" : "CLIENTE"}: ${String(row.text || "").slice(0, 500)}`)
     .join("\n");
 
+  const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
   try {
     const data = await openAIResponses(env, clientId, {
       nexusPurpose: "whatsapp-reply",
@@ -262,6 +270,7 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
         "",
         knowledgePrompt(clientId),
         "",
+        known.prompt,
         `Contato: ${displayName || waId}`,
         "Histórico:",
         history || "(sem histórico anterior)",
@@ -300,9 +309,11 @@ async function buildAliceDraft(env, clientId, waId, displayName, text, message, 
     "SELECT memory_json FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2"
   ).bind(clientId, waId).first();
   const memory = parseMemory(contact?.memory_json);
+  const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
 
   const answer = await aliceReply(env, buildAliceRequest({
     knowledge: knowledgePrompt(clientId),
+    knownCustomer: known.prompt,
     memory, history, inboundText: text,
     mediaType: MEDIA_TYPES.has(type) ? type : "",
     media, displayName, alreadyIntroduced
@@ -365,7 +376,11 @@ async function storeInbound(env, clientId, value) {
     ).bind(`wa-contact-${clientId}-${waId}`, clientId, waId, displayName, createdAt).run();
 
     // Quem escreve para o número da Flow entra no CRM (ou passa para "conversando").
-    await addFromWhatsApp(env, { phone: waId, name: displayName }).catch(() => null);
+    // Quem já é cliente (Nexus ou streaming) não vira lead.
+    const alreadyClient = await knownCustomer(env, clientId, waId).catch(() => ({}));
+    if (!alreadyClient.customerType && !alreadyClient.nexus) {
+      await addFromWhatsApp(env, { phone: waId, name: displayName }).catch(() => null);
+    }
 
     const type = String(message?.type || "");
     const nonText = { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
@@ -661,7 +676,7 @@ export async function handleWhatsAppProtected(request, env, url) {
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 30)));
     const rows = await env.DB.prepare(
       `SELECT c.wa_id,c.display_name,c.classification,c.priority,c.needs_human,c.bot_paused,c.unread_count,
-              c.last_message_at,c.updated_at,
+              c.last_message_at,c.updated_at,c.customer_type,
               (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
                ORDER BY m.created_at DESC LIMIT 1) AS last_text,
               (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
@@ -669,7 +684,12 @@ export async function handleWhatsAppProtected(request, env, url) {
        FROM whatsapp_contacts c WHERE c.client_id=?1
        ORDER BY c.needs_human DESC, COALESCE(c.updated_at,c.last_message_at) DESC LIMIT ?2`
     ).bind(clientId, limit).all();
-    return json({ ok: true, items: rows?.results || [] });
+    const index = await nexusClientIndex(env).catch(() => new Map());
+    const items = (rows?.results || []).map(row => {
+      const nexus = index.get(phoneKey(row.wa_id));
+      return { ...row, customer_type: row.customer_type || "", nexus_client: nexus ? nexus.name : "" };
+    });
+    return json({ ok: true, items });
   }
 
   if (url.pathname === "/api/whatsapp/messages" && request.method === "GET") {
@@ -744,6 +764,11 @@ export async function handleWhatsAppProtected(request, env, url) {
       if (!body.botPaused) fields.push("needs_human=0");
     }
     if (body?.read === true) fields.push("unread_count=0");
+    if (typeof body?.customerType === "string") {
+      if (!CUSTOMER_TYPES.has(body.customerType)) return json({ error: "invalid_customer_type" }, 400);
+      values.push(body.customerType);
+      fields.push(`customer_type=?${values.length}`);
+    }
     if (!fields.length) return json({ error: "nothing_to_update" }, 400);
     const result = await env.DB.prepare(
       `UPDATE whatsapp_contacts SET ${fields.join(",")},updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND wa_id=?2`

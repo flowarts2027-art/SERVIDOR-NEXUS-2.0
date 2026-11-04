@@ -63,6 +63,13 @@
     }
   }
 
+  // Etiqueta de quem já é cliente: Nexus (cadastro do Master) ou streaming (marcado pelo Rodrigo).
+  function customerTag(item) {
+    if (item?.customer_type === "streaming") return '<span class="wa-tag client">Cliente streaming</span>';
+    if (item?.nexus_client) return `<span class="wa-tag client">Cliente Nexus</span>`;
+    return "";
+  }
+
   function renderList() {
     $("#wa-list-count").textContent = wa.items.length ? `${wa.items.length}` : "";
     if (!wa.items.length) {
@@ -76,7 +83,7 @@
       return `<button type="button" class="wa-item${human ? " human" : ""}${item.wa_id === wa.phone ? " active" : ""}" data-phone="${escapeHtml(item.wa_id)}">
         <span class="wa-item-top"><strong>${escapeHtml(item.display_name || phoneLabel(item.wa_id))}</strong><small>${escapeHtml(when(item.updated_at || item.last_message_at))}</small></span>
         <p>${escapeHtml(prefix + (item.last_text || "(mídia)"))}</p>
-        <span class="wa-tags">${human ? '<span class="wa-tag human">Precisa de você</span>' : ""}${unread ? `<span class="wa-tag unread">${unread} nova${unread > 1 ? "s" : ""}</span>` : ""}${Number(item.bot_paused) ? '<span class="wa-tag">Robô pausado</span>' : ""}</span>
+        <span class="wa-tags">${customerTag(item)}${human ? '<span class="wa-tag human">Precisa de você</span>' : ""}${unread ? `<span class="wa-tag unread">${unread} nova${unread > 1 ? "s" : ""}</span>` : ""}${Number(item.bot_paused) ? '<span class="wa-tag">Robô pausado</span>' : ""}</span>
       </button>`;
     }).join("");
   }
@@ -133,6 +140,19 @@
   }
 
   function renderContactState() {
+    const streaming = wa.contact?.customer_type === "streaming";
+    const nexus = wa.contact?.nexus_client || "";
+    const info = $("#wa-customer");
+    if (info) {
+      info.textContent = streaming ? "Cliente do streaming. O David não vende nada e chama você para recarga e suporte."
+        : nexus ? `Cliente do Nexus: ${nexus}. O David não trata como pessoa nova.` : "";
+      info.hidden = !info.textContent;
+    }
+    const mark = $("#wa-streaming");
+    if (mark) {
+      mark.hidden = Boolean(nexus) && !streaming;
+      mark.textContent = streaming ? "Não é cliente do streaming" : "É cliente do streaming";
+    }
     const paused = Number(wa.contact?.bot_paused) === 1;
     const human = Number(wa.contact?.needs_human) === 1;
     $("#wa-handoff").hidden = !human;
@@ -204,6 +224,18 @@
     renderList();
   });
   $("#wa-bot-toggle").addEventListener("click", () => setBot(Number(wa.contact?.bot_paused) !== 1));
+  $("#wa-streaming")?.addEventListener("click", async () => {
+    if (!wa.phone) return;
+    const next = wa.contact?.customer_type === "streaming" ? "" : "streaming";
+    try {
+      await api("/api/whatsapp/contact", { method: "POST", body: JSON.stringify({ phone: wa.phone, customerType: next }) });
+      if (wa.contact) wa.contact.customer_type = next;
+      renderContactState();
+      await loadInbox();
+    } catch (error) {
+      alert("Não consegui marcar: " + error.message);
+    }
+  });
   // Respostas prontas: preenchem a caixa; o Rodrigo confere e aperta Enviar.
   const QUICK = {
     planos: "Aqui estão todos os planos e preços da Flow Arts: https://flowarts.com.br/#pacotes\n\nSe me contar qual é o seu negócio, eu te digo qual plano combina mais com você.",

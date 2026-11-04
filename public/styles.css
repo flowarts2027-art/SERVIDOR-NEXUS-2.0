@@ -694,3 +694,6 @@ input:focus,select:focus,textarea:focus{outline-color:#168c5444!important;border
 .wa-draft p{margin:6px 0;white-space:pre-wrap;font-size:18px;line-height:1.5}
 .wa-draft small{display:block;font-size:15px;margin-bottom:8px}
 .wa-draft button{font-size:17px;min-height:42px}
+.wa-tag.client{background:#2e8b571f;color:#1f6b45;border-color:#2e8b5755}
+.wa-customer{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#2e8b5714;border:1px solid #2e8b5755;font-size:17px}
+.wa-streaming{margin-top:10px;font-size:16px;min-height:40px}

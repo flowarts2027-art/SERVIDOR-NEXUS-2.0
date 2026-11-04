@@ -93,10 +93,11 @@ function mediaLabel(type) {
   return type === "audio" ? "um ÁUDIO (ouça o arquivo anexo)" : "uma IMAGEM (veja o arquivo anexo)";
 }
 
-export function buildAliceRequest({ knowledge, memory, history, inboundText, mediaType, media, displayName, alreadyIntroduced }) {
+export function buildAliceRequest({ knowledge, knownCustomer = "", memory, history, inboundText, mediaType, media, displayName, alreadyIntroduced }) {
   const rules = [
     knowledge,
     "",
+    ...(knownCustomer ? [knownCustomer, ""] : []),
     "COMO RESPONDER:",
     alreadyIntroduced
       ? "- Você já se apresentou nesta conversa; não se apresente de novo."

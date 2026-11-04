@@ -1,5 +1,11 @@
 ## 2026-11-03 — Pacote do painel (PR aberto)
 
+## 2026-11-04 07:45 BRT — branch feat/whatsapp-cliente-conhecido
+- feat: o David reconhece quem já é cliente. Clientes do Nexus: número do cadastro do Master (agentProfile.whatsapp, contact.whatsapp/phone), lido na hora — cliente novo já é reconhecido. Clientes do streaming: o Rodrigo marca a conversa no Master › WhatsApp ("É cliente do streaming"); o David não vende e chama o Rodrigo para recarga e suporte.
+- feat: etiquetas "Cliente Nexus" / "Cliente streaming" na lista; cliente conhecido não entra no CRM como lead.
+- novo: `cloudflare/src/whatsapp-known.js`; coluna `whatsapp_contacts.customer_type`.
+- test: 773/773.
+
 ## 2026-11-04 07:15 BRT — branch feat/whatsapp-rascunho-david
 - feat: Master › WhatsApp mostra o quadro "Rascunho do David" na conversa aberta (o rascunho pendente mais novo daquela pessoa) com botão "Usar rascunho", que só preenche a caixa; o Rodrigo confere e aperta Enviar.
 - feat: GET /api/whatsapp/drafts aceita `phone` (últimos 5 rascunhos daquela conversa).
