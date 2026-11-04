@@ -1,4 +1,11 @@
 
+## 2026-11-03 21:39 BRT — Resultado confirmado do Master verde
+- PR #532 (head 6e56c683) **mesclado** em main como cfeeab62, 03/11/2026 21:36:56 BRT.
+- Deploy Cloudflare Actions 41748150875 **success** (03/11/2026 21:37:37 BRT): painel web Master recebeu CSS verde/branco, login administrativo, símbolo N transparente gerado antes do deploy e PWA Master. A tela inicial do cliente ficou com fundo único claro, preservando o restante do tema do cliente.
+- Android Actions 41748077840 e 41748150838 **success**; APK Master v1.0.9 disponível em https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/releases/download/app-v1.0.9/nexus-master.apk, assinado com chave existente no R2. APK validado como ZIP íntegro no ambiente local; não há teste de instalação em telefone autenticado.
+- CI no merge cfeeab62 falhou por expectativas desatualizadas: azul pré-03/11, asset azul pré-03/11, vídeo de fundo retirado no site e preços/combos atualizados anteriormente. Correções de testes isoladas no PR subsequente a esta entrada; **não confundir CI vermelho com deploy que já concluiu com sucesso**.
+- Pendente: mesclar o PR de testes/acentos residuais, confirmar CI; teste visual autenticado Master e cliente em Android depois.
+
 ## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
 - Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.
 - Alteração preparada em branch `feat/nexus-master-green-apk-20261103`: CSS Master/menus/holográfico, login administrativo, manifesto PWA, tema Android Master; pipeline gera imagem N transparente e ícones do APK a partir da arte metálica já versionada. Tela de login do cliente passa a fundo único claro e logo transparente; tema interno dos clientes permanece preservado.

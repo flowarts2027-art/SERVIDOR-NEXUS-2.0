@@ -34,7 +34,7 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   const home = read("site.html");
   assert.match(home, /Postador Automático<\/h3>[\s\S]{0,60}R\$ 97 <small>por mês/);
-  assert.match(home, /Resposta Automática<\/h3>[\s\S]{0,60}R\$ 39,90 <small>por mês/);
+  assert.match(home, /Resposta Automática<\/h3>[\s\S]{0,60}R\$ 39,99 <small>por mês/);
   assert.match(home, /Tráfego Pago<\/h3>[\s\S]{0,60}R\$ 297 <small>por mês/);
   assert.doesNotMatch(home, /plano=(essencial|completo|captador|reels5|posts10|responde)/);
   assert.match(home, /1º ano incluso: domínio \.com\.br/);
@@ -55,10 +55,8 @@ test("site (02/11): topo do Postador, sem Captador, e movimento que para com 're
   assert.doesNotMatch(home, /id="oportunidades"|Classificados de empresas|Novos clientes todo dia/);
   assert.doesNotMatch(home.replace(/\/\*[^*]*\*\//g, ""), /Captador/);
   assert.match(home, /prefers-reduced-motion: reduce/);
-  assert.match(home, /class="bg-video" aria-hidden="true"><video id="bg-video" autoplay muted loop playsinline/, "vídeo de fundo como marca d'água");
-  assert.equal((home.match(/<video/g) || []).length, 1, "só o vídeo de fundo do início");
-  const size = fs.statSync(new URL("../../public/video/fundo-vendedor.mp4", import.meta.url)).size;
-  assert.ok(size > 10000 && size < 2_000_000, "vídeo leve: " + size);
+  assert.doesNotMatch(home, /class="bg-video" aria-hidden="true"/, "vídeo de fundo removido por pedido de 03/11");
+  assert.equal((home.match(/<video\b/g) || []).length, 0, "nenhum vídeo de fundo deve carregar");
   assert.doesNotMatch(home, /reel-cafeteria|fundo-cafe|cafe-brisa\.svg/);
 });
 
