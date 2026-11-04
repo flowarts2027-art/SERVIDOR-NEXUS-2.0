@@ -161,9 +161,9 @@ export function isWorkerLimitError(message = "") {
   return /too many subrequests/i.test(String(message || ""));
 }
 
-// 04/11/2026: nos minutos 7, 22, 37 e 52 o cron de 1 minuto só publica, com o limite do Worker inteiro livre.
+// 04/11/2026: nos minutos terminados em 2 e 7 o cron de 1 minuto só publica (1 job), com o limite do Worker livre.
 export function isPublisherOnlyMinute(at = new Date()) {
-  return new Date(at).getUTCMinutes() % 15 === 7;
+  return new Date(at).getUTCMinutes() % 5 === 2;
 }
 
 export function isStoryPost(payload = {}) {
@@ -319,7 +319,8 @@ export async function processDueJobs(env, scheduledAt = new Date(), scope = {}) 
 
   // Drain at most one due job per client in each cron iteration.
   // This prevents one busy client from starving the other clients for hours.
-  const dueJobs = selectFairDueJobs(result?.results || [], 4);
+  // 04/11/2026: no minuto só de publicar, 1 job por vez (plano grátis: 50 pedidos externos por rodada).
+  const dueJobs = selectFairDueJobs(result?.results || [], Math.max(1, Math.trunc(Number(scope.maxJobs) || 4)));
 
   for (const job of dueJobs) {
     const attempts = Math.max(0, Number(job.attempts || 0)) + 1;

@@ -946,3 +946,4 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Causa (lida no ledger via conector, PR #551): `Too many subrequests by single Worker invocation`. A rodada de 15 min roda dezenas de tarefas juntas e a publicação fica sem limite.
 - Correção (PR fix/publicar-sem-limite-subrequests): minutos 7/22/37/52 do cron de 1 min só rodam `processDueJobs`; erro de limite do Worker não gasta tentativa e posts presos por ele voltam à fila. Testes 776/776.
 - Próximo passo: depois do deploy, conferir no `nexus_ver_agenda` se os "failed" com esse erro saíram.
+- 04/11 12:45 — depois do deploy do PR #553 os posts presos não saíram às 12:37. Ajuste: o minuto só de publicar passa a rodar a cada 5 min (minutos terminados em 2 e 7) e com 1 job por vez (`maxJobs: 1`), como já era a regra antiga do plano grátis (50 pedidos externos por rodada). Testes 776/776.

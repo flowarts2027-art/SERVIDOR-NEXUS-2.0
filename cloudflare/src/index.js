@@ -560,9 +560,9 @@ export default {
     // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
     if (String(event.cron || "") === MINUTE_CRON) {
       // 04/11/2026: postagens falhavam com "Too many subrequests" porque a rodada de 15 min faz tudo junto.
-      // Nos minutos 7, 22, 37 e 52 esta rodada só publica, com o limite do Worker livre.
+      // Nos minutos terminados em 2 e 7 esta rodada só publica 1 job, com o limite do Worker livre.
       if (isPublisherOnlyMinute(at)) {
-        ctx.waitUntil(processDueJobs(env, at).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
+        ctx.waitUntil(processDueJobs(env, at, { maxJobs: 1 }).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
           console.warn("publisher_only_minute_failed", String(error?.message || error).slice(0, 140))
         ));
         return;
