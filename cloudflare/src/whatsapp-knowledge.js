@@ -14,27 +14,25 @@ const FLOW_ARTS = Object.freeze({
     "Português do Brasil, informal e educado (pode usar 'show', 'beleza'). No máximo 1 emoji por mensagem, e nem sempre.",
     "Mensagens curtas, como no WhatsApp: cada mensagem com 1 a 3 linhas. Nada de listas longas, títulos ou texto com cara de site.",
     "Uma pergunta por vez. Chame a pessoa pelo nome quando souber.",
-    "Objetivo: entender o que a pessoa vende e em qual cidade atende; descobrir se vende para empresas ou para pessoa física; indicar o plano certo e levar ao link de cadastro ou ao Rodrigo."
+    "Objetivo: entender o que a pessoa vende e em qual cidade atende, se ela tem tempo para postar e se perde mensagens no Instagram; indicar o plano certo e levar ao link de cadastro ou ao Rodrigo.",
   ]),
   facts: Object.freeze([
-    "A Flow Arts Marketing ajuda quem vende a ter clientes novos todo dia. Atendimento 100% online para todo o Brasil. Instagram: @flowarts2026. Site: https://flowarts.com.br",
-    "Captador de clientes: a pessoa escolhe o tipo de empresa e a cidade (e bairros). O Captador traz empresas da região SÓ com WhatsApp (telefone fixo fica de fora), com endereço, nota no Google e mensagem pronta para chamar com um toque. Tem lembrete de retorno. Tudo no painel, pelo celular.",
-    "O Captador é para quem vende para EMPRESAS: vendedores, representantes comerciais, aluguel de equipamentos, energia solar, seguro e consórcio. Ele mostra só empresas, não pessoas físicas.",
-    "Os contatos do Captador vêm de dados públicos de mapas (Google Maps e OpenStreetMap). Cada mensagem traz a opção de não receber mais contato.",
+    "A Flow Arts Marketing deixa o Instagram do negócio no automático: posts e stories todo dia e resposta automática no Direct. Atendimento 100% online para todo o Brasil. Instagram: @flowarts2026. Site: https://flowarts.com.br",
     "Instagram no automático: a IA cria posts, carrosséis, stories e Reels com a cara do trabalho do cliente. Nada sai sem a aprovação do cliente no celular. Posta sozinho no horário certo. Quem comenta a palavra combinada recebe mensagem no direct.",
     "Não precisa dar a senha do Instagram: conecta pelo login oficial da Meta e pode desconectar quando quiser.",
     "Se a pessoa comparar com um app de agendamento (mLabs, Postgrain, Metricool, Buffer, Hootsuite) ou disser que já usa um: explique, sem falar mal, que esses apps só agendam e mostram números; a foto, o texto e a ideia continuam com ela. Na Flow Arts a IA cria os posts e ela só aprova no celular.",
-    "Quem vende para pessoa física (despachante, serviço ao consumidor, profissional que atende pessoas) usa o Essencial ou o Completo: é só Instagram, a busca de empresas não entra no painel dela.",
+    "Serve para qualquer negócio que tem Instagram: loja, salão, clínica, prestador de serviço, quem vende para empresas ou para pessoa física.",
     "Pagamento no Pix. Sem fidelidade: para sair, é só avisar no WhatsApp.",
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo."
   ]),
   offers: Object.freeze([
     "Postador Automático: 2 posts por dia (manhã e tarde) + 2 stories por dia, artes feitas para o negócio e aprovação no painel antes de sair. R$ 97 por mês. Contratar: https://flowarts.com.br/cadastro?plano=postador",
-    "Resposta Automática: quem comenta a palavra (ex.: QUERO) no post recebe a mensagem no Direct na hora. R$ 39,90 por mês. Contratar: https://flowarts.com.br/cadastro?plano=resposta",
+    "Resposta Automática: quem comenta a palavra (ex.: QUERO) no post recebe a mensagem no Direct na hora. R$ 39,99 por mês. Contratar: https://flowarts.com.br/cadastro?plano=resposta",
+    "Combo Postador + Resposta Automática: R$ 119,99 por mês (separados dariam R$ 136,99; economiza R$ 17 por mês). Contratar: https://flowarts.com.br/cadastro?plano=combo",
     "Tráfego Pago: R$ 297 por mês, só para quem já é cliente, + a verba do anúncio, paga no cartão do cliente direto na Meta (não passa pela Flow Arts). AINDA NÃO LANÇADO: sai assim que a Meta liberar a Flow Arts. Nunca prometa data.",
     "Site (site do seu negócio): R$ 497, pagamento único. Site de 1 página com botão para o WhatsApp, pronto em até 5 dias. O 1º ano já inclui domínio .com.br, hospedagem e ajustes pequenos. Depois: R$ 297 por ano (ou R$ 29 por mês), já com a renovação do domínio. Tem contrato. https://flowarts.com.br/cadastro?plano=site",
     "Avulso (pagamento único): Logo profissional R$ 67. A Flow Arts não vende mais Reels nem o Captador.",
-    "Qual indicar: vende para empresas → comece pelo Captador; se também quer o Instagram em dia, o Completo já traz o Captador de brinde. Vende para pessoa física → Essencial ou Completo. Quer anúncio → Completo + Tráfego (lembrando que o Tráfego aguarda a Meta).",
+    "Qual indicar: sem tempo para postar → Postador Automático; perde mensagens ou demora a responder comentário → Resposta Automática; quer os dois → Combo (sai mais barato). Quer anúncio → Tráfego, só para quem já é cliente (lembrando que o Tráfego aguarda a Meta).",
     "Todos os planos: https://flowarts.com.br/#pacotes"
   ]),
   media: Object.freeze([

@@ -1,3 +1,14 @@
+## 2026-11-03 23h BRT — Pacote do painel: aviso, planos, campanha nova, David, testes e auditoria (PR aberto)
+
+- Pedido do Rodrigo: fazer todas as etapas restantes do repasse do ChatGPT num PR só.
+- **Aviso vermelho** no topo do cartão do post (logo abaixo do selo Feed/Carrossel/Stories), no painel do cliente: "Se não pedir ajuste até DD/MM às HH:MM (1 hora antes), este post será publicado automaticamente." Depois do prazo: "Prazo de ajuste encerrado…". Mesma regra do `auto-approve.js`; não aparece em post de IA, reajuste pedido, post sem janela de 1 hora ou aprovado pelo próprio cliente. Botão Aprovar não mudou.
+- **Tabela de planos** (planos.js): Resposta R$ 39,99, Postador R$ 97, Combo R$ 119,99 (economize R$ 17), cada um com cor; botão "Solicitar este plano" abre o WhatsApp comercial 21 96481-6185 com o plano escrito. Preços lidos do catálogo `plans.js`.
+- **Campanha diária da Flow Arts** (`conteudo.json`, primeiro-teste): 3 dias reescritos só para automação do Instagram (sem Captador/leads). Conferido por render com foto falsa: texto inteiro, sem corte.
+- **David (WhatsApp)**: preço R$ 39,99, combo R$ 119,99, tirado Captador/Essencial/Completo.
+- **Radar**: volta da conexão do Instagram só leva ao Radar a Flow Arts.
+- **Testes**: 6 testes antigos atualizados para as decisões novas (Master verde, R$ 39,99, combo, site sem vídeo antigo). Suíte 768/768. Wrangler dry-run não rodou aqui (sem rede para npm); o CI roda.
+- Auditoria completa: `AUDITORIA_2026-11-03.md`.
+
 ## 2026-11-03 22h BRT — Publicação automática após 1 hora de silêncio (PR aberto)
 
 - Pedido do Rodrigo (repasse do ChatGPT, item 2): post que ele mandou ao painel sai no horário mesmo sem o cliente clicar; só trava se o cliente pedir reajuste.

@@ -1025,3 +1025,33 @@ html[data-client-theme="daniela-martins"] .nexus-top-logo{display:none!important
 #login .login-card{background:#fff!important;border:1px solid #d5e8dc!important;box-shadow:0 20px 60px #174b2b14!important}
 #login .nexus-login-logo{background:transparent!important;box-shadow:none!important;filter:none!important;object-fit:contain!important}
 #login .login-brand{color:#168c54!important}
+
+/* Aviso de publicação automática (03/11/2026): vermelho, pequeno e bem legível, no topo do cartão. */
+.auto-publish-notice { margin: 0 0 10px; padding: 8px 12px; border-radius: 10px; border: 2px solid #c62828; background: #fff1f0; color: #b71c1c; font-weight: 800; font-size: 1rem; line-height: 1.4; }
+.auto-publish-notice.is-closed { background: #c62828; color: #fff; }
+@media (prefers-color-scheme: dark) { .auto-publish-notice { background: #3b0d0d; color: #ffb4ab; border-color: #ff6f61; } .auto-publish-notice.is-closed { background: #b71c1c; color: #fff; } }
+
+/* Comparativo de planos (03/11/2026): cada plano tem a sua cor; rola de lado no celular se precisar. */
+.cmp-wrap { overflow-x: auto; margin: 0 0 10px; border-radius: 12px; }
+.cmp-table { width: 100%; min-width: 340px; border-collapse: separate; border-spacing: 4px; font-size: 1rem; line-height: 1.35; }
+.cmp-table th, .cmp-table td { padding: 10px 8px; border-radius: 8px; text-align: center; vertical-align: middle; }
+.cmp-table tbody th { text-align: left; font-weight: 700; background: var(--soft, #f2f4f7); color: inherit; }
+.cmp-table thead th { font-weight: 800; color: #fff; }
+.cmp-table thead th:first-child { background: transparent; }
+.cmp-table thead .c-resp { background: #6a3fb5; }
+.cmp-table thead .c-post { background: #1565c0; }
+.cmp-table thead .c-combo { background: #2e7d32; }
+.cmp-table td.c-resp { background: #f1ebfb; color: #3d2270; }
+.cmp-table td.c-post { background: #e8f1fd; color: #0d3c7a; }
+.cmp-table td.c-combo { background: #e8f5e9; color: #1b4d1e; }
+.cmp-table td.cmp-no { opacity: .55; }
+.cmp-save { display: block; margin-top: 4px; font-size: .85rem; font-weight: 800; color: #fff59d; }
+.cmp-price td { font-size: 1.05rem; }
+.cmp-btn { display: inline-block; width: 100%; padding: 8px 6px; font-size: .95rem; white-space: normal; text-decoration: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-color-scheme: dark) {
+  .cmp-table tbody th { background: #22262e; }
+  .cmp-table td.c-resp { background: #2a1f3d; color: #e3d3ff; }
+  .cmp-table td.c-post { background: #142a45; color: #cfe3ff; }
+  .cmp-table td.c-combo { background: #16301a; color: #cdeccf; }
+}
