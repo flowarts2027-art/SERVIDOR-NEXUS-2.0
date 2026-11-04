@@ -197,3 +197,38 @@ export async function refreshInstagramTokenIfNeeded(env, clientId, now = new Dat
     return { refreshed: false, reason: "transport_error" };
   }
 }
+
+// Quem a verificação do Instagram vigia (04/11/2026): todo cliente ativo com conexão salva.
+// Cliente novo entra sozinho e arquivado sai sozinho. Token vencido continua na lista, para o alerta aparecer.
+export async function watchedInstagramClients(env) {
+  const result = await env.DB.prepare(
+    `SELECT DISTINCT c.id
+     FROM clients c
+     JOIN connections k ON k.client_id = c.id AND k.provider IN ('meta','instagram')
+     WHERE c.status = 'online'
+     ORDER BY c.id`
+  ).all();
+  return (result?.results || []).map(row => String(row.id));
+}
+
+// Lista vazia ou banco fora do ar nunca contam como "tudo certo".
+export async function instagramPublishingHealth(env, statusOf = instagramCredentialStatus) {
+  const watched = await watchedInstagramClients(env).catch(() => null);
+  if (!watched) return { ok: false, error: "watchlist_unavailable", clients: [] };
+  const clients = await Promise.all(watched.map(async clientId => {
+    const raw = await statusOf(env, clientId).catch(() => ({
+      connected: false, tokenValid: false, accountMatches: false, validation: "diagnostic_error"
+    }));
+    return {
+      clientId,
+      connected: Boolean(raw.connected),
+      tokenValid: Boolean(raw.tokenValid),
+      accountMatches: Boolean(raw.accountMatches),
+      validation: String(raw.validation || "unknown")
+    };
+  }));
+  return {
+    ok: clients.length > 0 && clients.every(item => item.connected && item.tokenValid && item.accountMatches),
+    clients
+  };
+}

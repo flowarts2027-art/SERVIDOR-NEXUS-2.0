@@ -3,7 +3,6 @@ const BAD_CONCLUSIONS = new Set(["failure","timed_out"]);
 const SAFE_PATH = /^(?:cloudflare\/(?:src\/[a-z0-9-]+\.js|test\/[a-z0-9-]+\.test\.mjs)|public\/[a-z0-9-]+\.js|scripts\/test_[a-z0-9_-]+\.py)$/;
 const SENSITIVE_PATH = /(?:auth|credential|secret|publisher|payment|token|security|policy|emergency|master|instagram|meta|oauth|permission)/i;
 export const CYCLE_CLIENTS = Object.freeze(["primeiro-teste"]);
-export const INSTAGRAM_CLIENTS = Object.freeze(["daniela-martins","giltec","maskara-assessoria","nexus-ai","primeiro-teste","quatree-dog"]);
 const SECURITY_TEXT =/(?:authorization|bearer|password|token|secret|api.?key|github|workflow|process\.env|eval\s*\(|new Function|child_process|execSync|spawnSync|fetch\s*\(|https?:\/\/|media_publish|publishingGate|approvalRequired|visualApproval|qualityGates|callbackToken|retryCount|CLIENT_SECRET|GH_TOKEN)/i;
 
 export function recoverableRun(run, mainSha, now = Date.now()) {
@@ -27,11 +26,12 @@ export function healthIncidents(data = {}, instagram = {}) {
       issues.push({type:"agent_cycle",clientId,details:"Managed client cycle missing, failed, or overdue"});
     }
   }
-  // Keep this list equal to the one in /api/instagram-publishing-health (cloudflare/src/index.js).
-  for (const clientId of INSTAGRAM_CLIENTS) {
-    const conn = (instagram.clients || []).find(x => x.clientId === clientId);
-    if (!conn || conn.connected !== true || conn.tokenValid !== true || conn.accountMatches !== true) {
-      issues.push({type:"instagram_credentials",clientId,details:"Instagram connection needs human authorization or investigation"});
+  // The Worker decides who is watched: every active client with Instagram connected.
+  const watched = instagram?.clients || [];
+  if (!watched.length) issues.push({type:"instagram_credentials",clientId:"watchlist",details:"Instagram watch list is empty or unavailable"});
+  for (const conn of watched) {
+    if (conn.connected !== true || conn.tokenValid !== true || conn.accountMatches !== true) {
+      issues.push({type:"instagram_credentials",clientId:conn.clientId,details:"Instagram connection needs human authorization or investigation"});
     }
   }
   return issues;
