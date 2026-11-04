@@ -1111,7 +1111,7 @@ export default {
     }
 
     if (url.pathname === "/api/instagram-publishing-health" && request.method === "GET") {
-      const managed = ["globalplay-streaming", "ragnar-one"];
+      const managed = ["daniela-martins", "giltec", "maskara-assessoria", "nexus-ai", "primeiro-teste", "quatree-dog"];
       const clients = await Promise.all(managed.map(async clientId => {
         const raw = await instagramCredentialStatus(env, clientId).catch(() => ({
           connected: false, tokenValid: false, accountMatches: false, validation: "diagnostic_error"
@@ -1125,7 +1125,7 @@ export default {
         };
       }));
       return json({
-        ok: clients.length === 2 && clients.every(item => item.connected && item.tokenValid && item.accountMatches),
+        ok: clients.length === managed.length && clients.every(item => item.connected && item.tokenValid && item.accountMatches),
         clients
       }, 200);
     }

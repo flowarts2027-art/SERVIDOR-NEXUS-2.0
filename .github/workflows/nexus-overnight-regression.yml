@@ -89,7 +89,7 @@ jobs:
           # from passing the overnight readiness check.
           jq -e '
             .ok == true
-            and ([.clients[]? | .clientId] | sort == ["globalplay-streaming", "ragnar-one"])
+            and ([.clients[]? | .clientId] | sort == ["daniela-martins", "giltec", "maskara-assessoria", "nexus-ai", "primeiro-teste", "quatree-dog"])
             and ([.clients[]? | .connected == true and .tokenValid == true and .accountMatches == true] | all)
           ' /tmp/instagram-health.json > /dev/null
           jq '{ok, clients: [.clients[] | {clientId, connected, tokenValid, accountMatches, validation}]}' /tmp/instagram-health.json

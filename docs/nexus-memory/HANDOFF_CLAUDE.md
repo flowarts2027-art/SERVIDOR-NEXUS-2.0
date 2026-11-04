@@ -1,3 +1,14 @@
+## 2026-11-04 18:10 BRT — Verificação do Instagram passa a olhar os clientes ativos (Claude)
+- Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
+- Pedido e objetivo: o Rodrigo pediu para investigar a falha do `NEXUS Overnight Regression` e vigiar só clientes ativos com Instagram conectado.
+- Diagnóstico: `/api/instagram-publishing-health` olhava só `globalplay-streaming` e `ragnar-one`, ambos arquivados. O token da Ragnar One retornou `http_400`, então o passo falhava. Último sucesso: 03/11 12:36 BRT. Nenhum cliente ativo era vigiado.
+- Decisão: lista nova com `daniela-martins`, `giltec`, `maskara-assessoria`, `nexus-ai`, `primeiro-teste` e `quatree-dog`. Todos têm métricas de hoje e posts recentes. Token da Ragnar One não será renovado.
+- Executado: lista trocada em `cloudflare/src/index.js`, `.github/workflows/nexus-overnight-regression.yml` e `.github/scripts/nexus-autofix-policy.mjs` (com o teste dele), e `clients.length === 2` virou `managed.length`. Branch `claude/saude-instagram-clientes-ativos`, PR sem merge.
+- Estado: PR aguardando revisão. Não implantado.
+- Próximo passo: depois do merge e do deploy, abrir `/api/instagram-publishing-health` e ver se os 6 clientes vêm com `ok: true`. Se um cliente falhar, é aviso real e precisa de análise.
+- Fora deste PR: `.github/scripts/nexus-audit.mjs` ainda olha só os dois clientes arquivados.
+- Bloqueios / autorização: o merge depende do OK do Rodrigo, porque mexe em `cloudflare/` e publica no site.
+
 ## 2026-11-04 17:37 BRT — Graphify: reinstalado no PC e teste de economia de tokens (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido e objetivo: o Rodrigo pediu para verificar se o Graphify economiza tokens neste projeto.
