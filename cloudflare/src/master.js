@@ -1,3 +1,5 @@
+import { clientGroup } from "./clients.js";
+import { ensureGroupClients } from "./client-groups.js";
 import {
   masterCredentialsValid,
   createMasterSession,
@@ -84,6 +86,7 @@ function masterClientView(client) {
     leads: config.leads && typeof config.leads === "object" ? config.leads : { total:0, hot:0, warm:0, cold:0 },
     usage: { openaiPercent: Number(config.usage?.openaiPercent || 0) },
     openaiDailyTokenLimit: Number(config.openaiDailyTokenLimit || 30000),
+    vendor: clientGroup(client.id)?.vendor || "",
     aiMode: client.id === "ragnar-one" ? "own-key" : "shared",
     aiMonthlyImageLimit: Number(config.aiMonthlyImageLimit || 0),
     aiImagesUsed: Number(config.aiImagesUsed || 0),
@@ -605,6 +608,7 @@ export async function handleMaster(request, env, url) {
   if (url.pathname === "/api/clients" && request.method === "GET") {
     // Clientes arquivados (ex.: contas antigas de streaming) saem do painel.
     const includeArchived = url.searchParams.get("all") === "1";
+    await ensureGroupClients(env).catch(error => console.error("group_clients_failed", String(error?.message || error)));
     const clients = (await listClients(env)).filter(client => includeArchived || String(client.status || "") !== "archived");
     return json(clients.map(masterClientView));
   }

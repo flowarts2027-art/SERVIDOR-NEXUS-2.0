@@ -25,6 +25,8 @@
       const data = await response.json();
       const list = (Array.isArray(data) ? data : data.clients || []).filter(c => c && c.id && !ARCHIVED.has(String(c.id)) && String(c.status || "online") !== "archived");
       if (list.length) select.innerHTML = list.map(c => `<option value="${esc(c.id)}">${esc(c.name || c.id)}</option>`).join("");
+      const groups = await fetch("/api/master/groups", { credentials: "same-origin" }).then(r => r.json()).catch(() => ({}));
+      for (const g of groups.groups || []) select.insertAdjacentHTML("beforeend", `<option value="${esc(g.id)}">${esc(g.name)}</option>`);
     } catch { /* fica a Flow Arts */ }
   }
 

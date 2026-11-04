@@ -90,7 +90,7 @@ function render() {
     const openUrl = `/api/clients/${encodeURIComponent(client.id)}/assume-open`;
     const action = `<div class="client-action-row"><a class="small-primary" href="${openUrl}" target="_blank" rel="noopener">Abrir painel</a><button type="button" class="ghost" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Acesso</button>${remove}${protect}</div>`;
     // Linha clicável (22/10): tocar no nome abre o painel do cliente.
-    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><small>${escapeHtml(client.niche || "Outro")}</small></td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
+    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>Vendedor: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();

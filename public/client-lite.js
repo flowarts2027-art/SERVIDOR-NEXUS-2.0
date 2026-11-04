@@ -464,7 +464,9 @@ function renderPosts() {
 /* ---------- Início ---------- */
 
 function renderHome() {
-  const name = String(state.client?.displayName || state.client?.contact?.name || state.client?.name || "").trim();
+  const group = state.client?.group;
+  const name = group ? group.name + " — Vendedor " + group.vendor
+    : String(state.client?.displayName || state.client?.contact?.name || state.client?.name || "").trim();
   $("#hello").textContent = name ? "Olá, " + name : "Olá";
   const connected = Boolean(state.connection?.connected);
   const loading = state.connection === null;
@@ -842,6 +844,18 @@ function applyClientTheme(clientId) {
   }
 }
 
+// Painel de grupo (04/11/2026): a Conta mostra de qual vendedor é este painel.
+function renderVendorField() {
+  $("#vendor-box")?.remove();
+  const vendor = state.client?.group?.vendor;
+  if (!vendor) return;
+  const box = document.createElement("section");
+  box.className = "block";
+  box.id = "vendor-box";
+  box.innerHTML = `<h2>Vendedor</h2><p>${escapeHtml(vendor)}</p>`;
+  $("#instagram-box")?.before(box);
+}
+
 function showLogin(message = "") {
   applyClientTheme(null);
   $("#app").hidden = true;
@@ -851,7 +865,8 @@ function showLogin(message = "") {
 
 function showApp(client) {
   state.client = client || state.client;
-  applyClientTheme(DEMO ? null : state.client?.id);
+  applyClientTheme(DEMO ? null : state.client?.group?.theme || state.client?.id);
+  renderVendorField();
   if (state.client?.flowCrm === true && !DEMO) enableFlowCrm();
   $("#login").hidden = true;
   $("#app").hidden = false;

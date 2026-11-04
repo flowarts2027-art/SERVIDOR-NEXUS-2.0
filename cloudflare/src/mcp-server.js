@@ -20,6 +20,8 @@ const AGENDA_MAX_DIAS = 31;
 
 const READ_ONLY = Object.freeze({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
 
+import { groupFromTarget, groupOptions } from "./client-groups.js";
+
 // Arquivo vindo do ChatGPT (openai/fileParams) ou de outro cliente MCP: um link temporário para baixar.
 const FILE_PARAM = Object.freeze({
   type: "object",
@@ -82,7 +84,7 @@ export const MCP_TOOLS = Object.freeze([
     inputSchema: {
       type: "object",
       properties: {
-        cliente_id: { type: "string", description: "Id do cliente (ex.: primeiro-teste para a Flow Arts)." },
+        cliente_id: { type: "string", description: "Id do cliente (ex.: primeiro-teste para a Flow Arts), ou de um grupo (ex.: grupo:quatree-dog) para subir ao painel de todos os vendedores." },
         formato: { type: "string", enum: ["post", "story", "carrossel"], description: "post, story ou carrossel." },
         dia: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Dia em Brasília, AAAA-MM-DD." },
         hora: { type: "string", pattern: "^\\d{2}:\\d{2}$", description: "Hora em Brasília, HH:MM (ex.: 09:00). Pelo menos 10 minutos à frente." },
@@ -159,7 +161,8 @@ class ToolInputError extends Error {}
 export async function listarClientes(env, deps) {
   const clients = await deps.listClients(env);
   return {
-    clientes: clients.map(c => ({ id: c.id, nome: c.name, instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status }))
+    clientes: clients.map(c => ({ id: c.id, nome: c.name, instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status })),
+    grupos: groupOptions()
   };
 }
 
@@ -285,7 +288,8 @@ const UPLOAD_ERRORS = {
 
 export async function enviarArte(env, deps, args, now = new Date()) {
   if (!mcpWriteEnabled(env)) throw new ToolInputError("O envio de artes pelo conector está desligado no Nexus.");
-  const client = await requireClient(env, deps, args);
+  const grupo = groupFromTarget(args?.cliente_id);
+  const client = grupo ? { id: "grupo:" + grupo.id, name: grupo.name } : await requireClient(env, deps, args);
   const tipo = FORMATS[String(args?.formato || "")];
   if (!tipo) throw new ToolInputError("Formato precisa ser post, story ou carrossel.");
   const dia = String(args?.dia || "");
@@ -355,10 +359,12 @@ export async function enviarArte(env, deps, args, now = new Date()) {
     if (UPLOAD_ERRORS[code]) throw new ToolInputError(UPLOAD_ERRORS[code]);
     throw error;
   }
+  if (result.ok === false) throw new ToolInputError(result.message);
   return {
     ok: true,
     id: result.id,
     cliente: { id: client.id, nome: client.name },
+    ...(result.results ? { vendedores: result.results } : {}),
     formato: args.formato,
     dia, hora,
     imagens: arquivos.length,
@@ -398,10 +404,12 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
     if (UPLOAD_ERRORS[code]) throw new ToolInputError(UPLOAD_ERRORS[code]);
     throw error;
   }
+  if (result.ok === false) throw new ToolInputError(result.message);
   return {
     ok: true,
     id: result.id,
     cliente: { id: client.id, nome: client.name },
+    ...(result.results ? { vendedores: result.results } : {}),
     formato: "story (vídeo)",
     dia, hora,
     video: true,

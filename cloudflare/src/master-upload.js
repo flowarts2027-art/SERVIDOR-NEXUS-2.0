@@ -8,6 +8,7 @@ import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js"
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
+import { ensureGroupClients, groupFromTarget, groupOptions, vendorCaption } from "./client-groups.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
@@ -40,7 +41,7 @@ export async function nextCaption(env, client, format = "post") {
 }
 
 async function activeClient(env, id) {
-  const clientId = String(id || "").trim();
+  const clientId = String(groupFromTarget(id)?.members[0].clientId || id || "").trim();
   if (!clientId || BLOCKED_PUBLISH_CLIENTS.has(clientId)) throw new Error("client_invalid");
   const client = await getClient(env, clientId);
   if (!client) throw new Error("client_invalid");
@@ -91,7 +92,42 @@ async function slotTaken(env, clientId, scheduledFor, isStory) {
   return Number(row?.n || 0) > 0;
 }
 
+// Campanha do grupo: as mesmas imagens para cada vendedor, sem moldura por cima, e a legenda de cada um.
+// "noDuplicate" faz o reenvio depois de uma falha não repetir o post de quem já recebeu.
+async function groupUpload(env, group, form, now, overrides) {
+  await ensureGroupClients(env);
+  const story = String(form.get("type") || "").trim() === "story";
+  const results = [];
+  for (let i = 0; i < group.members.length; i++) {
+    const member = group.members[i];
+    const one = new FormData();
+    for (const [key, value] of form.entries()) one.append(key, value);
+    one.set("clientId", member.clientId);
+    one.set("jaTemTexto", "1");
+    one.set("noDuplicate", "1");
+    try {
+      if (!story) {
+        const client = await activeClient(env, member.clientId);
+        const base = String(form.get("caption") || "").trim() || await nextCaption(env, client, String(form.get("type") || ""));
+        one.set("caption", vendorCaption(base, group, i));
+      }
+      const out = await masterUpload(env, one, now, overrides);
+      results.push({ clientId: member.clientId, vendor: member.vendor, ok: true, id: out.id });
+    } catch (error) {
+      results.push({ clientId: member.clientId, vendor: member.vendor, ok: false, error: String(error?.message || error).slice(0, 60) });
+    }
+  }
+  const failed = results.filter(item => !item.ok);
+  if (failed.length === results.length) throw new Error(failed[0].error);
+  if (!failed.length) return { ok: true, id: results[0].id, group: group.id, results };
+  const sent = results.filter(item => item.ok).map(item => item.vendor).join(", ");
+  const missing = failed.map(item => item.vendor + " (" + (MESSAGES[item.error] || "erro no envio") + ")").join(", ");
+  return { ok: false, group: group.id, results, message: "Subiu para: " + sent + ". Faltou: " + missing + "." };
+}
+
 export async function masterUpload(env, form, now = new Date(), overrides = {}) {
+  const group = groupFromTarget(form.get("clientId"));
+  if (group) return groupUpload(env, group, form, now, overrides);
   const client = await activeClient(env, form.get("clientId"));
   const type = TYPES[String(form.get("type") || "").trim()];
   if (!type) throw new Error("type_invalid");
@@ -120,6 +156,9 @@ const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, client_invalid: "Escolha um client
 // Rotas: GET /api/master/caption, GET /api/master/legendas e POST /api/master/upload. Quem chama já conferiu o login do Master.
 export async function handleMasterUpload(request, env, url) {
   try {
+    if (url.pathname === "/api/master/groups" && request.method === "GET") {
+      return send({ ok: true, groups: groupOptions() });
+    }
     if (url.pathname === "/api/master/caption" && request.method === "GET") {
       const client = await activeClient(env, url.searchParams.get("clientId"));
       const format = String(url.searchParams.get("format") || "post");

@@ -36,6 +36,15 @@
 - Próximo passo: depois do merge e do deploy, abrir o painel real da Quatree e conferir Início, Posts e Números.
 - Bloqueios / autorização: o merge depende do OK do Rodrigo, porque mexe em `public/` e publica no site.
 
+## 2026-11-04 20:30 BRT — Grupos de clientes: Quatree Dog com Ericsson e Eduardo (Claude)
+- Pedido: criar grupos; campanha do grupo sobe para todos os vendedores com as mesmas imagens, legenda com o nome do vendedor e um pouco diferente; painéis com logo e cores da Quatree.
+- Executado: `CLIENT_GROUPS` e `clientGroup` em `cloudflare/src/clients.js`; `cloudflare/src/client-groups.js`; destino `grupo:quatree-dog` em Master, Enviar artes e conector; campo Vendedor na Conta do painel e na tabela do Master; topo "Olá, Quatree Dog — Vendedor <nome>".
+- Eduardo: cliente `quatree-dog-eduardo`, criado sozinho na primeira abertura do Master depois do deploy, em `setup`, sem Instagram e sem senha.
+- Decisões: grupo fica no código, como `CLIENT_THEMES`, porque migrations não rodam no deploy. Legenda varia por modelo fixo, sem IA. Vendedor que não é o 1º perde linhas com telefone ou @ do outro. Campanha de grupo sempre vai sem moldura, para as imagens serem iguais.
+- Limite: `agendamentos/` por pasta ainda não aceita grupo. Reenvio só evita duplicar quando a campanha tem dia e hora.
+- Estado: PR aguardando revisão, não implantado. Nada foi criado em produção.
+- Próximo passo: depois do merge e do deploy, abrir o Master, definir a senha do Eduardo e conectar o Instagram dele.
+
 ## 2026-11-04 03h BRT — Instagram @nexusai_system: auditoria + campanha de 7 dias (só documentação)
 
 - Pedido do Rodrigo: auditar o Instagram antigo do Global Play, agora renomeado para Nexus (@nexusai_system), e criar estratégia de 7 dias para ele começar as artes no ChatGPT. Perfil vai funcionar igual ao da Flow Arts.
