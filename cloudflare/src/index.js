@@ -33,6 +33,7 @@ import { handleGiftRequest } from "./gift.js";
 import { runGiftInbox } from "./gift-dm.js";
 import { fixGiftCtaInOpenPosts } from "./gift-cta-fix.js";
 import { fixArtTextInOpenPosts } from "./art-text-fix.js";
+import { approveSilentPosts } from "./auto-approve.js";
 import { ensureDemoClient } from "./demo-client.js";
 import { handleSiteHit, siteStats } from "./site-analytics.js";
 import { handleProspectsRoute } from "./prospects.js";
@@ -573,6 +574,12 @@ export default {
       // Fila do Facebook (28/10): um post por minuto vai para a Página, depois de sair no Instagram.
       ctx.waitUntil(runFacebookCrosspostQueue(env).catch(error =>
         console.warn("facebook_crosspost_failed", String(error?.message || error).slice(0, 140))
+      ));
+      // Aprovação por silêncio (03/11): post mandado pelo Rodrigo sai no horário se o cliente não pedir reajuste até 1 hora antes.
+      ctx.waitUntil(approveSilentPosts(env, { now: at }).then(out => {
+        if (out.approved.length || out.noWindow.length) console.log("silent_approval", JSON.stringify(out));
+      }).catch(error =>
+        console.warn("silent_approval_failed", String(error?.message || error).slice(0, 140))
       ));
       // Agente "Texto nas artes" (29/10): 1 post por minuto; imagem sem texto ganha logo, título e botão do Nexus.
       ctx.waitUntil(fixArtTextInOpenPosts(env, { now: at, limit: 1 }).catch(error =>

@@ -1,3 +1,6 @@
+## 2026-11-03 — Publicação automática após 1 hora sem pedido de reajuste (PR aberto)
+- Post mandado pelo Rodrigo (Master, conector, Biblioteca) vira aprovado quando falta 1 hora para o horário, se o cliente não pediu reajuste. Agente `auto-approve.js` no cron de 1 minuto. Detalhes em HANDOFF_CLAUDE.md.
+
 
 ## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
 - Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.
