@@ -170,7 +170,7 @@ export async function verAgenda(env, deps, args, now = new Date()) {
   const from = new Date(`${hojeBrasilia}T00:00:00-03:00`);
   const to = new Date(from.getTime() + dias * 86400000);
   const rows = await env.DB.prepare(
-    `SELECT id, scheduled_for, status, approval_status, caption, payload_json
+    `SELECT id, scheduled_for, status, approval_status, caption, payload_json, error
      FROM post_ledger WHERE client_id=?1 AND scheduled_for>=?2 AND scheduled_for<?3
      ORDER BY scheduled_for ASC LIMIT 200`
   ).bind(client.id, from.toISOString(), to.toISOString()).all();
@@ -183,7 +183,9 @@ export async function verAgenda(env, deps, args, now = new Date()) {
       formato: String(payload?.creativeFeatures?.requestedFormat || "post"),
       situacao: String(r.status || ""),
       aprovacao: String(r.approval_status || ""),
-      legenda: String(r.caption || "").replace(/\s+/g, " ").trim().slice(0, 140)
+      legenda: String(r.caption || "").replace(/\s+/g, " ").trim().slice(0, 140),
+      // 04/11/2026: mostrar o motivo da falha para o Claude/ChatGPT diagnosticarem sem pedir print.
+      ...(r.error ? { erro: String(r.error).slice(0, 300), tentativas: Number(payload?.retryCount || 0) } : {})
     };
   });
   return { cliente: { id: client.id, nome: client.name }, de: hojeBrasilia, dias, total: postagens.length, postagens };

@@ -8,7 +8,7 @@ const TOKEN = "chave-de-teste-bem-comprida-123456";
 
 function setup(extra = {}) {
   const db = new DatabaseSync(":memory:");
-  db.exec(`CREATE TABLE post_ledger(id TEXT PRIMARY KEY, client_id TEXT, scheduled_for TEXT, status TEXT, approval_status TEXT, caption TEXT, payload_json TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);`);
+  db.exec(`CREATE TABLE post_ledger(id TEXT PRIMARY KEY, client_id TEXT, scheduled_for TEXT, status TEXT, approval_status TEXT, caption TEXT, payload_json TEXT, error TEXT DEFAULT '', created_at TEXT DEFAULT CURRENT_TIMESTAMP);`);
   const DB = { prepare(sql) { const wrap = args => {
     const p = Object.fromEntries(args.map((v, i) => ["?" + (i + 1), v ?? null]));
     return { first: async () => db.prepare(sql).get(p) || null, all: async () => ({ results: db.prepare(sql).all(p) }),
@@ -304,4 +304,15 @@ test("moldura somente com solicitação explícita ja_tem_texto=false", async ()
   assert.equal(compositions, 1);
   assert.equal(calls.uploads[0].form.get("jaTemTexto"), "1");
   assert.equal(calls.uploads[0].form.get("approval"), "cliente");
+});
+
+test("agenda mostra o motivo quando a postagem falhou", async () => {
+  const { env, deps, db } = setup();
+  db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,status,approval_status,caption,payload_json,error) VALUES(?,?,?,?,?,?,?,?)")
+    .run("f1","primeiro-teste","2026-11-04T15:00:00Z","failed","approved","x",JSON.stringify({retryCount:2}),"instagram_container_missing");
+  const { verAgenda } = await import("../src/mcp-server.js");
+  const out = await verAgenda(env, deps, { cliente_id: "primeiro-teste", dias: 1 }, new Date("2026-11-04T12:00:00Z"));
+  const p = out.postagens.find(x => x.id === "f1");
+  assert.equal(p.erro, "instagram_container_missing");
+  assert.equal(p.tentativas, 2);
 });
