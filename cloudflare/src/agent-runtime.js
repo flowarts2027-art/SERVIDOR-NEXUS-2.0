@@ -813,18 +813,37 @@ async function runCreator(env,client,strategy,options) {
         return {url:staged,source:"own-instagram-r2-replenishment",sourceInstagramMediaId:String(candidate.id)};
       }
     }
-    return {url:"",source:"awaiting-unique-media",sourceInstagramMediaId:""};
+    // Pedido do Rodrigo (04/11): nada de post sem imagem. Última saída: IA grátis.
+    try{
+      const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
+        contentFormat:"image",cleanImage:true,
+        variationSeed:String(postId)+"|"+String(Date.now())
+      });
+      return {
+        url:generated.url,source:"free-ai-fallback",sourceInstagramMediaId:"",
+        fingerprint:String(generated.fingerprint||""),brandingApplied:false,brandingError:"",
+        referenceVersion:generated.promptVersion,referenceMode:generated.referenceMode,contentFormat:"image",costUsd:Number(generated.costUsd||0)
+      };
+    }catch(error){
+      return {url:"",source:"awaiting-unique-media",sourceInstagramMediaId:"",error:String(error?.message||error)};
+    }
   }
 
   // Adaptive times may change between cycles. Recover one due post from
   // today's earlier timing plan before allocating media to future slots.
   const dueRecoveries=recent
     .filter(row=>row.status==="ready"
-      &&localDay(row.scheduled_for)===localDay()
-      &&Date.parse(String(row.scheduled_for||""))<=Date.now()
       &&!String(row.payload?.imageUrl||row.payload?.publicImageUrl||"")
-      &&row.approval_status==="approved")
-    .sort((a,b)=>Date.parse(a.scheduled_for)-Date.parse(b.scheduled_for));
+      &&((row.approval_status==="approved"
+          &&localDay(row.scheduled_for)===localDay()
+          &&Date.parse(String(row.scheduled_for||""))<=Date.now())
+        // Pedido do Rodrigo (04/11): post esperando aprovação também ganha imagem
+        // antes do horário, para o cliente ter o que aprovar no painel.
+        ||(row.approval_status!=="approved"&&row.approval_status!=="rejected"
+          &&Date.parse(String(row.scheduled_for||""))<=Date.now()+36*3600000
+          &&Date.parse(String(row.scheduled_for||""))>=Date.now()-12*3600000)))
+    .sort((a,b)=>Date.parse(a.scheduled_for)-Date.parse(b.scheduled_for))
+    .slice(0,3);
   for(const pending of dueRecoveries){
     const payload={...pending.payload};
     const blocked=String(payload.blockedDesignerMedia||"");
