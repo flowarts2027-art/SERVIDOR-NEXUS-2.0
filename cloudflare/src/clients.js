@@ -154,9 +154,31 @@ export function portalClientView(client) {
     agentProfile,
     agentCore,
     connections: config.connections && typeof config.connections === "object" ? config.connections : {},
+    group: clientGroup(client.id),
     branding: {
       logoKey: String(config.branding?.logoKey || ""),
       logoUpdatedAt: config.branding?.logoUpdatedAt || null
     }
   };
+}
+
+// Grupos de clientes (04/11/2026). O 1º vendedor é o cliente que já existia.
+// "theme" é o tema de logo e cores do painel, em CLIENT_THEMES (public/client-lite.js).
+export const CLIENT_GROUPS = Object.freeze({
+  "quatree-dog": Object.freeze({
+    name: "Quatree Dog",
+    theme: "quatree-dog",
+    members: Object.freeze([
+      Object.freeze({ clientId: "quatree-dog", vendor: "Ericsson", instagram: "ericsson_quatree" }),
+      Object.freeze({ clientId: "quatree-dog-eduardo", vendor: "Eduardo" })
+    ])
+  })
+});
+
+export function clientGroup(clientId) {
+  for (const [id, group] of Object.entries(CLIENT_GROUPS)) {
+    const member = group.members.find(item => item.clientId === String(clientId || ""));
+    if (member) return { id, name: group.name, theme: group.theme, vendor: member.vendor };
+  }
+  return null;
 }

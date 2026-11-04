@@ -880,7 +880,7 @@ export default {
     }
 
     // Subir conteúdo pronto do cliente (post, carrossel, Reels, Stories) com legenda pronta por nicho. Só com login do Master.
-    if (url.pathname === "/api/master/upload" || url.pathname === "/api/master/caption" || url.pathname === "/api/master/legendas") {
+    if (url.pathname === "/api/master/upload" || url.pathname === "/api/master/caption" || url.pathname === "/api/master/legendas" || url.pathname === "/api/master/groups") {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleMasterUpload(request, env, url);

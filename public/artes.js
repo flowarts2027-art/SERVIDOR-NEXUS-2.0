@@ -46,6 +46,8 @@
       if (list.length) {
         $("#client").innerHTML = list.map(c => `<option value="${esc(c.id)}">${esc(c.name || c.id)}</option>`).join("");
         if (list.some(c => c.id === "primeiro-teste")) $("#client").value = "primeiro-teste";
+        const groups = await api("/api/master/groups").catch(() => ({}));
+        for (const g of groups.groups || []) $("#client").insertAdjacentHTML("beforeend", `<option value="${esc(g.id)}">${esc(g.name)}</option>`);
       }
     } catch { /* fica a Flow Arts */ }
   }
