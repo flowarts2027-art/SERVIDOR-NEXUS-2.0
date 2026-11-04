@@ -103,7 +103,9 @@ const hello = {
 test("Alice persona and site facts are in the knowledge prompt", () => {
   const prompt = knowledgePrompt(CLIENT);
   assert.match(prompt, /David/);
-  assert.match(prompt, /Resposta Automática: .*R\$ 39,90 por mês/);
+  assert.match(prompt, /Resposta Automática: .*R\$ 39,99 por mês/);
+  assert.match(prompt, /Combo Postador \+ Resposta Automática: R\$ 119,99 por mês/);
+  assert.doesNotMatch(prompt, /Captador de clientes:|comece pelo Captador|Essencial ou o Completo/);
   assert.match(prompt, /Tráfego Pago: R\$ 297 por mês/);
   assert.doesNotMatch(prompt, /Captador \(de clientes\): R\$ 97/);
   assert.match(prompt, /AINDA NÃO LANÇADO/);

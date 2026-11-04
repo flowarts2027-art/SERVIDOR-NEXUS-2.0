@@ -1,3 +1,6 @@
+## 2026-11-03 — Pacote do painel (PR aberto)
+- Aviso vermelho de publicação automática no cartão do post; tabela de planos com botão para o WhatsApp; campanha da Flow Arts só de automação do Instagram; David com preços novos; volta do Instagram corrigida; CI verde (768/768). Detalhes em HANDOFF_CLAUDE.md e AUDITORIA_2026-11-03.md.
+
 ## 2026-11-03 — Publicação automática após 1 hora sem pedido de reajuste (PR aberto)
 - Post mandado pelo Rodrigo (Master, conector, Biblioteca) vira aprovado quando falta 1 hora para o horário, se o cliente não pediu reajuste. Agente `auto-approve.js` no cron de 1 minuto. Detalhes em HANDOFF_CLAUDE.md.
 

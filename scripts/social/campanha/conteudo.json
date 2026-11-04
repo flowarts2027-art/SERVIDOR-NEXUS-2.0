@@ -1255,392 +1255,392 @@
     "tema": "flow",
     "dias": [
       {
-        "tema": "Representante comercial: carteira nova toda semana",
+        "tema": "Seu Instagram postando sozinho",
         "carrossel": [
           {
-            "foto": "a sales representative with a sample case walking along a street of small shops, morning, seen from behind",
+            "foto": "a small business owner behind the counter serving a customer, busy morning, seen from behind",
             "titulo": [
-              "Representante:",
-              "sua carteira",
-              "parou de crescer?"
+              "Sem tempo",
+              "para postar",
+              "no Instagram?"
             ],
             "vantagens": [
-              "Mesmos clientes",
-              "Mesma rota",
-              "Pouca novidade"
+              "Loja cheia",
+              "Dia corrido",
+              "Perfil parado"
             ]
           },
           {
-            "foto": "a printed regional map on a desk with a pen and a coffee, top view",
+            "foto": "a phone lying on a wooden counter next to a coffee cup, screen facing down, morning light",
             "titulo": [
-              "Escolha",
-              "o ramo",
-              "e a cidade"
+              "A Flow Arts",
+              "faz as",
+              "artes"
             ],
             "vantagens": [
-              "Mercado",
-              "Oficina",
-              "Construtora"
+              "Do seu ramo",
+              "Com sua logo",
+              "Sem você criar"
             ]
           },
           {
-            "foto": "a small warehouse office with a desk and a laptop, screen facing away from the viewer, natural light",
+            "foto": "hands holding a phone over a desk, screen facing away from the viewer, soft natural light",
             "titulo": [
-              "O Captador",
-              "acha as",
-              "empresas"
+              "Você aprova",
+              "pelo",
+              "celular"
             ],
             "vantagens": [
+              "Um toque",
+              "Pede ajuste",
+              "Quando quiser"
+            ]
+          },
+          {
+            "foto": "a calendar on an office wall with a few days marked, top light",
+            "titulo": [
+              "E o post",
+              "sai no",
+              "horário"
+            ],
+            "vantagens": [
+              "Manhã e tarde",
               "Todo dia",
-              "Sem planilha",
-              "Sem lista comprada"
+              "Sem esquecer"
             ]
           },
           {
-            "foto": "close view of hands holding a phone face down on a desk next to a business card",
-            "titulo": [
-              "Mensagem",
-              "pronta, com",
-              "o seu nome"
-            ],
-            "vantagens": [
-              "Você revisa",
-              "Do seu jeito",
-              "Você envia"
-            ]
-          },
-          {
-            "foto": "a representative presenting products to a shop owner at the counter, both smiling, side view",
-            "titulo": [
-              "Visita",
-              "com quem",
-              "pode comprar"
-            ],
-            "vantagens": [
-              "Rota melhor",
-              "Mais pedidos",
-              "Menos km"
-            ]
-          }
-        ],
-        "post1900": {
-          "foto": "an empty shop counter at dusk with an order notebook open and a pen",
-          "titulo": [
-            "Qual ramo",
-            "você mais",
-            "quer atender?"
-          ],
-          "vantagens": [
-            "Comércio",
-            "Indústria",
-            "Obras"
-          ]
-        },
-        "stories": [
-          {
-            "foto": "a road leaving a small Brazilian town at sunrise, seen from a car",
-            "titulo": [
-              "Rota",
-              "nova",
-              "hoje?"
-            ],
-            "vantagens": [
-              "Seu ramo",
-              "Sua região",
-              "Comente QUERO"
-            ]
-          },
-          {
-            "foto": "a sample case and a notebook on the passenger seat of a car, no faces",
-            "titulo": [
-              "Carteira",
-              "cresce com",
-              "contato novo"
-            ],
-            "vantagens": [
-              "Todo dia",
-              "Com WhatsApp",
-              "No painel"
-            ]
-          },
-          {
-            "foto": "a representative closing a car door at night outside a warehouse, warm street light",
-            "titulo": [
-              "Amanhã",
-              "tem empresa",
-              "nova"
-            ],
-            "vantagens": [
-              "Captador",
-              "Flow Arts",
-              "Comente QUERO"
-            ]
-          }
-        ],
-        "legendas": {
-          "1900": "Pergunta rápida: qual ramo você mais quer atender? Comércio, indústria ou obras?\n\nResponde nos comentários.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArtsMarketing",
-          "0900": "Representante comercial: sua carteira cresce ou só roda?\n\nVocê escolhe o ramo e a cidade. O Captador da Flow Arts procura as empresas, separa só quem tem WhatsApp e deixa a primeira mensagem pronta, com o seu nome. Você revisa e envia.\n\nSalve e mande para um representante que vive na estrada.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#RepresentanteComercial #VendasB2B #Prospeccao #Vendedor #FlowArtsMarketing"
-        }
-      },
-      {
-        "tema": "Seu Instagram é o seu cartão de visita",
-        "carrossel": [
-          {
-            "foto": "over-the-shoulder view of a business owner at a counter looking at a phone, screen facing the owner, small shop behind",
-            "titulo": [
-              "Antes de",
-              "te responder,",
-              "ele olha o perfil"
-            ],
-            "vantagens": [
-              "Fotos",
-              "Últimos posts",
-              "Bio"
-            ]
-          },
-          {
-            "foto": "a closed shop with an empty window at night, slightly abandoned look",
-            "titulo": [
-              "Perfil parado",
-              "parece",
-              "empresa fechada"
-            ],
-            "vantagens": [
-              "Sem post",
-              "Sem novidade",
-              "Sem confiança"
-            ]
-          },
-          {
-            "foto": "a tidy small office with natural light, a laptop closed and a plant",
-            "titulo": [
-              "Post todo dia",
-              "sem você",
-              "parar de vender"
-            ],
-            "vantagens": [
-              "Foto",
-              "Texto",
-              "Horário"
-            ]
-          },
-          {
-            "foto": "over-the-shoulder view of a salesperson holding a coffee and glancing at a phone, screen facing the person",
-            "titulo": [
-              "Você só",
-              "olha e",
-              "aprova"
-            ],
-            "vantagens": [
-              "1 minuto",
-              "No celular",
-              "Nada sai sem OK"
-            ]
-          },
-          {
-            "foto": "a salesperson greeting a client at the entrance of a small company, natural light, side view",
-            "titulo": [
-              "Chega com",
-              "perfil",
-              "que passa confiança"
-            ],
-            "vantagens": [
-              "Mais resposta",
-              "Mais conversa",
-              "Mais venda"
-            ]
-          }
-        ],
-        "post1900": {
-          "foto": "a business owner at dusk in a small office holding a phone, screen facing the owner, thoughtful",
-          "titulo": [
-            "O seu perfil",
-            "ajuda ou",
-            "atrapalha a venda?"
-          ],
-          "vantagens": [
-            "Ajuda",
-            "Atrapalha",
-            "Nem sei"
-          ]
-        },
-        "stories": [
-          {
-            "foto": "a shop door being opened in the morning, warm light, no faces",
+            "foto": "a shop entrance with an open sign at golden hour, no faces",
             "titulo": [
               "Seu perfil",
-              "também",
-              "abriu hoje?"
+              "sempre",
+              "vivo"
             ],
             "vantagens": [
-              "Post novo",
-              "Foto boa",
-              "Comente QUERO"
+              "2 posts por dia",
+              "2 stories",
+              "No automático"
             ]
-          },
+          }
+        ],
+        "post1900": {
+          "foto": "an empty shop at dusk with the lights still on, seen from the street",
+          "titulo": [
+            "Quantos dias",
+            "seu perfil",
+            "ficou parado?"
+          ],
+          "vantagens": [
+            "1 semana",
+            "1 mês",
+            "Nem lembro"
+          ]
+        },
+        "stories": [
           {
-            "foto": "hands writing a short list of ideas in a notebook on a wooden desk",
+            "foto": "a busy kitchen of a small restaurant, steam and movement, no faces",
             "titulo": [
-              "Post pronto",
-              "enquanto",
-              "você vende"
+              "Correria",
+              "hoje?",
+              "Normal."
             ],
             "vantagens": [
-              "Foto",
-              "Texto",
-              "Horário"
+              "Você trabalha",
+              "A gente posta",
+              "Mande QUERO"
             ]
           },
           {
-            "foto": "a small office light being turned off at night, warm interior",
+            "foto": "a phone on a stand at a shop counter, screen facing away",
+            "titulo": [
+              "Post",
+              "aprovado",
+              "em 1 toque"
+            ],
+            "vantagens": [
+              "Pelo celular",
+              "Sem app novo",
+              "Fácil"
+            ]
+          },
+          {
+            "foto": "a street of small shops at night with warm lights",
             "titulo": [
               "Amanhã",
               "tem post",
-              "pronto"
+              "novo"
             ],
             "vantagens": [
-              "Você aprova",
-              "Flow Arts",
-              "Comente QUERO"
+              "No horário",
+              "Sem você lembrar",
+              "Mande QUERO"
             ]
           }
         ],
         "legendas": {
-          "1900": "Sinceridade: hoje o seu perfil ajuda ou atrapalha a venda?\n\nResponde aqui embaixo: ajuda, atrapalha ou nem sei.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArtsMarketing",
-          "0900": "Vendedor e dono de negócio: antes de te responder, o cliente olha o seu Instagram.\n\nPerfil parado parece empresa fechada. A Flow Arts deixa o post pronto no seu painel, com foto, texto e horário. Você olha, aprova e volta a vender. Nada sai sem o seu OK.\n\nSalve para lembrar.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #InstagramParaNegocios #Vendedor #PequenosNegocios #FlowArtsMarketing"
+          "0900": "Sem tempo para postar no Instagram?\n\nA Flow Arts faz as artes do seu negócio, você aprova pelo celular com um toque e o post sai sozinho no horário. Todo dia, manhã e tarde, sem você precisar lembrar.\n\nSalve e mande para um amigo que tem negócio e vive sem tempo.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo",
+          "1900": "Pergunta rápida: quantos dias o Instagram do seu negócio ficou sem post?\n\n1 semana, 1 mês ou nem lembra? Responde nos comentários.\n\nComente QUERO que eu te mostro como deixar o seu perfil postando sozinho.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo"
         }
       },
       {
-        "tema": "Vendedor, pare de caçar cliente na mão",
+        "tema": "Comentou QUERO, recebeu no Direct",
         "carrossel": [
           {
-            "foto": "a tired salesperson in a car parked on a city street in the morning, looking at a paper list, phone face down on the seat",
+            "foto": "a phone on a café table showing a blurred social feed, screen angled away, warm light",
             "titulo": [
-              "Vendedor,",
-              "você caça",
-              "cliente na mão?"
+              "Alguém",
+              "comentou",
+              "no seu post?"
             ],
             "vantagens": [
-              "Google",
-              "Planilha",
-              "Horas perdidas"
+              "Interessado",
+              "Quer preço",
+              "Quer saber mais"
             ]
           },
           {
-            "foto": "a person at a desk with many open notebooks and sticky notes with phone numbers, messy, late afternoon",
+            "foto": "an empty shop counter at lunch time, nobody attending, seen from the door",
             "titulo": [
-              "Procurar",
-              "empresa toma",
-              "o seu dia"
+              "E você",
+              "demorou",
+              "para responder"
             ],
             "vantagens": [
-              "Telefone",
-              "WhatsApp",
-              "Endereço"
+              "Cliente esfria",
+              "Vai embora",
+              "Venda perdida"
             ]
           },
           {
-            "foto": "a quiet street of small businesses and offices in a Brazilian town, morning light, eye level",
+            "foto": "hands typing on a laptop in a small office, screen facing away",
             "titulo": [
-              "O Captador",
-              "procura",
-              "por você"
+              "Resposta",
+              "automática",
+              "no Direct"
             ],
             "vantagens": [
-              "Seu ramo",
-              "Sua cidade",
+              "Na hora",
+              "Sua mensagem",
+              "Sem você ali"
+            ]
+          },
+          {
+            "foto": "a phone resting on a notebook with a pen, top view",
+            "titulo": [
+              "Você escreve",
+              "a mensagem",
+              "uma vez"
+            ],
+            "vantagens": [
+              "Do seu jeito",
+              "Com seu link",
+              "Pronto"
+            ]
+          },
+          {
+            "foto": "a shop owner handing a bag to a customer at the counter, both seen from the side, smiling",
+            "titulo": [
+              "Cliente",
+              "atendido",
+              "rápido"
+            ],
+            "vantagens": [
+              "Mais conversa",
+              "Mais pedidos",
+              "Menos espera"
+            ]
+          }
+        ],
+        "post1900": {
+          "foto": "a phone face down on a sofa at night, soft lamp light",
+          "titulo": [
+            "Quanto tempo",
+            "você leva para",
+            "responder?"
+          ],
+          "vantagens": [
+            "Na hora",
+            "Horas depois",
+            "Esqueço"
+          ]
+        },
+        "stories": [
+          {
+            "foto": "a small bakery counter in the morning with bread on display, no faces",
+            "titulo": [
+              "Comentou",
+              "QUERO?",
+              "Recebeu."
+            ],
+            "vantagens": [
+              "No Direct",
+              "Na hora",
+              "Mande QUERO"
+            ]
+          },
+          {
+            "foto": "a phone on a table next to keys and a wallet, screen facing down",
+            "titulo": [
+              "Sem ficar",
+              "de olho no",
+              "celular"
+            ],
+            "vantagens": [
+              "Responde sozinho",
+              "Dia e noite",
+              "Fácil"
+            ]
+          },
+          {
+            "foto": "a closed shop with the lights off at night, street view",
+            "titulo": [
+              "Até com",
+              "a loja",
+              "fechada"
+            ],
+            "vantagens": [
+              "Resposta na hora",
+              "Cliente feliz",
+              "Mande QUERO"
+            ]
+          }
+        ],
+        "legendas": {
+          "0900": "Alguém comentou no seu post e você demorou para responder?\n\nCom a Resposta Automática da Flow Arts, quem comenta a palavra no seu post recebe a sua mensagem no Direct na hora. Você escreve a mensagem uma vez e pronto.\n\nSalve para lembrar e mande para quem vive perdendo mensagem.\n\nComente QUERO e veja funcionando agora no seu Direct.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo",
+          "1900": "Responde aí: quanto tempo você leva para responder um comentário no Instagram?\n\nNa hora, horas depois ou às vezes esquece?\n\nComente QUERO e veja a resposta automática chegando no seu Direct.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo"
+        }
+      },
+      {
+        "tema": "Como funciona o Postador Automático",
+        "carrossel": [
+          {
+            "foto": "a tidy small business office desk with a plant and a laptop, screen facing away, morning",
+            "titulo": [
+              "Como",
+              "funciona o",
+              "Postador?"
+            ],
+            "vantagens": [
+              "Simples",
+              "Pelo celular",
+              "Sem complicação"
+            ]
+          },
+          {
+            "foto": "a designer's desk with color samples and a tablet, screen facing away, top view",
+            "titulo": [
+              "1. A arte",
+              "chega no",
+              "seu painel"
+            ],
+            "vantagens": [
+              "Do seu ramo",
+              "Com sua logo",
+              "Pronta"
+            ]
+          },
+          {
+            "foto": "hands holding a phone near a shop window, screen facing away",
+            "titulo": [
+              "2. Você",
+              "aprova ou",
+              "pede ajuste"
+            ],
+            "vantagens": [
+              "Um toque",
+              "Do celular",
+              "Quando puder"
+            ]
+          },
+          {
+            "foto": "a wall clock in a small shop showing morning time, shelves behind",
+            "titulo": [
+              "3. Sai",
+              "sozinho no",
+              "horário"
+            ],
+            "vantagens": [
+              "Feed",
+              "Stories",
               "Todo dia"
             ]
           },
           {
-            "foto": "over-the-shoulder view of a salesperson reading a short list on a laptop in a small office, screen facing the person",
+            "foto": "a small business street with several shops open, sunny afternoon, no faces",
             "titulo": [
-              "Lista pronta",
-              "só com",
-              "WhatsApp"
+              "Você cuida",
+              "do negócio.",
+              "A gente posta."
             ],
             "vantagens": [
-              "Sem fixo",
-              "Pronto para chamar",
-              "No seu painel"
-            ]
-          },
-          {
-            "foto": "a salesperson shaking hands with a business owner at a shop counter, seen from the side, natural light",
-            "titulo": [
-              "Você para",
-              "de procurar",
-              "e vende"
-            ],
-            "vantagens": [
-              "Mais conversa",
-              "Menos procura",
-              "Mais tempo"
+              "Menos trabalho",
+              "Perfil ativo",
+              "Comece hoje"
             ]
           }
         ],
         "post1900": {
-          "foto": "a salesperson sitting in a car at dusk with a notebook on the steering wheel, thoughtful",
+          "foto": "a shop owner's notebook with a to-do list on a counter, pen beside it, no faces",
           "titulo": [
-            "Quanto tempo",
-            "você gasta",
-            "procurando cliente?"
+            "O que mais",
+            "falta no seu",
+            "Instagram?"
           ],
           "vantagens": [
-            "1 hora",
-            "2 horas",
-            "O dia todo"
+            "Tempo",
+            "Ideias",
+            "Constância"
           ]
         },
         "stories": [
           {
-            "foto": "morning traffic on a Brazilian avenue seen from inside a car, windshield view, no faces",
+            "foto": "a coffee cup and a phone on a windowsill at sunrise",
             "titulo": [
-              "Bom dia,",
-              "vendedor",
-              "externo!"
+              "Painel",
+              "no seu",
+              "celular"
             ],
             "vantagens": [
-              "Lista pronta",
-              "Todo dia",
-              "Comente QUERO"
+              "Vê as artes",
+              "Aprova",
+              "Mande QUERO"
             ]
           },
           {
-            "foto": "a coffee cup and a car key on a desk next to a closed notebook",
+            "foto": "an organized shelf of products in a small shop, soft light",
             "titulo": [
-              "Menos",
-              "procura,",
-              "mais venda"
+              "Arte",
+              "do seu",
+              "ramo"
             ],
             "vantagens": [
-              "Seu ramo",
-              "Sua cidade",
-              "Com WhatsApp"
+              "Sua logo",
+              "Seu estilo",
+              "Sem repetir"
             ]
           },
           {
-            "foto": "a salesperson walking out of a client's shop at sunset, seen from behind",
+            "foto": "a quiet street of shops at dusk, lights turning on",
             "titulo": [
-              "Amanhã",
-              "tem lista",
-              "nova"
+              "Post de",
+              "amanhã já",
+              "está pronto"
             ],
             "vantagens": [
-              "Captador",
-              "Flow Arts",
-              "Comente QUERO"
+              "No horário",
+              "Sem esquecer",
+              "Mande QUERO"
             ]
           }
         ],
         "legendas": {
-          "1900": "Vendedor, responde aqui: quanto tempo por dia você gasta procurando cliente novo?\n\n1 hora, 2 horas ou o dia todo? A gente lê todas as respostas.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArtsMarketing",
-          "0900": "Vendas externas: quanto do seu dia vai embora procurando cliente?\n\nGoogle, planilha, telefone fixo que ninguém atende. Quando você acha alguém para chamar, a manhã já foi.\n\nO Captador da Flow Arts procura empresas do seu ramo na sua cidade e deixa no seu painel só quem tem WhatsApp, com a mensagem pronta. Você revisa e chama.\n\nSalve para lembrar e mande para um colega vendedor.\n\nComente QUERO que eu te chamo no direct e mostro como funciona.\n\n#VendasExternas #Vendedor #Prospeccao #RepresentanteComercial #FlowArtsMarketing"
+          "0900": "Como funciona o Postador Automático da Flow Arts, em 3 passos:\n\n1. A arte do seu negócio chega no seu painel.\n2. Você aprova pelo celular ou pede ajuste.\n3. O post sai sozinho no horário, todo dia.\n\nVocê cuida do negócio. A gente cuida do Instagram.\n\nSalve e mande para quem precisa.\n\nComente QUERO que eu te chamo no direct e mostro o painel.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo",
+          "1900": "O que mais falta no Instagram do seu negócio: tempo, ideias ou constância?\n\nResponde nos comentários.\n\nComente QUERO que eu te mostro como deixar tudo no automático.\n\n#FlowArtsMarketing #InstagramParaNegocios #MarketingDigital #PequenosNegocios #NovaFriburgo"
         }
       }
     ],
     "rodape_story": "ou comente QUERO no post de hoje",
-    "_obs": "29/10 (auditoria): público = vendedores externos e representantes; sem post das 12h (o horário fica para o Reel do ChatGPT). Ver docs/nexus-memory/AUDITORIA_INSTAGRAM_FLOWARTS_2026-10-29.md."
+    "_obs": "03/11/2026: foco só na automação do Instagram (Postador Automático e Resposta Automática). Sem Captador, sem busca de leads. Público: dono de pequeno negócio sem tempo de postar. Sem preço na imagem e sem prometer alcance. Sem post das 12h (o horário fica para o Reel)."
   },
   "maskara-assessoria": {
     "pasta": "clientes/maskara-assessoria",

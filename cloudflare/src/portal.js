@@ -480,6 +480,11 @@ function mediaExtension(contentType, originalName = "") {
   return match ? match[1] : "bin";
 }
 
+// Volta da conexão do Instagram (03/11/2026): só a Flow Arts tem o Radar; os outros clientes voltam para a aba Conta.
+export function instagramReturnPath(clientId) {
+  return String(clientId || "") === "primeiro-teste" ? "/portal.html?tab=radar" : "/portal.html?tab=instagram";
+}
+
 async function listPosts(env, clientId) {
   const result = await env.DB.prepare(
     `SELECT id, client_id, scheduled_for, scheduled_hour, status, approval_status,
@@ -842,7 +847,7 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   if (url.pathname === "/api/portal/instagram/start" && request.method === "GET") {
     try {
-      return json({ ok: true, ...(await startInstagramOAuth(env, request, client.id, "/portal.html?tab=radar")) });
+      return json({ ok: true, ...(await startInstagramOAuth(env, request, client.id, instagramReturnPath(client.id))) });
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       if (code === "instagram_nexus_not_configured") {

@@ -29,11 +29,12 @@ test("Master no celular: 4 telas + Mais, tabelas em cartões, vira app", () => {
   }
 });
 
-test("Master em azul, branco e cinza (pedido de 2026-10-17): sem verde neon; vermelho de erro mantido", () => {
+// 03/11/2026: o Rodrigo trocou a identidade do Master para verde + branco (antes era azul, de 17/10).
+test("Master em verde e branco (pedido de 2026-11-03): sem verde neon; vermelho de erro mantido", () => {
   const css = read("styles.css");
   assert.doesNotMatch(css, /#22c55e|#24e27a|#7bf3a5|#31e676/i);
-  assert.match(css, /--blue:#1f66d6/);
-  assert.match(css, /--bg:#eef3f9/);
+  assert.match(css, /--blue:#168c54/);
+  assert.match(css, /--bg:#f3faf6/);
   assert.match(css, /--danger:#d3344b/);
   assert.match(css, /html\{font-size:16px\}/);
 });

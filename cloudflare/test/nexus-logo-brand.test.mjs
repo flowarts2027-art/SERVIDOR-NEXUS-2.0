@@ -5,10 +5,13 @@ import { readFileSync } from "node:fs";
 const read = (file) => readFileSync(new URL("../../public/" + file, import.meta.url), "utf8");
 const asset = "/assets/nexus-logo-azul-oficial.webp";
 
+// 03/11/2026: Master e login do cliente usam o N verde (gerado no deploy por scripts/generate_nexus_green.py);
+// dentro do painel do cliente continua a logo azul oficial.
 test("Marca oficial do NEXUS aparece no Master e no Portal", () => {
   const master = read("index.html");
   const portal = read("portal.html");
-  assert.ok(master.includes(asset));
+  assert.ok(master.includes("/assets/nexus-mark-green.png"));
+  assert.ok(portal.includes("/assets/nexus-mark-green.png"));
   assert.ok(portal.includes(asset));
   assert.ok(portal.includes("nexus-top-logo"));
   assert.ok(portal.includes("nexus-login-logo"));

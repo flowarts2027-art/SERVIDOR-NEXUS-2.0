@@ -248,12 +248,48 @@ function reviewHtml(post) {
   return `<div class="review-warn" role="note"><p>⚠️ Revisor: confira antes de aprovar</p><ul>${items}</ul></div>`;
 }
 
+// Aviso de publicação automática (pedido do Rodrigo, 03/11/2026). Fica no topo do cartão, perto do selo do post.
+// Mesma regra do agente cloudflare/src/auto-approve.js: post mandado pela Flow Arts sai no horário
+// se o cliente não pedir ajuste até 1 hora antes.
+const REVIEW_WINDOW_MS = 60 * 60 * 1000;
+
+function sqlDateMs(value) {
+  const s = String(value || "").trim();
+  if (!s) return NaN;
+  return Date.parse(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(s) ? s.replace(" ", "T") + "Z" : s);
+}
+
+function autoPublishNotice(post, nowMs = Date.now()) {
+  if (!["master", "mcp"].includes(String(post.createdBy || ""))) return null;
+  if (["published", "publishing", "cancelled", "expired"].includes(String(post.status || ""))) return null;
+  if (post.hiddenFromPanel === true || post.revisionRequestedAt || post.revisionRequest) return null;
+  const approval = String(post.approvalStatus || "");
+  const silent = post.autoApproval?.status === "aprovado_por_silencio";
+  if (approval === "approved" && !silent) return null;
+  if (approval !== "approved" && approval !== "pending") return null;
+  const at = Date.parse(String(post.scheduledFor || ""));
+  if (!Number.isFinite(at)) return null;
+  const created = sqlDateMs(post.createdAt);
+  if (post.autoApproval?.status === "sem_janela" || (Number.isFinite(created) && at - created < REVIEW_WINDOW_MS)) return null;
+  const deadline = at - REVIEW_WINDOW_MS;
+  const fmt = ms => new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(ms)).replace(",", " às");
+  if (silent || nowMs >= deadline) return { closed: true, text: "Prazo de ajuste encerrado. Este post será publicado automaticamente em " + fmt(at) + "." };
+  return { closed: false, text: "Se não pedir ajuste até " + fmt(deadline) + " (1 hora antes), este post será publicado automaticamente." };
+}
+
+function autoPublishNoticeHtml(post) {
+  const notice = autoPublishNotice(post);
+  if (!notice) return "";
+  return `<p class="auto-publish-notice${notice.closed ? " is-closed" : ""}" role="note"><span aria-hidden="true">⏰</span> ${escapeHtml(notice.text)}</p>`;
+}
+
 function postCardHtml(post) {
   const when = post.status === "published" ? (post.publishedAt || post.updatedAt) : post.scheduledFor;
   return `<article class="post">
     ${mediaHtml(post, "post-media")}
     <div class="post-body">
       ${formatBadgeHtml(post)}
+      ${autoPublishNoticeHtml(post)}
       ${tagHtml(post)}
       ${reviewHtml(post)}
       <p class="when">${escapeHtml(formatDate(when) || "data a definir")}</p>
@@ -1037,7 +1073,8 @@ async function boot() {
     const data = await api("/api/portal/session", { signal: AbortSignal.timeout(8000) });
     showApp(data.client || data);
     const params = new URLSearchParams(window.location.search);
-    showTab(params.get("tab") === "instagram" ? "conta" : params.get("tab") === "crm" ? "crm" : "inicio");
+    const wantedTab = params.get("tab");
+    showTab(wantedTab === "instagram" ? "conta" : wantedTab === "crm" ? "crm" : wantedTab === "radar" && document.querySelector('[data-tab="radar"]:not([hidden])') ? "radar" : wantedTab === "radar" ? "conta" : "inicio");
     if (params.get("oauth") === "success") toast("Instagram conectado com sucesso.");
     else if (params.get("oauth")) toast("A conexão com o Instagram não terminou. Tente de novo.");
     if (params.has("oauth") || params.has("tab")) history.replaceState({}, "", window.location.pathname);
