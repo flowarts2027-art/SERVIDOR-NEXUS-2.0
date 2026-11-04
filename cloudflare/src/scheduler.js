@@ -380,12 +380,16 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
       `SELECT id FROM post_ledger
        WHERE client_id=?1
          AND status IN ('ready','scheduled','failed')
-         AND approval_status='approved'
-         AND scheduled_for<=?2
-         AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
          AND error IN ('media_generation_required','duplicate_media_blocked','duplicate_media_content_blocked')
+         AND (
+           (approval_status='approved' AND scheduled_for<=?2
+            AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours'))
+           -- Pedido do Rodrigo (04/11): esperando aprovação também ganha imagem antes do horário.
+           OR (COALESCE(approval_status,'') NOT IN ('approved','rejected')
+            AND scheduled_for<=?3 AND scheduled_for>=?4)
+         )
        LIMIT 1`
-    ).bind(client.id,now.toISOString()).first();
+    ).bind(client.id,now.toISOString(),new Date(nowMs+36*3600000).toISOString(),new Date(nowMs-12*3600000).toISOString()).first();
     if (needsFreshMedia?.id) cycleIsDue = true;
 
     // A slow full cycle must not suppress publishing content that already

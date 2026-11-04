@@ -6,6 +6,7 @@ import { GLOBAL_PLAY_BRAND_PNG, GLOBAL_PLAY_REEL_BAND_PNG } from "./media-brand-
 import { clientBrand, brandProfileVersion } from "./client-brand.js";
 import { nicheById } from "./flowarts-niches.js";
 import { pickFlowArtsStyle } from "./flowarts-styles.js";
+import { cloudflareImage } from "./gemini-campaign.js";
 
 function bytesFromBase64(value){
   const raw=atob(String(value||""));
@@ -173,9 +174,33 @@ export function imageGenerationPaused(env){
   return String(env?.NEXUS_IMAGE_GENERATION||"").trim().toLowerCase()!=="on";
 }
 
+export async function generateFreeMedia(env,client,postId,visualBrief="",options={}){
+  if(!env.AI)throw new Error("image_generation_paused");
+  const origin=String(env.PUBLIC_BASE_URL||"").replace(/\/+$/,"");
+  if(!origin)throw new Error("public_base_url_missing");
+  const style=styleForPost(client,visualBrief,options.variationSeed||postId,options);
+  const prompt=buildVisualPrompt(client,visualBrief,options.variationSeed||postId,options)
+    +" Do not write any text, letters or logos in the image.";
+  const aspect=options.contentFormat==="reel"||options.contentFormat==="story"?"9:16":"4:5";
+  const image=await (options.freeImage||cloudflareImage)(env,prompt,aspect);
+  if(!image?.bytes?.byteLength||image.bytes.byteLength>12*1024*1024)throw new Error("free_image_invalid_bytes");
+  const composed=await composeBrandOverlay(env,image.bytes,client,options.title||"",options.photoOnly===true?{...options,cleanImage:true}:options);
+  const bytes=composed.bytes;
+  const fingerprint=[...new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))]
+    .map(byte=>byte.toString(16).padStart(2,"0")).join("");
+  const key="posts/"+String(client.id)+"/"+String(postId)+"/free-"+crypto.randomUUID()+".jpg";
+  await env.MEDIA.put(key,bytes,{
+    httpMetadata:{contentType:"image/jpeg",cacheControl:"public, max-age=31536000, immutable"},
+    customMetadata:{clientId:String(client.id),postId:String(postId),kind:"cloudflare-free-media"}
+  });
+  return {url:origin+"/media/"+key,key,fingerprint,brandingApplied:composed.applied,brandingError:composed.reason,promptVersion:"free-cloudflare-v1",styleId:style?style.id:"",referenceMode:"text-direction",referenceCount:0,contentFormat:options.contentFormat||"image",model:String(image.model||""),costUsd:0};
+}
+
 export async function generateOriginalMedia(env,client,postId,visualBrief="",options={}){
-  if(imageGenerationPaused(env))throw new Error("image_generation_paused");
   if(!env.MEDIA)throw new Error("r2_unavailable");
+  // Pedido do Rodrigo (04/11): post sem imagem não pode ficar sem sair.
+  // Com a OpenAI pausada, a imagem sai grátis pela IA da Cloudflare (Flux).
+  if(imageGenerationPaused(env))return generateFreeMedia(env,client,postId,visualBrief,options);
   const origin=String(env.PUBLIC_BASE_URL||"").replace(/\/+$/,"");
   if(!origin)throw new Error("public_base_url_missing");
   const request=options.request||openAIResponses;
