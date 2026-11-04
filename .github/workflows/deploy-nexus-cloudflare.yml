@@ -7,6 +7,7 @@ on:
       - "cloudflare/**"
       - "public/**"
       - "scripts/local-youtube/**"
+      - "scripts/generate_nexus_green.py"
       - "scripts/build-local-helper-zip.py"
       - "scripts/social/molduras_upload.py"
       - "scripts/social/campanha_diaria.py"
@@ -36,6 +37,20 @@ jobs:
         run: |
           node --check public/client-lite.js
           python3 -m py_compile scripts/build_promo_card.py
+
+      - name: Gerar identidade verde do NEXUS Master
+        run: |
+          python3 -m pip install --quiet --break-system-packages Pillow || python3 -m pip install --quiet Pillow
+          python3 scripts/generate_nexus_green.py
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          logo = Image.open("public/assets/nexus-mark-green.png")
+          assert logo.mode == "RGBA" and logo.getpixel((0, 0))[3] == 0
+          for size in (180, 192, 512):
+              assert Image.open(f"public/assets/app-master-{size}.png").size == (size, size)
+          print("NEXUS_MASTER_GREEN_VISUAL_ASSETS_OK")
+          PY
 
       - name: Verify Cloudflare credentials are configured
         env:

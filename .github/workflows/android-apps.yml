@@ -12,7 +12,7 @@ name: Apps Android (Master e Cliente)
 
 on:
   push:
-    branches: [app-android, main]
+    branches: [app-android, main, feat/nexus-master-green-apk-20261103]
     paths:
       - "android/**"
       - ".github/workflows/android-apps.yml"
@@ -87,6 +87,11 @@ jobs:
           echo "origem=$origem" >> "$GITHUB_OUTPUT"
           echo "Impressão digital SHA-256: $SHA"
 
+      - name: Gerar logo verde, ícones e splash do Master
+        run: |
+          python3 -m pip install --quiet --break-system-packages Pillow || python3 -m pip install --quiet Pillow
+          python3 scripts/generate_nexus_green.py
+
       - name: Gerar APKs
         working-directory: android
         env:
@@ -115,6 +120,14 @@ jobs:
           ]
           EOF
           ls -la saida
+
+      - name: Anexar o APK do Master como artefato para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-master-verde
+          path: saida/nexus-master.apk
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Publicar na Release
         uses: softprops/action-gh-release@v2
