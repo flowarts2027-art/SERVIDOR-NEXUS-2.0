@@ -81,6 +81,15 @@
 - Pendências: arquivo da logo N do Nexus (não existe no repositório); conexão do Instagram ao painel; decisão do Rodrigo sobre arquivar os 155 posts antigos.
 - Próximo passo: Rodrigo cola no ChatGPT o prompt do fim do arquivo e faz o dia 05/11.
 
+## 2026-11-04 20:50 BRT — Planos em cartões no celular (Claude)
+- Pedido: na Conta dos clientes, trocar a tabela "Planos e upgrade" por 3 cartões empilhados só no celular; no computador manter a tabela; sem mudar preços, textos e botões.
+- Executado: `public/planos.js` gera tabela e cartões com as mesmas peças. `public/client-lite.css` troca por CSS abaixo de 900 px, o mesmo limite do menu de celular.
+- Decisão: vale para todos os clientes, inclusive a Daniela, porque a tela é compartilhada e o pedido fala do painel dos clientes.
+- Evidências: Chrome sem tela, 390 e 1280 px, sem tema, Daniela e Quatree, com planos simulados: 3 cartões empilhados, textos e links iguais aos da tabela, sem rolagem lateral.
+- Observação: a etiqueta "Seu plano" (`.tag-ok`) tem contraste 3,14 fora dos cartões novos, igual a antes. Foi corrigida só nos cartões.
+- Estado: PR aguardando revisão, não implantado. Não conferido com login real.
+- Próximo passo: depois do merge, abrir a Conta no celular.
+
 ## 2026-11-03 23h BRT — Pacote do painel: aviso, planos, campanha nova, David, testes e auditoria (PR aberto)
 
 - Pedido do Rodrigo: fazer todas as etapas restantes do repasse do ChatGPT num PR só.
