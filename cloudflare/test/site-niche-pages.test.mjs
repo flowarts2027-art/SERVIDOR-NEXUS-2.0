@@ -34,7 +34,7 @@ test("site mostra os 2 planos e o site com 1º ano e renovação com domínio; r
   const read = name => fs.readFileSync(new URL("../../public/" + name, import.meta.url), "utf8");
   const home = read("site.html");
   assert.match(home, /Postador Automático<\/h3>[\s\S]{0,60}R\$ 97 <small>por mês/);
-  assert.match(home, /Resposta Automática<\/h3>[\s\S]{0,60}R\$ 39,90 <small>por mês/);
+  assert.match(home, /Resposta Automática<\/h3>[\s\S]{0,60}R\$ 39,99 <small>por mês/);
   assert.match(home, /Tráfego Pago<\/h3>[\s\S]{0,60}R\$ 297 <small>por mês/);
   assert.doesNotMatch(home, /plano=(essencial|completo|captador|reels5|posts10|responde)/);
   assert.match(home, /1º ano incluso: domínio \.com\.br/);
