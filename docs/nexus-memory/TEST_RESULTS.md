@@ -1,5 +1,15 @@
 # Testes e evidências
 
+## 2026-11-04 17:37 BRT — Graphify: custo de consulta contra leitura direta
+Tokens são estimativa (bytes ÷ 3,5), não medição da API. Mapa com 4.836 nós, `main` em `5004519`, Graphify 0.9.102.
+- `graphify query "manual-reel.js"`: 6.620 bytes, cerca de 1.900 tokens. Saída cortada: 66 de 164 nós.
+- Achou `cloudflare/src/manual-reel.js` (10 nós, com `createManualReel` L31 e `handleManualReelMaster` L108). **Não trouxe `public/manual-reel.js`** (0 nós). Os outros 56 nós são de arquivos vizinhos, como `manual-carousel.js` (11).
+- Ler `cloudflare/src/manual-reel.js` direto: 6.550 bytes, 118 linhas, cerca de 1.870 tokens. Ler também `public/manual-reel.js`: mais cerca de 1.740.
+- A consulta mostra só nomes e linhas. Para ver o código ainda é preciso abrir o arquivo: cerca de 3.770 tokens no total.
+- `graphify query "como funciona o agendamento de reels manuais"`: cerca de 2.300 tokens e 25 nós, nenhum de `manual-reel.js` (lugar errado).
+- Busca pelo nome exato no `graph.json` (simulada em script, mapa anterior, 5 nomes): 50 a 130 tokens. Grep no código: 36 a 290. Arquivos inteiros: 4.400 a 52.000.
+- Conclusão: para arquivo pequeno e conhecido, a consulta não economiza. A economia aparece ao evitar leitura de arquivos grandes. Foi um teste pequeno, não vale como média.
+
 ## 2026-10-27 20h52 BRT — Redesign visual do painel do cliente
 - `node --check public/client-lite.js`: aprovado.
 - Parse básico de `public/portal.html` e `git diff --check`: aprovados.

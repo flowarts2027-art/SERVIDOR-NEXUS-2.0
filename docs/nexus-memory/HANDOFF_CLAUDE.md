@@ -1,3 +1,18 @@
+## 2026-11-04 17:37 BRT — Graphify: reinstalado no PC e teste de economia de tokens (Claude)
+- Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
+- Pedido e objetivo: o Rodrigo pediu para verificar se o Graphify economiza tokens neste projeto.
+- Diagnóstico: `graphify.exe` estava quebrado neste PC (`uv trampoline failed to canonicalize script path`) e a pasta `uv/tools` estava vazia, então `graphify query` e os hooks de `.claude/settings.local.json` não podiam funcionar. Causa provável, não comprovada: a pasta foi recriada em 28/10.
+- Executado com o OK do Rodrigo: `uv tool install --force "graphifyy[sql]"` (versão 0.9.102), `git pull --ff-only` (389 commits) e `uv tool update-shell` (`.local/bin` no PATH do usuário). `--force` foi preciso porque os atalhos antigos bloqueavam a instalação.
+- Efeitos colaterais: a primeira consulta atualizou a skill local de 0.9.94 para 0.9.102 (cópia antiga em `SKILL.md.bak`, fora do Git; o Rodrigo decidiu manter a skill nova). Os hooks do Git refazem o mapa neste PC depois de um pull; a reconstrução terminou sem mudança de estrutura.
+- Evidências: `main` local igual ao GitHub em `5004519` após `git fetch` (0 à frente, 0 atrás). `graphify --version` = 0.9.102. `graphify` encontrado em processo novo com o PATH salvo. Hooks `hook-guard read` e `search` saíram com código 0, testados só com entrada vazia. O workflow do mapa continua rodando (commit do mapa de hoje).
+- Resultado do teste de tokens: ver `TEST_RESULTS.md`. Resumo: `graphify query "manual-reel.js"` custou cerca de 1.900 tokens, quase igual a ler o arquivo (cerca de 1.870), e não trouxe `public/manual-reel.js`. Consulta em frases custou cerca de 2.300 e errou o lugar.
+- Código: nenhum alterado. Sem deploy, sem publicação. Este registro vai no PR da branch `claude/graphify-regra-tokens`.
+- Estado: Graphify instalado e verificado no PC. Regra nova do `CLAUDE.md` em PR, aguardando revisão.
+- Limite desta sessão: os sete arquivos de `AGENTS.md` não foram lidos inteiros (cerca de 125 mil tokens); li `BRIDGE_PROTOCOL.md` e o início do `TASK_BOARD.md`. Sessões do Nexus na nuvem não puderam ser conferidas.
+- Regra nova, com o OK do Rodrigo: arquivo conhecido, abrir direto; função conhecida, buscar o nome no `graph.json`; `graphify query` só para ligações entre partes ou quando não souber onde procurar.
+- Próximo passo: o Rodrigo revisa e faz o merge do PR.
+- Bloqueios / autorização: o merge depende do OK do Rodrigo.
+
 ## 2026-11-04 03h BRT — Instagram @nexusai_system: auditoria + campanha de 7 dias (só documentação)
 
 - Pedido do Rodrigo: auditar o Instagram antigo do Global Play, agora renomeado para Nexus (@nexusai_system), e criar estratégia de 7 dias para ele começar as artes no ChatGPT. Perfil vai funcionar igual ao da Flow Arts.
