@@ -8,15 +8,16 @@ const asset = "/assets/nexus-logo-azul-oficial.webp";
 test("Marca oficial do NEXUS aparece no Master e no Portal", () => {
   const master = read("index.html");
   const portal = read("portal.html");
-  assert.ok(master.includes(asset));
+  assert.ok(master.includes("/assets/nexus-mark-green.png"));
   assert.ok(portal.includes(asset));
+  assert.ok(portal.includes("/assets/nexus-mark-green.png"));
   assert.ok(portal.includes("nexus-top-logo"));
   assert.ok(portal.includes("nexus-login-logo"));
   assert.ok(!master.includes("/assets/nexus-mark-blue.svg"));
   assert.ok(!portal.includes("/assets/nexus-mark-blue.svg"));
 });
 
-test("Arquivo WebP válido e marca personalizada preservada", () => {
+test("Arquivo WebP oficial antigo preservado e marca personalizada mantida", () => {
   const logo = readFileSync(new URL("../../public" + asset, import.meta.url));
   assert.equal(logo.toString("ascii", 0, 4), "RIFF");
   assert.equal(logo.toString("ascii", 8, 12), "WEBP");
