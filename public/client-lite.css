@@ -845,6 +845,86 @@ html[data-client-theme="daniela-martins"] .stat::before { background: #EFECDF; c
 html[data-client-theme="daniela-martins"] .stat:nth-child(2)::before { background: #F6EBDA; color: #8B5A2B; }
 html[data-client-theme="daniela-martins"] .stat:nth-child(3)::before { background: #F3EFE6; color: #B98A45; }
 
+/* ===== Tema da cliente Quatree Dog (04/11/2026) =====
+   Só cores: vermelho #C8102E, vermelho escuro #8B0A1F, prata #B8BCC2, branco e texto #2B2B2B.
+   Não troca a logo. Prata fica em bordas e detalhes: como texto sobre branco é difícil de ler.
+   Verde, laranja e vermelho de aviso continuam iguais, porque têm significado. */
+html[data-client-theme="quatree-dog"] {
+  --navy: #8B0A1F;
+  --navy-2: #A50D26;
+  --blue: #C8102E;
+  --blue-soft: #FBE9EC;
+  --paper: #F6F6F7;
+  --ink: #2B2B2B;
+  --muted: #5F6368;
+  --line: #DDDFE2;
+  --silver: #B8BCC2;
+  --accent: #C8102E;
+  --violet: #8B0A1F;
+  --warm: #92400E;
+  --whats: #0F7A40;
+  --shadow-soft: 0 12px 30px rgba(70, 8, 20, .07);
+  --shadow-card: 0 16px 36px rgba(70, 8, 20, .10);
+}
+html[data-client-theme="quatree-dog"] .btn-primary,
+html[data-client-theme="quatree-dog"] .login .btn-primary { background: linear-gradient(135deg, #C8102E, #8B0A1F); box-shadow: 0 10px 20px rgba(200, 16, 46, .22); }
+html[data-client-theme="quatree-dog"] .btn-ok { background: linear-gradient(135deg, #0F7A5C, #0A6349); box-shadow: 0 10px 20px rgba(10, 99, 73, .18); }
+html[data-client-theme="quatree-dog"] .hero-label { color: #5F6368; }
+html[data-client-theme="quatree-dog"] .format-post { background: #C8102E; }
+html[data-client-theme="quatree-dog"] .format-carousel { background: #8B0A1F; }
+html[data-client-theme="quatree-dog"] .format-reel { background: #2B2B2B; }
+html[data-client-theme="quatree-dog"] .format-story { background: #5F6368; }
+html[data-client-theme="quatree-dog"] .top-chip { background: #EEEFF1; color: #8B0A1F; }
+html[data-client-theme="quatree-dog"] .top-chip i { box-shadow: 0 0 0 4px rgba(200, 16, 46, .14); }
+html[data-client-theme="quatree-dog"] .hero { background: radial-gradient(circle at 84% 18%, rgba(255, 255, 255, .9), transparent 28%), linear-gradient(120deg, #FBE9EC 0%, #F6F6F7 54%, #EEEFF1 100%); }
+html[data-client-theme="quatree-dog"] .hero-media,
+html[data-client-theme="quatree-dog"] .post-media { background: #8B0A1F; }
+html[data-client-theme="quatree-dog"] .followers { background: radial-gradient(circle at 90% 10%, rgba(184, 188, 194, .30), transparent 30%), linear-gradient(135deg, #8B0A1F, #C8102E); }
+html[data-client-theme="quatree-dog"] .followers p,
+html[data-client-theme="quatree-dog"] .media-wait { color: #F4E9EB; }
+html[data-client-theme="quatree-dog"] .followers svg path { stroke: #FFFFFF; }
+html[data-client-theme="quatree-dog"] #instagram-box { background: radial-gradient(circle at 92% 8%, rgba(255, 255, 255, .55), transparent 24%), linear-gradient(135deg, #F6F6F7, #FBE9EC); }
+html[data-client-theme="quatree-dog"] #instagram-box::after { border-color: rgba(200, 16, 46, .12); }
+html[data-client-theme="quatree-dog"] #plan-box { border-color: var(--silver); background: linear-gradient(135deg, #F6F6F7, #fff); }
+html[data-client-theme="quatree-dog"] .cal-nav:hover { border-color: var(--silver); }
+html[data-client-theme="quatree-dog"] .cal-day img + .cal-num,
+html[data-client-theme="quatree-dog"] .car-btn,
+html[data-client-theme="quatree-dog"] .car-count { background: rgba(90, 8, 22, .82); }
+html[data-client-theme="quatree-dog"] .cal-day.is-today { box-shadow: inset 0 0 0 2px rgba(200, 16, 46, .22); }
+html[data-client-theme="quatree-dog"] .cal-day.is-plan,
+html[data-client-theme="quatree-dog"] .plan-list li { border-color: var(--silver); background: #F6F6F7; }
+html[data-client-theme="quatree-dog"] .lg-plan { border-color: var(--silver); }
+html[data-client-theme="quatree-dog"] .upload-box > summary { box-shadow: 0 10px 22px rgba(200, 16, 46, .15); }
+html[data-client-theme="quatree-dog"] .nav-brand small,
+html[data-client-theme="quatree-dog"] .nav-caption,
+html[data-client-theme="quatree-dog"] .nav-section-label,
+html[data-client-theme="quatree-dog"] .nav-spotlight small { color: #F4E9EB; }
+html[data-client-theme="quatree-dog"] .nav-spotlight { border-color: rgba(184, 188, 194, .35); background: linear-gradient(150deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05)); }
+html[data-client-theme="quatree-dog"] .nav-spotlight-icon { color: #FFFFFF; }
+html[data-client-theme="quatree-dog"] .stat::before { background: #FBE9EC; color: #C8102E; }
+html[data-client-theme="quatree-dog"] .stat:nth-child(2)::before { background: #EEEFF1; color: #5F6368; }
+html[data-client-theme="quatree-dog"] .stat:nth-child(3)::before { background: #F6E4E7; color: #8B0A1F; }
+html[data-client-theme="quatree-dog"] .tester-steps li { border-color: rgba(200, 16, 46, .4); background: rgba(200, 16, 46, .06); }
+html[data-client-theme="quatree-dog"] .radar-hero { background: radial-gradient(ellipse at 85% 5%, rgba(184, 188, 194, .28), transparent 48%), linear-gradient(140deg, #5E0715, #8B0A1F 75%, #6E0818); border-color: rgba(184, 188, 194, .35); }
+html[data-client-theme="quatree-dog"] .radar-hero:after { border-color: rgba(184, 188, 194, .3); box-shadow: 0 0 0 28px rgba(184, 188, 194, .06); }
+html[data-client-theme="quatree-dog"] .radar-source { background: rgba(60, 5, 15, .55); border-color: rgba(184, 188, 194, .3); }
+html[data-client-theme="quatree-dog"] #plans-upgrade .up-card[data-plan-card="postador"] { border-color: #C8102E; background: #FBE9EC; }
+html[data-client-theme="quatree-dog"] .cmp-table thead .c-post { background: #C8102E; }
+html[data-client-theme="quatree-dog"] .cmp-table td.c-post { background: #FBE9EC; color: #6B0818; }
+@media (min-width: 900px) {
+  html[data-client-theme="quatree-dog"] .tabbar { background: linear-gradient(180deg, #C8102E 0%, #A50D26 55%, #8B0A1F 100%) !important; box-shadow: 10px 0 30px rgba(70, 8, 20, .16); }
+  html[data-client-theme="quatree-dog"] .tabbar > button { color: #FFFFFF; }
+  html[data-client-theme="quatree-dog"] .tabbar > button:hover { background: rgba(255, 255, 255, .14); }
+  html[data-client-theme="quatree-dog"] .tabbar > button.active { background: linear-gradient(90deg, rgba(90, 8, 22, .75), rgba(90, 8, 22, .30)); box-shadow: inset 3px 0 #B8BCC2, 0 9px 20px rgba(0, 0, 0, .12); }
+  html[data-client-theme="quatree-dog"] .tabbar .badge { background: #FFFFFF; color: #8B0A1F; }
+}
+@media (max-width: 899px) {
+  html[data-client-theme="quatree-dog"] .top { background: radial-gradient(circle at 88% 12%, rgba(184, 188, 194, .28), transparent 26%), linear-gradient(135deg, #C8102E, #8B0A1F); }
+  html[data-client-theme="quatree-dog"] .top-kicker { color: #FFFFFF; }
+  html[data-client-theme="quatree-dog"] .status { color: #F4E9EB; }
+  html[data-client-theme="quatree-dog"] .tabbar { box-shadow: 0 -10px 28px rgba(70, 8, 20, .10); }
+}
+
 
 /* Navegação móvel global: exatamente cinco destinos visíveis.
    Mantém a identidade própria de cada cliente via variáveis do tema. */

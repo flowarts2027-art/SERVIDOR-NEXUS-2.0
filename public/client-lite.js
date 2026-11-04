@@ -796,6 +796,11 @@ const CLIENT_THEMES = {
     logo: "/brand/daniela-martins-logo.png",
     symbol: "/brand/daniela-martins-simbolo.png",
     themeColor: "#746E44"
+  },
+  // Só cores: sem "logo" aqui, o cliente continua com a marca do NEXUS.
+  "quatree-dog": {
+    name: "Quatree Dog",
+    themeColor: "#8B0A1F"
   }
 };
 let defaultBrandHtml = null;
@@ -806,17 +811,18 @@ function applyClientTheme(clientId) {
   if (brand && defaultBrandHtml === null) defaultBrandHtml = brand.innerHTML;
   document.querySelectorAll(".client-top-logo").forEach(el => el.remove());
   const theme = CLIENT_THEMES[clientId];
+  if (!theme?.logo && brand && defaultBrandHtml !== null) {
+    brand.innerHTML = defaultBrandHtml;
+    brand.setAttribute("aria-label", "Nexus by Flow Arts");
+  }
   if (!theme) {
     delete document.documentElement.dataset.clientTheme;
-    if (brand && defaultBrandHtml !== null) {
-      brand.innerHTML = defaultBrandHtml;
-      brand.setAttribute("aria-label", "Nexus by Flow Arts");
-    }
     if (meta) meta.setAttribute("content", "#0F1E3D");
     return;
   }
   document.documentElement.dataset.clientTheme = clientId;
   if (meta) meta.setAttribute("content", theme.themeColor);
+  if (!theme.logo) return;
   if (brand) {
     brand.innerHTML = "";
     const img = document.createElement("img");

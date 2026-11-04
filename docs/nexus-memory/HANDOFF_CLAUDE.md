@@ -24,6 +24,18 @@
 - Próximo passo: o Rodrigo revisa e faz o merge do PR.
 - Bloqueios / autorização: o merge depende do OK do Rodrigo.
 
+## 2026-11-04 18:52 BRT — Painel da Quatree Dog com as cores da marca (Claude)
+- Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
+- Pedido e objetivo: o Rodrigo pediu para mudar só as cores do painel da `quatree-dog`: vermelho #C8102E, vermelho escuro #8B0A1F, prata #B8BCC2, branco e texto #2B2B2B.
+- Logo: não há logo oficial da Quatree no repositório nem nas branches da Quatree. As cores são as passadas pelo Rodrigo, sem conferência pela logo.
+- Executado: tema `html[data-client-theme="quatree-dog"]` em `public/client-lite.css`; `CLIENT_THEMES` em `public/client-lite.js` aceita tema sem logo (a marca do NEXUS fica); versões de cache em `public/portal.html`; teste em `cloudflare/test/nexus-logo-brand.test.mjs`.
+- Decisões: prata só em bordas e detalhes. Verde de aprovar e WhatsApp e laranja de aviso ficaram mais escuros só neste tema, para leitura. Selos de formato usam 4 tons diferentes.
+- Evidências: Chrome sem tela, demonstração com o tema forçado, 1280 px e 390 px, 12 itens de menu e 4 abas de Posts. Sem contraste baixo e sem azul restante. Mesmos botões e abas antes e depois. Daniela e cliente sem tema continuam iguais. Testes 777/778; a falha é a do cron por CRLF no Windows.
+- Não conferido: painel real da Quatree e cartão de seguidores, que a demonstração não desenha. O Calendário foi visto com resposta simulada, porque na demonstração essa rota pede login.
+- Estado: PR aguardando revisão. Não implantado.
+- Próximo passo: depois do merge e do deploy, abrir o painel real da Quatree e conferir Início, Posts e Números.
+- Bloqueios / autorização: o merge depende do OK do Rodrigo, porque mexe em `public/` e publica no site.
+
 ## 2026-11-04 03h BRT — Instagram @nexusai_system: auditoria + campanha de 7 dias (só documentação)
 
 - Pedido do Rodrigo: auditar o Instagram antigo do Global Play, agora renomeado para Nexus (@nexusai_system), e criar estratégia de 7 dias para ele começar as artes no ChatGPT. Perfil vai funcionar igual ao da Flow Arts.
