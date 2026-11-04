@@ -1,3 +1,13 @@
+## 2026-11-04 03h BRT — Instagram @nexusai_system: auditoria + campanha de 7 dias (só documentação)
+
+- Pedido do Rodrigo: auditar o Instagram antigo do Global Play, agora renomeado para Nexus (@nexusai_system), e criar estratégia de 7 dias para ele começar as artes no ChatGPT. Perfil vai funcionar igual ao da Flow Arts.
+- Feito no navegador (com o OK dele): categoria trocada para "Serviço de marketing na internet"; e-mail comercial trocado para o da Flow Arts. Link extra `globalplay.fun` ficou: o Instagram não deixa editar links nesta conta agora.
+- Erro 409 ao criar o cliente no Master: o cliente `nexus-ai` já existia (status setup). Não foi criado outro.
+- Criado `docs/nexus-memory/CAMPANHA_NEXUS_AI_7D.md` (05/11 a 11/11): auditoria, posicionamento, grade 09h carrossel 4 cartões + 12h post + 19h post + 3 stories, temas por dia e regras de envio para `agendamentos/clientes/nexus-ai/`.
+- Nenhum código, deploy ou publicação.
+- Pendências: arquivo da logo N do Nexus (não existe no repositório); conexão do Instagram ao painel; decisão do Rodrigo sobre arquivar os 155 posts antigos.
+- Próximo passo: Rodrigo cola no ChatGPT o prompt do fim do arquivo e faz o dia 05/11.
+
 ## 2026-11-03 23h BRT — Pacote do painel: aviso, planos, campanha nova, David, testes e auditoria (PR aberto)
 
 - Pedido do Rodrigo: fazer todas as etapas restantes do repasse do ChatGPT num PR só.
