@@ -925,3 +925,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 ## 2026-11-02 (23h) — Claude: topo do site vende o Postador (sem Captador)
 - `public/site.html`: título/descrição/og falam do Postador (R$ 97); topo novo "Seu Instagram postando sozinho, todo dia." com a "Agenda do seu Instagram" (exemplo de 4 publicações aprovadas); saiu a seção de classificados/oportunidades; 3 passos novos (conte, a Flow Arts cria, você aprova); seção do QUERO virou a Resposta Automática (R$ 39,90); comparação "App de agendar post não cria post"; chamada final pede exemplo grátis; FAQ sem a pergunta da busca de clientes.
 - Testes 751/751. Próximo passo: depois do merge, conferir o site no celular.
+
+
+## 2026-11-04 07:15 BRT — Rascunho do David no Master (Claude)
+- Contexto: o WhatsApp comercial ficou conectado ao Master (coexistência com o app WhatsApp Business). Robô **desligado**. O texto da tela dizia "a IA só escreve rascunhos", mas a tela não mostrava os rascunhos; no banco havia 10 pendentes em 04/11.
+- Observado nos rascunhos: o David tratou uma cliente que já é do Nexus como contato novo. Por isso **não ligar o robô** neste número até ele saber quem já é cliente (pendência).
+- Feito: quadro "Rascunho do David" + botão "Usar rascunho" (só preenche a caixa), filtro `phone` em /api/whatsapp/drafts, rascunho usado vira `sent`. Testes 769/769. Branch `feat/whatsapp-rascunho-david`, PR aberto; **merge só com OK do Rodrigo**.
+- Próximo passo: depois do merge, abrir Master › WhatsApp e conferir o quadro numa conversa; depois ensinar o David a reconhecer clientes do Nexus.

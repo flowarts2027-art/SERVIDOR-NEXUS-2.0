@@ -686,11 +686,18 @@ export async function handleWhatsAppProtected(request, env, url) {
 
   if (url.pathname === "/api/whatsapp/drafts" && request.method === "GET") {
     const status = String(url.searchParams.get("status") || "pending");
-    const rows = await env.DB.prepare(
-      `SELECT id,message_id,wa_id,classification,priority,needs_human,reply_text,reason,status,created_at
-       FROM whatsapp_drafts WHERE client_id=?1 AND status=?2
-       ORDER BY priority DESC, created_at DESC LIMIT 100`
-    ).bind(clientId, status).all();
+    const phone = cleanPhone(url.searchParams.get("phone") || "");
+    const rows = phone
+      ? await env.DB.prepare(
+        `SELECT id,message_id,wa_id,classification,priority,needs_human,reply_text,reason,status,created_at
+         FROM whatsapp_drafts WHERE client_id=?1 AND status=?2 AND wa_id=?3
+         ORDER BY created_at DESC LIMIT 5`
+      ).bind(clientId, status, phone).all()
+      : await env.DB.prepare(
+        `SELECT id,message_id,wa_id,classification,priority,needs_human,reply_text,reason,status,created_at
+         FROM whatsapp_drafts WHERE client_id=?1 AND status=?2
+         ORDER BY priority DESC, created_at DESC LIMIT 100`
+      ).bind(clientId, status).all();
     return json({ ok: true, items: rows?.results || [] });
   }
 

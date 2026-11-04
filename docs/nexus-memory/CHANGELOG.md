@@ -1,4 +1,10 @@
 ## 2026-11-03 — Pacote do painel (PR aberto)
+
+## 2026-11-04 07:15 BRT — branch feat/whatsapp-rascunho-david
+- feat: Master › WhatsApp mostra o quadro "Rascunho do David" na conversa aberta (o rascunho pendente mais novo daquela pessoa) com botão "Usar rascunho", que só preenche a caixa; o Rodrigo confere e aperta Enviar.
+- feat: GET /api/whatsapp/drafts aceita `phone` (últimos 5 rascunhos daquela conversa).
+- fix: envio manual com o rascunho marca o rascunho como `sent`.
+- test: novo teste de rascunho por conversa; 769/769.
 - Aviso vermelho de publicação automática no cartão do post; tabela de planos com botão para o WhatsApp; campanha da Flow Arts só de automação do Instagram; David com preços novos; volta do Instagram corrigida; CI verde (768/768). Detalhes em HANDOFF_CLAUDE.md e AUDITORIA_2026-11-03.md.
 
 ## 2026-11-03 — Publicação automática após 1 hora sem pedido de reajuste (PR aberto)

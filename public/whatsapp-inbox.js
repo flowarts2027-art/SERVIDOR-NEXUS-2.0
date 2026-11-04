@@ -10,7 +10,7 @@
     if (!response.ok) throw new Error(response.status === 401 ? "Login do painel não aceito nesta aba. Recarregue a página." : `Erro ${response.status}`);
     return response.json();
   }
-  const wa = { items: [], phone: "", contact: null, timer: null, autoReply: false, sending: false };
+  const wa = { items: [], phone: "", contact: null, timer: null, autoReply: false, sending: false, draft: null, draftId: "" };
 
   const when = value => {
     if (!value) return "";
@@ -82,6 +82,7 @@
   }
 
   async function openThread(phone, { quiet = false } = {}) {
+    if (wa.phone !== phone) wa.draftId = "";
     wa.phone = phone;
     wa.contact = wa.items.find(item => item.wa_id === phone) || null;
     $(".wa-layout").classList.add("open");
@@ -103,6 +104,7 @@
         return `<div class="wa-msg ${out ? "out" : "in"}${auto ? " auto" : ""}">${escapeHtml(msg.text || "(" + (msg.message_type || "mídia") + ")")}<small>${label} · ${escapeHtml(when(msg.created_at))}</small></div>`;
       }).join("") || '<p class="muted">Sem mensagens.</p>';
       if (!quiet || nearBottom) box.scrollTop = box.scrollHeight;
+      await loadDraft(phone);
       if (Number(wa.contact?.unread_count)) {
         await api("/api/whatsapp/contact", { method: "POST", body: JSON.stringify({ phone, read: true }) });
         wa.contact.unread_count = 0;
@@ -111,6 +113,23 @@
     } catch {
       $("#wa-thread").innerHTML = '<p class="muted">Não consegui carregar esta conversa.</p>';
     }
+  }
+
+  // Rascunho do David: só aparece; o Rodrigo decide se usa, muda e envia.
+  async function loadDraft(phone) {
+    try {
+      const data = await api("/api/whatsapp/drafts?status=pending&phone=" + encodeURIComponent(phone));
+      if (wa.phone !== phone) return;
+      wa.draft = (data.items || [])[0] || null;
+    } catch {
+      wa.draft = null;
+    }
+    const card = $("#wa-draft");
+    if (!card) return;
+    card.hidden = !wa.draft?.reply_text;
+    if (card.hidden) return;
+    $("#wa-draft-text").textContent = wa.draft.reply_text;
+    $("#wa-draft-reason").textContent = (Number(wa.draft.needs_human) ? "O David acha que você precisa responder. " : "") + (wa.draft.reason || "");
   }
 
   function renderContactState() {
@@ -142,8 +161,9 @@
     wa.sending = true;
     msg.textContent = "Enviando…";
     try {
-      await api("/api/whatsapp/send", { method: "POST", body: JSON.stringify({ to: wa.phone, text, confirmed: true }) });
+      await api("/api/whatsapp/send", { method: "POST", body: JSON.stringify({ to: wa.phone, text, confirmed: true, draftId: wa.draftId || undefined }) });
       $("#wa-text").value = "";
+      wa.draftId = "";
       msg.textContent = "Enviado. O robô ficou pausado nesta conversa.";
       await loadInbox();
       await openThread(wa.phone);
@@ -198,6 +218,14 @@
     $("#wa-form-msg").textContent = "Confira o texto e aperte Enviar.";
   });
 
+  $("#wa-draft-use")?.addEventListener("click", () => {
+    if (!wa.draft?.reply_text) return;
+    const box = $("#wa-text");
+    box.value = wa.draft.reply_text;
+    wa.draftId = wa.draft.id;
+    box.focus();
+    $("#wa-form-msg").textContent = "Confira o rascunho, mude se quiser e aperte Enviar.";
+  });
   $("#wa-form").addEventListener("submit", send);
   $("#wa-text").addEventListener("keydown", event => {
     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) $("#wa-form").requestSubmit();

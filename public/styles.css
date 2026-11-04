@@ -688,3 +688,9 @@ html,body{background:#f3faf6!important;color:var(--text)}
 .holo .agent-core-metrics strong,#site .site-kpis strong{color:#92efb4!important;text-shadow:0 0 14px #59d48a77}
 input:focus,select:focus,textarea:focus{outline-color:#168c5444!important;border-color:#168c54!important}
 @media(max-width:700px){.sidebar{background:#104d34!important}.master-more-sheet{background:#ffffff!important}.master-more-grid .nav-item{color:#123927!important}.master-more-grid .nav-item.active{color:white!important;background:#168c54!important}}
+
+.wa-draft{margin-top:12px;padding:12px 14px;border-radius:12px;border:2px dashed var(--line);background:#2e8b5714}
+.wa-draft strong{display:block;font-size:17px}
+.wa-draft p{margin:6px 0;white-space:pre-wrap;font-size:18px;line-height:1.5}
+.wa-draft small{display:block;font-size:15px;margin-bottom:8px}
+.wa-draft button{font-size:17px;min-height:42px}

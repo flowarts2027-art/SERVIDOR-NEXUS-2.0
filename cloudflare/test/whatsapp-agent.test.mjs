@@ -221,3 +221,21 @@ test("WhatsApp routes accept the Master panel login (cookie), not only the inter
   const inbox = fs.readFileSync(new URL("../../public/whatsapp-inbox.js", import.meta.url), "utf8");
   assert.doesNotMatch(inbox, /location\.href/, "a aba WhatsApp nunca redireciona para o login");
 });
+
+test("draft per conversation: robot off shows David's draft; using it marks it sent", async () => {
+  const f = fixture();
+  try {
+    await f.receive("Quanto custa?", "5521999990011");
+    await f.receive("Oi", "5521999990022");
+    assert.equal(f.sent.length, 0, "robô desligado: ninguém recebe nada sozinho");
+    const one = await f.call("/api/whatsapp/drafts?status=pending&phone=5521999990011");
+    assert.equal(one.status, 200);
+    assert.equal(one.body.items.length, 1);
+    assert.equal(one.body.items[0].wa_id, "5521999990011");
+    assert.ok(one.body.items[0].reply_text);
+    const ok = await f.call("/api/whatsapp/send", "POST", { to: "5521999990011", text: one.body.items[0].reply_text, confirmed: true, draftId: one.body.items[0].id });
+    assert.equal(ok.status, 200);
+    assert.equal((await f.call("/api/whatsapp/drafts?status=pending&phone=5521999990011")).body.items.length, 0);
+    assert.equal((await f.call("/api/whatsapp/drafts?status=pending")).body.items.length, 1, "o rascunho da outra conversa continua");
+  } finally { f.close(); }
+});
