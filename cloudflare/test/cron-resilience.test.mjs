@@ -49,7 +49,7 @@ test("wrangler keeps production cron on a D1-safe fifteen-minute cadence", async
   // para a publicação não dividir o limite do Worker com as outras tarefas.
   const outsidePublisherMinute = minuteBranch.replace(/if \(isPublisherOnlyMinute\(at\)\) \{[\s\S]*?return;\n      \}/, "");
   assert.notEqual(outsidePublisherMinute, minuteBranch, "minuto só de publicar precisa existir");
-  assert.match(minuteBranch, /processDueJobs\(env, at, \{ maxJobs: 1 \}\)/);
+  assert.match(minuteBranch, /processDueJobs\(env, at, \{ maxJobs: 1, onlyKind: "publisher-sweep" \}\)/);
   assert.doesNotMatch(outsidePublisherMinute, /runCronIteration|runSchedulerTick|processDueJobs/);
 });
 

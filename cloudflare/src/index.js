@@ -562,7 +562,7 @@ export default {
       // 04/11/2026: postagens falhavam com "Too many subrequests" porque a rodada de 15 min faz tudo junto.
       // Nos minutos terminados em 2 e 7 esta rodada só publica 1 job, com o limite do Worker livre.
       if (isPublisherOnlyMinute(at)) {
-        ctx.waitUntil(processDueJobs(env, at, { maxJobs: 1 }).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
+        ctx.waitUntil(processDueJobs(env, at, { maxJobs: 1, onlyKind: "publisher-sweep" }).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
           console.warn("publisher_only_minute_failed", String(error?.message || error).slice(0, 140))
         ));
         return;
@@ -656,7 +656,9 @@ export default {
         at,
         runScheduler: current => runSchedulerTick(env, current),
         recordFailure: (current, error) => recordSchedulerFailure(env, current, error).catch(() => "scheduler_tick_error"),
-        processJobs: current => processDueJobs(env, current)
+        // 04/11/2026: a rodada de 15 min não publica. Quem publica é o minuto próprio (terminados em 2 e 7),
+        // porque aqui as outras tarefas já gastam o limite de 50 pedidos e o post falhava.
+        processJobs: current => processDueJobs(env, current, { skipKind: "publisher-sweep" })
       }).catch(async error => {
         if (!isD1Emergency(error)) throw error;
         return runEmergencyPublisher(env, at);

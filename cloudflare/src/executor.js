@@ -285,8 +285,12 @@ export async function processDueJobs(env, scheduledAt = new Date(), scope = {}) 
   const active = automationEnabled(env);
   const now = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt || Date.now());
   const scoped = Boolean(scope.clientId && scope.kind);
-  const filter = scoped ? " AND client_id = ?2 AND kind = ?3" : "";
-  const parameters = scoped ? [now.toISOString(), String(scope.clientId), String(scope.kind)] : [now.toISOString()];
+  // 04/11/2026: onlyKind/skipKind separam a publicação (minuto próprio) das outras tarefas (rodada de 15 min).
+  const kindFilter = !scoped && scope.onlyKind ? " AND kind = ?2" : !scoped && scope.skipKind ? " AND kind <> ?2" : "";
+  const filter = scoped ? " AND client_id = ?2 AND kind = ?3" : kindFilter;
+  const parameters = scoped
+    ? [now.toISOString(), String(scope.clientId), String(scope.kind)]
+    : kindFilter ? [now.toISOString(), String(scope.onlyKind || scope.skipKind)] : [now.toISOString()];
 
   if (!active) {
     const shadowed = await env.DB.prepare(
