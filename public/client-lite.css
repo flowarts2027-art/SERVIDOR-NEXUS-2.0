@@ -1018,3 +1018,10 @@ html[data-client-theme="daniela-martins"] .nexus-top-logo{display:none!important
 #plans-upgrade .up-combo-offer p { margin:0;line-height:1.4; }
 #plans-upgrade .up-combo-total {font-weight:800;font-size:1.05rem;}
 #plans-upgrade .up-combo-offer .btn {white-space:normal;text-align:center;}
+
+/* Login cliente: fundo único claro e logo com transparência real.
+   Não altera as marcas e os temas específicos dentro dos painéis. */
+#login.login{background:#f3faf6!important;color:#163825!important}
+#login .login-card{background:#fff!important;border:1px solid #d5e8dc!important;box-shadow:0 20px 60px #174b2b14!important}
+#login .nexus-login-logo{background:transparent!important;box-shadow:none!important;filter:none!important;object-fit:contain!important}
+#login .login-brand{color:#168c54!important}

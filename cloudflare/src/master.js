@@ -116,24 +116,24 @@ export function masterLoginPage(error = false, action = "/master-login") {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0F1E3D">
+<meta name="theme-color" content="#104d34">
 <title>NEXUS AI · Master</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-/* Login do Master no azul do painel do cliente (pedido do Rodrigo, 23/10/2026). */
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,#0F1E3D 0%,#183A75 100%);font-family:"Atkinson Hyperlegible",system-ui,Arial,sans-serif;color:#1D2633;font-size:18px;line-height:1.6}
-.card{width:min(440px,92vw);padding:32px;border-radius:20px;background:#FFFDF8;box-shadow:0 24px 70px rgba(5,12,30,.45)}
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:22px}.brand img{width:52px;height:52px}.brand strong{display:block;font-size:21px;color:#0F1E3D}.brand small{color:#3F4B5C;letter-spacing:.06em}
-h1{font-size:28px;margin:0 0 6px;color:#0F1E3D}.muted{color:#3F4B5C;margin:0 0 18px;font-size:16px}
-label{display:grid;gap:6px;margin:14px 0;color:#1D2633;font-size:16px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1.5px solid #B9B09E;background:#fff;color:#1D2633;font:inherit;outline:none}input:focus{border-color:#2457D6;box-shadow:0 0 0 3px #E6EDFF}
-button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;background:#2457D6;color:#fff;font:inherit;font-weight:700;cursor:pointer}button:hover{background:#1A44AD}
-.check{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:400;color:#1D2633}.check input{width:22px;height:22px;padding:0;accent-color:#2457D6}
+/* Login do Master: verde e branco, em linha com a marca NEXUS. */
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(160deg,#e8f8ee 0%,#f7fdf9 100%);font-family:"Atkinson Hyperlegible",system-ui,Arial,sans-serif;color:#1D2633;font-size:18px;line-height:1.6}
+.card{width:min(440px,92vw);padding:32px;border-radius:20px;background:#ffffff;box-shadow:0 24px 70px rgba(5,12,30,.45)}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:22px}.brand img{width:52px;height:52px}.brand strong{display:block;font-size:21px;color:#104d34}.brand small{color:#3F4B5C;letter-spacing:.06em}
+h1{font-size:28px;margin:0 0 6px;color:#104d34}.muted{color:#3F4B5C;margin:0 0 18px;font-size:16px}
+label{display:grid;gap:6px;margin:14px 0;color:#1D2633;font-size:16px;font-weight:700}input{width:100%;padding:14px;border-radius:10px;border:1.5px solid #B9B09E;background:#fff;color:#1D2633;font:inherit;outline:none}input:focus{border-color:#168c54;box-shadow:0 0 0 3px #e4f6eb}
+button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;background:#168c54;color:#fff;font:inherit;font-weight:700;cursor:pointer}button:hover{background:#0d7042}
+.check{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:400;color:#1D2633}.check input{width:22px;height:22px;padding:0;accent-color:#168c54}
 .error{min-height:20px;margin-top:12px;color:#A11D12;font-size:15px}.secure{margin-top:18px;padding-top:14px;border-top:1px solid #D9D2C3;color:#3F4B5C;font-size:14px;text-align:center}
 </style>
 </head>
 <body><main class="card">
-<div class="brand"><img src="/assets/nexus-mark-blue.svg" alt=""><div><strong>NEXUS AI</strong><small>SERVIDOR NEXUS</small></div></div>
+<div class="brand"><img src="/assets/nexus-mark-green.png" alt=""><div><strong>NEXUS AI</strong><small>SERVIDOR NEXUS</small></div></div>
 <h1>Acesso administrativo</h1><p class="muted">Área exclusiva do administrador NEXUS.</p>
 <form method="post" action="${action}">
 <label>Usuário<input name="username" autocomplete="username" required></label>

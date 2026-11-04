@@ -1,3 +1,9 @@
+
+## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
+- Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.
+- Alteração preparada em branch `feat/nexus-master-green-apk-20261103`: CSS Master/menus/holográfico, login administrativo, manifesto PWA, tema Android Master; pipeline gera imagem N transparente e ícones do APK a partir da arte metálica já versionada. Tela de login do cliente passa a fundo único claro e logo transparente; tema interno dos clientes permanece preservado.
+- Teste local isolado: `scripts/generate_nexus_green.py` executado com imagem RGBA de referência, PNG com alpha(0,0)=0. Verificação real de APK assinado/deploy exige GitHub Actions; **não afirmar APK pronto nem deploy até o run ser confirmado**.
+- Próximo passo: revisar PR, acompanhar execução `Apps Android (Master e Cliente)` na branch e obter `nexus-master.apk` na Release; após merge validar deploy Cloudflare e logins no celular.
 ## 2026-11-03 — Planos do Portal: preço FINAL do combo R$ 119,99 e comparativo visual (pedido Rodrigo)
 **Repasse para Claude executar no pacote único de correções; ainda NÃO implantado.** Criar na área Planos do painel do cliente uma comparação visual tipo planilha, com colunas/faixas de cores distintas, legível no celular, destacando diferenças e botão **Solicitar este plano** que encaminhe ao WhatsApp comercial configurado (não inventar número), com texto pré-preenchido identificando o plano escolhido. Valores **mensais** definidos pelo Rodrigo:
 - **Autoresponder R$ 39,99/mês**: somente respostas automáticas de mensagens no Instagram; não inclui agendamento/publicação.

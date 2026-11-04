@@ -1,3 +1,9 @@
+
+## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
+- Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.
+- Alteração preparada em branch `feat/nexus-master-green-apk-20261103`: CSS Master/menus/holográfico, login administrativo, manifesto PWA, tema Android Master; pipeline gera imagem N transparente e ícones do APK a partir da arte metálica já versionada. Tela de login do cliente passa a fundo único claro e logo transparente; tema interno dos clientes permanece preservado.
+- Teste local isolado: `scripts/generate_nexus_green.py` executado com imagem RGBA de referência, PNG com alpha(0,0)=0. Verificação real de APK assinado/deploy exige GitHub Actions; **não afirmar APK pronto nem deploy até o run ser confirmado**.
+- Próximo passo: revisar PR, acompanhar execução `Apps Android (Master e Cliente)` na branch e obter `nexus-master.apk` na Release; após merge validar deploy Cloudflare e logins no celular.
 ## 2026-11-03 — Nova marca NEXUS azul e prata, painéis Master e cliente
 - Pedido explícito: trocar a marca visual padrão de ambos os painéis pela logo NEXUS 3D aprovada no chat (N cromado e azul, órbita, NEXUS abaixo, fundo transparente). Convertida a partir da imagem fornecida/gerada; versão leve 96×96 WebP para exibição pequena na interface. Não foi redesenhada.
 - Arquivo estático em `public/assets/nexus-logo-azul-oficial.webp`; Master: menu superior; Portal: marca da navegação desktop, topo mobile e login; favicon. CSS dimensiona sem esticar. O tema Daniela Martins continua com sua logo própria.
