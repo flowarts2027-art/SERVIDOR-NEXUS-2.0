@@ -13,6 +13,7 @@ import {
   clearLoginFailures
 } from "./auth.js";
 import { listClients, getClient, upsertClient } from "./clients.js";
+import { clientScreenName } from "./client-display.js";
 import { getMasterInstagramSummary, saveMasterInstagramConfig, connectInstagramWithToken, startInstagramOAuth } from "./instagram.js";
 import { agentCoreDashboard, agentCoreClientView, saveAgentCoreConfig, queueManualAgentRun } from "./agent-core.js";
 import { masterLeadSummary } from "./leads.js";
@@ -71,7 +72,7 @@ function masterClientView(client) {
   const config = client.config && typeof client.config === "object" ? client.config : {};
   return {
     id: client.id,
-    name: client.name,
+    name: clientScreenName(client),
     niche: client.niche,
     instagram: client.instagram,
     status: client.status,
@@ -204,7 +205,7 @@ async function allSupportTickets(env) {
       costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
       id: row.id,
       clientId: row.client_id,
-      clientName: String(clients.find(client => client.id === row.client_id)?.name || row.client_id),
+      clientName: clientScreenName(clients.find(client => client.id === row.client_id)) || String(row.client_id),
       // "open" (gravado pelos pedidos de correção) é um chamado novo para a tela.
       status: ["new", "read", "resolved"].includes(row.status) ? row.status : "new",
       subject: row.subject || "",

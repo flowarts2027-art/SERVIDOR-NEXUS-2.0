@@ -19,6 +19,13 @@
 - Fora deste PR: `.github/scripts/nexus-audit.mjs` ainda olha só os dois clientes arquivados.
 - Bloqueios / autorização: o merge depende do OK do Rodrigo, porque mexe em `cloudflare/` e publica no site.
 
+## 2026-11-04 19:55 BRT — Nomes mostrados nos painéis (Claude)
+- Pedido: tela do cliente `primeiro-teste` mostrar "Flow Arts", e topo da Quatree mostrar "Olá, Quatree Dog — Vendedor Ericsson", sem mudar os IDs.
+- Executado: novo `cloudflare/src/client-display.js`, usado só em respostas de tela (Master, painel do cliente, conector, aviso de aprovação).
+- Decisão: não alterar o nome salvo no banco. Migrations não rodam no deploy, e o nome salvo alimenta marca e legendas: "Quatree Dog — Vendedor Ericsson" iria parar nas legendas.
+- Estado: PR aguardando revisão, não implantado. Não conferido no painel real.
+- Próximo passo: depois do merge, ver o Master e o topo do painel da Quatree.
+
 ## 2026-11-04 17:37 BRT — Graphify: reinstalado no PC e teste de economia de tokens (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido e objetivo: o Rodrigo pediu para verificar se o Graphify economiza tokens neste projeto.

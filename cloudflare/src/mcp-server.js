@@ -13,6 +13,7 @@
 // Protocolo: MCP "Streamable HTTP" em modo JSON (sem SSE), JSON-RPC 2.0, sem sessão.
 
 import { sha256Hex } from "./auth.js";
+import { clientScreenName } from "./client-display.js";
 
 export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.3.1" });
 export const MCP_PROTOCOL_VERSIONS = Object.freeze(["2025-11-25", "2025-06-18", "2025-03-26"]);
@@ -159,7 +160,7 @@ class ToolInputError extends Error {}
 export async function listarClientes(env, deps) {
   const clients = await deps.listClients(env);
   return {
-    clientes: clients.map(c => ({ id: c.id, nome: c.name, instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status }))
+    clientes: clients.map(c => ({ id: c.id, nome: clientScreenName(c), instagram: c.instagram || null, nicho: c.niche || null, situacao: c.status }))
   };
 }
 
@@ -188,7 +189,7 @@ export async function verAgenda(env, deps, args, now = new Date()) {
       ...(r.error ? { erro: String(r.error).slice(0, 300), tentativas: Number(payload?.retryCount || 0) } : {})
     };
   });
-  return { cliente: { id: client.id, nome: client.name }, de: hojeBrasilia, dias, total: postagens.length, postagens };
+  return { cliente: { id: client.id, nome: clientScreenName(client) }, de: hojeBrasilia, dias, total: postagens.length, postagens };
 }
 
 export async function verMetricas(env, deps, args) {
@@ -196,10 +197,10 @@ export async function verMetricas(env, deps, args) {
   const data = await deps.metrics(env, client);
   if (!data?.ok) {
     const motivo = data?.error === "instagram_not_connected" ? "O Instagram deste cliente não está conectado no Nexus." : "O Instagram não respondeu agora. Tente de novo mais tarde.";
-    return { cliente: { id: client.id, nome: client.name }, ok: false, motivo };
+    return { cliente: { id: client.id, nome: clientScreenName(client) }, ok: false, motivo };
   }
   return {
-    cliente: { id: client.id, nome: client.name },
+    cliente: { id: client.id, nome: clientScreenName(client) },
     ok: true,
     atualizado_em: data.updatedAt || null,
     dados_antigos: Boolean(data.stale),
@@ -358,7 +359,7 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   return {
     ok: true,
     id: result.id,
-    cliente: { id: client.id, nome: client.name },
+    cliente: { id: client.id, nome: clientScreenName(client) },
     formato: args.formato,
     dia, hora,
     imagens: arquivos.length,
@@ -401,7 +402,7 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
   return {
     ok: true,
     id: result.id,
-    cliente: { id: client.id, nome: client.name },
+    cliente: { id: client.id, nome: clientScreenName(client) },
     formato: "story (vídeo)",
     dia, hora,
     video: true,

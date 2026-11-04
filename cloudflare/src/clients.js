@@ -1,3 +1,5 @@
+import { clientScreenName } from "./client-display.js";
+
 function parseJson(raw, fallback = {}) {
   try {
     const value = JSON.parse(String(raw || ""));
@@ -109,11 +111,11 @@ export function portalClientView(client) {
     : {};
   return {
     id: client.id,
-    name: client.name,
+    name: clientScreenName(client),
     niche: client.niche,
     instagram: client.instagram,
     contact: {
-      name: String(config.contact?.name || client.name || ""),
+      name: String(config.contact?.name || clientScreenName(client)),
       phone: String(config.contact?.phone || "")
     },
     videoTemplate: { whatsappNumber: String(config.videoTemplate?.whatsappNumber || "") },
