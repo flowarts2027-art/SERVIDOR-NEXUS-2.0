@@ -13,6 +13,7 @@
 // O modelo tem 2 campos: {{1}} nome do cliente, {{2}} quantidade de artes. O link do painel fica fixo no modelo.
 
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
+import { clientScreenName } from "./client-display.js";
 import { ensureWhatsAppSchema, sendAndRecord } from "./whatsapp-agent.js";
 
 export const NOTICE_GAP_HOURS = 3;
@@ -108,7 +109,7 @@ export async function runClientApprovalNotices(env, at = new Date()) {
       status = "sem_numero";
     } else {
       const count = String(postIds.length);
-      const name = String(clientConfig.contact?.name || client.name || "").trim().split(/\s+/)[0] || "tudo bem";
+      const name = String(clientConfig.contact?.name || clientScreenName(client)).trim().split(/\s+/)[0] || "tudo bem";
       const text = `Olá, ${name}! Tem ${count} arte(s) nova(s) esperando a sua aprovação no painel da Flow Arts.`;
       try {
         await sendAndRecord(env, senderClient, to, text, {

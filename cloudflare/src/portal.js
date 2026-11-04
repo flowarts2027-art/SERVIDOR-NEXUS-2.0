@@ -21,6 +21,7 @@ import {
   clearLoginFailures
 } from "./auth.js";
 import { getClient, portalClientView } from "./clients.js";
+import { clientScreenName, portalGreetingName } from "./client-display.js";
 import { tokenUsageToday, openAIResponses } from "./openai.js";
 import { startInstagramOAuth, handleInstagramOAuthCallback } from "./instagram.js";
 import { AGENT_CORE_MODULES, normalizeAgentCoreConfig, agentCoreState, agentExecutions, saveAgentCoreConfig } from "./agent-core.js";
@@ -638,7 +639,7 @@ export async function handlePortalApi(request, env, url, ctx) {
       source: "cloudflare"
     });
     return json(
-      { token: session.token, client: { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "") } },
+      { token: session.token, client: { ...portalClientView(client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")) } },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );
@@ -714,7 +715,7 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(
       // flowCrm (22/10): a Flow Arts vê a aba CRM (o CRM saiu do Master).
-      { ...portalClientView(client), displayName: brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || ""), flowCrm: client.id === SHOWCASE_CLIENT },
+      { ...portalClientView(client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")), flowCrm: client.id === SHOWCASE_CLIENT },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );
@@ -1783,7 +1784,7 @@ export async function handlePortalApi(request, env, url, ctx) {
   // Contato do suporte (WhatsApp do dono da agência) para o botão "Falar com a gente".
   if (url.pathname === "/api/portal/contact" && request.method === "GET") {
     const owner = { id: "primeiro-teste", name: "Flow Arts", config: {} };
-    return json({ ok: true, whatsapp: whatsappLink(owner, "Olá! Sou cliente (" + String(client.name || client.id) + ") e preciso de ajuda.") });
+    return json({ ok: true, whatsapp: whatsappLink(owner, "Olá! Sou cliente (" + (clientScreenName(client) || client.id) + ") e preciso de ajuda.") });
   }
 
   if (url.pathname === "/api/portal/posts" && request.method === "GET") {

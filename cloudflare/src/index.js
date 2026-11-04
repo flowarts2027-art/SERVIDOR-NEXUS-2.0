@@ -59,6 +59,7 @@ import { handleAnimatedReelMaster, handleAnimatedReelCallback } from "./animated
 import { runAutoReels, handleAutoReelMaster } from "./auto-reel.js";
 import { handleShowcasePage, handleShowcaseMaster, handleShowcaseExtras } from "./showcase.js";
 import { listClients } from "./clients.js";
+import { clientScreenName } from "./client-display.js";
 
 // Keep the exact legacy export name until Cloudflare removes its existing Durable Objects.
 export class YoutubeDownloader extends DurableObject {
@@ -402,7 +403,7 @@ async function autonomyHealth(env, detailed = false) {
         errorCode: /^[a-z_]+$/.test(String(row.last_error || "")) ? String(row.last_error).slice(0, 80) : (row.last_error ? "execution_error" : "")
       }));
       return {
-        ...(detailed?{clientId:client.id,clientName:client.name}:{}),
+        ...(detailed?{clientId:client.id,clientName:clientScreenName(client)}:{}),
         status: client.status,
         agents,
         allAgentsSeen: missing.length === 0,
