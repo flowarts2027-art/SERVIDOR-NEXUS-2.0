@@ -26,3 +26,19 @@ test("Arquivo WebP válido e marca personalizada preservada", () => {
   assert.ok(read("client-lite.js").includes("/brand/daniela-martins-logo.png"));
   assert.ok(read("client-lite.css").includes('html[data-client-theme="daniela-martins"] .nexus-top-logo'));
 });
+
+test("Tema da Quatree Dog muda só as cores e fica preso ao cliente", () => {
+  const css = read("client-lite.css");
+  const js = read("client-lite.js");
+  const block = js.slice(js.indexOf('"quatree-dog": {'), js.indexOf("let defaultBrandHtml"));
+  assert.ok(block.includes('themeColor: "#8B0A1F"'));
+  assert.ok(!block.includes("logo:"), "tema da Quatree não pode trocar a logo");
+  assert.ok(js.includes("if (!theme.logo) return;"));
+  const start = css.indexOf("/* ===== Tema da cliente Quatree Dog");
+  const rules = css.slice(start, css.indexOf("/* Navegação móvel global", start));
+  assert.ok(rules.includes('html[data-client-theme="quatree-dog"] {'));
+  assert.ok(!/display\s*:/.test(rules), "tema da Quatree não pode esconder nem mostrar elementos");
+  for (const line of rules.split(/\r?\n/)) {
+    if (/^\s*[.#]/.test(line)) assert.fail("regra sem o escopo da Quatree: " + line);
+  }
+});
