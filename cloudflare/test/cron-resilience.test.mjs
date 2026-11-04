@@ -45,7 +45,11 @@ test("wrangler keeps production cron on a D1-safe fifteen-minute cadence", async
   const index = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
   const minuteBranch = index.match(/if \(String\(event\.cron \|\| ""\) === MINUTE_CRON\) \{[\s\S]*?return;\n    \}/)?.[0] || "";
   assert.ok(minuteBranch, "cron de 1 minuto precisa sair antes do agendador");
-  assert.doesNotMatch(minuteBranch, /runCronIteration|runSchedulerTick|processDueJobs/);
+  // 04/11/2026: a única exceção é o minuto só de publicar (7, 22, 37, 52): também a cada 15 min,
+  // só deslocado, para a publicação não dividir o limite do Worker com as outras tarefas.
+  const outsidePublisherMinute = minuteBranch.replace(/if \(isPublisherOnlyMinute\(at\)\) \{[\s\S]*?return;\n      \}/, "");
+  assert.notEqual(outsidePublisherMinute, minuteBranch, "minuto só de publicar precisa existir");
+  assert.doesNotMatch(outsidePublisherMinute, /runCronIteration|runSchedulerTick|processDueJobs/);
 });
 
 
