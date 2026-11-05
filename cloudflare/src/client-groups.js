@@ -3,6 +3,7 @@
 // O destino "grupo:<id>" vale no Master, em Enviar artes e no conector. Tudo continua esperando aprovação.
 import { CLIENT_GROUPS, getClient, listClients, upsertClient } from "./clients.js";
 import { newManagedClientConfig } from "./client-create.js";
+import { clientScreenName } from "./client-display.js";
 
 const GROUP_PREFIX = "grupo:";
 const CONTACT_LINE = /wa\.me|whatsapp\.com|\(?\b\d{2}\)?[\s.-]?9?\d{4}[\s.-]?\d{4}\b/i;
@@ -31,9 +32,15 @@ export async function groupMembers(env, group) {
 
 export async function groupOptions(env) {
   const options = [];
+  // Painel renomeado pelo lápis do Master aparece com o nome novo; os outros, com o nome do vendedor.
+  const clients = await listClients(env).catch(() => []);
+  const label = member => {
+    const client = clients.find(item => item.id === member.clientId);
+    return client?.config?.displayName ? clientScreenName(client) : member.vendor;
+  };
   for (const [id, group] of Object.entries(CLIENT_GROUPS)) {
     const members = await groupMembers(env, { id, ...group }).catch(() => group.members);
-    options.push({ id: GROUP_PREFIX + id, name: "Grupo: " + group.name + " (" + members.map(member => member.vendor).join(" e ") + ")" });
+    options.push({ id: GROUP_PREFIX + id, name: "Grupo: " + group.name + " (" + members.map(label).join(" e ") + ")" });
   }
   return options;
 }

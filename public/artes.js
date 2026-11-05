@@ -48,6 +48,9 @@
         if (list.some(c => c.id === "primeiro-teste")) $("#client").value = "primeiro-teste";
         const groups = await api("/api/master/groups").catch(() => ({}));
         for (const g of groups.groups || []) $("#client").insertAdjacentHTML("beforeend", `<option value="${esc(g.id)}">${esc(g.name)}</option>`);
+        // Botão "Enviar artes" do quadro de postagens faltando: já abre no cliente certo.
+        const wanted = new URLSearchParams(location.search).get("cliente");
+        if (wanted && list.some(c => c.id === wanted)) $("#client").value = wanted;
       }
     } catch { /* fica a Flow Arts */ }
   }

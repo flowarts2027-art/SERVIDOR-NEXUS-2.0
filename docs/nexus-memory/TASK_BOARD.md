@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-05 — MASTER-001: nome do painel e postagens faltando (Claude)
+Branch `feat/master-nome-e-postagens-faltando-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. WhatsApp desligado.
+
+
 ## 2026-11-05 — AGENDA-001: espaçar postagens dos clientes (Claude)
 Branch `fix/espacar-postagens-clientes-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. Depois do merge: conferir a agenda e a primeira rodada real.
 

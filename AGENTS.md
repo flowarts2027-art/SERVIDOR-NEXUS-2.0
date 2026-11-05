@@ -35,6 +35,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Clientes nunca publicam no mesmo minuto.** Cada cliente tem um minuto fixo na hora e o story sai 5 minutos depois. Ver `docs/nexus-memory/REGRA_HORARIOS_CLIENTES.md`.
 
+## Master: nome do painel e postagens faltando (Rodrigo, 05/11/2026)
+
+**Trocar o nome do painel nunca muda o id do cliente.** O quadro "Postagens faltando" confere 3 dias contra o plano de 2 posts + 2 stories. Ver `docs/nexus-memory/REGRA_MASTER_NOME_E_POSTAGENS.md`.
+
 ## Padrão fixo das artes (Rodrigo, 28/10/2026)
 
 **Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC, da Flow Arts e da Maskara (desde 28/10) é feita por `.github/workflows/nexus-campanha-diaria.yml`, com fotos da IA grátis do Cloudflare.

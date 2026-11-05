@@ -1,3 +1,8 @@
+## 2026-11-05 — Master: nome do painel e postagens faltando (PR aberto, sem deploy)
+- Lápis troca o nome que aparece, sem mexer no id.
+- Quadro "Postagens faltando" no topo do Início, com sino de contagem e botão "Enviar artes".
+- Aviso diário por WhatsApp pronto e desligado.
+
 ## 2026-11-05 — Espaçamento de postagens (PR aberto, sem deploy)
 - Minuto fixo por cliente, story 5 minutos depois, alinhador antes de cada rodada.
 - Trava de 2 publicações por execução; falha por limite volta para a fila, com no máximo 3 tentativas.

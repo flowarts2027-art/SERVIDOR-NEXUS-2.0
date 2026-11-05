@@ -219,3 +219,9 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Quando os 11 clientes estiverem ativos e todos na mesma hora, a fila leva perto de 1 hora para esvaziar (24 publicações por hora no máximo).
 - Limite de 30 clientes com minuto próprio. Passando disso, o cliente fica sem minuto e o log mostra `client_slots_full`.
 - O segredo `CLOUDFLARE_API_TOKEN` do GitHub não tem permissão de importar SQL no D1 (erro 10000 no job do PR #585). Este PR não depende disso.
+
+## 2026-11-05 — Limites do quadro de postagens faltando
+- O plano de 2 posts + 2 stories é o mesmo para todos os clientes online. Cliente com outro plano aparece como faltando.
+- Depois das 22h, o que falta hoje continua vermelho, mesmo sem dar tempo de publicar.
+- O aviso por WhatsApp sai como texto comum. Fora da janela de 24 horas a Meta exige modelo aprovado.
+- Se o número do WhatsApp da API for o mesmo do destino do aviso, ele não consegue mandar para si mesmo. Conferir antes de ligar.

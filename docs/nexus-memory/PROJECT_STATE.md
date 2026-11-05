@@ -359,3 +359,6 @@ Pedido de 04/10: priorizar YouTube → MP4 no PC → upload existente → geraç
 
 ## 2026-11-05 — Espaçamento de postagens
 PR aberto com minuto fixo por cliente e trava de 2 publicações por execução. Ainda não está em produção.
+
+## 2026-11-05 — Master: nome do painel e postagens faltando
+PR aberto. Ainda não está em produção. Aviso por WhatsApp pronto e desligado.

@@ -185,3 +185,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Substitui a regra de 04/11 em que "Too many subrequests" não gastava tentativa.
 - Substitui os 20 minutos entre painéis do PR #585, que nunca foram aplicados no D1 (o job falhou com erro de autenticação).
 - Com 6 clientes os degraus de 10 minutos acabam. Decisão do Claude: os novos usam os minutos entre eles, para continuar na mesma hora.
+
+## 2026-11-05 — Nome do painel e quadro de postagens faltando (Rodrigo)
+- Regras em `REGRA_MASTER_NOME_E_POSTAGENS.md`.
+- Decisão do Claude: o nome novo fica em `config.displayName`, e não em `clients.name`, porque esse campo alimenta marca e legendas.
+- Decisão do Claude: postagem com problema não conta para o plano de 2 posts + 2 stories.
+- Decisão do Claude: post com 3 falhas (regra do PR #586) também aparece no quadro.
