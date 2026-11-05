@@ -47,6 +47,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins e Quatree Dog não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
 
+## Marca do cliente (Rodrigo, 05/11/2026)
+
+**Logo, cores e palavra do botão vêm do Master.** Antes de criar arte, leia `docs/nexus-memory/clientes/<id>/marca.json` se existir. Ver `docs/nexus-memory/REGRA_MARCA_DO_CLIENTE.md`.
+
 ## Padrão fixo das artes (Rodrigo, 28/10/2026)
 
 **Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC, da Flow Arts e da Maskara (desde 28/10) é feita por `.github/workflows/nexus-campanha-diaria.yml`, com fotos da IA grátis do Cloudflare.

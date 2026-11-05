@@ -1,3 +1,7 @@
+## 2026-11-05 — Marca do cliente (PR aberto, sem deploy)
+- Logo, cores e palavra do botão pelo Master, sem deploy.
+- Título das artes criado na hora para quem tem marca salva.
+
 ## 2026-11-05 — Vigia de postagens (PR aberto, sem deploy)
 - Post com erro nas próximas 6 horas é consertado sozinho e publicado sem esperar aprovação.
 - Selo "Substituída automaticamente" no painel do cliente e alerta vermelho no quadro quando não há substituta.

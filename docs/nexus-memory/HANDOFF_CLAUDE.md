@@ -1087,3 +1087,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Mesmo PR #594. Correção pedida nas próximas 6 horas vira alerta vermelho no quadro, sem publicar.
 - GILTEC pausada por `NEXUS_PAUSED_CLIENTS`: sem ciclo de agentes, vigia, publicação e quadro. Fora da campanha diária no GitHub.
 - Fila de 06/11 registrada em `NEXT_ACTIONS.md`. Sem merge e sem deploy.
+
+## 05/11/2026 — Marca do cliente (Claude)
+- Feito: `brand-editor.js`, aba Marca, campo no "Novo cliente", `client-identity.js`, `art-title.js`, `compor_arte.py` e `art-compose.yml`.
+- A camada do deploy não leva mais a logo: ela vai em `marca-feed.png` e `marca-story.png`.
+- Testes e limites em `TEST_RESULTS.md` e `KNOWN_ISSUES.md`. Sem merge e sem deploy.
+- Próximo passo: Rodrigo aprova o merge e cria o painel da Adimax.

@@ -50,7 +50,7 @@ async function assetBytes(env, path) {
 const stream = bytes => new Blob([bytes]).stream();
 
 // bytes: imagem original (JPG, PNG ou WEBP). Devolve um JPG 1080x1350 (feed) ou 1080x1920 (story).
-export async function composeFramed(env, bytes, frame, { story = false, numero = null } = {}) {
+export async function composeFramed(env, bytes, frame, { story = false, numero = null, logoKey = "" } = {}) {
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const size = story ? STORY : FEED;
   const info = await env.IMAGES.info(stream(bytes));
@@ -58,6 +58,11 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
   const clientDir = frame.arquivo.split("/")[0];
   let canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
   canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, frame.arquivo))), { left: 0, top: 0 });
+  // Logo salva no Master entra aqui, na hora. Sem ela, vale a identidade feita no deploy.
+  const logo = logoKey ? await env.MEDIA.get(logoKey).catch(() => null) : null;
+  canvas = logo
+    ? canvas.draw(env.IMAGES.input(logo.body).transform({ height: story ? 112 : 104, fit: "scale-down" }), { left: 64, top: story ? 270 : 48 })
+    : canvas.draw(env.IMAGES.input(stream(await assetBytes(env, `${clientDir}/marca-${story ? "story" : "feed"}.png`))), { left: 0, top: 0 });
   if (numero && frame.numero) {
     canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, `${clientDir}/num-${numero}.png`))), { left: frame.numero.left, top: frame.numero.top });
   }

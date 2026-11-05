@@ -10,6 +10,8 @@ import { nextCampaignArt } from "./client-campaign.js";
 import { nextCaption } from "./master-upload.js";
 import { sendAndRecord } from "./whatsapp-agent.js";
 import { isClientPaused } from "./client-pause.js";
+import { effectiveBrand } from "./client-identity.js";
+import { writeArtTitle } from "./art-title.js";
 
 // Vigia "cliente nunca fica sem post" (Rodrigo, 05/11/2026). Regra em docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md.
 // Confere as próximas 6 horas. Post com erro é consertado na mesma linha, então fica no mesmo horário.
@@ -17,6 +19,7 @@ import { isClientPaused } from "./client-pause.js";
 const WATCH_AHEAD_MS = 6 * 3600000;
 const WATCH_BEHIND_MS = 30 * 60000; // o erro pode ter aparecido em cima da hora
 const MAX_TRIES = 2;
+const COMPOSE_WAIT_MS = 20 * 60000;
 // Daniela: pedido do Rodrigo. Quatree: toda peça mostra a embalagem oficial, e a IA não sabe desenhar produto real.
 const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo"]));
 const ERROR_RE = /^media_generation_required$|^format_build_failed$|retry_limit_reached$|^format_mismatch$/;
@@ -62,7 +65,10 @@ async function generate(env, client, row, target, deps) {
   if (NO_GENERATION_CLIENTS.has(client.id)) return null;
   const frames = await deps.loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
-  if (!frames || !hasFrames(frames, frameClientId)) return null;
+  const brand = await deps.brand(env, client);
+  // Cliente com marca salva no Master não depende da lista do deploy: título na hora e arte montada no GitHub.
+  const dynamic = Boolean(brand?.buttonWord);
+  if (!dynamic && (!frames || !hasFrames(frames, frameClientId))) return null;
   const story = target === "story";
   const prompt = buildVisualPrompt(client, "", row.id, { contentFormat: story ? "story" : "image", cleanImage: true }) + SAFE_ZONES;
   const image = await deps.image(env, prompt, story ? "9:16" : "4:5");
@@ -71,14 +77,38 @@ async function generate(env, client, row, target, deps) {
   // A IA não escreve, e o texto do Nexus não pode passar por cima de pessoa ou animal.
   if (await deps.hasText(env, image.bytes)) throw new Error("generated_has_text");
   if (await deps.zonesBlocked(env, image.bytes)) throw new Error("generated_subject_in_text_zone");
+  if (dynamic) return requestCompose(env, client, row, image.bytes, brand, story, deps);
   const seed = Number(String(row.id).replace(/\D/g, "").slice(0, 6)) || 0;
-  const out = await deps.compose(env, image.bytes, pickFrame(frames, frameClientId, story, seed), { story });
+  const out = await deps.compose(env, image.bytes, pickFrame(frames, frameClientId, story, seed), { story, logoKey: brand?.logoKey || "" });
   const key = "posts/" + client.id + "/" + row.id + "/substituta-" + crypto.randomUUID() + ".jpg";
   await env.MEDIA.put(key, out, {
     httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
     customMetadata: { clientId: client.id, postId: String(row.id), kind: "auto-replacement" }
   });
   return { url: String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "") + "/media/" + key, source: "cloudflare-workers-ai" };
+}
+
+// Guarda a foto e pede a montagem. A arte volta por finishComposedArt, e o post fica esperando até lá.
+async function requestCompose(env, client, row, bytes, brand, story, deps) {
+  const token = String(env.GITHUB_ACTIONS_TOKEN || env.GITHUB_TOKEN || "").trim();
+  if (!token) throw new Error("github_token_missing");
+  const origin = String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "");
+  const key = "posts/" + client.id + "/" + row.id + "/foto-" + crypto.randomUUID() + ".jpg";
+  await env.MEDIA.put(key, bytes, { httpMetadata: { contentType: "image/jpeg" }, customMetadata: { clientId: client.id, postId: String(row.id), kind: "auto-replacement-photo" } });
+  const callbackToken = crypto.randomUUID();
+  const repo = String(env.GITHUB_INGEST_REPOSITORY || "flowarts2027-art/SERVIDOR-NEXUS-2.0").trim();
+  const response = await deps.fetch(`https://api.github.com/repos/${repo}/dispatches`, {
+    method: "POST",
+    headers: { authorization: "Bearer " + token, accept: "application/vnd.github+json", "content-type": "application/json", "user-agent": "nexus-worker" },
+    body: JSON.stringify({ event_type: "art-compose", client_payload: {
+      post_id: String(row.id), story, photo: origin + "/media/" + key, logo: brand.logoUrl || "",
+      title: await deps.title(env, client), button: (story ? "RESPONDA " : "COMENTE ") + brand.buttonWord,
+      accent: brand.colors.accent, onAccent: brand.colors.onAccent,
+      callback_url: origin + "/api/internal/art-compose/" + encodeURIComponent(row.id), callback_token: callbackToken
+    } })
+  });
+  if (!response.ok) throw new Error("github_dispatch_" + response.status);
+  return { pending: true, token: callbackToken };
 }
 
 async function approvedArt(env, client, row, target, deps) {
@@ -115,6 +145,7 @@ async function saveReplacement(env, client, row, payload, found, target, reason,
     autoReplaced: { at: now.toISOString(), reason, source: found.source }
   };
   delete next.autoReplaceFailed;
+  delete next.autoReplacePending;
   if (await notifyClient(env, client, row, next, deps.send).catch(() => false)) next.autoReplaced.noticeAt = now.toISOString();
   const saved = await env.DB.prepare(
     `UPDATE post_ledger SET status='scheduled',approval_status='approved',error='',caption=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP
@@ -136,6 +167,11 @@ export async function replacePost(env, client, row, payload, reason, now, deps) 
     catch (error) { failure = String(error?.message || error); }
   }
   if (!found) found = await approvedArt(env, client, row, target, deps);
+  if (found?.pending) {
+    const next = { ...payload, autoReplacePending: { token: found.token, at: now.toISOString(), reason, target } };
+    await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id, JSON.stringify(next)).run();
+    return { id: row.id, replaced: false, pending: true };
+  }
   if (found && await saveReplacement(env, client, row, payload, found, target, reason, now, deps)) return { id: row.id, replaced: true, source: found.source };
   const tries = Number(payload.autoReplaceTries || 0) + 1;
   await saveFailure(env, row, payload, failure || "sem_arte_disponivel", tries, now);
@@ -144,8 +180,30 @@ export async function replacePost(env, client, row, payload, reason, now, deps) 
 
 const DEFAULT_DEPS = {
   loadFrames, image: cloudflareImage, hasText: imageHasText, zonesBlocked: imageZonesBlocked, compose: composeFramed,
-  library: takeLibraryArt, campaignArt: nextCampaignArt, caption: nextCaption, send: sendAndRecord
+  library: takeLibraryArt, campaignArt: nextCampaignArt, caption: nextCaption, send: sendAndRecord,
+  brand: effectiveBrand, title: writeArtTitle, fetch: (...args) => fetch(...args)
 };
+
+// A arte montada no GitHub volta aqui. Só vale com a senha de uso único daquele pedido.
+export async function finishComposedArt(env, postId, token, bytes, now = new Date(), overrides = {}) {
+  const deps = { ...DEFAULT_DEPS, ...overrides };
+  const row = await env.DB.prepare("SELECT id,client_id,status,caption,payload_json FROM post_ledger WHERE id=?1 LIMIT 1").bind(String(postId)).first();
+  const payload = parse(row?.payload_json);
+  const pending = payload.autoReplacePending;
+  if (!row || !pending?.token || pending.token !== String(token || "")) return { ok: false, status: 403 };
+  const size = readImageSize(bytes);
+  if (windowError(pending.target === "story" ? "story" : "feed", size)) return { ok: false, status: 400 };
+  const client = (await listClients(env)).find(item => item.id === row.client_id);
+  if (!client) return { ok: false, status: 404 };
+  const key = "posts/" + client.id + "/" + row.id + "/substituta-" + crypto.randomUUID() + ".jpg";
+  await env.MEDIA.put(key, bytes, {
+    httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
+    customMetadata: { clientId: client.id, postId: String(row.id), kind: "auto-replacement" }
+  });
+  const url = String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "") + "/media/" + key;
+  const saved = await saveReplacement(env, client, row, payload, { url, source: "cloudflare-workers-ai" }, pending.target, pending.reason, now, deps);
+  return { ok: saved, status: saved ? 200 : 409 };
+}
 
 export async function runPostWatcher(env, now = new Date(), overrides = {}) {
   const deps = { ...DEFAULT_DEPS, ...overrides };
@@ -163,6 +221,8 @@ export async function runPostWatcher(env, now = new Date(), overrides = {}) {
   for (const row of rows?.results || []) {
     const payload = parse(row.payload_json);
     if (Number(payload.autoReplaceTries || 0) >= MAX_TRIES) continue;
+    // Montagem pedida há pouco: espera voltar. Se passar do prazo, tenta de novo.
+    if (now.getTime() - Date.parse(String(payload.autoReplacePending?.at || "")) < COMPOSE_WAIT_MS) continue;
     let reason = replacementReason(row, payload);
     if (!reason && !await mediaFitsFormat(env, payload, formatOf(payload))) reason = "format_mismatch";
     if (!reason) continue;

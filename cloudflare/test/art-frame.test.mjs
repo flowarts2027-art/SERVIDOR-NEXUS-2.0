@@ -73,9 +73,10 @@ test("foto ocupa a tela toda: sem desfoque, véu ou margem, só o texto e o núm
   const steps = log[0].steps;
   assert.deepEqual(steps[0], ["transform", { width: 1080, height: 1350, fit: "cover" }]);
   assert.deepEqual(steps[1][3], { left: 0, top: 0 }); // texto inteiro
-  assert.deepEqual(steps[2][3], { left: 948, top: 66 }); // número
-  assert.deepEqual(steps[3], ["output", { format: "image/jpeg", quality: 90 }]);
-  assert.deepEqual(assets, ["/molduras/quatree-dog/feed-1.png", "/molduras/quatree-dog/num-2.png"]);
+  assert.deepEqual(steps[2][3], { left: 0, top: 0 }); // identidade do deploy
+  assert.deepEqual(steps[3][3], { left: 948, top: 66 }); // número
+  assert.deepEqual(steps[4], ["output", { format: "image/jpeg", quality: 90 }]);
+  assert.deepEqual(assets, ["/molduras/quatree-dog/feed-1.png", "/molduras/quatree-dog/marca-feed.png", "/molduras/quatree-dog/num-2.png"]);
 });
 
 test("story usa 1080x1920", async () => {

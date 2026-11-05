@@ -368,3 +368,6 @@ PR aberto. Ainda não está em produção.
 
 ## 2026-11-05 — Vigia de postagens
 PR aberto. Ainda não está em produção. Aviso por WhatsApp pronto e desligado.
+
+## 2026-11-05 — Marca do cliente
+PR aberto. Ainda não está em produção.

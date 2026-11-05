@@ -1255,3 +1255,5 @@ html[data-client-theme="quatree-dog"] .cmp-card.c-post h4 { background: #C03C34;
   .cmp-wrap { display: none; }
   .cmp-cards { display: grid; gap: 12px; margin: 0 0 10px; }
 }
+/* Marca salva no Master. */
+[data-custom-brand] .tabbar > button.active, [data-custom-brand] .btn-primary, [data-custom-brand] button.primary { background: var(--brand-primary); color: var(--brand-on-primary); }

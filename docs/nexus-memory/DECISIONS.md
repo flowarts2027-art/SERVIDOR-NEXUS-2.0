@@ -212,3 +212,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Artes de reserva na Biblioteca: Rodrigo envia depois. Até lá vale o alerta vermelho.
 - GILTEC (`giltec` e `giltec-locacoes`) pausada por falta de pagamento, até ele liberar.
 - Decisão do Claude: "fica sem post" foi lido ao pé da letra. Nem os posts já aprovados saem durante a pausa.
+
+## 2026-11-05 — Marca do cliente (Rodrigo)
+- Aprovada a logo no R2, por cima na montagem, com SVG convertido no navegador.
+- Título das artes criado na hora, lendo a ficha do cliente. Palavra do botão no "Novo cliente" e na aba Marca.
+- Decisão do Claude: o Worker não desenha letras, e o plano grátis não aguenta fazer isso em código. A arte final é montada no GitHub Actions, como nos Reels.
+- Decisão do Claude: título na hora vale para quem tem marca salva. Os demais continuam com a lista do deploy.

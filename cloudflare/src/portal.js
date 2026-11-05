@@ -7,6 +7,7 @@ import { handleLibrary } from "./art-library.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { WINDOW_MOVES } from "./art-format.js";
+import { effectiveBrand } from "./client-identity.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
 import { handleClientCampaignPortal } from "./client-campaign.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
@@ -640,7 +641,7 @@ export async function handlePortalApi(request, env, url, ctx) {
       source: "cloudflare"
     });
     return json(
-      { token: session.token, client: { ...portalClientView(client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")) } },
+      { token: session.token, client: { ...portalClientView(client), brand: await effectiveBrand(env, client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")) } },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );
@@ -716,7 +717,7 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (url.pathname === "/api/portal/session" && request.method === "GET") {
     return json(
       // flowCrm (22/10): a Flow Arts vê a aba CRM (o CRM saiu do Master).
-      { ...portalClientView(client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")), flowCrm: client.id === SHOWCASE_CLIENT },
+      { ...portalClientView(client), brand: await effectiveBrand(env, client), displayName: portalGreetingName(client) || (brandProfileVersion(client.id) ? clientBrand(client).brandName : String(client.name || "")), flowCrm: client.id === SHOWCASE_CLIENT },
       200,
       { "set-cookie": portalSessionCookie(session.token) }
     );

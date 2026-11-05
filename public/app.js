@@ -984,6 +984,11 @@ $("#client-form").addEventListener("submit", async event => {
     const result = await api("/api/clients", { method: "POST", body: JSON.stringify(data) });
     form.reset();
     $("#form-status").textContent = "Cliente criado. Envie somente o acesso abaixo.";
+    // Com logo, o painel já nasce com a marca. Sem logo, fica o tema padrão.
+    if (newClientBrand?.hasLogo() && result.client?.id) {
+      await newClientBrand.save(result.client.id).catch(error => { $("#form-status").textContent = "Cliente criado, mas a marca não salvou: " + error.message; });
+      newClientBrand.load(null);
+    }
     const access = result.portalCredentials || {};
     $("#new-client-user").textContent = "Usuário: " + (access.username || "—");
     $("#new-client-password").textContent = "Senha: " + (access.initialPassword || "—");
@@ -1195,6 +1200,35 @@ if(openaiMasterForm)openaiMasterForm.addEventListener("submit",async event=>{
     if(message)message.textContent="Não foi possível conectar: "+error.message;
   }
 });
+
+// Marca do cliente (05/11/2026): "Novo cliente" e aba Marca usam o mesmo editor.
+const newClientBrand = window.BrandEditor && $("#new-client-brand") ? window.BrandEditor.mount($("#new-client-brand")) : null;
+const brandEditor = window.BrandEditor && $("#brand-editor") ? window.BrandEditor.mount($("#brand-editor")) : null;
+async function fillBrandTargets() {
+  const select = $("#brand-target");
+  if (!select) return;
+  const groups = await api("/api/master/groups").catch(() => ({ groups: [] }));
+  const clients = (state.clients || []).filter(client => client.status !== "archived");
+  select.innerHTML = [...(groups.groups || []), ...clients].map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
+  await loadBrandTarget();
+}
+async function loadBrandTarget() {
+  const target = $("#brand-target").value;
+  if (!target || !brandEditor) return;
+  const out = await api("/api/master/brand?target=" + encodeURIComponent(target)).catch(() => ({}));
+  brandEditor.load(out.brand || out.inherited || null);
+  $("#brand-status").textContent = out.inherited && !out.brand ? "Este painel usa a marca do grupo." : "";
+}
+$("#brand-target")?.addEventListener("change", loadBrandTarget);
+$("#brand-save")?.addEventListener("click", async () => {
+  const status = $("#brand-status");
+  status.textContent = "Salvando…";
+  try {
+    const out = await brandEditor.save($("#brand-target").value);
+    status.textContent = out.ficha === "atualizada" ? "Marca salva. Ficha do GitHub atualizada." : "Marca salva, mas a ficha do GitHub não foi atualizada (" + out.ficha + ").";
+  } catch (error) { status.textContent = error.message; }
+});
+document.addEventListener("nexus:view", event => { if (event.detail === "clients") fillBrandTargets(); });
 
 // Lápis do nome (05/11/2026): troca só o nome que aparece. O id do cliente não muda.
 document.addEventListener("click", async event => {

@@ -1,3 +1,9 @@
+## 2026-11-05 — Depois do merge da marca do cliente
+1. Rodrigo cria o painel da Adimax pelo "Novo cliente", com logo e palavra do botão.
+2. Conferir se a tela diz "Ficha do GitHub atualizada". Isso prova o token.
+3. Conferir logo e cores no painel, com login real.
+4. Forçar uma substituição de teste só com aprovação do Rodrigo. O caminho do GitHub Actions nunca rodou de verdade.
+
 ## 2026-11-05 — Fila para continuar em 06/11 (pedido do Rodrigo)
 Nada abaixo foi feito ainda.
 1. Botão "Criar com agente (grátis)" no quadro "Postagens faltando". Corrigir a página "Enviar artes": plano 2 posts + 2 stories, e abrir no dia certo.

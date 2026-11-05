@@ -95,3 +95,6 @@ Nos minutos terminados em 2 e 7, `publisher-round.js` alinha os horários (`clie
 
 ## Vigia de postagens (05/11/2026)
 `post-watcher.js` roda nos minutos terminados em 4 e 9 e conserta um post por rodada, na mesma linha do `post_ledger`. Regra em `REGRA_CLIENTE_NUNCA_SEM_POST.md`.
+
+## Marca do cliente (05/11/2026)
+`client-identity.js` salva e resolve a marca (própria ou do grupo). `art-title.js` escreve o título. O vigia pede a arte ao workflow `art-compose.yml`, que devolve por `/api/internal/art-compose/:id`. Regra em `REGRA_MARCA_DO_CLIENTE.md`.

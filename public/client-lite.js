@@ -815,6 +815,24 @@ const CLIENT_THEMES = {
 };
 let defaultBrandHtml = null;
 
+// Marca salva no Master (05/11/2026): logo no topo e cores do cliente, com contraste garantido pelo servidor.
+function applyCustomBrand(brand) {
+  const root = document.documentElement;
+  if (!brand?.colors) { delete root.dataset.customBrand; return; }
+  root.dataset.customBrand = "1";
+  root.style.setProperty("--brand-primary", brand.colors.primary);
+  root.style.setProperty("--brand-on-primary", brand.colors.onPrimary);
+  root.style.setProperty("--accent", brand.colors.accent);
+  const top = $(".nav-brand");
+  if (!top || !brand.logoUrl) return;
+  top.innerHTML = "";
+  const img = document.createElement("img");
+  img.className = "client-brand-logo";
+  img.src = brand.logoUrl;
+  img.alt = state.client?.name || "Logo";
+  top.appendChild(img);
+}
+
 function applyClientTheme(clientId) {
   const brand = $(".nav-brand");
   const meta = document.querySelector('meta[name="theme-color"]');
@@ -874,6 +892,7 @@ function showLogin(message = "") {
 function showApp(client) {
   state.client = client || state.client;
   applyClientTheme(DEMO ? null : state.client?.group?.theme || state.client?.id);
+  if (!DEMO) applyCustomBrand(state.client?.brand);
   renderVendorField();
   if (state.client?.flowCrm === true && !DEMO) enableFlowCrm();
   $("#login").hidden = true;
