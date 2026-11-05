@@ -1057,3 +1057,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - WhatsApp: regra pronta e desligada (`NEXUS_MISSING_POSTS_WHATSAPP=false`). Falta modelo aprovado pela Meta.
 - Testes: só a falha do cron por CRLF no Windows. Dry-run aprovado. Sem login real, sem merge e sem deploy.
 - Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.
+
+## 05/11/2026 — Resultado do espaçamento e investigação das artes (Claude)
+- Espaçamento: story da GILTEC das 15:15 saiu (`published` no ledger). Detalhes em `TEST_RESULTS.md`. PR #561 fechado a pedido do Rodrigo.
+- Pedido novo do Rodrigo: janelas por formato (Story, Post/Carrossel, Reels) e regra de envio para o ChatGPT. A mensagem chegou cortada no item 2. **Nada foi implementado.** Branch vazia: `fix/janelas-por-formato-20261105`.
+- Achados no código: `toInstagramJpeg` corta até 3% de diferença e encolhe acima disso; a janela Post força 1080x1350, inclusive arte 1:1; `composeFramed` encolhe a foto e pode cortar até 10% em cima e embaixo; o agente "Texto nas artes" aplica moldura em posts abertos.
+- `ja_tem_texto` protege, mas o painel do cliente e o Master não mandam esse campo. Neles quem decide é a IA, olhando uma cópia pequena.
+- Hipótese, ainda não provada: a IA responde "não tem texto" para arte pronta e a moldura encolhe e corta. As 21 artes de 05/11 em `agendamentos` têm o tamanho certo.
+- Leitura do D1 de produção foi bloqueada pela permissão da sessão. Sem exemplo real desta semana; o registrado é o post da Quatree de 29/10.
+- Próximo passo: Rodrigo reenvia o resto do pedido, indica um post errado ou autoriza a leitura, e decide se foto sem texto no tamanho certo ainda recebe moldura.
