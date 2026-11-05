@@ -361,3 +361,7 @@ Pedido: impedir nova sobreposição de texto nos uploads. Campo ja_tem_texto aus
 ## 2026-11-05 — Stories aprovados sem legenda
 
 Agenda consultada: seis contas ativas com Instagram, feeds e carrosséis da manhã marcados como publicados. Três stories aprovados de 09:00–09:05 continuavam prontos/agendados, com legenda vazia. O executor pulava a publicação antes da chamada à Meta. Ajuste restrito à validação de legenda de stories. Teste local da rotina com D1 e publicador simulados reproduziu a falha original e passou nos três cenários após a mudança. Próximo passo: integrar, verificar deploy e acompanhar esses itens na agenda, sem reenviar artes.
+
+## 2026-11-05 — Escalonamento entre painéis
+
+Regra pedida: pelo menos 20 minutos entre horários agendados de painéis ativos distintos. Proposta no D1 trata agendamentos existentes futuros, inserções e remarcações. Testes SQLite cobrem seis contas simultâneas, nova conta, repetição, remarcação, janela noturna e exclusão de histórico/demonstração. Simulação com a agenda atual sem colisões futuras entre contas. Aguardando merge, execução da workflow e conferência da agenda pela API. Intervalo entre horários é distinto da cadência do executor e da quota de subrequests por invocação.
