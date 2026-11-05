@@ -40,6 +40,7 @@ export function postProblem(post = {}, now = new Date()) {
   const error = String(post.error || "");
   const approval = String(post.approval_status || "");
   if (String(post.status || "") === "published") return "";
+  if (post.replace_failed) return "não consegui substituir";
   if (approval === "correction_requested") return "correção pedida";
   if (/^media_generation/.test(error)) return "sem imagem";
   if (error === "format_mismatch") return "arte no formato errado";
@@ -75,7 +76,8 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
       if (!Number.isFinite(at) || dayIndex < 0 || dayIndex >= DAYS_AHEAD) continue;
       const format = String(post.format || "post").toLowerCase();
       const problem = postProblem(post, now);
-      if (problem) problems.push({ dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
+      // Sem substituta é urgente: fica vermelho e em primeiro, mesmo sendo de amanhã.
+      if (problem) problems.push({ dayIndex: post.replace_failed ? 0 : dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
       else counts[dayIndex][format === "story" ? "stories" : "posts"] += 1;
     }
     counts.forEach((count, dayIndex) => {
@@ -102,7 +104,8 @@ export async function missingPostsBoard(env, now = new Date()) {
   const rows = await env.DB.prepare(
     `SELECT client_id,scheduled_for,status,approval_status,error,created_at,
             json_extract(${payload},'$.creativeFeatures.requestedFormat') AS format,
-            json_extract(${payload},'$.retryCount') AS retry_count
+            json_extract(${payload},'$.retryCount') AS retry_count,
+            json_extract(${payload},'$.autoReplaceFailed.at') AS replace_failed
      FROM post_ledger
      WHERE client_id IN (${marks}) AND scheduled_for>=?1 AND scheduled_for<?2
        AND status IN ('ready','scheduled','publishing','published','failed')

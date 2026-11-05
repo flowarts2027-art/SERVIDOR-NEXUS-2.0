@@ -232,3 +232,11 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Foto de celular (3:4) agora é recusada no painel do cliente. O cliente precisa recortar antes.
 - Pelo conector, o carrossel vai até 5 imagens. Pelo painel, até 10.
 - O texto por cima pode cair em cima de pessoa, porque a posição é fixa.
+
+## 2026-11-05 — Limites do vigia
+- 04/11 da Quatree: os 2 carrosséis ficaram em `correction_requested`, sem erro. O vigia não age nesse caso.
+- Sem camada de texto (Nexus AI) ou sem geração (Quatree, Daniela), a reserva é só a Biblioteca e as artes da campanha.
+- Substituta gerada sai sem revisão humana. A conferência é só da IA grátis, que pode errar.
+- A palavra do botão vem da camada de texto do cliente, feita no deploy, e não da resposta automática salva no painel.
+- O vigia não troca post sem erro que ficou esperando aprovação.
+- Nos minutos do vigia, as tarefas leves do cron de 1 minuto não rodam.

@@ -90,7 +90,8 @@ function toBase64(bytes) {
   return btoa(bin);
 }
 
-export async function imageHasText(env, bytes) {
+// Pergunta de SIM ou NAO para a IA grátis. Na dúvida (sem IA, erro ou demora), responde SIM.
+async function visionYes(env, bytes, question) {
   if (!env?.AI || !env?.IMAGES) return true;
   try {
     const small = await (await env.IMAGES.input(stream(bytes)).transform({ width: 512, height: 640, fit: "scale-down" })
@@ -100,7 +101,7 @@ export async function imageHasText(env, bytes) {
     const out = await Promise.race([
       env.AI.run(String(env.NEXUS_VISION_MODEL || TEXT_CHECK_MODEL), {
         messages: [{ role: "user", content: [
-          { type: "text", text: TEXT_CHECK_PROMPT },
+          { type: "text", text: question },
           { type: "image_url", image_url: { url: dataUrl } }
         ] }],
         max_tokens: 5
@@ -112,4 +113,13 @@ export async function imageHasText(env, bytes) {
     console.error("text_check_failed", String(error?.message || error));
     return true;
   }
+}
+
+export function imageHasText(env, bytes) {
+  return visionYes(env, bytes, TEXT_CHECK_PROMPT);
+}
+
+// Imagem gerada: tem pessoa ou animal onde o Nexus vai escrever? Sim descarta a imagem.
+export function imageZonesBlocked(env, bytes) {
+  return visionYes(env, bytes, "Há pessoa ou animal no terço de cima ou no terço de baixo desta imagem? Responda só SIM ou NAO.");
 }

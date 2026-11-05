@@ -200,3 +200,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: tolerância de 0,5% na proporção, só para arredondamento.
 - Decisão do Claude: foto 1:1 sem texto fica como veio, porque a camada de texto é 4:5 ou 9:16.
 - Decisão do Claude: as letras ganham contorno escuro para serem lidas sobre a foto, no lugar da faixa.
+
+## 2026-11-05 — Cliente nunca fica sem post (Rodrigo)
+- Regra em `REGRA_CLIENTE_NUNCA_SEM_POST.md`. Substituta publica sem esperar aprovação, por pedido expresso do Rodrigo.
+- Decisão do Claude: Quatree Dog não recebe imagem gerada, porque o pedido proíbe inventar produto e a diretriz exige embalagem oficial.
+- Decisão do Claude: rascunho de agente não vale como imagem original para Quatree e Daniela.
+- Decisão do Claude: post com correção pedida fica de fora, porque foi pedido de uma pessoa.

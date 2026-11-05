@@ -322,3 +322,9 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - `wrangler deploy --dry-run` aprovado.
 - Camada de texto nova gerada com Pillow e vista sobre fundo claro e escuro. Sem foto real sem texto.
 - Não testado com login real nem em produção. Nenhuma publicação real foi feita.
+
+## 2026-11-05 — Vigia (Claude, antes do merge)
+- Consulta só de leitura ao D1 sobre a Quatree: 04/11 com 2 carrosséis em `correction_requested`, sem erro.
+- 05/11 14:50: agente, aprovação pendente, `format_build_retry_limit_reached`, causa `cf_image_failed: Too many subrequests`.
+- Testes do vigia com geração simulada. Workers AI não foi chamado.
+- Não testado em produção. Nenhuma publicação real foi feita.

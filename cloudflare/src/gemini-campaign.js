@@ -239,7 +239,7 @@ async function callGemini(env, model, body, fetcher) {
 // FLUX.2 klein 4B com tamanho livre; se falhar, FLUX.1 schnell (quadrado, cortado depois para o formato).
 const CF_IMAGE_MODEL = "@cf/black-forest-labs/flux-2-klein-4b";
 const CF_FALLBACK_MODEL = "@cf/black-forest-labs/flux-1-schnell";
-const CF_SIZES = { "4:5": [1024, 1280], "9:16": [768, 1344] };
+const CF_SIZES = { "4:5": [1024, 1280], "9:16": [1008, 1792] };
 
 export function imageProvider(env) {
   const pick = String(env?.NEXUS_FREE_IMAGE_PROVIDER || "").trim().toLowerCase();

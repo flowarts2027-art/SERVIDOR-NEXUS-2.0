@@ -20,6 +20,7 @@ import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
 import { runPublisherRound } from "./publisher-round.js";
+import { isWatcherMinute, runPostWatcher } from "./post-watcher.js";
 import { handleClientName } from "./client-name.js";
 import { missingPostsBoard, sendMissingPostsAlert } from "./missing-posts.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
@@ -568,6 +569,13 @@ export default {
       if (isPublisherOnlyMinute(at)) {
         ctx.waitUntil(runPublisherRound(env, at).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
           console.warn("publisher_only_minute_failed", String(error?.message || error).slice(0, 140))
+        ));
+        return;
+      }
+      // Vigia "cliente nunca fica sem post": minutos terminados em 4 e 9, sozinho, porque gerar imagem gasta os pedidos da execução.
+      if (isWatcherMinute(at)) {
+        ctx.waitUntil(runPostWatcher(env, at).then(out => console.log("post_watcher", JSON.stringify(out))).catch(error =>
+          console.warn("post_watcher_failed", String(error?.message || error).slice(0, 140))
         ));
         return;
       }

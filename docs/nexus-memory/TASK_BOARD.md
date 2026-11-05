@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-05 — VIGIA-001: cliente nunca fica sem post (Claude)
+Branch `feat/vigia-cliente-nunca-sem-post-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy.
+
+
 ## 2026-11-05 — ARTES-001: janelas por formato (Claude)
 Branch `fix/janelas-por-formato-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. GILTEC precisa de stories novos.
 

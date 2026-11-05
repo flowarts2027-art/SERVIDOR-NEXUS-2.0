@@ -9,7 +9,7 @@
 //  5. tira da fila do painel os posts repetidos (mesma imagem) que ainda não saíram.
 
 import { clientBrand } from "./client-brand.js";
-import { artShape } from "./art-format.js";
+import { artShape, keepArt } from "./art-format.js";
 import { masterUpload } from "./master-upload.js";
 import { deletePostFromPanel } from "./posts.js";
 import { handleArtText } from "./art-text.js";
@@ -117,6 +117,25 @@ export async function addToLibrary(env, client, form, now = new Date()) {
   }
   await writeItems(env, client.id, items);
   return { added: added.length, duplicates, invalid, items: libraryView(items) };
+}
+
+// Vigia "cliente nunca fica sem post": pega a arte livre mais antiga do cliente que serve para o formato.
+export async function takeLibraryArt(env, client, postId, story = false) {
+  const items = await readItems(env, client.id);
+  const item = items.find(i => i.status === "livre" && (artShape(i.width, i.height) === "story") === Boolean(story) && artShape(i.width, i.height));
+  const object = item ? await env.MEDIA.get(item.key) : null;
+  if (!object) return null;
+  const file = new File([await object.arrayBuffer()], "arte", { type: item.mime });
+  const key = "posts/" + client.id + "/" + postId + "/substituta-" + item.id + ".jpg";
+  await env.MEDIA.put(key, await keepArt(env, file), {
+    httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
+    customMetadata: { clientId: String(client.id), postId: String(postId), kind: "auto-replacement-library" }
+  });
+  item.status = "programado";
+  item.postId = String(postId);
+  item.postType = story ? "story" : "post";
+  await writeItems(env, client.id, items);
+  return String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "") + "/media/" + key;
 }
 
 export async function removeFromLibrary(env, client, id) {

@@ -1,3 +1,9 @@
+## 2026-11-05 — Depois do merge do vigia
+1. Olhar o log `post_watcher` e o quadro nas primeiras horas.
+2. Conferir a primeira substituta gerada antes de confiar nela. A geração nunca rodou em produção.
+3. Encher a Biblioteca da Quatree, da Daniela e da Nexus AI: é a única reserva delas.
+4. Rodrigo decide o que fazer com post parado em correção pedida.
+
 ## 2026-11-05 — Depois do merge das janelas por formato
 1. ChatGPT refaz os stories da GILTEC que têm faixas azuis, em 1080x1920 ocupando a tela toda.
 2. Testar uma arte na janela errada no painel e no Master, com login real, e usar o botão de mover.

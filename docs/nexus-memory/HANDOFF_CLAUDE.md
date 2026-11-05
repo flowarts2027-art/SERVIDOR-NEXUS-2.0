@@ -1074,3 +1074,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Item 6: os 2 posts de agente são soltos pelo alinhador depois do deploy e voltam a pedir imagem. Os 4 stories da GILTEC precisam de arte nova; não foram alterados.
 - Sem merge e sem deploy.
 - Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.
+
+## 05/11/2026 — Vigia "cliente nunca fica sem post" (Claude)
+- Achados: 04/11 da Quatree foi correção pedida, sem erro. 05/11 14:50 foi limite de subrequests na montagem, em rascunho nunca aprovado. Nada substituía porque esse mecanismo não existia.
+- Feito: `post-watcher.js`, `takeLibraryArt`, `imageZonesBlocked`, `mediaSize`, selo no painel, alerta vermelho no quadro e WhatsApp desligado.
+- Tamanho 9:16 do gerador corrigido para 1008x1792, porque 768x1344 não é 9:16.
+- Fora do pedido literal: Quatree sem imagem gerada, correção pedida fora do vigia.
+- Sem merge e sem deploy. Geração real nunca testada.
+- Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.

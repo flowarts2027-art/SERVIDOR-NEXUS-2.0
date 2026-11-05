@@ -36,7 +36,8 @@
     "WHATSAPP_CLIENT_ID": "primeiro-teste",
     "WHATSAPP_GRAPH_VERSION": "v26.0",
     "WHATSAPP_SEND_LIMIT_PER_HOUR": "90",
-    "NEXUS_MISSING_POSTS_WHATSAPP": "false"
+    "NEXUS_MISSING_POSTS_WHATSAPP": "false",
+    "NEXUS_AUTO_REPLACE_WHATSAPP": "false"
   },
   "assets": {
     "directory": "../public",
