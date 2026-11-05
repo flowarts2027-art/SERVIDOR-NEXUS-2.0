@@ -429,6 +429,8 @@
               <label>Nicho<input name="niche" placeholder="Ex.: Restaurante, loja, salão de beleza"></label>
               <label>Instagram do cliente<input name="instagram" placeholder="Ex.: @lojaalpha" autocomplete="off"></label>
               
+              <label>Grupo<select name="group" data-group-select><option value="">Sem grupo</option></select></label>
+              <label>Vendedora ou vendedor<input name="vendor" maxlength="40" placeholder="Só se escolher um grupo" autocomplete="off"></label>
               <label>Usuário do painel<input name="username" placeholder="Gerado automaticamente"></label>
               <label>Senha inicial<input name="password" type="text" minlength="8" placeholder="Gerada automaticamente"></label>
               <label>Tema<select name="theme"><option value="green-black">Preto + Verde</option><option value="red-black">Preto + Vermelho</option><option value="blue-white">Azul + Branco</option><option value="gold-black">Preto + Dourado</option></select></label>
@@ -631,10 +633,15 @@
         <button type="button" id="portal-access-cancel" class="ghost">Cancelar</button>
         <button type="submit" class="primary">Salvar acesso</button>
       </div>
+      <div id="portal-group-box">
+        <label>Grupo<select id="portal-group" data-group-select><option value="">Sem grupo</option></select></label>
+        <label>Vendedora ou vendedor<input id="portal-vendor" maxlength="40" autocomplete="off"></label>
+        <button type="button" id="portal-group-save" class="ghost" style="margin-top:12px">Salvar grupo</button>
+      </div>
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=55" defer></script>
+  <script src="/app.js?v=56" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>

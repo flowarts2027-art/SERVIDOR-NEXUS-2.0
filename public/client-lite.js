@@ -465,7 +465,7 @@ function renderPosts() {
 
 function renderHome() {
   const group = state.client?.group;
-  const name = group ? group.name + " — Vendedor " + group.vendor
+  const name = group ? group.name + " — " + (group.vendorLabel || "Vendedor") + " " + group.vendor
     : String(state.client?.displayName || state.client?.contact?.name || state.client?.name || "").trim();
   $("#hello").textContent = name ? "Olá, " + name : "Olá";
   const connected = Boolean(state.connection?.connected);
@@ -859,7 +859,7 @@ function renderVendorField() {
   const box = document.createElement("section");
   box.className = "block";
   box.id = "vendor-box";
-  box.innerHTML = `<h2>Vendedor</h2><p>${escapeHtml(vendor)}</p>`;
+  box.innerHTML = `<h2>${escapeHtml(state.client.group.vendorLabel || "Vendedor")}</h2><p>${escapeHtml(vendor)}</p>`;
   $("#instagram-box")?.before(box);
 }
 

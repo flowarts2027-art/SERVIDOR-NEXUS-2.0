@@ -1,3 +1,7 @@
+## 2026-11-05 — Grupo de clientes GILTEC (PRs abertos, sem deploy)
+- Nome, logo e tema da GILTEC no painel da Rose (PR #582).
+- Grupo GILTEC, campos Grupo e Vendedora no Master e regras da marca herdadas por quem entra no grupo.
+
 ## 2026-11-03 — Pacote do painel (PR aberto)
 
 ## 2026-11-04 07:45 BRT — branch feat/whatsapp-cliente-conhecido

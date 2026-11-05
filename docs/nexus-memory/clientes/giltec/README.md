@@ -1,5 +1,9 @@
 # GILTEC Locações — cadastro documental
 
+## 2026-11-05 — Grupo GILTEC
+
+Grupo de vendedoras, igual ao da Quatree Dog. Rose é o painel `giltec`, fixo no código. As outras vendedoras entram pelo campo Grupo do Master (Novo cliente ou Acesso). Quem entra herda logo, molduras, Captador do estado do RJ e mensagem pronta no próprio nome. Estado real: PRs abertos, sem deploy; ver HANDOFF_CLAUDE de 05/11.
+
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
 
 - Pedido mais recente de Rodrigo corrige o escopo: **3 posts, sendo 1 carrossel, e 3 stories**, somente 28/10/2026. Campanha permanece diária, não mensal.

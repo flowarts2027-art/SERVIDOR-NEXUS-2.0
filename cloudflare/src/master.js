@@ -1,5 +1,5 @@
-import { clientGroup } from "./clients.js";
-import { ensureGroupClients } from "./client-groups.js";
+import { clientGroup, isFixedGroupMember } from "./clients.js";
+import { ensureGroupClients, groupChoice } from "./client-groups.js";
 import {
   masterCredentialsValid,
   createMasterSession,
@@ -87,7 +87,10 @@ function masterClientView(client) {
     leads: config.leads && typeof config.leads === "object" ? config.leads : { total:0, hot:0, warm:0, cold:0 },
     usage: { openaiPercent: Number(config.usage?.openaiPercent || 0) },
     openaiDailyTokenLimit: Number(config.openaiDailyTokenLimit || 30000),
-    vendor: clientGroup(client.id)?.vendor || "",
+    vendor: clientGroup(client)?.vendor || "",
+    vendorLabel: clientGroup(client)?.vendorLabel || "Vendedor",
+    group: clientGroup(client)?.id || "",
+    groupFixed: isFixedGroupMember(client.id),
     aiMode: client.id === "ragnar-one" ? "own-key" : "shared",
     aiMonthlyImageLimit: Number(config.aiMonthlyImageLimit || 0),
     aiImagesUsed: Number(config.aiImagesUsed || 0),
@@ -173,6 +176,16 @@ button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;backg
 })();
 </script>
 </body></html>`;
+}
+
+// Campo Grupo do Novo cliente e do Acesso.
+function readGroupField(body) {
+  try {
+    return { group: groupChoice(body) };
+  } catch (error) {
+    const code = String(error?.message || error);
+    return { error: { error: code, message: code === "group_invalid" ? "Escolha um grupo da lista." : "Escreva o nome da vendedora ou do vendedor, só com letras." } };
+  }
 }
 
 async function asset(env, request, pathname) {
@@ -643,7 +656,9 @@ export async function handleMaster(request, env, url) {
       }, 409);
     }
 
-    const config = newManagedClientConfig(id, body);
+    const groupField = readGroupField(body);
+    if (groupField.error) return json(groupField.error, 400);
+    const config = newManagedClientConfig(id, body, groupField.group ? { group: groupField.group } : {});
     // @ do Instagram do cliente (opcional): o Master usa para o convite de testador da Meta.
     const instagramHandle = String(body.instagram || "").trim().replace(/^@+/, "").toLowerCase();
     if (instagramHandle && !/^[a-z0-9._]{1,30}$/.test(instagramHandle)) {
@@ -771,6 +786,14 @@ export async function handleMaster(request, env, url) {
     ];
     for (const key of configKeys) {
       if (Object.prototype.hasOwnProperty.call(body, key)) nextConfig[key] = body[key];
+    }
+    if (Object.prototype.hasOwnProperty.call(body, "group")) {
+      if (isFixedGroupMember(clientId)) {
+        return json({ error: "group_fixed", message: "Este painel já é fixo no grupo. Não dá para trocar aqui." }, 409);
+      }
+      const groupField = readGroupField(body);
+      if (groupField.error) return json(groupField.error, 400);
+      nextConfig.group = groupField.group;
     }
     nextConfig.openaiKeySource = clientId === String(env.RAGNAR_CLIENT_ID || "ragnar-one")
       ? "ragnar-exclusive"

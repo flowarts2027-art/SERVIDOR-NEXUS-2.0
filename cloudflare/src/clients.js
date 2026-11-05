@@ -154,7 +154,7 @@ export function portalClientView(client) {
     agentProfile,
     agentCore,
     connections: config.connections && typeof config.connections === "object" ? config.connections : {},
-    group: clientGroup(client.id),
+    group: clientGroup(client),
     branding: {
       logoKey: String(config.branding?.logoKey || ""),
       logoUpdatedAt: config.branding?.logoUpdatedAt || null
@@ -164,6 +164,8 @@ export function portalClientView(client) {
 
 // Grupos de clientes (04/11/2026). O 1º vendedor é o cliente que já existia.
 // "theme" é o tema de logo e cores do painel, em CLIENT_THEMES (public/client-lite.js).
+// "sharedBrand": quem entra no grupo herda do 1º vendedor as molduras com a logo, os textos das artes e o Captador.
+// Vendedor novo também entra pelo campo Grupo do Master, que grava em config.group: { id, vendor }.
 export const CLIENT_GROUPS = Object.freeze({
   "quatree-dog": Object.freeze({
     name: "Quatree Dog",
@@ -172,13 +174,46 @@ export const CLIENT_GROUPS = Object.freeze({
       Object.freeze({ clientId: "quatree-dog", vendor: "Ericsson", instagram: "ericsson_quatree" }),
       Object.freeze({ clientId: "quatree-dog-eduardo", vendor: "Eduardo" })
     ])
+  }),
+  giltec: Object.freeze({
+    name: "GILTEC",
+    theme: "giltec",
+    vendorLabel: "Vendedora",
+    sharedBrand: true,
+    closings: Object.freeze([
+      "Fale com a vendedora {vendedor} pelo WhatsApp e peça o seu orçamento.",
+      "Peça o seu orçamento com a vendedora {vendedor}.",
+      "Tem obra em andamento? Fale com a vendedora {vendedor}."
+    ]),
+    members: Object.freeze([
+      Object.freeze({ clientId: "giltec", vendor: "Rose", instagram: "rose.giltec3" })
+    ])
   })
 });
 
-export function clientGroup(clientId) {
+function groupView(id, group, vendor) {
+  return { id, name: group.name, theme: group.theme, vendor, ...(group.vendorLabel ? { vendorLabel: group.vendorLabel } : {}) };
+}
+
+export function isFixedGroupMember(clientId) {
+  return Object.values(CLIENT_GROUPS).some(group => group.members.some(item => item.clientId === String(clientId || "")));
+}
+
+// Aceita o id ou o cliente. Só com o cliente dá para ler quem entrou pelo campo Grupo do Master.
+export function clientGroup(client) {
+  const clientId = String(client?.id ?? client ?? "");
   for (const [id, group] of Object.entries(CLIENT_GROUPS)) {
-    const member = group.members.find(item => item.clientId === String(clientId || ""));
-    if (member) return { id, name: group.name, theme: group.theme, vendor: member.vendor };
+    const member = group.members.find(item => item.clientId === clientId);
+    if (member) return groupView(id, group, member.vendor);
   }
-  return null;
+  const saved = client?.config?.group;
+  if (!saved?.vendor || !Object.hasOwn(CLIENT_GROUPS, String(saved.id || ""))) return null;
+  return groupView(saved.id, CLIENT_GROUPS[saved.id], String(saved.vendor));
+}
+
+// De quem vêm a logo e as regras da marca: do 1º vendedor, em grupo com "sharedBrand". Fora disso, do próprio cliente.
+export function brandClientId(client) {
+  const group = clientGroup(client);
+  if (group && CLIENT_GROUPS[group.id].sharedBrand) return CLIENT_GROUPS[group.id].members[0].clientId;
+  return String(client?.id ?? client ?? "");
 }
