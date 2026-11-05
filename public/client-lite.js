@@ -804,6 +804,12 @@ const CLIENT_THEMES = {
     tagline: "Ração Pet",
     logo: "/brand/quatree-logo.png",
     themeColor: "#88401C"
+  },
+  giltec: {
+    name: "GILTEC",
+    tagline: "Locações",
+    logo: "/brand/giltec-logo.png",
+    themeColor: "#0D1B3E"
   }
 };
 let defaultBrandHtml = null;

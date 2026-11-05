@@ -23,6 +23,14 @@ test("o topo da Quatree mostra o vendedor; o nome salvo e a marca não mudam", (
   assert.ok(!String(clientBrand(quatree).brandName).includes("Ericsson"));
 });
 
+test("o topo da Rose mostra GILTEC e a vendedora; id e nome salvo não mudam", () => {
+  const giltec = { id: "giltec", name: "Giltec", niche: "Locação", config: {} };
+  assert.equal(portalGreetingName(giltec), "GILTEC — Vendedora Rose");
+  assert.equal(portalClientView(giltec).id, "giltec");
+  assert.equal(clientScreenName(giltec), "Giltec");
+  assert.ok(!String(clientBrand(giltec).brandName).includes("Rose"));
+});
+
 test("outros clientes continuam com o próprio nome", () => {
   assert.equal(clientScreenName(daniela), "Daniela Martins");
   assert.equal(portalGreetingName(daniela), "");
