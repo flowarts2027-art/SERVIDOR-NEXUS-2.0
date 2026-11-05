@@ -31,6 +31,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Toda campanha feita pelo ChatGPT segue `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md`:** uma imagem por geração (nunca mosaico ou grade), tabela da campanha antes de gerar, um dia por vez, a IA nunca desenha a logo (a logo oficial é carimbada depois). **Flow Arts agora foca só na automação do Instagram — sem busca de leads nas campanhas. Nunca usar #flowart nem #flowarts (malabarismo); usar #FlowArtsMarketing.**
 
+## Horários de publicação (Rodrigo, 05/11/2026)
+
+**Clientes nunca publicam no mesmo minuto.** Cada cliente tem um minuto fixo na hora e o story sai 5 minutos depois. Ver `docs/nexus-memory/REGRA_HORARIOS_CLIENTES.md`.
+
 ## Padrão fixo das artes (Rodrigo, 28/10/2026)
 
 **Toda arte de qualquer cliente segue `docs/nexus-memory/PADRAO_ARTES.md`:** texto nunca em cima de pessoa (título numa faixa em cima, botão numa faixa embaixo, foto só no meio), texto escrito por código e nunca pela IA, fonte Montserrat ExtraBold, uma logo só (a verdadeira). A campanha diária da GILTEC, da Flow Arts e da Maskara (desde 28/10) é feita por `.github/workflows/nexus-campanha-diaria.yml`, com fotos da IA grátis do Cloudflare.

@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-05 — AGENDA-001: espaçar postagens dos clientes (Claude)
+Branch `fix/espacar-postagens-clientes-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. Depois do merge: conferir a agenda e a primeira rodada real.
+
 ## 2026-11-05 — GILTEC-GRUPO-001: grupo de clientes GILTEC (Claude)
 PR #582 (nome, logo e cores) e PR `claude/grupo-giltec` (grupo, campos Grupo e Vendedora, regras herdadas) abertos. **Aguardando merge do Rodrigo.** Depois: ligar `giltec-locacoes` ao grupo pelo Acesso. Pendente decidir: campanha diária para o grupo e divisão do Captador entre as vendedoras.
 

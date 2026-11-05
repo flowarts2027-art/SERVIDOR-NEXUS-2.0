@@ -85,7 +85,8 @@ async function slotTaken(env, clientId, scheduledFor, isStory) {
     ? "json_extract(payload_json,'$.creativeFeatures.requestedFormat')='story'"
     : "COALESCE(json_extract(payload_json,'$.creativeFeatures.requestedFormat'),'post')<>'story'";
   const row = await env.DB.prepare(
-    `SELECT COUNT(*) AS n FROM post_ledger WHERE client_id=?1 AND scheduled_for=?2
+    `SELECT COUNT(*) AS n FROM post_ledger WHERE client_id=?1
+     AND (scheduled_for=?2 OR json_extract(payload_json,'$.slotOriginalFor')=?2)
      AND json_extract(payload_json,'$.source')='master:upload' AND ${formatFilter}
      AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'`
   ).bind(String(clientId), String(scheduledFor)).first().catch(() => null);

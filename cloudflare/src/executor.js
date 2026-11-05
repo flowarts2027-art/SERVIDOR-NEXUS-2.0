@@ -4,6 +4,7 @@ import { runLeadHunter, leadHunterConfig } from "./lead-hunter.js";
 import { runAgentCoreCycle } from "./agent-runtime.js";
 import { getClient } from "./clients.js";
 import { publishingGate, isPublishingWindow } from "./publishing-policy.js";
+import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -80,8 +81,7 @@ async function duePosts(env, clientId, nowIso) {
      WHERE client_id = ?1
        AND approval_status = 'approved'
        AND status IN ('ready', 'scheduled', 'failed')
-       AND (COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0) < ${MAX_PUBLISH_RETRIES}
-            OR LOWER(COALESCE(error,'')) LIKE 'too many subrequests%')
+       AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0) < ${MAX_PUBLISH_RETRIES}
        AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.copyChief') = 'approved'
        AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer') = 'approved'
        AND scheduled_for IS NOT NULL
@@ -155,13 +155,7 @@ export async function recoverStuckPublishing(env, clientId, now = new Date(), fi
   return out;
 }
 
-// 04/11/2026: "Too many subrequests" é do servidor (a rodada de 15 min faz coisa demais junta),
-// não do post. Esse erro não gasta tentativa, e o post volta para a fila mesmo depois de 3 falhas.
-export function isWorkerLimitError(message = "") {
-  return /too many subrequests/i.test(String(message || ""));
-}
-
-// 04/11/2026: nos minutos terminados em 2 e 7 o cron de 1 minuto só publica (1 job), com o limite do Worker livre.
+// 04/11/2026: nos minutos terminados em 2 e 7 o cron de 1 minuto só publica, com o limite do Worker livre.
 export function isPublisherOnlyMinute(at = new Date()) {
   return new Date(at).getUTCMinutes() % 5 === 2;
 }
@@ -176,7 +170,7 @@ export function canPublishInSweep({ story = false, gateOk = true, done = { feed:
   return gateOk && Number(done.feed || 0) === 0;
 }
 
-async function runPublisherSweep(env, clientId, now) {
+async function runPublisherSweep(env, clientId, now, budget = createPublishBudget()) {
   await recoverStuckPublishing(env, clientId, now).catch(() => null);
   const rows = await duePosts(env, clientId, now.toISOString());
   const summary = { candidates: rows.length, published: 0, failed: 0, skipped: 0 };
@@ -208,9 +202,8 @@ async function runPublisherSweep(env, clientId, now) {
     const payload = parseJson(row.payload_json, {});
     const story = isStoryPost(payload);
     if (!canPublishInSweep({ story, gateOk: gate.ok, done })) continue;
-    if (isWorkerLimitError(row.error) && Number(payload.retryCount || 0) >= MAX_PUBLISH_RETRIES) {
-      payload.retryCount = MAX_PUBLISH_RETRIES - 1;
-    }
+    const format = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
+    if (!canPublish(budget, clientId, format)) continue;
     const guard = publishGuard(payload, clientId);
     if (!guard.ok) {
       await savePostResult(env, row, { status: row.status, error: guard.error, payload });
@@ -223,6 +216,18 @@ async function runPublisherSweep(env, clientId, now) {
       continue;
     }
 
+    const prior = await findPriorPublication(env, clientId, row.caption, payload);
+    if (prior) {
+      await savePostResult(env, row, {
+        status: "published",
+        mediaId: prior.mediaId,
+        payload: { ...payload, permalink: prior.permalink, publishedAt: prior.timestamp, recoveredFromRetry: true }
+      });
+      summary.skipped += 1;
+      continue;
+    }
+
+    await waitForNextMinute(budget);
     try {
       const claim = await env.DB.prepare(
         "UPDATE post_ledger SET payload_json=json_set(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishingStartedAt',strftime('%Y-%m-%dT%H:%M:%SZ','now')), status = 'publishing', error = '', updated_at = CURRENT_TIMESTAMP WHERE id = ?1 AND status IN ('ready','scheduled','failed')"
@@ -252,22 +257,15 @@ async function runPublisherSweep(env, clientId, now) {
       });
       summary.published += 1;
       done[story ? "story" : "feed"] += 1;
+      spendPublish(budget, clientId, format);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      // Limite do Worker não é culpa do post: não conta tentativa (e devolve as que esse erro gastou).
-      const retries = isWorkerLimitError(message)
-        ? Math.min(Math.max(0, Number(payload.retryCount || 0)), MAX_PUBLISH_RETRIES - 1)
-        : Math.max(0, Number(payload.retryCount || 0)) + 1;
-      await savePostResult(env, row, {
-        status: "failed",
-        error: message,
-        payload: {
-          ...payload,
-          retryCount: retries,
-          lastPublishAttemptAt: new Date().toISOString()
-        }
-      });
+      const failure = publishFailure(payload, error);
+      await savePostResult(env, row, { status: failure.status, error: message, payload: failure.payload });
       summary.failed += 1;
+      spendPublish(budget, clientId, format);
+      // Bateu no limite: o resto da execução também bateria. Fica para a próxima rodada.
+      if (failure.limit) budget.remaining = 0;
     }
   }
   return summary;
@@ -320,13 +318,15 @@ export async function processDueJobs(env, scheduledAt = new Date(), scope = {}) 
   ).bind(...parameters).all();
 
   const summary = { active: true, processed: 0, completed: 0, failed: 0, deferred: 0 };
+  const budget = scope.publishBudget || createPublishBudget();
 
   // Drain at most one due job per client in each cron iteration.
   // This prevents one busy client from starving the other clients for hours.
-  // 04/11/2026: no minuto só de publicar, 1 job por vez (plano grátis: 50 pedidos externos por rodada).
   const dueJobs = selectFairDueJobs(result?.results || [], Math.max(1, Math.trunc(Number(scope.maxJobs) || 4)));
 
   for (const job of dueJobs) {
+    // Trava cheia: os jobs de publicação que sobraram ficam na fila para a próxima rodada.
+    if (job.kind === "publisher-sweep" && budget.remaining <= 0) continue;
     const attempts = Math.max(0, Number(job.attempts || 0)) + 1;
     const claim = await env.DB.prepare("UPDATE scheduled_jobs SET status='running',attempts=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND status='scheduled'").bind(job.id, attempts).run();
     if (!claim?.meta?.changes) continue;
@@ -335,9 +335,10 @@ export async function processDueJobs(env, scheduledAt = new Date(), scope = {}) 
       if (job.kind === "publisher-sweep") {
         await runAgentCoreCycle(env, job.client_id, {
           trigger: "publisher-sweep",
-          agent: "publisher"
+          agent: "publisher",
+          publishBudget: budget
         });
-        const publishSummary = await runPublisherSweep(env, job.client_id, now);
+        const publishSummary = await runPublisherSweep(env, job.client_id, now, budget);
         if (publishSummary.failed > 0) {
           throw new Error("publisher_sweep_failed:" + publishSummary.failed);
         }

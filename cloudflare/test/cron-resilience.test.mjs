@@ -45,11 +45,11 @@ test("wrangler keeps production cron on a D1-safe fifteen-minute cadence", async
   const index = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
   const minuteBranch = index.match(/if \(String\(event\.cron \|\| ""\) === MINUTE_CRON\) \{[\s\S]*?return;\n    \}/)?.[0] || "";
   assert.ok(minuteBranch, "cron de 1 minuto precisa sair antes do agendador");
-  // 04/11/2026: a única exceção é o minuto só de publicar (terminados em 2 e 7): 1 job por vez,
+  // 04/11/2026: a única exceção é o minuto só de publicar (terminados em 2 e 7),
   // para a publicação não dividir o limite do Worker com as outras tarefas.
   const outsidePublisherMinute = minuteBranch.replace(/if \(isPublisherOnlyMinute\(at\)\) \{[\s\S]*?return;\n      \}/, "");
   assert.notEqual(outsidePublisherMinute, minuteBranch, "minuto só de publicar precisa existir");
-  assert.match(minuteBranch, /processDueJobs\(env, at, \{ maxJobs: 1, onlyKind: "publisher-sweep" \}\)/);
+  assert.match(minuteBranch, /runPublisherRound\(env, at\)/);
   assert.doesNotMatch(outsidePublisherMinute, /runCronIteration|runSchedulerTick|processDueJobs/);
 });
 
@@ -58,6 +58,6 @@ test("publisher-sweep executes the real Instagram publishing routine", async () 
   const executor = await readFile(new URL("../src/executor.js", import.meta.url), "utf8");
   const publisherBranch = executor.match(/if \(job\.kind === "publisher-sweep"\) \{[\s\S]*?\} else if \(job\.kind === "lead-hunter"\)/)?.[0] || "";
   assert.match(publisherBranch, /runAgentCoreCycle\(env, job\.client_id/);
-  assert.match(publisherBranch, /runPublisherSweep\(env, job\.client_id, now\)/);
+  assert.match(publisherBranch, /runPublisherSweep\(env, job\.client_id, now, budget\)/);
   assert.match(publisherBranch, /publisher_sweep_failed/);
 });

@@ -83,3 +83,6 @@ Alternativa local: Baixar no PC abre página 127.0.0.1:8765 com URL YouTube púb
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## Publicação (05/11/2026)
+Nos minutos terminados em 2 e 7, `publisher-round.js` alinha os horários (`client-slots.js`), põe na fila quem venceu e publica com a trava de `publish-budget.js`. A rodada de 15 minutos não publica. Regra em `REGRA_HORARIOS_CLIENTES.md`.

@@ -292,3 +292,9 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - Recuperação focada: polling Meta limitado a12 consultas porcontainer (antesaté40); mantém revisão visual real e media_publish único após FINISHED. Não altera plano Cloudflare nem orçamento OpenAI.
 - Antes de qualquer repetição, CI [retry-social-test] consulta diagnóstico autenticado somente leitura: estado R2 do teste anterior e25 mídias recentes Meta; bloqueia nova tentativa se houver carrossel após início anterior ou histórico insuficiente. Não repetir cegamente nem apagar lock anterior.
 - Implementação final de referências usa direção textual das imagens anexadas, sem envio dos pixels/biblioteca privada R2. Reels têm layout9:16 e zoomFFmpeg testado localmente; Reel real ainda não renderizado/publicado. Próximo: CI/deploy da recuperação e evidência real Meta.
+
+## 2026-11-05 — Espaçamento de postagens (Claude, antes do merge)
+- `node --test test/*.test.mjs` no Windows: 833 de 834. A falha é a do cron por CRLF; o mesmo teste passou com os arquivos em LF.
+- `test/publisher-round.test.mjs` roda as consultas em SQLite de verdade, com o cenário das 09:00 dos 6 clientes.
+- `wrangler deploy --dry-run` aprovado.
+- Não testado em produção. Nenhuma publicação real foi feita.

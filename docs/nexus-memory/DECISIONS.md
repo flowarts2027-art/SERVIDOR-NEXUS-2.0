@@ -178,3 +178,10 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Avulsos que continuam: Site R$ 497 e Logo R$ 67. Saíram: Essencial, Completo, Completo + Tráfego, Captador, Responde, Reels 5, Posts 10 e o preço de fundador.
 - Captador fora da venda: não prometer clientes com ele. O código fica guardado; acesso só liberado na mão pelo Master.
 - Uma campanha de anúncio por plano. Começar vendendo o Postador.
+
+## 2026-11-05 — Clientes nunca publicam no mesmo minuto (Rodrigo)
+- Regra fixa, detalhada em `REGRA_HORARIOS_CLIENTES.md`: cada cliente tem um minuto próprio na hora, story 5 minutos depois.
+- Trava: no máximo 2 publicações por execução. Falha por limite volta para a fila, com no máximo 3 tentativas.
+- Substitui a regra de 04/11 em que "Too many subrequests" não gastava tentativa.
+- Substitui os 20 minutos entre painéis do PR #585, que nunca foram aplicados no D1 (o job falhou com erro de autenticação).
+- Com 6 clientes os degraus de 10 minutos acabam. Decisão do Claude: os novos usam os minutos entre eles, para continuar na mesma hora.
