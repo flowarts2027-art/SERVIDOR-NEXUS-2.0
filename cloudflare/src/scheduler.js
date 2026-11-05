@@ -178,6 +178,27 @@ export async function expireStalePosts(env, clientId, now = new Date()) {
   };
 }
 
+// Rodada de publicação: põe na fila, sem esperar a rodada de 15 min, quem tem post vencido hoje.
+export async function enqueueDuePublishers(env, now = new Date()) {
+  const dayRange = saoPauloDayRange(now);
+  const due = await env.DB.prepare(
+    `SELECT c.id, c.name, c.niche, c.instagram, c.status, c.config_json, MIN(p.scheduled_for) AS first_due
+     FROM clients c JOIN post_ledger p ON p.client_id=c.id
+     WHERE c.status='online'
+       AND p.status IN ('ready','scheduled','failed') AND p.approval_status='approved'
+       AND p.scheduled_for<=?1 AND p.scheduled_for>=?2
+       AND COALESCE(json_extract(CASE WHEN json_valid(p.payload_json) THEN p.payload_json ELSE '{}' END,'$.retryCount'),0)<3
+     GROUP BY c.id ORDER BY first_due ASC LIMIT 6`
+  ).bind(now.toISOString(), dayRange.start).all();
+  let queued = 0;
+  for (const raw of due?.results || []) {
+    const client = rowClient(raw);
+    if (!agentCoreConfig(client).enabled) continue;
+    if (await enqueue(env, client.id, "publisher-sweep", now, { trigger: "publisher-round" })) queued += 1;
+  }
+  return queued;
+}
+
 export async function runSchedulerTick(env, scheduledAt = new Date()) {
   const now = scheduledAt instanceof Date ? scheduledAt : new Date(scheduledAt || Date.now());
   const nowMs = now.getTime();
@@ -438,8 +459,7 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
          AND status IN ('ready','scheduled','failed') AND approval_status='approved'
          AND scheduled_for<=?2
          AND date(scheduled_for,'-3 hours')=date(?2,'-3 hours')
-         AND (COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
-              OR LOWER(COALESCE(error,'')) LIKE 'too many subrequests%')
+         AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.retryCount'),0)<3
 
          AND (
            COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''

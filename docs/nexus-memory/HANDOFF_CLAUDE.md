@@ -1040,3 +1040,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Limites: a campanha diária automática (`nexus-campanha-diaria.yml` e pasta `agendamentos/`) ainda sobe só para a Rose. O Captador das duas busca as mesmas cidades e pode achar as mesmas empresas. Falta decidir como dividir.
 - Testes: `node --test test/*.test.mjs` 812 de 813; a falha é a do cron por CRLF no Windows, que já existia. Wrangler dry-run aprovado. Chrome sem tela com dados simulados. Não conferido com login real. Sem merge e sem deploy.
 - Próximo passo: Rodrigo junta os PRs, abre Clientes > Acesso de Giltec Locações, escolhe GILTEC, escreve Sheila e salva. Depois confere o painel dela e faz uma campanha de teste, sem aprovar.
+
+## 05/11/2026 — Espaçar postagens dos clientes (Claude)
+- Pedido do Rodrigo: 8 publicações saíram juntas às 09:00. Regra em `REGRA_HORARIOS_CLIENTES.md`.
+- Achados: crons de 15 min e 1 min; publicação só nos minutos terminados em 2 e 7, 1 job por vez; a fila só era preenchida na rodada de 15 min; o ciclo de agentes também publicava na rodada de 15 min (PR #561 aberto).
+- PR #585: o SQL de 20 minutos não entrou no D1 (erro de autenticação) e a agenda real confirma isso. Retirei SQL, teste e workflow, porque desfariam os 10 minutos.
+- Feito: `client-slots.js`, `publish-budget.js`, `publisher-round.js`, `enqueueDuePublishers`; a mudança do #561 foi incluída.
+- Mudança de regra: limite do Worker agora gasta tentativa (máximo 3), como pedido.
+- Testes: 833 de 834, falha só por CRLF no Windows. Dry-run aprovado. Sem merge e sem deploy.
+- Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.

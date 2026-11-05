@@ -1,3 +1,9 @@
+## 2026-11-05 — Depois do merge do espaçamento de postagens
+1. Conferir o deploy no GitHub Actions.
+2. Em até 5 minutos, ver em `nexus_ver_agenda` se os horários mudaram (GILTEC 19:00 vira 19:10). Os posts se ajustam 40 por rodada.
+3. Olhar o log `publisher_only_minute` na primeira rodada com post vencido.
+4. Decidir se fecha o PR #561, que este PR já cobre.
+
 
 ## 2026-11-03 — NEXUS Master verde, app Android e login cliente (PR pendente)
 - Pedido confirmado: usar N metálico com anel verde, verde + branco em todo o Master, iconografia/splash do APK Master, eliminar blocos azuis duplicados no login do cliente.

@@ -3,6 +3,7 @@ import { mediaFingerprint } from "./media-fingerprint.js";
 import { getClient } from "./clients.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { publishInstagramPost } from "./publisher.js";
+import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 import {
   AGENT_CORE_MODULES,
   NEXUS_WORKER_MODULES,
@@ -1277,7 +1278,17 @@ async function runCreator(env,client,strategy,options) {
   return {created,repaired};
 }
 
+export function publisherSkippedForTrigger(trigger=""){
+  return String(trigger||"")==="scheduler";
+}
+
 async function runPublisher(env,client,options) {
+  // O ciclo de agentes da rodada de 15 min (trigger "scheduler") não publica: lá o limite de 50 pedidos
+  // já acabou. Quem publica é a rodada própria (trigger "publisher-sweep") ou o botão do painel.
+  if(publisherSkippedForTrigger(options?.trigger)){
+    return {published:0,failed:0,awaitingApproval:0,awaitingMedia:0,repairedApproval:0,duplicateMediaBlocked:0,duplicateCaptionBlocked:0,blockedReason:"publisher_only_minute"};
+  }
+  const budget=options?.publishBudget||createPublishBudget();
   // Corrige posts presos em "publishing" (servidor parou depois de publicar).
   await import("./executor.js").then(mod=>mod.recoverStuckPublishing(env,client.id,new Date())).catch(()=>null);
   const startedAt=new Date().toISOString();
@@ -1328,6 +1339,7 @@ async function runPublisher(env,client,options) {
 
   for(const row of rows?.results||[]){
     if(published>0)break;
+    if(budget.remaining<=0||budget.clients.has(client.id))break;
     let approval=String(row.approval_status||"pending");
     const payload=parseJson(row.payload_json,{});
     if(client.id==="ragnar-one"&&(payload.sourceInstagramMediaId
@@ -1356,6 +1368,7 @@ async function runPublisher(env,client,options) {
     }
 
     const requestedFormat=String(payload?.creativeFeatures?.requestedFormat||"post").toLowerCase();
+    if(!canPublish(budget,client.id,requestedFormat))continue;
     if(["reel","carousel"].includes(requestedFormat)&&quality.formatBuilder!=="approved"){
       await env.DB.prepare(
         "UPDATE post_ledger SET error='format_build_pending',updated_at=CURRENT_TIMESTAMP WHERE id=?1"
@@ -1463,6 +1476,17 @@ async function runPublisher(env,client,options) {
       continue;
     }
 
+    const prior=await findPriorPublication(env,client.id,caption,payload);
+    if(prior){
+      payload.permalink=prior.permalink;
+      payload.publishedAt=prior.timestamp;
+      payload.recoveredFromRetry=true;
+      await env.DB.prepare("UPDATE post_ledger SET status='published',media_id=?2,error='',payload_json=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
+        .bind(row.id,String(prior.mediaId),JSON.stringify(payload)).run();
+      continue;
+    }
+
+    await waitForNextMinute(budget);
     try{
       const claim=await env.DB.prepare(
         "UPDATE post_ledger SET payload_json=json_set(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishingStartedAt',strftime('%Y-%m-%dT%H:%M:%SZ','now')), status='publishing',error='',updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND status IN ('ready','scheduled','failed')"
@@ -1481,12 +1505,14 @@ async function runPublisher(env,client,options) {
       publishedTodayCount+=1;
       if(key)usedMedia.add(key);
       usedCaptions.push(caption);
+      spendPublish(budget,client.id,requestedFormat);
     }catch(error){
-      payload.retryCount=Math.max(0,Number(payload.retryCount||0))+1;
-      payload.lastPublishAttemptAt=new Date().toISOString();
-      await env.DB.prepare("UPDATE post_ledger SET status='failed',error=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
-        .bind(row.id,String(error?.message||error).slice(0,900),JSON.stringify(payload)).run();
+      const failure=publishFailure(payload,error);
+      await env.DB.prepare("UPDATE post_ledger SET status=?4,error=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP WHERE id=?1")
+        .bind(row.id,String(error?.message||error).slice(0,900),JSON.stringify(failure.payload),failure.status).run();
       failed+=1;
+      spendPublish(budget,client.id,requestedFormat);
+      if(failure.limit)budget.remaining=0;
     }
   }
 

@@ -1,3 +1,8 @@
+## 2026-11-05 — Espaçamento de postagens (PR aberto, sem deploy)
+- Minuto fixo por cliente, story 5 minutos depois, alinhador antes de cada rodada.
+- Trava de 2 publicações por execução; falha por limite volta para a fila, com no máximo 3 tentativas.
+- Retirados os gatilhos de 20 minutos do PR #585.
+
 ## 2026-11-05 — Grupo de clientes GILTEC (PRs abertos, sem deploy)
 - Nome, logo e tema da GILTEC no painel da Rose (PR #582).
 - Grupo GILTEC, campos Grupo e Vendedora no Master e regras da marca herdadas por quem entra no grupo.

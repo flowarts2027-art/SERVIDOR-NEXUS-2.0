@@ -212,3 +212,10 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Meta de crescimento 1.000.000 seguidores em 30 dias (33.334/dia) para todos os clientes.
 - Reels: despacho de render no GitHub falha com "Sorry. Your account was suspended" (token GITHUB_ACTIONS_TOKEN de conta suspensa; repositório padrão do vídeo ainda globalplay27/SERVIDOR-GLOBAL-PLAY). Todo Reel vira imagem estática. rendererAvailable=false.
 - Cota de texto da OpenAI: 30.000 tokens/dia (NEXUS_OPENAI_DAILY_TOKEN_LIMIT); posts já expiraram por openai_daily_budget_reached.
+
+## 2026-11-05 — Limites do espaçamento de postagens
+- Story com horário próprio também muda: 10:30 da Flow Arts vira 11:05 (até 59 minutos depois).
+- Story não tem legenda: a conferência contra duplicidade antes de repetir não vale para ele.
+- Quando os 11 clientes estiverem ativos e todos na mesma hora, a fila leva perto de 1 hora para esvaziar (24 publicações por hora no máximo).
+- Limite de 30 clientes com minuto próprio. Passando disso, o cliente fica sem minuto e o log mostra `client_slots_full`.
+- O segredo `CLOUDFLARE_API_TOKEN` do GitHub não tem permissão de importar SQL no D1 (erro 10000 no job do PR #585). Este PR não depende disso.

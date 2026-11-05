@@ -19,6 +19,7 @@ import { runClientApprovalNotices } from "./client-approval-notify.js";
 import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
+import { runPublisherRound } from "./publisher-round.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
 import { instagramCredentialStatus, instagramPublishingHealth } from "./instagram-credentials.js";
 import { instagramMasterConfigStatus, handleInstagramOAuthCallback, handleInstagramComplianceRequest } from "./instagram.js";
@@ -561,9 +562,9 @@ export default {
     // Cron de 1 minuto: só o direct do brinde ("Já segui") e, a cada 5 min, os comentários QUERO.
     if (String(event.cron || "") === MINUTE_CRON) {
       // 04/11/2026: postagens falhavam com "Too many subrequests" porque a rodada de 15 min faz tudo junto.
-      // Nos minutos terminados em 2 e 7 esta rodada só publica 1 job, com o limite do Worker livre.
+      // Nos minutos terminados em 2 e 7 esta rodada só publica, com o limite do Worker livre (trava em publish-budget.js).
       if (isPublisherOnlyMinute(at)) {
-        ctx.waitUntil(processDueJobs(env, at, { maxJobs: 1, onlyKind: "publisher-sweep" }).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
+        ctx.waitUntil(runPublisherRound(env, at).then(out => console.log("publisher_only_minute", JSON.stringify(out))).catch(error =>
           console.warn("publisher_only_minute_failed", String(error?.message || error).slice(0, 140))
         ));
         return;
