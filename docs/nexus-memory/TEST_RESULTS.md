@@ -305,3 +305,10 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - `wrangler deploy --dry-run` aprovado.
 - Quadro renderizado no Chrome sem tela, com o CSS real e dados de exemplo: em 390 px cabe na largura e o sino aparece.
 - Não testado com login real nem em produção. Nenhuma mensagem foi enviada.
+
+## 2026-11-05 — Primeira publicação com o espaçamento em produção (Claude)
+- Deploy do PR #586: versão `635ba19b`, às 14:38. PR #587: deploy concluído às 15:14.
+- Às 14:46, `nexus_ver_agenda` mostrou os horários alinhados nos 6 clientes online, hoje e amanhã, sem dois clientes no mesmo minuto.
+- Às 15:20, o story da GILTEC das 15:15 estava como `published` no ledger.
+- Não conferido: o minuto exato em que saiu e a postagem dentro do Instagram.
+- Ainda não houve teste de carga: o horário com várias postagens seguidas é 19:00 de 05/11.
