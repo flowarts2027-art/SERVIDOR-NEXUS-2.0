@@ -2,6 +2,7 @@ import { leadHunterConfig } from "./lead-hunter.js";
 import { ensureLeadSchema } from "./leads.js";
 import { isPublishingWindow, saoPauloDay } from "./publishing-policy.js";
 import { refreshInstagramTokenIfNeeded } from "./instagram-credentials.js";
+import { isClientPaused } from "./client-pause.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -193,7 +194,7 @@ export async function enqueueDuePublishers(env, now = new Date()) {
   let queued = 0;
   for (const raw of due?.results || []) {
     const client = rowClient(raw);
-    if (!agentCoreConfig(client).enabled) continue;
+    if (!agentCoreConfig(client).enabled || isClientPaused(env, client.id)) continue;
     if (await enqueue(env, client.id, "publisher-sweep", now, { trigger: "publisher-round" })) queued += 1;
   }
   return queued;
@@ -477,7 +478,7 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
          )
          LIMIT 1`
       ).bind(client.id, now.toISOString()).first();
-      const publisherQueued = ready
+      const publisherQueued = ready && !isClientPaused(env, client.id)
         ? await enqueue(env, client.id, "publisher-sweep", now, { trigger: "scheduler" })
         : false;
       if (publisherQueued) {
@@ -487,7 +488,8 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
       next.lastPublisherQueuedAt = queueTimestamp(state.lastPublisherQueuedAt, now, publisherQueued);
     }
 
-    if (cycleIsDue) {
+    // Cliente pausado não gera nada. O token do Instagram continua sendo renovado, para a volta ser simples.
+    if (cycleIsDue && !isClientPaused(env, client.id)) {
       const cycleQueued = await enqueue(env, client.id, "agent-core-cycle", now, {
         trigger: "scheduler",
         agent: "all"

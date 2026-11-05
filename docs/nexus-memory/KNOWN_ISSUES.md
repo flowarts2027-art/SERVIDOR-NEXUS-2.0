@@ -240,3 +240,8 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - A palavra do botão vem da camada de texto do cliente, feita no deploy, e não da resposta automática salva no painel.
 - O vigia não troca post sem erro que ficou esperando aprovação.
 - Nos minutos do vigia, as tarefas leves do cron de 1 minuto não rodam.
+
+## 2026-11-05 — Pausa da GILTEC
+- Post aprovado que passar 24 horas do horário durante a pausa vira `approved_post_missed`. Ele fica guardado e pode ser reagendado.
+- O agente "Texto nas artes" continua passando nos posts abertos da GILTEC.
+- Liberar exige um PR pequeno: tirar o id de `NEXUS_PAUSED_CLIENTS` e voltar a GILTEC ao workflow.

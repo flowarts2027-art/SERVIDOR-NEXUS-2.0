@@ -9,6 +9,7 @@ import { takeLibraryArt } from "./art-library.js";
 import { nextCampaignArt } from "./client-campaign.js";
 import { nextCaption } from "./master-upload.js";
 import { sendAndRecord } from "./whatsapp-agent.js";
+import { isClientPaused } from "./client-pause.js";
 
 // Vigia "cliente nunca fica sem post" (Rodrigo, 05/11/2026). Regra em docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md.
 // Confere as próximas 6 horas. Post com erro é consertado na mesma linha, então fica no mesmo horário.
@@ -148,7 +149,7 @@ const DEFAULT_DEPS = {
 
 export async function runPostWatcher(env, now = new Date(), overrides = {}) {
   const deps = { ...DEFAULT_DEPS, ...overrides };
-  const clients = (await listClients(env)).filter(client => client.status === "online" && !BLOCKED_PUBLISH_CLIENTS.has(client.id));
+  const clients = (await listClients(env)).filter(client => client.status === "online" && !BLOCKED_PUBLISH_CLIENTS.has(client.id) && !isClientPaused(env, client.id));
   if (!clients.length) return { checked: 0 };
   const marks = clients.map((_, index) => "?" + (index + 3)).join(",");
   const rows = await env.DB.prepare(

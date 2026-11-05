@@ -4,6 +4,7 @@ import { getClient } from "./clients.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { publishInstagramPost } from "./publisher.js";
 import { mediaFitsFormat } from "./art-format.js";
+import { isClientPaused } from "./client-pause.js";
 import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 import {
   AGENT_CORE_MODULES,
@@ -1289,6 +1290,9 @@ async function runPublisher(env,client,options) {
   // já acabou. Quem publica é a rodada própria (trigger "publisher-sweep") ou o botão do painel.
   if(publisherSkippedForTrigger(options?.trigger)){
     return {published:0,failed:0,awaitingApproval:0,awaitingMedia:0,repairedApproval:0,duplicateMediaBlocked:0,duplicateCaptionBlocked:0,blockedReason:"publisher_only_minute"};
+  }
+  if(isClientPaused(env,client.id)){
+    return {published:0,failed:0,awaitingApproval:0,awaitingMedia:0,repairedApproval:0,duplicateMediaBlocked:0,duplicateCaptionBlocked:0,blockedReason:"client_paused"};
   }
   const budget=options?.publishBudget||createPublishBudget();
   // Corrige posts presos em "publishing" (servidor parou depois de publicar).

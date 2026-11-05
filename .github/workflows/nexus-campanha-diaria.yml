@@ -17,7 +17,7 @@ on:
       clients:
         description: "Clientes (separados por espaço)"
         required: false
-        default: "giltec primeiro-teste maskara-assessoria"
+        default: "primeiro-teste maskara-assessoria"
       preview:
         description: "Só prévia (não manda ao painel; guarda na branch previa-artes)"
         type: boolean
@@ -41,7 +41,7 @@ jobs:
       BASE: https://servidor-nexus.diamantehinode2015.workers.dev
       NEXUS_BASE: https://servidor-nexus.diamantehinode2015.workers.dev
       AGENDAMENTOS_DIR: ${{ github.workspace }}/agendamentos
-      CLIENTS: ${{ github.event.inputs.clients || 'giltec primeiro-teste maskara-assessoria' }}
+      CLIENTS: ${{ github.event.inputs.clients || 'primeiro-teste maskara-assessoria' }}
     steps:
       - uses: actions/checkout@v4
 

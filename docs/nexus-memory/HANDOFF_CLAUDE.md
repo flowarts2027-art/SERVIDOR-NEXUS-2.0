@@ -1082,3 +1082,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Fora do pedido literal: Quatree sem imagem gerada, correção pedida fora do vigia.
 - Sem merge e sem deploy. Geração real nunca testada.
 - Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.
+
+## 05/11/2026 — Ajustes do vigia pedidos pelo Rodrigo (Claude)
+- Mesmo PR #594. Correção pedida nas próximas 6 horas vira alerta vermelho no quadro, sem publicar.
+- GILTEC pausada por `NEXUS_PAUSED_CLIENTS`: sem ciclo de agentes, vigia, publicação e quadro. Fora da campanha diária no GitHub.
+- Fila de 06/11 registrada em `NEXT_ACTIONS.md`. Sem merge e sem deploy.

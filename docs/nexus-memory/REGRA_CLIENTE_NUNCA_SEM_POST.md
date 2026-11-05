@@ -8,6 +8,7 @@ Pedido do Rodrigo em 05/11/2026. Vale para todos os clientes online.
 - Conserta um post por rodada, no máximo 2 tentativas por post.
 - Age em: `media_generation_required`, `format_build_failed`, `*_retry_limit_reached`, `format_mismatch` e imagem ausente.
 - Não mexe em post rejeitado nem com correção pedida.
+- Correção pedida nas próximas 6 horas: alerta vermelho no quadro, sem publicar.
 
 ## Ordem de conserto
 1. Usa a imagem original, se ela servir para o formato. Carrossel e Reels que não montaram viram post de uma imagem.
@@ -24,6 +25,11 @@ Pedido do Rodrigo em 05/11/2026. Vale para todos os clientes online.
 ## Quem não recebe imagem gerada
 - Daniela Martins: pedido do Rodrigo.
 - Quatree Dog: toda peça precisa mostrar a embalagem oficial, e a IA inventaria o produto.
+
+## Cliente pausado
+- A lista fica em `NEXUS_PAUSED_CLIENTS`, no `wrangler.jsonc`. Hoje: `giltec` e `giltec-locacoes`, por falta de pagamento.
+- Cliente pausado não gera, não substitui, não publica e não aparece no quadro.
+- Para liberar: tirar o id da lista e devolver a GILTEC à campanha diária (`nexus-campanha-diaria.yml`).
 
 ## Publicação
 - A substituta fica no mesmo post, então mantém o horário e o minuto do cliente.

@@ -37,7 +37,8 @@
     "WHATSAPP_GRAPH_VERSION": "v26.0",
     "WHATSAPP_SEND_LIMIT_PER_HOUR": "90",
     "NEXUS_MISSING_POSTS_WHATSAPP": "false",
-    "NEXUS_AUTO_REPLACE_WHATSAPP": "false"
+    "NEXUS_AUTO_REPLACE_WHATSAPP": "false",
+    "NEXUS_PAUSED_CLIENTS": "giltec,giltec-locacoes"
   },
   "assets": {
     "directory": "../public",

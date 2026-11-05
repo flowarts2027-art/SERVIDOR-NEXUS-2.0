@@ -206,3 +206,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: Quatree Dog não recebe imagem gerada, porque o pedido proíbe inventar produto e a diretriz exige embalagem oficial.
 - Decisão do Claude: rascunho de agente não vale como imagem original para Quatree e Daniela.
 - Decisão do Claude: post com correção pedida fica de fora, porque foi pedido de uma pessoa.
+
+## 2026-11-05 — Respostas do Rodrigo sobre o vigia
+- Correção pedida perto do horário: alerta vermelho no quadro, sem publicar.
+- Artes de reserva na Biblioteca: Rodrigo envia depois. Até lá vale o alerta vermelho.
+- GILTEC (`giltec` e `giltec-locacoes`) pausada por falta de pagamento, até ele liberar.
+- Decisão do Claude: "fica sem post" foi lido ao pé da letra. Nem os posts já aprovados saem durante a pausa.
