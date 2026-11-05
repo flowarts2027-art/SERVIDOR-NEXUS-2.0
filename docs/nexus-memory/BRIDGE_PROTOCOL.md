@@ -1,5 +1,8 @@
 # Ponte de trabalho — ChatGPT ↔ Claude (Nexus / Flow Arts)
 
+## 2026-11-05 — AVISO: leia REGRAS_ENVIO_ARTES.md antes de enviar arte
+A partir de agora, `nexus_enviar_arte` exige o campo `formato` (story, post, carrossel ou reels) e recusa arte com tamanho errado. O Nexus não corta nem encolhe mais. Crie cada arte no tamanho do formato, ocupando a tela toda. Regras em `docs/nexus-memory/REGRAS_ENVIO_ARTES.md`.
+
 ## 2026-10-28 — Atualização: logo recebida e pacote correto 3 posts + 3 stories
 
 - Pedido mais recente de Rodrigo corrige o escopo: **3 posts, sendo 1 carrossel, e 3 stories**, somente 28/10/2026. Campanha permanece diária, não mensal.

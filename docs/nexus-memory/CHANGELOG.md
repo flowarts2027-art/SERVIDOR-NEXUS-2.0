@@ -1,3 +1,9 @@
+## 2026-11-05 — Janelas por formato (PR aberto, sem deploy)
+- Cada janela aceita só o seu tamanho. Arte na janela errada avisa em letras grandes e oferece mover.
+- Imagem certa não é alterada. O Nexus não corta nem encolhe mais.
+- `formato` obrigatório no conector, com `reels`.
+- Texto do Nexus por cima da foto inteira. Daniela Martins sem texto.
+
 ## 2026-11-05 — Master: nome do painel e postagens faltando (PR aberto, sem deploy)
 - Lápis troca o nome que aparece, sem mexer no id.
 - Quadro "Postagens faltando" no topo do Início, com sino de contagem e botão "Enviar artes".

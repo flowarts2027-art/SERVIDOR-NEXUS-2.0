@@ -7,6 +7,7 @@ import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brandProfileVersion } from "./client-brand.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
+import { ART_MESSAGES, assertArtFits, keepArt } from "./art-format.js";
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
@@ -56,6 +57,7 @@ export async function toInstagramJpeg(env, file, size = { width: 1080, height: 1
   return new Uint8Array(await response.arrayBuffer());
 }
 
+// Janelas por formato (05/11/2026): o carrossel do Master segue a mesma regra do painel.
 export async function createManualCarousel(env, form) {
   if (!env.MEDIA) throw new Error("r2_unavailable");
   const origin = String(env.PUBLIC_BASE_URL || "").replace(/\/+$/, "");
@@ -76,13 +78,15 @@ export async function createManualCarousel(env, form) {
     if (!file.size || file.size > IMAGE_MAX_BYTES) throw new Error("image_size");
   }
 
+  await assertArtFits(env, "carousel", images);
+
   const id = "manual-carousel-" + crypto.randomUUID();
   const base = "posts/" + clientId + "/" + id + "/";
   const meta = { clientId, postId: id, kind: "manual-carousel" };
   const urls = [];
   for (let index = 0; index < images.length; index++) {
     const key = base + "cartao-" + (index + 1) + ".jpg";
-    await env.MEDIA.put(key, await toInstagramJpeg(env, images[index]), {
+    await env.MEDIA.put(key, await keepArt(env, images[index]), {
       httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
       customMetadata: { ...meta, card: String(index + 1) }
     });
@@ -128,6 +132,7 @@ export async function schedulePost(env, client, postId, date, time, now = new Da
 }
 
 export const MANUAL_CAROUSEL_MESSAGES = {
+  ...ART_MESSAGES,
   client_invalid: "Escolha um cliente da lista.",
   caption_required: "Escreva a legenda do carrossel.",
   images_count: "Escolha de 2 a 10 imagens.",

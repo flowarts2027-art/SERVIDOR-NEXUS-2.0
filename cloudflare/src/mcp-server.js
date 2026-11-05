@@ -23,6 +23,7 @@ const AGENDA_MAX_DIAS = 31;
 const READ_ONLY = Object.freeze({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
 
 import { groupFromTarget, groupOptions } from "./client-groups.js";
+import { ART_MESSAGES, assertArtFits, assertVideoFits } from "./art-format.js";
 
 // Arquivo vindo do ChatGPT (openai/fileParams) ou de outro cliente MCP: um link temporário para baixar.
 const FILE_PARAM = Object.freeze({
@@ -82,12 +83,12 @@ export const MCP_TOOLS = Object.freeze([
   {
     name: "nexus_enviar_arte",
     title: "Enviar arte ao painel do cliente",
-    description: "Envia uma arte PRONTA (imagem) ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. Formatos: post (1 imagem 4:5), story (1 imagem 9:16, OU um vídeo MP4 no campo video/video_url) ou carrossel (2 a 5 imagens 4:5, na ordem imagem, imagem2, imagem3...). Passe a imagem gerada ou anexada na conversa nos campos imagem, imagem2... Se a legenda ficar vazia, o Nexus escreve uma. Por padrão preserva a arte recebida, sem acrescentar texto ou logo. Só use ja_tem_texto=false quando houver pedido explícito para aplicar a moldura a uma foto sem texto. Antes, veja a agenda (nexus_ver_agenda) para não usar um horário já ocupado.",
+    description: "Envia uma arte PRONTA ao painel do cliente no Nexus, no dia e hora escolhidos. Chega SEMPRE esperando aprovação: nada é publicado sem o OK do Rodrigo ou do cliente. O campo formato é obrigatório e precisa bater com o tamanho: story = imagem ou vídeo 9:16 (1080x1920); post = 1 imagem 4:5 (1080x1350) ou 1:1 (1080x1080); carrossel = 2 a 5 imagens, todas do mesmo tamanho, na ordem, numa chamada só; reels = vídeo 9:16. Arte fora do tamanho é recusada: o Nexus nunca corta nem encolhe. Regras em docs/nexus-memory/REGRAS_ENVIO_ARTES.md.",
     inputSchema: {
       type: "object",
       properties: {
         cliente_id: { type: "string", description: "Id do cliente (ex.: primeiro-teste para a Flow Arts), ou de um grupo (ex.: grupo:quatree-dog) para subir ao painel de todos os vendedores." },
-        formato: { type: "string", enum: ["post", "story", "carrossel"], description: "post, story ou carrossel." },
+        formato: { type: "string", enum: ["post", "story", "carrossel", "reels"], description: "Obrigatório: story, post, carrossel ou reels." },
         dia: { type: "string", pattern: "^\\d{4}-\\d{2}-\\d{2}$", description: "Dia em Brasília, AAAA-MM-DD." },
         hora: { type: "string", pattern: "^\\d{2}:\\d{2}$", description: "Hora em Brasília, HH:MM (ex.: 09:00). Pelo menos 10 minutos à frente." },
         legenda: { type: "string", maxLength: 2200, description: "Legenda do post (vazia = o Nexus escreve). Story não tem legenda." },
@@ -98,7 +99,7 @@ export const MCP_TOOLS = Object.freeze([
         imagem5: FILE_PARAM,
         imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." },
         video: VIDEO_PARAM,
-        video_url: { type: "string", format: "uri", description: "Opcional: link https do vídeo MP4 do story, no lugar do campo video." },
+        video_url: { type: "string", format: "uri", description: "Opcional: link https do vídeo MP4 do story ou do reels, no lugar do campo video." },
         ja_tem_texto: { type: "boolean", description: "Padrão true: preserva a arte sem acrescentar texto ou logo, inclusive quando o campo é omitido. false somente para solicitar explicitamente a moldura numa foto sem texto." }
       },
       required: ["cliente_id", "formato", "dia", "hora"],
@@ -223,7 +224,8 @@ export async function verMetricas(env, deps, args) {
 // ---------- envio de arte (passo 2) ----------
 const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 const IMAGE_MIME = { "image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png", "image/webp": "webp" };
-const FORMATS = { post: "post", story: "story", carrossel: "carousel" };
+const FORMATS = { post: "post", story: "story", carrossel: "carousel", reels: "reel" };
+const WINDOW_OF = { post: "feed", story: "story", carousel: "carousel", reel: "reel" };
 
 export function mcpWriteEnabled(env) {
   return String(env?.NEXUS_MCP_WRITE || "").toLowerCase() !== "off";
@@ -284,7 +286,10 @@ const UPLOAD_ERRORS = {
   caption_required: "Escreva a legenda.",
   video_type: "O vídeo precisa ser MP4.",
   video_size: "O vídeo passa do limite de tamanho.",
-  cover_required: "Faltou a capa do vídeo."
+  cover_required: "Faltou a capa do vídeo.",
+  ...ART_MESSAGES,
+  window_story: "A arte é 9:16 e não serve para este formato. Use formato story. Nada foi enviado.",
+  window_feed: "A arte é 4:5 ou 1:1 e não serve para este formato. Use formato post. Nada foi enviado."
 };
 
 export async function enviarArte(env, deps, args, now = new Date()) {
@@ -292,13 +297,14 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   const grupo = groupFromTarget(args?.cliente_id);
   const client = grupo ? { id: "grupo:" + grupo.id, name: grupo.name } : await requireClient(env, deps, args);
   const tipo = FORMATS[String(args?.formato || "")];
-  if (!tipo) throw new ToolInputError("Formato precisa ser post, story ou carrossel.");
+  if (!tipo) throw new ToolInputError("O campo formato é obrigatório: story, post, carrossel ou reels.");
   const dia = String(args?.dia || "");
   const hora = String(args?.hora || "");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dia) || !/^\d{2}:\d{2}$/.test(hora)) throw new ToolInputError(UPLOAD_ERRORS.schedule_invalid);
 
   const videoLink = String(args?.video?.download_url || args?.video_url || "").trim();
-  if (videoLink && tipo !== "story") throw new ToolInputError("Vídeo pelo conector só vale para story.");
+  if (videoLink && !["story", "reel"].includes(tipo)) throw new ToolInputError("Vídeo pelo conector só vale para story e reels.");
+  if (tipo === "reel" && !videoLink) throw new ToolInputError("Reels precisa de vídeo: mande no campo video ou video_url.");
 
   const links = ["imagem", "imagem2", "imagem3", "imagem4", "imagem5"]
     .map(k => args?.[k]?.download_url).filter(Boolean);
@@ -311,7 +317,17 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   const arquivos = [];
   for (let i = 0; i < links.length; i++) arquivos.push(await baixarImagem(deps, links[i], i + 1));
 
-  if (video) return enviarStoryVideo(env, deps, client, args, dia, hora, video, arquivos[0] || null, now);
+  // Confere antes de qualquer coisa: formato e tamanho precisam bater. A capa do vídeo não entra nessa conta.
+  try {
+    if (video) await assertVideoFits(video);
+    else await assertArtFits(env, WINDOW_OF[tipo], arquivos);
+  } catch (error) {
+    const code = String(error?.message || "");
+    if (UPLOAD_ERRORS[code]) throw new ToolInputError(UPLOAD_ERRORS[code]);
+    throw error;
+  }
+
+  if (video) return enviarVideo(env, deps, client, args, dia, hora, video, arquivos[0] || null, now, tipo);
 
   // Arte pronta é preservada inclusive em conectores antigos que omitem ja_tem_texto.
   let texto = "arte preservada, sem acrescentar texto ou logo";
@@ -376,7 +392,7 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   };
 }
 
-// Story em vídeo: vai como está (o Nexus não escreve texto por cima de vídeo).
+// Story e Reels em vídeo: vão como estão (o Nexus não escreve texto por cima de vídeo).
 // Sem imagem de capa, usa uma capa lisa da marca só para a miniatura do painel; o Instagram usa o próprio vídeo.
 const CAPA_LISA = (() => {
   // JPEG 8x8 cinza-escuro (válido) — miniatura do painel quando não vem capa.
@@ -384,10 +400,11 @@ const CAPA_LISA = (() => {
   return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 })();
 
-async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa, now) {
+async function enviarVideo(env, deps, client, args, dia, hora, video, capa, now, tipo = "story") {
   const form = new FormData();
   form.set("clientId", client.id);
-  form.set("type", "story");
+  form.set("type", tipo);
+  if (tipo === "reel") form.set("caption", String(args?.legenda || "").slice(0, 2200));
   form.set("date", dia);
   form.set("time", hora);
   form.set("approval", "cliente"); // sempre esperando aprovação
@@ -399,7 +416,7 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
   try {
     result = await deps.upload(env, form, now, {
       source: "mcp:upload", createdBy: "mcp", mediaSource: "mcp-upload",
-      reviewer: "mcp", reason: "Story em vídeo enviado pelo conector MCP (Claude/ChatGPT)"
+      reviewer: "mcp", reason: "Vídeo enviado pelo conector MCP (Claude/ChatGPT)"
     });
   } catch (error) {
     const code = String(error?.message || "");
@@ -411,7 +428,7 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
     ok: true,
     id: result.id,
     cliente: { id: client.id, nome: clientScreenName(client) },
-    formato: "story (vídeo)",
+    formato: tipo === "reel" ? "reels" : "story (vídeo)",
     dia, hora,
     video: true,
     texto: "vídeo enviado como está",

@@ -1066,3 +1066,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Hipótese, ainda não provada: a IA responde "não tem texto" para arte pronta e a moldura encolhe e corta. As 21 artes de 05/11 em `agendamentos` têm o tamanho certo.
 - Leitura do D1 de produção foi bloqueada pela permissão da sessão. Sem exemplo real desta semana; o registrado é o post da Quatree de 29/10.
 - Próximo passo: Rodrigo reenvia o resto do pedido, indica um post errado ou autoriza a leitura, e decide se foto sem texto no tamanho certo ainda recebe moldura.
+
+## 05/11/2026 — Janelas por formato e regras de envio (Claude)
+- Corrige a hipótese anterior: a moldura da IA não causou os casos atuais. Só 6 posts da Flow Arts de 30/10 usaram moldura.
+- Causas reais: arte no formato errado cortada pelo código antigo (Quatree, 29/10); agente usando arte de story em post de feed; faixas lisas já na arte enviada (GILTEC).
+- Feito: `art-format.js`, `window-alert.js`, janelas no painel, no Master e em Enviar artes, trava antes de publicar (`format_mismatch`), `formato` obrigatório e `reels` no conector, Biblioteca recusando tamanho sem janela, texto por cima da foto inteira e Daniela sem texto.
+- Item 6: os 2 posts de agente são soltos pelo alinhador depois do deploy e voltam a pedir imagem. Os 4 stories da GILTEC precisam de arte nova; não foram alterados.
+- Sem merge e sem deploy.
+- Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.

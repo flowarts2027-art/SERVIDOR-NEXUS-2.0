@@ -42,6 +42,7 @@ export function postProblem(post = {}, now = new Date()) {
   if (String(post.status || "") === "published") return "";
   if (approval === "correction_requested") return "correção pedida";
   if (/^media_generation/.test(error)) return "sem imagem";
+  if (error === "format_mismatch") return "arte no formato errado";
   if (/^format_build_(failed|retry_limit_reached)/.test(error)) return "erro de montagem";
   if (/retry_limit_reached$/.test(error)) return "falhou 3 vezes";
   if (String(post.status || "") === "failed" && Number(post.retry_count || 0) >= MAX_PUBLISH_ATTEMPTS) return "falhou 3 vezes";

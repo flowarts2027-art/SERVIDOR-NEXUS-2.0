@@ -362,3 +362,6 @@ PR aberto com minuto fixo por cliente e trava de 2 publicações por execução.
 
 ## 2026-11-05 — Master: nome do painel e postagens faltando
 PR aberto. Ainda não está em produção. Aviso por WhatsApp pronto e desligado.
+
+## 2026-11-05 — Janelas por formato
+PR aberto. Ainda não está em produção.

@@ -3,6 +3,7 @@ import { mediaFingerprint } from "./media-fingerprint.js";
 import { getClient } from "./clients.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
 import { publishInstagramPost } from "./publisher.js";
+import { mediaFitsFormat } from "./art-format.js";
 import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 import {
   AGENT_CORE_MODULES,
@@ -706,6 +707,7 @@ async function runCreator(env,client,strategy,options) {
   );
   const queuedUnusedMedia=recent
     .filter(row=>row.status!=="published"
+      &&!["story","reel"].includes(String(row.payload?.creativeFeatures?.requestedFormat||"").toLowerCase())
       &&!(client.id==="ragnar-one"&&row.payload?.sourceInstagramMediaId))
     .map(row=>String(row.payload?.imageUrl||row.payload?.publicImageUrl||"").trim())
     .filter(url=>/^https:\/\//i.test(url)
@@ -1369,6 +1371,10 @@ async function runPublisher(env,client,options) {
 
     const requestedFormat=String(payload?.creativeFeatures?.requestedFormat||"post").toLowerCase();
     if(!canPublish(budget,client.id,requestedFormat))continue;
+    if(!await mediaFitsFormat(env,payload,requestedFormat)){
+      await env.DB.prepare("UPDATE post_ledger SET error='format_mismatch',updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id).run();
+      continue;
+    }
     if(["reel","carousel"].includes(requestedFormat)&&quality.formatBuilder!=="approved"){
       await env.DB.prepare(
         "UPDATE post_ledger SET error='format_build_pending',updated_at=CURRENT_TIMESTAMP WHERE id=?1"

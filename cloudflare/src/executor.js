@@ -4,6 +4,7 @@ import { runLeadHunter, leadHunterConfig } from "./lead-hunter.js";
 import { runAgentCoreCycle } from "./agent-runtime.js";
 import { getClient } from "./clients.js";
 import { publishingGate, isPublishingWindow } from "./publishing-policy.js";
+import { mediaFitsFormat } from "./art-format.js";
 import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 
 function parseJson(raw, fallback = {}) {
@@ -204,6 +205,12 @@ async function runPublisherSweep(env, clientId, now, budget = createPublishBudge
     if (!canPublishInSweep({ story, gateOk: gate.ok, done })) continue;
     const format = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
     if (!canPublish(budget, clientId, format)) continue;
+    // Última trava: arte que não serve para o formato não sai, e aparece no quadro do Master.
+    if (!await mediaFitsFormat(env, payload, format)) {
+      await savePostResult(env, row, { status: row.status, error: "format_mismatch", payload });
+      summary.skipped += 1;
+      continue;
+    }
     const guard = publishGuard(payload, clientId);
     if (!guard.ok) {
       await savePostResult(env, row, { status: row.status, error: guard.error, payload });

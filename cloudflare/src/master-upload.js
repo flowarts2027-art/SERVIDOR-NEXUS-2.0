@@ -5,6 +5,7 @@
 
 import { getClient } from "./clients.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
+import { WINDOW_MOVES } from "./art-format.js";
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
@@ -180,7 +181,7 @@ export async function handleMasterUpload(request, env, url) {
     }
   } catch (error) {
     const code = String(error?.message || error).slice(0, 60);
-    return send({ ok: false, error: code, message: MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
+    return send({ ok: false, error: code, moveTo: WINDOW_MOVES[code] || "", message: MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
   }
   return null;
 }

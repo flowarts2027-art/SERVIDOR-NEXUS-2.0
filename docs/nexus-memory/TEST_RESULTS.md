@@ -312,3 +312,13 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - Às 15:20, o story da GILTEC das 15:15 estava como `published` no ledger.
 - Não conferido: o minuto exato em que saiu e a postagem dentro do Instagram.
 - Ainda não houve teste de carga: o horário com várias postagens seguidas é 19:00 de 05/11.
+
+## 2026-11-05 — Janelas por formato (Claude, antes do merge)
+- Leitura do D1 autorizada pelo Rodrigo, só consulta. 59 postagens `ready` de hoje em diante. Nenhuma com `texto-do-nexus`.
+- Arquivos conferidos: 2 posts de agente com arte 1080x1920 no feed (GILTEC e Daniela). Os demais têm o tamanho do formato.
+- Revisão visual em folha de contato: 4 stories da GILTEC com faixas azuis lisas, já na arte enviada.
+- Caso real: story da Quatree de 29/10 com texto cortado dos lados. Arte 4:5 enviada como story e cortada pelo código antigo.
+- `node --test test/*.test.mjs` no Windows: 871 de 872. A falha é a do cron por CRLF, que já existia.
+- `wrangler deploy --dry-run` aprovado.
+- Camada de texto nova gerada com Pillow e vista sobre fundo claro e escuro. Sem foto real sem texto.
+- Não testado com login real nem em produção. Nenhuma publicação real foi feita.

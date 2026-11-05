@@ -191,3 +191,12 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: o nome novo fica em `config.displayName`, e não em `clients.name`, porque esse campo alimenta marca e legendas.
 - Decisão do Claude: postagem com problema não conta para o plano de 2 posts + 2 stories.
 - Decisão do Claude: post com 3 falhas (regra do PR #586) também aparece no quadro.
+
+## 2026-11-05 — Janelas por formato e envio de artes (Rodrigo)
+- Regras em `REGRAS_ENVIO_ARTES.md`. Vale para todos os clientes.
+- Cada janela aceita só o seu tamanho. Imagem certa não é alterada. Nunca converter sozinho.
+- Foto sem texto: sem moldura, margem ou faixa de cor. O Nexus escreve por cima, sem cortar. Daniela Martins: nada escrito.
+- Isso muda a regra de 29/10 de encaixar a arte com fundo desfocado, e o desenho de faixas do `PADRAO_ARTES.md` para foto sem texto.
+- Decisão do Claude: tolerância de 0,5% na proporção, só para arredondamento.
+- Decisão do Claude: foto 1:1 sem texto fica como veio, porque a camada de texto é 4:5 ou 9:16.
+- Decisão do Claude: as letras ganham contorno escuro para serem lidas sobre a foto, no lugar da faixa.

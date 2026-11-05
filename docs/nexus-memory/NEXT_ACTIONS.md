@@ -1,3 +1,9 @@
+## 2026-11-05 — Depois do merge das janelas por formato
+1. ChatGPT refaz os stories da GILTEC que têm faixas azuis, em 1080x1920 ocupando a tela toda.
+2. Testar uma arte na janela errada no painel e no Master, com login real, e usar o botão de mover.
+3. Conferir uma foto sem texto com o texto do Nexus por cima, antes de aprovar.
+4. Ver se os posts de agente da GILTEC e da Daniela voltaram a pedir imagem no quadro.
+
 ## 2026-11-05 — Depois do merge do nome do painel e do quadro
 1. Abrir o Master no celular e conferir o quadro e o sino com login real.
 2. Trocar o nome de um cliente e conferir no painel dele, nos grupos e no conector.

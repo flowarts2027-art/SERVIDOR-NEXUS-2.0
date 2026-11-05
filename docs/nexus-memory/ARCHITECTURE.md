@@ -89,3 +89,6 @@ Nos minutos terminados em 2 e 7, `publisher-round.js` alinha os horários (`clie
 
 ## Master: nome e postagens faltando (05/11/2026)
 `clientScreenName` lê `config.displayName` antes dos nomes fixos. `/api/master/client-name` grava esse campo e `/api/master/missing-posts` calcula o quadro. Regras em `REGRA_MASTER_NOME_E_POSTAGENS.md`.
+
+## Janelas por formato (05/11/2026)
+`art-format.js` lê o tamanho da imagem e do vídeo, confere a janela e guarda a arte sem alterar. `mediaFitsFormat` é a última trava antes de publicar. `composeFramed` só escreve por cima da foto inteira. Regras em `REGRAS_ENVIO_ARTES.md`.

@@ -9,6 +9,7 @@ import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
 import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
+import { ART_MESSAGES, artShape, assertArtFits, assertVideoFits, keepArt, readImageSize } from "./art-format.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -56,9 +57,8 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const id = "upload-" + type + "-" + crypto.randomUUID();
   const base = "posts/" + clientId + "/" + id + "/";
   const meta = { clientId, postId: id, kind: "client-upload-" + type };
-  // REGRA FIXA (Rodrigo, 29/10/2026): imagem que chega SEM texto ganha logo, título, vantagens e botão
-  // escritos pelo Nexus (moldura do cliente, PADRAO_ARTES.md). Imagem que já tem texto não recebe nada
-  // por cima: só entra inteira no formato, sem cortar (toInstagramJpeg). "jaTemTexto=1" pula a checagem.
+  // REGRA FIXA (Rodrigo, 29/10 e 05/11/2026): imagem que chega SEM texto ganha logo, título, vantagens e botão
+  // escritos pelo Nexus POR CIMA da foto inteira. Imagem que já tem texto vai como veio. "jaTemTexto=1" pula a checagem.
   const alreadyText = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1";
   const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
@@ -70,7 +70,10 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     let body = null;
     if (canFrame) {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (await imageHasText(env, bytes)) {
+      const real = readImageSize(bytes);
+      if (artShape(real?.width, real?.height) === "square") {
+        textReport.push("sem-texto-1x1"); // a camada de texto é 4:5 ou 9:16; quadrada fica como veio
+      } else if (await imageHasText(env, bytes)) {
         textReport.push("ja-tinha-texto");
       } else {
         const story = size.height > 1500;
@@ -84,7 +87,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
         }
       }
     }
-    await env.MEDIA.put(key, body || await toInstagramJpeg(env, file, size), {
+    await env.MEDIA.put(key, body || await keepArt(env, file), {
       httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" }, customMetadata: meta
     });
     return origin + "/media/" + key;
@@ -113,12 +116,14 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     const [image] = files(form, "images");
     if (!image) throw new Error("image_required");
     checkImage(image);
+    await assertArtFits(env, "feed", [image]);
     imageUrl = await putImage(image, "imagem.jpg", FEED);
     formatBuild = { status: "approved", kind: "post", imageUrl };
   } else if (type === "carousel") {
     const images = files(form, "images");
     if (images.length < 2 || images.length > 10) throw new Error("images_count");
     images.forEach(checkImage);
+    await assertArtFits(env, "carousel", images);
     const urls = [];
     for (let i = 0; i < images.length; i++) urls.push(await putImage(images[i], "cartao-" + (i + 1) + ".jpg", FEED, i < 5 ? i + 1 : null));
     imageUrl = urls[0];
@@ -131,6 +136,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     if (type === "story" && !video && !image) throw new Error("story_media_required");
     if (video) {
       await checkVideo(video);
+      await assertVideoFits(video);
       if (!cover) throw new Error("cover_required");
       checkImage(cover);
       const videoUrl = await putVideo(video);
@@ -138,6 +144,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
       formatBuild = { status: "approved", kind: type, videoUrl, imageUrl };
     } else {
       checkImage(image);
+      await assertArtFits(env, "story", [image]);
       imageUrl = await putImage(image, "story.jpg", VERTICAL);
       formatBuild = { status: "approved", kind: "story", imageUrl };
     }
@@ -170,6 +177,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
 }
 
 export const CLIENT_UPLOAD_MESSAGES = {
+  ...ART_MESSAGES,
   type_invalid: "Escolha o tipo: feed, carrossel, reels ou stories.",
   caption_required: "Escreva a legenda.",
   schedule_invalid: "Escolha o dia e a hora.",

@@ -1,6 +1,6 @@
 // Agente "Texto nas artes" (pedido do Rodrigo, 29/10/2026: "não quero ficar pedindo todo dia").
 // Passa em TODOS os painéis, nos posts que ainda não saíram. Imagem sem texto ganha a moldura do cliente
-// (logo, título, vantagens e botão), escrita pelo Nexus, sem cortar a foto. Imagem que já tem texto fica.
+// (logo, título, vantagens e botão), escrita pelo Nexus por cima da foto inteira. Imagem que já tem texto fica.
 // Vídeo e capa de Reels não mudam. Post que já saiu ou está saindo não muda.
 //
 // v3 (29/10 22h20): o cron de 1 minuto tem pouco tempo. Conferir + escrever tudo de uma vez estourava o
@@ -10,6 +10,7 @@
 
 import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
 import { brandClientId, getClient } from "./clients.js";
+import { artShape, readImageSize } from "./art-format.js";
 
 const MAX_TRIES = 4;
 
@@ -75,7 +76,8 @@ async function step(env, frames, row, payload) {
     steps[i] = "sem-arquivo";
   } else if (toCheck >= 0) {
     const bytes = new Uint8Array(await obj.arrayBuffer());
-    steps[i] = (await imageHasText(env, bytes)) ? "ja-tinha-texto" : "precisa";
+    const real = readImageSize(bytes);
+    steps[i] = artShape(real?.width, real?.height) === "square" ? "sem-texto-1x1" : (await imageHasText(env, bytes)) ? "ja-tinha-texto" : "precisa";
   } else {
     const story = build.kind === "story";
     const seed = (Number(String(row.id).replace(/\D/g, "").slice(0, 6)) || 0) + i;
