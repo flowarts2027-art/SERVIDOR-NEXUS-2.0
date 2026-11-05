@@ -1030,3 +1030,13 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Próximo passo: depois do deploy, conferir no `nexus_ver_agenda` se os "failed" com esse erro saíram.
 - 04/11 12:45 — depois do deploy do PR #553 os posts presos não saíram às 12:37. Ajuste: o minuto só de publicar passa a rodar a cada 5 min (minutos terminados em 2 e 7) e com 1 job por vez (`maxJobs: 1`), como já era a regra antiga do plano grátis (50 pedidos externos por rodada). Testes 776/776.
 - 04/11 13:20 — com o #555 no ar, o carrossel 12h da Daniela saiu, mas o story 12:05 e o post 13h dela falharam de novo na rodada de 15 min. Ajuste final: a rodada de 15 min não processa mais `publisher-sweep` (`skipKind`); só o minuto próprio publica (`onlyKind`, 1 por vez, a cada 5 min). O agendador também volta a enfileirar posts que gastaram as 3 tentativas só por "Too many subrequests". Testes 776/776.
+
+## 05/11/2026 — Grupo de clientes GILTEC (Claude)
+- Pedido do Rodrigo: grupo GILTEC igual ao da Quatree, com a Rose (`giltec`) e a Sheila, que ele liga pelo Master.
+- PR #582: topo "GILTEC — Vendedora Rose", logo oficial e tema `giltec` no painel.
+- PR do grupo (`claude/grupo-giltec`): grupo em `CLIENT_GROUPS`, palavra "Vendedora", fechamentos próprios da locação e campos Grupo e Vendedora no Novo cliente e no Acesso. A escolha fica em `config.group`, sem migration.
+- `sharedBrand` (só GILTEC): quem entra herda da Rose molduras com logo, textos das artes e Captador do RJ. A mensagem do Captador sai no nome de cada vendedora. Campanha do grupo GILTEC não pula mais a moldura: imagem sem texto ganha logo, a mesma para todas. Quatree continua como estava.
+- Produção: já existe `giltec-locacoes` (setup, Instagram da Sheila). Nada foi ligado nem criado pelo código. Falta o Rodrigo confirmar e ligar pelo botão Acesso.
+- Limites: a campanha diária automática (`nexus-campanha-diaria.yml` e pasta `agendamentos/`) ainda sobe só para a Rose. O Captador das duas busca as mesmas cidades e pode achar as mesmas empresas. Falta decidir como dividir.
+- Testes: `node --test test/*.test.mjs` 812 de 813; a falha é a do cron por CRLF no Windows, que já existia. Wrangler dry-run aprovado. Chrome sem tela com dados simulados. Não conferido com login real. Sem merge e sem deploy.
+- Próximo passo: Rodrigo junta os PRs, abre Clientes > Acesso de Giltec Locações, escolhe GILTEC, escreve Sheila e salva. Depois confere o painel dela e faz uma campanha de teste, sem aprovar.

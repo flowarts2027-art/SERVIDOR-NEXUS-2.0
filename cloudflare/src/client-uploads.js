@@ -4,6 +4,7 @@
 
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brandProfileVersion } from "./client-brand.js";
+import { brandClientId } from "./clients.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
@@ -60,7 +61,8 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   // por cima: só entra inteira no formato, sem cortar (toInstagramJpeg). "jaTemTexto=1" pula a checagem.
   const alreadyText = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1";
   const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
-  const canFrame = Boolean(frames && hasFrames(frames, clientId));
+  const frameClientId = brandClientId(client);
+  const canFrame = Boolean(frames && hasFrames(frames, frameClientId));
   const textReport = [];
   let frameSeed = Math.floor(now.getTime() / 3600000);
   const putImage = async (file, name, size, numero = null) => {
@@ -72,7 +74,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
         textReport.push("ja-tinha-texto");
       } else {
         const story = size.height > 1500;
-        const frame = pickFrame(frames, clientId, story, frameSeed++);
+        const frame = pickFrame(frames, frameClientId, story, frameSeed++);
         try {
           body = await composeFramed(env, bytes, frame, { story, numero });
           textReport.push("texto-do-nexus");

@@ -11,6 +11,7 @@ import { SHOWCASE_CLIENT, readShowcase, showcaseLine, canonicalNiche } from "./s
 import { parseOsmHours, googleHours, withHours, hoursStatus, readWeek } from "./business-hours.js";
 import { clientDailySettings, saveClientDailySettings, runClientDaily, publicDaily, suggestedNiches } from "./captador-daily.js";
 import { clientRegion, RJ_STATE_CITIES } from "./captador-regions.js";
+import { brandClientId, clientGroup } from "./clients.js";
 
 // "depois" (18/10): empresa fechada na hora da busca; o cliente pediu para lembrar quando abrir.
 // "hoje" (22/10): separada pela busca diária automática, esperando o cliente mandar.
@@ -182,7 +183,7 @@ export function planGivesCaptador(client = {}) {
 }
 
 async function readAccess(env, clientId, client = null) {
-  const preset = CAPTADOR_PRESETS[String(clientId || "")]?.access || {};
+  const preset = captadorPreset(client || { id: clientId })?.access || {};
   const access = await readState(env, String(clientId || ""), "access", { enabled: false, ...preset });
   const limit = Math.round(Number(access.monthlyLimit));
   const audience = AUDIENCES.includes(access.audience) ? access.audience : defaultAudience(client || {});
@@ -237,7 +238,13 @@ export const CAPTADOR_PRESETS = Object.freeze({
     daily: { enabled: true, onlyWhatsapp: true, cities: RJ_STATE_CITIES } // estado do RJ inteiro (27/10)
   })
 });
-export const captadorPreset = client => CAPTADOR_PRESETS[String(client?.id || "")] || null;
+// Vendedora do grupo herda a configuração do 1º vendedor, e a mensagem pronta sai no nome dela.
+export function captadorPreset(client) {
+  const own = CAPTADOR_PRESETS[String(client?.id || "")];
+  if (own) return own;
+  const shared = CAPTADOR_PRESETS[brandClientId(client)];
+  return shared ? { ...shared, config: { ...shared.config, myName: clientGroup(client).vendor } } : null;
+}
 
 export function defaultConfig(client = {}) {
   return { myName: "", business: clean(client.name, 80), offer: "", onlyNoSite: false, ...(captadorPreset(client)?.config || {}) };
@@ -469,7 +476,7 @@ export async function runCaptadorSearch(env, client, body = {}, fetcher = fetch)
   const area = clean(body.area, 60); // bairro (opcional), só na busca do Google
   if (city.length < 3 || !/\p{L}/u.test(city)) throw new Error("city_invalid");
   const key = await placesKey(env);
-  const { monthlyLimit } = await readAccess(env, client.id);
+  const { monthlyLimit } = await readAccess(env, client.id, client);
   const used = await captadorUsage(env, client.id);
   if (used >= monthlyLimit) throw new Error("monthly_limit");
   await writeState(env, client.id, "usage", { month: thisMonth(), count: used + 1 });
@@ -592,7 +599,7 @@ export async function captadorView(env, client, status = "enviado") {
   const daily = publicDaily(await clientDailySettings(env, client));
   return {
     ok: true, enabled: true, ready: true, config, counts, material, daily,
-    usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id)).monthlyLimit,
+    usedMonth: await captadorUsage(env, client.id), monthlyLimit: (await readAccess(env, client.id, client)).monthlyLimit,
     niches: clientNiches(client).map(key => ({ key, label: CAPTADOR_ALL_NICHES[key].label })),
     region: clientRegion(client, daily),
     items: rows.map(row => {

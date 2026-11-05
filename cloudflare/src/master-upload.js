@@ -8,7 +8,7 @@ import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js"
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
-import { ensureGroupClients, groupFromTarget, groupOptions, vendorCaption } from "./client-groups.js";
+import { ensureGroupClients, groupFromTarget, groupMembers, groupOptions, vendorCaption } from "./client-groups.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
@@ -94,22 +94,24 @@ async function slotTaken(env, clientId, scheduledFor, isStory) {
 
 // Campanha do grupo: as mesmas imagens para cada vendedor, sem moldura por cima, e a legenda de cada um.
 // "noDuplicate" faz o reenvio depois de uma falha não repetir o post de quem já recebeu.
+// Grupo com "sharedBrand" (GILTEC): imagem sem texto ganha a moldura com a logo, a mesma para todas as vendedoras.
 async function groupUpload(env, group, form, now, overrides) {
   await ensureGroupClients(env);
+  const team = { ...group, members: await groupMembers(env, group) };
   const story = String(form.get("type") || "").trim() === "story";
   const results = [];
-  for (let i = 0; i < group.members.length; i++) {
-    const member = group.members[i];
+  for (let i = 0; i < team.members.length; i++) {
+    const member = team.members[i];
     const one = new FormData();
     for (const [key, value] of form.entries()) one.append(key, value);
     one.set("clientId", member.clientId);
-    one.set("jaTemTexto", "1");
+    if (!group.sharedBrand) one.set("jaTemTexto", "1");
     one.set("noDuplicate", "1");
     try {
       if (!story) {
         const client = await activeClient(env, member.clientId);
         const base = String(form.get("caption") || "").trim() || await nextCaption(env, client, String(form.get("type") || ""));
-        one.set("caption", vendorCaption(base, group, i));
+        one.set("caption", vendorCaption(base, team, i));
       }
       const out = await masterUpload(env, one, now, overrides);
       results.push({ clientId: member.clientId, vendor: member.vendor, ok: true, id: out.id });
@@ -157,7 +159,7 @@ const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, client_invalid: "Escolha um client
 export async function handleMasterUpload(request, env, url) {
   try {
     if (url.pathname === "/api/master/groups" && request.method === "GET") {
-      return send({ ok: true, groups: groupOptions() });
+      return send({ ok: true, groups: await groupOptions(env) });
     }
     if (url.pathname === "/api/master/caption" && request.method === "GET") {
       const client = await activeClient(env, url.searchParams.get("clientId"));

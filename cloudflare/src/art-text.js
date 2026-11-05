@@ -2,6 +2,7 @@
 // O navegador vê que as faixas de cima e de baixo estão vazias e pergunta aqui o assunto da imagem.
 // A IA grátis do Cloudflare só diz QUAL é o assunto (uma palavra da lista); quem escreve o texto é o
 // Nexus, com os textos revisados abaixo (PADRAO_ARTES.md: texto escrito por código, nunca pela IA).
+import { brandClientId } from "./clients.js";
 
 const VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
 const ZAP = "Orçamento no zap";
@@ -113,9 +114,10 @@ export async function pickTheme(env, table, dataUrl) {
 
 // POST .../texto  { image: "data:image/jpeg;base64,...", seed, story }
 export async function handleArtText(env, client, body) {
-  const table = textTable(client?.id);
+  const brandId = brandClientId(client);
+  const table = textTable(brandId);
   if (!table) return { ok: true, text: null };
-  const logo = LOGOS[String(client?.id || "")] || "";
+  const logo = LOGOS[brandId] || "";
   const image = String(body?.image || "");
   if (image.length > 2_000_000) return { ok: true, logo, text: artText(table, "obra", body?.seed, Boolean(body?.story)) };
   const theme = await pickTheme(env, table, image);

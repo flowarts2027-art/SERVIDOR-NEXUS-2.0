@@ -9,6 +9,7 @@
 // O progresso fica em formatBuild.artSteps. Post que falha 4 vezes é marcado e a fila anda.
 
 import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
+import { brandClientId, getClient } from "./clients.js";
 
 const MAX_TRIES = 4;
 
@@ -50,7 +51,8 @@ async function step(env, frames, row, payload) {
   const steps = Array.isArray(build.artSteps) && build.artSteps.length === urls.length ? build.artSteps : urls.map(() => "");
   const tries = Number(build.artTries || 0);
 
-  if (!frames || !hasFrames(frames, row.client_id) || tries >= MAX_TRIES) {
+  const frameClientId = brandClientId(await getClient(env, row.client_id).catch(() => null) || row.client_id);
+  if (!frames || !hasFrames(frames, frameClientId) || tries >= MAX_TRIES) {
     const report = tries >= MAX_TRIES ? steps.map(s => s === "texto-do-nexus" || s === "ja-tinha-texto" ? s : "sem-texto-erro") : [];
     await save(env, row.id, finish(payload, report));
     return tries >= MAX_TRIES ? "erro" : "pronto";
@@ -77,7 +79,7 @@ async function step(env, frames, row, payload) {
   } else {
     const story = build.kind === "story";
     const seed = (Number(String(row.id).replace(/\D/g, "").slice(0, 6)) || 0) + i;
-    const frame = pickFrame(frames, row.client_id, story, seed);
+    const frame = pickFrame(frames, frameClientId, story, seed);
     const out = await composeFramed(env, new Uint8Array(await obj.arrayBuffer()), frame, { story, numero: build.kind === "carousel" && i < 5 ? i + 1 : null });
     const newKey = key.replace(/\.jpg$/i, "") + "-texto-" + Date.now().toString(36) + ".jpg";
     await env.MEDIA.put(newKey, out, {

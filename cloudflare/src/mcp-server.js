@@ -14,6 +14,7 @@
 
 import { sha256Hex } from "./auth.js";
 import { clientScreenName } from "./client-display.js";
+import { brandClientId } from "./clients.js";
 
 export const MCP_SERVER_INFO = Object.freeze({ name: "nexus-flowarts", title: "Nexus (Flow Arts)", version: "0.3.1" });
 export const MCP_PROTOCOL_VERSIONS = Object.freeze(["2025-11-25", "2025-06-18", "2025-03-26"]);
@@ -316,11 +317,12 @@ export async function enviarArte(env, deps, args, now = new Date()) {
   let texto = "arte preservada, sem acrescentar texto ou logo";
   if (args?.ja_tem_texto === false) {
     const meta = deps.frames ? await deps.frames.loadFrames(env) : null;
-    if (meta && deps.frames.hasFrames(meta, client.id)) {
+    const frameClientId = grupo?.sharedBrand ? grupo.members[0].clientId : brandClientId(client);
+    if (meta && deps.frames.hasFrames(meta, frameClientId)) {
       const story = tipo === "story";
       const base = Number(dia.replace(/\D/g, "").slice(-4)) + Number(hora.replace(/\D/g, ""));
       for (let i = 0; i < arquivos.length; i++) {
-        const frame = deps.frames.pickFrame(meta, client.id, story, base + i);
+        const frame = deps.frames.pickFrame(meta, frameClientId, story, base + i);
         let out;
         try {
           out = await deps.frames.composeFramed(env, new Uint8Array(await arquivos[i].arrayBuffer()), frame, { story, numero: tipo === "carousel" ? i + 1 : null });
@@ -420,7 +422,7 @@ async function enviarStoryVideo(env, deps, client, args, dia, hora, video, capa,
 }
 
 export async function listarClientesEGrupos(env, deps) {
-  return { ...await listarClientes(env, deps), grupos: groupOptions() };
+  return { ...await listarClientes(env, deps), grupos: await groupOptions(env) };
 }
 
 const HANDLERS = { nexus_listar_clientes: listarClientesEGrupos, nexus_ver_agenda: verAgenda, nexus_ver_metricas: verMetricas, nexus_enviar_arte: enviarArte };

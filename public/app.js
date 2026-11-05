@@ -31,7 +31,11 @@ function api(path, options = {}) {
       location.href = "/api/master/access";
       throw new Error("Sessão administrativa expirada");
     }
-    if (!response.ok) throw new Error(`Erro ${response.status}`);
+    if (!response.ok) {
+      const error = new Error(`Erro ${response.status}`);
+      error.detail = (await response.json().catch(() => null))?.message || "";
+      throw error;
+    }
     return response.json();
   });
 }
@@ -90,7 +94,7 @@ function render() {
     const openUrl = `/api/clients/${encodeURIComponent(client.id)}/assume-open`;
     const action = `<div class="client-action-row"><a class="small-primary" href="${openUrl}" target="_blank" rel="noopener">Abrir painel</a><button type="button" class="ghost" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Acesso</button>${remove}${protect}</div>`;
     // Linha clicável (22/10): tocar no nome abre o painel do cliente.
-    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>Vendedor: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
+    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>${escapeHtml(client.vendorLabel || "Vendedor")}: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();
@@ -911,6 +915,29 @@ $("#refresh").addEventListener("click", load);
 $("#portal-client").addEventListener("change", event => { state.portalClientId = event.target.value; renderPortalSelector(); });
 const masterLeadFilter=$("#master-lead-client-filter");if(masterLeadFilter)masterLeadFilter.addEventListener("change",event=>{state.leadClientFilter=event.target.value||"";renderMasterLeads();});
 const assumeSelected=$("#assume-selected-client");if(assumeSelected&&state.portalClientId)assumeSelected.href="/api/clients/"+encodeURIComponent(state.portalClientId)+"/assume-open";
+// Campo Grupo (05/11/2026): liga um painel a um grupo, no Novo cliente e no Acesso. Os grupos vêm do servidor.
+async function loadClientGroups(){
+  const data=await api("/api/master/groups").catch(()=>({}));
+  document.querySelectorAll("[data-group-select]").forEach(select=>{
+    const current=select.value;
+    select.innerHTML='<option value="">Sem grupo</option>'+(data.groups||[]).map(group=>`<option value="${escapeHtml(group.id)}">${escapeHtml(String(group.name).replace(/^Grupo: /,""))}</option>`).join("");
+    select.value=current;
+  });
+}
+loadClientGroups();
+$("#portal-group-save")?.addEventListener("click",async()=>{
+  const clientId=$("#portal-access-client-id")?.value||"";
+  const status=$("#portal-access-status");
+  if(status)status.textContent="Salvando…";
+  try{
+    await api("/api/clients/"+encodeURIComponent(clientId),{method:"PATCH",body:JSON.stringify({group:$("#portal-group").value,vendor:$("#portal-vendor").value})});
+    await load();
+    await loadClientGroups();
+    if(status)status.textContent="Grupo salvo.";
+  }catch(error){
+    if(status)status.textContent=error.detail||error.message||"Não foi possível salvar o grupo.";
+  }
+});
 const portalAccessDialog=$("#portal-access-dialog");
 const portalAccessForm=$("#portal-access-form");
 const closePortalAccess=()=>{if(portalAccessDialog?.open)portalAccessDialog.close();};
@@ -973,7 +1000,7 @@ $("#client-form").addEventListener("submit", async event => {
     state.portalClientId = result.client?.id || state.portalClientId;
     await load();
   }
-  catch (error) { $("#form-status").textContent = error.message; }
+  catch (error) { $("#form-status").textContent = error.detail || error.message; }
 });
 $("select[name=theme]").addEventListener("change", event => {
   const colors = { "green-black": ["#31e676", "#031d0c"], "red-black": ["#ff4b55", "#200306"], "blue-white": ["#3d9bff", "#10253c"], "gold-black": ["#e9bd52", "#211804"] };
@@ -1051,6 +1078,10 @@ document.addEventListener("click", async event => {
     $("#portal-access-username").value=clientId==="ragnar-one"?"ragnar.one":clientId.replace(/-/g,".");
     $("#portal-access-password").value="";
     $("#portal-access-status").textContent="";
+    const chosen=state.clients.find(client=>client.id===clientId);
+    $("#portal-group-box").hidden=Boolean(chosen?.groupFixed);
+    $("#portal-group").value=chosen?.group?"grupo:"+chosen.group:"";
+    $("#portal-vendor").value=chosen?.vendor||"";
     portalAccessDialog?.showModal();
     return;
   }

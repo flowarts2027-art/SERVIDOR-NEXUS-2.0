@@ -2,10 +2,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import { readdirSync, readFileSync } from "node:fs";
-import { CLIENT_GROUPS, clientGroup, portalClientView } from "../src/clients.js";
-import { ensureGroupClients, groupFromTarget, groupOptions, vendorCaption } from "../src/client-groups.js";
+import { CLIENT_GROUPS, brandClientId, clientGroup, isFixedGroupMember, portalClientView } from "../src/clients.js";
+import { ensureGroupClients, groupChoice, groupFromTarget, groupMembers, groupOptions, vendorCaption } from "../src/client-groups.js";
 import { masterUpload } from "../src/master-upload.js";
 import { enviarArte, listarClientesEGrupos } from "../src/mcp-server.js";
+import { handleMaster } from "../src/master.js";
+import { resetFramesCache } from "../src/art-frame.js";
+import { handleArtText } from "../src/art-text.js";
+import { captadorMessage, captadorPreset, defaultConfig } from "../src/captador.js";
+import { RJ_STATE_CITIES } from "../src/captador-regions.js";
 
 const group = { id: "quatree-dog", ...CLIENT_GROUPS["quatree-dog"] };
 const NOW = new Date("2026-10-18T13:00:00Z");
@@ -46,11 +51,14 @@ test("cada vendedor tem o seu painel no grupo, com o mesmo tema", () => {
   assert.equal(portalClientView({ id: "daniela-martins", name: "Daniela", config: {} }).group, null);
 });
 
-test("destino de grupo só vale para grupo que existe", () => {
+test("destino de grupo só vale para grupo que existe", async () => {
   assert.equal(groupFromTarget("grupo:quatree-dog").name, "Quatree Dog");
   assert.equal(groupFromTarget("grupo:nao-existe"), null);
   assert.equal(groupFromTarget("quatree-dog"), null);
-  assert.deepEqual(groupOptions(), [{ id: "grupo:quatree-dog", name: "Grupo: Quatree Dog (Ericsson e Eduardo)" }]);
+  assert.deepEqual(await groupOptions(fakeEnv().env), [
+    { id: "grupo:quatree-dog", name: "Grupo: Quatree Dog (Ericsson e Eduardo)" },
+    { id: "grupo:giltec", name: "Grupo: GILTEC (Rose)" }
+  ]);
 });
 
 test("a legenda leva o nome do vendedor e varia entre eles", () => {
@@ -151,11 +159,173 @@ test("o conector envia para o grupo e lista os grupos", async () => {
   assert.equal(out.ok, true);
   assert.deepEqual(out.vendedores.map(v => v.vendor), ["Ericsson", "Eduardo"]);
   assert.equal(rows(db).length, 2);
-  assert.deepEqual((await listarClientesEGrupos(env, deps)).grupos, groupOptions());
+  assert.deepEqual((await listarClientesEGrupos(env, deps)).grupos, await groupOptions(env));
 });
 
 test("painel usa o tema do grupo e mostra o campo Vendedor", () => {
   const js = readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
   assert.ok(js.includes("state.client?.group?.theme || state.client?.id"));
-  assert.ok(js.includes("<h2>Vendedor</h2>"));
+  assert.ok(js.includes('state.client.group.vendorLabel || "Vendedor"'));
+});
+
+// ---------- Grupo GILTEC (05/11/2026) ----------
+const addClient = (db, id, name, instagram, config = {}, status = "setup") =>
+  db.prepare("INSERT INTO clients(id,name,niche,instagram,status,config_json) VALUES(?,?,?,?,?,?)")
+    .run(id, name, "Locação de equipamentos para construção civil", instagram, status, JSON.stringify(config));
+const sheila = { id: "giltec-locacoes", name: "Giltec Locações", config: { group: { id: "giltec", vendor: "Sheila" } } };
+function giltecEnv(options) {
+  const out = fakeEnv(options);
+  addClient(out.db, "giltec", "Giltec", "@rose.giltec3", {}, "online");
+  addClient(out.db, sheila.id, sheila.name, "sheilavendas3", sheila.config);
+  return out;
+}
+function giltecCampaign(caption = "Compactador para a sua obra. Fale com a Rose.\n\nSiga @rose.giltec3\n\n#GILTEC #ObrasRJ") {
+  const form = campaign(caption);
+  form.set("clientId", "grupo:giltec");
+  return form;
+}
+
+test("a Rose é fixa no grupo e a Sheila entra pelo campo Grupo", () => {
+  assert.deepEqual(clientGroup("giltec"), { id: "giltec", name: "GILTEC", theme: "giltec", vendor: "Rose", vendorLabel: "Vendedora" });
+  assert.deepEqual(clientGroup(sheila), { id: "giltec", name: "GILTEC", theme: "giltec", vendor: "Sheila", vendorLabel: "Vendedora" });
+  assert.equal(portalClientView(sheila).group.vendor, "Sheila");
+  assert.equal(clientGroup("giltec-locacoes"), null, "só o id não basta");
+  assert.equal(clientGroup({ id: "x", config: { group: { id: "constructor", vendor: "Ana" } } }), null);
+  assert.equal(isFixedGroupMember("giltec"), true);
+  assert.equal(isFixedGroupMember("giltec-locacoes"), false);
+});
+
+test("o código não cria painel para a Sheila", async () => {
+  const { db, env } = fakeEnv();
+  addClient(db, "giltec", "Giltec", "@rose.giltec3", {}, "online");
+  await ensureGroupClients(env);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM clients WHERE id LIKE 'giltec%'").get().n, 1);
+});
+
+test("campo Grupo aceita só grupo da lista e nome de verdade", () => {
+  assert.deepEqual(groupChoice({ group: "grupo:giltec", vendor: "  Sheila  " }), { id: "giltec", vendor: "Sheila" });
+  assert.equal(groupChoice({ group: "", vendor: "Sheila" }), null);
+  assert.throws(() => groupChoice({ group: "grupo:nao-existe", vendor: "Ana" }), /group_invalid/);
+  assert.throws(() => groupChoice({ group: "constructor", vendor: "Ana" }), /group_invalid/);
+  assert.throws(() => groupChoice({ group: "giltec", vendor: "" }), /group_vendor_invalid/);
+  assert.throws(() => groupChoice({ group: "giltec", vendor: "Ana.*" }), /group_vendor_invalid/);
+});
+
+test("legenda da GILTEC: vendedora, fechamento diferente e sem o @ da Rose", async () => {
+  const { env } = giltecEnv();
+  const team = { id: "giltec", ...CLIENT_GROUPS.giltec };
+  team.members = await groupMembers(env, team);
+  const base = "Compactador para a sua obra. Fale com a Rose.\n\nSiga @rose.giltec3\n\n#GILTEC";
+  const a = vendorCaption(base, team, 0);
+  const b = vendorCaption(base, team, 1);
+  assert.match(a, /vendedora Rose/); assert.match(a, /@rose\.giltec3/); assert.doesNotMatch(a, /Sheila/);
+  assert.match(b, /vendedora Sheila/); assert.doesNotMatch(b, /Rose|rose/);
+  assert.doesNotMatch(b, /tabela/, "fechamento da ração não vale para locação");
+  assert.notEqual(a.replace(/Rose/g, "X"), b.replace(/Sheila/g, "X"));
+  assert.match(b, /#GILTEC$/);
+});
+
+test("troca nome com acento na legenda", () => {
+  const team = { members: [{ clientId: "a", vendor: "Rose" }, { clientId: "b", vendor: "Sônia" }] };
+  assert.match(vendorCaption("Fale com a Sônia.", team, 0), /Fale com a Rose\./);
+});
+
+test("campanha da GILTEC sobe para as duas, com as mesmas imagens, e não toca na Quatree", async () => {
+  const { db, puts, env } = giltecEnv();
+  addClient(db, "giltec-antiga", "Antiga", "", { group: { id: "giltec", vendor: "Marta" } }, "archived");
+  const out = await masterUpload(env, giltecCampaign(), NOW);
+  assert.equal(out.ok, true);
+  assert.deepEqual(out.results.map(r => [r.vendor, r.ok]), [["Rose", true], ["Sheila", true]]);
+  const posts = rows(db);
+  assert.deepEqual(posts.map(p => p.client_id), ["giltec", "giltec-locacoes"]);
+  for (const post of posts) assert.equal(post.approval_status, "pending");
+  assert.match(posts[1].caption, /Sheila/); assert.doesNotMatch(posts[1].caption, /Rose/);
+  assert.equal(puts.length, 2);
+  assert.equal(puts[0].size, puts[1].size);
+  assert.deepEqual((await groupOptions(env))[1], { id: "grupo:giltec", name: "Grupo: GILTEC (Rose e Sheila)" });
+});
+
+test("imagem sem texto da GILTEC pede a moldura com a logo; a Quatree continua sem", async () => {
+  const framesAsked = async form => {
+    resetFramesCache();
+    const { env } = giltecEnv();
+    let asked = 0;
+    env.ASSETS = { fetch: async () => { asked += 1; return new Response("{}", { status: 404 }); } };
+    await masterUpload(env, form, NOW);
+    return asked;
+  };
+  assert.ok(await framesAsked(giltecCampaign()) > 0);
+  assert.equal(await framesAsked(campaign()), 0);
+});
+
+test("a Sheila herda da marca GILTEC; o Eduardo não muda", async () => {
+  const eduardo = { id: "quatree-dog-eduardo", name: "Quatree Dog Eduardo", config: {} };
+  assert.equal(brandClientId(sheila), "giltec");
+  assert.equal(brandClientId({ id: "giltec", config: {} }), "giltec");
+  assert.equal(brandClientId(eduardo), "quatree-dog-eduardo");
+  assert.equal(brandClientId({ id: "daniela-martins", config: {} }), "daniela-martins");
+  const big = { image: "x".repeat(2_000_001) };
+  const art = await handleArtText({}, sheila, big);
+  assert.equal(art.logo, "/brand/giltec-logo.png");
+  assert.ok(art.text);
+  assert.equal((await handleArtText({}, eduardo, big)).text, null);
+});
+
+test("Captador: a Sheila busca no RJ e a mensagem sai no nome dela", () => {
+  const preset = captadorPreset(sheila);
+  assert.equal(preset.config.myName, "Sheila");
+  assert.equal(preset.config.business, "GILTEC Locações");
+  assert.equal(preset.access.enabled, true);
+  assert.equal(preset.daily.cities, RJ_STATE_CITIES);
+  assert.equal(captadorPreset({ id: "giltec", config: {} }).config.myName, "Rose");
+  assert.equal(captadorPreset({ id: "quatree-dog-eduardo", config: {} }), null);
+  assert.equal(captadorPreset({ id: "daniela-martins", config: {} }), null);
+  const text = captadorMessage(defaultConfig(sheila), { name: "Obra Alfa", city: "Niterói" });
+  assert.match(text, /Aqui é Sheila, da GILTEC Locações/);
+  assert.doesNotMatch(text, /Rose/);
+});
+
+test("Master tem o campo Grupo no Novo cliente e no Acesso", () => {
+  const html = readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
+  const form = html.slice(html.indexOf('id="client-form"'), html.indexOf('id="new-client-access"'));
+  assert.ok(form.includes('name="group"') && form.includes('name="vendor"'));
+  const dialog = html.slice(html.indexOf('id="portal-access-dialog"'));
+  assert.ok(dialog.includes('id="portal-group"') && dialog.includes('id="portal-group-save"'));
+  assert.ok(dialog.includes('type="submit" class="primary">Salvar acesso'), "o botão antigo continua");
+});
+
+test("Master liga e desliga o grupo pelo Novo cliente e pelo Acesso", async () => {
+  const { db, env } = giltecEnv();
+  env.NEXUS_SECRET_KEY = "k".repeat(32);
+  const call = (method, path, body) => {
+    const url = new URL("https://x" + path);
+    return handleMaster(new Request(url, { method, headers: { authorization: "Bearer " + env.NEXUS_SECRET_KEY }, body: JSON.stringify(body) }), env, url);
+  };
+  const saved = id => JSON.parse(db.prepare("SELECT config_json FROM clients WHERE id=?").get(id).config_json).group;
+
+  const created = await call("POST", "/api/clients", { name: "Nova Vendedora", group: "grupo:giltec", vendor: "Ana", password: "senha-forte-1" });
+  assert.equal(created.status, 201);
+  const body = await created.json();
+  assert.deepEqual([body.client.group, body.client.vendor, body.client.vendorLabel], ["giltec", "Ana", "Vendedora"]);
+  assert.equal(body.portalCredentials.initialPassword, "senha-forte-1", "o copiar acesso continua igual");
+
+  const semNome = await call("POST", "/api/clients", { name: "Sem Nome", group: "grupo:giltec" });
+  assert.equal(semNome.status, 400);
+  assert.match((await semNome.json()).message, /nome da vendedora/);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM clients WHERE id='sem-nome'").get().n, 0);
+
+  addClient(db, "painel-solto", "Painel Solto", "");
+  const linked = await call("PATCH", "/api/clients/painel-solto", { group: "grupo:giltec", vendor: "Bia" });
+  assert.equal(linked.status, 200);
+  assert.deepEqual(saved("painel-solto"), { id: "giltec", vendor: "Bia" });
+  assert.match((await groupOptions(env))[1].name, /Bia/);
+
+  const removed = await call("PATCH", "/api/clients/painel-solto", { group: "", vendor: "" });
+  assert.equal(removed.status, 200);
+  assert.equal(saved("painel-solto"), null);
+  assert.doesNotMatch((await groupOptions(env))[1].name, /Bia/);
+
+  assert.equal((await call("PATCH", "/api/clients/giltec", { group: "", vendor: "" })).status, 409);
+  assert.equal((await call("PATCH", "/api/clients/quatree-dog", { group: "grupo:giltec", vendor: "X" })).status, 409);
+  assert.equal(saved("quatree-dog"), undefined);
 });

@@ -1,7 +1,7 @@
 // Grupos de clientes (pedido do Rodrigo, 04/11/2026): vendedores da mesma marca, cada um com o seu painel.
 // Uma campanha do grupo sobe para o painel de todos, com as mesmas imagens e a legenda de cada vendedor.
 // O destino "grupo:<id>" vale no Master, em Enviar artes e no conector. Tudo continua esperando aprovação.
-import { CLIENT_GROUPS, getClient, upsertClient } from "./clients.js";
+import { CLIENT_GROUPS, getClient, listClients, upsertClient } from "./clients.js";
 import { newManagedClientConfig } from "./client-create.js";
 
 const GROUP_PREFIX = "grupo:";
@@ -19,11 +19,34 @@ export function groupFromTarget(target) {
   return CLIENT_GROUPS[id] ? { id, ...CLIENT_GROUPS[id] } : null;
 }
 
-export function groupOptions() {
-  return Object.entries(CLIENT_GROUPS).map(([id, group]) => ({
-    id: GROUP_PREFIX + id,
-    name: "Grupo: " + group.name + " (" + group.members.map(member => member.vendor).join(" e ") + ")"
-  }));
+// Vendedores do grupo: os fixos em CLIENT_GROUPS e os ligados pelo campo Grupo do Master.
+export async function groupMembers(env, group) {
+  const fixed = new Set(group.members.map(member => member.clientId));
+  const linked = (await listClients(env))
+    .filter(client => client.config?.group?.id === group.id && client.config.group.vendor
+      && client.status !== "archived" && !fixed.has(client.id))
+    .map(client => ({ clientId: client.id, vendor: String(client.config.group.vendor) }));
+  return [...group.members, ...linked];
+}
+
+export async function groupOptions(env) {
+  const options = [];
+  for (const [id, group] of Object.entries(CLIENT_GROUPS)) {
+    const members = await groupMembers(env, { id, ...group }).catch(() => group.members);
+    options.push({ id: GROUP_PREFIX + id, name: "Grupo: " + group.name + " (" + members.map(member => member.vendor).join(" e ") + ")" });
+  }
+  return options;
+}
+
+// Campo Grupo do Master (05/11/2026). Devolve o que salvar em config.group, ou null para ficar sem grupo.
+// O nome só aceita letras, espaço, hífen e apóstrofo, porque entra na troca de nomes da legenda.
+export function groupChoice(body = {}) {
+  const id = String(body.group || "").trim().replace(GROUP_PREFIX, "");
+  if (!id) return null;
+  if (!Object.hasOwn(CLIENT_GROUPS, id)) throw new Error("group_invalid");
+  const vendor = String(body.vendor || "").trim().replace(/\s+/g, " ");
+  if (!/^\p{L}[\p{L}' -]{0,39}$/u.test(vendor)) throw new Error("group_vendor_invalid");
+  return { id, vendor };
 }
 
 // Legenda do vendedor: o nome dele no lugar do outro, e um fechamento diferente para cada um.
@@ -41,9 +64,10 @@ export function vendorCaption(base, group, index) {
   }
   text = text.split("{vendedor}").join(member.vendor);
   for (const other of group.members) {
-    if (other !== member) text = text.replace(new RegExp("\\b" + other.vendor + "\\b", "gi"), member.vendor);
+    if (other !== member) text = text.replace(new RegExp("(?<![\\p{L}\\p{N}])" + other.vendor + "(?![\\p{L}\\p{N}])", "giu"), member.vendor);
   }
-  const closing = CLOSINGS[index % CLOSINGS.length].replace("{vendedor}", member.vendor);
+  const closings = group.closings || CLOSINGS;
+  const closing = closings[index % closings.length].replace("{vendedor}", member.vendor);
   const parts = text.replace(/\n{3,}/g, "\n\n").trim().split(/\n\n/).filter(Boolean);
   const last = parts[parts.length - 1] || "";
   // Deixa as hashtags no fim: o fechamento entra logo antes delas.
