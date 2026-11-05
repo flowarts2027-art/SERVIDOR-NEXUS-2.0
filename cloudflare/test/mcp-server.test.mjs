@@ -212,7 +212,7 @@ test("sem imagem, dia errado ou formato errado: nada é enviado", async () => {
   const { env, deps, calls } = sendSetup();
   await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-30", hora: "09:00" }, NOW), /campo imagem/);
   await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "30/10", hora: "09:00", imagem: arq(1) }, NOW), /AAAA-MM-DD/);
-  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "reel", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /post, story ou carrossel/);
+  await assert.rejects(enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "reel", dia: "2026-10-30", hora: "09:00", imagem: arq(1) }, NOW), /story, post, carrossel/);
   assert.equal(calls.downloads.length + calls.uploads.length, 0);
 });
 

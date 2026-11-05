@@ -225,3 +225,10 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Depois das 22h, o que falta hoje continua vermelho, mesmo sem dar tempo de publicar.
 - O aviso por WhatsApp sai como texto comum. Fora da janela de 24 horas a Meta exige modelo aprovado.
 - Se o número do WhatsApp da API for o mesmo do destino do aviso, ele não consegue mandar para si mesmo. Conferir antes de ligar.
+
+## 2026-11-05 — Limites das janelas por formato
+- Stories da GILTEC com faixas azuis têm o tamanho certo, então passam na trava. Só a revisão visual pega esse caso.
+- Se o tamanho do arquivo não puder ser lido, a arte não é recusada.
+- Foto de celular (3:4) agora é recusada no painel do cliente. O cliente precisa recortar antes.
+- Pelo conector, o carrossel vai até 5 imagens. Pelo painel, até 10.
+- O texto por cima pode cair em cima de pessoa, porque a posição é fixa.

@@ -34,7 +34,7 @@
     const res = await fetch(path, { credentials: "same-origin", ...options });
     if (res.status === 401) { $("#login-msg").hidden = false; throw new Error("login"); }
     const data = await res.json().catch(() => ({}));
-    if (!res.ok || data.ok === false) throw new Error(data.message || "Não deu certo. Tente de novo.");
+    if (!res.ok || data.ok === false) throw Object.assign(new Error(data.message || "Não deu certo. Tente de novo."), { moveTo: data.moveTo, wrongWindow: /^(window_|size_invalid|carousel_mixed|video_window)/.test(String(data.error || "")) });
     return data;
   }
 
@@ -168,7 +168,7 @@
 
     $("#send").disabled = true;
     const label = g => (g.story ? "Story " : g.type === "carousel" ? "Carrossel " : "Post ") + clock(g.time);
-    for (const g of list) {
+    const sendOne = async g => {
       const line = toastResult("wait", `${label(g)}: enviando…`);
       const form = new FormData();
       form.set("clientId", $("#client").value);
@@ -184,9 +184,19 @@
         g.items.forEach(item => { item.sent = true; });
         line.className = "ok"; line.textContent = `✓ ${label(g)}: no painel, esperando aprovação.`;
       } catch (error) {
-        line.className = "bad"; line.textContent = `✕ ${label(g)}: ${error.message === "login" ? "entre no Master primeiro." : error.message}`;
+        line.className = "bad";
+        if (error.wrongWindow) window.showWindowAlert(line, `${label(g)}: ${error.message}`, error.moveTo, async moveTo => {
+          // Só troca a janela: a mesma arte vai de novo.
+          g.story = moveTo === "story";
+          g.type = g.story ? "story" : "post";
+          line.remove();
+          await sendOne(g);
+          render();
+        });
+        else line.textContent = `✕ ${label(g)}: ${error.message === "login" ? "entre no Master primeiro." : error.message}`;
       }
-    }
+    };
+    for (const g of list) await sendOne(g);
     render();
   }
 

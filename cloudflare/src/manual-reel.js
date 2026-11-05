@@ -6,6 +6,7 @@
 import { getClient } from "./clients.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brandProfileVersion } from "./client-brand.js";
+import { assertVideoFits } from "./art-format.js";
 
 export const MANUAL_REEL_MAX_BYTES = 95 * 1024 * 1024;
 const COVER_MAX_BYTES = 5 * 1024 * 1024;
@@ -51,6 +52,7 @@ export async function createManualReel(env, form, now = new Date()) {
   if (!VIDEO_TYPES.has(videoType)) throw new Error("video_type");
   if (!video.size || video.size > MANUAL_REEL_MAX_BYTES) throw new Error("video_size");
   if (!isMp4(new Uint8Array(await video.slice(0, 16).arrayBuffer()))) throw new Error("video_type");
+  await assertVideoFits(video);
 
   const cover = form.get("cover");
   if (!cover || typeof cover.arrayBuffer !== "function") throw new Error("cover_required");

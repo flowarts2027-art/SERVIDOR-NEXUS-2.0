@@ -6,6 +6,7 @@ import { handleClientAutoReplyPortal } from "./client-autoreply.js";
 import { handleLibrary } from "./art-library.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
+import { WINDOW_MOVES } from "./art-format.js";
 import { handleBusinessProfilePortal } from "./business-profile.js";
 import { handleClientCampaignPortal } from "./client-campaign.js";
 import { resolveInstagramCredentials } from "./instagram-credentials.js";
@@ -1814,7 +1815,7 @@ export async function handlePortalApi(request, env, url, ctx) {
       return json(await createClientUpload(env, client, form), 201);
     } catch (error) {
       const code = String(error?.message || error).slice(0, 60);
-      return json({ error: code, message: CLIENT_UPLOAD_MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
+      return json({ error: code, moveTo: WINDOW_MOVES[code] || "", message: CLIENT_UPLOAD_MESSAGES[code] || "Não deu para enviar. Tente de novo." }, 400);
     }
   }
 

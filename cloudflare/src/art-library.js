@@ -9,6 +9,7 @@
 //  5. tira da fila do painel os posts repetidos (mesma imagem) que ainda não saíram.
 
 import { clientBrand } from "./client-brand.js";
+import { artShape } from "./art-format.js";
 import { masterUpload } from "./master-upload.js";
 import { deletePostFromPanel } from "./posts.js";
 import { handleArtText } from "./art-text.js";
@@ -105,6 +106,8 @@ export async function addToLibrary(env, client, form, now = new Date()) {
     if (known.has(hash)) { duplicates.push(String(file.name || "").slice(0, 60)); continue; }
     known.add(hash);
     const size = imageSize(bytes);
+    // Janelas por formato (05/11/2026): tamanho que não serve para nenhuma janela não entra na Biblioteca.
+    if (size.width && !artShape(size.width, size.height)) { invalid.push(String(file.name || "").slice(0, 60)); continue; }
     const id = hash.slice(0, 16);
     const key = `library/${client.id}/artes/${id}.${ext}`;
     await env.MEDIA.put(key, bytes, { httpMetadata: { contentType: file.type }, customMetadata: { clientId: String(client.id), kind: "art-library" } });

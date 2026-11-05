@@ -1,13 +1,13 @@
-// Texto por código nas artes que chegam SEM texto pelo conector (pedido do Rodrigo, 29/10/2026).
-// As letras já vêm prontas numa moldura transparente feita no deploy (scripts/social/molduras_upload.py,
-// mesmo desenho do PADRAO_ARTES.md). Aqui o Nexus só cola, com o binding de imagens da Cloudflare:
-// 1. fundo = a própria foto, cobrindo tudo, bem desfocada, com um véu na cor do cliente;
-// 2. a foto inteira (ou quase) no meio, entre o título e as vantagens, sem cortar o produto;
-// 3. a moldura por cima (logo, título, vantagens e botão) e, no carrossel, o número do cartão.
+// Texto por código nas artes que chegam SEM texto (pedido do Rodrigo, 29/10/2026).
+// As letras já vêm prontas numa camada transparente feita no deploy (scripts/social/molduras_upload.py).
+// Regra de 05/11/2026: a foto ocupa a tela toda. Nada de fundo desfocado, margem ou faixa de cor, e nada é
+// cortado. O Nexus só escreve logo, título, vantagens e botão por cima, e só em foto 4:5 ou 9:16.
+// Daniela Martins não recebe nada escrito.
+import { artShape } from "./art-format.js";
 
 const FEED = { width: 1080, height: 1350 };
 const STORY = { width: 1080, height: 1920 };
-const MIN_VISIBLE = 0.8; // corta no máximo 10% em cima e 10% embaixo da foto
+const NO_TEXT_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
 let cachedMeta = null;
 
 export async function loadFrames(env) {
@@ -28,6 +28,7 @@ export async function loadFrames(env) {
 export function resetFramesCache() { cachedMeta = null; }
 
 export function hasFrames(meta, clientId) {
+  if (NO_TEXT_CLIENTS.has(String(clientId || ""))) return false;
   const c = meta?.clientes?.[String(clientId || "")];
   return Boolean(c?.feed?.length && c?.story?.length);
 }
@@ -38,20 +39,6 @@ export function pickFrame(meta, clientId, story, seed = 0) {
   const list = story ? c.story : c.feed;
   const frame = list[Math.abs(Math.trunc(Number(seed) || 0)) % list.length];
   return { ...frame, numero: c.numero?.[story ? "story" : "feed"] || null };
-}
-
-// Tamanho da foto no meio: o maior possível sem passar da largura nem da faixa, cortando no máximo
-// 10% em cima e 10% embaixo (produto não pode sumir).
-export function photoBox(srcW, srcH, boxW, boxH) {
-  const w = Math.max(1, Number(srcW) || 1);
-  const h = Math.max(1, Number(srcH) || 1);
-  const cover = Math.max(boxW / w, boxH / h);
-  const contain = Math.min(boxW / w, boxH / h);
-  const cap = boxH / (MIN_VISIBLE * h);
-  const s = Math.max(contain, Math.min(cover, cap));
-  const width = Math.min(boxW, Math.round(w * s));
-  const height = Math.min(boxH, Math.round(h * s));
-  return { width, height, left: Math.round((boxW - width) / 2), top: Math.round((boxH - height) / 2) };
 }
 
 async function assetBytes(env, path) {
@@ -67,14 +54,9 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const size = story ? STORY : FEED;
   const info = await env.IMAGES.info(stream(bytes));
-  const box = photoBox(info?.width, info?.height, size.width, frame.base - frame.topo);
-
-  let canvas = env.IMAGES.input(stream(bytes))
-    .transform({ width: size.width, height: size.height, fit: "cover", blur: 40 });
+  if (artShape(info?.width, info?.height) !== (story ? "story" : "portrait")) throw new Error("art_not_framable");
   const clientDir = frame.arquivo.split("/")[0];
-  canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, `${clientDir}/veu-${story ? "story" : "feed"}.png`))), { left: 0, top: 0 });
-  const photo = env.IMAGES.input(stream(bytes)).transform({ width: box.width, height: box.height, fit: "cover" });
-  canvas = canvas.draw(photo, { left: box.left, top: frame.topo + box.top });
+  let canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
   canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, frame.arquivo))), { left: 0, top: 0 });
   if (numero && frame.numero) {
     canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, `${clientDir}/num-${numero}.png`))), { left: frame.numero.left, top: frame.numero.top });

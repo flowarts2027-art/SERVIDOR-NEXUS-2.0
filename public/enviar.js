@@ -128,6 +128,7 @@
     const status = $("#upload-status");
     const button = form.querySelector("button[type=submit]");
     const t = type();
+    window.clearWindowAlert(status);
     const data = new FormData();
     data.set("type", t);
     data.set("caption", form.caption.value);
@@ -144,13 +145,18 @@
       images.forEach(file => data.append("images", file, file.name));
       const response = await fetch("/api/portal/uploads", { method: "POST", credentials: "same-origin", body: data });
       const out = await response.json().catch(() => ({}));
-      if (!response.ok || !out.ok) throw new Error(out.message || "Não deu para enviar.");
+      if (!response.ok || !out.ok) throw Object.assign(new Error(out.message || "Não deu para enviar."), { moveTo: out.moveTo, wrongWindow: /^(window_|size_invalid|carousel_mixed|video_window)/.test(String(out.error || "")) });
       status.textContent = "Pronto! Agendado. Ele aparece em \"Agendados\".";
       form.caption.value = "";
       setupFields();
       $("#refresh")?.click();
     } catch (error) {
-      status.textContent = error.message === "cover" ? "Não consegui tirar a capa do vídeo. Tente outro navegador." : error.message;
+      if (error.wrongWindow) window.showWindowAlert(status, error.message, error.moveTo, moveTo => {
+        // Só troca a janela: a imagem escolhida continua a mesma e vai de novo.
+        form.querySelector(`input[name=type][value=${moveTo}]`).checked = true;
+        form.requestSubmit();
+      });
+      else status.textContent = error.message === "cover" ? "Não consegui tirar a capa do vídeo. Tente outro navegador." : error.message;
     } finally {
       button.disabled = false;
     }

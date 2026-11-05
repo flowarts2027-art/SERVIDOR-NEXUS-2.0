@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import * as frames from "../src/art-frame.js";
 import { enviarArte } from "../src/mcp-server.js";
 
-const { photoBox, pickFrame, hasFrames, composeFramed, loadFrames, resetFramesCache } = frames;
+const { pickFrame, hasFrames, composeFramed, loadFrames, resetFramesCache } = frames;
 
 const META = {
   versao: 1,
@@ -54,19 +54,6 @@ function fakeEnv({ fail = false, info = { width: 1664, height: 2080 } } = {}) {
   };
 }
 
-test("foto no meio: inteira quando cabe, corta no máximo 10% em cima e embaixo", () => {
-  // 4:5 numa faixa larga: altura usa a faixa toda e mostra 80% da foto.
-  const b = photoBox(1664, 2080, 1080, 546);
-  assert.equal(b.height, 546);
-  assert.ok(b.width < 1080);
-  assert.ok(b.width / 1664 * 2080 * 0.8 <= 546 + 1, "não corta mais de 20% da altura");
-  assert.equal(b.left, Math.round((1080 - b.width) / 2));
-  // Foto bem larga: cabe inteira na largura.
-  const w = photoBox(2000, 800, 1080, 546);
-  assert.equal(w.width, 1080);
-  assert.ok(w.height <= 546);
-});
-
 test("escolhe moldura girando os textos e sabe onde vai o número do carrossel", () => {
   assert.equal(hasFrames(META, "quatree-dog"), true);
   assert.equal(hasFrames(META, "demo-cafe"), false);
@@ -78,27 +65,33 @@ test("escolhe moldura girando os textos e sabe onde vai o número do carrossel",
   assert.deepEqual(s.numero, { left: 948, top: 288 });
 });
 
-test("monta na ordem: fundo desfocado, véu, foto no meio, moldura e número", async () => {
+test("foto ocupa a tela toda: sem desfoque, véu ou margem, só o texto e o número por cima", async () => {
   const { env, log, assets } = fakeEnv();
   const frame = pickFrame(META, "quatree-dog", false, 0);
   const out = await composeFramed(env, new Uint8Array([1, 2, 3]), frame, { numero: 2 });
   assert.ok(out.byteLength > 0);
   const steps = log[0].steps;
-  assert.deepEqual(steps[0], ["transform", { width: 1080, height: 1350, fit: "cover", blur: 40 }]);
-  assert.equal(steps[1][0], "draw"); // véu
-  assert.equal(steps[2][0], "draw"); // foto
-  assert.equal(steps[2][3].top >= frame.topo, true);
-  assert.equal(steps[3][3].left, 0); // moldura inteira
-  assert.deepEqual(steps[4][3], { left: 948, top: 66 }); // número
-  assert.deepEqual(steps[5], ["output", { format: "image/jpeg", quality: 90 }]);
-  assert.deepEqual(assets, ["/molduras/quatree-dog/veu-feed.png", "/molduras/quatree-dog/feed-1.png", "/molduras/quatree-dog/num-2.png"]);
+  assert.deepEqual(steps[0], ["transform", { width: 1080, height: 1350, fit: "cover" }]);
+  assert.deepEqual(steps[1][3], { left: 0, top: 0 }); // texto inteiro
+  assert.deepEqual(steps[2][3], { left: 948, top: 66 }); // número
+  assert.deepEqual(steps[3], ["output", { format: "image/jpeg", quality: 90 }]);
+  assert.deepEqual(assets, ["/molduras/quatree-dog/feed-1.png", "/molduras/quatree-dog/num-2.png"]);
 });
 
-test("story usa 1080x1920 e o véu do story", async () => {
-  const { env, log, assets } = fakeEnv();
+test("story usa 1080x1920", async () => {
+  const { env, log } = fakeEnv({ info: { width: 1080, height: 1920 } });
   await composeFramed(env, new Uint8Array([1]), pickFrame(META, "quatree-dog", true, 0), { story: true });
   assert.equal(log[0].steps[0][1].height, 1920);
-  assert.ok(assets.includes("/molduras/quatree-dog/veu-story.png"));
+});
+
+test("foto fora do tamanho não recebe texto: nunca corta nem encolhe", async () => {
+  const { env } = fakeEnv({ info: { width: 1080, height: 1080 } });
+  await assert.rejects(composeFramed(env, new Uint8Array([1]), pickFrame(META, "quatree-dog", false, 0)), /art_not_framable/);
+});
+
+test("Daniela Martins não recebe nada escrito", () => {
+  const meta = { clientes: { "daniela-martins": META.clientes["quatree-dog"] } };
+  assert.equal(hasFrames(meta, "daniela-martins"), false);
 });
 
 // ---------- conector: enviar arte com texto automático ----------

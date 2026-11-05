@@ -79,6 +79,20 @@ export async function loadClientOffsets(env) {
   return offsets;
 }
 
+// Agentes já pegaram a arte de um story para usar em post de feed, e o Instagram corta (Quatree, 29/10).
+// Agora o Creator não faz isso. Aqui solta os que ficaram: o post volta a pedir imagem, e o story continua intacto.
+async function releaseStoryArtFromFeed(env, row, payload) {
+  const format = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
+  const url = String(payload.imageUrl || "");
+  if (!String(payload.source || "").startsWith("agent-core") || ["story", "reel"].includes(format) || !url.includes("/upload-story-")) return false;
+  await env.DB.prepare(
+    `UPDATE post_ledger SET error='media_generation_required',updated_at=CURRENT_TIMESTAMP,
+       payload_json=json_set(payload_json,'$.blockedWrongFormat',?2,'$.imageUrl','','$.publicImageUrl','','$.mediaGeneration.status','requested','$.qualityGates.designer','pending')
+     WHERE id=?1 AND status IN ('ready','scheduled')`
+  ).bind(row.id, url).run();
+  return true;
+}
+
 // Roda antes de cada rodada de publicação. Biblioteca, painel, conector e agentes gravam o horário
 // pedido e ele vira o minuto do cliente aqui, então nenhum post sai fora do lugar, por nenhum caminho.
 // "Publicar agora" é pedido de quem está no painel: fica como está. Post publicado ou com falha não muda.
@@ -99,6 +113,7 @@ export async function alignScheduledPosts(env, now = new Date()) {
     if (moved >= MAX_MOVES_PER_ROUND) break;
     const payload = parse(row.payload_json);
     if (payload.publishNowByClient) continue;
+    if (await releaseStoryArtFromFeed(env, row, payload)) continue;
     const story = String(payload?.creativeFeatures?.requestedFormat || "").toLowerCase() === "story";
     const slot = clientSlot(row.scheduled_for, offsets[row.client_id], story);
     if (!slot || Date.parse(slot) === Date.parse(row.scheduled_for)) continue;

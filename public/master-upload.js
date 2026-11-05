@@ -158,6 +158,7 @@
     const plan = slots();
     if (whenMode() === "date" && plan.some(p => !p.time)) { status.textContent = "Escreva pelo menos um horário (ex.: 12:00)."; return; }
     button.disabled = true;
+    window.clearWindowAlert(status);
     let ok = 0;
     try {
       for (let i = 0; i < items.length; i++) {
@@ -180,13 +181,18 @@
         }
         const response = await fetch("/api/master/upload", { method: "POST", credentials: "same-origin", body: data });
         const out = await response.json().catch(() => ({}));
-        if (!response.ok || out.ok === false) throw new Error((items.length > 1 ? `Item ${i + 1}: ` : "") + (out.message || "Não deu para enviar."));
+        if (!response.ok || out.ok === false) throw Object.assign(new Error((items.length > 1 ? `Item ${i + 1}: ` : "") + (out.message || "Não deu para enviar.")), { moveTo: out.moveTo, wrongWindow: /^(window_|size_invalid|carousel_mixed|video_window)/.test(String(out.error || "")) });
         ok++;
       }
       status.textContent = `Pronto: ${ok} ${ok === 1 ? "item enviado" : "itens enviados"}. ${form.approval.checked ? "Já aprovados." : "O cliente aprova no painel dele."}`;
       items = []; $("#mu-files").value = ""; render();
     } catch (error) {
-      status.textContent = (ok ? `${ok} enviado(s). ` : "") + error.message;
+      if (error.wrongWindow) window.showWindowAlert(status, (ok ? `${ok} enviado(s). ` : "") + error.message, error.moveTo, moveTo => {
+        // Só troca a janela: os arquivos escolhidos continuam os mesmos e vão de novo.
+        $("#mu-type").value = moveTo === "feed" ? "post" : moveTo;
+        form.requestSubmit();
+      });
+      else status.textContent = (ok ? `${ok} enviado(s). ` : "") + error.message;
       items = items.slice(ok); render();
     } finally {
       button.disabled = false;

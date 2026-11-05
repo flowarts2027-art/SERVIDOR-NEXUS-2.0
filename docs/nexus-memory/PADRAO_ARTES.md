@@ -3,6 +3,8 @@
 Regra permanente. Vale para o Nexus (código), o ChatGPT, o Claude, o Manus e qualquer agente que faça arte.
 Código que aplica: `scripts/social/campanha_diaria.py` (função `desenhar`). Textos: `scripts/social/campanha/conteudo.json`.
 
+> **Atualização de 05/11/2026 (Rodrigo):** para foto que chega sem texto, valem `REGRAS_ENVIO_ARTES.md` e as seções 8 e 9. A foto ocupa a tela toda, sem faixa de cor, e o Nexus escreve por cima. Daniela Martins não recebe nada escrito.
+
 ## 1. Texto nunca em cima de pessoa
 - O título fica numa **faixa própria em cima**; as vantagens e o botão numa **faixa própria embaixo**.
 - A **foto fica só no meio**, começando **abaixo do título**. Nenhuma letra passa por cima de cabeça, rosto, mão ou produto.
@@ -44,7 +46,8 @@ Código que aplica: `scripts/social/campanha_diaria.py` (função `desenhar`). T
 - Sem preço, sem prazo prometido, sem telefone na imagem, sem depoimento ou número inventado.
 - Tudo vai ao painel **esperando aprovação**.
 
-## 9. Arte nunca é cortada (Rodrigo, 29/10/2026)
+## 9. Arte nunca é cortada (Rodrigo, 29/10/2026; atualizada em 05/11/2026)
+- **Desde 05/11:** arte fora do tamanho é recusada na janela, e o Nexus não encolhe nem corta mais. O texto abaixo fica só como histórico.
 - Motivo: o post das 11h de 29/10 do Quatree saiu com título e vantagens cortados (arte mais larga que 4:5, cortada para caber).
 - Regra no código (`toInstagramJpeg` em `cloudflare/src/manual-carousel.js`): arte fora do formato entra **inteira** no meio, com a própria imagem desfocada no resto. Só corta se a diferença for de até 3%, ou quando é foto de cena pedida com corte (Reel animado).
 
