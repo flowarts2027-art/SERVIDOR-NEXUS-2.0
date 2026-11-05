@@ -218,7 +218,7 @@ async function runPublisherSweep(env, clientId, now) {
       continue;
     }
     const imageUrl = String(payload.imageUrl || payload.publicImageUrl || "");
-    if (!imageUrl || !row.caption) {
+    if (!imageUrl || (!story && !row.caption)) {
       summary.skipped += 1;
       continue;
     }
