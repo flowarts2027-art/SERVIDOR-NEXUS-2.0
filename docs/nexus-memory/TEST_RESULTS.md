@@ -298,3 +298,10 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - `test/publisher-round.test.mjs` roda as consultas em SQLite de verdade, com o cenário das 09:00 dos 6 clientes.
 - `wrangler deploy --dry-run` aprovado.
 - Não testado em produção. Nenhuma publicação real foi feita.
+
+## 2026-11-05 — Nome do painel e quadro de postagens faltando (Claude, antes do merge)
+- `node --test test/*.test.mjs` no Windows: a única falha é a do cron por CRLF, que já existia.
+- `test/missing-posts.test.mjs` roda as consultas em SQLite de verdade.
+- `wrangler deploy --dry-run` aprovado.
+- Quadro renderizado no Chrome sem tela, com o CSS real e dados de exemplo: em 390 px cabe na largura e o sino aparece.
+- Não testado com login real nem em produção. Nenhuma mensagem foi enviada.

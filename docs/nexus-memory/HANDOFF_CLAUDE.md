@@ -1049,3 +1049,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Mudança de regra: limite do Worker agora gasta tentativa (máximo 3), como pedido.
 - Testes: 833 de 834, falha só por CRLF no Windows. Dry-run aprovado. Sem merge e sem deploy.
 - Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.
+
+## 05/11/2026 — Master: nome do painel e quadro de postagens faltando (Claude)
+- Pedido do Rodrigo: lápis para trocar o nome do painel e quadro "Postagens faltando" no topo do Master.
+- Feito: `client-name.js`, `missing-posts.js`, sino, quadro, lápis e `/artes.html?cliente=<id>`.
+- O id e `clients.name` não mudam. O nome novo fica em `config.displayName`.
+- WhatsApp: regra pronta e desligada (`NEXUS_MISSING_POSTS_WHATSAPP=false`). Falta modelo aprovado pela Meta.
+- Testes: só a falha do cron por CRLF no Windows. Dry-run aprovado. Sem login real, sem merge e sem deploy.
+- Próximo passo: Rodrigo aprova o merge. Depois seguir `NEXT_ACTIONS.md`.

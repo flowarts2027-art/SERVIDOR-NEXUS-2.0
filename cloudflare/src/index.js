@@ -20,6 +20,8 @@ import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
 import { runPublisherRound } from "./publisher-round.js";
+import { handleClientName } from "./client-name.js";
+import { missingPostsBoard, sendMissingPostsAlert } from "./missing-posts.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
 import { instagramCredentialStatus, instagramPublishingHealth } from "./instagram-credentials.js";
 import { instagramMasterConfigStatus, handleInstagramOAuthCallback, handleInstagramComplianceRequest } from "./instagram.js";
@@ -605,6 +607,10 @@ export default {
       }
       return;
     }
+    // Aviso de postagem faltando por WhatsApp: desligado até a Meta liberar (NEXUS_MISSING_POSTS_WHATSAPP).
+    ctx.waitUntil(sendMissingPostsAlert(env, at).catch(error =>
+      console.warn("missing_posts_alert_failed", String(error?.message || error).slice(0, 140))
+    ));
     // Poster discovery runs independently; failures must never block Instagram cron.
     ctx.waitUntil(warmYoutubePosterLibrary(env, at).catch(error =>
       console.warn("youtube_poster_library_refresh_failed", String(error?.message || error).slice(0, 140))
@@ -918,6 +924,20 @@ export default {
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleAnimatedReelMaster(request, env, url);
       if (response) return response;
+    }
+
+    // Lápis do Master: troca o nome que aparece, sem mexer no id. Só com login do Master.
+    if (url.pathname === "/api/master/client-name") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return handleClientName(request, env);
+    }
+
+    // Quadro "Postagens faltando". Só com login do Master.
+    if (url.pathname === "/api/master/missing-posts" && request.method === "GET") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return json(await missingPostsBoard(env));
     }
 
     // Imagem por IA para clientes: liberação e limite por mês. Só com login do Master.

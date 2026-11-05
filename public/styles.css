@@ -697,3 +697,18 @@ input:focus,select:focus,textarea:focus{outline-color:#168c5444!important;border
 .wa-tag.client{background:#2e8b571f;color:#1f6b45;border-color:#2e8b5755}
 .wa-customer{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#2e8b5714;border:1px solid #2e8b5755;font-size:17px}
 .wa-streaming{margin-top:10px;font-size:16px;min-height:40px}
+/* Quadro "Postagens faltando" e lápis do nome (05/11/2026): letras grandes e cores fortes, pedido do Rodrigo. */
+.missing-board{margin:0 0 18px;display:grid;gap:12px}.missing-board h2{margin:0;font-size:26px;font-weight:800;color:#06080c}
+.missing-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;border-radius:14px;font-size:20px;line-height:1.35;border:3px solid transparent}
+.missing-row strong{display:block;font-size:22px;font-weight:800}.missing-row p{margin:4px 0 0;font-weight:700}
+.missing-row.today{background:#c40000;border-color:#7a0000;color:#fff;animation:missing-blink 1.2s ease-in-out infinite}
+.missing-row.tomorrow{background:#e65c00;border-color:#8f3900;color:#000}
+.missing-row.later{background:#ffd400;border-color:#a88c00;color:#000}
+.missing-row.done{background:#0b7a35;border-color:#06501f;color:#fff}
+.missing-send{flex:none;display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 18px;border-radius:12px;background:#000;color:#fff;font-size:18px;font-weight:800;text-decoration:none}
+@keyframes missing-blink{50%{background:#ff1a1a}}
+@media (prefers-reduced-motion:reduce){.missing-row.today{animation:none}}
+@media (max-width:640px){.missing-row{flex-direction:column;align-items:stretch}.missing-send{width:100%}}
+.missing-bell{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:0;border-radius:99px;background:#c40000;color:#fff;font-size:20px;font-weight:800;cursor:pointer}.missing-bell[hidden]{display:none}
+.name-edit{margin-left:8px;min-width:40px;min-height:40px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:18px;cursor:pointer}
+.name-edit-form{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.name-edit-form input{flex:1 1 180px;min-height:44px;padding:0 12px;font-size:18px;border:2px solid var(--line);border-radius:10px}.name-edit-status{flex-basis:100%}

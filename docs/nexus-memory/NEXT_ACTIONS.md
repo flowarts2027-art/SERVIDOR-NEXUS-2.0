@@ -1,3 +1,8 @@
+## 2026-11-05 — Depois do merge do nome do painel e do quadro
+1. Abrir o Master no celular e conferir o quadro e o sino com login real.
+2. Trocar o nome de um cliente e conferir no painel dele, nos grupos e no conector.
+3. Quando a Meta liberar o WhatsApp, criar o modelo aprovado e só então ligar o aviso.
+
 ## 2026-11-05 — Depois do merge do espaçamento de postagens
 1. Conferir o deploy no GitHub Actions.
 2. Em até 5 minutos, ver em `nexus_ver_agenda` se os horários mudaram (GILTEC 19:00 vira 19:10). Os posts se ajustam 40 por rodada.

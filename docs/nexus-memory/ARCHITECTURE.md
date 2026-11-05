@@ -86,3 +86,6 @@ Alternativa local: Baixar no PC abre página 127.0.0.1:8765 com URL YouTube púb
 
 ## Publicação (05/11/2026)
 Nos minutos terminados em 2 e 7, `publisher-round.js` alinha os horários (`client-slots.js`), põe na fila quem venceu e publica com a trava de `publish-budget.js`. A rodada de 15 minutos não publica. Regra em `REGRA_HORARIOS_CLIENTES.md`.
+
+## Master: nome e postagens faltando (05/11/2026)
+`clientScreenName` lê `config.displayName` antes dos nomes fixos. `/api/master/client-name` grava esse campo e `/api/master/missing-posts` calcula o quadro. Regras em `REGRA_MASTER_NOME_E_POSTAGENS.md`.
