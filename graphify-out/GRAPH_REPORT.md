@@ -1,7 +1,7 @@
-# Graph Report - SERVIDOR-NEXUS-2.0  (2026-11-04)
+# Graph Report - SERVIDOR-NEXUS-2.0  (2026-11-05)
 
 ## Corpus Check
-- 502 files · ~497,506 words
+- 502 files · ~497,695 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 30 file(s) not represented in the graph (top: .css 7, .xml 6, (none) 5)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a2ee4679`
+- Built from commit: `015b2836`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1207,7 +1207,7 @@ Nodes (4): app, html, instagram, master
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `startGitHubVideoRender()` connect `startGitHubVideoRender` to `video-demand-catalog.js`, `video-catalog.js`, `video-metadata-enrichment.js`, `helper.py`, `github-video-render.js`, `portal.js`, `video-related-library.js`?**
-  _High betweenness centrality (0.068) - this node is a cross-community bridge._
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **What connects `CLIENT_OK` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `client-lite.js` be split into smaller, more focused modules?**
@@ -1217,6 +1217,6 @@ _Questions this graph is uniquely positioned to answer:_
 - **Should `app.js` be split into smaller, more focused modules?**
   _Cohesion score 0.07486338797814207 - nodes in this community are weakly interconnected._
 - **Why does `upload_to_nexus()` connect `helper.py` to `json`, `argparse`, `pathlib`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
 - **Should `ref_node_assert` be split into smaller, more focused modules?**
   _Cohesion score 0.04612612612612613 - nodes in this community are weakly interconnected._
