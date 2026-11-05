@@ -931,6 +931,91 @@ html[data-client-theme="quatree-dog"] .nexus-top-logo { display: none !important
 }
 
 
+/* ===== Tema do grupo GILTEC (05/11/2026) =====
+   Cores pedidas pelo Rodrigo: azul-marinho #0D1B3E, azul de apoio #1F3A6E, branco #FFFFFF e texto #1A1A1A.
+   Os tons bem claros de fundo saem do mesmo azul. Verde e aviso continuam iguais, porque têm significado. */
+html[data-client-theme="giltec"] {
+  --navy: #0D1B3E;
+  --navy-2: #1F3A6E;
+  --blue: #1F3A6E;
+  --blue-soft: #EEF2F9;
+  --paper: #FFFFFF;
+  --ink: #1A1A1A;
+  --muted: #3D4A66;
+  --line: #D5DCEA;
+  --silver: #1F3A6E;
+  --accent: #1F3A6E;
+  --violet: #0D1B3E;
+  --warm: #92400E;
+  --whats: #0F7A40;
+  --shadow-soft: 0 12px 30px rgba(13, 27, 62, .07);
+  --shadow-card: 0 16px 36px rgba(13, 27, 62, .10);
+}
+html[data-client-theme="giltec"] .btn-primary,
+html[data-client-theme="giltec"] .login .btn-primary { background: linear-gradient(135deg, #1F3A6E, #0D1B3E); box-shadow: 0 10px 20px rgba(31, 58, 110, .22); }
+html[data-client-theme="giltec"] .btn-ok { background: linear-gradient(135deg, #0F7A5C, #0A6349); box-shadow: 0 10px 20px rgba(10, 99, 73, .18); }
+html[data-client-theme="giltec"] .hero-label { color: #3D4A66; }
+html[data-client-theme="giltec"] .format-post { background: #1F3A6E; }
+html[data-client-theme="giltec"] .format-carousel { background: #0D1B3E; }
+html[data-client-theme="giltec"] .format-reel { background: #1A1A1A; }
+html[data-client-theme="giltec"] .format-story { background: #33508A; }
+html[data-client-theme="giltec"] .top-chip { background: #E6ECF6; color: #0D1B3E; }
+html[data-client-theme="giltec"] .top-chip i { box-shadow: 0 0 0 4px rgba(31, 58, 110, .14); }
+html[data-client-theme="giltec"] .hero { background: radial-gradient(circle at 84% 18%, rgba(255, 255, 255, .9), transparent 28%), linear-gradient(120deg, #EEF2F9 0%, #F6F8FC 54%, #E6ECF6 100%); }
+html[data-client-theme="giltec"] .hero-media,
+html[data-client-theme="giltec"] .post-media { background: #0D1B3E; }
+html[data-client-theme="giltec"] .followers { background: radial-gradient(circle at 90% 10%, rgba(255, 255, 255, .30), transparent 30%), linear-gradient(135deg, #0D1B3E, #1F3A6E); }
+html[data-client-theme="giltec"] .followers p,
+html[data-client-theme="giltec"] .media-wait { color: #FFFFFF; }
+html[data-client-theme="giltec"] .followers svg path { stroke: #FFFFFF; }
+html[data-client-theme="giltec"] #instagram-box { background: radial-gradient(circle at 92% 8%, rgba(255, 255, 255, .55), transparent 24%), linear-gradient(135deg, #F6F8FC, #EEF2F9); }
+html[data-client-theme="giltec"] #instagram-box::after { border-color: rgba(31, 58, 110, .12); }
+html[data-client-theme="giltec"] #plan-box { border-color: var(--silver); background: linear-gradient(135deg, #F6F8FC, #fff); }
+html[data-client-theme="giltec"] .cal-nav:hover { border-color: var(--silver); }
+html[data-client-theme="giltec"] .cal-day img + .cal-num,
+html[data-client-theme="giltec"] .car-btn,
+html[data-client-theme="giltec"] .car-count { background: rgba(13, 27, 62, .82); }
+html[data-client-theme="giltec"] .cal-day.is-today { box-shadow: inset 0 0 0 2px rgba(31, 58, 110, .22); }
+html[data-client-theme="giltec"] .cal-day.is-plan,
+html[data-client-theme="giltec"] .plan-list li { border-color: var(--silver); background: #F6F8FC; }
+html[data-client-theme="giltec"] .lg-plan { border-color: var(--silver); }
+html[data-client-theme="giltec"] .upload-box > summary { box-shadow: 0 10px 22px rgba(31, 58, 110, .15); }
+html[data-client-theme="giltec"] .nav-brand small,
+html[data-client-theme="giltec"] .nav-caption,
+html[data-client-theme="giltec"] .nav-section-label,
+html[data-client-theme="giltec"] .nav-spotlight small { color: #FFFFFF; }
+html[data-client-theme="giltec"] .nav-spotlight { border-color: rgba(255, 255, 255, .35); background: linear-gradient(150deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .05)); }
+html[data-client-theme="giltec"] .nav-spotlight-icon { color: #FFFFFF; }
+html[data-client-theme="giltec"] .stat::before { background: #EEF2F9; color: #1F3A6E; }
+html[data-client-theme="giltec"] .stat:nth-child(2)::before { background: #E6ECF6; color: #3D4A66; }
+html[data-client-theme="giltec"] .stat:nth-child(3)::before { background: #DDE5F3; color: #0D1B3E; }
+html[data-client-theme="giltec"] .tester-steps li { border-color: rgba(31, 58, 110, .4); background: rgba(31, 58, 110, .06); }
+html[data-client-theme="giltec"] .radar-hero { background: radial-gradient(ellipse at 85% 5%, rgba(255, 255, 255, .28), transparent 48%), linear-gradient(140deg, #0D1B3E, #0D1B3E 75%, #1F3A6E); border-color: rgba(255, 255, 255, .35); }
+html[data-client-theme="giltec"] .radar-hero:after { border-color: rgba(255, 255, 255, .3); box-shadow: 0 0 0 28px rgba(255, 255, 255, .06); }
+html[data-client-theme="giltec"] .radar-source { background: rgba(13, 27, 62, .55); border-color: rgba(255, 255, 255, .3); }
+html[data-client-theme="giltec"] #plans-upgrade .up-card[data-plan-card="postador"] { border-color: #1F3A6E; background: #EEF2F9; }
+html[data-client-theme="giltec"] .cmp-table thead .c-post { background: #1F3A6E; }
+html[data-client-theme="giltec"] .cmp-table td.c-post { background: #EEF2F9; color: #0D1B3E; }
+html[data-client-theme="giltec"] .nav-brand { justify-content: center; padding: 4px 4px 0; margin-bottom: 18px; }
+/* Logo quadrada com sobra de azul em volta: o recorte é só por CSS. O arquivo não é cortado. */
+html[data-client-theme="giltec"] .nav-brand img.client-brand-logo { width: 100%; max-width: 200px; height: 130px; object-fit: cover; object-position: 50% 52%; border-radius: 10px; }
+html[data-client-theme="giltec"] .nexus-top-logo { display: none !important; }
+@media (min-width: 900px) {
+  html[data-client-theme="giltec"] .tabbar { background: linear-gradient(180deg, #0D1B3E 0%, #1F3A6E 60%, #0D1B3E 100%) !important; box-shadow: 10px 0 30px rgba(13, 27, 62, .16); }
+  html[data-client-theme="giltec"] .tabbar > button { color: #FFFFFF; }
+  html[data-client-theme="giltec"] .tabbar > button:hover { background: rgba(255, 255, 255, .14); }
+  html[data-client-theme="giltec"] .tabbar > button.active { background: #FFFFFF; color: #0D1B3E; box-shadow: inset 3px 0 #FFFFFF, 0 9px 20px rgba(0, 0, 0, .12); }
+  html[data-client-theme="giltec"] .tabbar .badge { background: #FFFFFF; color: #0D1B3E; }
+}
+@media (max-width: 899px) {
+  html[data-client-theme="giltec"] .top { background: radial-gradient(circle at 88% 12%, rgba(255, 255, 255, .14), transparent 26%), linear-gradient(135deg, #1F3A6E, #0D1B3E); }
+  html[data-client-theme="giltec"] .top-kicker { color: #FFFFFF; }
+  html[data-client-theme="giltec"] .client-top-logo { display: block; width: 170px; max-width: 60vw; height: 110px; object-fit: cover; object-position: 50% 52%; border-radius: 10px; margin: 0 0 8px; }
+  html[data-client-theme="giltec"] .status { color: #FFFFFF; }
+  html[data-client-theme="giltec"] .tabbar { box-shadow: 0 -10px 28px rgba(13, 27, 62, .10); }
+}
+
+
 /* Navegação móvel global: exatamente cinco destinos visíveis.
    Mantém a identidade própria de cada cliente via variáveis do tema. */
 @media (max-width: 899px) {

@@ -45,3 +45,23 @@ test("Tema da Quatree Dog usa a logo oficial e as cores dela, preso ao cliente",
     if (/^\s*[.#]/.test(line)) assert.fail("regra sem o escopo da Quatree: " + line);
   }
 });
+
+test("Tema da GILTEC usa a logo oficial e as cores pedidas, preso ao tema dela", () => {
+  const css = read("client-lite.css");
+  const js = read("client-lite.js");
+  const block = js.slice(js.indexOf("  giltec: {"), js.indexOf("let defaultBrandHtml"));
+  assert.ok(block.includes('logo: "/brand/giltec-logo.png"'));
+  assert.ok(block.includes('themeColor: "#0D1B3E"'));
+  const oficial = readFileSync(new URL("../../docs/nexus-memory/clientes/giltec/logo-giltec.png", import.meta.url));
+  const painel = readFileSync(new URL("../../public/brand/giltec-logo.png", import.meta.url));
+  assert.ok(oficial.equals(painel), "o painel usa o arquivo oficial, sem mudar nada");
+  const start = css.indexOf("/* ===== Tema do grupo GILTEC");
+  const rules = css.slice(start, css.indexOf("/* Navegação móvel global", start));
+  assert.ok(rules.includes('html[data-client-theme="giltec"] {'));
+  assert.ok(rules.includes('html[data-client-theme="giltec"] .nexus-top-logo'));
+  for (const color of ["#0D1B3E", "#1F3A6E", "#FFFFFF", "#1A1A1A"]) assert.ok(rules.includes(color), "falta a cor " + color);
+  for (const old of ["#E88400", "#C03C34", "#88401C", "quatree"]) assert.ok(!rules.includes(old), "sobrou da Quatree: " + old);
+  for (const line of rules.split(/\r?\n/)) {
+    if (/^\s*[.#]/.test(line)) assert.fail("regra sem o escopo da GILTEC: " + line);
+  }
+});
