@@ -333,3 +333,15 @@ Pedido: remover teto de uploads ao painel. Causa confirmada em mcp-server.js: MC
 
 ## 2026-10-30 — Preservar artes prontas no MCP
 Pedido: impedir nova sobreposição de texto nos uploads. Campo ja_tem_texto ausente agora preserva a arte; somente false explícito solicita moldura. Encaminha jaTemTexto=1 ao upload para impedir segunda composição. Testes reproduziram falha antes; 29 testes MCP passaram após alteração (incluindo post, story, carrossel, bytes preservados e moldura explícita). Branch fix/preservar-artes-mcp-20261030. Integração/deploy pendentes. Após deploy: conferir agenda e retomar carrossel Quatree sábado e stories Maskara domingo; nenhum upload novo nesta correção.
+
+
+## 2026-11-05 — Revisão diária de campanhas e Reels locais
+- Consultadas as regras `REGRA_POSTS_DIARIOS.md`, `PADRAO_ARTES.md`, `SISTEMATICA_IMAGENS_CHATGPT.md`, `FORMATOS_POSTAGENS.md` e as campanhas de Maskara, Quatree e GILTEC.
+- **Flow Arts / `primeiro-teste`**: a pasta de hoje já tinha carrossel 09h, feed 19h e Stories 09h/12h/19h; não havia Reel 12h. Criado localmente Reel de 9s, 9:16, três cenas novas, capa e legenda, com tema “3 vagas de fundador” (05/11, sem preço). Não gravado no GitHub nem enviado ao painel.
+- **Maskara Assessoria**: feeds 09h/12h/19h e Stories 09h/12h/19h já estavam na pasta. O calendário de 30 dias pede Reel 12h em 05/11, mas a pasta contém `imagem.jpg` em vez de `video.mp4`. Criado localmente Reel substituto de 9s, 9:16, três cenas inéditas, capa e legenda sobre documentação relacionada ao SINARM; CTA preservado: **“Comenta QUERO abaixo que a gente te chama.”** Não enviado nem substituído no painel.
+- **GILTEC**: três feeds (compactador, betoneira, martelete) e três Stories já estavam na pasta de 05/11. O workflow [41994828204](https://github.com/flowarts2027-art/SERVIDOR-NEXUS-2.0/actions/runs/41994828204) falhou na etapa `Conferir as artes`: os três Stories têm faixas vazias lisas no topo e embaixo. O passo de upload ao painel foi pulado; os arquivos foram guardados na branch `agendamentos`. Não declarar envio concluído.
+- **Nexus AI**: 9 imagens de 05/11 já constam como enviadas ao painel e `ready` / aprovação pendente, conforme a entrada anterior deste handoff; não recriadas.
+- **Quatree Dog**: ID correto `quatree-dog` (não há cliente separado `4Dog`). Não há pasta de 05/11. O calendário pede Reel com Ericsson e 3 Stories, mas toda peça precisa de embalagem oficial. O PDF original `CATÁLOGO QUATREE 2026.pdf` não estava acessível; não foram criadas embalagens artificiais.
+- **Daniela Martins**: cadastro e identidade visual existem, mas não há pasta de 05/11; a ficha exige `nexus_ver_agenda` antes da produção e esse conector não estava disponível. Nenhuma peça criada para evitar conflito de agenda.
+- **Luciana Carvalho**: cadastro/briefing completo não localizado. Faltam segmento/serviços, público, oferta, identidade visual/referências, CTA e conexão Instagram. Nenhum conteúdo inventado.
+- Os dois Reels novos ficaram apenas no pacote local `artes_diarias_2026-11-05_parcial.zip`; nenhum binário novo foi gravado na branch ou enviado ao painel. Nenhuma peça aprovada ou publicada.
