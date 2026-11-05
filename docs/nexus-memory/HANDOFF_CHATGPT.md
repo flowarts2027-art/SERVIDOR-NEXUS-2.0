@@ -357,3 +357,7 @@ Pedido: impedir nova sobreposição de texto nos uploads. Campo ja_tem_texto aus
 - **Nexus AI:** 9 imagens de 05/11 já foram enviadas ao painel em 04/11 e estão aguardando aprovação (registro acima). Não duplicar.
 - **Luciana Carvalho:** só há registro antigo de convite de testadora; não foi encontrada ficha comercial completa nem conexão ativa. Faltam serviço/segmento, público, oferta, identidade visual/referências e CTA. Nenhum briefing inventado.
 - **Geração:** OpenArt e Creative Claw estão com 0 créditos. O gerador de imagem desta execução devolveu três colagens multi-marca; todas descartadas. Resultado desta execução: **0 imagens novas válidas, 0 uploads novos, 0 aprovações e 0 publicações**. Os arquivos existentes acima permanecem apenas como material já presente na branch; o estado do painel desses itens não foi confirmado nesta execução.
+
+## 2026-11-05 — Stories aprovados sem legenda
+
+Agenda consultada: seis contas ativas com Instagram, feeds e carrosséis da manhã marcados como publicados. Três stories aprovados de 09:00–09:05 continuavam prontos/agendados, com legenda vazia. O executor pulava a publicação antes da chamada à Meta. Ajuste restrito à validação de legenda de stories. Teste local da rotina com D1 e publicador simulados reproduziu a falha original e passou nos três cenários após a mudança. Próximo passo: integrar, verificar deploy e acompanhar esses itens na agenda, sem reenviar artes.
