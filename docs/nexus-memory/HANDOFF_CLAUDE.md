@@ -1116,6 +1116,14 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Rodrigo apagou o painel da Adimax e vai criar de novo pelo "Novo cliente" depois do merge.
 - Sem merge e sem deploy.
 
+## 06/11/2026 — Acesso e grupos no Master (Claude)
+- Causa da senha em branco: o servidor nunca gerava a senha, apesar do texto "Gerada automaticamente". Sem senha, nem criava o login.
+- Feito: `generatePortalPassword`, `client-access.js`, rota `/api/master/clients/:id/access`, `POST /api/master/groups`, `savedGroups`, `findGroup`, `createGroup`, `inheritBrandWord`.
+- Senha curta e usuário repetido agora são recusados antes de criar o cliente.
+- `giltec-neto` e `adimax-eduardo-soares` seguem sem login até o Rodrigo usar o Copiar acesso depois do deploy.
+- A ficha de `adimax-eduardo-soares` está com `#e2a107`, salva pelo Master. Não foi alterada.
+- Sem merge e sem deploy.
+
 ## 06/11/2026 — Deploy conferido, Nexus AI e Pedir ajuste (Claude)
 - #600 já estava publicado. Depois dele, a `main` só recebeu fichas, sem código.
 - Nexus AI: marca salva em produção pelo Master, a pedido do Rodrigo. Ficha atualizada. Nenhuma arte foi criada.

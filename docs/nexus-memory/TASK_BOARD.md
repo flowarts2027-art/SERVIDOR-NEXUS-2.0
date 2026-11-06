@@ -118,5 +118,7 @@ Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, n
 
 - [ ] 2026-10-28 Gemini gera a campanha diária da GILTEC sozinho (6h–8h), logo automática, esperando aprovação — PR aberto pelo Claude, falta o OK do Rodrigo.
 
+- [ ] 2026-11-06 Acesso fácil de copiar e grupos no Master: PR aguardando revisão do Rodrigo.
+
 - [ ] 2026-11-06 Pedir ajuste com imagem nova: PR aguardando revisão do Rodrigo.
 - [x] 2026-11-06 Nexus AI com camada de texto: marca salva em produção pelo Master.

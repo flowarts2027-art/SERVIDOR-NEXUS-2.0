@@ -9,7 +9,7 @@ import { WINDOW_MOVES } from "./art-format.js";
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
-import { ensureGroupClients, groupFromTarget, groupMembers, groupOptions, vendorCaption } from "./client-groups.js";
+import { createGroup, ensureGroupClients, findGroup, groupMembers, groupOptions, vendorCaption } from "./client-groups.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
@@ -42,7 +42,9 @@ export async function nextCaption(env, client, format = "post") {
 }
 
 async function activeClient(env, id) {
-  const clientId = String(groupFromTarget(id)?.members[0].clientId || id || "").trim();
+  const group = await findGroup(env, id);
+  const [first] = group ? await groupMembers(env, group) : [];
+  const clientId = String(first?.clientId || id || "").trim();
   if (!clientId || BLOCKED_PUBLISH_CLIENTS.has(clientId)) throw new Error("client_invalid");
   const client = await getClient(env, clientId);
   if (!client) throw new Error("client_invalid");
@@ -100,6 +102,7 @@ async function slotTaken(env, clientId, scheduledFor, isStory) {
 async function groupUpload(env, group, form, now, overrides) {
   await ensureGroupClients(env);
   const team = { ...group, members: await groupMembers(env, group) };
+  if (!team.members.length) throw new Error("group_empty");
   const story = String(form.get("type") || "").trim() === "story";
   const results = [];
   for (let i = 0; i < team.members.length; i++) {
@@ -130,7 +133,7 @@ async function groupUpload(env, group, form, now, overrides) {
 }
 
 export async function masterUpload(env, form, now = new Date(), overrides = {}) {
-  const group = groupFromTarget(form.get("clientId"));
+  const group = await findGroup(env, form.get("clientId"));
   if (group) return groupUpload(env, group, form, now, overrides);
   const client = await activeClient(env, form.get("clientId"));
   const type = TYPES[String(form.get("type") || "").trim()];
@@ -155,13 +158,17 @@ export async function masterUpload(env, form, now = new Date(), overrides = {}) 
   });
 }
 
-const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories.", slot_taken: "Já tem um post neste horário. Cancele o antigo no painel para trocar." };
+const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, group_name: "Escreva o nome do grupo, de 2 a 40 letras.", group_exists: "Já existe um grupo com este nome.", group_empty: "Este grupo ainda não tem cliente.", client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories.", slot_taken: "Já tem um post neste horário. Cancele o antigo no painel para trocar." };
 
 // Rotas: GET /api/master/caption, GET /api/master/legendas e POST /api/master/upload. Quem chama já conferiu o login do Master.
 export async function handleMasterUpload(request, env, url) {
   try {
     if (url.pathname === "/api/master/groups" && request.method === "GET") {
       return send({ ok: true, groups: await groupOptions(env) });
+    }
+    if (url.pathname === "/api/master/groups" && request.method === "POST") {
+      const body = await request.json().catch(() => ({}));
+      return send({ ok: true, group: await createGroup(env, body.name) });
     }
     if (url.pathname === "/api/master/caption" && request.method === "GET") {
       const client = await activeClient(env, url.searchParams.get("clientId"));

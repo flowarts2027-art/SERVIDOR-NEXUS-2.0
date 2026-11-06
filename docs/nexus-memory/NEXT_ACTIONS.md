@@ -1,3 +1,9 @@
+## 2026-11-06 — Depois do merge do acesso e dos grupos
+1. Conferir o deploy.
+2. Abrir Acesso de `giltec-neto` e `adimax-eduardo-soares` e tocar em "Copiar acesso". Foram criados sem senha, então ainda não têm login.
+3. Rodrigo conferir a cor da ficha de `adimax-eduardo-soares`: está `#e2a107`, e o combinado é `#F2A900`.
+4. Criar um grupo de teste com login real e conferir a logo no painel de um cliente novo.
+
 ## 2026-11-06 — Depois do merge do Pedir ajuste
 1. Conferir o deploy.
 2. Testar um ajuste num post da Flow Arts que esteja esperando aprovação e olhar a arte. A geração real nunca rodou em produção.

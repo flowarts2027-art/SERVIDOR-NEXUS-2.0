@@ -1,3 +1,8 @@
+## 2026-11-06 — Acesso fácil de copiar e grupos no Master (PR aberto, sem deploy)
+- Novo cliente com senha vazia agora gera a senha. Antes o cliente nascia sem login.
+- Botão grande "Copiar acesso" no Novo cliente e no Acesso, com a mensagem pronta para o WhatsApp.
+- Botão "+ Novo grupo". Cliente novo do grupo herda logo, cores e palavra do botão.
+
 ## 2026-11-06 — Pedir ajuste com imagem nova (PR aberto, sem deploy)
 - O ajuste do cliente cria outra imagem no gerador grátis e volta para ele aprovar.
 - Quem não recebe imagem gerada vira aviso no Master, sem apagar a arte.
