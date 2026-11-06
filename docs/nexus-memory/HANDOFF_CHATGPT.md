@@ -386,3 +386,8 @@ A partir de agora, `nexus_enviar_arte` exige o campo `formato` (story, post, car
 - Luciana Carvalho: continua sem briefing comercial completo verificável. Faltam segmento/serviço, público, oferta, identidade visual/referências, CTA e conexão ativa do Instagram. Nenhuma arte criada.
 - Geração: saldo consultado nesta execução: OpenArt Free = 0 créditos; Creative Claw = 0 créditos. O gerador de imagem devolveu colagens multi-cliente com marcas/textos incorretos; ambas descartadas. Não houve imagem nova válida.
 - Resultado operacional: 0 imagens novas válidas, 0 uploads novos, 0 aprovações e 0 publicações. Arquivos existentes foram apenas auditados; nenhum foi sobrescrito. Próxima ação: restabelecer saldo/ferramenta de geração individual, obter packshots oficiais Quatree, reconciliar catálogo GILTEC, disponibilizar consulta de agenda Daniela e concluir o cadastro comercial/Instagram da Luciana.
+
+
+### Complemento da auditoria de 06/11 — Biblioteca
+- A busca na Biblioteca encontrou apenas artes Quatree geradas em 23/10 (ex.: “Quatree Supreme para gatos castrados”, “Quatree Supreme em destaque na loja”, “Quatree Supreme com golden retriever”). Elas já são peças promocionais antigas, com textos/embalagens compostos por IA; não são o catálogo oficial/packshots originais. Não reutilizar nem recortar essas imagens para a campanha de 06/11.
+- A busca na Biblioteca por catálogo oficial Quatree 2026 e briefing comercial de Luciana Carvalho não encontrou o arquivo/briefing solicitado. Mantidos os bloqueios descritos acima.
