@@ -1,10 +1,11 @@
 ## 2026-11-05 — Depois do merge do Criar com agente
 1. Testar o botão em um dia da Flow Arts e olhar a arte antes de confiar. A geração nunca rodou em produção.
-2. Rodrigo decide se o vigia também deixa de gerar para a GILTEC.
+2. Rodrigo cria de novo a Adimax pelo "Novo cliente": logo preta, palavra QUERO e cores digitadas à mão: principal e destaque `#F2A900`, texto `#000000`.
+3. Encher a Biblioteca da GILTEC antes de sair da pausa: sem imagem gerada, é a reserva dela.
 
 ## 2026-11-05 — Depois do merge da logo no painel
-1. Adimax, no lápis: enviar a logo preta, cores `#FFA500` e preto, palavra QUERO.
-2. Conferir o cartão laranja no painel da Adimax, com login real.
+1. Adimax, no lápis: enviar a logo preta, principal e destaque `#F2A900`, texto `#000000`, palavra QUERO.
+2. Conferir o cartão amarelo-ouro no painel da Adimax, com login real.
 3. Conferir na lista de grupos se aparece "Quatree Dog (Ericsson)". Se o Eduardo continuar, tirar o grupo do painel dele no Acesso.
 4. A logo recortada da capa tem 255 px, abaixo do mínimo de 300 px. Pedir a logo original.
 

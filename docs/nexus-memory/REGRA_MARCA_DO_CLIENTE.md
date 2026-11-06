@@ -22,7 +22,8 @@ Pedido do Rodrigo em 05/11/2026. Logo, cores e palavra do botão mudam sem coman
 - No celular, a mesma logo aparece no topo.
 - O menu usa a cor do texto, que é sempre escura.
 - Logo escura vai num cartão de cantos arredondados, na cor principal. Se a principal também for escura, o cartão é branco.
-- Adimax: cartão laranja `#FFA500`, logo preta, painel laranja e preto.
+- Adimax: cartão amarelo-ouro `#F2A900`, logo e texto pretos, painel amarelo-ouro e preto. Marca oficial no Instagram @adimaxoficial.
+- Logo toda preta: o editor ignora o preto e preenche azul-marinho `#1c283a`. As cores precisam ser digitadas à mão.
 
 ## Grupos
 Painel de grupo usa a marca do grupo, a não ser que tenha marca própria. Sheila (`giltec-locacoes`) entra pelo campo Grupo. A pausa de postagem continua.
@@ -32,4 +33,4 @@ Painel de grupo usa a marca do grupo, a não ser que tenha marca própria. Sheil
 - Cliente com palavra do botão salva: título criado na hora pela IA grátis, lendo a ficha, e arte montada no GitHub Actions (`compor_arte.py`).
 - O título não aceita número, preço nem porcentagem.
 - Cliente sem marca salva continua com a camada de texto do deploy.
-- Quatree Dog e Daniela Martins seguem sem imagem gerada, mesmo com marca salva.
+- Quatree Dog, Daniela Martins, Adimax e GILTEC seguem sem imagem gerada, mesmo com marca salva.

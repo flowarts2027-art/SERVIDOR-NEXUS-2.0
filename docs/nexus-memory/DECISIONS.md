@@ -245,3 +245,13 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: o botão fica só nas linhas de falta. Linha de problema já tem post gravado, e o vigia cuida dela.
 - Decisão do Claude: sem cair na Biblioteca, para o selo dizer a verdade.
 - Decisão do Claude: a página Enviar artes também passou a preencher 2 + 2, para o texto não mentir.
+
+## 2026-11-05 — GILTEC sem imagem gerada (Rodrigo)
+- O vigia não gera imagem para `giltec` e `giltec-locacoes`, nem depois de sair da pausa.
+- O painel da Adimax foi apagado pelo Rodrigo. Ele cria de novo depois do merge.
+- Decisão do Claude: a regra vale para o grupo inteiro, para vendedora nova não escapar por ter outro id.
+
+## 2026-11-06 — Cor da Adimax (Rodrigo)
+- A marca oficial (@adimaxoficial) é ADIMAX em preto sobre amarelo-ouro. `#FFA500` estava errado.
+- Valem principal e destaque `#F2A900`, texto `#000000`, logo preta.
+- Decisão do Claude: destaque igual à principal. Destaque preto sumiria no menu escuro, e o botão das artes sai amarelo-ouro com letra preta.

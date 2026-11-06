@@ -20,12 +20,12 @@ const WATCH_AHEAD_MS = 6 * 3600000;
 const WATCH_BEHIND_MS = 30 * 60000; // o erro pode ter aparecido em cima da hora
 const MAX_TRIES = 2;
 export const COMPOSE_WAIT_MS = 20 * 60000;
-// Daniela: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
-const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo"]));
+// Daniela e GILTEC: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
+const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo", "giltec", "giltec-locacoes"]));
 // O painel da Adimax nasce pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
 const NO_GENERATION_RE = /(^|-)adimax(-|$)/;
-// Botão "Criar com agente": além da lista acima, vale para todo o grupo. GILTEC e Quatree não usam imagem gerada.
-const NO_AGENT_GROUPS = Object.freeze(new Set(["giltec", "quatree-dog"]));
+// Vendedor novo entra pelo campo Grupo do Master, com outro id. A regra vale para o grupo inteiro.
+const NO_GENERATION_GROUPS = Object.freeze(new Set(["giltec", "quatree-dog"]));
 const ERROR_RE = /^media_generation_required$|^format_build_failed$|retry_limit_reached$|^format_mismatch$/;
 const SAFE_ZONES = " Composition: keep the top third and the bottom third of the frame free of people and animals, with calm background only. "
   + "Main subject in the center. Do not show any branded product, packaging or label. Do not write any text, letters or logos.";
@@ -33,6 +33,10 @@ const SAFE_ZONES = " Composition: keep the top third and the bottom third of the
 export function receivesGeneratedImage(clientId) {
   const id = String(clientId || "");
   return !NO_GENERATION_CLIENTS.has(id) && !NO_GENERATION_RE.test(id);
+}
+
+function usesGeneratedImage(client) {
+  return receivesGeneratedImage(client.id) && !NO_GENERATION_GROUPS.has(clientGroup(client)?.id);
 }
 
 function parse(text) {
@@ -64,14 +68,14 @@ async function remount(env, client, payload, target) {
   const url = String(payload.imageUrl || payload.publicImageUrl || "");
   if (!url) return null;
   // Rascunho de agente é imagem de IA: para quem não recebe imagem gerada, não vale como original.
-  if (!receivesGeneratedImage(client.id) && String(payload.source || "").startsWith("agent-core")) return null;
+  if (!usesGeneratedImage(client) && String(payload.source || "").startsWith("agent-core")) return null;
   const size = await mediaSize(env, url);
   if (!size || windowError(target === "story" ? "story" : "feed", size)) return null;
   return { url, source: "imagem-original" };
 }
 
 async function generate(env, client, row, target, deps) {
-  if (!receivesGeneratedImage(client.id)) return null;
+  if (!usesGeneratedImage(client)) return null;
   const frames = await deps.loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
   const brand = await deps.brand(env, client);
@@ -196,7 +200,7 @@ export const WATCHER_DEPS = {
 
 // Quem pode ter arte criada pelo agente: usa imagem gerada e tem onde escrever título, logo e botão.
 export async function canCreateArt(env, client, deps = WATCHER_DEPS) {
-  if (!receivesGeneratedImage(client.id) || NO_AGENT_GROUPS.has(clientGroup(client)?.id)) return false;
+  if (!usesGeneratedImage(client)) return false;
   const brand = await deps.brand(env, client).catch(() => null);
   if (brand?.buttonWord) return true;
   const frames = await deps.loadFrames(env).catch(() => null);
