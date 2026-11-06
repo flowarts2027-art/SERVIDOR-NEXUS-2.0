@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=49">
+  <link rel="stylesheet" href="/styles.css?v=50">
 </head>
 <body>
   <div class="shell">
@@ -68,6 +68,13 @@
       </section>
 
       <section id="clients" class="view">
+        <div class="panel" id="brand-panel">
+          <div class="panel-head"><div><p class="eyebrow">MARCA</p><h2>Marca do cliente ou do grupo</h2></div></div>
+          <label>Cliente ou grupo<select id="brand-target"></select></label>
+          <div id="brand-editor"></div>
+          <button class="primary" type="button" id="brand-save">Salvar</button>
+          <p id="brand-status" class="form-status" role="status"></p>
+        </div>
         <div class="panel signup-panel" id="signup-panel">
           <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
           <div id="signup-list"><p class="muted">Carregando…</p></div>
@@ -442,6 +449,7 @@
               <div><span>2</span><strong>Cliente entra no NEXUS</strong><small>Sem cadastro técnico externo.</small></div>
               <div><span>3</span><strong>Autoriza o Instagram</strong><small>Única autorização prevista para o cliente.</small></div>
             </div>
+            <div class="brand-new"><h3>Logo do cliente (opcional)</h3><div id="new-client-brand"></div></div>
             <div class="theme-preview" id="theme-preview"><span>PRÉVIA</span><strong>Seu agente, sua marca.</strong><small>Automação inteligente e independente</small></div>
             <button class="primary" type="submit">Criar acesso do cliente</button>
             <span id="form-status" class="form-status"></span>
@@ -642,7 +650,8 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/app.js?v=57" defer></script>
+  <script src="/brand-editor.js?v=1" defer></script>
+  <script src="/app.js?v=58" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>

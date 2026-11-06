@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-05 — MARCA-001: marca do cliente pelo Master (Claude)
+Branch `feat/marca-do-cliente-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy.
+
+
 ## 2026-11-05 — VIGIA-001: cliente nunca fica sem post (Claude)
 Branch `feat/vigia-cliente-nunca-sem-post-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy.
 

@@ -1,0 +1,49 @@
+name: Montar arte com a marca do cliente
+
+# O vigia manda a foto, o título, o botão e a logo. Aqui as letras são desenhadas
+# (scripts/social/compor_arte.py) e a arte volta para o Nexus.
+on:
+  repository_dispatch:
+    types: [art-compose]
+
+permissions:
+  contents: read
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event.client_payload.post_id != ''
+    steps:
+      - name: Conferir os dados
+        shell: bash
+        env:
+          DATA: ${{ toJson(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$DATA" > /tmp/arte.json
+          BASE="https://servidor-nexus.diamantehinode2015.workers.dev"
+          echo "::add-mask::$(jq -r '.callback_token' /tmp/arte.json)"
+          jq -e '(.title|type=="array" and length==3) and (.button|type=="string")' /tmp/arte.json >/dev/null
+          case "$(jq -r '.photo' /tmp/arte.json)" in "$BASE/media/posts/"*) ;; *) exit 1 ;; esac
+          case "$(jq -r '.logo // ""' /tmp/arte.json)" in ""|"$BASE/media/branding/"*) ;; *) exit 1 ;; esac
+          case "$(jq -r '.callback_url' /tmp/arte.json)" in "$BASE/api/internal/art-compose/"*) ;; *) exit 1 ;; esac
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/social
+
+      - name: Preparar fonte e Pillow
+        run: |
+          python3 -m pip install --quiet --break-system-packages "pillow==12.3.0" || python3 -m pip install --quiet "pillow==12.3.0"
+          mkdir -p scripts/social/fonts
+          curl -fsSL -o "scripts/social/fonts/Montserrat[wght].ttf" "https://raw.githubusercontent.com/google/fonts/main/ofl/montserrat/Montserrat%5Bwght%5D.ttf"
+
+      - name: Montar e devolver
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/social/compor_arte.py /tmp/arte.json /tmp/arte.jpg
+          curl -fsS -X POST "$(jq -r '.callback_url' /tmp/arte.json)" \
+            -H "x-nexus-callback: $(jq -r '.callback_token' /tmp/arte.json)" \
+            -H "content-type: image/jpeg" --data-binary @/tmp/arte.jpg

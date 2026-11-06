@@ -49,8 +49,7 @@ def moldura(cartao, tema, story):
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     # Em cima: logo + título (3ª linha no destaque).
-    cd.colar_logo(img, dict(tema, logo_alt=L["logo_alt"]), L["margem"], L["topo"])
-    d = ImageDraw.Draw(img)
+    # A logo fica numa camada própria (marca), para o Master poder trocar sem deploy.
     f = cd.fonte_titulo(L["tam"], 800)
     y = L["topo"] + L["logo_alt"] + 34
     for linha, cor in zip(L["titulo"], (txt, txt, dest)):
@@ -75,6 +74,14 @@ def moldura(cartao, tema, story):
     d.rounded_rectangle([bx, bb, bx + bw, bb + bh], radius=bh // 2, fill=dest)
     chamada = tema.get("botao_story", "MANDE QUERO NO DIRECT") if story else tema.get("botao", "COMENTE QUERO")
     d.text((W // 2, bb + bh // 2), chamada, font=cd.fonte_titulo(cd.cabe(chamada, 800, 48, bw - 70), 800), fill=tema["botao_texto"], anchor="mm")
+    return img
+
+
+def marca(tema, story):
+    """Identidade do deploy: logo oficial, ou o nome do cliente se ele não tiver logo."""
+    W, H = (1080, 1920) if story else (1080, 1350)
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    cd.colar_logo(img, dict(tema, logo_alt=112 if story else 104), 64, 270 if story else 48)
     return img
 
 
@@ -104,6 +111,7 @@ def gerar(saida):
                 nome = f"{tipo}-{i + 1}.png"
                 img.save(os.path.join(pasta, nome), optimize=True)
                 info[tipo].append({"arquivo": f"{cliente}/{nome}"})
+            marca(tema, story).save(os.path.join(pasta, f"marca-{tipo}.png"), optimize=True)
             topo = 270 if story else 48
             info["numero"][tipo] = {"left": 1080 - 64 - 68, "top": topo + 18}
         for k in range(1, 6):

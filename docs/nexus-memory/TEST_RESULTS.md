@@ -328,3 +328,9 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - 05/11 14:50: agente, aprovação pendente, `format_build_retry_limit_reached`, causa `cf_image_failed: Too many subrequests`.
 - Testes do vigia com geração simulada. Workers AI não foi chamado.
 - Não testado em produção. Nenhuma publicação real foi feita.
+
+## 2026-11-05 — Marca do cliente (Claude, antes do merge)
+- `test/client-identity.test.mjs` com SQLite de verdade e GitHub simulado.
+- `compor_arte.py` rodou no PC com Pillow: arte 1080x1350 e 1080x1920, foto inteira, logo, título e botão.
+- Editor no Chrome sem tela: extraiu #04102c e #ffc20e de uma logo de teste, tirou o fundo branco e manteve a marca.
+- Não testado: login real, token do GitHub, workflow `art-compose` e título real do Workers AI.

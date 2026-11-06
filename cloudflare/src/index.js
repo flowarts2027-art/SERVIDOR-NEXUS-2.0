@@ -20,7 +20,8 @@ import { warmYoutubePosterLibrary } from "./youtube-poster-demand.js";
 import { refreshSchedulerIfStale } from "./watchdog.js";
 import { processDueJobs, isPublisherOnlyMinute } from "./executor.js";
 import { runPublisherRound } from "./publisher-round.js";
-import { isWatcherMinute, runPostWatcher } from "./post-watcher.js";
+import { finishComposedArt, isWatcherMinute, runPostWatcher } from "./post-watcher.js";
+import { handleBrand } from "./client-identity.js";
 import { handleClientName } from "./client-name.js";
 import { missingPostsBoard, sendMissingPostsAlert } from "./missing-posts.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
@@ -687,6 +688,13 @@ export default {
     const siteRedirect = canonicalSiteRedirect(url, request.method);
     if (siteRedirect) return Response.redirect(siteRedirect, 301);
 
+    // Arte montada no GitHub volta aqui, com a senha de uso único do pedido.
+    const composed = url.pathname.match(/^\/api\/internal\/art-compose\/([^/]+)$/);
+    if (composed && request.method === "POST") {
+      const out = await finishComposedArt(env, decodeURIComponent(composed[1]), request.headers.get("x-nexus-callback"), new Uint8Array(await request.arrayBuffer()));
+      return json(out, out.status);
+    }
+
     // Conector MCP (Claude/ChatGPT), só leitura no passo 1. Ver src/mcp-server.js.
     if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
       const mcpResponse = await handleMcpRequest(request, env, url);
@@ -932,6 +940,13 @@ export default {
       if (!master) return json({ error: "unauthorized" }, 401);
       const response = await handleAnimatedReelMaster(request, env, url);
       if (response) return response;
+    }
+
+    // Aba Marca e Novo cliente: logo, cores e palavra do botão. Só com login do Master.
+    if (url.pathname === "/api/master/brand") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      return handleBrand(request, env, url);
     }
 
     // Lápis do Master: troca o nome que aparece, sem mexer no id. Só com login do Master.

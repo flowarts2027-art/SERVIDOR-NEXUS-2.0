@@ -245,3 +245,10 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Post aprovado que passar 24 horas do horário durante a pausa vira `approved_post_missed`. Ele fica guardado e pode ser reagendado.
 - O agente "Texto nas artes" continua passando nos posts abertos da GILTEC.
 - Liberar exige um PR pequeno: tirar o id de `NEXUS_PAUSED_CLIENTS` e voltar a GILTEC ao workflow.
+
+## 2026-11-05 — Limites da marca do cliente
+- Substituta de cliente com marca leva alguns minutos, porque a arte volta do GitHub Actions. Sem token válido, cai na Biblioteca.
+- Título na hora só existe no vigia. Upload do painel segue a camada do deploy.
+- Cliente sem camada do deploy e com marca salva não recebe texto em foto enviada pelo painel.
+- Sem lista oficial de produtos: o título usa nicho, oferta e serviços da ficha. A lista está na fila de 06/11.
+- As cores no painel do cliente cobrem destaque, abas e botões principais. Falta conferir com login real.
