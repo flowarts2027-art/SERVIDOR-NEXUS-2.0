@@ -382,6 +382,25 @@ export async function insertPortalUserRecord(env, clientId, username, record) {
   return { clientId: cleanClientId, username: cleanUsername };
 }
 
+// Sem letras parecidas (l, I, 1, O, 0): a senha é lida no WhatsApp e digitada à mão.
+export function generatePortalPassword() {
+  const letters = "abcdefghjkmnpqrstuvwxyz23456789";
+  const limit = 256 - (256 % letters.length);
+  const out = [];
+  while (out.length < 12) {
+    for (const byte of crypto.getRandomValues(new Uint8Array(16))) {
+      if (byte < limit && out.length < 12) out.push(letters[byte % letters.length]);
+    }
+  }
+  return out.join("");
+}
+
+export async function portalUsernameOf(env, clientId) {
+  await ensureAuthRuntimeSchema(env);
+  const row = await env.DB.prepare("SELECT username FROM portal_users WHERE client_id = ?1 LIMIT 1").bind(String(clientId || "")).first();
+  return row?.username || "";
+}
+
 export async function portalUsernameTaken(env, username) {
   await ensureAuthRuntimeSchema(env);
   const row = await env.DB.prepare(

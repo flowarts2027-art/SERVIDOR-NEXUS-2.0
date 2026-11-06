@@ -206,13 +206,15 @@ export function clientGroup(client) {
     if (member) return groupView(id, group, member.vendor);
   }
   const saved = client?.config?.group;
-  if (!saved?.vendor || !Object.hasOwn(CLIENT_GROUPS, String(saved.id || ""))) return null;
-  return groupView(saved.id, CLIENT_GROUPS[saved.id], String(saved.vendor));
+  if (!saved?.vendor) return null;
+  if (Object.hasOwn(CLIENT_GROUPS, String(saved.id || ""))) return groupView(saved.id, CLIENT_GROUPS[saved.id], String(saved.vendor));
+  // Grupo criado no Master: o nome vem junto, porque esta função não lê o banco.
+  return saved.name ? groupView(String(saved.id), { name: String(saved.name) }, String(saved.vendor)) : null;
 }
 
 // De quem vêm a logo e as regras da marca: do 1º vendedor, em grupo com "sharedBrand". Fora disso, do próprio cliente.
 export function brandClientId(client) {
   const group = clientGroup(client);
-  if (group && CLIENT_GROUPS[group.id].sharedBrand) return CLIENT_GROUPS[group.id].members[0].clientId;
+  if (group && CLIENT_GROUPS[group.id]?.sharedBrand) return CLIENT_GROUPS[group.id].members[0].clientId;
   return String(client?.id ?? client ?? "");
 }

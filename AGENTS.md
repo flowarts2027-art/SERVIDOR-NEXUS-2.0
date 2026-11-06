@@ -47,6 +47,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins, Quatree Dog, Adimax e GILTEC não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
 
+## Pedir ajuste (Rodrigo, 06/11/2026)
+
+**Arte refeita a pedido do cliente sempre volta para ele aprovar.** Quem não recebe imagem gerada vira aviso no Master. Ver `docs/nexus-memory/REGRA_PEDIR_AJUSTE.md`.
+
 ## Marca do cliente (Rodrigo, 05/11/2026)
 
 **Logo, cores e palavra do botão vêm do Master.** Antes de criar arte, leia `docs/nexus-memory/clientes/<id>/marca.json` se existir. Ver `docs/nexus-memory/REGRA_MARCA_DO_CLIENTE.md`.

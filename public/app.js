@@ -22,7 +22,6 @@ async function assumeClient(clientId) {
 }
 
 // Endereço do painel do cliente no domínio da Flow Arts (não o endereço técnico workers.dev).
-const CLIENT_PANEL_URL = "https://painel.flowarts.com.br/";
 
 function api(path, options = {}) {
   const headers = { "content-type": "application/json", ...(options.headers || {}) };
@@ -943,6 +942,24 @@ $("#portal-group-save")?.addEventListener("click",async()=>{
 const portalAccessDialog=$("#portal-access-dialog");
 const portalAccessForm=$("#portal-access-form");
 const closePortalAccess=()=>{if(portalAccessDialog?.open)portalAccessDialog.close();};
+let portalAccessHasLogin=false;
+// A senha salva não pode ser lida. Por isso o botão copia a senha digitada ou cria uma nova.
+$("#portal-access-copy")?.addEventListener("click",async()=>{
+  const clientId=$("#portal-access-client-id").value;
+  const field=$("#portal-access-password");
+  const status=$("#portal-access-status");
+  const resetPassword=!field.value&&portalAccessHasLogin;
+  if(resetPassword&&!window.confirm("Este cliente já tem senha, e ela não pode ser lida.\n\nPara copiar o acesso, o Nexus cria uma senha nova. A senha antiga para de funcionar. Continuar?"))return;
+  status.textContent="Preparando…";
+  try{
+    const out=await api("/api/master/clients/"+encodeURIComponent(clientId)+"/access",{method:"POST",body:JSON.stringify({username:$("#portal-access-username").value,password:field.value,resetPassword})});
+    portalAccessHasLogin=true;
+    field.type="text";
+    field.value=out.password;
+    status.textContent="";
+    await copyAccess(out.message,portalAccessDialog);
+  }catch(error){status.textContent=error.detail||error.message||"Não consegui preparar o acesso.";}
+});
 $("#portal-access-close")?.addEventListener("click",closePortalAccess);
 $("#portal-access-cancel")?.addEventListener("click",closePortalAccess);
 $("#post-show-removed")?.addEventListener("change",event=>{state.postShowRemoved=event.target.checked;renderPostLedger();});
@@ -985,6 +1002,7 @@ $("#client-form").addEventListener("submit", async event => {
   try {
     const result = await api("/api/clients", { method: "POST", body: JSON.stringify(data) });
     form.reset();
+    syncNewClientGroup();
     $("#form-status").textContent = "Cliente criado. Envie somente o acesso abaixo.";
     // Com logo, o painel já nasce com a marca. Sem logo, fica o tema padrão.
     if (newClientBrand?.hasLogo() && result.client?.id) {
@@ -995,8 +1013,8 @@ $("#client-form").addEventListener("submit", async event => {
     $("#new-client-user").textContent = "Usuário: " + (access.username || "—");
     $("#new-client-password").textContent = "Senha: " + (access.initialPassword || "—");
     const igHandle = String(result.client?.instagram || data.instagram || "").trim().replace(/^@+/, "");
-    $("#new-client-access").dataset.access = "NEXUS AI\nAcesso: " + CLIENT_PANEL_URL + "\nUsuário: " + (access.username || "") + "\nSenha: " + (access.initialPassword || "")
-      + (igHandle ? "\n\nAntes de conectar o Instagram: aceite o convite em " + IG_TESTER_INVITES_URL + " (aba Convites de testador)." : "");
+    $("#new-client-access").dataset.access = access.message || "";
+    resetCopied($("#new-client-access"));
     const tester = $("#tester-invite");
     if (tester) {
       tester.dataset.handle = igHandle;
@@ -1082,9 +1100,19 @@ document.addEventListener("click", async event => {
     const clientName=accessButton.dataset.clientName||clientId;
     $("#portal-access-client-id").value=clientId;
     $("#portal-access-title").textContent="Acesso de "+clientName;
-    $("#portal-access-username").value=clientId==="ragnar-one"?"ragnar.one":clientId.replace(/-/g,".");
+    $("#portal-access-username").value="";
     $("#portal-access-password").value="";
-    $("#portal-access-status").textContent="";
+    $("#portal-access-password").type="password";
+    $("#portal-access-status").textContent="Carregando…";
+    $("#portal-access-copy").disabled=true;
+    resetCopied(portalAccessDialog);
+    api("/api/master/clients/"+encodeURIComponent(clientId)+"/access").then(out=>{
+      if($("#portal-access-client-id").value!==clientId)return;
+      $("#portal-access-username").value=out.username||"";
+      portalAccessHasLogin=Boolean(out.hasLogin);
+      $("#portal-access-status").textContent="";
+      $("#portal-access-copy").disabled=false;
+    }).catch(error=>{$("#portal-access-status").textContent=error.detail||error.message||"Não consegui carregar o acesso.";});
     const chosen=state.clients.find(client=>client.id===clientId);
     $("#portal-group-box").hidden=Boolean(chosen?.groupFixed);
     $("#portal-group").value=chosen?.group?"grupo:"+chosen.group:"";
@@ -1205,6 +1233,7 @@ if(openaiMasterForm)openaiMasterForm.addEventListener("submit",async event=>{
 
 // Marca do cliente (05/11/2026): "Novo cliente" e lápis usam o mesmo editor.
 const newClientBrand = window.BrandEditor && $("#new-client-brand") ? window.BrandEditor.mount($("#new-client-brand")) : null;
+const newGroupBrand = window.BrandEditor && $("#group-new-brand") ? window.BrandEditor.mount($("#group-new-brand")) : null;
 const editBrand = window.BrandEditor && $("#client-edit-brand") ? window.BrandEditor.mount($("#client-edit-brand")) : null;
 const clientEditDialog = $("#client-edit-dialog");
 let clientEdit = null;
@@ -1304,7 +1333,6 @@ setInterval(async()=>{
 },60000);
 
 // Convite de testador: a Meta não tem API para isso. O Master copia o @ e abre a Meta.
-const IG_TESTER_INVITES_URL="https://www.instagram.com/accounts/manage_access/";
 const META_APPS_URL="https://developers.facebook.com/apps/";
 const testerInviteButton=$("#tester-invite-open");
 if(testerInviteButton)testerInviteButton.addEventListener("click",async()=>{
@@ -1315,13 +1343,62 @@ if(testerInviteButton)testerInviteButton.addEventListener("click",async()=>{
   catch{alert("Copie o @: "+handle);}
 });
 
-const copyAccessButton=$("#copy-client-access");
-if(copyAccessButton)copyAccessButton.addEventListener("click",async()=>{
+function resetCopied(box){
+  box.querySelector(".access-copied").hidden=true;
+  box.querySelector(".access-fallback").hidden=true;
+}
+// Se o navegador bloquear a cópia, o texto fica na tela para copiar com o dedo.
+async function copyAccess(text,box){
+  resetCopied(box);
+  try{await navigator.clipboard.writeText(text);box.querySelector(".access-copied").hidden=false;}
+  catch{const area=box.querySelector(".access-fallback");area.value=text;area.hidden=false;area.select();}
+}
+$("#copy-client-access")?.addEventListener("click",()=>{
   const card=$("#new-client-access");
-  const text=card?.dataset.access||"";
-  if(!text)return;
-  try{await navigator.clipboard.writeText(text);copyAccessButton.textContent="Acesso copiado";setTimeout(()=>copyAccessButton.textContent="Copiar acesso",1500);}
-  catch{alert(text);}
+  if(card.dataset.access)copyAccess(card.dataset.access,card);
+});
+
+// Grupo escolhido no Novo cliente: logo, cores e palavra vêm do grupo, e a tela não pede de novo.
+function syncNewClientGroup(){
+  const inGroup=Boolean($("#client-form select[name=group]").value);
+  $("#new-client-inherits").hidden=!inGroup;
+  $("#new-client-brand-box").hidden=inGroup;
+  $("#new-client-theme").hidden=inGroup;
+  $("#theme-preview").hidden=inGroup;
+  if(inGroup)newClientBrand?.load(null);
+}
+$("#client-form select[name=group]").addEventListener("change",syncNewClientGroup);
+
+// "+ Novo grupo" (06/11/2026). Se a marca falhar, o grupo já existe: tentar de novo só salva a marca.
+const groupNewDialog=$("#group-new-dialog");
+let newGroupTarget="";
+const closeGroupNew=()=>{if(groupNewDialog?.open)groupNewDialog.close();};
+$("#group-new-close")?.addEventListener("click",closeGroupNew);
+$("#group-new-cancel")?.addEventListener("click",closeGroupNew);
+$("#group-new-open")?.addEventListener("click",()=>{
+  newGroupTarget="";
+  $("#group-new-name").value="";
+  $("#group-new-name").disabled=false;
+  $("#group-new-status").textContent="";
+  newGroupBrand?.load(null);
+  groupNewDialog.showModal();
+});
+$("#group-new-form")?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const status=$("#group-new-status");
+  if(!newGroupBrand?.hasLogo()){status.textContent="Envie a logo do grupo.";return;}
+  status.textContent="Salvando…";
+  try{
+    if(!newGroupTarget){
+      const out=await api("/api/master/groups",{method:"POST",body:JSON.stringify({name:$("#group-new-name").value})});
+      newGroupTarget=out.group.id;
+      $("#group-new-name").disabled=true;
+      await loadClientGroups();
+    }
+    const saved=await newGroupBrand.save(newGroupTarget);
+    if(saved.ficha!=="atualizada"){status.textContent="Grupo criado, mas a ficha do GitHub não foi atualizada ("+saved.ficha+").";return;}
+    closeGroupNew();
+  }catch(error){status.textContent=error.detail||error.message||"Não consegui criar o grupo. Tente de novo.";}
 });
 
 const campaignClient=$("#campaign-client");

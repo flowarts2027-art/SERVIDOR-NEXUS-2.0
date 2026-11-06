@@ -20,7 +20,7 @@ Pedido do Rodrigo em 05/11/2026. Vale para todos os clientes online.
 - A IA não escreve texto e não mostra produto ou embalagem de marca.
 - O Nexus confere com a IA grátis se há texto e se há pessoa ou animal nas áreas do texto. Se houver, descarta.
 - Título, botão e logo vêm da camada de texto do cliente, por cima da foto inteira.
-- Quem não tem camada de texto não recebe imagem gerada. Hoje isso vale para a Nexus AI.
+- Quem não tem camada de texto não recebe imagem gerada. A Nexus AI ganhou a dela em 06/11/2026, pela marca salva no Master.
 
 ## Quem não recebe imagem gerada
 - Daniela Martins: pedido do Rodrigo.

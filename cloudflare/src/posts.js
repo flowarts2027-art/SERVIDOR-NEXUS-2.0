@@ -1,7 +1,7 @@
 import { visualApproval } from "./visual-review.js";
 import { publishInstagramPost } from "./publisher.js";
 
-function parseJson(raw, fallback = {}) {
+export function parseJson(raw, fallback = {}) {
   try {
     const value = JSON.parse(String(raw || ""));
     return value && typeof value === "object" ? value : fallback;
@@ -24,7 +24,7 @@ function postImageKeyBelongsToClient(key, clientId) {
     && !value.includes("\\");
 }
 
-async function postRow(env, clientId, postId) {
+export async function postRow(env, clientId, postId) {
   return env.DB.prepare(
     `SELECT id, client_id, scheduled_for, scheduled_hour, status, approval_status,
             media_id, caption, image_object_key, error, cost_usd, payload_json,
@@ -33,7 +33,7 @@ async function postRow(env, clientId, postId) {
   ).bind(String(postId), String(clientId)).first();
 }
 
-function view(row) {
+export function view(row) {
   if (!row) return null;
   return {
     id: row.id,
@@ -54,7 +54,7 @@ function view(row) {
   };
 }
 
-async function updateRow(env, row, patch = {}) {
+export async function updateRow(env, row, patch = {}) {
   const payload = {
     ...parseJson(row.payload_json, {}),
     costUsd: Math.max(Number(row.cost_usd || 0), Number(parseJson(row.payload_json, {}).mediaGeneration?.costUsd || 0)),
@@ -108,6 +108,23 @@ export async function decidePost(env, client, postId, decision) {
   };
 }
 
+// Aviso no Master, na aba de chamados.
+export async function openRevisionTicket(env, client, row, text, subject) {
+  await env.DB.prepare(
+    `INSERT INTO support_tickets(id, client_id, status, subject, payload_json, created_at, updated_at)
+     VALUES(?1, ?2, 'open', ?3, ?4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+  ).bind(
+    "sup_" + crypto.randomUUID(),
+    client.id,
+    subject + " · " + (row.scheduled_hour || "postagem"),
+    JSON.stringify({
+      category: "Postagens / correção",
+      message: text,
+      postId: row.id
+    })
+  ).run();
+}
+
 export async function requestPostRevision(env, client, postId, instructions) {
   const text = String(instructions || "").trim().slice(0, 1600);
   if (!text) throw new Error("revision_instructions_required");
@@ -156,20 +173,7 @@ export async function requestPostRevision(env, client, postId, instructions) {
     JSON.stringify({ trigger: "client-revision", agent: "all", postId: row.id })
   ).run();
 
-  const ticketId = "sup_" + crypto.randomUUID();
-  await env.DB.prepare(
-    `INSERT INTO support_tickets(id, client_id, status, subject, payload_json, created_at, updated_at)
-     VALUES(?1, ?2, 'open', ?3, ?4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
-  ).bind(
-    ticketId,
-    client.id,
-    "Correção solicitada · " + (row.scheduled_hour || "postagem"),
-    JSON.stringify({
-      category: "Postagens / correção",
-      message: text,
-      postId: row.id
-    })
-  ).run();
+  await openRevisionTicket(env, client, row, text, "Correção solicitada");
 
   return {
     ok: true,

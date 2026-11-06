@@ -117,3 +117,8 @@ Concluído envio corretivo: **3stories exclusivos09h/12h/19h em CADA perfil**, n
 - [x] 2026-10-28 GILTEC: 3 posts (1 carrossel) + 3 stories com logo enviados ao painel pelo Claude, esperando aprovação do cliente (ver HANDOFF_CLAUDE 28/10 07h).
 
 - [ ] 2026-10-28 Gemini gera a campanha diária da GILTEC sozinho (6h–8h), logo automática, esperando aprovação — PR aberto pelo Claude, falta o OK do Rodrigo.
+
+- [ ] 2026-11-06 Acesso fácil de copiar e grupos no Master: PR aguardando revisão do Rodrigo.
+
+- [ ] 2026-11-06 Pedir ajuste com imagem nova: PR aguardando revisão do Rodrigo.
+- [x] 2026-11-06 Nexus AI com camada de texto: marca salva em produção pelo Master.

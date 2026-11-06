@@ -37,3 +37,11 @@ Pedido do Rodrigo em 05/11/2026.
 - Pronto e DESLIGADO. Liga com `NEXUS_MISSING_POSTS_WHATSAPP="true"` no `wrangler.jsonc`.
 - Uma única mensagem por dia, a partir das 8h, para o número comercial da Flow Arts.
 - Só ligar depois de a Meta liberar. Fora da janela de 24 horas a Meta exige modelo aprovado, e hoje a mensagem sai como texto comum.
+
+## Acesso do cliente (Rodrigo, 06/11/2026)
+- Senha vazia no Novo cliente: o Nexus gera 12 letras e números, sem letras parecidas.
+- "Copiar acesso" copia a mensagem de `cloudflare/src/client-access.js`. Depois aparece "Acesso copiado" em letras grandes.
+- A senha salva não pode ser lida, porque só o hash fica guardado.
+- No botão Acesso: senha digitada é a que vale. Campo vazio cria senha nova.
+- Se o cliente já tem login, o Nexus pede confirmação, porque a senha antiga para de funcionar.
+- A janela Acesso mostra o usuário real do cliente, e não mais um usuário adivinhado pelo id.

@@ -28,6 +28,13 @@ Pedido do Rodrigo em 05/11/2026. Logo, cores e palavra do botão mudam sem coman
 ## Grupos
 Painel de grupo usa a marca do grupo, a não ser que tenha marca própria. Sheila (`giltec-locacoes`) entra pelo campo Grupo. A pausa de postagem continua.
 
+- Botão "+ Novo grupo" em Clientes: nome, logo, cores e palavra do botão. A logo é obrigatória.
+- Grupo novo fica no banco (`nexus_state`, `client-group`). Quatree Dog e GILTEC seguem fixos em `CLIENT_GROUPS`.
+- A marca fica só no grupo. Mudar no lápis do grupo muda para todo cliente sem marca própria.
+- Cliente que entra no grupo já responde à palavra do botão. Sem nicho escrito, usa o nicho de quem já está no grupo.
+- Grupo com a palavra adimax no id também fica sem imagem gerada.
+- Grupo novo ainda não tem troca de nome. Campanha para grupo vazio é recusada com aviso.
+
 ## Artes
 - A logo salva entra na hora da montagem.
 - Cliente com palavra do botão salva: título criado na hora pela IA grátis, lendo a ficha, e arte montada no GitHub Actions (`compor_arte.py`).
