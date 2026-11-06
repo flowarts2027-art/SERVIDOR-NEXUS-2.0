@@ -22,7 +22,7 @@ const MAX_TRIES = 2;
 export const COMPOSE_WAIT_MS = 20 * 60000;
 // Daniela e GILTEC: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
 const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo", "giltec", "giltec-locacoes"]));
-// O painel da Adimax nasce pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
+// O painel e o grupo da Adimax nascem pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
 const NO_GENERATION_RE = /(^|-)adimax(-|$)/;
 // Vendedor novo entra pelo campo Grupo do Master, com outro id. A regra vale para o grupo inteiro.
 const NO_GENERATION_GROUPS = Object.freeze(new Set(["giltec", "quatree-dog"]));
@@ -36,7 +36,8 @@ export function receivesGeneratedImage(clientId) {
 }
 
 function usesGeneratedImage(client) {
-  return receivesGeneratedImage(client.id) && !NO_GENERATION_GROUPS.has(clientGroup(client)?.id);
+  const group = String(clientGroup(client)?.id || "");
+  return receivesGeneratedImage(client.id) && !NO_GENERATION_GROUPS.has(group) && !NO_GENERATION_RE.test(group);
 }
 
 function parse(text) {

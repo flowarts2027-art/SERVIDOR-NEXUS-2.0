@@ -1115,3 +1115,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Vigia bloqueado para a GILTEC, a pedido do Rodrigo, mesmo fora da pausa. Vale para todo o grupo GILTEC e Quatree.
 - Rodrigo apagou o painel da Adimax e vai criar de novo pelo "Novo cliente" depois do merge.
 - Sem merge e sem deploy.
+
+## 06/11/2026 — Acesso e grupos no Master (Claude)
+- Causa da senha em branco: o servidor nunca gerava a senha, apesar do texto "Gerada automaticamente". Sem senha, nem criava o login.
+- Feito: `generatePortalPassword`, `client-access.js`, rota `/api/master/clients/:id/access`, `POST /api/master/groups`, `savedGroups`, `findGroup`, `createGroup`, `inheritBrandWord`.
+- Senha curta e usuário repetido agora são recusados antes de criar o cliente.
+- `giltec-neto` e `adimax-eduardo-soares` seguem sem login até o Rodrigo usar o Copiar acesso depois do deploy.
+- A ficha de `adimax-eduardo-soares` está com `#e2a107`, salva pelo Master. Não foi alterada.
+- Sem merge e sem deploy.

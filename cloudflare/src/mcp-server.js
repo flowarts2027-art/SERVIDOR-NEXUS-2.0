@@ -22,7 +22,7 @@ const AGENDA_MAX_DIAS = 31;
 
 const READ_ONLY = Object.freeze({ readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
 
-import { groupFromTarget, groupOptions } from "./client-groups.js";
+import { findGroup, groupOptions } from "./client-groups.js";
 import { ART_MESSAGES, assertArtFits, assertVideoFits } from "./art-format.js";
 
 // Arquivo vindo do ChatGPT (openai/fileParams) ou de outro cliente MCP: um link temporário para baixar.
@@ -296,7 +296,7 @@ const UPLOAD_ERRORS = {
 
 export async function enviarArte(env, deps, args, now = new Date()) {
   if (!mcpWriteEnabled(env)) throw new ToolInputError("O envio de artes pelo conector está desligado no Nexus.");
-  const grupo = groupFromTarget(args?.cliente_id);
+  const grupo = await findGroup(env, args?.cliente_id);
   const client = grupo ? { id: "grupo:" + grupo.id, name: grupo.name } : await requireClient(env, deps, args);
   const tipo = FORMATS[String(args?.formato || "")];
   if (!tipo) throw new ToolInputError("O campo formato é obrigatório: story, post, carrossel ou reels.");

@@ -1,3 +1,8 @@
+## 2026-11-06 — Acesso fácil de copiar e grupos no Master (PR aberto, sem deploy)
+- Novo cliente com senha vazia agora gera a senha. Antes o cliente nascia sem login.
+- Botão grande "Copiar acesso" no Novo cliente e no Acesso, com a mensagem pronta para o WhatsApp.
+- Botão "+ Novo grupo". Cliente novo do grupo herda logo, cores e palavra do botão.
+
 ## 2026-11-05 — Criar com agente no quadro (sem deploy)
 - Quadro sem o que já passou. Botão "Criar com agente (grátis)". Enviar artes abre no dia da linha.
 
