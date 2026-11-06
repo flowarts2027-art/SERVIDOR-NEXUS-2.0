@@ -25,12 +25,12 @@ export const AGENT_MESSAGES = Object.freeze({
 });
 
 // Horário do plano, se estiver livre. Senão, a primeira hora livre do dia. Sempre no minuto do cliente.
-export function agentSlot(date, offset, story, taken, now = new Date()) {
+export function agentSlot(date, offset, story, taken, now = new Date(), lead = MIN_LEAD_MS) {
   const others = Array.from({ length: LAST_HOUR - FIRST_HOUR + 1 }, (_, index) => FIRST_HOUR + index).filter(hour => !PLAN_HOURS.includes(hour));
   for (const hour of [...PLAN_HOURS, ...others]) {
     const slot = clientSlot(`${date}T${String(hour).padStart(2, "0")}:00:00-03:00`, offset, story);
     const at = Date.parse(slot);
-    if (at >= now.getTime() + MIN_LEAD_MS && !taken.has(at)) return slot;
+    if (at >= now.getTime() + lead && !taken.has(at)) return slot;
   }
   return "";
 }
@@ -40,7 +40,7 @@ function nextFormat(gap) {
   return gap.posts >= gap.stories ? "post" : "story";
 }
 
-function localTime(slot) {
+export function localTime(slot) {
   return new Date(Date.parse(slot) - 3 * 3600000).toISOString().slice(11, 16);
 }
 

@@ -1294,7 +1294,7 @@ async function loadMissingPosts() {
   $("#missing-bell-count").textContent = total;
   board.hidden = false;
   board.innerHTML = total
-    ? `<h2>Postagens faltando</h2>${(data.items || []).map(item => `<div class="missing-row ${escapeHtml(item.level)}"><div><strong>${escapeHtml(item.clientName)}</strong><p>${escapeHtml(item.text)}</p></div><div class="missing-actions">${item.agent ? `<button type="button" class="missing-agent" data-agent-create="${escapeHtml(item.clientId)}" data-agent-date="${escapeHtml(item.date)}" data-agent-count="${Number(item.agent)}">Criar com agente (grátis)</button>` : ""}<a class="missing-send" href="/artes.html?cliente=${encodeURIComponent(item.clientId)}&dia=${encodeURIComponent(item.date)}">Enviar artes</a></div></div>`).join("")}`
+    ? `<h2>Postagens faltando</h2>${(data.items || []).map(item => `<div class="missing-row ${escapeHtml(item.level)}"><div><strong>${escapeHtml(item.clientName)}</strong><p>${escapeHtml(item.text)}</p></div><div class="missing-actions">${item.agent ? `<button type="button" class="missing-agent" data-agent-create="${escapeHtml(item.clientId)}" data-agent-date="${escapeHtml(item.date)}" data-agent-count="${Number(item.agent)}">Criar com agente (grátis)</button>` : ""}<a class="missing-send" href="/artes.html?cliente=${encodeURIComponent(item.clientId)}&dia=${encodeURIComponent(item.date)}${item.lacking ? `&posts=${Number(item.lacking.posts)}&stories=${Number(item.lacking.stories)}` : ""}">Enviar artes</a></div></div>`).join("")}`
     : `<div class="missing-row done"><strong>Tudo completo nos próximos 3 dias.</strong></div>`;
 }
 // Uma arte por chamada: gerar imagem gasta os pedidos da execução no servidor.
@@ -1322,6 +1322,11 @@ $("#missing-bell")?.addEventListener("click", () => { showView("dashboard"); $("
 $("#refresh").addEventListener("click", loadMissingPosts);
 loadMissingPosts();
 setInterval(loadMissingPosts, 60000);
+// A página Enviar artes avisa quando grava. Voltar para o Master, por aba ou pelo botão, também confere de novo.
+const boardChannel = "BroadcastChannel" in window ? new BroadcastChannel("nexus-postagens") : null;
+if (boardChannel) boardChannel.onmessage = loadMissingPosts;
+window.addEventListener("pageshow", event => { if (event.persisted) loadMissingPosts(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadMissingPosts(); });
 
 load();
 setInterval(async()=>{

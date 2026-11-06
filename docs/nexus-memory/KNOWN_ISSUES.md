@@ -255,3 +255,8 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 
 ## 2026-11-05 — Logo escura salva antes do cartão
 `logoDark` só é medido ao enviar. Logo salva antes disso precisa ser enviada de novo para ganhar o cartão.
+
+## 2026-11-06 — Artes do quatree-dog que não chegaram à agenda
+- Leitura da produção às 18h20: nenhuma linha `master:upload` do `quatree-dog` criada de 04/11 até 06/11. Hoje só há carrosséis `mcp:upload`, criados em 01/11.
+- Causa provável, pelo código, não confirmada por log: a página punha as 2 primeiras imagens em Post 9h e Post 19h. Post 9h vencido dava "pelo menos 10 minutos à frente". Arte 9:16 em Post 19h pedia para trocar de janela. Sem o clique, nada era gravado.
+- Não foi possível ver registro das tentativas recusadas, porque o Nexus não guarda envio recusado.

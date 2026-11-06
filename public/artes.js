@@ -13,7 +13,16 @@
   const PLAN_TIMES = ["0900", "1900"]; // plano do dia: 2 posts + 2 stories
   const ORDER = [...PLAN_TIMES.map(t => "post-" + t), ...PLAN_TIMES.map(t => "story-" + t)];
   const nice = t => t.slice(0, 2) + "h" + (t.slice(2) === "00" ? "" : t.slice(2));
-  const OPTIONS = [
+  // Veio de um cartão de "Postagens faltando": só existem as vagas do aviso, e o servidor escolhe o horário.
+  const params = new URLSearchParams(location.search);
+  const lacking = name => Math.min(2, Math.max(0, Math.trunc(Number(params.get(name))) || 0));
+  const FILL = { posts: lacking("posts"), stories: lacking("stories") };
+  const FILLING = /^\d{4}-\d{2}-\d{2}$/.test(params.get("dia") || "") && Boolean(params.get("cliente")) && FILL.posts + FILL.stories > 0;
+  const fillSlots = (kind, count) => Array.from({ length: count }, (_, index) => kind + "-" + (index + 1));
+  const FILL_SLOTS = [...fillSlots("post", FILL.posts), ...fillSlots("story", FILL.stories)];
+  if (FILLING) ORDER.splice(0, ORDER.length, ...FILL_SLOTS);
+  const fillName = slot => (slot.startsWith("story") ? "Story " : "Post ") + slot.split("-")[1];
+  const OPTIONS = FILLING ? [...FILL_SLOTS.map(slot => [slot, fillName(slot)]), ["skip", "Não enviar"]] : [
     ...TIMES.map(t => ["post-" + t, "Post " + nice(t)]),
     ...STORY_TIMES.map(t => ["story-" + t, "Story " + nice(t)]),
     ["skip", "Não enviar"]
@@ -50,13 +59,14 @@
         const groups = await api("/api/master/groups").catch(() => ({}));
         for (const g of groups.groups || []) $("#client").insertAdjacentHTML("beforeend", `<option value="${esc(g.id)}">${esc(g.name)}</option>`);
         // Botão "Enviar artes" do quadro de postagens faltando: já abre no cliente certo.
-        const wanted = new URLSearchParams(location.search).get("cliente");
+        const wanted = params.get("cliente");
         if (wanted && list.some(c => c.id === wanted)) $("#client").value = wanted;
       }
     } catch { /* fica a Flow Arts */ }
   }
 
   async function loadCaptions() {
+    if (FILLING) return; // as legendas do ChatGPT são por horário, e aqui o horário só sai no envio
     const status = $("#caption-status");
     status.textContent = "Buscando legendas do ChatGPT…";
     captions = {}; captionFrom = {};
@@ -128,12 +138,13 @@
   }
 
   function renderCaptions() {
-    const used = TIMES.filter(t => items.some(i => !i.sent && !i.dup && i.slot === "post-" + t));
+    const used = (FILLING ? fillSlots("post", FILL.posts).map(hhmm) : TIMES).filter(t => items.some(i => !i.sent && !i.dup && i.slot === "post-" + t));
+    const name = t => FILLING ? "Post " + t : "Post " + t.slice(0, 2) + "h";
     $("#captions-card").hidden = !used.length;
     $("#captions").innerHTML = used.map(t => `
       <div class="cap">
-        <span class="tag">Post ${t.slice(0, 2)}h</span>${captionFrom[t] === "github" ? `<span class="src">do ChatGPT</span>` : ""}
-        <textarea data-caption="${t}" aria-label="Legenda do post das ${t.slice(0, 2)}h" placeholder="Vazia: o Nexus usa a legenda pronta do nicho.">${esc(captions[t] || "")}</textarea>
+        <span class="tag">${name(t)}</span>${captionFrom[t] === "github" ? `<span class="src">do ChatGPT</span>` : ""}
+        <textarea data-caption="${t}" aria-label="Legenda: ${name(t)}" placeholder="Vazia: o Nexus usa a legenda pronta do nicho.">${esc(captions[t] || "")}</textarea>
       </div>`).join("");
   }
 
@@ -156,19 +167,39 @@
     return p;
   }
 
+  function filledText(name, out) {
+    const when = new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(out.scheduledFor));
+    return `✓ ${name}: ${when}, ${out.approval === "approved" ? "já aprovado" : "esperando aprovação"}.`;
+  }
+
+  function showFillMode() {
+    const parts = [];
+    if (FILL.posts) parts.push(FILL.posts + (FILL.posts === 1 ? " post" : " posts"));
+    if (FILL.stories) parts.push(FILL.stories + (FILL.stories === 1 ? " story" : " stories"));
+    const note = $("#fill-note");
+    $(".top p").textContent = "Escolha as imagens que faltam. O Nexus põe na agenda do cliente.";
+    note.hidden = false;
+    note.textContent = `Preenchendo o que falta: ${parts.join(" e ")} em ${$("#date").value.split("-").reverse().join("/")}. O Nexus escolhe o horário livre neste dia.`;
+    note.insertAdjacentHTML("beforeend", `<a href="/artes.html">Enviar outras artes</a>`);
+    $("#plan-hint").textContent = "As imagens vão só para as vagas do aviso, na ordem. Imagem a mais fica em Não enviar.";
+    $("#client").disabled = true;
+    $("#date").disabled = true;
+    $("#send").textContent = "Enviar para a agenda";
+  }
+
   async function sendAll() {
     const list = groups();
     const problems = [];
     for (const g of list) {
-      if (g.story && g.items.length > 1) problems.push(`Story ${nice(g.time)} tem ${g.items.length} imagens. Story é uma imagem só.`);
-      if (g.type === "carousel" && g.items.length > 10) problems.push(`Post ${g.time.slice(0, 2)}h tem mais de 10 imagens.`);
+      if (g.story && g.items.length > 1) problems.push(`${FILLING ? fillName(g.slot) : "Story " + nice(g.time)} tem ${g.items.length} imagens. Story é uma imagem só.`);
+      if (g.type === "carousel" && g.items.length > 10) problems.push(`${FILLING ? fillName(g.slot) : "Post " + g.time.slice(0, 2) + "h"} tem mais de 10 imagens.`);
     }
     $("#result").innerHTML = "";
     if (problems.length) { problems.forEach(t => toastResult("bad", t)); return; }
     if (!window.confirm(`Enviar ${list.length} conteúdo(s) para o dia ${$("#date").value.split("-").reverse().join("/")}?`)) return;
 
     $("#send").disabled = true;
-    const label = g => (g.story ? "Story " : g.type === "carousel" ? "Carrossel " : "Post ") + clock(g.time);
+    const label = g => FILLING ? fillName(g.slot) : (g.story ? "Story " : g.type === "carousel" ? "Carrossel " : "Post ") + clock(g.time);
     const sendOne = async g => {
       const line = toastResult("wait", `${label(g)}: enviando…`);
       const form = new FormData();
@@ -176,17 +207,19 @@
       form.set("approval", "cliente");
       form.set("type", g.type);
       form.set("date", $("#date").value);
-      form.set("time", clock(g.time));
-      form.set("noDuplicate", "1");
+      if (FILLING) form.set("fill", "1");
+      else { form.set("time", clock(g.time)); form.set("noDuplicate", "1"); }
       if (!g.story) form.set("caption", captions[g.time] || "");
       for (const item of g.items) form.append("images", item.file, item.file.name);
       try {
-        await api("/api/master/upload", { method: "POST", body: form });
+        const out = await api("/api/master/upload", { method: "POST", body: form });
         g.items.forEach(item => { item.sent = true; });
-        line.className = "ok"; line.textContent = `✓ ${label(g)}: no painel, esperando aprovação.`;
+        line.className = "ok"; line.textContent = FILLING ? filledText(label(g), out) : `✓ ${label(g)}: no painel, esperando aprovação.`;
+        if (FILLING && "BroadcastChannel" in window) new BroadcastChannel("nexus-postagens").postMessage("mudou");
       } catch (error) {
         line.className = "bad";
-        if (error.wrongWindow) window.showWindowAlert(line, `${label(g)}: ${error.message}`, error.moveTo, async moveTo => {
+        // Aqui o formato é o do aviso: arte de outro tamanho não troca de janela.
+        if (error.wrongWindow && !FILLING) window.showWindowAlert(line, `${label(g)}: ${error.message}`, error.moveTo, async moveTo => {
           // Só troca a janela: a mesma arte vai de novo.
           g.story = moveTo === "story";
           g.type = g.story ? "story" : "post";
@@ -203,8 +236,9 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     // Botão "Enviar artes" do quadro de postagens faltando: abre no dia da linha.
-    const wantedDay = new URLSearchParams(location.search).get("dia");
+    const wantedDay = params.get("dia");
     $("#date").value = /^\d{4}-\d{2}-\d{2}$/.test(wantedDay || "") ? wantedDay : tomorrow();
+    if (FILLING) showFillMode();
     loadClients().then(loadCaptions);
     $("#client").addEventListener("change", loadCaptions);
     $("#date").addEventListener("change", loadCaptions);

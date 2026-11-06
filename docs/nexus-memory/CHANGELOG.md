@@ -1,3 +1,8 @@
+## 2026-11-06 — Enviar artes preenche o que falta (PR aberto, sem deploy)
+- O cartão de "Postagens faltando" leva dia e formato. A página só aceita o que falta.
+- O servidor escolhe o horário livre no minuto do cliente. Story de hoje já entra aprovado.
+- O quadro do Master atualiza assim que a arte é gravada.
+
 ## 2026-11-06 — Acesso fácil de copiar e grupos no Master (PR aberto, sem deploy)
 - Novo cliente com senha vazia agora gera a senha. Antes o cliente nascia sem login.
 - Botão grande "Copiar acesso" no Novo cliente e no Acesso, com a mensagem pronta para o WhatsApp.

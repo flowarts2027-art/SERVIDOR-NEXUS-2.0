@@ -1,5 +1,9 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-06 — ARTES-002: Enviar artes preenche o que falta (Claude)
+Branch `fix/enviar-artes-faltando-20261106`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. Depois do merge: reenviar os stories do `quatree-dog`.
+
+
 ## 2026-11-05 — MARCA-001: marca do cliente pelo Master (Claude)
 Branch `feat/marca-do-cliente-20261105`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy.
 

@@ -10,12 +10,17 @@ import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./ca
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { createGroup, ensureGroupClients, findGroup, groupMembers, groupOptions, vendorCaption } from "./client-groups.js";
+import { agentSlot, localTime } from "./agent-art.js";
+import { loadClientOffsets } from "./client-slots.js";
+import { boardToday, dayGap, loadPosts, localDayStart } from "./missing-posts.js";
 
 const send = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
 });
 
 const TYPES = { post: "feed", feed: "feed", carousel: "carousel", reel: "reel", story: "story" };
+const DAY_MS = 86400000;
+const FILL_LEAD_MS = 10 * 60000; // a arte já vem pronta: só o mínimo que o envio exige
 
 // Próxima legenda do cliente (pedido de 18/10: "cada postagem com um texto diferente").
 // Guarda a vez de cada cliente e formato e pula legenda igual a uma já usada por ele.
@@ -132,6 +137,27 @@ async function groupUpload(env, group, form, now, overrides) {
   return { ok: false, group: group.id, results, message: "Subiu para: " + sent + ". Faltou: " + missing + "." };
 }
 
+// "Enviar artes" de um cartão de "Postagens faltando" (Rodrigo, 06/11/2026): preenche o que falta, no dia e formato do aviso.
+// O servidor escolhe o horário livre, no minuto do cliente. Sem vaga, recusa: nunca muda de dia nem de formato.
+// Story de hoje já sai aprovado, porque não daria tempo de esperar o cliente.
+async function fillMissing(env, client, form, type, now) {
+  const day = String(form.get("date") || "");
+  const start = localDayStart(day);
+  const today = boardToday(now);
+  if (!Number.isFinite(start) || day < today) throw new Error("fill_date");
+  const story = type === "story";
+  const posts = await loadPosts(env, [client.id], new Date(start).toISOString(), new Date(start + DAY_MS).toISOString());
+  const gap = dayGap(posts, now);
+  if (!(story ? gap.stories : gap.posts)) throw new Error("fill_complete");
+  const offsets = await loadClientOffsets(env);
+  const taken = new Set(posts.map(post => Date.parse(String(post.scheduled_for || ""))));
+  const slot = agentSlot(day, offsets[client.id] ?? 0, story, taken, now, FILL_LEAD_MS);
+  if (!slot) throw new Error("fill_no_slot");
+  form.delete("when");
+  form.set("time", localTime(slot));
+  form.set("approval", story && day === today ? "eu" : "cliente");
+}
+
 export async function masterUpload(env, form, now = new Date(), overrides = {}) {
   const group = await findGroup(env, form.get("clientId"));
   if (group) return groupUpload(env, group, form, now, overrides);
@@ -139,6 +165,7 @@ export async function masterUpload(env, form, now = new Date(), overrides = {}) 
   const type = TYPES[String(form.get("type") || "").trim()];
   if (!type) throw new Error("type_invalid");
   form.set("type", type);
+  if (String(form.get("fill") || "") === "1") await fillMissing(env, client, form, type, now);
   if (String(form.get("noDuplicate") || "") === "1") {
     const when = brasiliaToIso(form.get("date"), String(form.get("time") || ""));
     if (when && await slotTaken(env, client.id, when, type === "story")) throw new Error("slot_taken");
@@ -158,7 +185,7 @@ export async function masterUpload(env, form, now = new Date(), overrides = {}) 
   });
 }
 
-const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, group_name: "Escreva o nome do grupo, de 2 a 40 letras.", group_exists: "Já existe um grupo com este nome.", group_empty: "Este grupo ainda não tem cliente.", client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories.", slot_taken: "Já tem um post neste horário. Cancele o antigo no painel para trocar." };
+const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, group_name: "Escreva o nome do grupo, de 2 a 40 letras.", group_exists: "Já existe um grupo com este nome.", group_empty: "Este grupo ainda não tem cliente.", client_invalid: "Escolha um cliente da lista.", type_invalid: "Escolha o tipo: post, carrossel, Reels ou Stories.", slot_taken: "Já tem um post neste horário. Cancele o antigo no painel para trocar.", fill_date: "Este dia já passou. Volte ao quadro de postagens faltando.", fill_complete: "O que faltava neste dia já está na agenda.", fill_no_slot: "Não há mais horário livre neste dia. Nada foi enviado." };
 
 // Rotas: GET /api/master/caption, GET /api/master/legendas e POST /api/master/upload. Quem chama já conferiu o login do Master.
 export async function handleMasterUpload(request, env, url) {

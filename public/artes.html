@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/artes.css?v=1">
+  <link rel="stylesheet" href="/artes.css?v=2">
   <script src="/upload-rules.js?v=1" defer></script>
   <script src="/window-alert.js?v=1" defer></script>
-  <script src="/artes.js?v=5" defer></script>
+  <script src="/artes.js?v=6" defer></script>
 </head>
 <body>
   <header class="top">
@@ -33,6 +33,7 @@
         <input id="date" type="date">
       </label>
       <p id="caption-status" class="hint"></p>
+      <p id="fill-note" class="fill-note" hidden></p>
     </section>
 
     <section class="card">
@@ -42,7 +43,7 @@
         <input id="files" type="file" accept="image/*" multiple>
         <span>＋ Escolher imagens</span>
       </label>
-      <p class="hint">Plano do dia: 2 posts + 2 stories. Na ordem: as 2 primeiras viram posts (9h e 19h). As 2 seguintes viram stories. Você pode trocar em cada imagem. Duas ou mais imagens no mesmo post viram carrossel.</p>
+      <p id="plan-hint" class="hint">Plano do dia: 2 posts + 2 stories. Na ordem: as 2 primeiras viram posts (9h e 19h). As 2 seguintes viram stories. Você pode trocar em cada imagem. Duas ou mais imagens no mesmo post viram carrossel.</p>
       <div id="list" class="list"></div>
     </section>
 
