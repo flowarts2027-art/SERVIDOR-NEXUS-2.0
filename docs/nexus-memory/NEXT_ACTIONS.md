@@ -14,12 +14,12 @@ Nada abaixo foi feito ainda.
 
 Atenção no item 5: os dois pontos mudam regras de 05/11. O texto por cima da foto inteira está em `REGRAS_ENVIO_ARTES.md`, e a foto 3:4 hoje é recusada.
 
-Pendente com o Rodrigo: artes de reserva na Biblioteca da Quatree, da Daniela e da Nexus AI.
+Pendente com o Rodrigo: artes de reserva na Biblioteca da Quatree, da Daniela, da Adimax e da Nexus AI.
 
 ## 2026-11-05 — Depois do merge do vigia
 1. Olhar o log `post_watcher` e o quadro nas primeiras horas.
 2. Conferir a primeira substituta gerada antes de confiar nela. A geração nunca rodou em produção.
-3. Encher a Biblioteca da Quatree, da Daniela e da Nexus AI: é a única reserva delas.
+3. Encher a Biblioteca da Quatree, da Daniela, da Adimax e da Nexus AI: é a única reserva delas.
 4. Rodrigo decide o que fazer com post parado em correção pedida.
 
 ## 2026-11-05 — Depois do merge das janelas por formato

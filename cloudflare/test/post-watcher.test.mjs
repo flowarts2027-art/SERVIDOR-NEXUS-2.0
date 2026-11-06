@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
-import { isWatcherMinute, replacementReason, runPostWatcher, targetFormat } from "../src/post-watcher.js";
+import { isWatcherMinute, replacementReason, runPostWatcher, targetFormat, receivesGeneratedImage } from "../src/post-watcher.js";
 import { takeLibraryArt } from "../src/art-library.js";
 import { buildMissingPostsBoard, postProblem } from "../src/missing-posts.js";
 
@@ -178,6 +178,33 @@ test("Quatree: não gera imagem nem usa rascunho de agente como original", async
   assert.equal(out.replaced, false);
   assert.equal(calls.image, 0);
   assert.equal(read(db).approval_status, "pending");
+});
+
+test("Adimax: mesmo com marca salva, não gera imagem e vai para o alerta vermelho", async () => {
+  const { db, env, stored } = setup();
+  addClient(db, "adimax-eduardo");
+  stored.set("ia.jpg", jpeg(1080, 1350));
+  addPost(db, { client: "adimax-eduardo", error: "format_build_retry_limit_reached", payload: { source: "agent-core:creator", imageUrl: "https://x.test/media/ia.jpg" } });
+  const { calls, overrides } = deps({ brand: async () => ({ buttonWord: "QUERO", colors: {} }) });
+  const out = await runPostWatcher(env, NOW, overrides);
+  assert.equal(out.replaced, false);
+  assert.equal(calls.image, 0);
+  assert.ok(read(db).payload.autoReplaceFailed.at, "marca a falha para o quadro");
+});
+
+test("Adimax: arte da Biblioteca continua valendo como substituta", async () => {
+  const { db, env } = setup();
+  addClient(db, "adimax");
+  addPost(db, { client: "adimax", error: "media_generation_required" });
+  const { calls, overrides } = deps({ library: async () => "https://x.test/media/lib.jpg" });
+  assert.equal((await runPostWatcher(env, NOW, overrides)).source, "biblioteca-do-cliente");
+  assert.equal(calls.image, 0);
+});
+
+test("a Adimax é achada pelo nome do painel, e os outros clientes não mudam", () => {
+  for (const id of ["adimax", "adimax-eduardo", "eduardo-adimax", "racao-adimax-mg"]) assert.equal(receivesGeneratedImage(id), false, id);
+  for (const id of ["quatree-dog", "quatree-dog-eduardo", "daniela-martins"]) assert.equal(receivesGeneratedImage(id), false, id);
+  for (const id of ["giltec", "maskara-assessoria", "adimaxx"]) assert.equal(receivesGeneratedImage(id), true, id);
 });
 
 test("cliente sem camada de texto não recebe imagem gerada", async () => {
