@@ -40,6 +40,7 @@
     input.value = "";
     $("#mu-files-label").textContent = t.label;
     $("#mu-files-hint").textContent = t.hint;
+    window.UploadRules?.fill($("#mu-rules"), typeNow());
     items = [];
     render();
   }

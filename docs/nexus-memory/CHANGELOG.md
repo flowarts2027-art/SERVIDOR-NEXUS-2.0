@@ -1,3 +1,10 @@
+## 2026-11-05 — Logo inteira no painel (sem deploy)
+- Logo na proporção dela, corte automático das sobras e aviso de capa.
+- Logo escura ganha cartão na cor principal. Menu na cor do cliente.
+- Marca saiu da seção separada e foi para o lápis do cliente e do grupo.
+- Eduardo saiu do grupo Quatree Dog.
+- Letras grandes acima dos botões de envio dizem o que é aceito.
+
 ## 2026-11-05 — Adimax sem imagem gerada (PR aberto, sem deploy)
 - O vigia não gera imagem para a Adimax. Faltando arte, fica o alerta vermelho no quadro.
 

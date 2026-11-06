@@ -171,8 +171,7 @@ export const CLIENT_GROUPS = Object.freeze({
     name: "Quatree Dog",
     theme: "quatree-dog",
     members: Object.freeze([
-      Object.freeze({ clientId: "quatree-dog", vendor: "Ericsson", instagram: "ericsson_quatree" }),
-      Object.freeze({ clientId: "quatree-dog-eduardo", vendor: "Eduardo" })
+      Object.freeze({ clientId: "quatree-dog", vendor: "Ericsson", instagram: "ericsson_quatree" })
     ])
   }),
   giltec: Object.freeze({

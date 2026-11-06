@@ -48,3 +48,6 @@ Pedido do Rodrigo em 05/11/2026. Vale para todos os clientes e para ChatGPT, con
 ## Por que existe
 - Quatree Dog, 29/10: uma arte 4:5 foi enviada como story. O código antigo cortou os lados e o texto saiu pela metade.
 - GILTEC, novembro: stories chegaram com faixas azuis lisas em cima e embaixo, já na arte enviada.
+
+## Aviso nas telas
+Acima dos botões de envio, letras grandes dizem o que é aceito. O texto fica só em `public/upload-rules.js`.

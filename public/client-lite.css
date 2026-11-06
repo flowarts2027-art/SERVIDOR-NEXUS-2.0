@@ -1251,6 +1251,19 @@ html[data-client-theme="quatree-dog"] .cmp-card.c-post h4 { background: #C03C34;
   .cmp-card.c-combo { background: #16301a; color: #cdeccf; }
   .cmp-card dl > div { border-bottom-color: rgba(255, 255, 255, .16); }
 }
+/* Logo inteira, na proporção dela. Menu escuro na cor do cliente e cartão para logo escura. */
+html[data-custom-brand] .nav-brand { justify-content: center; padding: 4px 4px 0; margin-bottom: 18px; }
+html[data-custom-brand] .nav-brand img.client-brand-logo { width: auto; max-width: 200px; height: auto; max-height: 100px; object-fit: contain; border-radius: 0; box-shadow: none; }
+html[data-custom-brand] .nav-brand img.brand-logo-card, html[data-custom-brand] .client-top-logo.brand-logo-card { box-sizing: border-box; padding: 10px 14px; border-radius: 14px; }
+html[data-custom-brand] .top-copy:has(.client-top-logo) .nexus-top-logo { display: none !important; }
+@media (min-width: 900px) {
+  html[data-custom-brand] .tabbar { background: var(--brand-menu) !important; }
+  html[data-custom-brand] .tabbar > button.active { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
+}
+@media (max-width: 899px) {
+  html[data-custom-brand] .top { background: var(--brand-menu); }
+  html[data-custom-brand] .client-top-logo { display: block; width: auto; max-width: min(200px, 60vw); height: auto; max-height: 72px; object-fit: contain; margin: 0 0 8px; border-radius: 0; box-shadow: none; }
+}
 @media (max-width: 899px) {
   .cmp-wrap { display: none; }
   .cmp-cards { display: grid; gap: 12px; margin: 0 0 10px; }

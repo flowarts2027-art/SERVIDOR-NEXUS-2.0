@@ -223,3 +223,15 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Igual à Quatree: toda peça mostra a ração ou a embalagem, então o vigia não gera imagem para a Adimax.
 - Faltando arte, fica o alerta vermelho no quadro.
 - Decisão do Claude: o painel ainda não existe, então a regra vale para qualquer id com a palavra adimax.
+
+## 2026-11-05 — Logo no painel (Rodrigo)
+- Logo inteira, sem espremer, com corte das sobras ao enviar.
+- Aviso de capa em letras grandes. Logo escura em menu escuro vai num cartão na cor principal.
+- Marca só no "Novo cliente" e no lápis. A seção separada saiu.
+- Decisão do Claude: a capa padrão do Facebook mede 851x315, proporção 2,7. Ela também dispara o aviso, mesmo abaixo de 3.
+- Decisão do Claude: o aviso não impede salvar, porque logo escrita em linha pode ser larga.
+- Decisão do Claude: o menu usa a cor do texto, que é sempre escura. Se a principal também for escura, o cartão é branco.
+- Decisão do Claude: não havia tela de grupo, então entrou uma linha por grupo com lápis em Clientes.
+- Grupo Quatree Dog mostra só "Quatree Dog (Ericsson)". O Eduardo saiu.
+- Acima dos botões de envio, letras grandes dizem o que é aceito. Adimax usa a palavra do botão QUERO.
+- Decisão do Claude: o painel do Eduardo não foi apagado nem arquivado. O pedido foi tirá-lo do grupo.

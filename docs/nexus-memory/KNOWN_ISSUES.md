@@ -252,3 +252,6 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 - Cliente sem camada do deploy e com marca salva não recebe texto em foto enviada pelo painel.
 - Sem lista oficial de produtos: o título usa nicho, oferta e serviços da ficha. A lista está na fila de 06/11.
 - As cores no painel do cliente cobrem destaque, abas e botões principais. Falta conferir com login real.
+
+## 2026-11-05 — Logo escura salva antes do cartão
+`logoDark` só é medido ao enviar. Logo salva antes disso precisa ser enviada de novo para ganhar o cartão.

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=50">
+  <link rel="stylesheet" href="/styles.css?v=51">
 </head>
 <body>
   <div class="shell">
@@ -68,13 +68,7 @@
       </section>
 
       <section id="clients" class="view">
-        <div class="panel" id="brand-panel">
-          <div class="panel-head"><div><p class="eyebrow">MARCA</p><h2>Marca do cliente ou do grupo</h2></div></div>
-          <label>Cliente ou grupo<select id="brand-target"></select></label>
-          <div id="brand-editor"></div>
-          <button class="primary" type="button" id="brand-save">Salvar</button>
-          <p id="brand-status" class="form-status" role="status"></p>
-        </div>
+        <div class="group-edit-list" id="group-edit-list"></div>
         <div class="panel signup-panel" id="signup-panel">
           <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
           <div id="signup-list"><p class="muted">Carregando…</p></div>
@@ -194,6 +188,7 @@
           <form id="master-upload-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="mu-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
             <label>Tipo<select name="type" id="mu-type"><option value="post">Post (1 foto)</option><option value="carousel">Carrossel (2 a 10 fotos)</option><option value="reel">Reels (vídeo)</option><option value="story">Stories (foto ou vídeo)</option></select></label>
+            <div class="wide" id="mu-rules" data-upload-rules="post"></div>
             <label class="wide"><span id="mu-files-label">Fotos</span><input type="file" id="mu-files" multiple accept="image/jpeg,image/png,image/webp" required></label>
             <p class="muted wide" id="mu-files-hint"></p>
             <div class="wide" id="mu-list"></div>
@@ -216,6 +211,7 @@
           <div class="panel-head"><div><p class="eyebrow">PLANO COM VÍDEO</p><h2>Enviar Reel pronto</h2><p class="muted">Faça o vídeo no Flow e envie aqui. Ele vai para o painel do cliente, que aprova. Depois de aprovado, sai no dia e hora escolhidos.</p></div></div>
           <form id="manual-reel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="manual-reel-client" required><option value="">Carregando…</option></select></label>
+            <div class="wide" data-upload-rules="reels"></div>
             <label>Vídeo (MP4, vertical 9:16)<input type="file" name="video" id="manual-reel-video" accept="video/mp4,video/quicktime" required></label>
             <video id="manual-reel-preview" class="manual-reel-preview" controls playsinline muted hidden></video>
             <label class="wide">Legenda<textarea name="caption" rows="4" maxlength="2200" required placeholder="Ex.: Café passado na hora e bolo caseiro. Qual combina com a sua pausa de hoje?"></textarea></label>
@@ -229,6 +225,7 @@
           <div class="panel-head"><div><p class="eyebrow">CARROSSEL PRONTO</p><h2>Enviar carrossel pronto</h2><p class="muted">Escolha as imagens NA ORDEM (1, 2, 3…). O post vai para o painel do cliente sem data: ele escolhe o dia e aprova. Sem data, nada é publicado.</p></div></div>
           <form id="manual-carousel-form" class="manual-reel-form">
             <label>Cliente<select name="clientId" id="manual-carousel-client" required><option value="primeiro-teste">Flow Arts</option></select></label>
+            <div class="wide" data-upload-rules="carrossel"></div>
             <label class="wide">Imagens (2 a 10, na ordem)<input type="file" name="images" id="manual-carousel-images" accept="image/jpeg,image/png,image/webp" multiple required></label>
             <div class="wide" id="manual-carousel-preview" style="display:flex;gap:8px;overflow-x:auto"></div>
             <label class="wide">Legenda<textarea name="caption" rows="6" maxlength="2200" required></textarea></label>
@@ -629,6 +626,18 @@
       </section>
     </main>
   </div>
+  <dialog id="client-edit-dialog" class="nexus-dialog">
+    <form id="client-edit-form" method="dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow" id="client-edit-kicker">EDITAR CLIENTE</p><h2 id="client-edit-title">Editar</h2></div>
+        <button type="button" id="client-edit-close" class="icon-btn" aria-label="Fechar">×</button>
+      </div>
+      <label id="client-edit-name-box">Nome do painel<input id="client-edit-name" maxlength="60" autocomplete="off"></label>
+      <div id="client-edit-brand"></div>
+      <p id="client-edit-status" class="form-status" role="status"></p>
+      <div class="dialog-actions"><button type="button" id="client-edit-cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar</button></div>
+    </form>
+  </dialog>
   <dialog id="portal-access-dialog" class="nexus-dialog">
     <form id="portal-access-form" method="dialog">
       <div class="dialog-head">
@@ -650,13 +659,14 @@
       <span id="portal-access-status" class="form-status"></span>
     </form>
   </dialog>
-  <script src="/brand-editor.js?v=1" defer></script>
-  <script src="/app.js?v=58" defer></script>
+  <script src="/upload-rules.js?v=1" defer></script>
+  <script src="/brand-editor.js?v=2" defer></script>
+  <script src="/app.js?v=59" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>
   <script src="/window-alert.js?v=1" defer></script>
-  <script src="/master-upload.js?v=3" defer></script>
+  <script src="/master-upload.js?v=4" defer></script>
   <script src="/animated-reel.js?v=4" defer></script>
   <script src="/whatsapp-inbox.js?v=5" defer></script>
   <script src="/site-stats.js?v=4" defer></script>

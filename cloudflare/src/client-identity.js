@@ -125,7 +125,9 @@ export async function saveBrand(env, form, now = new Date(), fetcher = fetch) {
   const buttonWord = cleanButtonWord(form.get("buttonWord")) || String(previous?.buttonWord || "");
   const logo = form.get("logo");
   const stored = logo && typeof logo.arrayBuffer === "function" ? await storeLogo(env, ownerId, logo) : { logoKey: previous?.logoKey || "", logoUrl: previous?.logoUrl || "" };
-  const brand = { ...stored, colors, buttonWord, updatedAt: now.toISOString() };
+  // Logo escura ganha cartão no menu. O navegador mede ao enviar, então só muda com logo nova.
+  const logoDark = stored.logoKey === previous?.logoKey ? Boolean(previous?.logoDark) : form.get("logoDark") === "1";
+  const brand = { ...stored, logoDark, colors, buttonWord, updatedAt: now.toISOString() };
 
   if (group) {
     await env.DB.prepare(

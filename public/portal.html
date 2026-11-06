@@ -14,17 +14,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/client-lite.css?v=148">
+  <link rel="stylesheet" href="/client-lite.css?v=149">
   <link rel="stylesheet" href="/flow-crm.css?v=4">
-  <script src="/client-lite.js?v=141" defer></script>
+  <script src="/upload-rules.js?v=1" defer></script>
+  <script src="/client-lite.js?v=143" defer></script>
   <script src="/captador.js?v=12" defer></script>
   <script src="/ads.js?v=2" defer></script>
   <script src="/planos.js?v=4" defer></script>
   <script src="/negocio.js?v=2" defer></script>
-  <script src="/biblioteca.js?v=2" defer></script>
-  <script src="/campanha.js?v=2" defer></script>
+  <script src="/biblioteca.js?v=3" defer></script>
+  <script src="/campanha.js?v=3" defer></script>
   <script src="/window-alert.js?v=1" defer></script>
-  <script src="/enviar.js?v=3" defer></script>
+  <script src="/enviar.js?v=4" defer></script>
   <script src="/autoreply.js?v=4" defer></script>
 </head>
 <body>
@@ -121,6 +122,7 @@
               <label><input type="radio" name="type" value="reel"> Reels</label>
               <label><input type="radio" name="type" value="story"> Stories</label>
             </fieldset>
+            <div id="upload-rules" data-upload-rules="post"></div>
             <label id="upload-images-label">Imagem<input type="file" id="upload-images" accept="image/jpeg,image/png,image/webp"></label>
             <label id="upload-video-label" hidden>Vídeo (MP4, em pé)<input type="file" id="upload-video" accept="video/mp4,video/quicktime"></label>
             <p class="muted" id="upload-order-help" hidden>As imagens ficam na ordem do número no nome do arquivo (1, 2, 3…). Use as setas para trocar.</p>
