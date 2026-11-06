@@ -261,3 +261,11 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: não guardar senha legível. Para cliente com login, copiar o acesso exige criar senha nova, com confirmação.
 - Decisão do Claude: logo obrigatória no grupo novo, porque sem ela não há o que herdar.
 - Decisão do Claude: a trava da Adimax vale também para grupo com a palavra adimax no id.
+
+## 2026-11-06 — Enviar artes preenche o que falta (Rodrigo)
+- O envio do cartão usa o mesmo dia e o mesmo formato do aviso. Nunca o próximo dia livre, nunca post no lugar de story.
+- Story de hoje ainda no horário ganha horário livre hoje e já fica aprovado.
+- O aviso some sem recarregar a página.
+- Decisão do Claude: a aprovação automática vale só para story de hoje, como foi pedido. Post de hoje continua esperando aprovação.
+- Decisão do Claude: usar a mesma busca de horário do "Criar com agente" (`agentSlot`), com antecedência de 10 minutos em vez de 30.
+- Decisão do Claude: linha de problema mantém o envio comum, porque ali não há vaga contada.

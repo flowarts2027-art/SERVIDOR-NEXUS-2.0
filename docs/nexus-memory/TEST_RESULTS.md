@@ -340,3 +340,10 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - Suíte: 958 de 959. Falha só `wrangler keeps production cron on a D1-safe fifteen-minute cadence`, que já falhava na `main` nesta máquina.
 - Chrome sem tela, com dados simulados: Novo grupo, Novo cliente com grupo, cópia nas duas telas, aviso de 28 px, confirmação e texto na tela quando a cópia é bloqueada.
 - Não testado: login real no Master, envio real da logo do grupo e cópia no celular.
+
+## 2026-11-06 — Enviar artes preenche o que falta (Claude, antes do merge)
+- `test/fill-missing.test.mjs`: 9 testes com SQLite de verdade, repetindo o dia do Quatree Dog às 18h20.
+- Suíte: 967 de 968. Falha só `wrangler keeps production cron on a D1-safe fifteen-minute cadence`, conferida também falhando na `main` limpa nesta máquina.
+- Pacote do Worker gerado com `wrangler deploy --dry-run` carrega sem erro de importação.
+- Chrome sem tela, com API simulada: link com `stories=2`, cliente e dia travados, 3ª imagem em "Não enviar", 2 envios como story e quadro do Master vazio sem recarregar.
+- Não testado: login real, envio real e publicação real do story.

@@ -1123,3 +1123,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - `giltec-neto` e `adimax-eduardo-soares` seguem sem login até o Rodrigo usar o Copiar acesso depois do deploy.
 - A ficha de `adimax-eduardo-soares` está com `#e2a107`, salva pelo Master. Não foi alterada.
 - Sem merge e sem deploy.
+
+## 06/11/2026 — Enviar artes preenche o que falta (Claude)
+- Pedido: as artes do `quatree-dog` não viraram story de hoje.
+- Achado na produção: nenhuma linha `master:upload` do `quatree-dog` de 04/11 até 06/11. As artes não foram gravadas. A causa provável está em `KNOWN_ISSUES.md`. A leitura seguinte ao banco foi bloqueada pela permissão da sessão.
+- Feito: `lacking` no quadro, `fillMissing` em `master-upload.js`, modo de preenchimento em `artes.js`, aviso ao Master por `BroadcastChannel`.
+- Testes em `TEST_RESULTS.md`. Sem merge e sem deploy. Nada foi alterado na agenda.

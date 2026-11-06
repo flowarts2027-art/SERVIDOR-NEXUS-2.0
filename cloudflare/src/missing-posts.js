@@ -93,9 +93,9 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
   const items = [];
   for (const client of clients) {
     const counts = Array.from({ length: DAYS_AHEAD }, () => ({ posts: 0, stories: 0 }));
-    const line = (dayIndex, kind, text, realDay = dayIndex, agent = 0) => items.push({
+    const line = (dayIndex, kind, text, realDay = dayIndex, agent = 0, lacking = null) => items.push({
       clientId: client.id, clientName: clientScreenName(client), dayIndex, date: dateOf(today + realDay),
-      day: DAY_LABELS[dayIndex], level: DAY_LEVELS[dayIndex], kind, text, agent
+      day: DAY_LABELS[dayIndex], level: DAY_LEVELS[dayIndex], kind, text, agent, lacking
     });
     const problems = [];
     for (const post of posts) {
@@ -117,7 +117,7 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
       const lackingPosts = Math.max(0, DAILY_PLAN.posts - count.posts);
       const lackingStories = Math.max(0, DAILY_PLAN.stories - count.stories);
       const agent = agentClients.has(client.id) ? Math.min(AGENT_MAX_PER_CLICK, lackingPosts + lackingStories) : 0;
-      if (lackingPosts || lackingStories) line(dayIndex, "missing", missingText(DAY_LABELS[dayIndex], lackingPosts, lackingStories), dayIndex, agent);
+      if (lackingPosts || lackingStories) line(dayIndex, "missing", missingText(DAY_LABELS[dayIndex], lackingPosts, lackingStories), dayIndex, agent, { posts: lackingPosts, stories: lackingStories });
     });
     problems.sort((a, b) => a.at - b.at).forEach(problem => line(problem.dayIndex, "problem", problem.text, problem.realDay));
   }

@@ -1,3 +1,8 @@
+## 2026-11-06 — Depois do merge do Enviar artes
+1. Conferir o deploy.
+2. Rodrigo reenviar os stories do `quatree-dog` pelo cartão, se ainda houver horário no dia.
+3. Conferir na agenda o dia, o formato e a aprovação, e ver o aviso sumir.
+
 ## 2026-11-06 — Depois do merge do acesso e dos grupos
 1. Conferir o deploy.
 2. Abrir Acesso de `giltec-neto` e `adimax-eduardo-soares` e tocar em "Copiar acesso". Foram criados sem senha, então ainda não têm login.

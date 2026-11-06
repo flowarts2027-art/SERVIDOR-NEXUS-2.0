@@ -25,6 +25,8 @@ select, input[type=date], textarea {
 textarea { min-height: 150px; resize: vertical; font-weight: 400; }
 select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .hint { color: var(--muted); margin: 8px 0 0; font-size: 1rem; }
+.fill-note { background: var(--bad-soft); border-radius: 14px; padding: 14px; font-weight: 700; margin: 12px 0 0; }
+.fill-note a { display: block; margin-top: 6px; font-weight: 400; }
 .alert { background: var(--bad-soft); color: var(--bad); border: 2px solid #f2c4cf; border-radius: 14px; padding: 14px; font-weight: 700; }
 .pick { position: relative; margin: 0; }
 .pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }

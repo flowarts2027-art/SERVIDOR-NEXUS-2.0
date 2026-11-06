@@ -18,7 +18,7 @@ Pedido do Rodrigo em 05/11/2026.
 - O sino no topo mostra quantos clientes estão no quadro.
 - O quadro é calculado a cada leitura e atualiza de minuto em minuto. Quem completa sai sozinho.
 - O que já passou sai do quadro: problema de hoje com horário vencido e, depois das 21h, o dia de hoje inteiro.
-- "Enviar artes" abre sempre no dia da linha.
+- "Enviar artes" abre sempre no dia da linha. Em linha de falta, preenche só o que falta (veja abaixo).
 - Código: `cloudflare/src/missing-posts.js`.
 
 ## Botão "Criar com agente (grátis)"
@@ -32,6 +32,16 @@ Pedido do Rodrigo em 05/11/2026.
 - Não aparece para Daniela Martins, grupo Quatree Dog, Adimax e grupo GILTEC.
 - Só aparece para quem tem camada de texto: palavra do botão salva ou moldura do deploy. A Nexus AI não tem.
 - Código: `cloudflare/src/agent-art.js`.
+
+## "Enviar artes" em linha de falta (Rodrigo, 06/11/2026)
+- O cartão leva dia, posts e stories que faltam. A página trava cliente e dia e só mostra essas vagas.
+- Imagem a mais fica em "Não enviar". "Enviar outras artes" volta para a página comum.
+- O servidor escolhe o horário: 9h e 19h primeiro, depois a próxima hora livre até as 21h, sempre no minuto do cliente.
+- Sem vaga no dia, recusa. Nunca muda de dia nem de formato. Arte do tamanho errado é recusada, sem botão de trocar janela.
+- Se o que faltava já estiver na agenda, recusa, para não duplicar.
+- Story de hoje já entra aprovado. Post de hoje e qualquer envio de outro dia esperam aprovação.
+- Ao gravar, a página avisa o Master, e o quadro relê na hora. Voltar ao Master também relê.
+- Código: `fillMissing` em `cloudflare/src/master-upload.js` e `public/artes.js`.
 
 ## Aviso por WhatsApp
 - Pronto e DESLIGADO. Liga com `NEXUS_MISSING_POSTS_WHATSAPP="true"` no `wrangler.jsonc`.
