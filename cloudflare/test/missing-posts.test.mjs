@@ -45,8 +45,9 @@ test("hoje vem primeiro, depois amanhã, depois o outro dia", () => {
 
 test("o dia vira à meia-noite de Brasília, não à do servidor", () => {
   const night = new Date("2026-11-06T02:00:00.000Z"); // 23:00 de 05/11 em Brasília
-  const board = buildMissingPostsBoard([client], [post("05", "post", { scheduled_for: "2026-11-06T01:00:00.000Z" })], night);
-  assert.equal(board.items[0].text, "Hoje: faltam 1 post e 2 stories");
+  const board = buildMissingPostsBoard([client], [post("06", "post", { scheduled_for: "2026-11-06T13:00:00.000Z" })], night);
+  assert.equal(board.items[0].text, "Amanhã: faltam 1 post e 2 stories");
+  assert.equal(board.items[0].date, "2026-11-06");
 });
 
 test("postagens com problema aparecem e não contam para o plano", () => {
@@ -60,8 +61,8 @@ test("postagens com problema aparecem e não contam para o plano", () => {
     [{ approval_status: "pending", created_at: "2026-11-04 12:00:00" }, "esperando aprovação há mais de 12 horas"]
   ];
   for (const [extra, reason] of cases) assert.equal(postProblem(post("05", "post", extra), NOW), reason);
-  const board = buildMissingPostsBoard([client], [post("05", "carousel", { approval_status: "correction_requested" })], NOW);
-  assert.ok(board.items.some(item => item.kind === "problem" && item.text === "Hoje 09:00: carrossel — correção pedida"));
+  const board = buildMissingPostsBoard([client], [post("05", "carousel", { approval_status: "correction_requested", scheduled_for: "2026-11-05T20:00:00.000Z" })], NOW);
+  assert.ok(board.items.some(item => item.kind === "problem" && item.text === "Hoje 17:00: carrossel — correção pedida"));
   assert.ok(board.items.some(item => item.text === "Hoje: faltam 2 posts e 2 stories"));
 });
 

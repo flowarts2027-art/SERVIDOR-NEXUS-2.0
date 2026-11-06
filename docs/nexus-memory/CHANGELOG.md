@@ -1,3 +1,6 @@
+## 2026-11-05 — Criar com agente no quadro (sem deploy)
+- Quadro sem o que já passou. Botão "Criar com agente (grátis)". Enviar artes abre no dia da linha.
+
 ## 2026-11-05 — Logo inteira no painel (sem deploy)
 - Logo na proporção dela, corte automático das sobras e aviso de capa.
 - Logo escura ganha cartão na cor principal. Menu na cor do cliente.

@@ -1103,8 +1103,15 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 ## 05/11/2026 — Logo inteira no painel (Claude)
 - Feito: corte, aviso de capa, `logoDark`, cartão, menu na cor do cliente, logo no topo do celular e lápis com nome e marca.
 - Conferido no Chrome sem tela com a capa real da Adimax, em 1280 e 500 px, com dados simulados.
-- A logo salva da Adimax ainda é a capa, com cores padrão. Precisa de logo nova e cores `#FFA500` e preto depois do deploy.
+- A logo salva da Adimax ainda é a capa, com cores padrão. Precisa de logo nova e cores `#F2A900` e preto depois do deploy.
 - Eduardo saiu do grupo Quatree Dog. O painel `quatree-dog-eduardo` continua existindo, fora do grupo, sem receber campanha.
 - Avisos do que é aceito em `public/upload-rules.js`, acima dos botões de envio de arte e de logo.
 - Sem aviso, porque a lista do Rodrigo não cobre: material do Captador, foto do Reel animado e criativo de referência.
+- Sem merge e sem deploy.
+
+## 05/11/2026 — Quadro com "Criar com agente" (Claude)
+- Feito: `agent-art.js`, `canCreateArt`, rota `/api/master/missing-posts/create`, quadro sem o que já passou, link com `dia`, página Enviar artes em 2 + 2.
+- A geração real ainda não rodou em produção. Testes usam gerador simulado.
+- Vigia bloqueado para a GILTEC, a pedido do Rodrigo, mesmo fora da pausa. Vale para todo o grupo GILTEC e Quatree.
+- Rodrigo apagou o painel da Adimax e vai criar de novo pelo "Novo cliente" depois do merge.
 - Sem merge e sem deploy.

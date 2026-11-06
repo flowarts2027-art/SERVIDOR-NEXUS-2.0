@@ -45,8 +45,8 @@ function setup() {
   return { db, env, stored };
 }
 
-const addClient = (db, id = "giltec") => db.prepare("INSERT INTO clients VALUES(?,?,'','@x','online','{}','','')").run(id, id);
-const addPost = (db, { id = "p", client = "giltec", at = AT, status = "ready", approval = "pending", error = "", caption = "Legenda", payload = {} } = {}) =>
+const addClient = (db, id = "maskara-assessoria") => db.prepare("INSERT INTO clients VALUES(?,?,'','@x','online','{}','','')").run(id, id);
+const addPost = (db, { id = "p", client = "maskara-assessoria", at = AT, status = "ready", approval = "pending", error = "", caption = "Legenda", payload = {} } = {}) =>
   db.prepare("INSERT INTO post_ledger VALUES(?,?,?,?,?,?,?,?,'')").run(id, client, at, status, approval, error, caption, JSON.stringify(payload));
 const read = (db, id = "p") => {
   const row = db.prepare("SELECT * FROM post_ledger WHERE id=?").get(id);
@@ -58,7 +58,7 @@ function deps(extra = {}) {
   return {
     calls,
     overrides: {
-      loadFrames: async () => ({ clientes: { giltec: { feed: [{ arquivo: "giltec/feed-1.png" }], story: [{ arquivo: "giltec/story-1.png" }] } } }),
+      loadFrames: async () => ({ clientes: { "maskara-assessoria": { feed: [{ arquivo: "maskara-assessoria/feed-1.png" }], story: [{ arquivo: "maskara-assessoria/story-1.png" }] } } }),
       image: async () => { calls.image += 1; return { bytes: jpeg(1024, 1280) }; },
       hasText: async () => false,
       zonesBlocked: async () => false,
@@ -203,8 +203,43 @@ test("Adimax: arte da Biblioteca continua valendo como substituta", async () => 
 
 test("a Adimax é achada pelo nome do painel, e os outros clientes não mudam", () => {
   for (const id of ["adimax", "adimax-eduardo", "eduardo-adimax", "racao-adimax-mg"]) assert.equal(receivesGeneratedImage(id), false, id);
-  for (const id of ["quatree-dog", "quatree-dog-eduardo", "daniela-martins"]) assert.equal(receivesGeneratedImage(id), false, id);
-  for (const id of ["giltec", "maskara-assessoria", "adimaxx"]) assert.equal(receivesGeneratedImage(id), true, id);
+  for (const id of ["quatree-dog", "quatree-dog-eduardo", "daniela-martins", "giltec", "giltec-locacoes"]) assert.equal(receivesGeneratedImage(id), false, id);
+  for (const id of ["primeiro-teste", "maskara-assessoria", "adimaxx"]) assert.equal(receivesGeneratedImage(id), true, id);
+});
+
+test("GILTEC: fora da pausa, não gera imagem nem usa rascunho de agente, e a falha vai para o alerta", async () => {
+  for (const id of ["giltec", "giltec-locacoes"]) {
+    const { db, env, stored } = setup();
+    assert.equal(env.NEXUS_PAUSED_CLIENTS, undefined, "sem pausa");
+    addClient(db, id);
+    stored.set("ia.jpg", jpeg(1080, 1350));
+    addPost(db, { client: id, error: "format_build_failed", payload: { source: "agent-core:creator", imageUrl: "https://x.test/media/ia.jpg" } });
+    const { calls, overrides } = deps({
+      brand: async () => ({ buttonWord: "ORCAMENTO", colors: {} }),
+      loadFrames: async () => ({ clientes: { [id]: { feed: [{ arquivo: "a.png" }], story: [{ arquivo: "b.png" }] } } })
+    });
+    assert.equal((await runPostWatcher(env, NOW, overrides)).replaced, false);
+    assert.equal(calls.image, 0, id);
+    assert.ok(read(db).payload.autoReplaceFailed.at, id);
+  }
+});
+
+test("GILTEC: vendedora nova ligada pelo Master também fica sem imagem gerada", async () => {
+  const { db, env } = setup();
+  db.prepare("INSERT INTO clients VALUES('giltec-ana','Ana','','@x','online',?,'','')").run(JSON.stringify({ group: { id: "giltec", vendor: "Ana" } }));
+  addPost(db, { client: "giltec-ana", error: "media_generation_required" });
+  const { calls, overrides } = deps({ brand: async () => ({ buttonWord: "ORCAMENTO", colors: {} }) });
+  await runPostWatcher(env, NOW, overrides);
+  assert.equal(calls.image, 0);
+});
+
+test("GILTEC: arte da Biblioteca continua valendo como substituta", async () => {
+  const { db, env } = setup();
+  addClient(db, "giltec");
+  addPost(db, { client: "giltec", error: "media_generation_required" });
+  const { calls, overrides } = deps({ library: async () => "https://x.test/media/lib.jpg" });
+  assert.equal((await runPostWatcher(env, NOW, overrides)).source, "biblioteca-do-cliente");
+  assert.equal(calls.image, 0);
 });
 
 test("cliente sem camada de texto não recebe imagem gerada", async () => {
@@ -250,7 +285,7 @@ test("um post por rodada", async () => {
 test("WhatsApp: desligado não manda; ligado manda um aviso e publica do mesmo jeito", async () => {
   const run = async flag => {
     const { db, env } = setup();
-    db.prepare("INSERT INTO clients VALUES('giltec','g','','@x','online',?,'','')").run(JSON.stringify({ contact: { whatsapp: "5521900000000" } }));
+    db.prepare("INSERT INTO clients VALUES('maskara-assessoria','g','','@x','online',?,'','')").run(JSON.stringify({ contact: { whatsapp: "5521900000000" } }));
     addPost(db, { error: "media_generation_required" });
     if (flag) env.NEXUS_AUTO_REPLACE_WHATSAPP = "true";
     const sent = [];

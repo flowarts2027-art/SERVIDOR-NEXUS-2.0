@@ -1254,9 +1254,10 @@ $("#client-edit-form")?.addEventListener("submit", async event => {
 });
 
 // Quadro "Postagens faltando" (05/11/2026): o servidor calcula, a tela só mostra.
+let agentCreating = false;
 async function loadMissingPosts() {
   const board = $("#missing-posts");
-  if (!board) return;
+  if (!board || agentCreating) return;
   let data;
   try { data = await api("/api/master/missing-posts"); } catch { return; }
   const total = Number(data.clients || 0);
@@ -1264,9 +1265,30 @@ async function loadMissingPosts() {
   $("#missing-bell-count").textContent = total;
   board.hidden = false;
   board.innerHTML = total
-    ? `<h2>Postagens faltando</h2>${(data.items || []).map(item => `<div class="missing-row ${escapeHtml(item.level)}"><div><strong>${escapeHtml(item.clientName)}</strong><p>${escapeHtml(item.text)}</p></div><a class="missing-send" href="/artes.html?cliente=${encodeURIComponent(item.clientId)}">Enviar artes</a></div>`).join("")}`
+    ? `<h2>Postagens faltando</h2>${(data.items || []).map(item => `<div class="missing-row ${escapeHtml(item.level)}"><div><strong>${escapeHtml(item.clientName)}</strong><p>${escapeHtml(item.text)}</p></div><div class="missing-actions">${item.agent ? `<button type="button" class="missing-agent" data-agent-create="${escapeHtml(item.clientId)}" data-agent-date="${escapeHtml(item.date)}" data-agent-count="${Number(item.agent)}">Criar com agente (grátis)</button>` : ""}<a class="missing-send" href="/artes.html?cliente=${encodeURIComponent(item.clientId)}&dia=${encodeURIComponent(item.date)}">Enviar artes</a></div></div>`).join("")}`
     : `<div class="missing-row done"><strong>Tudo completo nos próximos 3 dias.</strong></div>`;
 }
+// Uma arte por chamada: gerar imagem gasta os pedidos da execução no servidor.
+document.addEventListener("click", async event => {
+  const button = event.target.closest?.("[data-agent-create]");
+  if (!button || agentCreating) return;
+  const status = $("#missing-agent-status");
+  const total = Number(button.dataset.agentCount) || 1;
+  agentCreating = true;
+  button.disabled = true;
+  let made = 0, waiting = 0, problem = "";
+  try {
+    for (let index = 1; index <= total; index++) {
+      button.textContent = `Criando ${index} de ${total}…`;
+      const out = await api("/api/master/missing-posts/create", { method: "POST", body: JSON.stringify({ clientId: button.dataset.agentCreate, date: button.dataset.agentDate }) });
+      made += 1;
+      if (out.pending) waiting += 1;
+    }
+  } catch (error) { problem = error.detail || error.message || "Não consegui criar agora. Tente de novo."; }
+  agentCreating = false;
+  status.textContent = [made ? `${made} ${made === 1 ? "arte criada" : "artes criadas"} pelo agente.` : "", waiting ? "A montagem final leva alguns minutos." : "", problem].filter(Boolean).join(" ");
+  loadMissingPosts();
+});
 $("#missing-bell")?.addEventListener("click", () => { showView("dashboard"); $("#missing-posts").scrollIntoView({ behavior: "smooth", block: "start" }); });
 $("#refresh").addEventListener("click", loadMissingPosts);
 loadMissingPosts();

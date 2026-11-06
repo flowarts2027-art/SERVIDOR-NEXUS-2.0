@@ -1,4 +1,4 @@
-import { brandClientId, listClients } from "./clients.js";
+import { brandClientId, clientGroup, listClients } from "./clients.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { artShape, keepArt, mediaSize, readImageSize, windowError, mediaFitsFormat } from "./art-format.js";
 import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, imageZonesBlocked, TEXT_CHECK_VERSION } from "./art-frame.js";
@@ -19,11 +19,13 @@ import { writeArtTitle } from "./art-title.js";
 const WATCH_AHEAD_MS = 6 * 3600000;
 const WATCH_BEHIND_MS = 30 * 60000; // o erro pode ter aparecido em cima da hora
 const MAX_TRIES = 2;
-const COMPOSE_WAIT_MS = 20 * 60000;
-// Daniela: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
-const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo"]));
+export const COMPOSE_WAIT_MS = 20 * 60000;
+// Daniela e GILTEC: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
+const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo", "giltec", "giltec-locacoes"]));
 // O painel da Adimax nasce pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
 const NO_GENERATION_RE = /(^|-)adimax(-|$)/;
+// Vendedor novo entra pelo campo Grupo do Master, com outro id. A regra vale para o grupo inteiro.
+const NO_GENERATION_GROUPS = Object.freeze(new Set(["giltec", "quatree-dog"]));
 const ERROR_RE = /^media_generation_required$|^format_build_failed$|retry_limit_reached$|^format_mismatch$/;
 const SAFE_ZONES = " Composition: keep the top third and the bottom third of the frame free of people and animals, with calm background only. "
   + "Main subject in the center. Do not show any branded product, packaging or label. Do not write any text, letters or logos.";
@@ -31,6 +33,10 @@ const SAFE_ZONES = " Composition: keep the top third and the bottom third of the
 export function receivesGeneratedImage(clientId) {
   const id = String(clientId || "");
   return !NO_GENERATION_CLIENTS.has(id) && !NO_GENERATION_RE.test(id);
+}
+
+function usesGeneratedImage(client) {
+  return receivesGeneratedImage(client.id) && !NO_GENERATION_GROUPS.has(clientGroup(client)?.id);
 }
 
 function parse(text) {
@@ -62,14 +68,14 @@ async function remount(env, client, payload, target) {
   const url = String(payload.imageUrl || payload.publicImageUrl || "");
   if (!url) return null;
   // Rascunho de agente é imagem de IA: para quem não recebe imagem gerada, não vale como original.
-  if (!receivesGeneratedImage(client.id) && String(payload.source || "").startsWith("agent-core")) return null;
+  if (!usesGeneratedImage(client) && String(payload.source || "").startsWith("agent-core")) return null;
   const size = await mediaSize(env, url);
   if (!size || windowError(target === "story" ? "story" : "feed", size)) return null;
   return { url, source: "imagem-original" };
 }
 
 async function generate(env, client, row, target, deps) {
-  if (!receivesGeneratedImage(client.id)) return null;
+  if (!usesGeneratedImage(client)) return null;
   const frames = await deps.loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
   const brand = await deps.brand(env, client);
@@ -138,6 +144,7 @@ async function notifyClient(env, client, row, payload, send) {
 
 async function saveReplacement(env, client, row, payload, found, target, reason, now, deps) {
   const story = target === "story";
+  const agent = Boolean(payload.createdByAgent);
   const caption = story ? "" : String(row.caption || "").trim() || await deps.caption(env, client, "post");
   const next = {
     ...payload,
@@ -146,14 +153,14 @@ async function saveReplacement(env, client, row, payload, found, target, reason,
     creativeFeatures: { ...(payload.creativeFeatures || {}), requestedFormat: target },
     formatBuild: { status: "approved", kind: target, imageUrl: found.url, artChecked: true, artCheckVersion: TEXT_CHECK_VERSION, builtAt: now.toISOString() },
     qualityGates: { ...(payload.qualityGates || {}), copyChief: "approved", designer: "approved", formatBuilder: "approved" },
-    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: found.url, status: "approved", qualityScore: 100, reviewer: "nexus", reason: "Substituída automaticamente" },
+    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: found.url, status: "approved", qualityScore: 100, reviewer: "nexus", reason: agent ? "Criada pelo agente" : "Substituída automaticamente" },
     manual: true,
     retryCount: 0,
-    autoReplaced: { at: now.toISOString(), reason, source: found.source }
+    ...(agent ? { createdByAgent: { ...payload.createdByAgent, source: found.source } } : { autoReplaced: { at: now.toISOString(), reason, source: found.source } })
   };
   delete next.autoReplaceFailed;
   delete next.autoReplacePending;
-  if (await notifyClient(env, client, row, next, deps.send).catch(() => false)) next.autoReplaced.noticeAt = now.toISOString();
+  if (!agent && await notifyClient(env, client, row, next, deps.send).catch(() => false)) next.autoReplaced.noticeAt = now.toISOString();
   const saved = await env.DB.prepare(
     `UPDATE post_ledger SET status='scheduled',approval_status='approved',error='',caption=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP
      WHERE id=?1 AND status IN ('ready','scheduled','failed')`
@@ -185,15 +192,24 @@ export async function replacePost(env, client, row, payload, reason, now, deps) 
   return { id: row.id, replaced: false, reason: failure || "sem_arte_disponivel" };
 }
 
-const DEFAULT_DEPS = {
+export const WATCHER_DEPS = {
   loadFrames, image: cloudflareImage, hasText: imageHasText, zonesBlocked: imageZonesBlocked, compose: composeFramed,
   library: takeLibraryArt, campaignArt: nextCampaignArt, caption: nextCaption, send: sendAndRecord,
   brand: effectiveBrand, title: writeArtTitle, fetch: (...args) => fetch(...args)
 };
 
+// Quem pode ter arte criada pelo agente: usa imagem gerada e tem onde escrever título, logo e botão.
+export async function canCreateArt(env, client, deps = WATCHER_DEPS) {
+  if (!usesGeneratedImage(client)) return false;
+  const brand = await deps.brand(env, client).catch(() => null);
+  if (brand?.buttonWord) return true;
+  const frames = await deps.loadFrames(env).catch(() => null);
+  return Boolean(frames && hasFrames(frames, brandClientId(client)));
+}
+
 // A arte montada no GitHub volta aqui. Só vale com a senha de uso único daquele pedido.
 export async function finishComposedArt(env, postId, token, bytes, now = new Date(), overrides = {}) {
-  const deps = { ...DEFAULT_DEPS, ...overrides };
+  const deps = { ...WATCHER_DEPS, ...overrides };
   const row = await env.DB.prepare("SELECT id,client_id,status,caption,payload_json FROM post_ledger WHERE id=?1 LIMIT 1").bind(String(postId)).first();
   const payload = parse(row?.payload_json);
   const pending = payload.autoReplacePending;
@@ -213,7 +229,7 @@ export async function finishComposedArt(env, postId, token, bytes, now = new Dat
 }
 
 export async function runPostWatcher(env, now = new Date(), overrides = {}) {
-  const deps = { ...DEFAULT_DEPS, ...overrides };
+  const deps = { ...WATCHER_DEPS, ...overrides };
   const clients = (await listClients(env)).filter(client => client.status === "online" && !BLOCKED_PUBLISH_CLIENTS.has(client.id) && !isClientPaused(env, client.id));
   if (!clients.length) return { checked: 0 };
   const marks = clients.map((_, index) => "?" + (index + 3)).join(",");

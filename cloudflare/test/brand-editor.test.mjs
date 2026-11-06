@@ -61,7 +61,7 @@ test("cartão: logo preta é escura, laranja não; principal escura vira cartão
   assert.equal(await dark(() => ORANGE), false);
   assert.equal(await dark(() => [0, 0, 0, 0]), false, "transparente não conta");
   const { cardColor } = await editor();
-  assert.equal(cardColor("#ffa500"), "#ffa500");
+  assert.equal(cardColor("#f2a900"), "#f2a900");
   assert.equal(cardColor("#102030"), "#ffffff");
 });
 

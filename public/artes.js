@@ -10,7 +10,8 @@
   const ARCHIVED = new Set(["ragnar-one", "globalplay-streaming", "global-play-streaming", "demo-cafe"]);
   const TIMES = ["0900", "1200", "1900"];
   const STORY_TIMES = ["0900", "1030", "1200", "1600", "1900"]; // grade de 22/10 usa 10h30 e 16h
-  const ORDER = [...TIMES.map(t => "post-" + t), ...TIMES.map(t => "story-" + t)];
+  const PLAN_TIMES = ["0900", "1900"]; // plano do dia: 2 posts + 2 stories
+  const ORDER = [...PLAN_TIMES.map(t => "post-" + t), ...PLAN_TIMES.map(t => "story-" + t)];
   const nice = t => t.slice(0, 2) + "h" + (t.slice(2) === "00" ? "" : t.slice(2));
   const OPTIONS = [
     ...TIMES.map(t => ["post-" + t, "Post " + nice(t)]),
@@ -201,7 +202,9 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    $("#date").value = tomorrow();
+    // Botão "Enviar artes" do quadro de postagens faltando: abre no dia da linha.
+    const wantedDay = new URLSearchParams(location.search).get("dia");
+    $("#date").value = /^\d{4}-\d{2}-\d{2}$/.test(wantedDay || "") ? wantedDay : tomorrow();
     loadClients().then(loadCaptions);
     $("#client").addEventListener("change", loadCaptions);
     $("#date").addEventListener("change", loadCaptions);
