@@ -1,3 +1,7 @@
+## 2026-11-05 — Depois do merge do Criar com agente
+1. Testar o botão em um dia da Flow Arts e olhar a arte antes de confiar. A geração nunca rodou em produção.
+2. Rodrigo decide se o vigia também deixa de gerar para a GILTEC.
+
 ## 2026-11-05 — Depois do merge da logo no painel
 1. Adimax, no lápis: enviar a logo preta, cores `#FFA500` e preto, palavra QUERO.
 2. Conferir o cartão laranja no painel da Adimax, com login real.

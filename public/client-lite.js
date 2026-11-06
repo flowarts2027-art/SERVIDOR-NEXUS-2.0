@@ -233,6 +233,7 @@ function actionsButtonsHtml(post) {
 function tagHtml(post) {
   const group = postGroup(post);
   if (post.autoReplaced) return `<span class="tag tag-blue">Substituída automaticamente</span>`;
+  if (post.createdByAgent && post.formatBuild?.status === "approved") return `<span class="tag tag-blue">Criada pelo agente</span>`;
   if (String(post.approvalStatus) === "correction_requested") return `<span class="tag tag-blue">Ajuste pedido · sendo refeito</span>`;
   if (group === "aprovar" && !autoReviewed(post)) return `<span class="tag tag-blue">Em revisão automática</span>`;
   if (group === "aprovar") return `<span class="tag tag-wait">Esperando sua aprovação</span>`;

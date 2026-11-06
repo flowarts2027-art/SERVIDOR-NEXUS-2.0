@@ -37,7 +37,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 ## Master: nome do painel e postagens faltando (Rodrigo, 05/11/2026)
 
-**Trocar o nome do painel nunca muda o id do cliente.** O quadro "Postagens faltando" confere 3 dias contra o plano de 2 posts + 2 stories. Ver `docs/nexus-memory/REGRA_MASTER_NOME_E_POSTAGENS.md`.
+**Trocar o nome do painel nunca muda o id do cliente.** O quadro "Postagens faltando" confere 3 dias contra o plano de 2 posts + 2 stories, e o botão "Criar com agente (grátis)" publica sem esperar aprovação. Ver `docs/nexus-memory/REGRA_MASTER_NOME_E_POSTAGENS.md`.
 
 ## Envio de artes (Rodrigo, 05/11/2026)
 

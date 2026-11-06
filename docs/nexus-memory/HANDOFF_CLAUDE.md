@@ -1108,3 +1108,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Avisos do que é aceito em `public/upload-rules.js`, acima dos botões de envio de arte e de logo.
 - Sem aviso, porque a lista do Rodrigo não cobre: material do Captador, foto do Reel animado e criativo de referência.
 - Sem merge e sem deploy.
+
+## 05/11/2026 — Quadro com "Criar com agente" (Claude)
+- Feito: `agent-art.js`, `canCreateArt`, rota `/api/master/missing-posts/create`, quadro sem o que já passou, link com `dia`, página Enviar artes em 2 + 2.
+- A geração real ainda não rodou em produção. Testes usam gerador simulado.
+- O vigia ainda gera imagem para a GILTEC se ela sair da pausa. O pedido citou só o botão.
+- Sem merge e sem deploy.

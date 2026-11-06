@@ -3,6 +3,7 @@ import { clientScreenName } from "./client-display.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { sendAndRecord } from "./whatsapp-agent.js";
 import { isClientPaused } from "./client-pause.js";
+import { COMPOSE_WAIT_MS, canCreateArt } from "./post-watcher.js";
 
 // Quadro "Postagens faltando" do Master (pedido do Rodrigo, 05/11/2026).
 // Para cada cliente online, confere hoje, amanhã e depois contra o plano de 2 posts + 2 stories por dia.
@@ -17,6 +18,8 @@ const DAY_LABELS = Object.freeze(["Hoje", "Amanhã", "Depois de amanhã"]);
 const DAY_LEVELS = Object.freeze(["today", "tomorrow", "later"]);
 const FORMAT_LABELS = Object.freeze({ story: "story", carousel: "carrossel", reel: "Reel" });
 const MAX_PUBLISH_ATTEMPTS = 3;
+const LAST_HOUR_OF_TODAY = 21; // depois disso, o quadro mostra só amanhã e depois
+const AGENT_MAX_PER_CLICK = 2;
 
 // Aviso por WhatsApp: pronto e desligado até a Meta liberar. Liga com NEXUS_MISSING_POSTS_WHATSAPP="true".
 const ALERT_TO = "5521964816185";
@@ -24,6 +27,19 @@ const ALERT_FIRST_HOUR = 8;
 
 function localDayNumber(ms) {
   return Math.floor((ms + TZ_OFFSET_MS) / DAY_MS);
+}
+
+function dateOf(dayNumber) {
+  return new Date(dayNumber * DAY_MS).toISOString().slice(0, 10);
+}
+
+export function boardToday(now = new Date()) {
+  return dateOf(localDayNumber(now.getTime()));
+}
+
+// Início do dia de Brasília, em milissegundos. NaN se a data não for válida.
+export function localDayStart(date) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(date || "")) ? Date.parse(date + "T00:00:00.000Z") - TZ_OFFSET_MS : NaN;
 }
 
 function hhmm(ms) {
@@ -42,6 +58,8 @@ export function postProblem(post = {}, now = new Date()) {
   const error = String(post.error || "");
   const approval = String(post.approval_status || "");
   if (String(post.status || "") === "published") return "";
+  // Arte do agente sendo montada no GitHub: ainda está no caminho.
+  if (now.getTime() - Date.parse(String(post.compose_at || "")) < COMPOSE_WAIT_MS) return "";
   if (post.replace_failed) return "não consegui substituir";
   if (approval === "correction_requested") return "correção pedida";
   if (/^media_generation/.test(error)) return "sem imagem";
@@ -60,15 +78,24 @@ export function missingText(label, posts, stories) {
   return label + ": " + (posts + stories === 1 ? "falta " : "faltam ") + parts.join(" e ");
 }
 
+// Quanto falta no dia para fechar o plano. Recebe só as postagens daquele dia.
+export function dayGap(posts = [], now = new Date()) {
+  const ok = posts.filter(post => !postProblem(post, now));
+  const stories = ok.filter(post => String(post.format || "post").toLowerCase() === "story").length;
+  return { posts: Math.max(0, DAILY_PLAN.posts - (ok.length - stories)), stories: Math.max(0, DAILY_PLAN.stories - stories) };
+}
+
 // Publicado ou no caminho conta para o plano. Com problema não conta, porque não vai sair.
-export function buildMissingPostsBoard(clients = [], posts = [], now = new Date()) {
+// O que já passou sai do quadro: postagem de hoje vencida e, depois das 21h, o dia de hoje inteiro.
+export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(), agentClients = new Set()) {
   const today = localDayNumber(now.getTime());
+  const lateToday = new Date(now.getTime() + TZ_OFFSET_MS).getUTCHours() >= LAST_HOUR_OF_TODAY;
   const items = [];
   for (const client of clients) {
     const counts = Array.from({ length: DAYS_AHEAD }, () => ({ posts: 0, stories: 0 }));
-    const line = (dayIndex, kind, text) => items.push({
-      clientId: client.id, clientName: clientScreenName(client), dayIndex,
-      day: DAY_LABELS[dayIndex], level: DAY_LEVELS[dayIndex], kind, text
+    const line = (dayIndex, kind, text, realDay = dayIndex, agent = 0) => items.push({
+      clientId: client.id, clientName: clientScreenName(client), dayIndex, date: dateOf(today + realDay),
+      day: DAY_LABELS[dayIndex], level: DAY_LEVELS[dayIndex], kind, text, agent
     });
     const problems = [];
     for (const post of posts) {
@@ -80,20 +107,41 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
       const problem = postProblem(post, now);
       // Sem substituta, ou correção pedida perto do horário: fica vermelho e em primeiro, mesmo sendo de amanhã.
       const urgent = post.replace_failed || (post.approval_status === "correction_requested" && at - now.getTime() <= URGENT_CORRECTION_MS);
-      if (problem) problems.push({ dayIndex: urgent ? 0 : dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
+      const gone = dayIndex === 0 && (lateToday || at <= now.getTime());
+      if (problem && gone) continue;
+      if (problem) problems.push({ dayIndex: urgent ? 0 : dayIndex, realDay: dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
       else counts[dayIndex][format === "story" ? "stories" : "posts"] += 1;
     }
     counts.forEach((count, dayIndex) => {
+      if (dayIndex === 0 && lateToday) return;
       const lackingPosts = Math.max(0, DAILY_PLAN.posts - count.posts);
       const lackingStories = Math.max(0, DAILY_PLAN.stories - count.stories);
-      if (lackingPosts || lackingStories) line(dayIndex, "missing", missingText(DAY_LABELS[dayIndex], lackingPosts, lackingStories));
+      const agent = agentClients.has(client.id) ? Math.min(AGENT_MAX_PER_CLICK, lackingPosts + lackingStories) : 0;
+      if (lackingPosts || lackingStories) line(dayIndex, "missing", missingText(DAY_LABELS[dayIndex], lackingPosts, lackingStories), dayIndex, agent);
     });
-    problems.sort((a, b) => a.at - b.at).forEach(problem => line(problem.dayIndex, "problem", problem.text));
+    problems.sort((a, b) => a.at - b.at).forEach(problem => line(problem.dayIndex, "problem", problem.text, problem.realDay));
   }
   items.sort((a, b) => a.dayIndex - b.dayIndex
     || a.clientName.localeCompare(b.clientName, "pt-BR")
     || (a.kind === b.kind ? 0 : a.kind === "missing" ? -1 : 1));
   return { clients: new Set(items.map(item => item.clientId)).size, items };
+}
+
+export async function loadPosts(env, ids, start, end) {
+  const marks = ids.map((_, index) => "?" + (index + 3)).join(",");
+  const payload = "CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END";
+  const rows = await env.DB.prepare(
+    `SELECT client_id,scheduled_for,status,approval_status,error,created_at,
+            json_extract(${payload},'$.creativeFeatures.requestedFormat') AS format,
+            json_extract(${payload},'$.retryCount') AS retry_count,
+            json_extract(${payload},'$.autoReplaceFailed.at') AS replace_failed,
+            json_extract(${payload},'$.autoReplacePending.at') AS compose_at
+     FROM post_ledger
+     WHERE client_id IN (${marks}) AND scheduled_for>=?1 AND scheduled_for<?2
+       AND status IN ('ready','scheduled','publishing','published','failed')
+       AND COALESCE(approval_status,'')<>'rejected'`
+  ).bind(start, end, ...ids).all();
+  return rows?.results || [];
 }
 
 export async function missingPostsBoard(env, now = new Date()) {
@@ -102,19 +150,9 @@ export async function missingPostsBoard(env, now = new Date()) {
   const today = localDayNumber(now.getTime());
   const start = new Date(today * DAY_MS - TZ_OFFSET_MS).toISOString();
   const end = new Date((today + DAYS_AHEAD) * DAY_MS - TZ_OFFSET_MS).toISOString();
-  const marks = clients.map((_, index) => "?" + (index + 3)).join(",");
-  const payload = "CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END";
-  const rows = await env.DB.prepare(
-    `SELECT client_id,scheduled_for,status,approval_status,error,created_at,
-            json_extract(${payload},'$.creativeFeatures.requestedFormat') AS format,
-            json_extract(${payload},'$.retryCount') AS retry_count,
-            json_extract(${payload},'$.autoReplaceFailed.at') AS replace_failed
-     FROM post_ledger
-     WHERE client_id IN (${marks}) AND scheduled_for>=?1 AND scheduled_for<?2
-       AND status IN ('ready','scheduled','publishing','published','failed')
-       AND COALESCE(approval_status,'')<>'rejected'`
-  ).bind(start, end, ...clients.map(client => client.id)).all();
-  return buildMissingPostsBoard(clients, rows?.results || [], now);
+  const ready = await Promise.all(clients.map(client => canCreateArt(env, client).catch(() => false)));
+  const agentClients = new Set(clients.filter((_, index) => ready[index]).map(client => client.id));
+  return buildMissingPostsBoard(clients, await loadPosts(env, clients.map(client => client.id), start, end), now, agentClients);
 }
 
 export function missingPostsMessage(board) {

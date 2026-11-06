@@ -235,3 +235,13 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Grupo Quatree Dog mostra só "Quatree Dog (Ericsson)". O Eduardo saiu.
 - Acima dos botões de envio, letras grandes dizem o que é aceito. Adimax usa a palavra do botão QUERO.
 - Decisão do Claude: o painel do Eduardo não foi apagado nem arquivado. O pedido foi tirá-lo do grupo.
+
+## 2026-11-05 — Criar com agente no quadro (Rodrigo)
+- O que já passou sai do quadro. Depois das 21h, só amanhã e depois.
+- Botão "Criar com agente (grátis)": cria até 2 artes, publica sozinho, selo "Criada pelo agente".
+- Fora do botão: Daniela Martins, Quatree Dog, Adimax e GILTEC.
+- "Enviar artes" abre no dia da linha e diz 2 posts + 2 stories.
+- Decisão do Claude: faltando post e story, cria 1 de cada. Horários 9h e 19h, os mesmos da página Enviar artes.
+- Decisão do Claude: o botão fica só nas linhas de falta. Linha de problema já tem post gravado, e o vigia cuida dela.
+- Decisão do Claude: sem cair na Biblioteca, para o selo dizer a verdade.
+- Decisão do Claude: a página Enviar artes também passou a preencher 2 + 2, para o texto não mentir.

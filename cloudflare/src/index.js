@@ -24,6 +24,7 @@ import { finishComposedArt, isWatcherMinute, runPostWatcher } from "./post-watch
 import { handleBrand } from "./client-identity.js";
 import { handleClientName } from "./client-name.js";
 import { missingPostsBoard, sendMissingPostsAlert } from "./missing-posts.js";
+import { createAgentArt } from "./agent-art.js";
 import { handleWhatsAppWebhook, handleWhatsAppProtected, whatsappConfigStatus } from "./whatsapp-agent.js";
 import { instagramCredentialStatus, instagramPublishingHealth } from "./instagram-credentials.js";
 import { instagramMasterConfigStatus, handleInstagramOAuthCallback, handleInstagramComplianceRequest } from "./instagram.js";
@@ -961,6 +962,15 @@ export default {
       const master = await resolveMasterSession(env, request).catch(() => null);
       if (!master) return json({ error: "unauthorized" }, 401);
       return json(await missingPostsBoard(env));
+    }
+
+    // Botão "Criar com agente (grátis)": uma arte por chamada. Só com login do Master.
+    if (url.pathname === "/api/master/missing-posts/create" && request.method === "POST") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const body = await request.json().catch(() => ({}));
+      const out = await createAgentArt(env, body.clientId, body.date);
+      return json(out, out.ok ? 200 : 400);
     }
 
     // Imagem por IA para clientes: liberação e limite por mês. Só com login do Master.

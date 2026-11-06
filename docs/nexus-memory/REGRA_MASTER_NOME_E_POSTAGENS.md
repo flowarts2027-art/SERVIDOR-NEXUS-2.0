@@ -17,7 +17,21 @@ Pedido do Rodrigo em 05/11/2026.
 - Ordem: hoje em vermelho piscando, amanhã em laranja, depois em amarelo.
 - O sino no topo mostra quantos clientes estão no quadro.
 - O quadro é calculado a cada leitura e atualiza de minuto em minuto. Quem completa sai sozinho.
+- O que já passou sai do quadro: problema de hoje com horário vencido e, depois das 21h, o dia de hoje inteiro.
+- "Enviar artes" abre sempre no dia da linha.
 - Código: `cloudflare/src/missing-posts.js`.
+
+## Botão "Criar com agente (grátis)"
+- Aparece nas linhas de falta. Cria até 2 artes por clique, e o resto continua como falta. Faltando post e story, cria 1 de cada.
+- Uma arte por chamada, porque gerar imagem gasta os pedidos da execução.
+- Mesmo gerador do vigia (Workers AI), com a ficha do cliente. A IA não escreve. O Nexus coloca título, logo e botão.
+- Tamanho final: story 1080x1920, post 1080x1350, com a imagem na tela toda.
+- Horário: 9h e 19h no minuto do cliente. Ocupado ou vencido, vai para a próxima hora livre até as 21h.
+- Publica sozinho, com o selo "Criada pelo agente". Exceção à regra de aprovação, pedida pelo Rodrigo.
+- Não usa Biblioteca nem arte de campanha. Se a geração falhar, nada fica gravado e a tela avisa.
+- Não aparece para Daniela Martins, grupo Quatree Dog, Adimax e grupo GILTEC.
+- Só aparece para quem tem camada de texto: palavra do botão salva ou moldura do deploy. A Nexus AI não tem.
+- Código: `cloudflare/src/agent-art.js`.
 
 ## Aviso por WhatsApp
 - Pronto e DESLIGADO. Liga com `NEXUS_MISSING_POSTS_WHATSAPP="true"` no `wrangler.jsonc`.

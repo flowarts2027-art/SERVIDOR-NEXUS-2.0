@@ -190,6 +190,7 @@ export async function verAgenda(env, deps, args, now = new Date()) {
       aprovacao: String(r.approval_status || ""),
       legenda: String(r.caption || "").replace(/\s+/g, " ").trim().slice(0, 140),
       ...(payload?.autoReplaced ? { substituida: true } : {}),
+      ...(payload?.createdByAgent ? { criada_pelo_agente: true } : {}),
       // 04/11/2026: mostrar o motivo da falha para o Claude/ChatGPT diagnosticarem sem pedir print.
       ...(r.error ? { erro: String(r.error).slice(0, 300), tentativas: Number(payload?.retryCount || 0) } : {})
     };
