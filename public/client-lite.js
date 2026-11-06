@@ -204,7 +204,7 @@ function actionsButtonsHtml(post) {
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
-      <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: na imagem 2, a agenda está fechada; ela precisa estar aberta."></textarea>
+      <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: mais ração, outro cachorro, sem texto em cima do cão."></textarea>
       <p class="muted">O post volta para "esperando aprovação" e só sai depois que você aprovar de novo.</p>
       <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
     </form>`;
@@ -216,8 +216,9 @@ function actionsButtonsHtml(post) {
   const id = escapeHtml(post.id);
   const reviewed = autoReviewed(post);
   const dateMissing = post.dateChoice === "client" && !post.scheduledFor;
-  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing;
-  const waitMsg = dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
+  const fixing = String(post.approvalStatus) === "correction_requested";
+  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing && !fixing;
+  const waitMsg = fixing ? "Espere a arte refeita" : dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
       <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
@@ -225,16 +226,17 @@ function actionsButtonsHtml(post) {
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
-      <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: use uma foto mais clara e fale do nosso horário de sábado."></textarea>
+      <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: mais ração, outro cachorro, sem texto em cima do cão."></textarea>
+      <p class="muted">A arte nova volta aqui para você aprovar.</p>
       <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
     </form>`;
 }
 
 function tagHtml(post) {
   const group = postGroup(post);
+  if (String(post.approvalStatus) === "correction_requested") return `<span class="tag tag-blue">Ajuste pedido · sendo refeito</span>`;
   if (post.autoReplaced) return `<span class="tag tag-blue">Substituída automaticamente</span>`;
   if (post.createdByAgent && post.formatBuild?.status === "approved") return `<span class="tag tag-blue">Criada pelo agente</span>`;
-  if (String(post.approvalStatus) === "correction_requested") return `<span class="tag tag-blue">Ajuste pedido · sendo refeito</span>`;
   if (group === "aprovar" && !autoReviewed(post)) return `<span class="tag tag-blue">Em revisão automática</span>`;
   if (group === "aprovar") return `<span class="tag tag-wait">Esperando sua aprovação</span>`;
   if (group === "agendados" && post.stuck) return `<span class="tag tag-wait">Não saiu no horário · toque em Publicar agora</span>`;
@@ -996,17 +998,20 @@ async function sendRevision(form) {
   const text = String(new FormData(form).get("instructions") || "").trim();
   if (!text) { toast("Escreva o que você quer mudar."); return; }
   const button = form.querySelector("button");
+  const label = button.textContent;
   button.disabled = true;
+  button.textContent = "Criando a arte nova…";
   try {
-    await api("/api/portal/posts/" + encodeURIComponent(id) + "/revision", {
+    const out = await api("/api/portal/posts/" + encodeURIComponent(id) + "/revision", {
       method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ instructions: text })
     });
-    toast("Pedido de ajuste enviado. Os agentes vão refazer este post.");
+    toast(out?.message || "Pedido de ajuste enviado.");
     await loadAll();
   } catch (error) {
     toast(error.message);
     button.disabled = false;
+    button.textContent = label;
   }
 }
 

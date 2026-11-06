@@ -255,3 +255,10 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - A marca oficial (@adimaxoficial) é ADIMAX em preto sobre amarelo-ouro. `#FFA500` estava errado.
 - Valem principal e destaque `#F2A900`, texto `#000000`, logo preta.
 - Decisão do Claude: destaque igual à principal. Destaque preto sumiria no menu escuro, e o botão das artes sai amarelo-ouro com letra preta.
+
+## 2026-11-06 — Pedir ajuste (Rodrigo)
+- Pedido: arte nova pelo gerador grátis, no mesmo horário, voltando para o cliente aprovar. Quem não recebe imagem gerada vira aviso no Master.
+- Decisão do Claude: a arte antiga fica até a nova ficar pronta. Geração que falha vira aviso.
+- Decisão do Claude: limite de 3 ajustes automáticos por post, para poupar o gerador grátis.
+- Decisão do Claude: Reels vira aviso. Carrossel de quem usa imagem gerada segue o fluxo antigo.
+- Decisão do Claude: Nexus AI usa `nexus-mark-metal-blue.png`, a logo N azul e prata descrita na campanha dela.

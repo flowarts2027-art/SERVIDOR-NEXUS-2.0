@@ -29,7 +29,8 @@ import { startInstagramOAuth, handleInstagramOAuthCallback } from "./instagram.j
 import { AGENT_CORE_MODULES, normalizeAgentCoreConfig, agentCoreState, agentExecutions, saveAgentCoreConfig } from "./agent-core.js";
 import { leadsForClient, leadHunterSummary } from "./leads.js";
 import { leadHunterView, saveLeadHunterConfig, runLeadHunter, discardLead } from "./lead-hunter.js";
-import { decidePost, requestPostRevision, cancelPost, deletePostFromPanel, saveOwnPostContent, publishPostNow, useLibraryImageForPost } from "./posts.js";
+import { requestAdjustment } from "./client-revision.js";
+import { decidePost, cancelPost, deletePostFromPanel, saveOwnPostContent, publishPostNow, useLibraryImageForPost } from "./posts.js";
 import { addDirective, createCampaign, masterWorkspace } from "./master-workspace.js";
 import { startGitHubVideoRender, startYouTubeVideoIngest, recoverLocalIngestViaServer, retryFailedYoutubeIngestWithLocalHelper, localHelperStaleReason, ingestTimeoutDetail } from "./github-video-render.js";
 import { confirmedVideoSource, isMp4Header, videoErrorMessages, videoRenderQueueExpired } from "./video-source.js";
@@ -1847,13 +1848,14 @@ export async function handlePortalApi(request, env, url, ctx) {
   if (postRevisionMatch && request.method === "POST") {
     const body = await request.json().catch(() => ({}));
     try {
-      return json(await requestPostRevision(env, client, decodeURIComponent(postRevisionMatch[1]), body.instructions));
+      return json(await requestAdjustment(env, client, decodeURIComponent(postRevisionMatch[1]), body.instructions));
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       const messages = {
         revision_instructions_required: "Explique o que precisa ser corrigido.",
         already_published: "Esta postagem já foi publicada.",
-        publishing_in_progress: "A postagem já está sendo publicada."
+        publishing_in_progress: "A postagem já está sendo publicada.",
+        revision_in_progress: "Já estou refazendo esta arte. Espere ela voltar aqui."
       };
       return json({ error: code, message: messages[code] || "Não foi possível pedir a correção." }, code === "post_not_found" ? 404 : 400);
     }

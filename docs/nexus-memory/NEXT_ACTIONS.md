@@ -1,3 +1,9 @@
+## 2026-11-06 — Depois do merge do Pedir ajuste
+1. Conferir o deploy.
+2. Testar um ajuste num post da Flow Arts que esteja esperando aprovação e olhar a arte. A geração real nunca rodou em produção.
+3. Testar "Criar com agente" na Nexus AI e olhar a arte antes de confiar. A publicação sai sozinha.
+4. Conferir se a resposta automática da Nexus AI está ligada, para o COMENTE QUERO responder.
+
 ## 2026-11-05 — Depois do merge do Criar com agente
 1. Testar o botão em um dia da Flow Arts e olhar a arte antes de confiar. A geração nunca rodou em produção.
 2. Rodrigo cria de novo a Adimax pelo "Novo cliente": logo preta, palavra QUERO e cores digitadas à mão: principal e destaque `#F2A900`, texto `#000000`.

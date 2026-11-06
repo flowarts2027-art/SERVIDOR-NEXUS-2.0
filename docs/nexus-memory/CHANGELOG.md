@@ -1,3 +1,10 @@
+## 2026-11-06 — Pedir ajuste com imagem nova (PR aberto, sem deploy)
+- O ajuste do cliente cria outra imagem no gerador grátis e volta para ele aprovar.
+- Quem não recebe imagem gerada vira aviso no Master, sem apagar a arte.
+
+## 2026-11-06 — Nexus AI com camada de texto (em produção)
+- Marca salva no Master: logo N azul e prata, `#031438`, `#02c7fc` e palavra QUERO. O botão "Criar com agente" já aparece nas linhas dela.
+
 ## 2026-11-05 — Criar com agente no quadro (sem deploy)
 - Quadro sem o que já passou. Botão "Criar com agente (grátis)". Enviar artes abre no dia da linha.
 

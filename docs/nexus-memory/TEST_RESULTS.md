@@ -334,3 +334,11 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - `compor_arte.py` rodou no PC com Pillow: arte 1080x1350 e 1080x1920, foto inteira, logo, título e botão.
 - Editor no Chrome sem tela: extraiu #04102c e #ffc20e de uma logo de teste, tirou o fundo branco e manteve a marca.
 - Não testado: login real, token do GitHub, workflow `art-compose` e título real do Workers AI.
+
+## 2026-11-06 — Pedir ajuste e Nexus AI (Claude)
+- `test/client-revision.test.mjs`: 20 testes com SQLite de verdade e gerador simulado.
+- Suíte: 958 de 959. Falha só `wrangler keeps production cron on a D1-safe fifteen-minute cadence`, que já falhava na `main` nesta máquina.
+- Pacote do Worker carregado por inteiro, sem dependência circular. `wrangler deploy --dry-run` passou.
+- Chrome sem tela, com dados simulados: campo de 150 px, letra de 18 px, texto "Criando a arte nova…" e aviso de volta.
+- Produção, no Master com login: deploy do #600 com sucesso, 4 botões no quadro, e a Nexus AI passou a ter botão depois de salvar a marca.
+- Não testado: geração real pelo Workers AI, montagem real no GitHub e resposta automática da Nexus AI.

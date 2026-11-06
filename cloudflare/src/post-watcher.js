@@ -20,6 +20,7 @@ const WATCH_AHEAD_MS = 6 * 3600000;
 const WATCH_BEHIND_MS = 30 * 60000; // o erro pode ter aparecido em cima da hora
 const MAX_TRIES = 2;
 export const COMPOSE_WAIT_MS = 20 * 60000;
+export const REVISION_REASON = "pedido_do_cliente"; // "Pedir ajuste" do cliente: a arte volta para aprovação
 // Daniela e GILTEC: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
 const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo", "giltec", "giltec-locacoes"]));
 // O painel da Adimax nasce pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
@@ -47,7 +48,7 @@ export function isWatcherMinute(at = new Date()) {
   return new Date(at).getUTCMinutes() % 5 === 4;
 }
 
-function formatOf(payload) {
+export function formatOf(payload) {
   return String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
 }
 
@@ -74,7 +75,7 @@ async function remount(env, client, payload, target) {
   return { url, source: "imagem-original" };
 }
 
-async function generate(env, client, row, target, deps) {
+async function generate(env, client, row, target, deps, revision = null) {
   if (!usesGeneratedImage(client)) return null;
   const frames = await deps.loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
@@ -83,7 +84,9 @@ async function generate(env, client, row, target, deps) {
   const dynamic = Boolean(brand?.buttonWord);
   if (!dynamic && (!frames || !hasFrames(frames, frameClientId))) return null;
   const story = target === "story";
-  const prompt = buildVisualPrompt(client, "", row.id, { contentFormat: story ? "story" : "image", cleanImage: true }) + SAFE_ZONES;
+  const asked = revision ? " Client requested this change, follow it: " + String(revision.request).slice(0, 400) + "." : "";
+  const seed = revision ? row.id + "-" + revision.count : row.id;
+  const prompt = buildVisualPrompt(client, "", seed, { contentFormat: story ? "story" : "image", cleanImage: true }) + asked + SAFE_ZONES;
   const image = await deps.image(env, prompt, story ? "9:16" : "4:5");
   const size = readImageSize(image.bytes);
   if (artShape(size?.width, size?.height) !== (story ? "story" : "portrait")) throw new Error("generated_wrong_size");
@@ -91,8 +94,8 @@ async function generate(env, client, row, target, deps) {
   if (await deps.hasText(env, image.bytes)) throw new Error("generated_has_text");
   if (await deps.zonesBlocked(env, image.bytes)) throw new Error("generated_subject_in_text_zone");
   if (dynamic) return requestCompose(env, client, row, image.bytes, brand, story, deps);
-  const seed = Number(String(row.id).replace(/\D/g, "").slice(0, 6)) || 0;
-  const out = await deps.compose(env, image.bytes, pickFrame(frames, frameClientId, story, seed), { story, logoKey: brand?.logoKey || "" });
+  const frameSeed = Number(String(row.id).replace(/\D/g, "").slice(0, 6)) || 0;
+  const out = await deps.compose(env, image.bytes, pickFrame(frames, frameClientId, story, frameSeed), { story, logoKey: brand?.logoKey || "" });
   const key = "posts/" + client.id + "/" + row.id + "/substituta-" + crypto.randomUUID() + ".jpg";
   await env.MEDIA.put(key, out, {
     httpMetadata: { contentType: "image/jpeg", cacheControl: "public, max-age=31536000, immutable" },
@@ -145,6 +148,7 @@ async function notifyClient(env, client, row, payload, send) {
 async function saveReplacement(env, client, row, payload, found, target, reason, now, deps) {
   const story = target === "story";
   const agent = Boolean(payload.createdByAgent);
+  const revision = reason === REVISION_REASON;
   const caption = story ? "" : String(row.caption || "").trim() || await deps.caption(env, client, "post");
   const next = {
     ...payload,
@@ -153,18 +157,21 @@ async function saveReplacement(env, client, row, payload, found, target, reason,
     creativeFeatures: { ...(payload.creativeFeatures || {}), requestedFormat: target },
     formatBuild: { status: "approved", kind: target, imageUrl: found.url, artChecked: true, artCheckVersion: TEXT_CHECK_VERSION, builtAt: now.toISOString() },
     qualityGates: { ...(payload.qualityGates || {}), copyChief: "approved", designer: "approved", formatBuilder: "approved" },
-    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: found.url, status: "approved", qualityScore: 100, reviewer: "nexus", reason: agent ? "Criada pelo agente" : "Substituída automaticamente" },
+    visualReview: { version: VISUAL_REVIEW_POLICY.version, media: found.url, status: "approved", qualityScore: 100, reviewer: "nexus", reason: revision ? "Refeita a pedido do cliente" : agent ? "Criada pelo agente" : "Substituída automaticamente" },
     manual: true,
     retryCount: 0,
-    ...(agent ? { createdByAgent: { ...payload.createdByAgent, source: found.source } } : { autoReplaced: { at: now.toISOString(), reason, source: found.source } })
+    ...(revision ? { clientRevision: { ...payload.clientRevision, source: found.source } }
+      : agent ? { createdByAgent: { ...payload.createdByAgent, source: found.source } }
+      : { autoReplaced: { at: now.toISOString(), reason, source: found.source } })
   };
   delete next.autoReplaceFailed;
   delete next.autoReplacePending;
-  if (!agent && await notifyClient(env, client, row, next, deps.send).catch(() => false)) next.autoReplaced.noticeAt = now.toISOString();
+  if (revision) delete next.autoReplaced;
+  if (!agent && !revision && await notifyClient(env, client, row, next, deps.send).catch(() => false)) next.autoReplaced.noticeAt = now.toISOString();
   const saved = await env.DB.prepare(
-    `UPDATE post_ledger SET status='scheduled',approval_status='approved',error='',caption=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP
+    `UPDATE post_ledger SET status=?4,approval_status=?5,error='',caption=?2,payload_json=?3,updated_at=CURRENT_TIMESTAMP
      WHERE id=?1 AND status IN ('ready','scheduled','failed')`
-  ).bind(row.id, caption, JSON.stringify(next)).run();
+  ).bind(row.id, caption, JSON.stringify(next), revision ? "ready" : "scheduled", revision ? "pending" : "approved").run();
   return Number(saved?.meta?.changes || 0) > 0;
 }
 
@@ -175,12 +182,14 @@ async function saveFailure(env, row, payload, reason, tries, now) {
 
 export async function replacePost(env, client, row, payload, reason, now, deps) {
   const target = targetFormat(payload);
-  let found = await remount(env, client, payload, target), failure = "";
+  // Ajuste do cliente só vale com imagem nova: remontar a atual ou pegar arte pronta não seguiria o pedido.
+  const revision = reason === REVISION_REASON ? payload.clientRevision : null;
+  let found = revision ? null : await remount(env, client, payload, target), failure = "";
   if (!found) {
-    try { found = await generate(env, client, row, target, deps); }
+    try { found = await generate(env, client, row, target, deps, revision); }
     catch (error) { failure = String(error?.message || error); }
   }
-  if (!found) found = await approvedArt(env, client, row, target, deps);
+  if (!found && !revision) found = await approvedArt(env, client, row, target, deps);
   if (found?.pending) {
     const next = { ...payload, autoReplacePending: { token: found.token, at: now.toISOString(), reason, target } };
     await env.DB.prepare("UPDATE post_ledger SET payload_json=?2,updated_at=CURRENT_TIMESTAMP WHERE id=?1").bind(row.id, JSON.stringify(next)).run();

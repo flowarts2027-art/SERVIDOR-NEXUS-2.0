@@ -1115,3 +1115,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Vigia bloqueado para a GILTEC, a pedido do Rodrigo, mesmo fora da pausa. Vale para todo o grupo GILTEC e Quatree.
 - Rodrigo apagou o painel da Adimax e vai criar de novo pelo "Novo cliente" depois do merge.
 - Sem merge e sem deploy.
+
+## 06/11/2026 — Deploy conferido, Nexus AI e Pedir ajuste (Claude)
+- #600 já estava publicado. Depois dele, a `main` só recebeu fichas, sem código.
+- Nexus AI: marca salva em produção pelo Master, a pedido do Rodrigo. Ficha atualizada. Nenhuma arte foi criada.
+- Feito: `client-revision.js`, `REVISION_REASON` em `post-watcher.js`, `openRevisionTicket` em `posts.js`, tela do cliente. Regra em `REGRA_PEDIR_AJUSTE.md`.
+- O fluxo antigo apagava a imagem e chamava o ciclo dos agentes, que podia gerar para Quatree e Daniela. Agora isso só vale para carrossel de quem usa imagem gerada.
+- #603 segue aberto. Sem merge e sem deploy do Pedir ajuste.

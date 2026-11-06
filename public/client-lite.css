@@ -117,7 +117,8 @@ h1, h2 { line-height: 1.2; margin: 0; }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .actions .btn { width: 100%; }
 .revision { display: grid; gap: 10px; margin-top: 12px; }
-.revision textarea { min-height: 96px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; resize: vertical; }
+.revision label { font-size: 18px; font-weight: 800; }
+.revision textarea { min-height: 150px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 18px; line-height: 1.4; resize: vertical; }
 
 /* Números rápidos */
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
