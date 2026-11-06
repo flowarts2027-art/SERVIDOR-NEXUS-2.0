@@ -91,6 +91,18 @@ test("salvar marca do cliente: logo, cores, palavra e resposta automática, sem 
   assert.ok(auto.keywords.map(word => word.toUpperCase()).includes("QUERO"));
 });
 
+test("logo escura: vale o que o navegador mediu, e salvar sem logo nova mantém", async () => {
+  const { db, env } = setup();
+  addClient(db, "a");
+  const form = brandForm("a", { logoDark: "1" });
+  form.set("logo", new File([new Uint8Array([1])], "logo.png", { type: "image/png" }));
+  assert.equal((await saveBrand(env, form, NOW, ok)).brand.logoDark, true);
+  assert.equal((await saveBrand(env, brandForm("a"), NOW, ok)).brand.logoDark, true);
+  const light = brandForm("a", { logoDark: "0" });
+  light.set("logo", new File([new Uint8Array([1])], "logo.png", { type: "image/png" }));
+  assert.equal((await saveBrand(env, light, NOW, ok)).brand.logoDark, false);
+});
+
 test("salvar de novo sem logo mantém a logo anterior", async () => {
   const { db, env } = setup();
   addClient(db, "a", { brand: { logoKey: "k", logoUrl: "u", colors: COLORS, buttonWord: "TABELA" } });

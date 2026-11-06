@@ -94,7 +94,7 @@ function render() {
     const openUrl = `/api/clients/${encodeURIComponent(client.id)}/assume-open`;
     const action = `<div class="client-action-row"><a class="small-primary" href="${openUrl}" target="_blank" rel="noopener">Abrir painel</a><button type="button" class="ghost" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Acesso</button>${remove}${protect}</div>`;
     // Linha clicável (22/10): tocar no nome abre o painel do cliente.
-    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><button type="button" class="name-edit" data-edit-client-name="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}" aria-label="Editar o nome do painel" title="Editar o nome do painel">✏️</button><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>${escapeHtml(client.vendorLabel || "Vendedor")}: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
+    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><button type="button" class="name-edit" data-edit-client-name="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}" aria-label="Editar o cliente" title="Editar o cliente">✏️</button><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>${escapeHtml(client.vendorLabel || "Vendedor")}: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();
@@ -923,6 +923,8 @@ async function loadClientGroups(){
     select.innerHTML='<option value="">Sem grupo</option>'+(data.groups||[]).map(group=>`<option value="${escapeHtml(group.id)}">${escapeHtml(String(group.name).replace(/^Grupo: /,""))}</option>`).join("");
     select.value=current;
   });
+  const list=$("#group-edit-list");
+  if(list)list.innerHTML=(data.groups||[]).map(group=>`<div class="group-edit-row"><strong>${escapeHtml(String(group.name).replace(/^Grupo: /,""))}</strong><button type="button" class="name-edit" data-edit-group="${escapeHtml(group.id)}" data-client-name="${escapeHtml(String(group.name).replace(/^Grupo: /,""))}" aria-label="Editar o grupo" title="Editar o grupo">✏️</button></div>`).join("");
 }
 loadClientGroups();
 $("#portal-group-save")?.addEventListener("click",async()=>{
@@ -1201,58 +1203,54 @@ if(openaiMasterForm)openaiMasterForm.addEventListener("submit",async event=>{
   }
 });
 
-// Marca do cliente (05/11/2026): "Novo cliente" e aba Marca usam o mesmo editor.
+// Marca do cliente (05/11/2026): "Novo cliente" e lápis usam o mesmo editor.
 const newClientBrand = window.BrandEditor && $("#new-client-brand") ? window.BrandEditor.mount($("#new-client-brand")) : null;
-const brandEditor = window.BrandEditor && $("#brand-editor") ? window.BrandEditor.mount($("#brand-editor")) : null;
-async function fillBrandTargets() {
-  const select = $("#brand-target");
-  if (!select) return;
-  const groups = await api("/api/master/groups").catch(() => ({ groups: [] }));
-  const clients = (state.clients || []).filter(client => client.status !== "archived");
-  select.innerHTML = [...(groups.groups || []), ...clients].map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
-  await loadBrandTarget();
-}
-async function loadBrandTarget() {
-  const target = $("#brand-target").value;
-  if (!target || !brandEditor) return;
-  const out = await api("/api/master/brand?target=" + encodeURIComponent(target)).catch(() => ({}));
-  brandEditor.load(out.brand || out.inherited || null);
-  $("#brand-status").textContent = out.inherited && !out.brand ? "Este painel usa a marca do grupo." : "";
-}
-$("#brand-target")?.addEventListener("change", loadBrandTarget);
-$("#brand-save")?.addEventListener("click", async () => {
-  const status = $("#brand-status");
-  status.textContent = "Salvando…";
-  try {
-    const out = await brandEditor.save($("#brand-target").value);
-    status.textContent = out.ficha === "atualizada" ? "Marca salva. Ficha do GitHub atualizada." : "Marca salva, mas a ficha do GitHub não foi atualizada (" + out.ficha + ").";
-  } catch (error) { status.textContent = error.message; }
-});
-document.addEventListener("nexus:view", event => { if (event.detail === "clients") fillBrandTargets(); });
+const editBrand = window.BrandEditor && $("#client-edit-brand") ? window.BrandEditor.mount($("#client-edit-brand")) : null;
+const clientEditDialog = $("#client-edit-dialog");
+let clientEdit = null;
+const closeClientEdit = () => { if (clientEditDialog?.open) clientEditDialog.close(); };
+$("#client-edit-close")?.addEventListener("click", closeClientEdit);
+$("#client-edit-cancel")?.addEventListener("click", closeClientEdit);
 
-// Lápis do nome (05/11/2026): troca só o nome que aparece. O id do cliente não muda.
-document.addEventListener("click", async event => {
-  const pencil = event.target.closest?.("[data-edit-client-name]");
-  if (pencil) {
-    pencil.closest("td").querySelector(".name-edit-form")?.remove();
-    pencil.insertAdjacentHTML("afterend", `<form class="name-edit-form"><input maxlength="60" aria-label="Nome do painel" value="${escapeHtml(pencil.dataset.clientName)}"><button type="submit" class="small-primary">Salvar</button><button type="button" class="ghost" data-cancel-client-name>Cancelar</button><small class="name-edit-status" role="status"></small></form>`);
-    pencil.nextElementSibling.querySelector("input").select();
-    return;
-  }
-  if (event.target.closest?.("[data-cancel-client-name]")) event.target.closest(".name-edit-form").remove();
+// Lápis (05/11/2026): nome e marca do cliente, ou marca do grupo. O id do cliente não muda.
+async function openClientEdit(target, name, group) {
+  clientEdit = { target, name, group };
+  const status = $("#client-edit-status");
+  $("#client-edit-kicker").textContent = group ? "EDITAR GRUPO" : "EDITAR CLIENTE";
+  $("#client-edit-title").textContent = name;
+  $("#client-edit-name-box").hidden = group;
+  $("#client-edit-name").value = name;
+  status.textContent = "Carregando…";
+  editBrand?.load(null);
+  clientEditDialog.showModal();
+  const out = await api("/api/master/brand?target=" + encodeURIComponent(target)).catch(() => null);
+  if (clientEdit?.target !== target) return;
+  if (!out) { status.textContent = "Não consegui carregar a marca. Tente de novo."; return; }
+  editBrand?.load(out.brand || out.inherited || null);
+  status.textContent = out.inherited && !out.brand ? "Este painel usa a marca do grupo." : "";
+}
+document.addEventListener("click", event => {
+  const pencil = event.target.closest?.("[data-edit-client-name],[data-edit-group]");
+  if (pencil) openClientEdit(pencil.dataset.editClientName || pencil.dataset.editGroup, pencil.dataset.clientName, Boolean(pencil.dataset.editGroup));
 });
-document.addEventListener("submit", async event => {
-  const form = event.target.closest?.(".name-edit-form");
-  if (!form) return;
+$("#client-edit-form")?.addEventListener("submit", async event => {
   event.preventDefault();
-  const status = form.querySelector(".name-edit-status");
-  const clientId = form.previousElementSibling.dataset.editClientName;
+  const status = $("#client-edit-status");
+  const { target, name, group } = clientEdit;
+  const newName = $("#client-edit-name").value.trim();
   status.textContent = "Salvando…";
   try {
-    await api("/api/master/client-name", { method: "POST", body: JSON.stringify({ clientId, name: form.querySelector("input").value }) });
+    if (!group && newName !== name) {
+      await api("/api/master/client-name", { method: "POST", body: JSON.stringify({ clientId: target, name: newName }) });
+      clientEdit.name = newName;
+    }
+    // Sem mexer na marca, nada é gravado: quem herda do grupo continua herdando.
+    const out = editBrand?.changed() ? await editBrand.save(target) : null;
     await load();
     loadMissingPosts();
-  } catch (error) { status.textContent = error.detail || "Não consegui salvar. Tente de novo."; }
+    if (out && out.ficha !== "atualizada") { status.textContent = "Marca salva, mas a ficha do GitHub não foi atualizada (" + out.ficha + ")."; return; }
+    closeClientEdit();
+  } catch (error) { status.textContent = error.detail || error.message || "Não consegui salvar. Tente de novo."; }
 });
 
 // Quadro "Postagens faltando" (05/11/2026): o servidor calcula, a tela só mostra.

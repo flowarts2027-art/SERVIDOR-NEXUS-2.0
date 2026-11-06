@@ -773,7 +773,7 @@ function enableFlowCrm() {
   window.NEXUS_API = "/api/portal/flow";
   document.body.classList.add("flow-crm");
   $$(".flow-only").forEach(el => { el.hidden = false; });
-  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=3", "/master-push.js?v=2", "/flow-radar.js?v=5"]) {
+  for (const src of ["/crm.js?v=12", "/prospects-ui.js?v=15", "/examples.js?v=4", "/master-push.js?v=2", "/flow-radar.js?v=5"]) {
     const script = document.createElement("script");
     script.src = src;
     script.async = false;
@@ -815,22 +815,34 @@ const CLIENT_THEMES = {
 };
 let defaultBrandHtml = null;
 
-// Marca salva no Master (05/11/2026): logo no topo e cores do cliente, com contraste garantido pelo servidor.
+// Marca salva no Master (05/11/2026): logo inteira e cores do cliente, com contraste garantido pelo servidor.
+// Logo escura vai num cartão, porque o menu é sempre escuro: a cor do texto passa no contraste com o branco.
+function customBrandLogo(brand, className) {
+  const img = document.createElement("img");
+  img.className = className;
+  img.src = brand.logoUrl;
+  img.alt = state.client?.name || "Logo";
+  if (brand.logoDark) {
+    img.classList.add("brand-logo-card");
+    img.style.background = brand.colors.onPrimary === "#000000" ? brand.colors.primary : "#ffffff";
+  }
+  return img;
+}
+
 function applyCustomBrand(brand) {
   const root = document.documentElement;
   if (!brand?.colors) { delete root.dataset.customBrand; return; }
   root.dataset.customBrand = "1";
   root.style.setProperty("--brand-primary", brand.colors.primary);
   root.style.setProperty("--brand-on-primary", brand.colors.onPrimary);
+  root.style.setProperty("--brand-menu", brand.colors.text);
   root.style.setProperty("--accent", brand.colors.accent);
   const top = $(".nav-brand");
   if (!top || !brand.logoUrl) return;
   top.innerHTML = "";
-  const img = document.createElement("img");
-  img.className = "client-brand-logo";
-  img.src = brand.logoUrl;
-  img.alt = state.client?.name || "Logo";
-  top.appendChild(img);
+  top.appendChild(customBrandLogo(brand, "client-brand-logo"));
+  document.querySelectorAll(".client-top-logo").forEach(el => el.remove());
+  $(".top-copy")?.prepend(customBrandLogo(brand, "client-top-logo"));
 }
 
 function applyClientTheme(clientId) {

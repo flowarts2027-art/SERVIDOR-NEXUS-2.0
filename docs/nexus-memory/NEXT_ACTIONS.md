@@ -1,3 +1,9 @@
+## 2026-11-05 — Depois do merge da logo no painel
+1. Adimax, no lápis: enviar a logo preta, cores `#FFA500` e preto, palavra QUERO.
+2. Conferir o cartão laranja no painel da Adimax, com login real.
+3. Conferir na lista de grupos se aparece "Quatree Dog (Ericsson)". Se o Eduardo continuar, tirar o grupo do painel dele no Acesso.
+4. A logo recortada da capa tem 255 px, abaixo do mínimo de 300 px. Pedir a logo original.
+
 ## 2026-11-05 — Depois do merge da marca do cliente
 1. Rodrigo cria o painel da Adimax pelo "Novo cliente", com logo e palavra do botão.
 2. Conferir se a tela diz "Ficha do GitHub atualizada". Isso prova o token.

@@ -22,6 +22,7 @@
     $("#upload-video-label").hidden = !["reel", "story"].includes(t);
     $("#upload-caption-label").hidden = t === "story";
     $("#upload-order-help").hidden = t !== "carousel";
+    window.UploadRules?.fill($("#upload-rules"), t);
     images = []; video = null;
     input.value = ""; $("#upload-video").value = "";
     render();

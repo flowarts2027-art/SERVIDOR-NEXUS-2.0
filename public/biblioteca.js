@@ -189,6 +189,7 @@
     box.innerHTML = `
       <section class="block bib">
         <p class="muted">Suba várias imagens de uma vez. O Nexus <strong>apaga as repetidas</strong>, decide o que é <strong>story</strong> (imagem em pé), <strong>post</strong> ou <strong>carrossel</strong> (imagens enviadas juntas), <strong>escreve a legenda</strong> e coloca nos <strong>próximos dias livres</strong> (9h, 12h e 19h; dia que já tem postagem fica de fora). Tudo fica esperando aprovação.</p>
+        ${window.UploadRules?.html("story post carrossel") || ""}
         <label class="btn bib-enviar">＋ Escolher imagens
           <input type="file" id="bib-files" accept="image/jpeg,image/png,image/webp" multiple hidden>
         </label>

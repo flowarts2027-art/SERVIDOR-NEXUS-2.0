@@ -36,9 +36,9 @@
         <label><input type="radio" name="kind" value="carousel"> Carrossel</label>
         <label><input type="radio" name="kind" value="video"> Vídeo</label>
       </div>
-      <label class="example-image">Arte 4:5<input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
-      <label class="example-carousel" hidden>Imagens na ordem (2 a 10)<input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple></label>
-      <label class="example-video" hidden>Vídeo MP4 (vertical)<input type="file" name="video" accept="video/mp4,video/quicktime"></label>
+      <label class="example-image">${globalThis.UploadRules?.html("post") || ""}Arte 4:5<input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
+      <label class="example-carousel" hidden>${globalThis.UploadRules?.html("carrossel") || ""}Imagens na ordem (2 a 10)<input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple></label>
+      <label class="example-video" hidden>${globalThis.UploadRules?.html("reels") || ""}Vídeo MP4 (vertical)<input type="file" name="video" accept="video/mp4,video/quicktime"></label>
       <div class="example-actions"><button type="submit" class="primary">Salvar exemplo</button><button type="button" class="ghost" data-example-cancel>Cancelar</button></div>
       ${reels ? `<details class="example-reels"><summary>Ou usar um Reel que já foi gravado</summary>
         <div class="example-actions"><select name="postId">${reels}</select><button type="button" class="ghost" data-example-reel="${esc(niche)}">Usar este</button></div></details>` : ""}

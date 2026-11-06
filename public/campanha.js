@@ -66,7 +66,8 @@
     const art = data.art || [];
     return `<section class="block">
       <h2>Suas artes</h2>
-      <p class="muted">Envie imagens prontas no formato 4:5 (1080 × 1350), em JPG, PNG ou WEBP, até 10 MB cada. Elas são postadas da mais antiga para a mais nova.</p>
+      <p class="muted">Envie imagens prontas, até 10 MB cada. Elas são postadas da mais antiga para a mais nova.</p>
+      ${window.UploadRules?.html("post") || ""}
       <label class="btn btn-soft camp-upload">Enviar artes<input type="file" id="camp-files" accept="image/jpeg,image/png,image/webp" multiple hidden ${DEMO ? "disabled" : ""}></label>
       <p class="muted" id="camp-upload-status" role="status"></p>
       <div class="camp-grid">${art.length ? art.map(item => `<figure class="camp-art ${item.used ? "is-used" : ""}">

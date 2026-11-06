@@ -12,13 +12,16 @@ import { handleArtText } from "../src/art-text.js";
 import { captadorMessage, captadorPreset, defaultConfig } from "../src/captador.js";
 import { RJ_STATE_CITIES } from "../src/captador-regions.js";
 
-const group = { id: "quatree-dog", ...CLIENT_GROUPS["quatree-dog"] };
+// O Eduardo saiu do grupo. Carlos é vendedor de teste, ligado pelo campo Grupo do Master.
+const CARLOS = { clientId: "quatree-dog-carlos", vendor: "Carlos" };
+const group = { id: "quatree-dog", ...CLIENT_GROUPS["quatree-dog"], members: [...CLIENT_GROUPS["quatree-dog"].members, CARLOS] };
 const NOW = new Date("2026-10-18T13:00:00Z");
 
-function fakeEnv({ failPut } = {}) {
+function fakeEnv({ failPut, seller = true } = {}) {
   const db = new DatabaseSync(":memory:");
   for (const name of readdirSync(new URL("../migrations/", import.meta.url)).sort()) db.exec(readFileSync(new URL("../migrations/" + name, import.meta.url), "utf8"));
   db.prepare("INSERT INTO clients(id,name,niche,instagram,status,config_json) VALUES('quatree-dog','Quatree Dog','Ração','@ericsson_quatree','online','{}')").run();
+  if (seller) db.prepare("INSERT INTO clients(id,name,niche,instagram,status,config_json) VALUES('quatree-dog-carlos','Quatree Dog Carlos','Ração','','setup',?)").run(JSON.stringify({ group: { id: "quatree-dog", vendor: "Carlos" } }));
   const DB = { prepare(sql) { const wrap = args => {
     const parameters = Object.fromEntries(args.map((value, i) => ["?" + (i + 1), value ?? null]));
     return { first: async () => db.prepare(sql).get(parameters) || null,
@@ -44,10 +47,11 @@ const rows = db => db.prepare("SELECT client_id, caption, approval_status, sched
 
 test("cada vendedor tem o seu painel no grupo, com o mesmo tema", () => {
   assert.deepEqual(clientGroup("quatree-dog"), { id: "quatree-dog", name: "Quatree Dog", theme: "quatree-dog", vendor: "Ericsson" });
-  assert.equal(clientGroup("quatree-dog-eduardo").vendor, "Eduardo");
-  assert.equal(clientGroup("quatree-dog-eduardo").theme, "quatree-dog");
+  const carlos = { id: "quatree-dog-carlos", name: "x", config: { group: { id: "quatree-dog", vendor: "Carlos" } } };
+  assert.equal(clientGroup(carlos).vendor, "Carlos");
+  assert.equal(clientGroup(carlos).theme, "quatree-dog");
   assert.equal(clientGroup("daniela-martins"), null);
-  assert.equal(portalClientView({ id: "quatree-dog-eduardo", name: "x", config: {} }).group.vendor, "Eduardo");
+  assert.equal(portalClientView(carlos).group.vendor, "Carlos");
   assert.equal(portalClientView({ id: "daniela-martins", name: "Daniela", config: {} }).group, null);
 });
 
@@ -55,8 +59,8 @@ test("destino de grupo só vale para grupo que existe", async () => {
   assert.equal(groupFromTarget("grupo:quatree-dog").name, "Quatree Dog");
   assert.equal(groupFromTarget("grupo:nao-existe"), null);
   assert.equal(groupFromTarget("quatree-dog"), null);
-  assert.deepEqual(await groupOptions(fakeEnv().env), [
-    { id: "grupo:quatree-dog", name: "Grupo: Quatree Dog (Ericsson e Eduardo)" },
+  assert.deepEqual(await groupOptions(fakeEnv({ seller: false }).env), [
+    { id: "grupo:quatree-dog", name: "Grupo: Quatree Dog (Ericsson)" },
     { id: "grupo:giltec", name: "Grupo: GILTEC (Rose)" }
   ]);
 });
@@ -65,9 +69,9 @@ test("a legenda leva o nome do vendedor e varia entre eles", () => {
   const base = "Linha Supreme. Fale com {vendedor}.\n\n#racao #quatree";
   const a = vendorCaption(base, group, 0);
   const b = vendorCaption(base, group, 1);
-  assert.match(a, /Ericsson/); assert.doesNotMatch(a, /Eduardo/);
-  assert.match(b, /Eduardo/); assert.doesNotMatch(b, /Ericsson/);
-  assert.notEqual(a.replace(/Ericsson/g, "X"), b.replace(/Eduardo/g, "X"));
+  assert.match(a, /Ericsson/); assert.doesNotMatch(a, /Carlos/);
+  assert.match(b, /Carlos/); assert.doesNotMatch(b, /Ericsson/);
+  assert.notEqual(a.replace(/Ericsson/g, "X"), b.replace(/Carlos/g, "X"));
   assert.match(b, /#racao #quatree$/, "hashtags continuam no fim");
   assert.doesNotMatch(a, /\{vendedor\}/);
 });
@@ -81,28 +85,30 @@ test("vendedor não herda o telefone nem o @ do outro", () => {
   assert.match(b, /Entrega na sua loja/);
 });
 
-test("o Eduardo nasce em configuração, sem Instagram, e não duplica", async () => {
-  const { db, env } = fakeEnv();
+test("o Eduardo saiu do grupo: não recebe campanha e o painel dele não é recriado", async () => {
+  const { db, env } = fakeEnv({ seller: false });
+  assert.equal(clientGroup("quatree-dog-eduardo"), null);
+  assert.equal(isFixedGroupMember("quatree-dog-eduardo"), false);
   await ensureGroupClients(env);
-  await ensureGroupClients(env);
-  const row = db.prepare("SELECT name, niche, instagram, status FROM clients WHERE id='quatree-dog-eduardo'").get();
-  assert.deepEqual({ ...row }, { name: "Quatree Dog Eduardo", niche: "Ração", instagram: "", status: "setup" });
-  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM portal_users WHERE client_id='quatree-dog-eduardo'").get().n, 0);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM clients WHERE id='quatree-dog-eduardo'").get().n, 0);
+  const out = await masterUpload(env, campaign(), NOW);
+  assert.deepEqual(out.results.map(r => r.vendor), ["Ericsson"]);
+  assert.deepEqual(rows(db).map(p => p.client_id), ["quatree-dog"]);
 });
 
 test("campanha do grupo sobe para todos, com as mesmas imagens e esperando aprovação", async () => {
   const { db, puts, env } = fakeEnv();
   const out = await masterUpload(env, campaign(), NOW);
   assert.equal(out.ok, true);
-  assert.deepEqual(out.results.map(r => [r.vendor, r.ok]), [["Ericsson", true], ["Eduardo", true]]);
+  assert.deepEqual(out.results.map(r => [r.vendor, r.ok]), [["Ericsson", true], ["Carlos", true]]);
   const posts = rows(db);
-  assert.deepEqual(posts.map(p => p.client_id), ["quatree-dog", "quatree-dog-eduardo"]);
+  assert.deepEqual(posts.map(p => p.client_id), ["quatree-dog", "quatree-dog-carlos"]);
   for (const post of posts) {
     assert.equal(post.approval_status, "pending");
     assert.equal(post.scheduled_for, "2026-10-20T15:00:00.000Z");
   }
-  assert.match(posts[0].caption, /Ericsson/); assert.doesNotMatch(posts[0].caption, /Eduardo/);
-  assert.match(posts[1].caption, /Eduardo/); assert.doesNotMatch(posts[1].caption, /Ericsson/);
+  assert.match(posts[0].caption, /Ericsson/); assert.doesNotMatch(posts[0].caption, /Carlos/);
+  assert.match(posts[1].caption, /Carlos/); assert.doesNotMatch(posts[1].caption, /Ericsson/);
   assert.equal(puts.length, 2);
   assert.equal(puts[0].size, puts[1].size);
 });
@@ -112,7 +118,7 @@ test("legenda vazia usa a pronta do nicho e ainda leva o vendedor", async () => 
   await masterUpload(env, campaign(""), NOW);
   const posts = rows(db);
   assert.match(posts[0].caption, /Ericsson/);
-  assert.match(posts[1].caption, /Eduardo/);
+  assert.match(posts[1].caption, /Carlos/);
 });
 
 test("story do grupo sobe sem legenda", async () => {
@@ -125,15 +131,15 @@ test("story do grupo sobe sem legenda", async () => {
 });
 
 test("falha parcial avisa quem ficou de fora, e reenviar não duplica", async () => {
-  const { db, env } = fakeEnv({ failPut: "quatree-dog-eduardo" });
+  const { db, env } = fakeEnv({ failPut: "quatree-dog-carlos" });
   const out = await masterUpload(env, campaign(), NOW);
   assert.equal(out.ok, false);
   assert.match(out.message, /Subiu para: Ericsson/);
-  assert.match(out.message, /Faltou: Eduardo/);
+  assert.match(out.message, /Faltou: Carlos/);
   env.MEDIA = { async put() {} };
   const retry = await masterUpload(env, campaign(), NOW);
-  assert.deepEqual(retry.results.map(r => [r.vendor, r.ok]), [["Ericsson", false], ["Eduardo", true]]);
-  assert.deepEqual(rows(db).map(p => p.client_id), ["quatree-dog", "quatree-dog-eduardo"]);
+  assert.deepEqual(retry.results.map(r => [r.vendor, r.ok]), [["Ericsson", false], ["Carlos", true]]);
+  assert.deepEqual(rows(db).map(p => p.client_id), ["quatree-dog", "quatree-dog-carlos"]);
 });
 
 test("se todos falham, o erro original aparece", async () => {
@@ -157,7 +163,7 @@ test("o conector envia para o grupo e lista os grupos", async () => {
     legenda: "Linha Supreme.", imagens_urls: ["https://x/a.jpg"]
   }, NOW);
   assert.equal(out.ok, true);
-  assert.deepEqual(out.vendedores.map(v => v.vendor), ["Ericsson", "Eduardo"]);
+  assert.deepEqual(out.vendedores.map(v => v.vendor), ["Ericsson", "Carlos"]);
   assert.equal(rows(db).length, 2);
   assert.deepEqual((await listarClientesEGrupos(env, deps)).grupos, await groupOptions(env));
 });
