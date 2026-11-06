@@ -45,7 +45,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 ## Cliente nunca fica sem post (Rodrigo, 05/11/2026)
 
-**Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins e Quatree Dog não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
+**Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins, Quatree Dog e Adimax não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
 
 ## Marca do cliente (Rodrigo, 05/11/2026)
 

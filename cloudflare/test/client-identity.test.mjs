@@ -163,12 +163,12 @@ const watcherDeps = extra => ({
   send: async () => {},
   ...extra
 });
-const addPost = (db, payload = {}) => db.prepare("INSERT INTO post_ledger VALUES('p','adimax','2026-11-06T14:00:00.000Z','ready','pending','media_generation_required','Legenda',?,'')").run(JSON.stringify(payload));
+const addPost = (db, payload = {}) => db.prepare("INSERT INTO post_ledger VALUES('p','loja-nova','2026-11-06T14:00:00.000Z','ready','pending','media_generation_required','Legenda',?,'')").run(JSON.stringify(payload));
 
 test("cliente novo com marca recebe imagem do vigia, sem depender da lista do deploy", async () => {
   const { db, env } = setup();
   env.GITHUB_ACTIONS_TOKEN = "t";
-  addClient(db, "adimax");
+  addClient(db, "loja-nova");
   addPost(db);
   const sent = [];
   const out = await runPostWatcher(env, NOW, watcherDeps({ fetch: async (url, options) => { sent.push(JSON.parse(options.body)); return new Response(null, { status: 204 }); } }));
@@ -195,7 +195,7 @@ test("cliente novo com marca recebe imagem do vigia, sem depender da lista do de
 
 test("sem token do GitHub, cai na arte do cliente", async () => {
   const { db, env } = setup();
-  addClient(db, "adimax");
+  addClient(db, "loja-nova");
   addPost(db);
   const out = await runPostWatcher(env, NOW, watcherDeps({ library: async () => "https://x.test/media/lib.jpg" }));
   assert.equal(out.source, "biblioteca-do-cliente");

@@ -235,7 +235,7 @@ Fatos verificados (perfil público, /api/master/posts, /api/master/agent-core):
 
 ## 2026-11-05 — Limites do vigia
 - 04/11 da Quatree: os 2 carrosséis ficaram em `correction_requested`, sem erro. O vigia não age nesse caso.
-- Sem camada de texto (Nexus AI) ou sem geração (Quatree, Daniela), a reserva é só a Biblioteca e as artes da campanha.
+- Sem camada de texto (Nexus AI) ou sem geração (Quatree, Daniela, Adimax), a reserva é só a Biblioteca e as artes da campanha.
 - Substituta gerada sai sem revisão humana. A conferência é só da IA grátis, que pode errar.
 - A palavra do botão vem da camada de texto do cliente, feita no deploy, e não da resposta automática salva no painel.
 - O vigia não troca post sem erro que ficou esperando aprovação.

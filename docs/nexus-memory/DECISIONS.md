@@ -218,3 +218,8 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Título das artes criado na hora, lendo a ficha do cliente. Palavra do botão no "Novo cliente" e na aba Marca.
 - Decisão do Claude: o Worker não desenha letras, e o plano grátis não aguenta fazer isso em código. A arte final é montada no GitHub Actions, como nos Reels.
 - Decisão do Claude: título na hora vale para quem tem marca salva. Os demais continuam com a lista do deploy.
+
+## 2026-11-05 — Adimax sem imagem gerada (Rodrigo)
+- Igual à Quatree: toda peça mostra a ração ou a embalagem, então o vigia não gera imagem para a Adimax.
+- Faltando arte, fica o alerta vermelho no quadro.
+- Decisão do Claude: o painel ainda não existe, então a regra vale para qualquer id com a palavra adimax.

@@ -25,6 +25,7 @@ Pedido do Rodrigo em 05/11/2026. Vale para todos os clientes online.
 ## Quem não recebe imagem gerada
 - Daniela Martins: pedido do Rodrigo.
 - Quatree Dog: toda peça precisa mostrar a embalagem oficial, e a IA inventaria o produto.
+- Adimax: toda peça precisa mostrar a ração ou a embalagem. Vale para qualquer painel com a palavra adimax no id. Faltando arte, fica o alerta vermelho no quadro.
 
 ## Cliente pausado
 - A lista fica em `NEXUS_PAUSED_CLIENTS`, no `wrangler.jsonc`. Hoje: `giltec` e `giltec-locacoes`, por falta de pagamento.

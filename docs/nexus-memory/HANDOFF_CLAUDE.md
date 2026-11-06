@@ -1093,3 +1093,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - A camada do deploy não leva mais a logo: ela vai em `marca-feed.png` e `marca-story.png`.
 - Testes e limites em `TEST_RESULTS.md` e `KNOWN_ISSUES.md`. Sem merge e sem deploy.
 - Próximo passo: Rodrigo aprova o merge e cria o painel da Adimax.
+
+## 05/11/2026 — Adimax sem imagem gerada (Claude)
+- Feito: `receivesGeneratedImage` em `post-watcher.js`. Vale para `adimax`, `adimax-eduardo` e outros ids com a palavra adimax.
+- Rascunho de agente também não vale como original para a Adimax. Biblioteca e artes da campanha continuam valendo.
+- Testes do vigia dinâmico em `client-identity.test.mjs` passaram a usar `loja-nova`.
+- Sem merge e sem deploy.

@@ -1,3 +1,6 @@
+## 2026-11-05 — Adimax sem imagem gerada (PR aberto, sem deploy)
+- O vigia não gera imagem para a Adimax. Faltando arte, fica o alerta vermelho no quadro.
+
 ## 2026-11-05 — Marca do cliente (PR aberto, sem deploy)
 - Logo, cores e palavra do botão pelo Master, sem deploy.
 - Título das artes criado na hora para quem tem marca salva.
