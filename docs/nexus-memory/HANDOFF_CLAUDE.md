@@ -1135,3 +1135,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - `public/client-lite.css`: botão ocupa a linha inteira. `portal.html`: versões v=150 (css) e v=145 (js).
 - Testes: 959/959. Sem merge e sem deploy até o OK do Rodrigo.
 - Próximo passo: Rodrigo aprova o merge; depois testar no celular do Ericsson.
+
+## 2026-11-06 (18h55) — Botão "Baixar" nos posts publicados do Quatree Dog
+- Pedido do Rodrigo: baixar também as postagens já publicadas do Quatree Dog.
+- Feito em `public/client-lite.js`: botão "⬇ Baixar" nos posts publicados, só no Quatree Dog (`canDownload`), usando o mesmo `saveFiles` do "Aprovar e baixar" (PR #606, já no ar). `portal.html`: js v=146.
+- Testes: 968/968. Sem merge e sem deploy até o OK do Rodrigo.
