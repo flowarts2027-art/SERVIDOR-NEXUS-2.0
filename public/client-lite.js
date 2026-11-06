@@ -217,10 +217,10 @@ function actionsButtonsHtml(post) {
   const reviewed = autoReviewed(post);
   const dateMissing = post.dateChoice === "client" && !post.scheduledFor;
   const fixing = String(post.approvalStatus) === "correction_requested";
-  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing && !fixing;
+  const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing;
   const waitMsg = fixing ? "Espere a arte refeita" : dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
-      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
+      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready && !fixing ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
       <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
     </div>

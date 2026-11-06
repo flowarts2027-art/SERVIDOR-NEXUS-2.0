@@ -271,6 +271,6 @@ test("tela do cliente: campo grande, exemplos pedidos e aviso de que volta para 
   assert.match(lite, /mais ração, outro cachorro, sem texto em cima do cão/);
   assert.match(lite, /A arte nova volta aqui para você aprovar/);
   assert.match(lite, /toast\(out\?\.message/);
-  assert.match(lite, /reviewed && !dateMissing && !fixing/, "Aprovar fica travado enquanto refaz");
+  assert.match(lite, /data-approve="\$\{id\}" \$\{ready && !fixing \?/, "Aprovar fica travado enquanto refaz");
   assert.match(css, /\.revision textarea \{ min-height: 150px/);
 });
