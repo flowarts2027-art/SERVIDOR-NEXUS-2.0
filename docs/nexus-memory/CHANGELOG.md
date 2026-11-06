@@ -1,3 +1,7 @@
+## 2026-11-05 — Vigia de postagens (PR aberto, sem deploy)
+- Post com erro nas próximas 6 horas é consertado sozinho e publicado sem esperar aprovação.
+- Selo "Substituída automaticamente" no painel do cliente e alerta vermelho no quadro quando não há substituta.
+
 ## 2026-11-05 — Janelas por formato (PR aberto, sem deploy)
 - Cada janela aceita só o seu tamanho. Arte na janela errada avisa em letras grandes e oferece mover.
 - Imagem certa não é alterada. O Nexus não corta nem encolhe mais.

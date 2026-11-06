@@ -2,6 +2,7 @@ import { listClients } from "./clients.js";
 import { clientScreenName } from "./client-display.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { sendAndRecord } from "./whatsapp-agent.js";
+import { isClientPaused } from "./client-pause.js";
 
 // Quadro "Postagens faltando" do Master (pedido do Rodrigo, 05/11/2026).
 // Para cada cliente online, confere hoje, amanhã e depois contra o plano de 2 posts + 2 stories por dia.
@@ -11,6 +12,7 @@ const DAYS_AHEAD = 3;
 const DAY_MS = 86400000;
 const TZ_OFFSET_MS = -3 * 3600000; // Brasília (sem horário de verão)
 const APPROVAL_WAIT_MS = 12 * 3600000;
+const URGENT_CORRECTION_MS = 6 * 3600000;
 const DAY_LABELS = Object.freeze(["Hoje", "Amanhã", "Depois de amanhã"]);
 const DAY_LEVELS = Object.freeze(["today", "tomorrow", "later"]);
 const FORMAT_LABELS = Object.freeze({ story: "story", carousel: "carrossel", reel: "Reel" });
@@ -40,6 +42,7 @@ export function postProblem(post = {}, now = new Date()) {
   const error = String(post.error || "");
   const approval = String(post.approval_status || "");
   if (String(post.status || "") === "published") return "";
+  if (post.replace_failed) return "não consegui substituir";
   if (approval === "correction_requested") return "correção pedida";
   if (/^media_generation/.test(error)) return "sem imagem";
   if (error === "format_mismatch") return "arte no formato errado";
@@ -75,7 +78,9 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
       if (!Number.isFinite(at) || dayIndex < 0 || dayIndex >= DAYS_AHEAD) continue;
       const format = String(post.format || "post").toLowerCase();
       const problem = postProblem(post, now);
-      if (problem) problems.push({ dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
+      // Sem substituta, ou correção pedida perto do horário: fica vermelho e em primeiro, mesmo sendo de amanhã.
+      const urgent = post.replace_failed || (post.approval_status === "correction_requested" && at - now.getTime() <= URGENT_CORRECTION_MS);
+      if (problem) problems.push({ dayIndex: urgent ? 0 : dayIndex, at, text: DAY_LABELS[dayIndex] + " " + hhmm(at) + ": " + (FORMAT_LABELS[format] || "post") + " — " + problem });
       else counts[dayIndex][format === "story" ? "stories" : "posts"] += 1;
     }
     counts.forEach((count, dayIndex) => {
@@ -92,7 +97,7 @@ export function buildMissingPostsBoard(clients = [], posts = [], now = new Date(
 }
 
 export async function missingPostsBoard(env, now = new Date()) {
-  const clients = (await listClients(env)).filter(client => client.status === "online" && !BLOCKED_PUBLISH_CLIENTS.has(client.id));
+  const clients = (await listClients(env)).filter(client => client.status === "online" && !BLOCKED_PUBLISH_CLIENTS.has(client.id) && !isClientPaused(env, client.id));
   if (!clients.length) return { clients: 0, items: [] };
   const today = localDayNumber(now.getTime());
   const start = new Date(today * DAY_MS - TZ_OFFSET_MS).toISOString();
@@ -102,7 +107,8 @@ export async function missingPostsBoard(env, now = new Date()) {
   const rows = await env.DB.prepare(
     `SELECT client_id,scheduled_for,status,approval_status,error,created_at,
             json_extract(${payload},'$.creativeFeatures.requestedFormat') AS format,
-            json_extract(${payload},'$.retryCount') AS retry_count
+            json_extract(${payload},'$.retryCount') AS retry_count,
+            json_extract(${payload},'$.autoReplaceFailed.at') AS replace_failed
      FROM post_ledger
      WHERE client_id IN (${marks}) AND scheduled_for>=?1 AND scheduled_for<?2
        AND status IN ('ready','scheduled','publishing','published','failed')

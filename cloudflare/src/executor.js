@@ -5,6 +5,7 @@ import { runAgentCoreCycle } from "./agent-runtime.js";
 import { getClient } from "./clients.js";
 import { publishingGate, isPublishingWindow } from "./publishing-policy.js";
 import { mediaFitsFormat } from "./art-format.js";
+import { isClientPaused } from "./client-pause.js";
 import { canPublish, createPublishBudget, findPriorPublication, publishFailure, spendPublish, waitForNextMinute } from "./publish-budget.js";
 
 function parseJson(raw, fallback = {}) {
@@ -172,6 +173,7 @@ export function canPublishInSweep({ story = false, gateOk = true, done = { feed:
 }
 
 async function runPublisherSweep(env, clientId, now, budget = createPublishBudget()) {
+  if (isClientPaused(env, clientId)) return { candidates: 0, published: 0, failed: 0, skipped: 0, blockedReason: "client_paused" };
   await recoverStuckPublishing(env, clientId, now).catch(() => null);
   const rows = await duePosts(env, clientId, now.toISOString());
   const summary = { candidates: rows.length, published: 0, failed: 0, skipped: 0 };

@@ -92,3 +92,6 @@ Nos minutos terminados em 2 e 7, `publisher-round.js` alinha os horários (`clie
 
 ## Janelas por formato (05/11/2026)
 `art-format.js` lê o tamanho da imagem e do vídeo, confere a janela e guarda a arte sem alterar. `mediaFitsFormat` é a última trava antes de publicar. `composeFramed` só escreve por cima da foto inteira. Regras em `REGRAS_ENVIO_ARTES.md`.
+
+## Vigia de postagens (05/11/2026)
+`post-watcher.js` roda nos minutos terminados em 4 e 9 e conserta um post por rodada, na mesma linha do `post_ledger`. Regra em `REGRA_CLIENTE_NUNCA_SEM_POST.md`.

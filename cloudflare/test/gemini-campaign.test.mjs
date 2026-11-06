@@ -171,7 +171,7 @@ test("Cloudflare grátis: é o padrão quando existe AI, tamanho certo, troca pa
   assert.equal(out.model, "flux-2-klein-4b");
   assert.ok(log[0].input.multipart.contentType.startsWith("multipart/form-data"));
   const sent = await new Response(log[0].input.multipart.body, { headers: { "content-type": log[0].input.multipart.contentType } }).formData();
-  assert.equal(sent.get("width"), "768"); assert.equal(sent.get("height"), "1344");
+  assert.equal(sent.get("width"), "1008"); assert.equal(sent.get("height"), "1792");
   const log2 = [];
   const fb = await cloudflareImage({ AI: fakeAI(log2, { kleinFails: true }) }, "cena", "4:5");
   assert.equal(fb.model, "flux-1-schnell");

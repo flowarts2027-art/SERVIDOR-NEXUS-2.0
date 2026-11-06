@@ -135,6 +135,14 @@ function mediaKey(url) {
   return at < 0 ? "" : decodeURIComponent(String(url).slice(at + marker.length).split(/[?#]/)[0]);
 }
 
+// Tamanho de uma imagem do nosso armazenamento, lendo só o começo do arquivo.
+export async function mediaSize(env, url) {
+  const key = mediaKey(url);
+  if (!key || !env?.MEDIA?.get) return null;
+  const object = await env.MEDIA.get(key, { range: { offset: 0, length: HEAD_BYTES } }).catch(() => null);
+  return object?.arrayBuffer ? readImageSize(new Uint8Array(await object.arrayBuffer())) : null;
+}
+
 // Última trava antes de publicar, para todos os caminhos: agentes, Biblioteca, conector e painel.
 // Só barra quando tem certeza. Vídeo e imagem fora do nosso armazenamento passam.
 export async function mediaFitsFormat(env, payload = {}, format = "post") {
@@ -143,12 +151,7 @@ export async function mediaFitsFormat(env, payload = {}, format = "post") {
   const type = format === "story" ? "story" : format === "carousel" ? "carousel" : "feed";
   const urls = type === "carousel" && Array.isArray(build.carouselUrls) ? build.carouselUrls : [build.imageUrl || payload.imageUrl || payload.publicImageUrl];
   for (const url of urls) {
-    const key = mediaKey(url);
-    if (!key) continue;
-    const object = await env.MEDIA.get(key, { range: { offset: 0, length: HEAD_BYTES } }).catch(() => null);
-    if (!object?.arrayBuffer) continue;
-    const size = readImageSize(new Uint8Array(await object.arrayBuffer()));
-    if (windowError(type, size)) return false;
+    if (windowError(type, await mediaSize(env, url))) return false;
   }
   return true;
 }

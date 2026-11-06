@@ -1,3 +1,21 @@
+## 2026-11-05 — Fila para continuar em 06/11 (pedido do Rodrigo)
+Nada abaixo foi feito ainda.
+1. Botão "Criar com agente (grátis)" no quadro "Postagens faltando". Corrigir a página "Enviar artes": plano 2 posts + 2 stories, e abrir no dia certo.
+2. Botão "Recriar com agente" para pedido de ajuste do cliente. Lista oficial de produtos por cliente.
+3. Painel da Adimax para o Eduardo (@eduardolimasoares9842).
+4. Logo da GILTEC no painel da Sheila.
+5. Ajustes finais: texto nunca por cima de pessoa (voltar a regra de 28/10) e foto de celular 3:4 ajustada sozinha, sem recusar.
+
+Atenção no item 5: os dois pontos mudam regras de 05/11. O texto por cima da foto inteira está em `REGRAS_ENVIO_ARTES.md`, e a foto 3:4 hoje é recusada.
+
+Pendente com o Rodrigo: artes de reserva na Biblioteca da Quatree, da Daniela e da Nexus AI.
+
+## 2026-11-05 — Depois do merge do vigia
+1. Olhar o log `post_watcher` e o quadro nas primeiras horas.
+2. Conferir a primeira substituta gerada antes de confiar nela. A geração nunca rodou em produção.
+3. Encher a Biblioteca da Quatree, da Daniela e da Nexus AI: é a única reserva delas.
+4. Rodrigo decide o que fazer com post parado em correção pedida.
+
 ## 2026-11-05 — Depois do merge das janelas por formato
 1. ChatGPT refaz os stories da GILTEC que têm faixas azuis, em 1080x1920 ocupando a tela toda.
 2. Testar uma arte na janela errada no painel e no Master, com login real, e usar o botão de mover.
