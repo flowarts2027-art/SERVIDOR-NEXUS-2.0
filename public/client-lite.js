@@ -219,6 +219,7 @@ function actionsButtonsHtml(post) {
   const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing;
   const waitMsg = dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
+      ${canDownload() ? `<button type="button" class="btn btn-ok btn-download" data-approve-download="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>⬇ Aprovar e baixar</button>` : ""}
       <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
       <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
       <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
@@ -915,6 +916,76 @@ function showApp(client) {
 
 /* ---------- Ações ---------- */
 
+// Botão "Aprovar e baixar" (pedido do Rodrigo, 06/11/2026): por enquanto só no painel do Quatree Dog.
+// O vendedor baixa a arte no celular para pôr no status do WhatsApp e repostar.
+function canDownload() {
+  return state.client?.group?.id === "quatree-dog" || state.client?.id === "quatree-dog";
+}
+
+function downloadUrls(post) {
+  const cards = (post.formatBuild?.carouselUrls || []).map(safeUrl).filter(Boolean);
+  if (cards.length >= 2) return cards;
+  const video = formatKey(post) === "reel" ? safeUrl(post.formatBuild?.videoUrl) : "";
+  const image = video || postImage(post);
+  return image ? [image] : [];
+}
+
+function fileExt(url, type) {
+  const fromType = String(type || "").split("/")[1]?.split(";")[0];
+  if (fromType) return fromType === "jpeg" ? "jpg" : fromType === "quicktime" ? "mov" : fromType;
+  const match = String(url).split("?")[0].match(/\.([a-z0-9]{2,4})$/i);
+  return match ? match[1].toLowerCase() : "jpg";
+}
+
+async function saveFiles(urls, baseName) {
+  let saved = 0;
+  for (let i = 0; i < urls.length; i += 1) {
+    const url = urls[i];
+    const name = baseName + (urls.length > 1 ? "-" + (i + 1) : "");
+    try {
+      const response = await fetch(url, { credentials: "same-origin" });
+      if (!response.ok) throw new Error("download_failed");
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      const objectUrl = URL.createObjectURL(blob);
+      link.href = objectUrl;
+      link.download = name + "." + fileExt(url, blob.type);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+      saved += 1;
+      if (i < urls.length - 1) await new Promise(resolve => setTimeout(resolve, 600));
+    } catch {
+      // Imagem em outro site: abre numa aba nova para o vendedor segurar o dedo e salvar.
+      window.open(url, "_blank", "noopener");
+    }
+  }
+  return saved;
+}
+
+async function decideAndDownload(id, button) {
+  const post = state.posts.find(item => String(item.id) === String(id));
+  const urls = post ? downloadUrls(post) : [];
+  button.disabled = true;
+  try {
+    await api("/api/portal/posts/" + encodeURIComponent(id) + "/decision", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ decision: "approved" })
+    });
+  } catch (error) {
+    toast(error.message);
+    button.disabled = false;
+    return;
+  }
+  const day = todayKey();
+  const saved = urls.length ? await saveFiles(urls, "quatree-" + day) : 0;
+  toast(saved
+    ? (saved > 1 ? "Aprovado. " + saved + " imagens baixadas no seu celular." : "Aprovado. A imagem foi baixada no seu celular.") + " Já pode pôr no status do WhatsApp."
+    : "Aprovado. Se a imagem não baixou, segure o dedo nela e toque em Salvar.");
+  await loadAll();
+}
+
 async function decide(id, button) {
   button.disabled = true;
   try {
@@ -1025,7 +1096,7 @@ async function connectInstagram(button) {
 document.addEventListener("click", event => {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
-  if (DEMO && target.closest("[data-approve], [data-revise], [data-cancel-post], [data-delete-post], [data-publish-now], [data-connect], [data-discard-lead], [data-logout]")) {
+  if (DEMO && target.closest("[data-approve], [data-approve-download], [data-revise], [data-cancel-post], [data-delete-post], [data-publish-now], [data-connect], [data-discard-lead], [data-logout]")) {
     event.preventDefault();
     event.stopImmediatePropagation();
     toast(DEMO_BLOCKED);
@@ -1056,6 +1127,8 @@ document.addEventListener("click", event => {
   }
   const filter = target.closest("[data-filter]");
   if (filter) { state.filter = filter.dataset.filter; renderPosts(); return; }
+  const approveDownload = target.closest("[data-approve-download]");
+  if (approveDownload) { decideAndDownload(approveDownload.dataset.approveDownload, approveDownload); return; }
   const approve = target.closest("[data-approve]");
   if (approve) { decide(approve.dataset.approve, approve); return; }
   const carBtn = target.closest("[data-car]");

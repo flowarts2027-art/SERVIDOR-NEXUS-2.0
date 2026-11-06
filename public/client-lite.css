@@ -1270,3 +1270,6 @@ html[data-custom-brand] .top-copy:has(.client-top-logo) .nexus-top-logo { displa
 }
 /* Marca salva no Master. */
 [data-custom-brand] .tabbar > button.active, [data-custom-brand] .btn-primary, [data-custom-brand] button.primary { background: var(--brand-primary); color: var(--brand-on-primary); }
+
+/* Botão "Aprovar e baixar" (06/11/2026): linha inteira, para o vendedor achar fácil. */
+.actions .btn-download { grid-column: 1 / -1; font-size: 1.05rem; }

@@ -1129,3 +1129,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Achado na produção: nenhuma linha `master:upload` do `quatree-dog` de 04/11 até 06/11. As artes não foram gravadas. A causa provável está em `KNOWN_ISSUES.md`. A leitura seguinte ao banco foi bloqueada pela permissão da sessão.
 - Feito: `lacking` no quadro, `fillMissing` em `master-upload.js`, modo de preenchimento em `artes.js`, aviso ao Master por `BroadcastChannel`.
 - Testes em `TEST_RESULTS.md`. Sem merge e sem deploy. Nada foi alterado na agenda.
+## 2026-11-06 — Botão "Aprovar e baixar" no painel do Quatree Dog
+- Pedido do Rodrigo: o vendedor do Quatree Dog aprova o post e já baixa a arte no celular, para pôr no status do WhatsApp e repostar.
+- Feito em `public/client-lite.js`: botão "⬇ Aprovar e baixar" ao lado de "Aprovar", só no grupo/cliente `quatree-dog` (`canDownload`). Aprova pela mesma rota `/api/portal/posts/:id/decision` e depois baixa a imagem (carrossel: todas as imagens; Reels: o vídeo). Se o download falhar, abre a imagem numa aba nova.
+- `public/client-lite.css`: botão ocupa a linha inteira. `portal.html`: versões v=150 (css) e v=145 (js).
+- Testes: 959/959. Sem merge e sem deploy até o OK do Rodrigo.
+- Próximo passo: Rodrigo aprova o merge; depois testar no celular do Ericsson.
