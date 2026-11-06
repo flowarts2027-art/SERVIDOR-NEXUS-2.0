@@ -1,5 +1,7 @@
 import { clientGroup, isFixedGroupMember } from "./clients.js";
-import { ensureGroupClients, groupChoice } from "./client-groups.js";
+import { ensureGroupClients, groupChoice, groupNiche, savedGroups } from "./client-groups.js";
+import { accessMessage } from "./client-access.js";
+import { inheritBrandWord } from "./client-identity.js";
 import {
   masterCredentialsValid,
   createMasterSession,
@@ -10,6 +12,9 @@ import {
   masterSessionCookie,
   clearMasterSessionCookie,
   upsertPortalUser,
+  generatePortalPassword,
+  portalUsernameOf,
+  portalUsernameTaken,
   loginRateLimitStatus,
   recordLoginFailure,
   clearLoginFailures
@@ -178,10 +183,12 @@ button{width:100%;margin-top:12px;padding:15px;border:0;border-radius:10px;backg
 </body></html>`;
 }
 
+const USERNAME_TAKEN = { error: "portal_username_taken", message: "Este usuário já existe. Escolha outro." };
+
 // Campo Grupo do Novo cliente e do Acesso.
-function readGroupField(body) {
+async function readGroupField(env, body) {
   try {
-    return { group: groupChoice(body) };
+    return { group: groupChoice(body, await savedGroups(env)) };
   } catch (error) {
     const code = String(error?.message || error);
     return { error: { error: code, message: code === "group_invalid" ? "Escolha um grupo da lista." : "Escreva o nome da vendedora ou do vendedor, só com letras." } };
@@ -656,8 +663,13 @@ export async function handleMaster(request, env, url) {
       }, 409);
     }
 
-    const groupField = readGroupField(body);
+    const groupField = await readGroupField(env, body);
     if (groupField.error) return json(groupField.error, 400);
+    // Confere antes de criar: sem isso o cliente nascia sem login quando o acesso falhava.
+    const username = slug(body.username || id).replace(/-/g, ".") || id;
+    const password = String(body.password || "").trim() || generatePortalPassword();
+    if (password.length < 8) return json({ error: "portal_password_too_short", message: "A senha precisa ter pelo menos 8 caracteres." }, 400);
+    if (await portalUsernameTaken(env, username)) return json(USERNAME_TAKEN, 409);
     const config = newManagedClientConfig(id, body, groupField.group ? { group: groupField.group } : {});
     // @ do Instagram do cliente (opcional): o Master usa para o convite de testador da Meta.
     const instagramHandle = String(body.instagram || "").trim().replace(/^@+/, "").toLowerCase();
@@ -668,24 +680,46 @@ export async function handleMaster(request, env, url) {
     const client = await upsertClient(env, {
       id,
       name: String(body.name || "Novo cliente").trim(),
-      niche: String(body.niche || "Outro").trim(),
+      niche: String(body.niche || (groupField.group && await groupNiche(env, groupField.group.id)) || "Outro").trim(),
       instagram: instagramHandle,
       status: "setup",
       config
     });
 
-    const username = slug(body.username || id).replace(/-/g, ".") || id;
-    const password = String(body.password || "").trim();
-    let portalCredentials = { username, portalPath: "/" };
-    if (password) {
-      if (password.length < 8) return json({ error: "portal_password_too_short" }, 400);
-      await upsertPortalUser(env, id, username, password);
-      portalCredentials.initialPassword = password;
-    } else {
-      portalCredentials.passwordRequired = true;
-    }
+    await upsertPortalUser(env, id, username, password);
+    if (groupField.group) await inheritBrandWord(env, client).catch(error => console.error("group_word_failed", String(error?.message || error)));
+    const portalCredentials = {
+      username,
+      portalPath: "/",
+      initialPassword: password,
+      message: accessMessage({ name: clientScreenName(client), username, password })
+    };
 
     return json({ client: masterClientView(client), portalCredentials }, 201);
+  }
+
+  // Botão Acesso da lista. A senha salva não pode ser lida: só sai aqui a que acabou de ser criada ou digitada.
+  const accessMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/access$/);
+  if (accessMatch && (request.method === "GET" || request.method === "POST")) {
+    const clientId = decodeURIComponent(accessMatch[1]);
+    const client = await getClient(env, clientId);
+    if (!client) return json({ error: "client_not_found" }, 404);
+    const current = await portalUsernameOf(env, clientId);
+    if (request.method === "GET") {
+      return json({ ok: true, hasLogin: Boolean(current), username: current || (clientId === "ragnar-one" ? "ragnar.one" : clientId.replace(/-/g, ".")) });
+    }
+    const body = await request.json().catch(() => ({}));
+    const username = String(body.username || "").trim();
+    const typed = String(body.password || "").trim();
+    if (!username) return json({ error: "username_required", message: "Escreva o usuário do painel." }, 400);
+    if (typed && typed.length < 8) return json({ error: "portal_password_too_short", message: "A senha precisa ter pelo menos 8 caracteres." }, 400);
+    if (current && !typed && body.resetPassword !== true) {
+      return json({ error: "password_reset_required", message: "Este cliente já tem senha. Confirme a troca." }, 409);
+    }
+    if (username.toLowerCase() !== current.toLowerCase() && await portalUsernameTaken(env, username)) return json(USERNAME_TAKEN, 409);
+    const password = typed || generatePortalPassword();
+    await upsertPortalUser(env, clientId, username, password);
+    return json({ ok: true, username, password, message: accessMessage({ name: clientScreenName(client), username, password }) });
   }
 
   const autoReplyStatusMatch = url.pathname.match(/^\/api\/master\/clients\/([^/]+)\/autoreply-status$/);
@@ -791,9 +825,10 @@ export async function handleMaster(request, env, url) {
       if (isFixedGroupMember(clientId)) {
         return json({ error: "group_fixed", message: "Este painel já é fixo no grupo. Não dá para trocar aqui." }, 409);
       }
-      const groupField = readGroupField(body);
+      const groupField = await readGroupField(env, body);
       if (groupField.error) return json(groupField.error, 400);
       nextConfig.group = groupField.group;
+      if (groupField.group) await inheritBrandWord(env, { ...existing, config: nextConfig }).catch(error => console.error("group_word_failed", String(error?.message || error)));
     }
     nextConfig.openaiKeySource = clientId === String(env.RAGNAR_CLIENT_ID || "ragnar-one")
       ? "ragnar-exclusive"

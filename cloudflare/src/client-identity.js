@@ -1,5 +1,5 @@
 import { clientGroup, getClient } from "./clients.js";
-import { groupFromTarget, groupMembers } from "./client-groups.js";
+import { findGroup, groupMembers } from "./client-groups.js";
 import { clientAutoReplyConfig, saveClientAutoReplyConfig } from "./client-autoreply.js";
 
 // Marca do cliente (Rodrigo, 05/11/2026): logo, cores e palavra do botão, sem precisar de deploy.
@@ -114,9 +114,14 @@ async function addKeyword(env, client, word) {
   await saveClientAutoReplyConfig(env, client, { keywords: [...new Set([word, ...current.keywords])] });
 }
 
+// Cliente que entra num grupo já responde à palavra do botão do grupo.
+export async function inheritBrandWord(env, client) {
+  await addKeyword(env, client, (await effectiveBrand(env, client))?.buttonWord);
+}
+
 export async function saveBrand(env, form, now = new Date(), fetcher = fetch) {
   const target = String(form.get("target") || "").trim();
-  const group = groupFromTarget(target);
+  const group = await findGroup(env, target);
   const client = group ? null : await getClient(env, target);
   if (!group && !client) throw new Error("brand_target");
   const ownerId = group ? "grupo-" + group.id : client.id;
@@ -154,7 +159,7 @@ export async function handleBrand(request, env, url) {
   try {
     if (request.method === "GET") {
       const target = String(url.searchParams.get("target") || "");
-      const group = groupFromTarget(target);
+      const group = await findGroup(env, target);
       if (group) return send({ ok: true, brand: await readGroupBrand(env, group.id) });
       const client = await getClient(env, target);
       if (!client) throw new Error("brand_target");

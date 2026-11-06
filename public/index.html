@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-  <link rel="stylesheet" href="/styles.css?v=52">
+  <link rel="stylesheet" href="/styles.css?v=53">
 </head>
 <body>
   <div class="shell">
@@ -68,6 +68,7 @@
       </section>
 
       <section id="clients" class="view">
+        <div class="group-new-row"><button type="button" id="group-new-open" class="primary">+ Novo grupo</button></div>
         <div class="group-edit-list" id="group-edit-list"></div>
         <div class="panel signup-panel" id="signup-panel">
           <div class="panel-head"><div><p class="eyebrow">CADASTROS NOVOS</p><h2>Clientes esperando aprovação</h2><p class="muted">Mande o link. O cliente escolhe usuário e senha. Você aprova aqui.</p></div><button class="ghost" type="button" id="signup-copy-link">Copiar link</button></div>
@@ -436,9 +437,10 @@
               
               <label>Grupo<select name="group" data-group-select><option value="">Sem grupo</option></select></label>
               <label>Vendedora ou vendedor<input name="vendor" maxlength="40" placeholder="Só se escolher um grupo" autocomplete="off"></label>
+              <p id="new-client-inherits" class="group-inherits" hidden>O painel herda a logo, as cores e a palavra do botão do grupo.</p>
               <label>Usuário do painel<input name="username" placeholder="Gerado automaticamente"></label>
               <label>Senha inicial<input name="password" type="text" minlength="8" placeholder="Gerada automaticamente"></label>
-              <label>Tema<select name="theme"><option value="green-black">Preto + Verde</option><option value="red-black">Preto + Vermelho</option><option value="blue-white">Azul + Branco</option><option value="gold-black">Preto + Dourado</option></select></label>
+              <label id="new-client-theme">Tema<select name="theme"><option value="green-black">Preto + Verde</option><option value="red-black">Preto + Vermelho</option><option value="blue-white">Azul + Branco</option><option value="gold-black">Preto + Dourado</option></select></label>
               <div class="managed-ai-info"><span>IA</span><strong>IA NEXUS gerenciada</strong><small>Sem conta OpenAI e sem chave para o cliente.</small></div>
             </div>
             <div class="automation-summary">
@@ -446,14 +448,15 @@
               <div><span>2</span><strong>Cliente entra no NEXUS</strong><small>Sem cadastro técnico externo.</small></div>
               <div><span>3</span><strong>Autoriza o Instagram</strong><small>Única autorização prevista para o cliente.</small></div>
             </div>
-            <div class="brand-new"><h3>Logo do cliente (opcional)</h3><div id="new-client-brand"></div></div>
+            <div class="brand-new" id="new-client-brand-box"><h3>Logo do cliente (opcional)</h3><div id="new-client-brand"></div></div>
             <div class="theme-preview" id="theme-preview"><span>PRÉVIA</span><strong>Seu agente, sua marca.</strong><small>Automação inteligente e independente</small></div>
             <button class="primary" type="submit">Criar acesso do cliente</button>
             <span id="form-status" class="form-status"></span>
           </form>
           <div id="new-client-access" class="access-result" hidden>
             <div><span>ACESSO CRIADO</span><strong id="new-client-user">—</strong><small id="new-client-password">—</small></div>
-            <div class="access-actions"><button id="copy-client-access" class="ghost" type="button">Copiar acesso</button><a id="open-client-login" class="primary link-button" href="/login" target="_blank" rel="noopener">Abrir login do cliente</a></div>
+            <div class="access-actions"><button id="copy-client-access" class="primary access-copy" type="button">Copiar acesso</button><a id="open-client-login" class="ghost link-button" href="/login" target="_blank" rel="noopener">Abrir login do cliente</a></div>
+            <div class="access-copy-result"><p class="access-copied" role="status" hidden>Acesso copiado</p><textarea class="access-fallback" readonly hidden aria-label="Mensagem do acesso"></textarea></div>
             <div id="tester-invite" class="tester-invite" hidden>
               <span>CONVITE DE TESTADOR (META)</span>
               <strong id="tester-invite-handle">—</strong>
@@ -638,6 +641,18 @@
       <div class="dialog-actions"><button type="button" id="client-edit-cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Salvar</button></div>
     </form>
   </dialog>
+  <dialog id="group-new-dialog" class="nexus-dialog">
+    <form id="group-new-form" method="dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">NOVO GRUPO</p><h2>Criar grupo</h2></div>
+        <button type="button" id="group-new-close" class="icon-btn" aria-label="Fechar">×</button>
+      </div>
+      <label>Nome do grupo<input id="group-new-name" maxlength="40" autocomplete="off" required></label>
+      <div id="group-new-brand"></div>
+      <p id="group-new-status" class="form-status" role="status"></p>
+      <div class="dialog-actions"><button type="button" id="group-new-cancel" class="ghost">Cancelar</button><button type="submit" class="primary">Criar grupo</button></div>
+    </form>
+  </dialog>
   <dialog id="portal-access-dialog" class="nexus-dialog">
     <form id="portal-access-form" method="dialog">
       <div class="dialog-head">
@@ -646,7 +661,9 @@
       </div>
       <input type="hidden" id="portal-access-client-id">
       <label>Usuário<input id="portal-access-username" autocomplete="username" required></label>
-      <label>Senha<input id="portal-access-password" type="password" autocomplete="new-password" minlength="8" required></label>
+      <label>Senha<input id="portal-access-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Vazio: o Nexus cria a senha"></label>
+      <button type="button" id="portal-access-copy" class="primary access-copy">Copiar acesso</button>
+      <div class="access-copy-result"><p class="access-copied" role="status" hidden>Acesso copiado</p><textarea class="access-fallback" readonly hidden aria-label="Mensagem do acesso"></textarea></div>
       <div class="dialog-actions">
         <button type="button" id="portal-access-cancel" class="ghost">Cancelar</button>
         <button type="submit" class="primary">Salvar acesso</button>
@@ -661,7 +678,7 @@
   </dialog>
   <script src="/upload-rules.js?v=1" defer></script>
   <script src="/brand-editor.js?v=2" defer></script>
-  <script src="/app.js?v=60" defer></script>
+  <script src="/app.js?v=61" defer></script>
   <script src="/manual-reel.js?v=1" defer></script>
   <script src="/carousel-test.js?v=2" defer></script>
   <script src="/manual-carousel.js?v=2" defer></script>

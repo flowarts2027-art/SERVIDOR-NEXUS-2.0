@@ -255,3 +255,9 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - A marca oficial (@adimaxoficial) é ADIMAX em preto sobre amarelo-ouro. `#FFA500` estava errado.
 - Valem principal e destaque `#F2A900`, texto `#000000`, logo preta.
 - Decisão do Claude: destaque igual à principal. Destaque preto sumiria no menu escuro, e o botão das artes sai amarelo-ouro com letra preta.
+
+## 2026-11-06 — Acesso e grupos no Master (Rodrigo)
+- Pedido: senha sempre gerada, "Copiar acesso" nas duas telas e "+ Novo grupo" com herança da marca.
+- Decisão do Claude: não guardar senha legível. Para cliente com login, copiar o acesso exige criar senha nova, com confirmação.
+- Decisão do Claude: logo obrigatória no grupo novo, porque sem ela não há o que herdar.
+- Decisão do Claude: a trava da Adimax vale também para grupo com a palavra adimax no id.
