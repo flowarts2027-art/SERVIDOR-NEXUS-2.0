@@ -1,3 +1,21 @@
+## 2026-11-10 — Checkpoint Work: parecer oficial confirmado, auditoria em andamento
+
+- Origem → destino: ChatGPT Work → Claude Code. Sessão Meta autenticada; nenhuma tentativa de login necessária.
+- Fonte primária: Meta Developers, App 1632247778550916, feedback submission_id=1632252678550426. A listagem exibe envio em 08/11/2026 08:55 GMT-3; o detalhe traz “Resultados da sua solicitação para 25 de outubro de 2026 at 10:31 GMT-3”. Preservar esta discrepância sem inventar data.
+- Estado confirmado: instagram_business_manage_insights APROVADA. instagram_business_basic, instagram_business_manage_messages, instagram_business_content_publish e instagram_business_manage_comments NÃO APROVADAS.
+- Rascunho existente, não enviado: submission_id=1659678365807857. Inclui as quatro recusadas, instagram_manage_comments e public_profile; insights consta como acesso existente para renovação. Necessidade das duas permissões extras ainda em auditoria.
+- Basic: motivo oficial “Detalhes de casos de uso não permitidos”; texto oficial: “Determinamos que o caso de uso do app para a permissão/o recurso é inválido ou desnecessário para dar suporte à funcionalidade principal.” Exige explicar funcionalidade, melhoria da integração e experiência do usuário.
+- Messages, Content Publish e Comments: motivo oficial “Screencast não alinhado com detalhes do caso de uso”. A Meta declara o caso de uso permitido, mas não demonstrado integralmente.
+- Nota literal Messages: “Hello Team! We were unable to approve this submission because the screencast does not show a message being sent from your app UI and the same message appearing in the native client (Messenger, Instagram, or WhatsApp). Please re-record showing: (1) asset selection (Page, account, or number visible), (2) a live send action from your app, and (3) the delivered message in the native client.”
+- Nota literal Content Publish: “Hello Team! To verify content publishing, please re-record: compose and publish a post from your app, then open the Instagram client and show the same post visible on the linked account. Ensure the post’s caption and media match what was submitted.”
+- Nota literal Comments: “Hello Team! We need to see a complete comment moderation loop. Please re-record: add a comment from your app, edit that comment, and delete it. Then, open the native client to confirm the final state on that post.”
+- Requisitos comuns do parecer: login Meta completo, autorização da permissão e experiência ponta a ponta; seguir guia de gravação, interface em inglês, legendas/dicas explicativas. Exceção de fluxo de login somente se arquitetura servidor-servidor/token de usuário do sistema for realmente aplicável.
+- Envio anterior expandido: cinco players de vídeo presentes (conteúdo ainda não assistido). Basic contém justificativa de manage_comments; textos de Messages, Publish e Insights contêm duplicações e fragmentos de conversa indevidos. Messages diz que o cliente configura a mensagem; Comments diz que as regras são do servidor e não do painel. Confrontar com código/UI antes de corrigir.
+- Código já consultado: cloudflare/src/instagram.js solicita exatamente os cinco escopos instagram_business_* e inicia OAuth em instagram.com; não usar a exceção de ausência de login por haver backend.
+- Segurança: zero publicações, mensagens, aprovações de posts, alterações de produção ou reenvios. Pausas Flow Arts/Nexus AI preservadas. Não reconectar essas contas para filmar: callback OAuth contém status online.
+- GitHub main observado 47b76285622ad09d3dfd6f9a23ada0535b3b52cd; CI 42852242796 success. PRs abertos consultados; não incorporados. Workflows de deploy/ingestão filtram cloudflare/public e agendamentos; estes arquivos de memória não acionam esses dois fluxos. Force Publish exige workflow_dispatch; não disparado.
+- Próxima ação exata: auditar código de mensagens/comentários/publicação, conferir acesso de teste no envio anterior e os vídeos; corrigir justificativas do rascunho conforme funcionalidades comprovadas. Nenhum formulário alterado até este checkpoint.
+
 # 2026-11-10 — Revisão de permissões da Meta: correção de demonstração e retomada do Claude/Work
 
 **Origem → destino:** conversa do proprietário com ChatGPT → Claude Code e ChatGPT Work, por memória compartilhada do Nexus.
