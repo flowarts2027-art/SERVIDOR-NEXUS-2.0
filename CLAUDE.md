@@ -17,7 +17,8 @@
 - Perfil da marca, temas e campanha: `cloudflare/src/client-brand.js` e `cloudflare/src/flowarts-campaign.js`.
 - Painel do cliente: `public/portal.html`, `public/client-lite.js`, `public/client-lite.css`. Painel Master: `public/index.html`, `public/app.js`.
 - Testes: `cd cloudflare && node --test test/*.test.mjs`. Rode antes de todo commit.
-- Deploy: todo push na `main` que muda `cloudflare/` ou `public/` publica na Cloudflare sozinho. Só faça push com os testes passando e com o OK do Rodrigo.
+- Código e remotes (06/11/2026): a conta do GitHub foi suspensa. O código fica no GitLab, no remote `gitlab`. **Não use o remote `origin`** (GitHub): nada de fetch, pull ou push nele. Trabalhe só na pasta `nexus-deploy`, que não tem remote do GitHub.
+- Deploy: agora é feito pelo PC, na pasta `nexus-deploy`, com `npm run deploy` dentro de `cloudflare/`, e **só com o OK do Rodrigo**. Push na `main` não publica mais nada. Antes, siga o passo a passo "Como publicar pelo PC" em `docs/nexus-memory/HANDOFF_CLAUDE.md` (testes, arquivos gerados, `npm run check`). Não publique de nenhuma outra pasta.
 - Nada de publicação real no Instagram para testar. Posts só saem depois que o Rodrigo aprova no painel.
 - Ao terminar, atualize `docs/nexus-memory/` com o que foi feito de verdade e o próximo passo.
 
@@ -39,7 +40,7 @@ This project has a knowledge graph at graphify-out/ with god nodes, community st
 Rules:
 - Para achar código, use o caminho mais barato (teste de 04/11/2026 em `docs/nexus-memory/TEST_RESULTS.md`). **Arquivo conhecido:** abra direto. **Função ou nome conhecido:** busque o nome em `graphify-out/graph.json`, do jeito descrito na regra abaixo, e abra só o trecho. **Ligações entre partes, ou quando não souber onde procurar:** use `graphify query "<pergunta>"`, `graphify path "<A>" "<B>"` ou `graphify explain "<conceito>"`. Cada `graphify query` custa cerca de 2 mil tokens e pergunta em frases pode trazer o lugar errado: confirme no código. Ponha esta regra em todo prompt de subagente que explore código.
 - **Sem o comando `graphify` (sessão na nuvem, 22/10/2026):** não instale nada. Leia primeiro `graphify-out/GRAPH_REPORT.md` (só as partes que importam) e procure em `graphify-out/graph.json` pelo nome da função ou do arquivo para achar o arquivo e a linha. **Atenção: `graph.json` é uma linha só de 3 MB; nunca leia o arquivo inteiro nem use Grep comum nele.** Use sempre só o pedaço: Grep com `-o: true` e um padrão como `"label":"NOME[^}]*` (ou `"source_file":"cloudflare/src/ARQUIVO.js"[^}]*`), com `head_limit` baixo. Depois abra só esse trecho do código. O mapa pode estar atrasado em relação à `main` (veja "Built from commit" no relatório): confirme no código antes de mudar.
-- O mapa se atualiza sozinho no GitHub a cada push na `main` (`.github/workflows/nexus-graphify.yml`); ninguém precisa rodar nada no PC.
+- O mapa não se atualiza mais sozinho: o robô do GitHub (`.github/workflows/nexus-graphify.yml`) parou com a suspensão. Atualize pelo PC, na `nexus-deploy`: depois de mudar o código, rode `graphify update .` e faça commit só da pasta `graphify-out`.
 - O automático do Claude Code (hook) fica só no PC do Rodrigo, em `.claude/settings.local.json`; não suba esse arquivo.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.

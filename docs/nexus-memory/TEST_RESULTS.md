@@ -347,3 +347,8 @@ Próximo passo: CI Linux (bundle local Windows bloqueado por leitura de diretór
 - Pacote do Worker gerado com `wrangler deploy --dry-run` carrega sem erro de importação.
 - Chrome sem tela, com API simulada: link com `stories=2`, cliente e dia travados, 3ª imagem em "Não enviar", 2 envios como story e quadro do Master vazio sem recarregar.
 - Não testado: login real, envio real e publicação real do story.
+
+## 2026-11-06 — Deploy pelo PC (Claude)
+- Na `nexus-deploy`: 968 de 968 testes. `npm run check` sem erro.
+- Publicado sem erro. Portal, `client-lite.js`, `app.js`, `artes.js`, ZIP do helper e `molduras.json` conferidos no ar.
+- Não testado: login real e rodada real depois do deploy.

@@ -1,3 +1,8 @@
+## 2026-11-06 — Depois do deploy pelo PC
+1. Testar com login real os botões "Aprovar e baixar" e "Baixar", no celular.
+2. Conferir uma rodada real de publicação.
+3. Rodrigo decidir o que fazer com o que dependia do GitHub.
+
 ## 2026-11-06 — Depois do merge do Enviar artes
 1. Conferir o deploy.
 2. Rodrigo reenviar os stories do `quatree-dog` pelo cartão, se ainda houver horário no dia.

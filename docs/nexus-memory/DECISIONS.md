@@ -269,3 +269,8 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - Decisão do Claude: a aprovação automática vale só para story de hoje, como foi pedido. Post de hoje continua esperando aprovação.
 - Decisão do Claude: usar a mesma busca de horário do "Criar com agente" (`agentSlot`), com antecedência de 10 minutos em vez de 30.
 - Decisão do Claude: linha de problema mantém o envio comum, porque ali não há vaga contada.
+
+## 2026-11-06 — Deploy pelo PC e código no GitLab (Rodrigo)
+- A conta do GitHub foi suspensa. Não usar fetch, pull ou push no `origin`.
+- O código fica no GitLab. O deploy é feito pelo PC, na pasta `nexus-deploy`, com `npm run deploy`.
+- Decisão do Claude: a pasta nova não tem remote do GitHub, para ninguém publicar ou buscar de lá por engano.

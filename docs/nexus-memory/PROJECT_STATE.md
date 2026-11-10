@@ -374,3 +374,6 @@ PR aberto. Ainda não está em produção.
 
 ## 2026-11-06 — Enviar artes preenche o que falta
 PR aberto. Ainda não está em produção.
+
+## 2026-11-06 — Deploy pelo PC
+GitHub suspenso. Código no GitLab. Produção publicada pelo PC, na pasta `nexus-deploy`, versão `4a9a6ccc`. Passo a passo em `HANDOFF_CLAUDE.md`.
