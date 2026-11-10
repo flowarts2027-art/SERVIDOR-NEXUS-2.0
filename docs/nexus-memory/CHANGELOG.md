@@ -1,3 +1,7 @@
+## 2026-11-06 — Deploy pelo PC, sem GitHub
+- GitHub suspenso. Código no GitLab e deploy pela pasta `nexus-deploy`.
+- Publicado: botões "Aprovar e baixar" (#606) e "Baixar" (#607). Versão `4a9a6ccc`.
+
 ## 2026-11-06 — Enviar artes preenche o que falta (PR aberto, sem deploy)
 - O cartão de "Postagens faltando" leva dia e formato. A página só aceita o que falta.
 - O servidor escolhe o horário livre no minuto do cliente. Story de hoje já entra aprovado.

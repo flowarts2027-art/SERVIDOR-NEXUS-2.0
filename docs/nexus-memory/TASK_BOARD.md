@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-06 — DEPLOY-PC-001: deploy pelo PC (Claude)
+Publicado pela pasta `nexus-deploy`, versão `4a9a6ccc`. Código no GitLab. **Pendente:** teste com login real e decisão sobre o que dependia do GitHub.
+
 ## 2026-11-06 — ARTES-002: Enviar artes preenche o que falta (Claude)
 Branch `fix/enviar-artes-faltando-20261106`, PR aberto. **Aguardando merge do Rodrigo.** Sem deploy. Depois do merge: reenviar os stories do `quatree-dog`.
 

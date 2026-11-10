@@ -210,7 +210,10 @@ function actionsButtonsHtml(post) {
     </form>`;
   }
   if (postGroup(post) === "publicados") {
-    return `<div class="actions"><button type="button" class="btn btn-soft btn-cancel" data-delete-post="${escapeHtml(post.id)}" data-published="1">Excluir do painel</button></div>`;
+    // Quatree Dog (06/11/2026): baixar o post já publicado para usar no status do WhatsApp.
+    const download = canDownload() && downloadUrls(post).length
+      ? `<button type="button" class="btn btn-ok btn-download" data-download="${escapeHtml(post.id)}">⬇ Baixar</button>` : "";
+    return `<div class="actions">${download}<button type="button" class="btn btn-soft btn-cancel" data-delete-post="${escapeHtml(post.id)}" data-published="1">Excluir do painel</button></div>`;
   }
   if (postGroup(post) !== "aprovar") return "";
   const id = escapeHtml(post.id);
@@ -964,6 +967,18 @@ async function saveFiles(urls, baseName) {
   return saved;
 }
 
+async function downloadOnly(id, button) {
+  const post = state.posts.find(item => String(item.id) === String(id));
+  const urls = post ? downloadUrls(post) : [];
+  if (!urls.length) { toast("Este post não tem imagem para baixar."); return; }
+  button.disabled = true;
+  const saved = await saveFiles(urls, "quatree-" + todayKey());
+  toast(saved
+    ? (saved > 1 ? saved + " imagens baixadas no seu celular." : "Imagem baixada no seu celular.") + " Já pode pôr no status do WhatsApp."
+    : "Se a imagem não baixou, segure o dedo nela e toque em Salvar.");
+  button.disabled = false;
+}
+
 async function decideAndDownload(id, button) {
   const post = state.posts.find(item => String(item.id) === String(id));
   const urls = post ? downloadUrls(post) : [];
@@ -1127,6 +1142,8 @@ document.addEventListener("click", event => {
   }
   const filter = target.closest("[data-filter]");
   if (filter) { state.filter = filter.dataset.filter; renderPosts(); return; }
+  const downloadBtn = target.closest("[data-download]");
+  if (downloadBtn) { downloadOnly(downloadBtn.dataset.download, downloadBtn); return; }
   const approveDownload = target.closest("[data-approve-download]");
   if (approveDownload) { decideAndDownload(approveDownload.dataset.approveDownload, approveDownload); return; }
   const approve = target.closest("[data-approve]");

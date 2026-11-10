@@ -1135,3 +1135,28 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - `public/client-lite.css`: botão ocupa a linha inteira. `portal.html`: versões v=150 (css) e v=145 (js).
 - Testes: 959/959. Sem merge e sem deploy até o OK do Rodrigo.
 - Próximo passo: Rodrigo aprova o merge; depois testar no celular do Ericsson.
+
+## 2026-11-06 (18h55) — Botão "Baixar" nos posts publicados do Quatree Dog
+- Pedido do Rodrigo: baixar também as postagens já publicadas do Quatree Dog.
+- Feito em `public/client-lite.js`: botão "⬇ Baixar" nos posts publicados, só no Quatree Dog (`canDownload`), usando o mesmo `saveFiles` do "Aprovar e baixar" (PR #606, já no ar). `portal.html`: js v=146.
+- Testes: 968/968. Sem merge e sem deploy até o OK do Rodrigo.
+
+## 06/11/2026 — Deploy pelo PC, sem GitHub (Claude)
+- Motivo: a conta do GitHub foi suspensa. O repositório e os arquivos públicos dele respondem 404, e o GitHub Actions parou.
+- Código agora no GitLab: `flow-arts-marketing-digital/servidor-nexus-flowarts`, branch `main`.
+- Deploy agora é feito pelo PC do Rodrigo, na pasta `nexus-deploy`, dentro da pasta do usuário. Essa pasta não tem remote do GitHub.
+- Não publicar da pasta `SERVIDOR-NEXUS-2.0` que fica em Documentos: ela ficou 66 commits atrás da produção.
+- A pasta nasceu de `57d30da`. Recebeu o `#606` no commit `c5158a3` e o `#607` no `5265579`. Conferido antes: os arquivos do painel depois do `c5158a3` eram iguais aos do ar.
+- Publicado em 06/11: versão `4a9a6ccc-0049-4af7-a3fb-6a4e0868c995`. A anterior, para voltar se precisar, é `e4db1704-0fd0-4998-af29-57f56e5b3568`.
+- Conferido no ar: `client-lite.js?v=146`, botões `data-download` e `data-approve-download`, ZIP do helper, `molduras.json` e portal.
+- Não testado: clique nos botões com login real e rodada real depois do deploy.
+
+### Como publicar pelo PC
+1. Na `nexus-deploy`, confira se a `main` local é a mais nova e se os testes passam: `cd cloudflare && node --test test/*.test.mjs`.
+2. Rode os mesmos passos do arquivo `.github/workflows/deploy-nexus-cloudflare.yml`: sintaxe, `npm install`, identidade verde, ZIP do helper, fonte Montserrat e `public/molduras`.
+3. Confira se `public/molduras/molduras.json` tem conteúdo. Rode `npm run check`.
+4. Só com o OK do Rodrigo: `npm run deploy`, de dentro de `cloudflare`. O login é o do `wrangler login`, feito pelo próprio Rodrigo.
+5. Depois de mudar o código, rode `graphify update .` na `nexus-deploy` e faça commit só da pasta `graphify-out`. O robô do GitHub que fazia isso parou. Os arquivos `.claude/settings.local.json` e os gerados no deploy não entram no commit.
+6. Confira no ar o portal, o `client-lite.js` e o ZIP do helper. Suba a `main` para o GitLab (`git push gitlab main:main`).
+- Os arquivos gerados no deploy ficam sem commit na pasta. Eles não fazem parte do código.
+- Esta pasta usa finais de linha do Linux (`core.autocrlf=false`), e assim o teste do cron passa.
