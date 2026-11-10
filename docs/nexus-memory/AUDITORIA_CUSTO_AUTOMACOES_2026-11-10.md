@@ -35,7 +35,8 @@
 | Graphify | a cada push da main | 1x/semana domingo 11:17 UTC + manual |
 | Campanha diária com texto | toda madrugada, incluindo primeiro-teste | só manual, até autorização para retomar agendamento |
 
-Quatro dos workflows tinham **pelo menos 146 disparos programados/dia** no cenário anterior (Core 96, AutoFix 48, Overnight 1, campanha 1); após a mudança, serão em média **cerca de 3,14 disparos programados/dia** (1+2+1/7; Graphify também semanal, incluindo Graphify fica 3,29/dia). Eventos por outros workflows continuam possíveis, mas foram removidas as cascatas automáticas dos componentes acima. Redução de pelo menos **97% dos disparos programados desses workflows**. Não é economia de 97% no consumo total de GitHub ou Cloudflare.
+Quatro dos workflows tinham **pelo menos 146 disparos programados/dia** no cenário anterior (Core 96, AutoFix 48, Overnight 1, campanha 1); após a mudança, serão em média **cerca de 3,14 disparos programados/dia** (1+2+1/7; Graphify também semanal, incluindo Graphify fica 3,29/dia). Eventos por outros workflows continuam possíveis, mas foram removidas as cascatas automáticas dos componentes acima.
+- O botão manual do Core também deixou de acionar a antiga etapa de **publicação emergencial real de Ragnar**; uma verificação manual não deve provocar postagem. Redução de pelo menos **97% dos disparos programados desses workflows**. Não é economia de 97% no consumo total de GitHub ou Cloudflare.
 
 ## Próximos passos antes de alterar Cloudflare
 1. Confirmar que a conta GitHub tem Actions habilitado e o painel de billing/usage.
