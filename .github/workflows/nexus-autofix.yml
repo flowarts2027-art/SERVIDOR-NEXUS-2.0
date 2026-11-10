@@ -1,22 +1,11 @@
 name: NEXUS AutoFix
 
+# Evitar enxurrada de eventos workflow_run/retry em cascata.
+# Duas verificações diárias; execução extraordinária só manualmente.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/nexus-autofix.yml
-      - .github/scripts/nexus-autofix.mjs
-      - .github/scripts/nexus-autofix-policy.mjs
-      - .github/scripts/nexus-autofix.test.mjs
   schedule:
-    - cron: "7,37 * * * *"
-  workflow_run:
-    workflows:
-      - "NEXUS CI"
-      - "NEXUS Overnight Regression"
-      - "Deploy NEXUS Cloudflare"
-    types: [completed]
+    - cron: "41 10,22 * * *"
 
 concurrency:
   group: nexus-autofix
