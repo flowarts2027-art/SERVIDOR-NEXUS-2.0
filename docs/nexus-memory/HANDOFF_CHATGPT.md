@@ -1,3 +1,8 @@
+## 2026-11-10 — URGENTE: Meta App Review / retorno ao Claude e Work (leitura obrigatória)
+- Pedido do proprietário: corrigir as solicitações de permissões Meta recusadas, a demonstração do funcionamento verdadeiro do Nexus e o roteiro de acesso de revisão.
+- **Leia integralmente `docs/nexus-memory/META_APP_REVIEW_RETORNO_2026-11-10.md` antes de retomar formulários ou vídeo.** A nota registra o fluxo real ChatGPT → GitHub Actions → painel do cliente → aprovação → scheduler/executor/publisher Cloudflare → API Instagram; as hipóteses de recusa (ainda não confirmadas pelo feedback oficial), o vídeo e usuário de teste já entregues segundo relato, e o problema de tentativas repetidas de login que consumiram o limite do Work.
+- Sem login repetitivo no Work. Verificar o parecer real da Meta permissão por permissão antes de afirmar causa/rejeição; não iniciar publicação real ou reenvio sem OK explícito. **Apenas memória/documentação atualizada; sem deploy, vídeo ou submissão.**
+
 ## 2026-11-04 — Nexus AI: 05/11/2026, 9 imagens enviadas ao painel (aprovação pendente)
 - Cliente `nexus-ai` / Instagram `@nexusai_system`. Agenda consultada antes: dia 05/11 estava sem peças.
 - Envio via `nexus_enviar_arte` confirmado e agenda relida: 09:00 carrossel 4 cartões (`upload-carousel-31ed2cc0-3310-4995-bc1b-54826113f2ff`); 12:00 post (`upload-feed-a165be14-2f95-4166-8ea8-ba466730095e`); 19:00 post (`upload-feed-62d9471f-6a5a-42c1-8b1a-ff4da1f37dc4`).
