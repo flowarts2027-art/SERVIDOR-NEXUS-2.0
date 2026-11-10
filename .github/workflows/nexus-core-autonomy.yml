@@ -1,17 +1,11 @@
 name: NEXUS Core Autonomy
 
+# Redução preventiva de volume (10/11): uma vez ao dia, com acionamento manual sob demanda.
+# A função de publicação de posts está no Cloudflare, não neste monitor GitHub.
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "23 11 * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/nexus-core-autonomy.yml
-      - .github/scripts/nexus-core-autonomy.mjs
-      - cloudflare/src/agent-core.js
-      - cloudflare/src/agent-runtime.js
-      - cloudflare/src/executor.js
 
 concurrency:
   group: nexus-core-autonomy
