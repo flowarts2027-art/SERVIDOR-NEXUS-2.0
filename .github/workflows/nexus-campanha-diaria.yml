@@ -6,9 +6,10 @@ name: NEXUS Campanha diária com texto (GILTEC, Flow Arts e Maskara)
 # scripts/social/campanha_diaria.py escreve logo, título, ícones e botão por código
 # (textos fixos em scripts/social/campanha/conteudo.json) e o agendar-pasta.sh sobe tudo
 # para o painel de cada cliente ESPERANDO APROVAÇÃO. Nada é publicado sem aprovação.
+# Modo econômico: interromper execução programada de campanhas.
+# A execução manual continua disponível para clientes aprovados.
+# Não reativar a Flow Arts nem o Nexus AI sem autorização.
 on:
-  schedule:
-    - cron: "17 7 * * *"
   workflow_dispatch:
     inputs:
       date:
