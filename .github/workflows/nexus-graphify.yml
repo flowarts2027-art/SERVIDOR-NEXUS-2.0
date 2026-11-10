@@ -1,15 +1,13 @@
 name: NEXUS Atualizar mapa do Graphify
 
-# Pedido do Rodrigo (22/10/2026): o mapa do código (graphify-out/) se atualiza sozinho,
-# sem ele abrir o Claude Code no PC. A cada mudança na main, o GitHub roda
-# "graphify update . --force" (só lê o código, sem IA e sem custo) e salva o mapa novo.
+# Pedido do Rodrigo (22/10/2026): manter mapa do código sem usar IA.
+# Ajuste 10/11/2026: por economia de GitHub Actions, regenerar semanalmente
+# ou sob demanda (workflow_dispatch), sem rodar em cada push da main.
 # --force: o mapa feito aqui é só do código; pode ter alguns itens a menos que o feito no PC.
 # Só GRAPH_REPORT.md e graph.json vão para o repositório. Não mexe no site nem no painel.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "graphify-out/**"
+  schedule:
+    - cron: "17 11 * * 0"
   workflow_dispatch:
 
 permissions:
