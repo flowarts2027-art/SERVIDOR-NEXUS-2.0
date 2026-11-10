@@ -36,17 +36,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/nexus-core-autonomy.mjs
 
-      - name: Controlled Ragnar publish test
-        if: >-
-          ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'test: trigger isolated Ragnar publication') }}
-        env:
-          EMERGENCY_TRIGGER_TOKEN: ${{ secrets.EMERGENCY_TRIGGER_TOKEN }}
-        run: |
-          test -n "$EMERGENCY_TRIGGER_TOKEN"
-          curl --fail-with-body --silent --show-error \
-            -X POST \
-            -H "x-nexus-emergency-token: $EMERGENCY_TRIGGER_TOKEN" \
-            "https://servidor-nexus.diamantehinode2015.workers.dev/api/emergency-publish-now?clientId=ragnar-one&format=post&forceTest=1"
+      # Emergência de publicação em Ragnar desativada: um clique em Run workflow
+      # não deve publicar conteúdo real durante a suspensão das contas.
 
       - name: Upload Core evidence
         if: always()
