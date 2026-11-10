@@ -1,3 +1,6 @@
+## 2026-11-10 — Work: motivos oficiais Meta recuperados
+Insights aprovado; Basic recusado por uso inválido/desnecessário; mensagens/publicação/comentários recusados por screencast incompleto. Basic recebeu por engano a justificativa de comentários; outros textos têm duplicações e fragmentos da conversa. Fonte: feedback 1632252678550426; rascunho 1659678365807857 não enviado. Parecer literal, discrepância de datas, requisitos e próxima ação em `META_APP_REVIEW_RETORNO_2026-11-10.md`. Auditoria em andamento, sem produção/publicação/reenvio. Pausas preservadas.
+
 ## 2026-11-10 — URGENTE: Meta App Review / retorno ao Claude e Work (leitura obrigatória)
 - Pedido do proprietário: corrigir as solicitações de permissões Meta recusadas, a demonstração do funcionamento verdadeiro do Nexus e o roteiro de acesso de revisão.
 - **Leia integralmente `docs/nexus-memory/META_APP_REVIEW_RETORNO_2026-11-10.md` antes de retomar formulários ou vídeo.** A nota registra o fluxo real ChatGPT → GitHub Actions → painel do cliente → aprovação → scheduler/executor/publisher Cloudflare → API Instagram; as hipóteses de recusa (ainda não confirmadas pelo feedback oficial), o vídeo e usuário de teste já entregues segundo relato, e o problema de tentativas repetidas de login que consumiram o limite do Work.
