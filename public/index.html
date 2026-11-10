@@ -234,6 +234,20 @@
             <p class="muted wide" id="manual-carousel-status" role="status"></p>
           </form>
         </div></div></details>
+        <details class="fold"><summary><span class="fold-icon">▶</span><span><strong>Criar Reel com IA</strong><small>8 a 15 segundos, custo por tentativa, sem publicar</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel">
+          <div class="panel-head"><div><p class="eyebrow">VÍDEO COM IA · PRÉVIA PAGA</p><h2>Criar Reel com IA</h2><p class="muted">Gera um clipe vertical sem texto nem logo. Não agenda e não publica. O recurso começa desligado.</p></div></div>
+          <form id="ai-reel-form" class="manual-reel-form">
+            <label>Cliente<select name="clientId" required><option value="">Carregando...</option></select></label>
+            <label>Duração<select name="duration"><option value="8">8 segundos</option><option value="10">10 segundos</option><option value="15">15 segundos</option></select></label>
+            <label>Resolução<select name="resolution"><option value="720p">720p</option><option value="480p">480p (econômico)</option></select></label>
+            <label class="wide">Descrição da cena<textarea name="prompt" rows="4" minlength="15" maxlength="1500" required placeholder="Café servido em câmera lenta, iluminação cinematográfica, sem marca e sem texto"></textarea></label>
+            <p id="ai-reel-price" class="muted wide" role="status">Consultando custo...</p>
+            <label class="wide"><input type="checkbox" name="confirmCost" required> Confirmo o custo desta geração. A cobrança pode ocorrer mesmo se o vídeo falhar depois.</label>
+            <button type="submit" class="primary" disabled>Gerar vídeo</button>
+            <p id="ai-reel-status" class="muted wide" role="status"></p>
+            <video id="ai-reel-video" class="manual-reel-preview wide" controls playsinline hidden></video>
+          </form>
+        </div></div></details>
         <details class="fold"><summary><span class="fold-icon">✦</span><span><strong>Criar Reel animado</strong><small>5 cenas de texto. Sem IA, sem custo.</small></span></summary><div class="fold-body"><div class="panel manual-reel-panel" id="animated-reel">
           <div class="panel-head"><div><p class="eyebrow">REEL ANIMADO · SEM IA</p><h2>Criar Reel animado</h2><p class="muted">Escreva as 5 cenas. O sistema anima o texto (e as fotos, se mandar) e grava um vídeo de 16 segundos, em pé. Não usa IA e não tem custo. Leva uns 5 minutos. Depois o Reel aparece no painel do cliente sem data: ele escolhe o dia e aprova.</p></div></div>
           <form id="auto-reel-form" class="manual-reel-form">
@@ -685,6 +699,7 @@
   <script src="/window-alert.js?v=1" defer></script>
   <script src="/master-upload.js?v=4" defer></script>
   <script src="/animated-reel.js?v=4" defer></script>
+  <script src="/ai-reel.js?v=1" defer></script>
   <script src="/whatsapp-inbox.js?v=5" defer></script>
   <script src="/site-stats.js?v=4" defer></script>
   <script src="/prospects-ui.js?v=18" defer></script>
