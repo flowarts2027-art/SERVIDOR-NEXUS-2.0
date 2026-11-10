@@ -1,11 +1,10 @@
 name: NEXUS Overnight Regression
 
+# Regressão completa é custosa e não precisa repetir a cada CI.
+# Semanal (domingo UTC) e manual, mantendo CI leve por PR/push.
 on:
-  workflow_run:
-    workflows: ["NEXUS CI"]
-    types: [completed]
   schedule:
-    - cron: "17 6 * * *"
+    - cron: "17 6 * * 0"
   workflow_dispatch:
 
 permissions:
