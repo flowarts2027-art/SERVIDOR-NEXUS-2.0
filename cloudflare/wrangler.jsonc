@@ -27,6 +27,7 @@
     "NEXUS_AUTO_STORY": "false",
     "RAGNAR_CLIENT_ID": "ragnar-one",
     "CLOUDFLARE_AUTOMATION_ACTIVE": "true",
+    "NEXUS_AGENT_MIN_CYCLE_MINUTES": "180",
     "PUBLIC_BASE_URL": "https://servidor-nexus.diamantehinode2015.workers.dev",
     "NEXUS_AI_PROVIDER": "local-first",
     "NEXUS_OPENAI_DAILY_TOKEN_LIMIT": "30000",
