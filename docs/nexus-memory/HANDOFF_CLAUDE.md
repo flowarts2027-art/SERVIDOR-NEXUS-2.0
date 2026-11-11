@@ -10,6 +10,13 @@
 
 
 
+
+## 2026-11-11 10h40 BRT — Deploy do PR #621 parou antes de publicar (sem efeito no site)
+
+- A API de upload de versões recusou `inherit` com `version_id` (erro 10057: só aceita "latest"). O passo falhou antes do `wrangler deploy`; site seguiu em 4a9a6ccc com segredos (/api/health OK).
+- Correção nesta branch: a versão carregadora é criada pela API beta `workers/workers/{worker}/versions` (aceita `version_id`, não publica) e o script confere que ela virou a última versão antes de deixar o deploy seguir.
+- Próximo passo: merge com OK do Rodrigo e conferir `SECRETS_CARRIED` + /api/health.
+
 ## 2026-11-11 10h30 BRT — Causa real dos segredos sumindo e correção do deploy
 
 - O PR #620 (wrangler 4.141.0) não resolveu: o deploy seguinte saiu sem segredos e o Build da Cloudflare publicou uma versão vazia (site 404). Rodrigo reverteu para 4a9a6ccc no painel; /api/health OK.

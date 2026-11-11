@@ -61,22 +61,38 @@ const code = [
   ...classes.map(n => `export class ${n} { constructor() {} async fetch() { return new Response("carrier", { status: 503 }); } }`),
   'export default { async fetch() { return new Response("carrier", { status: 503 }); } };'
 ].join("\n");
-const metadata = {
+// Só a API "beta" de Workers aceita herdar de uma versão específica; a de upload aceita apenas "latest".
+// Criar uma versão por ela não publica nada.
+const body = {
   main_module: "carrier.mjs",
   compatibility_date: source.resources?.script_runtime?.compatibility_date || "2026-09-24",
+  modules: [{ name: "carrier.mjs", content_type: "application/javascript+module", content_base64: Buffer.from(code).toString("base64") }],
   bindings: names.map(name => ({ type: "inherit", name, version_id: source.id })),
   annotations: { "workers/message": `Carregar segredos da versão ${source.id.slice(0, 8)} (não publicada)` }
 };
-const form = new FormData();
-form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-form.append("carrier.mjs", new Blob([code], { type: "application/javascript+module" }), "carrier.mjs");
-const created = await api("/versions", { method: "POST", body: form });
-const createdId = created?.id || created?.version?.id;
+const betaRes = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/workers/workers/${worker}/versions`, {
+  method: "POST",
+  headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+  body: JSON.stringify(body)
+});
+const betaBody = await betaRes.json().catch(() => ({}));
+if (!betaRes.ok || betaBody.success === false) {
+  console.error(`::error::Criar versão carregadora falhou: HTTP ${betaRes.status} ${JSON.stringify(betaBody.errors || betaBody).slice(0, 500)}`);
+  process.exit(1);
+}
+const createdId = betaBody.result?.id;
 
 const check = await api(`/versions/${createdId}`);
 const carried = secretNames(check).length;
 if (carried !== names.length) {
   console.error(`::error::A versão carregadora ficou com ${carried} de ${names.length} segredos.`);
+  process.exit(1);
+}
+// O wrangler herda da última versão da API de scripts: ela precisa ser a carregadora.
+const after = await api("/versions?per_page=1");
+const newLatest = (after.items || after)[0]?.id;
+if (newLatest !== createdId) {
+  console.error(`::error::A última versão (${String(newLatest).slice(0, 8)}) não é a carregadora (${String(createdId).slice(0, 8)}). Deploy cancelado para não perder os segredos.`);
   process.exit(1);
 }
 console.log(`SECRETS_CARRIED from=${source.id.slice(0, 8)} to=${String(createdId).slice(0, 8)} secrets=${carried}`);
