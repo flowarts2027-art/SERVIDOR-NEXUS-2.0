@@ -104,6 +104,24 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
         run: npm run deploy
 
+      # 11/11/2026: wrangler 4.160 publicou sem os segredos (senha do Master, chave dos tokens).
+      # Se o Worker no ar perdeu os segredos, o deploy falha em vermelho em vez de passar calado.
+      - name: Confirm Worker secrets survived the deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            body="$(curl --fail --silent --show-error --max-time 25 -H 'Cache-Control: no-cache' \
+              "https://servidor-nexus.diamantehinode2015.workers.dev/api/health?secrets_check=$GITHUB_SHA-$attempt" || true)"
+            if printf '%s' "$body" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("openai",{}).get("shared") and d.get("whatsapp",{}).get("configured") else 1)'; then
+              echo "WORKER_SECRETS_PRESENT on attempt $attempt"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::O Worker no ar ficou SEM os segredos. Reverta no painel da Cloudflare para a ultima versao com segredos."
+          exit 1
+
       - name: Verify 21 niche images and public showcase pages
         if: contains(github.event.head_commit.message, '[verify-2x2]')
         run: python3 scripts/verify-showcase-2x2.py --origin https://servidor-nexus.diamantehinode2015.workers.dev

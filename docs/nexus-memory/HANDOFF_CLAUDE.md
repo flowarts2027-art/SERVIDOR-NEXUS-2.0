@@ -8,6 +8,15 @@
 - Não conferido: painel real da Quatree. Estado: PR aguardando revisão, não implantado.
 - Próximo passo: depois do merge, abrir o painel real e conferir Início, Posts e Números.
 
+
+## 2026-11-11 10h BRT — Segredos do Worker apagados (login do Master quebrado)
+
+- Sintoma: login do Master dava "Usuário ou senha inválidos"; /api/health mostrava openai e whatsapp sem configuração.
+- Causa comprovada: desde 10/11 16:13 UTC as versões do Worker `servidor-nexus` saíam com 0 segredos (a de 06/11, 4a9a6ccc, tinha 26). O deploy usa `wrangler` sem lockfile e baixou a 4.160.0, que publica sem herdar os segredos. Sem `NEXUS_SECRET_KEY` o Nexus também não abre os tokens do Instagram dos clientes (publicação parada desde 10/11).
+- Feito com OK do Rodrigo: rollback na Cloudflare para a versão 4a9a6ccc (segredos voltaram; /api/health OK). Teste de redeploy pelo Actions com wrangler 4.160 apagou de novo; novo rollback feito.
+- Correção nesta branch: wrangler fixado em 4.141.0 e passo no deploy que falha se o Worker ficar sem segredos.
+- Próximo passo: depois do merge, conferir /api/health (openai.shared=true). Se falhar, reverter para 4a9a6ccc. O código no ar está na versão de 06/11 até o merge.
+
 ## 2026-11-04 18:10 BRT — Verificação do Instagram passa a olhar os clientes ativos (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido e objetivo: o Rodrigo pediu para investigar a falha do `NEXUS Overnight Regression` e vigiar só clientes ativos com Instagram conectado.
