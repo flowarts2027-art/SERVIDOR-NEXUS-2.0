@@ -125,6 +125,11 @@ async function asset(env, request, pathname) {
   target.search = "";
   const response = await env.ASSETS.fetch(new Request(target.toString(), request));
   const headers = new Headers(response.headers);
+  // Cabeçalhos básicos de segurança (auditoria SEO de 11/11/2026) e charset nas páginas HTML.
+  headers.set("x-content-type-options", "nosniff");
+  headers.set("referrer-policy", "strict-origin-when-cross-origin");
+  headers.set("strict-transport-security", "max-age=31536000");
+  if (/^text\/html\s*$/i.test(headers.get("content-type") || "")) headers.set("content-type", "text/html; charset=utf-8");
   if (["/portal.html", "/client-lite.js", "/client-lite.css"].includes(pathname)) {
     headers.set("cache-control", "no-store, no-cache, must-revalidate");
     headers.set("pragma", "no-cache");
