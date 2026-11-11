@@ -1166,3 +1166,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Registrado em `META_APP_REVIEW_RETORNO_2026-11-10.md` (seção 11/11): erros, regras fixas para o reenvio e roteiro de vídeo por permissão.
 - Nada mudou no Meta Developers, no código ou no deploy. Nenhum reenvio.
 - Próximo passo: conferir no código se o painel envia mensagem e edita/apaga comentário; montar a matriz por permissão e mostrar ao Rodrigo antes de qualquer envio.
+
+## 11/11/2026 (07h15) — Meta App Review: matriz por permissão e passagem ao ChatGPT (Claude)
+- Auditado o código: Basic e Publish existem e podem ser filmados; Messages e Comments só funcionam no automático, sem botão manual no painel, que é o que o revisor pediu.
+- Matriz e ordem de trabalho em `META_APP_REVIEW_RETORNO_2026-11-11.md`.
+- Próximo passo: Claude cria os dois recursos no painel (enviar Direct; responder/ocultar/apagar comentário) se o Rodrigo autorizar; ChatGPT prepara os textos em inglês; vídeo gravado na tela do Rodrigo.
