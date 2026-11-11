@@ -15,7 +15,7 @@ test("GitHub-dispatched jobs wait for a runner instead of claiming work complete
 });
 
 test("Old workflow reruns do not block a fresh dispatch of the same job", () => {
-  const workflow = readFileSync(new URL("../../.github/workflows/video-template-render.yml", import.meta.url),"utf8");
+  const workflow = readFileSync(new URL("../../.github/workflows-desligados/video-template-render.yml", import.meta.url),"utf8");
   assert.match(workflow,/group:\s*nexus-video-render-attempt-\$\{\{ github\.run_id \}\}/);
   assert.doesNotMatch(workflow,/group:\s*nexus-video-render-\$\{\{ github\.event\.client_payload\.job_id \}\}/);
   assert.match(workflow,/"progress":39/);
