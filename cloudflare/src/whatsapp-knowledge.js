@@ -22,7 +22,7 @@ const FLOW_ARTS = Object.freeze({
     "Não precisa dar a senha do Instagram: conecta pelo login oficial da Meta e pode desconectar quando quiser.",
     "Se a pessoa comparar com um app de agendamento (mLabs, Postgrain, Metricool, Buffer, Hootsuite) ou disser que já usa um: explique, sem falar mal, que esses apps só agendam e mostram números; a foto, o texto e a ideia continuam com ela. Na Flow Arts a IA cria os posts e ela só aprova no celular.",
     "Serve para qualquer negócio que tem Instagram: loja, salão, clínica, prestador de serviço, quem vende para empresas ou para pessoa física.",
-    "Pagamento no Pix. Sem fidelidade: para sair, é só avisar no WhatsApp.",
+    "Pagamento no Pix. Sem fidelidade: para sair, é só avisar no WhatsApp com 30 dias de antecedência.",
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo."
   ]),
   offers: Object.freeze([
