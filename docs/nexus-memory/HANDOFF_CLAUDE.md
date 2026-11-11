@@ -11,6 +11,14 @@
 
 
 
+
+## 2026-11-11 10h55 BRT — Deploy com segredos comprovado + robôs desligados
+
+- Deploy manual (workflow_dispatch, 11/11 ~10h47) com `cf-carry-secrets.mjs`: log `SECRETS_CARRIED from=4a9a6ccc to=6a2748c3 secrets=26` e `WORKER_SECRETS_PRESENT`; /api/health com openai e whatsapp configurados. Código de hoje no ar.
+- Auditoria dos workflows (pedido do Rodrigo, antes do teste da Meta): em 05-06/11 eram 200+ rodadas/dia (AutoFix 1.078 em 14 dias, CI 377, Overnight 371, Core Autonomy 261, Instagram Force 161).
+- Nesta branch: 16 workflows movidos para `.github/workflows-desligados/` (não rodam; ver LEIA-ME.md). CI só em pull_request. Ficam 7: ci, deploy, campanha-diaria (manual), agendar-pasta, art-compose, carousel-card-render, social-format-render. Testes: 977/977.
+- Próximo passo: merge com OK do Rodrigo. O Graphify não atualiza mais sozinho: atualizar pelo PC quando precisar.
+
 ## 2026-11-11 10h40 BRT — Deploy do PR #621 parou antes de publicar (sem efeito no site)
 
 - A API de upload de versões recusou `inherit` com `version_id` (erro 10057: só aceita "latest"). O passo falhou antes do `wrangler deploy`; site seguiu em 4a9a6ccc com segredos (/api/health OK).

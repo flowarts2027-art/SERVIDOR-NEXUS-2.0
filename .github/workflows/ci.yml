@@ -6,8 +6,7 @@ name: NEXUS CI
 # guardada em docs/legacy/ci-antigo-2026-10-13.yml.txt.
 
 on:
-  push:
-    branches: [main]
+  # 11/11/2026: só nos PRs (pedido do Rodrigo, menos rodadas). Todo merge na main passa por PR.
   pull_request:
 
 permissions:

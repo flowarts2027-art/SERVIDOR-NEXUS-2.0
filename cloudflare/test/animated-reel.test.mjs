@@ -134,7 +134,7 @@ test("painel do cliente esconde Reel gravando ou com falha; rotas, workflow e bo
   const index = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(index, /handleAnimatedReelMaster/);
   assert.match(index, /handleAnimatedReelCallback/);
-  const wf = fs.readFileSync(new URL("../../.github/workflows/reel-template-render.yml", import.meta.url), "utf8");
+  const wf = fs.readFileSync(new URL("../../.github/workflows-desligados/reel-template-render.yml", import.meta.url), "utf8");
   assert.match(wf, /types: \[reel-template-render\]/);
   assert.match(wf, /scripts\/reel\/render_reel\.py/);
   const html = fs.readFileSync(new URL("../../public/index.html", import.meta.url), "utf8");
