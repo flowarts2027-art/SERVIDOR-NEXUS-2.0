@@ -95,6 +95,7 @@ function postGroup(post) {
   const status = String(post.status || "");
   const approval = String(post.approvalStatus || "");
   if (post.hiddenFromPanel === true) return "";
+  if (missedPost(post)) return "agendados";
   if (DONE.has(status)) return "";
   if (status === "published") return "publicados";
   if (approval === "approved") return "agendados";
@@ -166,7 +167,14 @@ function mediaHtml(post, cls) {
 
 // Post em que o cliente escolhe o dia (carrossel pronto enviado pela Flow Arts).
 function needsDate(post) {
+  if (missedPost(post)) return true;
   return post.dateChoice === "client" && !["published", "publishing", "cancelled", "expired"].includes(String(post.status));
+}
+
+// Aprovado que perdeu o horário: dá para escolher outro dia (volta para agendado).
+function missedPost(post) {
+  return String(post.status || "") === "expired" && String(post.error || "") === "approved_post_missed"
+    && String(post.approvalStatus || "") === "approved";
 }
 
 function saoPauloParts(iso) {
@@ -1065,11 +1073,11 @@ async function saveSchedule(form) {
   const button = form.querySelector("button");
   button.disabled = true;
   try {
-    await api("/api/portal/posts/" + encodeURIComponent(id) + "/schedule", {
+    const result = await api("/api/portal/posts/" + encodeURIComponent(id) + "/schedule", {
       method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ date: String(data.get("date") || ""), time: String(data.get("time") || "") })
     });
-    toast("Dia salvo. Agora é só aprovar.");
+    toast(result?.status === "scheduled" ? "Dia salvo. O post voltou para agendado." : "Dia salvo. Agora é só aprovar.");
     await loadAll();
   } catch (error) {
     toast(error.message);

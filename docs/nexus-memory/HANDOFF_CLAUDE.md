@@ -1236,3 +1236,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Não mexi no servidor: `/api/master/missing-posts`, `/create`, o aviso por WhatsApp e a troca automática de post com erro continuam. "Cliente nunca fica sem post" segue ligada.
 - Testes: `agent-art` e `fill-missing` agora conferem que a tela não tem mais o quadro. Suíte 976/977; a única falha é `wrangler keeps production cron...` (cron de 1 minuto), que já falhava na main.
 - Depois do merge e do deploy: conferir `/api/master/self-test` com `credentialsValid: true`; se vier false, avisar o Rodrigo na hora. Merge aguardando o OK dele.
+
+## 2026-11-11 — "Publicar agora" de feed e "Salvar dia" em post expirado — branch `claude/publicar-agora-e-expirado`
+- Cliente afetado: `adimax-eduardo-soares`. Dois feeds com "Publicar agora" (`upload-feed-f48bcee7`, `upload-feed-ea073000`) ficaram em `scheduled` e não saíram. Stories saíram.
+- Causa (registros do PUBLISHER e `scheduled_jobs` no D1): o "Publicar agora" só põe o post no horário de agora. A rodada escolhe o feed **mais antigo** que está na fila (`ORDER BY scheduled_for ASC`), e não o que o cliente pediu. Às 19:32 UTC saiu `upload-feed-6a9d64d5`, de 10/11, no lugar do `ea073000`. Depois disso a regra de 90 min entre feeds bloqueou o resto (`minimum_spacing_not_reached`). O story tem fila própria, por isso saiu.
+- Correção: `executor.js` (`isPublishNowPost`) e `agent-runtime.js` põem o post com "Publicar agora" na frente da fila. No executor, esse post não espera os 90 min, mas a janela 8h–22h continua valendo. A marca é `publishNowByClient.at` igual a `scheduled_for`; se o post for reagendado depois, ela deixa de valer.
+- Salvar dia: `schedulePost` aceita `expired` + `approved_post_missed`. Com uma data futura, o post volta para `scheduled` + `approved`, com `retryCount` 0. Rascunho vencido sem aprovação continua travado. O painel do cliente (`client-lite.js`) agora mostra esses posts em "Agendados", com o "Salvar dia".
+- Testes: 2 novos; suíte 978/979. A única falha é `wrangler keeps production cron...`, que já falhava na main.
+- Pendente: merge com o OK do Rodrigo. Depois do deploy, o `f48bcee7` (o mais antigo) sai primeiro e o `ea073000` na rodada seguinte (cerca de 5 min depois).
