@@ -10,6 +10,9 @@ Pedido do Rodrigo em 05/11/2026.
 - Código: `cloudflare/src/client-name.js` e `client-display.js`.
 
 ## Regra 2: quadro "Postagens faltando"
+- **REMOVIDO da tela do Master a pedido do Rodrigo em 11/11/2026**: o quadro, o sino, o botão "Criar com agente (grátis)" e o "Enviar artes" do cartão não aparecem mais. Vale para o painel Master (`public/index.html`, `public/app.js`); o painel dos clientes não mudou.
+- **A regra "cliente nunca fica sem post" continua ligada**: a troca automática de post com erro segue no servidor. As rotas `/api/master/missing-posts` e `/create`, o aviso por WhatsApp e `missing-posts.js` continuam no código, só sem tela.
+- O que está abaixo descreve como o quadro funcionava até 10/11/2026.
 - Entra só cliente online. Arquivados, setup e o demo não entram.
 - Confere hoje, amanhã e depois, contra o plano de 2 posts + 2 stories por dia.
 - Publicado ou no caminho conta. Postagem com problema não conta, porque não vai sair.

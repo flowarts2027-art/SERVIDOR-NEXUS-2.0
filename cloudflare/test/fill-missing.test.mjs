@@ -127,12 +127,10 @@ test("dia que já passou é recusado", async () => {
   await assert.rejects(masterUpload(env, fillForm("story", "2026-11-05"), NOW), /fill_date/);
 });
 
-test("telas: cartão leva o que falta, página trava cliente e dia, e o quadro atualiza sozinho", () => {
+test("telas: página trava cliente e dia, e o Master não tem mais o quadro", () => {
   const app = publicFile("app.js");
   const artes = publicFile("artes.js");
-  assert.match(app, /&posts=\$\{Number\(item\.lacking\.posts\)\}&stories=\$\{Number\(item\.lacking\.stories\)\}/);
-  assert.match(app, /BroadcastChannel\("nexus-postagens"\)/);
-  assert.match(app, /pageshow/);
+  assert.doesNotMatch(app, /missing-posts|loadMissingPosts/);
   assert.match(artes, /BroadcastChannel\("nexus-postagens"\)\.postMessage/);
   assert.match(artes, /form\.set\("fill", "1"\)/);
   assert.match(artes, /error\.wrongWindow && !FILLING/);
