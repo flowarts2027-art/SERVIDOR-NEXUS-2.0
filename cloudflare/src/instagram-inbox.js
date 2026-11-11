@@ -63,14 +63,19 @@ async function connection(env, client, resolve) {
 }
 
 // Conversas do Direct: quem é a outra pessoa e a última mensagem.
-export async function listConversations({ request, token, igUserId }) {
+// O id salvo na conexão pode ser diferente do id da própria conta em "participants"
+// (visto na Adimax, 11/11/2026). Por isso a própria conta também é reconhecida pelo @.
+export async function listConversations({ request, token, igUserId, username = "" }) {
+  const mine = String(username || "").replace(/^@/, "").toLowerCase();
+  const isMe = p => String(p?.id || "") === igUserId
+    || (mine !== "" && String(p?.username || "").replace(/^@/, "").toLowerCase() === mine);
   const data = await graph(request, token, "me/conversations", {
     params: { platform: "instagram", fields: "id,updated_time,participants,messages.limit(1){message,from,created_time}", limit: CONVERSATION_LIMIT }
   });
   const out = [];
   for (const item of Array.isArray(data?.data) ? data.data : []) {
     const people = Array.isArray(item?.participants?.data) ? item.participants.data : [];
-    const other = people.find(p => String(p?.id || "") !== igUserId) || null;
+    const other = people.find(p => !isMe(p)) || null;
     if (!other?.id) continue;
     const last = Array.isArray(item?.messages?.data) ? item.messages.data[0] : null;
     out.push({
@@ -79,7 +84,7 @@ export async function listConversations({ request, token, igUserId }) {
       username: String(other.username || ""),
       updated: String(item.updated_time || ""),
       lastText: cleanText(last?.message, 140),
-      lastFromMe: String(last?.from?.id || "") === igUserId
+      lastFromMe: isMe(last?.from)
     });
   }
   return out;
@@ -158,7 +163,7 @@ export async function handleInstagramInboxPortal(request, env, url, client, { fe
   if (!path.startsWith("/api/portal/ig/")) return null;
   try {
     const conn = await connection(env, client, resolve);
-    const base = { request: fetchImpl, token: conn.token, igUserId: conn.igUserId };
+    const base = { request: fetchImpl, token: conn.token, igUserId: conn.igUserId, username: conn.username };
     if (path === "/api/portal/ig/conversations" && request.method === "GET") {
       return send({ ok: true, account: conn.username, conversations: await listConversations(base) });
     }
