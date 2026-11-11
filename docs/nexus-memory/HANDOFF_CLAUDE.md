@@ -1184,3 +1184,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Incidente visto às 10h20: flowarts.com.br/ mostrava o painel Master durante o deploy de PR #615; após o deploy terminar, voltou ao site. Causa não investigada.
 - Pendente com o Rodrigo (não alterado): regra de cancelamento (home "é só avisar" x termos "30 dias"); política de privacidade não cita dados de mapas usados na prospecção; nome do perfil @flowarts2026; Bing Webmaster/Search Console; páginas de nicho seguem noindex (decisão de 02/11).
 - Deploy: não feito. Merge só com OK do Rodrigo.
+
+## 2026-11-11 — Cabeçalhos de segurança no resto do site — branch `claude/seo-headers-20261111`
+- PR #616 (SEO do site) foi mesclado com OK do Rodrigo; deploy 43005616239 success; home, /privacidade, /termos e sitemap conferidos no ar.
+- Faltava: /privacidade, /termos e demais arquivos estáticos saíam pelo `env.ASSETS.fetch(request)` final, sem os cabeçalhos. Agora passam por `secureHeaders()` (nosniff, referrer-policy, HSTS sem includeSubDomains, charset no HTML). `asset()` mantém o código dentro dela porque `portal-asset-routing.test.mjs` avalia a função sozinha.
+- Testes: 977/977. Merge aguardando OK do Rodrigo.
+- Pendente com o Rodrigo: regra de cancelamento; trecho de privacidade sobre dados de mapas.

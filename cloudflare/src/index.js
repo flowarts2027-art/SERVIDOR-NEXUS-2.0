@@ -115,6 +115,16 @@ function requireAuth(request, env) {
   return authorized(request, env) ? null : json({ error: "unauthorized" }, 401);
 }
 
+// Cabeçalhos básicos de segurança (auditoria SEO de 11/11/2026) e charset nas páginas HTML.
+function secureHeaders(source) {
+  const headers = new Headers(source);
+  headers.set("x-content-type-options", "nosniff");
+  headers.set("referrer-policy", "strict-origin-when-cross-origin");
+  headers.set("strict-transport-security", "max-age=31536000");
+  if (/^text\/html\s*$/i.test(headers.get("content-type") || "")) headers.set("content-type", "text/html; charset=utf-8");
+  return headers;
+}
+
 async function asset(env, request, pathname) {
   if (!env.ASSETS) return json({ error: "assets_binding_unavailable" }, 503);
   const target = new URL(request.url);
@@ -124,8 +134,8 @@ async function asset(env, request, pathname) {
   target.pathname = /^\/(portal|site)\.html$/.test(pathname) ? pathname.slice(0, -5) : pathname;
   target.search = "";
   const response = await env.ASSETS.fetch(new Request(target.toString(), request));
+  // Mesmo conteúdo de secureHeaders(), escrito aqui porque o teste de rotas avalia asset() sozinha.
   const headers = new Headers(response.headers);
-  // Cabeçalhos básicos de segurança (auditoria SEO de 11/11/2026) e charset nas páginas HTML.
   headers.set("x-content-type-options", "nosniff");
   headers.set("referrer-policy", "strict-origin-when-cross-origin");
   headers.set("strict-transport-security", "max-age=31536000");
@@ -1231,7 +1241,10 @@ export default {
       }, 501);
     }
 
-    if (env.ASSETS) return env.ASSETS.fetch(request);
+    if (env.ASSETS) {
+      const response = await env.ASSETS.fetch(request);
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers: secureHeaders(response.headers) });
+    }
 
     return json({
       ok: true,
