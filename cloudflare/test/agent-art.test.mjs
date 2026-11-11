@@ -212,10 +212,9 @@ test("marca salva: monta no GitHub, conta como no caminho e volta com o selo do 
   assert.equal(final.payload.autoReplaced, undefined);
 });
 
-test("telas: botão no quadro, link com o dia, selo no painel e página em 2 posts + 2 stories", () => {
-  const app = publicFile("app.js");
-  assert.match(app, /Criar com agente \(grátis\)/);
-  assert.match(app, /artes\.html\?cliente=\$\{encodeURIComponent\(item\.clientId\)\}&dia=\$\{encodeURIComponent\(item\.date\)\}/);
+// O quadro "Postagens faltando" saiu do Master a pedido do Rodrigo em 11/11/2026.
+test("telas: selo no painel do cliente e página em 2 posts + 2 stories", () => {
+  assert.doesNotMatch(publicFile("app.js"), /Criar com agente/);
   assert.match(publicFile("client-lite.js"), /Criada pelo agente/);
   assert.match(publicFile("artes.html"), /2 posts \+ 2 stories/);
   assert.doesNotMatch(publicFile("artes.html"), /3 primeiras/);

@@ -1229,3 +1229,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Decisão do Rodrigo (11/11): cancelamento com aviso de 30 dias, igual aos Termos. Site (plano, FAQ e JSON-LD) e `whatsapp-knowledge.js` atualizados.
 - Privacidade: nova seção "Empresas encontradas em mapas públicos" (OpenStreetMap guardado; Google mostrado e não guardado, salvo quem é chamado e o código "não serve"; envio manual pelo WhatsApp; legítimo interesse, LGPD art. 7º, IX; pedido para parar marca a empresa). Google e OpenStreetMap incluídos em "Com quem os dados passam". Data de atualização 11/11/2026. Fatos conferidos em `prospects.js`, `captador.js` e `daily-prospects.js`.
 - Testes: 977/977. Merge aguardando o Rodrigo ler o texto.
+
+## 2026-11-11 — Quadro "Postagens faltando" removido do Master — branch `claude/remover-quadro-faltando-20261111`
+- Pedido do Rodrigo (11/11/2026): tirar do painel Master o quadro vermelho com "Criar com agente (grátis)" e "Enviar artes".
+- Feito: saíram o quadro, o sino, o aviso de status, o JS que os alimentava (atualização por minuto, BroadcastChannel, botão do agente) e o CSS. Painel dos clientes intacto.
+- Não mexi no servidor: `/api/master/missing-posts`, `/create`, o aviso por WhatsApp e a troca automática de post com erro continuam. "Cliente nunca fica sem post" segue ligada.
+- Testes: `agent-art` e `fill-missing` agora conferem que a tela não tem mais o quadro. Suíte 976/977; a única falha é `wrangler keeps production cron...` (cron de 1 minuto), que já falhava na main.
+- Depois do merge e do deploy: conferir `/api/master/self-test` com `credentialsValid: true`; se vier false, avisar o Rodrigo na hora. Merge aguardando o OK dele.
