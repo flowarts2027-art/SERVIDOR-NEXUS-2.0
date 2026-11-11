@@ -1190,3 +1190,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Faltava: /privacidade, /termos e demais arquivos estáticos saíam pelo `env.ASSETS.fetch(request)` final, sem os cabeçalhos. Agora passam por `secureHeaders()` (nosniff, referrer-policy, HSTS sem includeSubDomains, charset no HTML). `asset()` mantém o código dentro dela porque `portal-asset-routing.test.mjs` avalia a função sozinha.
 - Testes: 977/977. Merge aguardando OK do Rodrigo.
 - Pendente com o Rodrigo: regra de cancelamento; trecho de privacidade sobre dados de mapas.
+
+## 2026-11-11 — Cancelamento com 30 dias e privacidade dos dados de mapas — branch `claude/cancelamento-privacidade-20261111`
+- PR #618 (cabeçalhos) mesclado com OK do Rodrigo; deploy success; cabeçalhos conferidos no ar em /, /privacidade e /termos.
+- Decisão do Rodrigo (11/11): cancelamento com aviso de 30 dias, igual aos Termos. Site (plano, FAQ e JSON-LD) e `whatsapp-knowledge.js` atualizados.
+- Privacidade: nova seção "Empresas encontradas em mapas públicos" (OpenStreetMap guardado; Google mostrado e não guardado, salvo quem é chamado e o código "não serve"; envio manual pelo WhatsApp; legítimo interesse, LGPD art. 7º, IX; pedido para parar marca a empresa). Google e OpenStreetMap incluídos em "Com quem os dados passam". Data de atualização 11/11/2026. Fatos conferidos em `prospects.js`, `captador.js` e `daily-prospects.js`.
+- Testes: 977/977. Merge aguardando o Rodrigo ler o texto.
