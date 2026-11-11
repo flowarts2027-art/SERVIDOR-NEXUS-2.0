@@ -97,6 +97,14 @@ jobs:
           python3 scripts/social/molduras_upload.py public/molduras
           test -s public/molduras/molduras.json
 
+      # 11/11/2026: o wrangler herda os segredos da última versão criada. Se ela estiver
+      # sem segredos, cria uma versão carregadora (não publicada) que herda da versão no ar.
+      - name: Make sure the latest Worker version carries the secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+        run: node .github/scripts/cf-carry-secrets.mjs servidor-nexus
+
       - name: Deploy Worker and public assets
         working-directory: cloudflare
         env:

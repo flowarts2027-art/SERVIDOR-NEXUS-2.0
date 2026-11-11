@@ -9,6 +9,15 @@
 - Próximo passo: depois do merge, abrir o painel real e conferir Início, Posts e Números.
 
 
+
+## 2026-11-11 10h30 BRT — Causa real dos segredos sumindo e correção do deploy
+
+- O PR #620 (wrangler 4.141.0) não resolveu: o deploy seguinte saiu sem segredos e o Build da Cloudflare publicou uma versão vazia (site 404). Rodrigo reverteu para 4a9a6ccc no painel; /api/health OK.
+- Causa comprovada pela API de versões: o wrangler herda os segredos da ÚLTIMA versão criada, não da que está no ar. Desde 10/11 o Build da Cloudflare (ligado ao GitHub) criava versões vazias a cada merge, e cada deploy herdava zero segredos.
+- Feito com OK do Rodrigo: Build da Cloudflare desconectado do GitHub (agora só o GitHub Actions publica).
+- Nesta branch: `.github/scripts/cf-carry-secrets.mjs` roda antes do `wrangler deploy`. Se a última versão não tem segredos, sobe uma versão carregadora não publicada que herda os segredos da versão no ar (binding `inherit` com `version_id`). Testado com Cloudflare simulada nos 3 casos.
+- Próximo passo: merge com OK do Rodrigo; conferir /api/health (openai.shared=true) e o log "SECRETS_CARRIED". Depois: reduzir os workflows (auditoria de 11/11 nesta mesma conversa).
+
 ## 2026-11-11 10h BRT — Segredos do Worker apagados (login do Master quebrado)
 
 - Sintoma: login do Master dava "Usuário ou senha inválidos"; /api/health mostrava openai e whatsapp sem configuração.
