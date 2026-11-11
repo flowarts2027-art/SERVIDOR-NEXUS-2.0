@@ -13,7 +13,7 @@ const DEMO_BLOCKED = "Isto é uma demonstração. No painel de verdade, este bot
 const MODO_TESTE_META = true;
 const IG_TESTER_INVITES_URL = "https://www.instagram.com/accounts/manage_access/";
 
-function testerStepsHtml(connectLabel = "Conectar Instagram") {
+function testerStepsHtml(connectLabel = "Conectar Instagram / Connect Instagram") {
   if (!MODO_TESTE_META) return `<button type="button" class="btn btn-primary" data-connect>${connectLabel}</button>`;
   return `<ol class="tester-steps">
       <li><strong>Aceite o convite</strong><span>Abra, entre na aba <b>Convites de testador</b> e toque em <b>Aceitar</b>.</span>
@@ -198,15 +198,15 @@ function actionsButtonsHtml(post) {
   if (postGroup(post) === "agendados" && !["published", "publishing"].includes(String(post.status))) {
     const id = escapeHtml(post.id);
     return `<div class="actions">
-      <button type="button" class="btn btn-ok" data-publish-now="${id}">Publicar agora</button>
-      <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
-      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
+      <button type="button" class="btn btn-ok" data-publish-now="${id}">Publicar agora / Publish now</button>
+      <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste / Request changes</button>
+      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir / Delete</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
       <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: na imagem 2, a agenda está fechada; ela precisa estar aberta."></textarea>
       <p class="muted">O post volta para "esperando aprovação" e só sai depois que você aprovar de novo.</p>
-      <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
+      <button type="submit" class="btn btn-primary">Enviar pedido de ajuste / Send request</button>
     </form>`;
   }
   if (postGroup(post) === "publicados") {
@@ -222,15 +222,15 @@ function actionsButtonsHtml(post) {
   const ready = Boolean(postImage(post)) && !carouselIncomplete(post) && reviewed && !dateMissing;
   const waitMsg = dateMissing ? "Escolha o dia primeiro" : reviewed ? "Espere todas as imagens ficarem prontas" : "Espere a revisão automática terminar";
   return `<div class="actions">
-      ${canDownload() ? `<button type="button" class="btn btn-ok btn-download" data-approve-download="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>⬇ Aprovar e baixar</button>` : ""}
-      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar</button>
-      <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste</button>
-      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir</button>
+      ${canDownload() ? `<button type="button" class="btn btn-ok btn-download" data-approve-download="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>⬇ Aprovar e baixar / Approve and download</button>` : ""}
+      <button type="button" class="btn btn-ok" data-approve="${id}" ${ready ? "" : `disabled title="${waitMsg}"`}>Aprovar / Approve</button>
+      <button type="button" class="btn btn-soft" data-revise="${id}">Pedir ajuste / Request changes</button>
+      <button type="button" class="btn btn-soft btn-cancel" data-delete-post="${id}">Excluir / Delete</button>
     </div>
     <form class="revision" data-revision-form="${id}" hidden>
       <label for="rev-${id}">O que você quer mudar?</label>
       <textarea id="rev-${id}" name="instructions" required placeholder="Ex.: use uma foto mais clara e fale do nosso horário de sábado."></textarea>
-      <button type="submit" class="btn btn-primary">Enviar pedido de ajuste</button>
+      <button type="submit" class="btn btn-primary">Enviar pedido de ajuste / Send request</button>
     </form>`;
 }
 
@@ -710,12 +710,12 @@ function renderAccount() {
   $("#instagram-box").innerHTML = `<h2>Instagram</h2>
     <div class="ig-row">
       <div>
-        <strong>${ig.connected ? "@" + escapeHtml(ig.username || String(state.client?.instagram || "").replace(/^@/, "")) : "Não conectado"}</strong>
+        <strong>${ig.connected ? "@" + escapeHtml(ig.username || String(state.client?.instagram || "").replace(/^@/, "")) : "Não conectado / Not connected"}</strong>
         <p class="muted" style="margin:2px 0 0">${ig.connected
-          ? (ig.expiresAt ? "Conexão válida até " + escapeHtml(formatDate(ig.expiresAt, false)) : "Conectado")
+          ? (ig.expiresAt ? "Conexão válida até " + escapeHtml(formatDate(ig.expiresAt, false)) : "Conectado / Connected")
           : "Conecte para os agentes postarem por você."}</p>
       </div>
-      ${ig.connected ? `<button type="button" class="btn btn-soft" data-connect>Reconectar</button>` : ""}
+      ${ig.connected ? `<button type="button" class="btn btn-soft" data-connect>Reconectar / Reconnect</button>` : ""}
     </div>
     ${ig.connected ? "" : testerStepsHtml()}`;
   const link = $("#support-link");

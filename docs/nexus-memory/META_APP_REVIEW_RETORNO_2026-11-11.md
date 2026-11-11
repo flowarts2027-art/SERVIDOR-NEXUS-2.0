@@ -47,3 +47,9 @@ Conta usada: uma conta de teste/testador combinada com o Rodrigo. O Rodrigo faz 
 4. **instagram_business_manage_comments:** bloco "Comments" → "Comment" num post → "Reply" num comentário → "Hide" e depois "Delete" → abrir o post no app do Instagram e mostrar o estado final. No texto, explicar que a API do Instagram não permite editar comentário; por isso o ciclo é criar → ocultar → apagar.
 5. Insights já aprovada: não regravar.
 Legendas no vídeo explicando cada passo, em inglês.
+
+## 11/11/2026 (07h45) — Textos revisados e botões em inglês
+- O ChatGPT escreveu as 4 justificativas; o Claude revisou contra o código e o Rodrigo recebeu as versões finais no chat (basic, content_publish, manage_messages, manage_comments). Ajustes principais: basic cita só `id, username, account_type` e diz que todas as outras funções dependem do ID; publish usa "delete" (o painel não tem "recusar") e diz que imagem e legenda saem iguais; messages e comments citam também a resposta automática por palavra-chave, que deve aparecer no vídeo.
+- Recomendação: tirar do rascunho `instagram_manage_comments` (login pelo Facebook, não usado) e `public_profile`, se o formulário permitir. Insights já aprovada: sem texto novo.
+- Botões do painel do cliente com inglês ao lado (Aprovar / Approve, Publicar agora / Publish now, Pedir ajuste / Request changes, Excluir / Delete, Conectar Instagram / Connect Instagram, Reconectar / Reconnect). `client-lite.js` v=147. Testes 977/977.
+- Vídeo: o Rodrigo vai gravar à noite de 11/11, com calma. No vídeo do Direct e dos comentários, mostrar também a resposta automática por palavra-chave.
