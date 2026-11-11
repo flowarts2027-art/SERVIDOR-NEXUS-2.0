@@ -1171,3 +1171,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Auditado o código: Basic e Publish existem e podem ser filmados; Messages e Comments só funcionam no automático, sem botão manual no painel, que é o que o revisor pediu.
 - Matriz e ordem de trabalho em `META_APP_REVIEW_RETORNO_2026-11-11.md`.
 - Próximo passo: Claude cria os dois recursos no painel (enviar Direct; responder/ocultar/apagar comentário) se o Rodrigo autorizar; ChatGPT prepara os textos em inglês; vídeo gravado na tela do Rodrigo.
+
+## 11/11/2026 (07h40) — Painel: Direct manual e Comentários (Claude)
+- Criados no painel do cliente (aba Conta) o envio manual de Direct e a tela de Comentários (comentar, responder, ocultar/mostrar, apagar). Rótulos PT/EN.
+- Arquivos: `cloudflare/src/instagram-inbox.js`, `cloudflare/src/portal.js`, `public/ig-tools.js`, `public/portal.html`, `cloudflare/test/instagram-inbox.test.mjs`. Testes 977/977.
+- Sem merge e sem deploy até o OK do Rodrigo. O merge pode disparar deploy automático (não confirmado após a volta do GitHub).
+- Próximo: ChatGPT reescreve os textos do App Review (sem enviar) e guia a gravação pelo roteiro em `META_APP_REVIEW_RETORNO_2026-11-11.md`.

@@ -3,6 +3,7 @@ import { handleCaptadorPortal } from "./captador.js";
 import { handleAdsPortal } from "./ads.js";
 import { handleUpgradesPortal } from "./upgrades.js";
 import { handleClientAutoReplyPortal } from "./client-autoreply.js";
+import { handleInstagramInboxPortal } from "./instagram-inbox.js";
 import { handleLibrary } from "./art-library.js";
 import { schedulePost, MANUAL_CAROUSEL_MESSAGES } from "./manual-carousel.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
@@ -703,6 +704,9 @@ export async function handlePortalApi(request, env, url, ctx) {
   // Resposta automática de comentários do próprio cliente (22/10).
   const autoReplyResponse = await handleClientAutoReplyPortal(request, env, url, client);
   if (autoReplyResponse) return autoReplyResponse;
+  // Direct e comentários feitos pelo próprio cliente no painel (11/11, App Review da Meta).
+  const inboxResponse = await handleInstagramInboxPortal(request, env, url, client);
+  if (inboxResponse) return inboxResponse;
   const captadorResponse = await handleCaptadorPortal(request, env, url, client);
   if (captadorResponse) return captadorResponse;
   const adsResponse = await handleAdsPortal(request, env, url, client);
