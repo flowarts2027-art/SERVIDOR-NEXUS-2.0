@@ -455,6 +455,15 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
       try {
         await upload(env, form);
         result.sent.push(piece.key);
+        // Preserve the original creative descriptors for later performance analysis.
+        // Flow Arts only; metadata recording never blocks a successful upload.
+        if (clientId === "primeiro-teste") {
+          const creative = { clientId, date, pieceKey: piece.key, type: piece.type, time: piece.time,
+            cards: piece.cards.map((card, index) => ({ index: index + 1, prompt: String(card.prompt || "").slice(0, 2000), aspect: card.aspect,
+              file: `${clientId}-${date}-${piece.key}-${index + 1}.jpg` })), createdAt: now.toISOString() };
+          await writeState(env, "flowarts-creative", date, piece.key, creative).catch(error =>
+            console.warn("flowarts_creative_metadata_failed", String(error?.message || error).slice(0, 120)));
+        }
       } catch (error) {
         if (String(error?.message || error) !== "slot_taken") throw error;
         result.skipped.push(piece.key + ":ja_tinha_post");
