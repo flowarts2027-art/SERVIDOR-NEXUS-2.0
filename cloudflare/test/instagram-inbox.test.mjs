@@ -98,3 +98,14 @@ test("lista comentários com respostas e marca ocultos", async () => {
   assert.equal(body.posts[0].comments[0].hidden, true);
   assert.equal(body.posts[0].comments[0].replies[0].id, "r1");
 });
+
+test("id da conexão diferente do id da própria conta: a outra pessoa é achada pelo @", async () => {
+  const mineId = "17841442699814087";
+  const { fetchImpl } = fakeGraph([["me/conversations", { data: [
+    { id: "c1", participants: { data: [{ id: mineId, username: "Eduardo.SoaresAdimax" }, { id: "555", username: "nexusai_system" }] }, messages: { data: [{ message: "Oi", from: { id: mineId, username: "eduardo.soaresadimax" } }] } },
+    { id: "c2", participants: { data: [{ id: mineId, username: "eduardo.soaresadimax" }, { id: "777", username: "joao" }] }, messages: { data: [{ message: "Olá", from: { id: "777", username: "joao" } }] } },
+    { id: "c3", participants: { data: [{ id: mineId, username: "eduardo.soaresadimax" }] }, messages: { data: [] } }
+  ] }]]);
+  const out = await listConversations({ request: fetchImpl, token: "t", igUserId: "111", username: "@eduardo.soaresadimax" });
+  assert.deepEqual(out.map(c => [c.recipientId, c.username, c.lastFromMe]), [["555", "nexusai_system", true], ["777", "joao", false]]);
+});
