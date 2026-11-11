@@ -1160,3 +1160,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 6. Confira no ar o portal, o `client-lite.js` e o ZIP do helper. Suba a `main` para o GitLab (`git push gitlab main:main`).
 - Os arquivos gerados no deploy ficam sem commit na pasta. Eles não fazem parte do código.
 - Esta pasta usa finais de linha do Linux (`core.autocrlf=false`), e assim o teste do cron passa.
+
+## 11/11/2026 — Meta App Review: erro de preenchimento registrado (Claude)
+- Rodrigo informou que a Meta não aprovou todas as permissões e que o formulário anterior foi preenchido errado pelo Claude. O Claude reconhece os erros de texto (Basic com texto de comentários; duplicações e trechos de conversa em Messages, Publish e Insights).
+- Registrado em `META_APP_REVIEW_RETORNO_2026-11-10.md` (seção 11/11): erros, regras fixas para o reenvio e roteiro de vídeo por permissão.
+- Nada mudou no Meta Developers, no código ou no deploy. Nenhum reenvio.
+- Próximo passo: conferir no código se o painel envia mensagem e edita/apaga comentário; montar a matriz por permissão e mostrar ao Rodrigo antes de qualquer envio.

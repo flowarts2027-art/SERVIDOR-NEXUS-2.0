@@ -67,3 +67,29 @@ Referências técnicas verificadas: `agendamentos/README.md`, `.github/workflows
 
 ## Limites deste registro
 Esta é a **orientação solicitada para a memória compartilhada**, não resultado de auditoria do painel Meta. Não foi acessado o feedback original do App Review nem o vídeo anterior nesta sessão. Não houve alteração funcional, merge de código, deploy, publicação ou envio a terceiros. O repositório é público: não adicionar credenciais, usuários/senhas de teste, capturas privadas, tokens ou mensagens de clientes.
+
+## 2026-11-11 — Registro do Claude: erro de preenchimento assumido e regras para o reenvio
+
+**Origem → destino:** Rodrigo (chat com Claude) → Claude Code e ChatGPT Work.
+**Fato relatado pelo Rodrigo:** a Meta não autorizou todas as permissões e o formulário anterior foi preenchido errado pelo Claude.
+**O Claude reconhece:** os textos do envio anterior tinham erros de preenchimento já comprovados no checkpoint de 10/11 acima:
+- a justificativa de `instagram_business_basic` falava de comentários (`manage_comments`), e não do acesso básico à conta;
+- os textos de Messages, Content Publish e Insights tinham trechos duplicados e pedaços de conversa colados;
+- Messages e Comments descreviam o funcionamento de um jeito diferente do painel real.
+
+**O que não foi só texto:** Messages, Content Publish e Comments também foram recusadas porque o vídeo não mostrou o fluxo completo (ver notas literais acima). Corrigir o texto sozinho não resolve: precisa vídeo novo.
+
+### Regras fixas para o próximo envio (valem para Claude e ChatGPT)
+1. Um texto próprio para cada permissão. Nunca copiar texto de uma permissão para outra.
+2. Revisar campo por campo antes de salvar: sem duplicação, sem frase de conversa, em inglês, descrevendo só o que o Nexus faz de verdade (conferido no código e no painel).
+3. Um trecho de vídeo por permissão, seguindo exatamente o pedido do revisor:
+   - **Messages:** escolher a conta → enviar mensagem pelo painel do Nexus → mostrar a mesma mensagem chegando no app do Instagram.
+   - **Content Publish:** montar e publicar um post pelo Nexus → abrir o Instagram e mostrar o mesmo post (mesma legenda e mesma imagem).
+   - **Comments:** comentar pelo Nexus → editar o comentário → apagar → mostrar o resultado final no app do Instagram. Se o Nexus não tiver editar/apagar comentário no painel, avisar o Rodrigo antes (precisa criar a função ou tirar a permissão do pedido).
+   - **Basic:** mostrar o login da Meta, a autorização e os dados da conta aparecendo no painel; explicar por que o Nexus precisa disso.
+4. Interface em inglês e legendas explicativas no vídeo.
+5. Mostrar o formulário completo ao Rodrigo **antes** de enviar. Nada é reenviado sem o OK dele.
+6. Publicação, mensagem ou comentário reais para o vídeo: só com o OK do Rodrigo, numa conta de teste combinada com ele.
+
+**Estado em 11/11:** nada alterado no Meta Developers, nenhum reenvio, nenhum vídeo gravado. Rascunho `submission_id=1659678365807857` segue sem envio.
+**Próximo passo exato:** conferir no código se o painel tem enviar mensagem e editar/apagar comentário; depois montar a matriz por permissão (texto + roteiro do vídeo) e mostrar ao Rodrigo.
