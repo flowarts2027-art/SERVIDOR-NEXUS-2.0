@@ -1177,3 +1177,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Arquivos: `cloudflare/src/instagram-inbox.js`, `cloudflare/src/portal.js`, `public/ig-tools.js`, `public/portal.html`, `cloudflare/test/instagram-inbox.test.mjs`. Testes 977/977.
 - Sem merge e sem deploy até o OK do Rodrigo. O merge pode disparar deploy automático (não confirmado após a volta do GitHub).
 - Próximo: ChatGPT reescreve os textos do App Review (sem enviar) e guia a gravação pelo roteiro em `META_APP_REVIEW_RETORNO_2026-11-11.md`.
+## 2026-11-11 — SEO do site (auditoria claude-seo) — branch `claude/seo-site-20261111`
+- Pedido do Rodrigo: aplicar as correções da auditoria SEO de flowarts.com.br (nota 64/100).
+- Feito: título e descrição com "postagem automática" (regra do teste de 02/11 mantida); frase de abertura com a palavra-chave; H2 "A Flow Arts cuida do seu Instagram"; FAQ "De onde vêm os contatos?" removida (sobra do Captador); JS e CSS mortos do mural de classificados removidos; preço da Resposta Automática no JSON-LD corrigido para 39.99 (igual a `plans.js` e à página); nó WebSite no JSON-LD; imagem do schema = flowarts-share.jpg; nome acessível no logo do topo; canonical e descrição em /privacidade e /termos; links internos sem `.html`; sitemap sem changefreq/priority; cabeçalhos nosniff, referrer-policy, HSTS (sem includeSubDomains) e charset nas respostas de `asset()`.
+- Testes: 967/968. A falha "wrangler keeps production cron..." já falha na `main` sem estas mudanças.
+- Incidente visto às 10h20: flowarts.com.br/ mostrava o painel Master durante o deploy de PR #615; após o deploy terminar, voltou ao site. Causa não investigada.
+- Pendente com o Rodrigo (não alterado): regra de cancelamento (home "é só avisar" x termos "30 dias"); política de privacidade não cita dados de mapas usados na prospecção; nome do perfil @flowarts2026; Bing Webmaster/Search Console; páginas de nicho seguem noindex (decisão de 02/11).
+- Deploy: não feito. Merge só com OK do Rodrigo.
