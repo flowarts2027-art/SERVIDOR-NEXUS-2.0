@@ -3,7 +3,8 @@ import { enqueue } from "./scheduler.js";
 
 // Painel do cliente: "Publicar agora" para um post APROVADO que ainda não saiu.
 // Não chama a Meta aqui: só põe o post no horário de agora e pede uma rodada do
-// Publisher, que continua com todos os fiscais (janela 8h–22h, 90 min entre posts).
+// Publisher. Ele passa na frente dos atrasados e não espera os 90 min entre posts
+// (executor.js, isPublishNowPost), mas continua com a janela 8h–22h e os fiscais.
 
 function parse(text) {
   try { const v = JSON.parse(text || "{}"); return v && typeof v === "object" ? v : {}; } catch { return {}; }

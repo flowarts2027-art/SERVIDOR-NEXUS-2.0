@@ -88,7 +88,8 @@ async function duePosts(env, clientId, nowIso) {
        AND json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.qualityGates.designer') = 'approved'
        AND scheduled_for IS NOT NULL
        AND scheduled_for <= ?2
-     ORDER BY scheduled_for ASC
+     ORDER BY CASE WHEN json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishNowByClient.at') = scheduled_for THEN 0 ELSE 1 END,
+              scheduled_for ASC
      LIMIT 8`
   ).bind(clientId, nowIso).all();
   return result?.results || [];
@@ -166,6 +167,13 @@ export function isStoryPost(payload = {}) {
   return String(payload?.creativeFeatures?.requestedFormat || "").toLowerCase() === "story";
 }
 
+// 11/11/2026: "Publicar agora" do cliente põe o mesmo horário em scheduled_for e em
+// publishNowByClient.at. Se o post foi reagendado depois, os dois ficam diferentes.
+export function isPublishNowPost(row = {}, payload = {}) {
+  const at = String(payload?.publishNowByClient?.at || "");
+  return Boolean(at) && at === String(row?.scheduled_for || "");
+}
+
 // Em cada rodada: no máximo 1 post do feed (respeitando os 90 min) e 1 story (sem esperar o feed).
 export function canPublishInSweep({ story = false, gateOk = true, done = { feed: 0, story: 0 } } = {}) {
   if (story) return Number(done.story || 0) === 0;
@@ -195,7 +203,10 @@ async function runPublisherSweep(env, clientId, now, budget = createPublishBudge
   // 23/10/2026: story não conta nos 90 min entre posts do feed e não espera por eles.
   // Antes, o story das 10h30 saía e travava o post do feed do mesmo horário.
   const hasStory = rows.some(row => isStoryPost(parseJson(row.payload_json, {})));
-  if (!gate.ok && !(hasStory && isPublishingWindow(now))) {
+  // 11/11/2026: feed com "Publicar agora" não espera os 90 min (o painel promete até 15 min).
+  // Antes, ele ficava atrás de posts mais antigos e da espera de 90 min e não saía.
+  const hasPublishNow = rows.some(row => isPublishNowPost(row, parseJson(row.payload_json, {})));
+  if (!gate.ok && !((hasStory || hasPublishNow) && isPublishingWindow(now))) {
     return { ...summary, blockedReason: gate.reason };
   }
   if (!gate.ok) summary.blockedReason = gate.reason;
@@ -204,7 +215,8 @@ async function runPublisherSweep(env, clientId, now, budget = createPublishBudge
   for (const row of rows) {
     const payload = parseJson(row.payload_json, {});
     const story = isStoryPost(payload);
-    if (!canPublishInSweep({ story, gateOk: gate.ok, done })) continue;
+    const gateOk = gate.ok || (!story && isPublishNowPost(row, payload));
+    if (!canPublishInSweep({ story, gateOk, done })) continue;
     const format = String(payload?.creativeFeatures?.requestedFormat || "post").toLowerCase();
     if (!canPublish(budget, clientId, format)) continue;
     // Última trava: arte que não serve para o formato não sai, e aparece no quadro do Master.

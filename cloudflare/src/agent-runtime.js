@@ -1312,7 +1312,9 @@ async function runPublisher(env,client,options) {
        AND (client_id NOT IN ('globalplay-streaming','ragnar-one')
          OR date(scheduled_for,'-3 hours')=date(?2,'-3 hours'))
        AND COALESCE(json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.imageUrl'),'')<>''
-     ORDER BY COALESCE(scheduled_for,created_at) ASC LIMIT 20`
+     -- "Publicar agora" do cliente passa na frente dos posts atrasados.
+     ORDER BY CASE WHEN json_extract(CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END,'$.publishNowByClient.at')=scheduled_for THEN 0 ELSE 1 END,
+       COALESCE(scheduled_for,created_at) ASC LIMIT 20`
   ).bind(client.id,new Date().toISOString()).all();
 
   const recentPublished=await ledgerRows(env,client.id,240);

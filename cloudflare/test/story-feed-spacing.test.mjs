@@ -27,3 +27,17 @@ test("contagem dos 90 min ignora stories publicados", async () => {
   const src = await readFile(new URL("../src/executor.js", import.meta.url), "utf8");
   assert.match(src, /requestedFormat'\),''\)\)<>'story'/);
 });
+
+test("Publicar agora: feed do cliente não espera os 90 min e passa na frente dos atrasados", async () => {
+  const { isPublishNowPost } = await import("../src/executor.js");
+  const at = "2026-11-11T19:28:22.616Z";
+  assert.equal(isPublishNowPost({ scheduled_for: at }, { publishNowByClient: { at } }), true);
+  // Reagendado depois do clique: volta a respeitar os 90 min.
+  assert.equal(isPublishNowPost({ scheduled_for: "2026-11-12T12:00:00.000Z" }, { publishNowByClient: { at } }), false);
+  assert.equal(isPublishNowPost({ scheduled_for: at }, {}), false);
+  const src = await readFile(new URL("../src/executor.js", import.meta.url), "utf8");
+  assert.match(src, /ORDER BY CASE WHEN json_extract\([^\n]*'\$\.publishNowByClient\.at'\) = scheduled_for THEN 0 ELSE 1 END/);
+  assert.match(src, /gate\.ok \|\| \(!story && isPublishNowPost\(row, payload\)\)/);
+  const runtime = await readFile(new URL("../src/agent-runtime.js", import.meta.url), "utf8");
+  assert.match(runtime, /ORDER BY CASE WHEN json_extract\([^\n]*'\$\.publishNowByClient\.at'\)=scheduled_for THEN 0 ELSE 1 END/);
+});

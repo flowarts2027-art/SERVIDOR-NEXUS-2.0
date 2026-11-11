@@ -123,9 +123,21 @@ export async function schedulePost(env, client, postId, date, time, now = new Da
   const scheduledFor = brasiliaToIso(date, time);
   if (!scheduledFor) throw new Error("schedule_invalid");
   if (new Date(scheduledFor).getTime() < now.getTime() + 10 * 60 * 1000) throw new Error("schedule_too_soon");
-  const row = await env.DB.prepare("SELECT id,status FROM post_ledger WHERE id=?1 AND client_id=?2 LIMIT 1").bind(String(postId), String(client.id)).first();
+  const row = await env.DB.prepare("SELECT id,status,error,approval_status,payload_json FROM post_ledger WHERE id=?1 AND client_id=?2 LIMIT 1").bind(String(postId), String(client.id)).first();
   if (!row) throw new Error("not_found");
-  if (!["ready", "scheduled", "failed"].includes(String(row.status))) throw new Error("not_schedulable");
+  // 11/11/2026: post aprovado que perdeu o horário (expired + approved_post_missed)
+  // ganha data nova e volta para agendado e aprovado.
+  const missed = String(row.status) === "expired" && String(row.error || "") === "approved_post_missed";
+  if (!missed && !["ready", "scheduled", "failed"].includes(String(row.status))) throw new Error("not_schedulable");
+  if (missed) {
+    let payload = {};
+    try { payload = JSON.parse(row.payload_json || "{}") || {}; } catch { payload = {}; }
+    payload.retryCount = 0;
+    payload.rescheduledFromExpired = { at: now.toISOString(), approvalStatus: String(row.approval_status || "") };
+    await env.DB.prepare("UPDATE post_ledger SET status='scheduled',approval_status='approved',error='',scheduled_for=?3,scheduled_hour=?4,payload_json=?5,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2")
+      .bind(String(postId), String(client.id), scheduledFor, String(time), JSON.stringify(payload)).run();
+    return { ok: true, id: String(postId), scheduledFor, status: "scheduled" };
+  }
   await env.DB.prepare("UPDATE post_ledger SET scheduled_for=?3,scheduled_hour=?4,updated_at=CURRENT_TIMESTAMP WHERE id=?1 AND client_id=?2")
     .bind(String(postId), String(client.id), scheduledFor, String(time)).run();
   return { ok: true, id: String(postId), scheduledFor };

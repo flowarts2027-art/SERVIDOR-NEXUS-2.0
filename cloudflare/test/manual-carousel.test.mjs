@@ -55,6 +55,30 @@ test("sem data não aprova; com data aprova; data no passado é recusada", async
   await assert.rejects(schedulePost({ DB }, client, "m1", "2026-10-21", "19:00", now), /not_schedulable/);
 });
 
+test("Salvar dia em post aprovado que perdeu o horário: volta para agendado e aprovado", async () => {
+  const { schedulePost } = await import("../src/manual-carousel.js");
+  const { db, DB } = setup();
+  const insert = db.prepare("INSERT INTO post_ledger(id,client_id,status,approval_status,error,scheduled_for,caption,payload_json) VALUES(?,?,?,?,?,?,?,?)");
+  insert.run("perdeu", "primeiro-teste", "expired", "approved", "approved_post_missed", "2026-11-08T12:13:00.000Z", "x", '{"retryCount":2}');
+  insert.run("rascunho", "primeiro-teste", "expired", "pending", "stale_ready_expired", "2026-11-08T12:13:00.000Z", "x", "{}");
+  const client = { id: "primeiro-teste" };
+  const now = new Date("2026-11-11T20:00:00Z");
+  await assert.rejects(schedulePost({ DB }, client, "perdeu", "2026-11-11", "16:00", now), /schedule_too_soon/);
+  const ok = await schedulePost({ DB }, client, "perdeu", "2026-11-13", "10:00", now);
+  assert.equal(ok.status, "scheduled");
+  const row = db.prepare("SELECT status,approval_status,error,scheduled_for,scheduled_hour,payload_json FROM post_ledger WHERE id='perdeu'").get();
+  assert.equal(row.status, "scheduled");
+  assert.equal(row.approval_status, "approved");
+  assert.equal(row.error, "");
+  assert.equal(row.scheduled_for, "2026-11-13T13:00:00.000Z");
+  assert.equal(row.scheduled_hour, "10:00");
+  assert.equal(JSON.parse(row.payload_json).retryCount, 0);
+  // Rascunho vencido sem aprovação continua travado.
+  await assert.rejects(schedulePost({ DB }, client, "rascunho", "2026-11-13", "10:00", now), /not_schedulable/);
+  const lite = fs.readFileSync(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  assert.match(lite, /if \(missedPost\(post\)\) return "agendados";/);
+});
+
 test("publicador do agente nunca publica post sem data quando a data é do cliente; rotas ligadas", () => {
   const runtime = fs.readFileSync(new URL("../src/agent-runtime.js", import.meta.url), "utf8");
   assert.match(runtime, /scheduled_for IS NOT NULL OR COALESCE[\s\S]{0,140}dateChoice'\),''\)<>'client'/);
