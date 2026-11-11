@@ -23,3 +23,27 @@
 4. **Envio:** mostrar formulário + vídeo ao Rodrigo; só envia com o OK dele.
 
 **Bloqueio atual:** os itens 3 e 4 dependem do item 1 para Messages e Comments. Basic e Content Publish já podem ser preparados.
+
+## 11/11/2026 (07h40) — Item 1 feito em código pelo Claude (aguardando merge e deploy)
+
+**O que foi criado** (PR `claude/painel-direct-comentarios`):
+- `cloudflare/src/instagram-inbox.js` + rotas em `portal.js`:
+  - `GET /api/portal/ig/conversations` — conversas do Direct da conta conectada;
+  - `POST /api/portal/ig/send` — envio MANUAL de mensagem para uma conversa existente;
+  - `GET /api/portal/ig/comments` — comentários dos 6 posts mais recentes, com respostas;
+  - `POST /api/portal/ig/comment` — `comment` (comentar no post), `reply`, `hide`, `unhide`, `delete`.
+- `public/ig-tools.js` + 2 blocos na aba **Conta** do painel do cliente: "Direct do Instagram / Instagram Direct" e "Comentários / Comments". Rótulos em português e inglês, para o vídeo da Meta.
+- Testes novos: `cloudflare/test/instagram-inbox.test.mjs` (9). Suíte completa: 977/977.
+- Nada é automático: só age quando o cliente clica. Apagar pede confirmação.
+
+**Atenção:** o deploy da `main` pode rodar sozinho pelo GitHub Actions (o workflow escuta `cloudflare/**` e `public/**`), mas não foi confirmado se as credenciais voltaram depois da suspensão (último deploy visto: 06/11). Depois do merge, conferir se o painel tem os dois blocos; se não tiver, deploy pelo PC com OK do Rodrigo.
+**Não testado em produção:** nenhuma chamada real à Meta foi feita.
+
+## Roteiro do vídeo (para o ChatGPT guiar o Rodrigo) — interface em inglês, um trecho por permissão
+Conta usada: uma conta de teste/testador combinada com o Rodrigo. O Rodrigo faz login e clica; o assistente só orienta.
+1. **instagram_business_basic:** abrir o painel → aba Conta → "Conectar Instagram" → tela de login da Meta → autorizar → voltar ao painel com o @ da conta aparecendo.
+2. **instagram_business_content_publish:** no painel, um post com imagem e legenda → aprovar → "Publicar agora" → abrir o app do Instagram e mostrar o MESMO post (mesma imagem e legenda) na conta.
+3. **instagram_business_manage_messages:** antes, de outro celular, mandar "Hi" para a conta (abre a janela de 24h). No painel: bloco "Instagram Direct" → escolher a conversa (o @ aparece) → escrever → "Send message" → abrir o app do Instagram da outra pessoa e mostrar a mensagem chegando.
+4. **instagram_business_manage_comments:** bloco "Comments" → "Comment" num post → "Reply" num comentário → "Hide" e depois "Delete" → abrir o post no app do Instagram e mostrar o estado final. No texto, explicar que a API do Instagram não permite editar comentário; por isso o ciclo é criar → ocultar → apagar.
+5. Insights já aprovada: não regravar.
+Legendas no vídeo explicando cada passo, em inglês.
