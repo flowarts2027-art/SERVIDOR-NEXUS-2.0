@@ -1244,3 +1244,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Salvar dia: `schedulePost` aceita `expired` + `approved_post_missed`. Com uma data futura, o post volta para `scheduled` + `approved`, com `retryCount` 0. Rascunho vencido sem aprovação continua travado. O painel do cliente (`client-lite.js`) agora mostra esses posts em "Agendados", com o "Salvar dia".
 - Testes: 2 novos; suíte 978/979. A única falha é `wrangler keeps production cron...`, que já falhava na main.
 - Pendente: merge com o OK do Rodrigo. Depois do deploy, o `f48bcee7` (o mais antigo) sai primeiro e o `ea073000` na rodada seguinte (cerca de 5 min depois).
+
+## 2026-11-12 — Home nova do flowarts.com.br — branch `claude/home-nova-20261112`
+- Pedido do Rodrigo (12/11/2026): remontar o visual da home, "sem vida". Prévia aprovada por ele ("perfeito... pode publicar"), com o botão do topo trocado pelo símbolo oficial do WhatsApp.
+- Feito: `public/site.html` refeito (estrutura nos blocos gratuitos do HyperUI, MIT; CSS à mão, sem Tailwind). Textos, preços, perguntas, links de WhatsApp e de cadastro, JSON-LD, contador de visitas e rodapé iguais aos de antes. Novo: iPhone 17 Pro Max laranja no topo (agenda com posts ficando "Aprovado" um por um) e na Resposta Automática (comentário QUERO, resposta no Direct, "levada para o WhatsApp"); animações só quando visíveis e paradas com "reduzir movimento"/economia de dados.
+- Fotos: `public/img/home-*.jpg` (Pexels, uso comercial liberado; ids 2379004, 2253643, 3965545, 1181690, 1307698, 2788792). Textos novos só na animação: "Aguardando", "Publicação", "Comentários", "Mensagem...", "Carlos".
+- Testes: 979/980; a única falha é `wrangler keeps production cron...`, que já falhava na main.
+- Prévia local e prints: `C:\Users\Flow Arts\flowarts-home-nova` (fora do repositório).
+- Próximo passo: conferir a home no ar (celular e computador) e o botão de WhatsApp.

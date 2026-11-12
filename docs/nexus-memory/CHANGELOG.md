@@ -1227,3 +1227,6 @@ Preparado auxiliar local em scripts/local-youtube, pacote public/nexus-baixar-no
 - Painel do cliente: Aprovar só depois de copyChief e designer aprovados.
 - 404 testes passando. Geração de imagens segue PAUSADA.
 - PRÓXIMO: conferir o deploy; com OK do Rodrigo religar só o Designer e gerar 1 imagem de teste.
+
+## 2026-11-12
+- Home (`public/site.html`) com visual novo: iPhone laranja animado (agenda e Resposta Automática), fotos reais de exemplo em `public/img/home-*.jpg`, botão do topo com o símbolo oficial do WhatsApp. Conteúdo, preços e links iguais.
