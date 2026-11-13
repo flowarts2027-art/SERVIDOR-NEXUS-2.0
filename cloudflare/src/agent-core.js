@@ -37,6 +37,19 @@ function parseJson(raw, fallback = {}) {
   }
 }
 
+// Piso de custo para ciclos PESADOS; publicação aprovada usa a fila separada.
+export function effectiveAgentCycleMinutes(value, env = {}) {
+  const requested = Number(value);
+  const minutes = Number.isFinite(requested) && requested > 0
+    ? Math.max(15, Math.min(1440, requested))
+    : 30;
+  const fromEnv = Number(env?.NEXUS_AGENT_MIN_CYCLE_MINUTES);
+  const minimum = Number.isFinite(fromEnv) && fromEnv >= 15
+    ? Math.max(15, Math.min(1440, fromEnv))
+    : 180;
+  return Math.max(minutes, minimum);
+}
+
 export function normalizeAgentCoreConfig(client) {
   const config = client?.config && typeof client.config === "object" ? client.config : {};
   const current = config.agentCore && typeof config.agentCore === "object" ? config.agentCore : {};

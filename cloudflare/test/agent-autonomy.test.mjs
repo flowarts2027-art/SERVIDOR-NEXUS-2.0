@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AGENT_CORE_MODULES, NEXUS_COORDINATOR_ID, NEXUS_WORKER_MODULES, normalizeAgentCoreConfig } from "../src/agent-core.js";
+import { AGENT_CORE_MODULES, NEXUS_COORDINATOR_ID, NEXUS_WORKER_MODULES, normalizeAgentCoreConfig, effectiveAgentCycleMinutes } from "../src/agent-core.js";
 
 test("Nexus keeps 19 agents with ODIN as coordinator and 18 workers", () => {
   const ids = AGENT_CORE_MODULES.map(item => item.id);
@@ -35,6 +35,14 @@ test("Nexus keeps 19 agents with ODIN as coordinator and 18 workers", () => {
     "media-ingest",
     "qa-recovery"
   ]);
+});
+
+test("heavy agent cycles are throttled without dropping configured slower cycles", () => {
+  assert.equal(effectiveAgentCycleMinutes(30), 180);
+  assert.equal(effectiveAgentCycleMinutes(15, { NEXUS_AGENT_MIN_CYCLE_MINUTES: "120" }), 120);
+  assert.equal(effectiveAgentCycleMinutes(240, { NEXUS_AGENT_MIN_CYCLE_MINUTES: "120" }), 240);
+  assert.equal(effectiveAgentCycleMinutes(30, { NEXUS_AGENT_MIN_CYCLE_MINUTES: "15" }), 30);
+  assert.equal(effectiveAgentCycleMinutes(30, { NEXUS_AGENT_MIN_CYCLE_MINUTES: "wrong" }), 180);
 });
 
 test("all autonomous modules default to enabled for Nexus clients", () => {

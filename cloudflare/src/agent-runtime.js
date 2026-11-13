@@ -10,6 +10,7 @@ import {
   AGENT_CORE_MODULES,
   NEXUS_WORKER_MODULES,
   normalizeAgentCoreConfig,
+  effectiveAgentCycleMinutes,
   agentCoreState,
   patchAgentCoreState,
   recordAgentExecution
@@ -1754,7 +1755,8 @@ async function finalizeOdinCoordination(env,client,coordination,result,options,s
 export async function runAgentCoreCycle(env, clientId, options = {}) {
   const client=await getClient(env,clientId);
   if(!client)throw new Error("client_not_found");
-  const config=normalizeAgentCoreConfig(client);
+  const baseConfig=normalizeAgentCoreConfig(client);
+  const config={...baseConfig,cycleMinutes:effectiveAgentCycleMinutes(baseConfig.cycleMinutes,env)};
   const requested=String(options.agent||"all").toLowerCase();
   if(requested!=="all"&&!AGENT_CORE_MODULES.some(item=>item.id===requested))throw new Error("invalid_agent");
   if(!config.enabled&&options.trigger!=="manual")return {ok:false,skipped:"agent_core_disabled"};

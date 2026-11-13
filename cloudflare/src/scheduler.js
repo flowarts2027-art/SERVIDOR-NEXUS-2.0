@@ -3,6 +3,7 @@ import { ensureLeadSchema } from "./leads.js";
 import { isPublishingWindow, saoPauloDay } from "./publishing-policy.js";
 import { refreshInstagramTokenIfNeeded } from "./instagram-credentials.js";
 import { isClientPaused } from "./client-pause.js";
+import { effectiveAgentCycleMinutes } from "./agent-core.js";
 
 function parseJson(raw, fallback = {}) {
   try {
@@ -225,6 +226,8 @@ export async function runSchedulerTick(env, scheduledAt = new Date()) {
   for (const raw of rows?.results || []) {
     const client = rowClient(raw);
     const config = agentCoreConfig(client);
+    // Ciclos de todos os agentes são caros; limitar a frequência sem atrasar Publisher.
+    config.cycleMinutes = effectiveAgentCycleMinutes(config.cycleMinutes, env);
     if (!config.enabled) continue;
     summary.clients += 1;
 
