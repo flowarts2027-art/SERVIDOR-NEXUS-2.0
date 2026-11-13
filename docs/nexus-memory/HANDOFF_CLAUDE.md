@@ -1252,3 +1252,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 979/980; a única falha é `wrangler keeps production cron...`, que já falhava na main.
 - Prévia local e prints: `C:\Users\Flow Arts\flowarts-home-nova` (fora do repositório).
 - Próximo passo: conferir a home no ar (celular e computador) e o botão de WhatsApp.
+
+## 13/11/2026 — SEO local e três páginas novas (Claude Code)
+- Home: frase de presença (Nova Friburgo, Região Serrana, Brasil online) no topo, no rodapé e na meta description; JSON-LD com areaServed ampliada (ProfessionalService e FAQPage já existiam e batem com a seção de perguntas).
+- Páginas novas, indexáveis, no sitemap com data 13/11 e no rodapé da home: /postagem-automatica-instagram, /resposta-automatica-instagram, /criacao-de-site-nova-friburgo. Rotas adicionadas em run_worker_first (wrangler.jsonc).
+- Páginas de nicho não foram tocadas (seguem noindex, fora do sitemap e do rodapé). Sem Reels, sem depoimento, sem número inventado.
+- Testes: cloudflare/test/site-seo-local.test.mjs (novo). Suíte: 984 de 985; a única falha é o teste de cron, que já falhava na main limpa.
+- Deploy: não feito. Depende do merge do PR e do deploy automático. Próximo passo: depois do deploy, enviar as 3 URLs no Google Search Console e conferir os canonicals.
