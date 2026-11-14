@@ -42,7 +42,8 @@ test("três páginas novas: indexáveis, com título, descrição, H1, 550+ pala
     assert.match(html, /<meta name="description" content="[^"]{80,}"/);
     assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
     assert.match(html, /Nova Friburgo/);
-    assert.ok(html.includes("https://wa.me/5521964816185?text=Ol%C3%A1!%20Quero%20meu%20Instagram%20no%20autom%C3%A1tico."));
+    const msg = s === "criacao-de-site-nova-friburgo" ? "Ol%C3%A1!%20Quero%20um%20site%20para%20o%20meu%20neg%C3%B3cio." : "Ol%C3%A1!%20Quero%20meu%20Instagram%20no%20autom%C3%A1tico.";
+    assert.ok(html.includes("https://wa.me/5521964816185?text=" + msg));
     assert.ok(html.includes('href="/#pacotes"'));
     assert.doesNotMatch(html, /Reels|depoimento|global ?play|ragnar/i);
     const main = html.slice(html.indexOf("<main>"), html.indexOf("</main>")).replace(/<[^>]+>/g, " ");
