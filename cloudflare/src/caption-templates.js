@@ -138,6 +138,20 @@ function phoneLabel(digits = "") {
   return "";
 }
 
+// 13/11/2026 (Rodrigo: legenda de molde vazando). Quando o agente não tem campanha, texto da IA
+// nem oferta da marca, o "tema" é rótulo interno ("daniela", "Conteúdo útil para salvar") e ia
+// parar na legenda. Aqui sai um gancho e uma frase de verdade do nicho do cliente, por código
+// (custo zero). A chamada (cta) fica igual: é ela que dispara a resposta automática.
+export function nicheFallbackCaption(client = {}, turn = 0, { cta = "", tags = "" } = {}) {
+  const n = N[captionNiche(client)] || GENERIC;
+  const t = Math.abs(Math.floor(Number(turn) || 0));
+  const hook = n.h[t % n.h.length];
+  const body = n.b[Math.floor(t / n.h.length) % n.b.length];
+  const hashtags = String(tags || "").trim() || n.t.slice(0, 5).join(" ");
+  const caption = [hook, body, String(cta || "").trim(), hashtags].filter(Boolean).join("\n\n").slice(0, 2200);
+  return { hook, body, hashtags, caption };
+}
+
 export function orderCodeLine(client = {}) {
   const brand = clientBrand(client);
   const code = String(brand.orderCode || "").trim();

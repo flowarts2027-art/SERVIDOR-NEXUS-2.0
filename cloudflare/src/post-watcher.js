@@ -10,6 +10,8 @@ import { nextCampaignArt } from "./client-campaign.js";
 import { nextCaption } from "./master-upload.js";
 import { sendAndRecord } from "./whatsapp-agent.js";
 import { isClientPaused } from "./client-pause.js";
+import { receivesGeneratedImage, usesGeneratedImage } from "./no-generation.js";
+export { receivesGeneratedImage };
 import { effectiveBrand } from "./client-identity.js";
 import { writeArtTitle } from "./art-title.js";
 
@@ -20,25 +22,9 @@ const WATCH_AHEAD_MS = 6 * 3600000;
 const WATCH_BEHIND_MS = 30 * 60000; // o erro pode ter aparecido em cima da hora
 const MAX_TRIES = 2;
 export const COMPOSE_WAIT_MS = 20 * 60000;
-// Daniela e GILTEC: pedido do Rodrigo. Quatree e Adimax: toda peça mostra a ração ou a embalagem, e a IA não sabe desenhar produto real.
-const NO_GENERATION_CLIENTS = Object.freeze(new Set(["daniela-martins", "quatree-dog", "quatree-dog-eduardo", "giltec", "giltec-locacoes"]));
-// O painel e o grupo da Adimax nascem pelo Master, e o id vem do nome escolhido. Por isso vale qualquer id com a palavra adimax.
-const NO_GENERATION_RE = /(^|-)adimax(-|$)/;
-// Vendedor novo entra pelo campo Grupo do Master, com outro id. A regra vale para o grupo inteiro.
-const NO_GENERATION_GROUPS = Object.freeze(new Set(["giltec", "quatree-dog"]));
 const ERROR_RE = /^media_generation_required$|^format_build_failed$|retry_limit_reached$|^format_mismatch$/;
 const SAFE_ZONES = " Composition: keep the top third and the bottom third of the frame free of people and animals, with calm background only. "
   + "Main subject in the center. Do not show any branded product, packaging or label. Do not write any text, letters or logos.";
-
-export function receivesGeneratedImage(clientId) {
-  const id = String(clientId || "");
-  return !NO_GENERATION_CLIENTS.has(id) && !NO_GENERATION_RE.test(id);
-}
-
-function usesGeneratedImage(client) {
-  const group = String(clientGroup(client)?.id || "");
-  return receivesGeneratedImage(client.id) && !NO_GENERATION_GROUPS.has(group) && !NO_GENERATION_RE.test(group);
-}
 
 function parse(text) {
   try { const v = JSON.parse(text || "{}"); return v && typeof v === "object" ? v : {}; } catch { return {}; }

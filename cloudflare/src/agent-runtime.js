@@ -26,6 +26,8 @@ import { giftCtaForTopic } from "./gift-materials.js";
 import { plannedFormat } from "./format-builder.js";
 import { GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
+import { nicheFallbackCaption } from "./caption-templates.js";
+import { usesGeneratedImage } from "./no-generation.js";
 import { pickNiche } from "./flowarts-niches.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -817,6 +819,11 @@ async function runCreator(env,client,strategy,options) {
         return {url:staged,source:"own-instagram-r2-replenishment",sourceInstagramMediaId:String(candidate.id)};
       }
     }
+    // 13/11/2026: Daniela, Quatree, Adimax e GILTEC não recebem imagem gerada (regra do Rodrigo).
+    // A lista valia só no Vigia; aqui a IA grátis criava carrossel para eles.
+    if(!usesGeneratedImage(client)){
+      return {url:"",source:"awaiting-client-art",sourceInstagramMediaId:"",error:"generated_image_not_allowed"};
+    }
     // Pedido do Rodrigo (04/11): nada de post sem imagem. Última saída: IA grátis.
     try{
       const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
@@ -1080,6 +1087,9 @@ async function runCreator(env,client,strategy,options) {
 
     // Campanha do cliente (7, 15 ou 30 dias): fora desses dias, não cria post.
     if(!campaignActiveOn(client,day))continue;
+    // 13/11/2026: quem não recebe imagem gerada só ganha post do agente se tiver campanha com as próprias artes.
+    // Sem isso o agente criava post novo todo dia para a Daniela e o Adimax, que usam só artes enviadas.
+    if(!usesGeneratedImage(client)&&campaignSettings(client)?.artSource!=="own")continue;
     if((plannedByDay.get(day)||0)>=dailyPublishTarget)continue;
     // A campanha da Flow Arts é por dia do mês: usa o dia do POST (não o dia de hoje),
     // senão o post de amanhã repete o tema de hoje.
@@ -1108,6 +1118,15 @@ async function runCreator(env,client,strategy,options) {
         caption=[written.hook,"",written.body,"",cta,tags?"":null,tags||null].filter(x=>x!==null).join("\n");
       }
     }
+    // 13/11/2026: sem campanha e sem oferta da marca, "theme" é rótulo interno e não pode ir para a legenda.
+    const fallbackTurn=[...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17);
+    const internalTheme=!campaignItem&&!(brandProfileVersion(client.id)&&clientBrand(client).offer);
+    if(!caption&&internalTheme){
+      const ready=nicheFallbackCaption(client,fallbackTurn,{cta,tags});
+      hook=ready.hook;
+      caption=ready.caption;
+      captionSource="niche-template";
+    }
     if(!caption){
       const brandOffer=brandProfileVersion(client.id)?clientBrand(client).offer:"";
       const storyLine=campaignItem&&brandOffer
@@ -1130,15 +1149,22 @@ async function runCreator(env,client,strategy,options) {
     caption=caption.slice(0,2200);
 
     if(recentCaptions.some(previous=>textSimilarity(caption,previous)>=Number(strategy?.antiRepeat?.captionSimilarityThreshold||0.72))){
-      caption=[
-        hook,
-        "",
-        String(aiCreative?.visualBrief||theme),
-        "",
-        cta,
-        tags?"":null,
-        tags||null
-      ].filter(x=>x!==null).join("\n").slice(0,2200);
+      // Parecida com uma recente: troca o texto. O briefing visual e o tema são internos; nunca vão para a legenda.
+      if(!campaignItem){
+        const ready=nicheFallbackCaption(client,fallbackTurn+1+recentCaptions.length,{cta,tags});
+        hook=ready.hook;
+        caption=ready.caption;
+      }else{
+        caption=[
+          hook,
+          "",
+          String(campaignItem.angle||theme),
+          "",
+          cta,
+          tags?"":null,
+          tags||null
+        ].filter(x=>x!==null).join("\n").slice(0,2200);
+      }
     }
     // Acabamento: até 5 hashtags, sem travessão nem caracteres invisíveis, 1ª linha curta.
     caption=ensureGiftCta(polishCaption(caption),giftCta);
