@@ -1,3 +1,7 @@
+## 2026-11-14 — Site novo na página inicial (PR aberto, sem deploy)
+- Home, Privacidade e Termos geradas pelo projeto Next `SITE-FLOWARTS-NOVO` (exportação estática) e copiadas para `public/`; JS, CSS e fontes em `public/_next/`.
+- Mesmo conteúdo, preços, SEO e contador de visitas da home atual. Botões de contratar vão para `/cadastro?plano=...`. Demais rotas sem mudança.
+
 ## 2026-11-06 — Deploy pelo PC, sem GitHub
 - GitHub suspenso. Código no GitLab e deploy pela pasta `nexus-deploy`.
 - Publicado: botões "Aprovar e baixar" (#606) e "Baixar" (#607). Versão `4a9a6ccc`.

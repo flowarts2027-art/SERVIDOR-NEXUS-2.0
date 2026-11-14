@@ -1,5 +1,8 @@
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
+## 2026-11-14 — SITE-NOVO-001: site novo na home de flowarts.com.br (Claude)
+Branch `claude/site-novo-home-20261114`, PR aberto. **Aguardando revisão e merge do Rodrigo.** Sem deploy. Troca só `site.html`, `privacidade.html`, `termos.html` e adiciona `public/_next/`. Depois do deploy: testar a home no celular e no computador.
+
 ## 2026-11-06 — DEPLOY-PC-001: deploy pelo PC (Claude)
 Publicado pela pasta `nexus-deploy`, versão `4a9a6ccc`. Código no GitLab. **Pendente:** teste com login real e decisão sobre o que dependia do GitHub.
 
