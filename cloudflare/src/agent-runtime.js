@@ -27,6 +27,7 @@ import { plannedFormat } from "./format-builder.js";
 import { GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
 import { nicheFallbackCaption } from "./caption-templates.js";
+import { usesGeneratedImage } from "./no-generation.js";
 import { pickNiche } from "./flowarts-niches.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -818,6 +819,11 @@ async function runCreator(env,client,strategy,options) {
         return {url:staged,source:"own-instagram-r2-replenishment",sourceInstagramMediaId:String(candidate.id)};
       }
     }
+    // 13/11/2026: Daniela, Quatree, Adimax e GILTEC não recebem imagem gerada (regra do Rodrigo).
+    // A lista valia só no Vigia; aqui a IA grátis criava carrossel para eles.
+    if(!usesGeneratedImage(client)){
+      return {url:"",source:"awaiting-client-art",sourceInstagramMediaId:"",error:"generated_image_not_allowed"};
+    }
     // Pedido do Rodrigo (04/11): nada de post sem imagem. Última saída: IA grátis.
     try{
       const generated=await generateOriginalMedia(env,client,postId,guidedVisualBrief,{
@@ -1081,6 +1087,9 @@ async function runCreator(env,client,strategy,options) {
 
     // Campanha do cliente (7, 15 ou 30 dias): fora desses dias, não cria post.
     if(!campaignActiveOn(client,day))continue;
+    // 13/11/2026: quem não recebe imagem gerada só ganha post do agente se tiver campanha com as próprias artes.
+    // Sem isso o agente criava post novo todo dia para a Daniela e o Adimax, que usam só artes enviadas.
+    if(!usesGeneratedImage(client)&&campaignSettings(client)?.artSource!=="own")continue;
     if((plannedByDay.get(day)||0)>=dailyPublishTarget)continue;
     // A campanha da Flow Arts é por dia do mês: usa o dia do POST (não o dia de hoje),
     // senão o post de amanhã repete o tema de hoje.
