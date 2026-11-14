@@ -26,6 +26,7 @@ import { giftCtaForTopic } from "./gift-materials.js";
 import { plannedFormat } from "./format-builder.js";
 import { GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { writeCampaignCaption } from "./campaign-copy.js";
+import { nicheFallbackCaption } from "./caption-templates.js";
 import { pickNiche } from "./flowarts-niches.js";
 import { commercialPromptGuard } from "./content-policy.js";
 import { activeMasterGuidance, filterMasterGuidance } from "./master-workspace.js";
@@ -1108,6 +1109,15 @@ async function runCreator(env,client,strategy,options) {
         caption=[written.hook,"",written.body,"",cta,tags?"":null,tags||null].filter(x=>x!==null).join("\n");
       }
     }
+    // 13/11/2026: sem campanha e sem oferta da marca, "theme" é rótulo interno e não pode ir para a legenda.
+    const fallbackTurn=[...String(day||"")].reduce((sum,ch)=>sum+ch.charCodeAt(0),index*17);
+    const internalTheme=!campaignItem&&!(brandProfileVersion(client.id)&&clientBrand(client).offer);
+    if(!caption&&internalTheme){
+      const ready=nicheFallbackCaption(client,fallbackTurn,{cta,tags});
+      hook=ready.hook;
+      caption=ready.caption;
+      captionSource="niche-template";
+    }
     if(!caption){
       const brandOffer=brandProfileVersion(client.id)?clientBrand(client).offer:"";
       const storyLine=campaignItem&&brandOffer
@@ -1130,15 +1140,22 @@ async function runCreator(env,client,strategy,options) {
     caption=caption.slice(0,2200);
 
     if(recentCaptions.some(previous=>textSimilarity(caption,previous)>=Number(strategy?.antiRepeat?.captionSimilarityThreshold||0.72))){
-      caption=[
-        hook,
-        "",
-        String(aiCreative?.visualBrief||theme),
-        "",
-        cta,
-        tags?"":null,
-        tags||null
-      ].filter(x=>x!==null).join("\n").slice(0,2200);
+      // Parecida com uma recente: troca o texto. O briefing visual e o tema são internos; nunca vão para a legenda.
+      if(!campaignItem){
+        const ready=nicheFallbackCaption(client,fallbackTurn+1+recentCaptions.length,{cta,tags});
+        hook=ready.hook;
+        caption=ready.caption;
+      }else{
+        caption=[
+          hook,
+          "",
+          String(campaignItem.angle||theme),
+          "",
+          cta,
+          tags?"":null,
+          tags||null
+        ].filter(x=>x!==null).join("\n").slice(0,2200);
+      }
     }
     // Acabamento: até 5 hashtags, sem travessão nem caracteres invisíveis, 1ª linha curta.
     caption=ensureGiftCta(polishCaption(caption),giftCta);

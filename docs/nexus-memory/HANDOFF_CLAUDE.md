@@ -1259,3 +1259,15 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Páginas de nicho não foram tocadas (seguem noindex, fora do sitemap e do rodapé). Sem Reels, sem depoimento, sem número inventado.
 - Testes: cloudflare/test/site-seo-local.test.mjs (novo). Suíte: 984 de 985; a única falha é o teste de cron, que já falhava na main limpa.
 - Deploy: não feito. Depende do merge do PR e do deploy automático. Próximo passo: depois do deploy, enviar as 3 URLs no Google Search Console e conferir os canonicals.
+
+## 2026-11-13 (noite) — Legenda sem rótulo interno e auditoria — branch `claude/legenda-sem-rotulo-interno-20261113`
+- Sessão do Claude na nuvem, com o Rodrigo. Li desta memória só os trechos ligados ao pedido (fim deste arquivo, `HANDOFF_CHATGPT.md` e o LEIA-ME dos robôs desligados); os sete arquivos inteiros não foram relidos nesta sessão.
+- Publicado hoje: PR #628 (SEO local e três páginas) entrou na `main` às 21:07 e o deploy do GitHub Actions terminou com sucesso. As três páginas abriram no ar e a indexação das três foi pedida no Google Search Console.
+- Auditoria pedida pelo Rodrigo ("tem menos agentes funcionando"): desde 11/11 o Actions roda 1 ou 2 vezes por dia (antes, cerca de 50). Quatree Dog e Daniela Martins publicam e têm métricas atualizadas. Flow Arts e Nexus AI estão com as métricas paradas em 08/11 e 07/11 (o Instagram recusa a consulta). Decisão do Rodrigo em 13/11: Flow Arts, Nexus AI e GILTEC (Rose) continuam pausados; nos outros clientes pode corrigir o que for preciso.
+- Problema: legendas saíram com rótulo interno no lugar do texto. Exemplos publicados: "Todo cliente olha isso antes de comprar. / daniela. / Comente QUERO..." (Daniela, 10/11) e "Tem um detalhe aqui que vale compartilhar. / nexus." (Nexus AI, 06/11).
+- Causa: em `agent-runtime.js`, sem campanha, sem texto da IA e sem oferta da marca, a legenda era `gancho + tema + chamada`. O tema é termo de pesquisa ou rótulo ("Conteúdo útil para salvar"). Na troca por repetição entrava o briefing visual da IA.
+- Correção: `nicheFallbackCaption` em `caption-templates.js` (gancho e frase do nicho, por código, custo zero, chamada e hashtags preservadas). `agent-runtime.js` usa essa função nos dois pontos; o briefing visual não vai mais para a legenda. `captionSource` novo: `niche-template`.
+- Site: o texto do botão em `/criacao-de-site-nova-friburgo` passou de "Quero meu Instagram no automático" para "Quero meu site".
+- Testes: `legenda-sem-rotulo-interno.test.mjs` (novo, 4 testes). Suíte nesta sessão: 989 de 989.
+- Não é código: a legenda repetida do Quatree Dog desde 09/11 ("Quatree Gourmet Gatos: produto da linha para gatos...") não existe no código; veio junto com as artes enviadas. ChatGPT: variar a legenda a cada arte do Quatree.
+- Próximo passo: merge com o OK do Rodrigo (o merge dispara o deploy). Depois, olhar a próxima legenda criada pelo agente para um cliente sem campanha e conferir que veio com frase do nicho.
