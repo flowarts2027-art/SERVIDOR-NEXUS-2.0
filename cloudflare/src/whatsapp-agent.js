@@ -694,18 +694,20 @@ export async function handleWhatsAppProtected(request, env, url) {
 
   if (url.pathname === "/api/whatsapp/inbox" && request.method === "GET") {
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 30)));
-    // Ordem da lista (pedido do Rodrigo, 15/11/2026): 1) mensagem nova não lida, 2) precisa dele, 3) o resto.
-    // Dentro de cada grupo, da mais recente para a mais antiga (hora da última mensagem, não a hora em que ele abriu a conversa).
+    // Ordem da lista (pedido do Rodrigo, 15/11/2026): igual ao WhatsApp. Só a hora da última mensagem (recebida ou enviada),
+    // a mais recente em primeiro, sem grupos. As etiquetas "Precisa de você" e "novas" aparecem, mas não mudam a ordem.
+    // Abrir a conversa não muda a hora da última mensagem, então não empurra a conversa para o topo.
     const rows = await env.DB.prepare(
       `SELECT c.wa_id,c.display_name,c.classification,c.priority,c.needs_human,c.bot_paused,c.unread_count,
               c.last_message_at,c.updated_at,c.customer_type,c.custom_name,c.memory_json,
+              COALESCE((SELECT MAX(m.created_at) FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id),
+                       c.last_message_at,c.updated_at) AS last_at,
               (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
                ORDER BY m.created_at DESC LIMIT 1) AS last_text,
               (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
                ORDER BY m.created_at DESC LIMIT 1) AS last_direction
        FROM whatsapp_contacts c WHERE c.client_id=?1
-       ORDER BY CASE WHEN c.unread_count>0 THEN 0 WHEN c.needs_human=1 THEN 1 ELSE 2 END,
-                REPLACE(REPLACE(COALESCE(c.last_message_at,c.updated_at),'T',' '),'Z','') DESC LIMIT ?2`
+       ORDER BY REPLACE(REPLACE(last_at,'T',' '),'Z','') DESC LIMIT ?2`
     ).bind(clientId, limit).all();
     const index = await nexusClientIndex(env).catch(() => new Map());
     const items = (rows?.results || []).map(row => {

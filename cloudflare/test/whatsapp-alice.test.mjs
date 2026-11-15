@@ -320,30 +320,45 @@ test("se a reserva também falhar, devolve o erro do Gemini", async () => {
 });
 
 // 15/11/2026 (Rodrigo): a conversa nova ficava na 52ª posição, atrás de 51 "Precisa de você".
-// Ordem da lista: 1) mensagem nova não lida, 2) precisa do Rodrigo, 3) o resto.
-// Dentro de cada grupo, da mais recente para a mais antiga (hora da última mensagem).
-test("lista do Master: não lidas primeiro, depois quem precisa do Rodrigo, depois o resto", async () => {
+// A lista é igual ao WhatsApp: só a hora da última mensagem, a mais recente em primeiro, sem grupos.
+// As etiquetas "Precisa de você" e "novas" aparecem, mas não mudam a ordem.
+test("lista do Master: só pela hora da última mensagem, sem grupos", async () => {
   const f = fixture({ answers: [hello] });
   try {
     await f.call("/api/whatsapp/inbox"); // cria as tabelas
     const add = (id, { unread = 0, human = 0, last = null, updated = "2026-11-15 20:00:00" }) =>
       f.db.prepare("INSERT INTO whatsapp_contacts(id,client_id,wa_id,display_name,needs_human,unread_count,last_message_at,updated_at) VALUES(?,?,?,?,?,?,?,?)")
         .run("c-" + id, CLIENT, "5521999" + id.charCodeAt(0), id, human, unread, last, updated);
+    const phone = id => "5521999" + id.charCodeAt(0);
+    const names = async () => (await f.call("/api/whatsapp/inbox")).body.items.map(item => item.display_name);
     add("A", { unread: 1, last: "2026-11-15T10:00:00.000Z" });
     add("B", { unread: 2, human: 1, last: "2026-11-15T11:00:00.000Z" });
     add("C", { human: 1, last: "2026-11-15T09:00:00.000Z" });
     add("D", { human: 1, last: "2026-11-15T12:00:00.000Z" });
     add("E", { last: "2026-11-15T13:00:00.000Z" });
     add("F", { last: "2026-11-15T08:00:00.000Z" });
-    // Já foi aberta várias vezes (updated_at novo), mas a mensagem é a mais antiga das não lidas.
+    // Já foi aberta várias vezes (updated_at novo), mas a última mensagem é a mais antiga de todas.
     add("G", { unread: 1, last: "2026-11-15T07:00:00.000Z", updated: "2026-11-15 23:59:00" });
     // Sem hora de mensagem: vale a hora da ficha (outro formato de data).
     add("H", { last: null, updated: "2026-11-15 14:00:00" });
-    const order = (await f.call("/api/whatsapp/inbox")).body.items.map(item => item.display_name);
-    assert.deepEqual(order, ["B", "A", "G", "D", "C", "H", "E", "F"]);
-    // Abrir a conversa (marcar como lida) tira ela do primeiro grupo.
-    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: "5521999" + "B".charCodeAt(0), read: true })).status, 200);
-    const after = (await f.call("/api/whatsapp/inbox")).body.items.map(item => item.display_name);
-    assert.deepEqual(after, ["A", "G", "D", "B", "C", "H", "E", "F"]); // B agora é do grupo "precisa de mim", atrás da D (mais recente)
+    // Sem grupos: não lida, "precisa de você" e resto ficam misturados, só pela hora.
+    assert.deepEqual(await names(), ["H", "E", "D", "B", "A", "C", "F", "G"]);
+
+    // As etiquetas continuam chegando à tela.
+    const items = (await f.call("/api/whatsapp/inbox")).body.items;
+    assert.equal(items.find(item => item.display_name === "B").needs_human, 1);
+    assert.equal(items.find(item => item.display_name === "B").unread_count, 2);
+
+    // Abrir a conversa (marcar como lida) não muda a posição.
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: phone("B"), read: true })).status, 200);
+    assert.deepEqual(await names(), ["H", "E", "D", "B", "A", "C", "F", "G"]);
+    assert.equal((await f.call("/api/whatsapp/inbox")).body.items.find(item => item.display_name === "B").unread_count, 0);
+
+    // Como no WhatsApp: mensagem enviada por nós (ou pelo robô) também sobe a conversa.
+    f.db.prepare("INSERT INTO whatsapp_messages(id,client_id,wa_id,direction,message_type,text,status,created_at) VALUES('out-f',?,?,'outbound','text','Oi!','sent','2026-11-15T15:00:00.000Z')")
+      .run(CLIENT, phone("F"));
+    const sorted = await names();
+    assert.equal(sorted[0], "F");
+    assert.equal((await f.call("/api/whatsapp/inbox")).body.items[0].last_at, "2026-11-15T15:00:00.000Z");
   } finally { f.close(); }
 });
