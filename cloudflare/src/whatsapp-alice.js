@@ -188,6 +188,39 @@ export function freeAliceMessages(request) {
   return { system, user: context };
 }
 
+function openAIText(data) {
+  if (typeof data?.output_text === "string") return data.output_text;
+  for (const item of Array.isArray(data?.output) ? data.output : []) {
+    for (const part of Array.isArray(item?.content) ? item.content : []) {
+      if (typeof part?.text === "string") return part.text;
+    }
+  }
+  return "";
+}
+
+// David (15/11/2026, pedido do Rodrigo): texto vai pela OpenAI, com a chave do painel Master
+// (a única que usa essa chave). Áudio e imagem seguem pelo Gemini, como antes. Se a OpenAI
+// falhar (sem chave, sem saldo, limite do dia), cai na reserva de sempre: Gemini e IAs grátis.
+export async function davidReply(env, clientId, request, fetcher = fetch, deps = {}) {
+  const parts = request?.contents?.[0]?.parts || [];
+  const hasMedia = parts.some(p => p?.inline_data);
+  if (!hasMedia) {
+    try {
+      const respond = deps.davidResponses || (await import("./openai.js")).davidResponses;
+      const { system, user } = freeAliceMessages(request);
+      const data = await respond(env, clientId, {
+        input: [{ role: "system", content: system }, { role: "user", content: user }],
+        max_output_tokens: 900
+      });
+      const answer = parseAliceText(openAIText(data), "openai");
+      if (answer) return answer;
+    } catch {
+      // segue para a reserva
+    }
+  }
+  return aliceReply(env, request, fetcher, deps);
+}
+
 export async function aliceReply(env, request, fetcher = fetch, deps = {}) {
   try {
     return await geminiAliceReply(env, request, fetcher);

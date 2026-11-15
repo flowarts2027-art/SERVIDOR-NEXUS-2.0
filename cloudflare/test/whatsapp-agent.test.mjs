@@ -53,7 +53,8 @@ function fixture({ aiReply, aiFails = false, limit = 30 } = {}) {
   const env = {
     DB, WHATSAPP_APP_SECRET: SECRET, WHATSAPP_ACCESS_TOKEN: "fixture-token", WHATSAPP_PHONE_NUMBER_ID: "123",
     WHATSAPP_GRAPH_VERSION: "v25.0", WHATSAPP_CLIENT_ID: CLIENT, WHATSAPP_VERIFY_TOKEN: "verify",
-    WHATSAPP_SEND_LIMIT_PER_HOUR: String(limit), OPENAI_API_KEY_SHARED: "fixture-openai"
+    WHATSAPP_SEND_LIMIT_PER_HOUR: String(limit), OPENAI_API_KEY_SHARED: "fixture-openai",
+    __sleep: async () => {}
   };
   const sent = [];
   const aiPrompts = [];
@@ -62,13 +63,19 @@ function fixture({ aiReply, aiFails = false, limit = 30 } = {}) {
   globalThis.fetch = async (url, options = {}) => {
     const target = String(url);
     if (target.startsWith("https://api.openai.com/")) {
-      aiPrompts.push(JSON.parse(options.body).input);
+      const input = JSON.parse(options.body).input;
+      aiPrompts.push(typeof input === "string" ? input : JSON.stringify(input));
       if (aiFails) return new Response("{}", { status: 500 });
-      const reply = aiReply || { classification: "lead", priority: 70, needsHuman: false, reply: "Oi! Sou a assistente virtual da Flow Arts. Qual é o seu negócio?", reason: "lead" };
+      const base = aiReply || { classification: "lead", priority: 70, needsHuman: false, reply: "Oi! Sou a assistente virtual da Flow Arts. Qual é o seu negócio?", reason: "lead" };
+      // David (15/11/2026) responde em 1 a 3 mensagens curtas.
+      const reply = { ...base, messages: base.messages || [base.reply] };
       return Response.json({ output_text: JSON.stringify(reply), usage: { input_tokens: 10, output_tokens: 10, total_tokens: 20 } });
     }
     if (target.startsWith("https://graph.facebook.com/")) {
-      sent.push(JSON.parse(options.body));
+      const body = JSON.parse(options.body);
+      // "Digitando…" do David não é mensagem enviada.
+      if (body.typing_indicator) return Response.json({ success: true });
+      sent.push(body);
       counter += 1;
       return Response.json({ messages: [{ id: "wamid.out" + counter }] });
     }

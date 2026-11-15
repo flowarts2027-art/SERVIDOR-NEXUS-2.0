@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { openAIResponses, tokenUsageToday } from "../src/openai.js";
+import { openAIResponses, davidResponses, DAVID_DEFAULT_MODEL, tokenUsageToday } from "../src/openai.js";
 
 function envAtUsage(usedTokens,runtime={status:"ok",detail:"",updated_at:""}){
   return {
@@ -37,47 +37,49 @@ function envAtUsage(usedTokens,runtime={status:"ok",detail:"",updated_at:""}){
   };
 }
 
-test("visual review cannot consume the strategic token reserve",async()=>{
-  const env=envAtUsage(25000);
-  const usage=await tokenUsageToday(env,"globalplay-streaming");
-  assert.equal(usage.blocked,false);
-  await assert.rejects(
-    openAIResponses(env,"globalplay-streaming",{nexusPurpose:"visual-review",input:"inspect"}),
-    error=>error?.message==="openai_visual_budget_reserved"
-  );
+// 15/11/2026 (Rodrigo): a chave da OpenAI é só do David. A função geral recusa sempre,
+// então a reserva da revisão visual e o atalho do publicador de emergência deixaram de existir.
+test("só o David usa a OpenAI: a função geral recusa sem chamar a OpenAI", async () => {
+  const env = envAtUsage(0);
+  const originalFetch = globalThis.fetch;
+  let called = false;
+  globalThis.fetch = async () => { called = true; return Response.json({}); };
+  try {
+    for (const purpose of ["visual-review", "emergency-publisher", "media-generation", "strategy", "caption", "whatsapp-reply"]) {
+      await assert.rejects(
+        openAIResponses(env, "primeiro-teste", { nexusPurpose: purpose, nexusBypassDailyBudget: true, input: "x" }),
+        error => error?.message === "openai_reserved_for_david" && error.status === 403
+      );
+    }
+    assert.equal(called, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
-test("emergency publisher can bypass the local daily token gate only for urgent publishing",async()=>{
-  const env=envAtUsage(30000);
-  const originalFetch=globalThis.fetch;
-  let called=false;
-  globalThis.fetch=async(_url,init)=>{
-    called=true;
-    const body=JSON.parse(String(init?.body||"{}"));
-    assert.equal(body.nexusBypassDailyBudget, undefined);
-    assert.equal(body.nexusTimeoutMs, undefined);
-    assert.ok(Number(init?.signal?.reason || 0) === 0 || init?.signal);
-    return Response.json({output:[],usage:{total_tokens:12}});
+test("David: modelo barato, chave do Master e sem furar o limite do dia", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), auth: init.headers.authorization, body: JSON.parse(String(init.body)) });
+    return Response.json({ output_text: "{}", usage: { total_tokens: 12 } });
   };
-  try{
-    await openAIResponses(env,"globalplay-streaming",{
-      nexusPurpose:"emergency-publisher",
-      nexusBypassDailyBudget:true,
-      input:"urgent image"
-    });
-    assert.equal(called,true);
-  }finally{
-    globalThis.fetch=originalFetch;
+  try {
+    await davidResponses(envAtUsage(100), "primeiro-teste", { input: "oi", nexusBypassDailyBudget: true });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].auth, "Bearer test-key");
+    assert.equal(calls[0].body.model, DAVID_DEFAULT_MODEL);
+    assert.equal(calls[0].body.nexusPurpose, undefined);
+    await davidResponses({ ...envAtUsage(100), WHATSAPP_OPENAI_MODEL: "outro-modelo" }, "primeiro-teste", { input: "oi" });
+    assert.equal(calls[1].body.model, "outro-modelo");
+    await assert.rejects(davidResponses(envAtUsage(30000), "primeiro-teste", { input: "oi", nexusBypassDailyBudget: true }),
+      error => error?.message === "openai_daily_budget_reached");
+    assert.equal(calls.length, 2);
+    await assert.rejects(davidResponses({ ...envAtUsage(100), OPENAI_API_KEY_SHARED: "" }, "primeiro-teste", { input: "oi" }),
+      /openai_not_configured|nexus_secret/);
+  } finally {
+    globalThis.fetch = originalFetch;
   }
-
-  await assert.rejects(
-    openAIResponses(env,"globalplay-streaming",{
-      nexusPurpose:"media-generation",
-      nexusBypassDailyBudget:true,
-      input:"normal image"
-    }),
-    error=>error?.message==="openai_daily_budget_reached"
-  );
 });
 
 test("aviso de sem saldo recente bloqueia, mas expira e deixa testar de novo",async()=>{

@@ -1,4 +1,5 @@
-import { openAIKeyForClient, openAIKeyStatus } from "./openai-routing.js";
+import { openAIKeyStatus } from "./openai-routing.js";
+import { davidOpenAIKey } from "./master-openai.js";
 import { getClient } from "./clients.js";
 
 function usageNumbers(usage = {}) {
@@ -132,8 +133,26 @@ export async function tokenUsageToday(env, clientId) {
   };
 }
 
-export async function openAIResponses(env, clientId, input) {
-  const apiKey = openAIKeyForClient(env, clientId);
+// 15/11/2026 (Rodrigo): a chave da OpenAI é só do David, o atendente do WhatsApp.
+// Nenhum outro robô usa a OpenAI: a função geral recusa sempre e cada robô segue com a reserva dele
+// (IA grátis, texto pronto). O David chama davidResponses, que só o whatsapp-agent importa.
+export const DAVID_PURPOSE = "whatsapp-reply";
+// Modelo de texto barato do projeto (mesmo preço usado na estimativa acima). Trocar: WHATSAPP_OPENAI_MODEL.
+export const DAVID_DEFAULT_MODEL = "gpt-5.6-luna";
+
+export async function openAIResponses() {
+  const error = new Error("openai_reserved_for_david");
+  error.status = 403;
+  throw error;
+}
+
+export async function davidResponses(env, clientId, input = {}) {
+  const apiKey = await davidOpenAIKey(env);
+  const model = String(input?.model || env?.WHATSAPP_OPENAI_MODEL || DAVID_DEFAULT_MODEL).trim() || DAVID_DEFAULT_MODEL;
+  return callOpenAI(env, clientId, { ...input, model, nexusPurpose: DAVID_PURPOSE, nexusBypassDailyBudget: false }, apiKey);
+}
+
+async function callOpenAI(env, clientId, input, apiKey) {
   const purpose = String(input?.nexusPurpose || "general");
   const bypassDailyBudget = input?.nexusBypassDailyBudget === true && purpose === "emergency-publisher";
   const defaultTimeoutMs = purpose === "media-generation" || purpose === "emergency-publisher" ? 90000 : 20000;
