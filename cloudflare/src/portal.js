@@ -1952,7 +1952,9 @@ export async function handlePortalApi(request, env, url, ctx) {
   }
 
   if (url.pathname === "/api/portal/agent-core" && request.method === "POST") {
-    const body = await request.json().catch(() => ({}));
+    const raw = await request.json().catch(() => ({}));
+    // Gerar imagem por IA sozinho: só o Master liga (15/11/2026). O painel do cliente não mexe nisso.
+    const { aiImages: _ignored, ...body } = raw && typeof raw === "object" ? raw : {};
     try {
       const config = await saveAgentCoreConfig(env, client.id, body);
       const updated = await getClient(env, client.id);

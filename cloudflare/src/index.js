@@ -3,6 +3,7 @@ import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch, 
 import { maestroProgress } from "./maestro-continuity.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
 import { getClient as getClientById } from "./clients.js";
+import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { runGeminiDaily, geminiDailyClients, campaignStatus, testOneImage, queueCampaign, runQueuedCampaigns, cloudflareImage } from "./gemini-campaign.js";
 import { DurableObject } from "cloudflare:workers";
 import { handleMcpRequest } from "./mcp-server.js";
@@ -890,6 +891,9 @@ export default {
       const body = await request.json().catch(() => ({}));
       const prompt = String(body.prompt || "").trim().slice(0, 2000);
       if (!prompt) return json({ ok: false, error: "prompt_missing" }, 400);
+      // 15/11/2026: a foto é sempre para um cliente, e só sai com "Gerar imagem por IA sozinho" ligado no Master.
+      const fotoClient = await getClientById(env, String(body.clientId || "")).catch(() => null);
+      if (!usesGeneratedImage(fotoClient)) return json({ ok: false, error: GENERATION_BLOCKED }, 403);
       try {
         const img = await cloudflareImage(env, prompt, body.aspect === "9:16" ? "9:16" : "4:5");
         return new Response(img.bytes, { headers: { "content-type": img.mime, "x-nexus-model": img.model || "", "cache-control": "no-store" } });

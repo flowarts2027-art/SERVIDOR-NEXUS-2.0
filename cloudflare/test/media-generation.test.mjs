@@ -25,7 +25,7 @@ test("generated image is stored in R2 and returns public URL",async()=>{
     MEDIA:{async put(key,bytes,meta){stored={key,bytes,meta};}}
   };
   const request=async()=>({output:[{type:"image_generation_call",result:btoa("PNGDATA")}]});
-  const out=await generateOriginalMedia(env,{id:"globalplay-streaming"},"post-1","brief",{request,variationSeed:"x"});
+  const out=await generateOriginalMedia(env,{id:"globalplay-streaming",config:{agentCore:{aiImages:true}}},"post-1","brief",{request,variationSeed:"x"});
   assert.match(out.url,/\/media\/posts\/globalplay-streaming\/post-1\/generated-/);
   assert.equal(new TextDecoder().decode(stored.bytes),"PNGDATA");
   assert.equal(stored.meta.httpMetadata.contentType,"image/jpeg");
@@ -44,7 +44,7 @@ test("Global Play compositing uses raster brand once, Reel panel only for Reel a
     const draws=[],transforms=[];let payload;
     const canvas={transform(value){transforms.push(value);return this;},draw(input,position){draws.push(position);return this;},async output(){return {response:async()=>new Response(new Uint8Array([255,216,255,217]),{headers:{"content-type":"image/jpeg"}})};}};
     const env={NEXUS_IMAGE_GENERATION:"on",PUBLIC_BASE_URL:"https://nexus.example",MEDIA:{async put(){}},IMAGES:{input(){return canvas;}}};
-    const result=await generateOriginalMedia(env,{id:"globalplay-streaming"},"test-"+format,"",{contentFormat:format,request:async(e,id,p)=>{payload=p;return {output:[{type:"image_generation_call",result:btoa("raw")}]};}});
+    const result=await generateOriginalMedia(env,{id:"globalplay-streaming",config:{agentCore:{aiImages:true}}},"test-"+format,"",{contentFormat:format,request:async(e,id,p)=>{payload=p;return {output:[{type:"image_generation_call",result:btoa("raw")}]};}});
     assert.equal(result.brandingApplied,true);
     assert.deepEqual(transforms,[{width:1080,height:format==="reel"?1920:1350,fit:"cover"}]);
     assert.equal(draws.length,format==="reel"?2:1);
@@ -57,7 +57,7 @@ test("Global Play compositing uses raster brand once, Reel panel only for Reel a
 
 test("missing or broken Images binding never claims successful branding",async()=>{
   for(const IMAGES of [undefined,{input(){throw new Error("transform_failed");}}]){
-    const result=await generateOriginalMedia({NEXUS_IMAGE_GENERATION:"on",PUBLIC_BASE_URL:"https://nexus.example",MEDIA:{async put(){}},IMAGES},{id:"globalplay-streaming"},"failed","",{contentFormat:"reel",request:async()=>({output:[{type:"image_generation_call",result:btoa("raw")}]})});
+    const result=await generateOriginalMedia({NEXUS_IMAGE_GENERATION:"on",PUBLIC_BASE_URL:"https://nexus.example",MEDIA:{async put(){}},IMAGES},{id:"globalplay-streaming",config:{agentCore:{aiImages:true}}},"failed","",{contentFormat:"reel",request:async()=>({output:[{type:"image_generation_call",result:btoa("raw")}]})});
     assert.equal(result.brandingApplied,false);assert.ok(result.brandingError);
   }
 });
@@ -65,7 +65,7 @@ test("missing or broken Images binding never claims successful branding",async()
 test("generation uses approved direction without reading or sending private library images",async()=>{
   let payload;
   const env={NEXUS_IMAGE_GENERATION:"on",PUBLIC_BASE_URL:"https://nexus.example",MEDIA:{async put(){},async list(){throw new Error("private_library_must_not_be_read");},async get(){return {size:4,httpMetadata:{contentType:"image/jpeg"},customMetadata:{clientId:"globalplay-streaming",purpose:"reference"},async arrayBuffer(){return new Uint8Array([255,216,255,217]).buffer;}};}}};
-  const result=await generateOriginalMedia(env,{id:"globalplay-streaming"},"with-ref","",{contentFormat:"carousel",request:async(e,id,p)=>{payload=p;return {output:[{type:"image_generation_call",result:btoa("raw")}]};}});
+  const result=await generateOriginalMedia(env,{id:"globalplay-streaming",config:{agentCore:{aiImages:true}}},"with-ref","",{contentFormat:"carousel",request:async(e,id,p)=>{payload=p;return {output:[{type:"image_generation_call",result:btoa("raw")}]};}});
   assert.equal(payload.input[0].content.length,1);
   assert.equal(result.referenceMode,"text-direction");assert.equal(result.referenceCount,0);
   assert.equal(payload.nexusBypassDailyBudget,false);
@@ -101,7 +101,7 @@ test("imagens por IA pausadas por padrão (18/10): nenhuma chamada paga sai", as
   const { generateOriginalMedia, imageGenerationPaused } = await import("../src/media-generation.js");
   let called = false;
   const request = async () => { called = true; return { output: [] }; };
-  await assert.rejects(generateOriginalMedia({ PUBLIC_BASE_URL: "https://x", MEDIA: {} }, { id: "primeiro-teste" }, "p", "", { request }), /image_generation_paused/);
+  await assert.rejects(generateOriginalMedia({ PUBLIC_BASE_URL: "https://x", MEDIA: {} }, { id: "primeiro-teste", config: { agentCore: { aiImages: true } } }, "p", "", { request }), /image_generation_paused/);
   assert.equal(called, false);
   assert.equal(imageGenerationPaused({ NEXUS_IMAGE_GENERATION: "on" }), false);
   assert.equal(imageGenerationPaused({}), true);

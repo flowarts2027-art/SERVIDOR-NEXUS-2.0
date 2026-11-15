@@ -180,7 +180,7 @@ const addPost = (db, payload = {}) => db.prepare("INSERT INTO post_ledger VALUES
 test("cliente novo com marca recebe imagem do vigia, sem depender da lista do deploy", async () => {
   const { db, env } = setup();
   env.GITHUB_ACTIONS_TOKEN = "t";
-  addClient(db, "loja-nova");
+  addClient(db, "loja-nova", { agentCore: { aiImages: true } });
   addPost(db);
   const sent = [];
   const out = await runPostWatcher(env, NOW, watcherDeps({ fetch: async (url, options) => { sent.push(JSON.parse(options.body)); return new Response(null, { status: 204 }); } }));
@@ -207,7 +207,7 @@ test("cliente novo com marca recebe imagem do vigia, sem depender da lista do de
 
 test("sem token do GitHub, cai na arte do cliente", async () => {
   const { db, env } = setup();
-  addClient(db, "loja-nova");
+  addClient(db, "loja-nova", { agentCore: { aiImages: true } });
   addPost(db);
   const out = await runPostWatcher(env, NOW, watcherDeps({ library: async () => "https://x.test/media/lib.jpg" }));
   assert.equal(out.source, "biblioteca-do-cliente");

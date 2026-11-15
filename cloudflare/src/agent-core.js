@@ -55,6 +55,8 @@ export function normalizeAgentCoreConfig(client) {
       : true,
     autoPublish,
     cycleMinutes: Math.max(15, Math.min(1440, Number(current.cycleMinutes || 30))),
+    // 15/11/2026: gerar imagem por IA sozinho só com esta opção ligada no Master. Padrão: desligado.
+    aiImages: current.aiImages === true,
     modules
   };
 }
@@ -165,6 +167,7 @@ export async function saveAgentCoreConfig(env, clientId, patch = {}) {
       ? (patch.approvalRequired === undefined ? current.approvalRequired : patch.approvalRequired === true)
       : true,
     cycleMinutes: Math.max(15, Math.min(1440, Number(patch.cycleMinutes || current.cycleMinutes || 60))),
+    aiImages: patch.aiImages === undefined ? current.aiImages : patch.aiImages === true,
     modules: nextModules
   };
   await upsertClient(env, {
