@@ -138,6 +138,25 @@ test("auto-reply ON answers with the AI text, records it and the prompt carries 
   } finally { f.close(); }
 });
 
+// 15/11/2026 (Rodrigo): o David nunca supõe nome nem ramo (caminho da OpenAI).
+test("contato novo sem cadastro mandando oi: o pedido não traz nome nem ramo, só regra de perguntar aberto", async () => {
+  const f = fixture();
+  try {
+    await f.call("/api/whatsapp/settings", "POST", { autoReply: true });
+    await f.receive("Oi");
+    const prompt = f.aiPrompts[0];
+    assert.match(prompt, /Nome confirmado: nenhum/);
+    assert.match(prompt, /Ramo confirmado: nenhum/);
+    assert.match(prompt, /Como posso te ajudar hoje\?/);
+    assert.match(prompt, /NÃO é o nome da pessoa/);
+    assert.doesNotMatch(prompt, /Contato:|cirurg/i);
+    assert.equal((prompt.match(/consultório/g) || []).length, 1, "só aparece na regra que proíbe citar ramo");
+    assert.doesNotMatch(prompt, /Serve para qualquer negócio que tem Instagram: loja/);
+    const memory = JSON.parse(f.db.prepare("SELECT memory_json FROM whatsapp_contacts").get().memory_json);
+    assert.deepEqual(memory, {});
+  } finally { f.close(); }
+});
+
 test("handoff: replies, then pauses the bot for that conversation", async () => {
   const f = fixture({ aiReply: { classification: "lead", priority: 90, needsHuman: true, reply: "Vou chamar o Rodrigo para fechar com você.", reason: "quer pagar" } });
   try {

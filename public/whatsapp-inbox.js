@@ -81,7 +81,7 @@
       const unread = Number(item.unread_count) || 0;
       const prefix = item.last_direction === "outbound" ? "Você/robô: " : "";
       return `<button type="button" class="wa-item${human ? " human" : ""}${item.wa_id === wa.phone ? " active" : ""}" data-phone="${escapeHtml(item.wa_id)}">
-        <span class="wa-item-top"><strong>${escapeHtml(item.display_name || phoneLabel(item.wa_id))}</strong><small>${escapeHtml(when(item.updated_at || item.last_message_at))}</small></span>
+        <span class="wa-item-top"><strong>${escapeHtml(item.custom_name || item.display_name || phoneLabel(item.wa_id))}</strong><small>${escapeHtml(when(item.updated_at || item.last_message_at))}</small></span>
         <p>${escapeHtml(prefix + (item.last_text || "(mídia)"))}</p>
         <span class="wa-tags">${customerTag(item)}${human ? '<span class="wa-tag human">Precisa de você</span>' : ""}${unread ? `<span class="wa-tag unread">${unread} nova${unread > 1 ? "s" : ""}</span>` : ""}${Number(item.bot_paused) ? '<span class="wa-tag">Robô pausado</span>' : ""}</span>
       </button>`;
@@ -89,13 +89,13 @@
   }
 
   async function openThread(phone, { quiet = false } = {}) {
-    if (wa.phone !== phone) wa.draftId = "";
+    if (wa.phone !== phone) { wa.draftId = ""; wa.editFor = ""; }
     wa.phone = phone;
     wa.contact = wa.items.find(item => item.wa_id === phone) || null;
     $(".wa-layout").classList.add("open");
     $("#wa-empty").hidden = true;
     $("#wa-thread-wrap").hidden = false;
-    $("#wa-name").textContent = wa.contact?.display_name || phoneLabel(phone);
+    $("#wa-name").textContent = wa.contact?.custom_name || wa.contact?.display_name || phoneLabel(phone);
     $("#wa-phone").textContent = phoneLabel(phone);
     renderContactState();
     renderList();
@@ -153,12 +153,63 @@
       mark.hidden = Boolean(nexus) && !streaming;
       mark.textContent = streaming ? "Não é cliente do streaming" : "É cliente do streaming";
     }
+    renderContactEdit();
     const paused = Number(wa.contact?.bot_paused) === 1;
     const human = Number(wa.contact?.needs_human) === 1;
     $("#wa-handoff").hidden = !human;
     const toggle = $("#wa-bot-toggle");
     toggle.textContent = paused ? "Religar robô aqui" : "Pausar robô aqui";
     toggle.title = paused ? "O robô volta a responder esta pessoa" : "Você assume esta conversa";
+  }
+
+  // O que o David guardou sobre a pessoa (nome, negócio, cidade...), em texto simples.
+  const MEMORY_LABELS = { nome: "Nome", negocio: "Negócio", cidade: "Cidade", vendePara: "Vende para", interesse: "Interesse", observacao: "Observação" };
+  function memoryText(memory) {
+    const lines = Object.entries(memory || {}).filter(([, value]) => String(value || "").trim())
+      .map(([key, value]) => `${MEMORY_LABELS[key] || key}: ${value}`);
+    return lines.length ? "O David guardou: " + lines.join(" · ") : "O David não guardou nada sobre esta pessoa.";
+  }
+
+  // O campo do nome só é preenchido ao abrir a conversa (a tela se atualiza a cada 6 s e não pode apagar o que você digita).
+  function renderContactEdit() {
+    const input = $("#wa-edit-name");
+    if (!input) return;
+    if (wa.editFor !== wa.phone) {
+      wa.editFor = wa.phone;
+      input.value = wa.contact?.custom_name || "";
+      $("#wa-edit-msg").textContent = "";
+    }
+    const memory = wa.contact?.memory || {};
+    $("#wa-memory").textContent = memoryText(memory);
+    $("#wa-clear-memory").hidden = !Object.values(memory).some(value => String(value || "").trim());
+  }
+
+  async function saveName() {
+    if (!wa.phone) return;
+    const name = $("#wa-edit-name").value.trim();
+    try {
+      await api("/api/whatsapp/contact", { method: "POST", body: JSON.stringify({ phone: wa.phone, name }) });
+      if (wa.contact) wa.contact.custom_name = name;
+      $("#wa-edit-msg").textContent = name ? "Nome salvo. O David vai chamar pelo nome." : "Nome apagado. O David cumprimenta sem nome.";
+      $("#wa-name").textContent = name || wa.contact?.display_name || phoneLabel(wa.phone);
+      await loadInbox();
+    } catch (error) {
+      $("#wa-edit-msg").textContent = "Não consegui salvar o nome: " + error.message;
+    }
+  }
+
+  async function clearMemory() {
+    if (!wa.phone) return;
+    if (!confirm("Apagar tudo o que o David guardou sobre esta pessoa? As conversas não são apagadas.")) return;
+    try {
+      await api("/api/whatsapp/contact", { method: "POST", body: JSON.stringify({ phone: wa.phone, clearMemory: true }) });
+      if (wa.contact) wa.contact.memory = {};
+      renderContactEdit();
+      $("#wa-edit-msg").textContent = "Memória apagada.";
+      await loadInbox();
+    } catch (error) {
+      $("#wa-edit-msg").textContent = "Não consegui apagar a memória: " + error.message;
+    }
   }
 
   async function setBot(paused) {
@@ -224,6 +275,9 @@
     renderList();
   });
   $("#wa-bot-toggle").addEventListener("click", () => setBot(Number(wa.contact?.bot_paused) !== 1));
+  $("#wa-save-name").addEventListener("click", saveName);
+  $("#wa-edit-name").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); saveName(); } });
+  $("#wa-clear-memory").addEventListener("click", clearMemory);
   $("#wa-streaming")?.addEventListener("click", async () => {
     if (!wa.phone) return;
     const next = wa.contact?.customer_type === "streaming" ? "" : "streaming";

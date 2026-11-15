@@ -72,6 +72,43 @@ export function mergeMemory(previous = {}, learned = {}) {
   return out;
 }
 
+// 15/11/2026 (Rodrigo): o David nunca chuta nome, profissão nem ramo.
+// Só vale o que está no cadastro do Master (nome editado no Master, ramo do cliente do Nexus)
+// ou o que a própria pessoa disse SOBRE ELA MESMA na conversa. Na dúvida, cumprimenta sem nome e sem ramo.
+export const NAME_AND_NICHE_RULES = [
+  "NOME E RAMO (regra fixa do Rodrigo):",
+  "- Só chame a pessoa pelo nome se estiver em 'Nome confirmado'. Se estiver 'nenhum', cumprimente SEM nome (ex.: 'Oi! Tudo bem?').",
+  "- O nome do perfil do WhatsApp NÃO é o nome da pessoa. Nome de outra pessoa que apareça na conversa também não.",
+  "- Nunca suponha o ramo, a profissão ou o negócio. Os clientes são de vários ramos (comida, ração, construção, depilação, despachante, streaming e outros). Só fale do ramo se estiver em 'Ramo confirmado'.",
+  "- Se o ramo for 'nenhum', não cite ramo nenhum (nada de consultório, loja, restaurante, salão...). Pergunte de forma aberta, como 'Como posso te ajudar hoje?'.",
+  "- 'memory': só preencha 'nome' e 'negocio' quando a pessoa falou de si mesma ('meu nome é', 'sou dono de', 'tenho uma'). Palavra solta, nome de terceiro ou profissão de outra pessoa não conta."
+].join("\n");
+
+const norm = value => String(value || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+// A pessoa falou de si mesma? Padrões conservadores: na dúvida, não vale.
+const SELF_NAME = /\b(meu nome|me chamo|pode me chamar|sou o|sou a|aqui e o|aqui e a|nome:)/;
+const SELF_BIZ = /\b(sou|tenho|trabalho|atuo|vendo|minha|meu|nossa|nosso|aqui na|aqui no)\b/;
+
+// O valor guardado vale se aparece, numa mesma mensagem da pessoa, junto de uma frase sobre ela mesma.
+export function declaredByPerson(field, value, inboundTexts = []) {
+  const wanted = norm(value);
+  if (!wanted) return false;
+  const pattern = field === "nome" ? SELF_NAME : SELF_BIZ;
+  return inboundTexts.some(text => {
+    const body = norm(text);
+    return body.includes(wanted) && pattern.test(body);
+  });
+}
+
+// Tira da memória o que a pessoa não disse de si mesma (nome e negócio).
+export function trustedMemory(memory = {}, inboundTexts = []) {
+  const out = { ...(memory || {}) };
+  for (const field of ["nome", "negocio"]) {
+    if (out[field] && !declaredByPerson(field, out[field], inboundTexts)) delete out[field];
+  }
+  return out;
+}
+
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
   properties: {
@@ -93,7 +130,7 @@ function mediaLabel(type) {
   return type === "audio" ? "um ÁUDIO (ouça o arquivo anexo)" : "uma IMAGEM (veja o arquivo anexo)";
 }
 
-export function buildAliceRequest({ knowledge, knownCustomer = "", memory, history, inboundText, mediaType, media, displayName, alreadyIntroduced }) {
+export function buildAliceRequest({ knowledge, knownCustomer = "", memory, history, inboundText, mediaType, media, displayName, alreadyIntroduced, confirmedName = "", confirmedNiche = "" }) {
   const rules = [
     knowledge,
     "",
@@ -107,12 +144,16 @@ export function buildAliceRequest({ knowledge, knownCustomer = "", memory, histo
     "- 'understood': se chegou ÁUDIO, escreva o que a pessoa falou (transcrição fiel, curta); se chegou IMAGEM, descreva em 1 frase o que ela mostra. Para texto, deixe vazio.",
     "- 'memory': só o que a PESSOA disse ou mostrou nesta conversa (nome, negócio, cidade, se vende para empresas ou pessoa física, interesse, observação). Não invente; deixe vazio o que não sabe.",
     "- classification: urgente, lead, cliente, fornecedor, pessoal ou ruido. priority de 0 a 100.",
-    "- needsHuman=true nos casos de passar para o responsável."
+    "- needsHuman=true nos casos de passar para o responsável.",
+    "",
+    NAME_AND_NICHE_RULES
   ].join("\n");
 
   const memoryLines = Object.entries(memory || {}).filter(([, v]) => String(v || "").trim());
   const context = [
-    `Contato: ${displayName || "(sem nome)"}`,
+    `Nome confirmado: ${confirmedName || "nenhum (cumprimente sem nome)"}`,
+    `Ramo confirmado: ${confirmedNiche || "nenhum (não cite ramo nenhum)"}`,
+    `Nome no perfil do WhatsApp (só referência, NÃO é o nome da pessoa): ${displayName || "(vazio)"}`,
     "O que você já sabe desta pessoa:",
     memoryLines.length ? memoryLines.map(([k, v]) => `- ${k}: ${v}`).join("\n") : "(nada ainda)",
     "Histórico (mais antigo primeiro):",

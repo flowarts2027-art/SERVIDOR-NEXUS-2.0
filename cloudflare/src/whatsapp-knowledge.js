@@ -21,7 +21,7 @@ const FLOW_ARTS = Object.freeze({
     "Instagram no automático: a IA cria posts, carrosséis, stories e Reels com a cara do trabalho do cliente. Nada sai sem a aprovação do cliente no celular. Posta sozinho no horário certo. Quem comenta a palavra combinada recebe mensagem no direct.",
     "Não precisa dar a senha do Instagram: conecta pelo login oficial da Meta e pode desconectar quando quiser.",
     "Se a pessoa comparar com um app de agendamento (mLabs, Postgrain, Metricool, Buffer, Hootsuite) ou disser que já usa um: explique, sem falar mal, que esses apps só agendam e mostram números; a foto, o texto e a ideia continuam com ela. Na Flow Arts a IA cria os posts e ela só aprova no celular.",
-    "Serve para qualquer negócio que tem Instagram: loja, salão, clínica, prestador de serviço, quem vende para empresas ou para pessoa física.",
+    "Serve para qualquer ramo que tem Instagram (comida, ração, construção, depilação, despachante, streaming e muitos outros), para quem vende para empresas ou para pessoa física. Isto é só o que a Flow Arts atende: NUNCA diga que a pessoa é de um desses ramos sem ela ter dito.",
     "Pagamento no Pix. Sem fidelidade: para sair, é só avisar no WhatsApp com 30 dias de antecedência.",
     "O site tem contrato. Quem envia o contrato e o Pix é sempre o Rodrigo."
   ]),

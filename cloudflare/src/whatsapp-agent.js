@@ -3,7 +3,7 @@ import { davidResponses } from "./openai.js";
 import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
 import { addFromWhatsApp } from "./crm.js";
 import {
-  davidReply, buildAliceRequest, downloadMedia, MEDIA_TYPES,
+  davidReply, buildAliceRequest, trustedMemory, NAME_AND_NICHE_RULES, downloadMedia, MEDIA_TYPES,
   mergeMemory, parseMemory, showTyping, sleep, typingDelayMs
 } from "./whatsapp-alice.js";
 
@@ -148,6 +148,13 @@ export async function ensureWhatsAppSchema(env) {
   } catch {
     // coluna já existe
   }
+  // Nome do contato editado pelo Rodrigo no Master (15/11/2026). O David só chama pelo nome se ele estiver aqui
+  // ou se a pessoa disse o nome dela na conversa. O nome do perfil do WhatsApp nunca vale.
+  try {
+    await env.DB.prepare("ALTER TABLE whatsapp_contacts ADD COLUMN custom_name TEXT NOT NULL DEFAULT ''").run();
+  } catch {
+    // coluna já existe
+  }
 
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_contacts_updated ON whatsapp_contacts(client_id, updated_at DESC)").run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_wa_messages_phone ON whatsapp_messages(client_id, wa_id, created_at DESC)").run();
@@ -253,6 +260,7 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
     .join("\n");
 
   const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
+  const customRow = await env.DB.prepare("SELECT custom_name FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2").bind(clientId, waId).first().catch(() => null);
   try {
     // David: só ele usa a chave da OpenAI do Master (15/11/2026).
     const data = await davidResponses(env, clientId, {
@@ -271,7 +279,10 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
         knowledgePrompt(clientId),
         "",
         known.prompt,
-        `Contato: ${displayName || waId}`,
+        NAME_AND_NICHE_RULES,
+        `Nome confirmado: ${String(customRow?.custom_name || "").trim() || "nenhum (cumprimente sem nome)"}`,
+        `Ramo confirmado: ${known.nexus?.niche || "nenhum (não cite ramo nenhum)"}`,
+        `Nome no perfil do WhatsApp (só referência, NÃO é o nome da pessoa): ${displayName || "(vazio)"}`,
         "Histórico:",
         history || "(sem histórico anterior)",
         "Nova mensagem do cliente:",
@@ -306,17 +317,25 @@ async function buildAliceDraft(env, clientId, waId, displayName, text, message, 
     .map(row => `${row.direction === "outbound" ? "ALICE" : "CLIENTE"}: ${String(row.text || "").slice(0, 500)}`)
     .join("\n");
   const contact = await env.DB.prepare(
-    "SELECT memory_json FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2"
+    "SELECT memory_json, custom_name FROM whatsapp_contacts WHERE client_id=?1 AND wa_id=?2"
   ).bind(clientId, waId).first();
-  const memory = parseMemory(contact?.memory_json);
+  // 15/11/2026: o que a pessoa escreveu (inclui a mensagem de agora). Nome e negócio da memória só valem
+  // se ela falou de si mesma; senão o David cumprimenta sem nome e sem ramo.
+  const inboundResult = await env.DB.prepare(
+    "SELECT text FROM whatsapp_messages WHERE client_id=?1 AND wa_id=?2 AND direction='inbound' ORDER BY created_at DESC LIMIT 200"
+  ).bind(clientId, waId).all();
+  const inboundTexts = (inboundResult?.results || []).map(row => String(row.text || ""));
+  const memory = trustedMemory(parseMemory(contact?.memory_json), inboundTexts);
   const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
+  const confirmedName = String(contact?.custom_name || "").trim() || String(memory.nome || "").trim();
+  const confirmedNiche = String(known.nexus?.niche || "").trim() || String(memory.negocio || "").trim();
 
   const answer = await davidReply(env, clientId, buildAliceRequest({
     knowledge: knowledgePrompt(clientId),
     knownCustomer: known.prompt,
     memory, history, inboundText: text,
     mediaType: MEDIA_TYPES.has(type) ? type : "",
-    media, displayName, alreadyIntroduced
+    media, displayName, alreadyIntroduced, confirmedName, confirmedNiche
   }), fetcher);
 
   // O que a Alice ouviu/viu fica no histórico (aparece no Master e ajuda a próxima resposta).
@@ -326,7 +345,7 @@ async function buildAliceDraft(env, clientId, waId, displayName, text, message, 
     await env.DB.prepare("UPDATE whatsapp_messages SET text=?3 WHERE client_id=?1 AND id=?2")
       .bind(clientId, rowId, seen.slice(0, 4000)).run();
   }
-  const learned = mergeMemory(memory, answer.memory);
+  const learned = mergeMemory(memory, trustedMemory(answer.memory, [...inboundTexts, text, answer.understood]));
   await env.DB.prepare("UPDATE whatsapp_contacts SET memory_json=?3 WHERE client_id=?1 AND wa_id=?2")
     .bind(clientId, waId, JSON.stringify(learned)).run();
   return answer;
@@ -677,7 +696,7 @@ export async function handleWhatsAppProtected(request, env, url) {
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 30)));
     const rows = await env.DB.prepare(
       `SELECT c.wa_id,c.display_name,c.classification,c.priority,c.needs_human,c.bot_paused,c.unread_count,
-              c.last_message_at,c.updated_at,c.customer_type,
+              c.last_message_at,c.updated_at,c.customer_type,c.custom_name,c.memory_json,
               (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
                ORDER BY m.created_at DESC LIMIT 1) AS last_text,
               (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
@@ -688,7 +707,8 @@ export async function handleWhatsAppProtected(request, env, url) {
     const index = await nexusClientIndex(env).catch(() => new Map());
     const items = (rows?.results || []).map(row => {
       const nexus = index.get(phoneKey(row.wa_id));
-      return { ...row, customer_type: row.customer_type || "", nexus_client: nexus ? nexus.name : "" };
+      const { memory_json: memoryJson, ...rest } = row;
+      return { ...rest, customer_type: row.customer_type || "", custom_name: String(row.custom_name || ""), memory: parseMemory(memoryJson), nexus_client: nexus ? nexus.name : "" };
     });
     return json({ ok: true, items });
   }
@@ -770,6 +790,11 @@ export async function handleWhatsAppProtected(request, env, url) {
       values.push(body.customerType);
       fields.push(`customer_type=?${values.length}`);
     }
+    if (typeof body?.name === "string") {
+      values.push(body.name.replace(/\s+/g, " ").trim().slice(0, 80));
+      fields.push(`custom_name=?${values.length}`);
+    }
+    if (body?.clearMemory === true) fields.push("memory_json='{}'");
     if (!fields.length) return json({ error: "nothing_to_update" }, 400);
     const result = await env.DB.prepare(
       `UPDATE whatsapp_contacts SET ${fields.join(",")},updated_at=CURRENT_TIMESTAMP WHERE client_id=?1 AND wa_id=?2`

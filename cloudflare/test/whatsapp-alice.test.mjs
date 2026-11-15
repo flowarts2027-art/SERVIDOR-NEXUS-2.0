@@ -138,20 +138,82 @@ test("text: typing indicator, human pause and short messages in order", async ()
   } finally { f.close(); }
 });
 
-test("memory: what the person said is kept and sent on the next reply", async () => {
-  const second = { ...hello, messages: ["Show! Para aluguel de equipamentos o Captador encaixa bem."], memory: { negocio: "aluguel de equipamentos", cidade: "Nova Friburgo", vendePara: "empresas" } };
-  const f = fixture({ answers: [hello, second] });
+test("memory: só vale o que a pessoa disse de si mesma, e volta no próximo pedido", async () => {
+  // 15/11/2026: antes, "Oi" já guardava o nome do perfil do WhatsApp (Carlos). Agora não.
+  const second = { ...hello, messages: ["Show! Para locação de equipamentos o Captador encaixa bem."], memory: { nome: "Carlos", negocio: "locadora de equipamentos", cidade: "Nova Friburgo", vendePara: "empresas" } };
+  const third = { ...hello, messages: ["Certo, Carlos!"], memory: {} };
+  const f = fixture({ answers: [hello, second, third] });
   try {
     await f.call("/api/whatsapp/settings", "POST", { autoReply: true });
     await f.receive({ type: "text", text: { body: "Oi" } });
-    await f.receive({ type: "text", text: { body: "Alugo equipamentos em Nova Friburgo" } });
+    assert.equal(JSON.parse(f.contact().memory_json).nome, undefined, "só 'Oi': nome do perfil não vira memória");
+    await f.receive({ type: "text", text: { body: "Oi, meu nome é Carlos. Tenho uma locadora de equipamentos em Nova Friburgo" } });
     const memory = JSON.parse(f.contact().memory_json);
     assert.equal(memory.nome, "Carlos");
+    assert.equal(memory.negocio, "locadora de equipamentos");
     assert.equal(memory.cidade, "Nova Friburgo");
-    const context = f.gemini[1].contents[0].parts[0].text;
-    assert.match(context, /nome: Carlos/);
+    await f.receive({ type: "text", text: { body: "Pode me explicar?" } });
+    const context = f.gemini[2].contents[0].parts[0].text;
+    assert.match(context, /Nome confirmado: Carlos/);
+    assert.match(context, /Ramo confirmado: locadora de equipamentos/);
     assert.match(context, /ALICE: Oi, Carlos!/);
-    assert.match(f.gemini[1].systemInstruction.parts[0].text, /já se apresentou/);
+    assert.match(f.gemini[2].systemInstruction.parts[0].text, /já se apresentou/);
+  } finally { f.close(); }
+});
+
+// 15/11/2026 (Rodrigo): o David nunca supõe nome, profissão nem ramo. Os clientes são de vários ramos.
+test("contato novo sem cadastro mandando oi: nenhum nome nem ramo inventado", async () => {
+  const invented = { ...hello, messages: ["Oi, Tiago! Como vai o seu consultório?"], memory: { nome: "Tiago", negocio: "cirurgião geral", observacao: "cirurgião geral" } };
+  const f = fixture({ answers: [invented, hello] });
+  try {
+    await f.call("/api/whatsapp/settings", "POST", { autoReply: true });
+    await f.receive({ type: "text", text: { body: "Oi" } });
+    const system = f.gemini[0].systemInstruction.parts[0].text;
+    const context = f.gemini[0].contents[0].parts[0].text;
+    // O pedido ao David diz que não há nome nem ramo confirmados, e que o nome do perfil não vale.
+    assert.match(context, /Nome confirmado: nenhum/);
+    assert.match(context, /Ramo confirmado: nenhum/);
+    assert.match(context, /Nome no perfil do WhatsApp \(só referência, NÃO é o nome da pessoa\): Carlos/);
+    assert.match(system, /cumprimente SEM nome/);
+    assert.match(system, /não cite ramo nenhum/);
+    assert.match(system, /Como posso te ajudar hoje\?/);
+    assert.match(system, /comida, ração, construção, depilação, despachante, streaming/);
+    // Mesmo que a IA invente nome e ramo, nada disso é guardado como fato da pessoa.
+    const memory = JSON.parse(f.contact().memory_json);
+    assert.equal(memory.nome, undefined);
+    assert.equal(memory.negocio, undefined);
+    // "Tiago kloe" e "Cirurgião geral" soltos (como no caso real de 05/11) também não valem.
+    await f.receive({ type: "text", text: { body: "Cirurgião geral" } });
+    await f.receive({ type: "text", text: { body: "Tiago kloe" } });
+    const next = f.gemini[2].contents[0].parts[0].text;
+    assert.match(next, /Nome confirmado: nenhum/);
+    assert.match(next, /Ramo confirmado: nenhum/);
+    assert.doesNotMatch(next, /nome: Tiago|negocio: cirurgi/i);
+  } finally { f.close(); }
+});
+
+test("Master: nome do contato editado vale, o perfil do WhatsApp não o apaga, e a memória pode ser apagada", async () => {
+  const learned = { ...hello, messages: ["Oi!"], memory: { cidade: "Petrópolis", observacao: "quer saber de planos" } };
+  const f = fixture({ answers: [learned, hello] });
+  try {
+    await f.call("/api/whatsapp/settings", "POST", { autoReply: true });
+    await f.receive({ type: "text", text: { body: "Oi, sou de Petrópolis" } });
+    const inbox = (await f.call("/api/whatsapp/inbox")).body.items[0];
+    assert.equal(inbox.custom_name, "");
+    assert.equal(inbox.memory.cidade, "Petrópolis");
+    assert.equal(inbox.memory_json, undefined, "o texto bruto não sai pela API");
+
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: PHONE, name: "  Maria   Souza " })).status, 200);
+    await f.receive({ type: "text", text: { body: "Quanto custa?" } }); // o perfil continua "Carlos"
+    assert.match(f.gemini[1].contents[0].parts[0].text, /Nome confirmado: Maria Souza/);
+    assert.equal((await f.call("/api/whatsapp/inbox")).body.items[0].custom_name, "Maria Souza");
+
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: PHONE, clearMemory: true })).status, 200);
+    assert.deepEqual((await f.call("/api/whatsapp/inbox")).body.items[0].memory, {});
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: PHONE, name: "" })).status, 200);
+    assert.equal((await f.call("/api/whatsapp/inbox")).body.items[0].custom_name, "");
+    // Mensagens não são apagadas.
+    assert.equal((await f.call("/api/whatsapp/messages?phone=" + PHONE)).body.items.length >= 2, true);
   } finally { f.close(); }
 });
 
