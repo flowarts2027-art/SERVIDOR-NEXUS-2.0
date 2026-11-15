@@ -81,7 +81,7 @@
       const unread = Number(item.unread_count) || 0;
       const prefix = item.last_direction === "outbound" ? "Você/robô: " : "";
       return `<button type="button" class="wa-item${human ? " human" : ""}${item.wa_id === wa.phone ? " active" : ""}" data-phone="${escapeHtml(item.wa_id)}">
-        <span class="wa-item-top"><strong>${escapeHtml(item.custom_name || item.display_name || phoneLabel(item.wa_id))}</strong><small>${escapeHtml(when(item.updated_at || item.last_message_at))}</small></span>
+        <span class="wa-item-top"><strong>${escapeHtml(item.custom_name || item.display_name || phoneLabel(item.wa_id))}</strong><small>${escapeHtml(when(item.last_at || item.last_message_at || item.updated_at))}</small></span>
         <p>${escapeHtml(prefix + (item.last_text || "(mídia)"))}</p>
         <span class="wa-tags">${customerTag(item)}${human ? '<span class="wa-tag human">Precisa de você</span>' : ""}${unread ? `<span class="wa-tag unread">${unread} nova${unread > 1 ? "s" : ""}</span>` : ""}${Number(item.bot_paused) ? '<span class="wa-tag">Robô pausado</span>' : ""}</span>
       </button>`;
