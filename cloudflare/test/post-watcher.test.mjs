@@ -45,7 +45,7 @@ function setup() {
   return { db, env, stored };
 }
 
-const addClient = (db, id = "maskara-assessoria") => db.prepare("INSERT INTO clients VALUES(?,?,'','@x','online','{}','','')").run(id, id);
+const addClient = (db, id = "maskara-assessoria") => db.prepare("INSERT INTO clients VALUES(?,?,'','@x','online',?,'','')").run(id, id, JSON.stringify({ agentCore: { aiImages: true } }));
 const addPost = (db, { id = "p", client = "maskara-assessoria", at = AT, status = "ready", approval = "pending", error = "", caption = "Legenda", payload = {} } = {}) =>
   db.prepare("INSERT INTO post_ledger VALUES(?,?,?,?,?,?,?,?,'')").run(id, client, at, status, approval, error, caption, JSON.stringify(payload));
 const read = (db, id = "p") => {
@@ -285,7 +285,7 @@ test("um post por rodada", async () => {
 test("WhatsApp: desligado não manda; ligado manda um aviso e publica do mesmo jeito", async () => {
   const run = async flag => {
     const { db, env } = setup();
-    db.prepare("INSERT INTO clients VALUES('maskara-assessoria','g','','@x','online',?,'','')").run(JSON.stringify({ contact: { whatsapp: "5521900000000" } }));
+    db.prepare("INSERT INTO clients VALUES('maskara-assessoria','g','','@x','online',?,'','')").run(JSON.stringify({ contact: { whatsapp: "5521900000000" }, agentCore: { aiImages: true } }));
     addPost(db, { error: "media_generation_required" });
     if (flag) env.NEXUS_AUTO_REPLACE_WHATSAPP = "true";
     const sent = [];

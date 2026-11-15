@@ -19,7 +19,7 @@ function jpeg(width, height) {
 function fakeEnv(clients = ["primeiro-teste"]) {
   const db = new DatabaseSync(":memory:");
   for (const name of readdirSync(new URL("../migrations/", import.meta.url)).sort()) db.exec(readFileSync(new URL("../migrations/" + name, import.meta.url), "utf8"));
-  for (const id of clients) db.prepare("INSERT INTO clients(id,name,niche,instagram,status,config_json) VALUES(?,?,'Moda','@x','online','{}')").run(id, id);
+  for (const id of clients) db.prepare("INSERT INTO clients(id,name,niche,instagram,status,config_json) VALUES(?,?,'Moda','@x','online',?)").run(id, id, JSON.stringify({ agentCore: { aiImages: true } }));
   const DB = { prepare(sql) { const wrap = args => {
     const parameters = Object.fromEntries(args.map((value, i) => ["?" + (i + 1), value ?? null]));
     return { first: async () => db.prepare(sql).get(parameters) || null,

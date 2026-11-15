@@ -220,7 +220,7 @@ test("grupo criado no Master não quebra quem lê o grupo do cliente", () => {
 test("grupo da Adimax também fica sem imagem gerada, mesmo com id de cliente sem a palavra", async () => {
   const { env } = setup();
   const deps = { brand: async () => ({ buttonWord: "QUERO" }), loadFrames: async () => null };
-  const member = group => ({ id: "eduardo-soares", config: { group: { id: group, vendor: "Eduardo", name: group } } });
+  const member = group => ({ id: "eduardo-soares", config: { agentCore: { aiImages: true }, group: { id: group, vendor: "Eduardo", name: group } } });
   assert.equal(await canCreateArt(env, member("adimax"), deps), false);
   assert.equal(await canCreateArt(env, member("adimax-sul"), deps), false);
   assert.equal(await canCreateArt(env, member("racao-forte"), deps), true);

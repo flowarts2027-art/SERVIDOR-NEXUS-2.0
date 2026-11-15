@@ -9,6 +9,7 @@
 import { freeChat, providerOrder } from "./free-llm.js";
 import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
+import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
@@ -406,6 +407,9 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
   const compose = deps.compose || composeWithLogo;
   const now = deps.now || new Date();
   if (!GEMINI_CAMPAIGNS[clientId]) throw new Error("gemini_client_not_configured");
+  // 15/11/2026: campanha com foto de IA só para quem tem "Gerar imagem por IA sozinho" ligado no Master.
+  const campaignClient = deps.client || await (await import("./clients.js")).getClient(env, clientId).catch(() => null);
+  if (!usesGeneratedImage(campaignClient)) throw new Error(GENERATION_BLOCKED);
   const plan = dailyPlan(clientId, date);
   const stateKey = date;
   const state = await readState(env, "gemini-daily", stateKey, clientId);

@@ -1857,6 +1857,9 @@ export async function runAgentCoreCycle(env, clientId, options = {}) {
 
     if(run("creator")&&config.modules.creator&&GENERATION_PAUSED_CLIENTS.has(String(client.id))){
       result.agents.creator={skipped:true,reason:"generation_paused"};
+    }else if(run("creator")&&config.modules.creator&&!usesGeneratedImage(client)){
+      // 15/11/2026: o Creator cria post sozinho. Só roda com "Gerar imagem por IA sozinho" ligado no Master.
+      result.agents.creator={skipped:true,reason:"generated_image_not_allowed"};
     }else if(run("creator")&&config.modules.creator){
       cycleStage="creator";
       result.agents.creator=await runCreator(env,client,strategy,options);

@@ -1,6 +1,7 @@
 import { reviewImage } from "./visual-review.js";
 import { globalPlayCarouselPlan, GLOBAL_PLAY_REFERENCE_VERSION } from "./media-references.js";
 import { generateOriginalMedia } from "./media-generation.js";
+import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { clientBrand, brandProfileVersion, GENERATION_PAUSED_CLIENTS } from "./client-brand.js";
 import { recordAgentExecution, patchAgentCoreState } from "./agent-core.js";
 import { openAIResponses } from "./openai.js";
@@ -521,6 +522,13 @@ export async function runFormatBuilder(env, client, options = {}) {
         .bind(row.id,JSON.stringify(payload)).run();
       failed++;
       items.push({id:row.id,format,status:"failed",error:"format_build_retry_limit_reached"});
+      continue;
+    }
+
+    // 15/11/2026 (Adimax): cartão de carrossel é imagem nova da IA (a capa de Reel trava em generateOriginalMedia).
+    // Sem "Gerar imagem por IA sozinho" ligado no Master, não gera e não mexe no post.
+    if(format==="carousel"&&!usesGeneratedImage(client)){
+      items.push({id:row.id,format,status:"blocked",error:GENERATION_BLOCKED});
       continue;
     }
 

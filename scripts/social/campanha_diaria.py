@@ -153,14 +153,15 @@ def foto_falsa(larg, alt, semente):
     return img.filter(ImageFilter.GaussianBlur(6))
 
 
-def pedir_foto(prompt, aspecto, semente):
+def pedir_foto(prompt, aspecto, semente, cliente=""):
     base = os.environ.get("NEXUS_BASE", "").rstrip("/")
     token = os.environ.get("NEXUS_MASTER_TOKEN", "")
     if os.environ.get("FOTO_FALSA") == "1":
         return foto_falsa(1024, 1280 if aspecto == "4:5" else 1344, semente)
     if not base or not token:
         raise RuntimeError("ATLAS: foto real indisponível; NEXUS_BASE e NEXUS_MASTER_TOKEN obrigatórios. Não usar foto falsa em produção.")
-    corpo = json.dumps({"prompt": prompt + " " + REGRAS_FOTO, "aspect": aspecto}).encode()
+    # 15/11/2026: o Nexus só gera a foto se o cliente tiver "Gerar imagem por IA sozinho" ligado no Master.
+    corpo = json.dumps({"prompt": prompt + " " + REGRAS_FOTO, "aspect": aspecto, "clientId": cliente}).encode()
     erro = ""
     for tentativa in range(3):
         req = urllib.request.Request(base + "/api/master/foto", data=corpo, method="POST", headers={
@@ -363,7 +364,7 @@ def gerar(cliente, data, saida_raiz):
             story = peca["tipo"] == "story"
             imagens = []
             for i, c in enumerate(peca["cartoes"]):
-                foto = pedir_foto(c["foto"], "9:16" if story else "4:5", f"{cliente}{data}{peca['chave']}{i}")
+                foto = pedir_foto(c["foto"], "9:16" if story else "4:5", f"{cliente}{data}{peca['chave']}{i}", cliente)
                 num = i + 1 if peca["tipo"] == "carousel" else None
                 imagens.append(desenhar(foto, c, tema, story=story, numero=num, rodape=cfg.get("rodape_story", "")))
             esperado = (1080, 1920) if story else (1080, 1350)

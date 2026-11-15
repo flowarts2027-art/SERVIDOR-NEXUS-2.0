@@ -523,6 +523,7 @@ function renderAgentCore(){
   if($("#agent-core-enabled"))$("#agent-core-enabled").checked=config.enabled!==false;
   if($("#agent-core-auto-publish"))$("#agent-core-auto-publish").checked=config.autoPublish===true;
   if($("#agent-core-require-approval"))$("#agent-core-require-approval").checked=config.approvalRequired!==false;
+  if($("#agent-core-ai-images"))$("#agent-core-ai-images").checked=config.aiImages===true;
   if($("#agent-core-cycle-minutes"))$("#agent-core-cycle-minutes").value=Number(config.cycleMinutes||60);
   const clientState=$("#agent-core-client-state");
   if(clientState){clientState.textContent=config.enabled!==false?"ATIVO":"PAUSADO";clientState.classList.toggle("off",config.enabled===false);}
@@ -590,6 +591,7 @@ async function saveAgentCoreConfig(){
         autoPublish,
         approvalRequired,
         cycleMinutes,
+        aiImages:Boolean($("#agent-core-ai-images")?.checked),
         modules
       })
     });

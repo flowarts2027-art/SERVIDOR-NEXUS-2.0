@@ -15,8 +15,14 @@ function fakeEnv(extra = {}) {
       all: async () => ({ results: db.prepare(sql).all(parameters) }),
       run: async () => ({ meta: { changes: Number(db.prepare(sql).run(parameters).changes) } }) };
   }; return { ...wrap([]), bind: (...args) => wrap(args) }; } };
+  // 15/11/2026: campanha com foto de IA só para cliente com a opção ligada no Master.
+  for (const id of ["giltec", "primeiro-teste"]) db.prepare("INSERT OR IGNORE INTO clients(id,name,status,config_json) VALUES(?,?,'online',?)").run(id, id, JSON.stringify({ agentCore: { aiImages: true } }));
   return { DB, GEMINI_API_KEY: "teste", GEMINI_DAILY_CLIENTS: "giltec", ...extra };
 }
+
+// 15/11/2026: a GILTEC nunca recebe foto de IA. Estes testes conferem a mecânica da campanha
+// com um cliente liberado no Master (deps.client); a trava da GILTEC fica no teste logo abaixo.
+const LIBERADO = { id: "cliente-liberado", config: { agentCore: { aiImages: true } } };
 
 const PNG = Buffer.from("iVBORw0KGgo=", "base64").toString("base64");
 function fakeGemini(log = []) {
@@ -78,13 +84,19 @@ test("pedido ao Google: modelo de imagem, proporção e chave no cabeçalho (nun
   await assert.rejects(geminiImage({}, "x", "4:5", fakeGemini()), /gemini_key_missing/);
 });
 
+test("GILTEC sem foto de IA: a campanha nem começa", async () => {
+  let n = 0;
+  await assert.rejects(runGeminiCampaign(fakeEnv(), "giltec", "2026-10-28", { fetcher: fakeGemini(), compose, githubCaptions: async () => ({}), image: async () => { n++; }, upload: async () => { n++; }, now: new Date("2026-10-28T09:00:00Z") }), /generated_image_not_allowed/);
+  assert.equal(n, 0);
+});
+
 test("roda o pacote: 6 envios esperando aprovação, legenda do GitHub ou do Gemini, gasto contado", async () => {
   const env = fakeEnv();
   const forms = [];
   const upload = async (e, form) => { forms.push(form); return { ok: true }; };
   const github = async () => ({ "0900": "", "1200": "Legenda do ChatGPT. Comente QUERO.", "1900": "" });
   const now = new Date("2026-10-28T09:00:00Z"); // 6h em Brasília
-  const r = await runGeminiCampaign(env, "giltec", "2026-10-28", { fetcher: fakeGemini(), upload, githubCaptions: github, compose, now });
+  const r = await runGeminiCampaign(env, "giltec", "2026-10-28", { client: LIBERADO, fetcher: fakeGemini(), upload, githubCaptions: github, compose, now });
   assert.deepEqual(r.failed, []);
   assert.equal(r.sent.length, 6);
   const types = forms.map(f => f.get("type") + "@" + f.get("time"));
@@ -97,7 +109,7 @@ test("roda o pacote: 6 envios esperando aprovação, legenda do GitHub ou do Gem
   assert.equal(forms[3].get("caption"), null);
   assert.ok(Math.abs(await monthSpend(env, "2026-10") - 7 * 0.039) < 1e-9);
   // Segunda rodada no mesmo dia não gera nada de novo.
-  const again = await runGeminiCampaign(env, "giltec", "2026-10-28", { fetcher: fakeGemini(), upload, githubCaptions: github, compose, now });
+  const again = await runGeminiCampaign(env, "giltec", "2026-10-28", { client: LIBERADO, fetcher: fakeGemini(), upload, githubCaptions: github, compose, now });
   assert.equal(again.sent.length, 0);
   assert.equal(forms.length, 6);
 });
@@ -106,7 +118,7 @@ test("limite mensal para tudo e não passa do valor; horário passado é pulado;
   const env = fakeEnv({ GEMINI_MONTHLY_LIMIT_USD: "0.1" });
   const forms = [];
   const r = await runGeminiCampaign(env, "giltec", "2026-10-28", {
-    fetcher: fakeGemini(), compose, githubCaptions: async () => ({}),
+    client: LIBERADO, fetcher: fakeGemini(), compose, githubCaptions: async () => ({}),
     upload: async (e, f) => { forms.push(f); }, now: new Date("2026-10-28T09:00:00Z")
   });
   assert.ok(r.failed.some(x => x.includes("limite_mensal")));
@@ -114,7 +126,7 @@ test("limite mensal para tudo e não passa do valor; horário passado é pulado;
 
   const env2 = fakeEnv();
   const late = await runGeminiCampaign(env2, "giltec", "2026-10-28", {
-    fetcher: fakeGemini(), compose, githubCaptions: async () => ({}),
+    client: LIBERADO, fetcher: fakeGemini(), compose, githubCaptions: async () => ({}),
     upload: async (e, f) => { if (f.get("type") === "story") throw new Error("slot_taken"); },
     now: new Date("2026-10-28T14:00:00Z") // 11h: 09h já passou
   });
@@ -128,7 +140,7 @@ test("cron: só entre 6h e 8h de Brasília, desligado sem chave ou sem cliente",
   assert.equal((await runGeminiDaily(fakeEnv(), new Date("2026-10-28T13:00:00Z"))).reason, "fora_do_horario");
   const env = fakeEnv();
   let n = 0;
-  const deps = { fetcher: fakeGemini(), compose, githubCaptions: async () => ({}), upload: async () => { n++; } };
+  const deps = { client: LIBERADO, fetcher: fakeGemini(), compose, githubCaptions: async () => ({}), upload: async () => { n++; } };
   const r = await runGeminiDaily(env, new Date("2026-10-28T09:15:00Z"), deps);
   assert.equal(r.ran, true);
   assert.equal(n, 6);
@@ -180,7 +192,7 @@ test("Cloudflare grátis: é o padrão quando existe AI, tamanho certo, troca pa
 test("Cloudflare grátis: roda sem chave do Google, sem custo e com legendas grátis", async () => {
   const env = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI(), GEMINI_MONTHLY_LIMIT_USD: "0" });
   const forms = [];
-  const r = await runGeminiDaily(env, new Date("2026-10-29T09:10:00Z"), { compose, githubCaptions: async () => ({}), upload: async (e, f) => { forms.push(f); } });
+  const r = await runGeminiDaily(env, new Date("2026-10-29T09:10:00Z"), { client: LIBERADO, compose, githubCaptions: async () => ({}), upload: async (e, f) => { forms.push(f); } });
   assert.equal(r.ran, true);
   assert.equal(forms.length, 6);
   assert.match(forms[0].get("caption"), /QUERO/);

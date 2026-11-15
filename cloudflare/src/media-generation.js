@@ -7,6 +7,7 @@ import { clientBrand, brandProfileVersion } from "./client-brand.js";
 import { nicheById } from "./flowarts-niches.js";
 import { pickFlowArtsStyle } from "./flowarts-styles.js";
 import { cloudflareImage } from "./gemini-campaign.js";
+import { assertGeneratedImageAllowed } from "./no-generation.js";
 
 function bytesFromBase64(value){
   const raw=atob(String(value||""));
@@ -175,6 +176,8 @@ export function imageGenerationPaused(env){
 }
 
 export async function generateFreeMedia(env,client,postId,visualBrief="",options={}){
+  // 15/11/2026: sem "Gerar imagem por IA sozinho" ligado no Master, nenhuma imagem sai daqui.
+  assertGeneratedImageAllowed(client);
   if(!env.AI)throw new Error("image_generation_paused");
   const origin=String(env.PUBLIC_BASE_URL||"").replace(/\/+$/,"");
   if(!origin)throw new Error("public_base_url_missing");
@@ -197,6 +200,8 @@ export async function generateFreeMedia(env,client,postId,visualBrief="",options
 }
 
 export async function generateOriginalMedia(env,client,postId,visualBrief="",options={}){
+  // 15/11/2026: trava de todos os caminhos (Creator, carrossel, capa de Reel, emergência).
+  assertGeneratedImageAllowed(client);
   if(!env.MEDIA)throw new Error("r2_unavailable");
   // Pedido do Rodrigo (04/11): post sem imagem não pode ficar sem sair.
   // Com a OpenAI pausada, a imagem sai grátis pela IA da Cloudflare (Flux).
