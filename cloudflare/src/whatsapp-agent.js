@@ -1,9 +1,9 @@
 import { knownCustomer, nexusClientIndex, phoneKey, CUSTOMER_TYPES } from "./whatsapp-known.js";
-import { openAIResponses } from "./openai.js";
+import { davidResponses } from "./openai.js";
 import { knowledgePrompt, whatsappKnowledge } from "./whatsapp-knowledge.js";
 import { addFromWhatsApp } from "./crm.js";
 import {
-  aliceEnabled, aliceReply, buildAliceRequest, downloadMedia, MEDIA_TYPES,
+  davidReply, buildAliceRequest, downloadMedia, MEDIA_TYPES,
   mergeMemory, parseMemory, showTyping, sleep, typingDelayMs
 } from "./whatsapp-alice.js";
 
@@ -254,8 +254,8 @@ async function buildDraft(env, clientId, waId, displayName, inboundText) {
 
   const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
   try {
-    const data = await openAIResponses(env, clientId, {
-      nexusPurpose: "whatsapp-reply",
+    // David: só ele usa a chave da OpenAI do Master (15/11/2026).
+    const data = await davidResponses(env, clientId, {
       input: [
         "Você é a assistente virtual de atendimento no WhatsApp desta empresa. Escreva em português do Brasil.",
         alreadyIntroduced
@@ -311,7 +311,7 @@ async function buildAliceDraft(env, clientId, waId, displayName, text, message, 
   const memory = parseMemory(contact?.memory_json);
   const known = await knownCustomer(env, clientId, waId).catch(() => ({ prompt: "" }));
 
-  const answer = await aliceReply(env, buildAliceRequest({
+  const answer = await davidReply(env, clientId, buildAliceRequest({
     knowledge: knowledgePrompt(clientId),
     knownCustomer: known.prompt,
     memory, history, inboundText: text,
@@ -386,7 +386,8 @@ async function storeInbound(env, clientId, value) {
     const nonText = { classification: "cliente", priority: 60, needsHuman: false, fallback: false,
       reply: NON_TEXT_REPLY, reason: `mensagem do tipo ${type || "desconhecido"}` };
     let draft = null;
-    if (aliceEnabled(env) && whatsappKnowledge(clientId) && (text || MEDIA_TYPES.has(type))) {
+    // David responde texto pela OpenAI; áudio e imagem pelo Gemini (15/11/2026).
+    if (whatsappKnowledge(clientId) && (text || MEDIA_TYPES.has(type))) {
       draft = await buildAliceDraft(env, clientId, waId, displayName, text, message, rowId).catch(() => null);
     }
     if (!draft) {
@@ -424,7 +425,7 @@ async function autoReply(env, clientId, waId, draft, draftId) {
   if (Number(contact?.bot_paused || 0)) return { sent: false, reason: "bot_paused" };
   try {
     const parts = Array.isArray(draft.messages) && draft.messages.length ? draft.messages : [draft.reply];
-    if (draft.engine === "gemini") {
+    if (Array.isArray(draft.messages) && draft.messages.length) {
       // Jeito de gente: "digitando…", uma pausa por mensagem e 1 a 3 mensagens curtas.
       const fetcher = env.__whatsappFetch || fetch;
       for (let i = 0; i < parts.length; i += 1) {

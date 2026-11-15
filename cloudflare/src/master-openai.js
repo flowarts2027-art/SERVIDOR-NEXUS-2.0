@@ -56,6 +56,11 @@ async function projectKey(env, current = null) {
   const row = current || await record(env);
   return decryptSecret(env, row.apiKey);
 }
+// Chave da OpenAI do painel Master (segredo do Cloudflare ou a salva no Master).
+// 15/11/2026: só o David (WhatsApp) usa, pela função própria dele em openai.js.
+export async function davidOpenAIKey(env) {
+  return String(await projectKey(env).catch(() => "") || "").trim();
+}
 async function adminKey(env, current = null) {
   const fromEnv = String(env.OPENAI_ADMIN_KEY || "").trim();
   if (fromEnv) return fromEnv;
