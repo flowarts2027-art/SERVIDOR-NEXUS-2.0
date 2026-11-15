@@ -318,3 +318,32 @@ test("se a reserva também falhar, devolve o erro do Gemini", async () => {
     /gemini_http_500/
   );
 });
+
+// 15/11/2026 (Rodrigo): a conversa nova ficava na 52ª posição, atrás de 51 "Precisa de você".
+// Ordem da lista: 1) mensagem nova não lida, 2) precisa do Rodrigo, 3) o resto.
+// Dentro de cada grupo, da mais recente para a mais antiga (hora da última mensagem).
+test("lista do Master: não lidas primeiro, depois quem precisa do Rodrigo, depois o resto", async () => {
+  const f = fixture({ answers: [hello] });
+  try {
+    await f.call("/api/whatsapp/inbox"); // cria as tabelas
+    const add = (id, { unread = 0, human = 0, last = null, updated = "2026-11-15 20:00:00" }) =>
+      f.db.prepare("INSERT INTO whatsapp_contacts(id,client_id,wa_id,display_name,needs_human,unread_count,last_message_at,updated_at) VALUES(?,?,?,?,?,?,?,?)")
+        .run("c-" + id, CLIENT, "5521999" + id.charCodeAt(0), id, human, unread, last, updated);
+    add("A", { unread: 1, last: "2026-11-15T10:00:00.000Z" });
+    add("B", { unread: 2, human: 1, last: "2026-11-15T11:00:00.000Z" });
+    add("C", { human: 1, last: "2026-11-15T09:00:00.000Z" });
+    add("D", { human: 1, last: "2026-11-15T12:00:00.000Z" });
+    add("E", { last: "2026-11-15T13:00:00.000Z" });
+    add("F", { last: "2026-11-15T08:00:00.000Z" });
+    // Já foi aberta várias vezes (updated_at novo), mas a mensagem é a mais antiga das não lidas.
+    add("G", { unread: 1, last: "2026-11-15T07:00:00.000Z", updated: "2026-11-15 23:59:00" });
+    // Sem hora de mensagem: vale a hora da ficha (outro formato de data).
+    add("H", { last: null, updated: "2026-11-15 14:00:00" });
+    const order = (await f.call("/api/whatsapp/inbox")).body.items.map(item => item.display_name);
+    assert.deepEqual(order, ["B", "A", "G", "D", "C", "H", "E", "F"]);
+    // Abrir a conversa (marcar como lida) tira ela do primeiro grupo.
+    assert.equal((await f.call("/api/whatsapp/contact", "POST", { phone: "5521999" + "B".charCodeAt(0), read: true })).status, 200);
+    const after = (await f.call("/api/whatsapp/inbox")).body.items.map(item => item.display_name);
+    assert.deepEqual(after, ["A", "G", "D", "B", "C", "H", "E", "F"]); // B agora é do grupo "precisa de mim", atrás da D (mais recente)
+  } finally { f.close(); }
+});
