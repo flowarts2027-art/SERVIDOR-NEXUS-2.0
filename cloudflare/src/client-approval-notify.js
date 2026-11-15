@@ -3,20 +3,23 @@
 // Como funciona:
 // - Roda no cron de 15 minutos. Olha o post_ledger: posts "esperando aprovação" (approval_status = 'pending')
 //   que ainda não foram avisados. Serve para qualquer caminho de envio (conector MCP, Master, campanhas).
-// - Manda UMA mensagem por cliente, com a quantidade de artes novas (10 artes = 1 mensagem, não 10).
-// - Só avisa de novo o mesmo cliente depois de NOTICE_GAP_HOURS horas, e só entre 08h e 20h de Brasília.
+// - Manda UMA mensagem por lote de artes (10 artes = 1 mensagem, não 10). Sem lembrete: cada arte só é avisada uma vez.
+// - Se chegarem artes novas depois, aí sim vai um novo aviso (regra do Rodrigo, 15/11/2026).
+// - O lote só é avisado depois de BATCH_SETTLE_MINUTES minutos sem arte nova, para um envio em várias partes não virar várias mensagens.
+// - Só entre 08h e 20h de Brasília.
 // - Sai pelo número oficial da Flow Arts (API da Meta), com a mensagem modelo aprovada pela Meta.
 //
 // DESLIGADO POR PADRÃO. Só liga com as duas variáveis:
 //   CLIENT_APPROVAL_WHATSAPP = "on"
 //   CLIENT_APPROVAL_TEMPLATE = nome do modelo aprovado na Meta (ex.: aviso_arte_painel)
-// O modelo tem 2 campos: {{1}} nome do cliente, {{2}} quantidade de artes. O link do painel fica fixo no modelo.
+// O modelo tem 2 campos: {{1}} nome do cliente, {{2}} link do painel (CLIENT_APPROVAL_PANEL_URL ou o painel padrão).
 
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { clientScreenName } from "./client-display.js";
 import { ensureWhatsAppSchema, sendAndRecord } from "./whatsapp-agent.js";
 
-export const NOTICE_GAP_HOURS = 3;
+export const BATCH_SETTLE_MINUTES = 10;
+export const DEFAULT_PANEL_URL = "https://painel.flowarts.com.br/";
 const MAX_CLIENTS_PER_RUN = 10;
 // Flow Arts é do próprio Rodrigo (ele aprova no Master) e o Café Brisa é demonstração.
 const SKIP_CLIENTS = new Set(["primeiro-teste", "demo-cafe"]);
@@ -37,7 +40,15 @@ export function clientWhatsapp(config = {}) {
 export function approvalNoticeConfig(env = {}) {
   const enabled = String(env.CLIENT_APPROVAL_WHATSAPP || "").trim().toLowerCase() === "on";
   const template = String(env.CLIENT_APPROVAL_TEMPLATE || "").trim();
-  return { enabled: enabled && Boolean(template), template, lang: String(env.CLIENT_APPROVAL_TEMPLATE_LANG || "pt_BR").trim() || "pt_BR" };
+  const panelUrl = String(env.CLIENT_APPROVAL_PANEL_URL || "").trim() || DEFAULT_PANEL_URL;
+  return { enabled: enabled && Boolean(template), template, panelUrl, lang: String(env.CLIENT_APPROVAL_TEMPLATE_LANG || "pt_BR").trim() || "pt_BR" };
+}
+
+// created_at do D1 vem como "AAAA-MM-DD HH:MM:SS" (UTC) ou ISO.
+function createdMs(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return NaN;
+  return new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(raw) ? raw : raw.replace(" ", "T") + "Z").getTime();
 }
 
 function brasiliaHour(at) {
@@ -68,7 +79,7 @@ export async function runClientApprovalNotices(env, at = new Date()) {
   await ensureWhatsAppSchema(env);
 
   const rows = await env.DB.prepare(
-    `SELECT p.id, p.client_id FROM post_ledger p
+    `SELECT p.id, p.client_id, p.created_at FROM post_ledger p
      LEFT JOIN client_approval_notices n ON n.post_id = p.id
      WHERE p.approval_status = 'pending' AND p.status = 'ready' AND n.post_id IS NULL
        AND (p.scheduled_for IS NULL OR p.scheduled_for >= ?1)
@@ -79,17 +90,18 @@ export async function runClientApprovalNotices(env, at = new Date()) {
   for (const row of rows?.results || []) {
     const id = String(row.client_id || "");
     if (!id || SKIP_CLIENTS.has(id) || BLOCKED_PUBLISH_CLIENTS.has(id)) continue;
-    if (!byClient.has(id)) byClient.set(id, []);
-    byClient.get(id).push(String(row.id));
+    if (!byClient.has(id)) byClient.set(id, { ids: [], newest: 0 });
+    const entry = byClient.get(id);
+    entry.ids.push(String(row.id));
+    const ms = createdMs(row.created_at);
+    if (Number.isFinite(ms) && ms > entry.newest) entry.newest = ms;
   }
 
   const results = [];
-  for (const [clientId, postIds] of [...byClient.entries()].slice(0, MAX_CLIENTS_PER_RUN)) {
-    const last = await env.DB.prepare(
-      "SELECT notified_at FROM client_approval_notices WHERE client_id = ?1 AND status = 'sent' ORDER BY notified_at DESC LIMIT 1"
-    ).bind(clientId).first();
-    if (last?.notified_at && at.getTime() - new Date(last.notified_at).getTime() < NOTICE_GAP_HOURS * 3600 * 1000) {
-      results.push({ clientId, skipped: "aviso_recente" });
+  for (const [clientId, { ids: postIds, newest }] of [...byClient.entries()].slice(0, MAX_CLIENTS_PER_RUN)) {
+    // Lote ainda chegando: espera sossegar para mandar um aviso só.
+    if (newest && at.getTime() - newest < BATCH_SETTLE_MINUTES * 60 * 1000) {
+      results.push({ clientId, skipped: "lote_chegando" });
       continue;
     }
     const client = await env.DB.prepare("SELECT id, name, status, config_json FROM clients WHERE id = ?1").bind(clientId).first();
@@ -108,14 +120,13 @@ export async function runClientApprovalNotices(env, at = new Date()) {
     if (!to) {
       status = "sem_numero";
     } else {
-      const count = String(postIds.length);
       const name = String(clientConfig.contact?.name || clientScreenName(client)).trim().split(/\s+/)[0] || "tudo bem";
-      const text = `Olá, ${name}! Tem ${count} arte(s) nova(s) esperando a sua aprovação no painel da Flow Arts.`;
+      const text = `Olá ${name}, chegou arte nova no seu painel para aprovar: ${config.panelUrl}`;
       try {
         await sendAndRecord(env, senderClient, to, text, {
           auto: true,
           source: "aviso-aprovacao",
-          template: { name: config.template, lang: config.lang, params: [name, count] }
+          template: { name: config.template, lang: config.lang, params: [name, config.panelUrl] }
         });
       } catch (err) {
         status = "erro";

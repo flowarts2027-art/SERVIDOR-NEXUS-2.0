@@ -26,10 +26,10 @@ function fixture(envExtra = {}) {
   const addClient = (id, config, status = "online") =>
     db.prepare("INSERT OR REPLACE INTO clients(id,name,status,config_json) VALUES(?1,?2,?3,?4)").run({ "?1": id, "?2": "Cliente " + id, "?3": status, "?4": JSON.stringify(config) });
   let n = 0;
-  const addPost = (clientId, approval = "pending", when = "2026-11-03T15:00:00.000Z") => {
+  const addPost = (clientId, approval = "pending", when = "2026-11-03T15:00:00.000Z", createdAt = "2026-11-02 16:00:00") => {
     n += 1;
-    db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,'12:00','ready',?4,'','x','','',0,'{}',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)")
-      .run({ "?1": "upload-feed-" + n, "?2": clientId, "?3": when, "?4": approval });
+    db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,'12:00','ready',?4,'','x','','',0,'{}',?5,CURRENT_TIMESTAMP)")
+      .run({ "?1": "upload-feed-" + n, "?2": clientId, "?3": when, "?4": approval, "?5": createdAt });
   };
   const sent = [];
   const env = {
@@ -68,20 +68,36 @@ test("várias artes = uma mensagem modelo; não repete o aviso", async () => {
   assert.equal(sent[0].to, "5522999998888");
   assert.equal(sent[0].type, "template");
   assert.equal(sent[0].template.name, "aviso_arte_painel");
-  assert.deepEqual(sent[0].template.components[0].parameters.map(p => p.text), ["Silva", "7"]);
+  assert.deepEqual(sent[0].template.components[0].parameters.map(p => p.text), ["Silva", "https://painel.flowarts.com.br/"]);
   assert.equal(out.results[0].posts, 7);
 
-  // Mesmas artes: não avisa de novo.
+  // Mesmas artes: nunca avisa de novo, nem depois de horas (sem lembrete).
   await runClientApprovalNotices(env, new Date(AT.getTime() + 15 * 60 * 1000));
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 5 * 60 * 60 * 1000));
   assert.equal(sent.length, 1);
 
-  // Arte nova 1 hora depois: espera o intervalo de 3 horas.
-  addPost("maskara-assessoria");
-  await runClientApprovalNotices(env, new Date(AT.getTime() + 60 * 60 * 1000));
-  assert.equal(sent.length, 1);
-  await runClientApprovalNotices(env, new Date(AT.getTime() + 4 * 60 * 60 * 1000));
+  // Arte nova depois: vai um novo aviso, sem esperar 3 horas.
+  addPost("maskara-assessoria", "pending", "2026-11-03T15:00:00.000Z", "2026-11-02 17:10:00");
+  await runClientApprovalNotices(env, new Date("2026-11-02T17:30:00Z"));
   assert.equal(sent.length, 2);
-  assert.equal(sent[1].template.components[0].parameters[1].text, "1");
+  assert.equal(sent[1].to, "5522999998888");
+});
+
+test("lote ainda chegando espera sossegar: um aviso só", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("giltec", { contact: { phone: "22 99999-0004" } });
+  addPost("giltec", "pending", undefined, "2026-11-02 16:55:00");
+  addPost("giltec", "pending", undefined, "2026-11-02 16:58:00");
+  const first = await runClientApprovalNotices(env, AT); // 17:00, última arte há 2 min
+  assert.equal(first.results[0].skipped, "lote_chegando");
+  assert.equal(sent.length, 0);
+  addPost("giltec", "pending", undefined, "2026-11-02 17:05:00");
+  await runClientApprovalNotices(env, new Date("2026-11-02T17:10:00Z"));
+  assert.equal(sent.length, 0);
+  await runClientApprovalNotices(env, new Date("2026-11-02T17:20:00Z"));
+  assert.equal(sent.length, 1);
+  await runClientApprovalNotices(env, new Date("2026-11-02T17:35:00Z"));
+  assert.equal(sent.length, 1);
 });
 
 test("não manda de noite, nem para Flow Arts, demonstração ou cliente arquivado", async () => {
