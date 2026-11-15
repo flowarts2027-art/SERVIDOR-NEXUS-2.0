@@ -495,6 +495,16 @@
               </div>
               <p class="wa-customer" id="wa-customer" hidden></p>
               <button type="button" class="ghost wa-streaming" id="wa-streaming" hidden>É cliente do streaming</button>
+              <div class="wa-contact-edit" id="wa-contact-edit">
+                <label for="wa-edit-name">Nome do contato</label>
+                <div class="wa-contact-row">
+                  <input type="text" id="wa-edit-name" maxlength="80" placeholder="Sem nome: o David cumprimenta sem nome" autocomplete="off">
+                  <button type="button" class="ghost" id="wa-save-name">Salvar nome</button>
+                </div>
+                <p class="muted" id="wa-memory"></p>
+                <button type="button" class="ghost" id="wa-clear-memory">Apagar memória</button>
+                <small class="muted" id="wa-edit-msg"></small>
+              </div>
               <p class="wa-handoff" id="wa-handoff" hidden>A IA chamou você nesta conversa. O robô está pausado aqui até você religar.</p>
               <div id="wa-thread" class="wa-thread"></div>
               <div class="wa-draft" id="wa-draft" hidden>
@@ -685,7 +695,7 @@
   <script src="/window-alert.js?v=1" defer></script>
   <script src="/master-upload.js?v=4" defer></script>
   <script src="/animated-reel.js?v=4" defer></script>
-  <script src="/whatsapp-inbox.js?v=5" defer></script>
+  <script src="/whatsapp-inbox.js?v=6" defer></script>
   <script src="/site-stats.js?v=4" defer></script>
   <script src="/prospects-ui.js?v=18" defer></script>
   <script src="/signups.js?v=2" defer></script>
