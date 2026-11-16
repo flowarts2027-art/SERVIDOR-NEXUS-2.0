@@ -65,7 +65,7 @@ export function cleanColors(source = {}) {
   return { ...colors, text: readableColor(colors.text), onPrimary: textOn(colors.primary), onAccent: textOn(colors.accent) };
 }
 
-async function readGroupBrand(env, groupId) {
+export async function readGroupBrand(env, groupId) {
   const row = await env.DB.prepare(
     "SELECT value_json FROM nexus_state WHERE namespace='group-brand' AND item_key=?1 AND client_id='' LIMIT 1"
   ).bind(String(groupId)).first().catch(() => null);
@@ -76,6 +76,44 @@ export async function effectiveBrand(env, client) {
   if (client?.config?.brand?.colors) return client.config.brand;
   const group = clientGroup(client);
   return group ? await readGroupBrand(env, group.id) : null;
+}
+
+// Lista do Master (Rodrigo, 16/11/2026): logo e cores lidas na hora do mesmo cadastro que pinta o painel do cliente.
+// O Master não guarda cópia: mudou a marca no "Editar cliente", a lista muda junto.
+export const MASTER_GREEN = "#168c54";
+
+// Logo fixa que o painel do cliente usa quando ainda não há logo no "Editar cliente"
+// (CLIENT_THEMES em public/client-lite.js). Um teste trava se as duas listas ficarem diferentes.
+export const PANEL_THEMES = Object.freeze({
+  "daniela-martins": Object.freeze({ logo: "/brand/daniela-martins-logo.png", color: "#746E44" }),
+  "quatree-dog": Object.freeze({ logo: "/brand/quatree-logo.png", color: "#88401C" }),
+  giltec: Object.freeze({ logo: "/brand/giltec-logo.png", color: "#0D1B3E" })
+});
+
+// Mesma ordem do painel: marca salva primeiro; sem ela, a logo e a cor fixas do tema.
+export function brandBadge(brand, themeId = "") {
+  const theme = PANEL_THEMES[String(themeId || "")] || null;
+  const colors = brand?.colors || {};
+  const primary = HEX.test(String(colors.primary || "")) ? colors.primary : theme?.color || MASTER_GREEN;
+  const accent = HEX.test(String(colors.accent || "")) ? colors.accent : primary;
+  const logoUrl = String(brand?.logoUrl || "") || theme?.logo || "";
+  return { logoUrl, logoDark: Boolean(brand?.logoUrl && brand?.logoDark), primary, accent, onPrimary: textOn(primary) };
+}
+
+// Uma leitura por grupo, mesmo com vários painéis no grupo.
+export async function masterBrandBadges(env, clients = []) {
+  const groupCache = new Map();
+  const groupBrand = id => {
+    if (!groupCache.has(id)) groupCache.set(id, readGroupBrand(env, id).catch(() => null));
+    return groupCache.get(id);
+  };
+  const out = {};
+  for (const client of clients) {
+    const group = clientGroup(client);
+    const brand = client?.config?.brand?.colors ? client.config.brand : group ? await groupBrand(group.id) : null;
+    out[client.id] = brandBadge(brand, group?.theme || client.id);
+  }
+  return out;
 }
 
 async function storeLogo(env, ownerId, file) {

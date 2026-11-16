@@ -1,7 +1,7 @@
 import { clientGroup, isFixedGroupMember } from "./clients.js";
 import { ensureGroupClients, groupChoice, groupNiche, savedGroups } from "./client-groups.js";
 import { accessMessage } from "./client-access.js";
-import { inheritBrandWord } from "./client-identity.js";
+import { brandBadge, inheritBrandWord, masterBrandBadges } from "./client-identity.js";
 import {
   masterCredentialsValid,
   createMasterSession,
@@ -631,7 +631,8 @@ export async function handleMaster(request, env, url) {
     const includeArchived = url.searchParams.get("all") === "1";
     await ensureGroupClients(env).catch(error => console.error("group_clients_failed", String(error?.message || error)));
     const clients = (await listClients(env)).filter(client => includeArchived || String(client.status || "") !== "archived");
-    return json(clients.map(masterClientView));
+    const badges = await masterBrandBadges(env, clients).catch(() => ({}));
+    return json(clients.map(client => ({ ...masterClientView(client), brand: badges[client.id] || brandBadge(null) })));
   }
 
   const assumeOpenMatch = url.pathname.match(/^\/api\/clients\/([^/]+)\/assume-open$/);

@@ -728,3 +728,29 @@ input:focus,select:focus,textarea:focus{outline-color:#168c5444!important;border
 .access-fallback{width:100%;min-height:210px;margin-top:12px;padding:12px;font-size:16px;line-height:1.4;border:2px solid #39c479;border-radius:12px;box-sizing:border-box}
 .group-new-row{display:flex;justify-content:flex-end;margin:0 0 12px}
 .group-inherits{grid-column:1/-1;margin:0;padding:12px 14px;font-size:18px;font-weight:700;border-radius:12px;background:#eef6ff;color:#12314f}
+
+/* Identidade visual na lista de clientes do Master (16/11/2026): logo pequena, nome embaixo e faixa com as cores.
+   O texto fica sempre no fundo claro; a cor do cliente só aparece na faixa da esquerda e no círculo. */
+.client-id{display:flex;align-items:flex-start;gap:8px}
+.client-sheet .client-open,.group-id{display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px}
+.client-sheet .client-open strong,.group-id strong{font-size:18px;line-height:1.25;color:#06080c}
+.brand-logo,.brand-initials{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:12px;flex:none;overflow:hidden}
+.brand-logo{padding:5px;border:1px solid var(--line)}
+.brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.brand-logo .brand-initials{display:none}
+.brand-logo.logo-failed{padding:0;border:0;background:transparent!important}
+.brand-logo.logo-failed img{display:none}
+.brand-logo.logo-failed .brand-initials{display:inline-grid}
+.brand-initials{border-radius:50%;font-weight:900;font-size:20px;letter-spacing:.02em}
+table.client-sheet td.client-brand-cell,.group-edit-row.client-brand-row{box-shadow:inset 6px 0 var(--client-primary,#168c54),inset 10px 0 var(--client-accent,#168c54);padding-left:20px}
+@media(max-width:700px){
+  table.client-sheet{min-width:0;border:0;border-spacing:0}
+  table.client-sheet thead{display:none}
+  table.client-sheet tbody,table.client-sheet tr,table.client-sheet td{display:block;width:100%}
+  table.client-sheet tr.client-brand-row{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:12px;box-shadow:inset 6px 0 var(--client-primary,#168c54),inset 10px 0 var(--client-accent,#168c54);background:#FFFDF8}
+  table.client-sheet tr.client-brand-row td{background:transparent!important;box-shadow:none;border-bottom:1px solid var(--line);padding:10px 14px 10px 20px;font-size:17px}
+  table.client-sheet tr.client-brand-row td:last-child{border-bottom:0}
+  table.client-sheet td[data-label]:not(.client-brand-cell)::before{content:attr(data-label);display:block;font-size:13px;font-weight:800;letter-spacing:.06em;color:#44638e;margin-bottom:4px;text-transform:uppercase}
+  .brand-logo,.brand-initials{width:64px;height:64px}
+  .client-sheet .client-open strong,.group-id strong{font-size:19px}
+}

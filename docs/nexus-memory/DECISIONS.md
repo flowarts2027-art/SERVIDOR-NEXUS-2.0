@@ -274,3 +274,12 @@ Usuário autorizou priorizar download YouTube no PC antes de geração direta e 
 - A conta do GitHub foi suspensa. Não usar fetch, pull ou push no `origin`.
 - O código fica no GitLab. O deploy é feito pelo PC, na pasta `nexus-deploy`, com `npm run deploy`.
 - Decisão do Claude: a pasta nova não tem remote do GitHub, para ninguém publicar ou buscar de lá por engano.
+
+## 2026-11-16 — Lista de clientes do Master com a identidade visual (Rodrigo)
+- Cada linha da aba Clientes mostra a logo pequena com o nome embaixo. O nome nunca sai, porque vários painéis usam a mesma logo (GILTEC: Rose, Neto e Sheila).
+- A cor principal e a cor de destaque aparecem numa faixa à esquerda. O texto fica no fundo claro, para ler bem.
+- Sem logo: círculo com as iniciais na cor principal. Sem cor: verde do Master (`#168c54`).
+- Os grupos (Quatree Dog, GILTEC) também mostram logo e cor do grupo.
+- **Regra fixa: o Master NÃO guarda cópia da logo nem das cores.** A lista lê, na hora, o mesmo cadastro que pinta o painel do cliente (Logo, Cor principal e Cor de destaque do "Editar cliente", ou a marca do grupo). Mudou a marca, a lista muda junto.
+- Decisão do Claude: seguir a mesma ordem do painel do cliente. Primeiro a marca salva no "Editar cliente". Sem ela, a logo e a cor fixas do tema do painel (`CLIENT_THEMES` em `public/client-lite.js`: GILTEC, Quatree Dog e Daniela). O servidor tem a mesma tabela em `PANEL_THEMES` (`client-identity.js`), e um teste falha se as duas ficarem diferentes.
+- Decisão do Claude: no celular, a tabela vira cartões, um por cliente, com o nome de cada campo em cima.

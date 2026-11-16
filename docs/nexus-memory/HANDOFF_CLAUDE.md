@@ -1354,3 +1354,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Produção hoje (leitura): Adimax 4 artes pendentes e prontas (vão gerar 1 aviso); Maskara 1 (em revisão automática, e fora do aviso de qualquer jeito).
 - Testes: 11 do aviso passam; suíte 1019 de 1020 (só o teste de cron, que já falhava). `wrangler deploy --dry-run` ok.
 - Próximo passo: Rodrigo aprova o merge; depois do deploy, conferir `client_approval_notices` e o log `client_approval_notices` para ver se a Meta aceitou.
+
+## 16/11/2026 — Lista de clientes do Master com logo, nome e cores (PR aberto, sem merge)
+- Pedido do Rodrigo: logo pequena e nome embaixo em cada cliente, faixa com cor principal e de destaque, iniciais quando não há logo, grupos com marca. Só a lista do Master; painel do cliente e aviso de arte (PR #638) não mudaram.
+- Servidor: `/api/clients` devolve `brand` (logo, cores, cor do texto) lido na hora por `masterBrandBadges` (`client-identity.js`): marca do cliente, depois a do grupo, depois o tema fixo do painel, depois o verde do Master. `/api/master/groups` devolve `brand` de cada grupo. Nada é copiado.
+- Tela: `public/app.js` (`brandMark`, `brandStripe`), `public/styles.css` (faixa, logo de 56px, cartões no celular), `public/index.html` (classe `client-sheet`, versões `styles.css?v=54` e `app.js?v=63`).
+- Produção hoje (leitura): logo no "Editar cliente" para Maskara, Nexus AI, Adimax e Gráfica Flash Color. GILTEC (Rose e Neto), Quatree Dog e Daniela usam a logo fixa do painel. Sheila (`giltec-locacoes`) tem cores salvas, mas não tem logo, e por isso mostra a logo fixa da GILTEC, como no painel dela. Nenhum grupo tem marca salva; os grupos mostram a logo fixa do tema.
+- Testes: 5 novos em `client-identity.test.mjs` (21 passam). Suíte: só falha o teste de cron, que já falhava antes.
+- Não conferido: a foto da tela no navegador (a prévia foi gerada, mas não deu para abrir). Conferir no celular depois do merge.
+- Próximo passo: Rodrigo aprova o merge; depois, abrir o Master no celular e conferir a lista.
