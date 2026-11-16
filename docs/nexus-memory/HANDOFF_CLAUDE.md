@@ -1379,3 +1379,5 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Causa ainda desconhecida: o webhook ignorava `statuses` (entregue/lida/falhou), então o motivo da falha da Meta se perdeu.
 - Correção (branch `claude/whatsapp-status-entrega-20261116`): o webhook grava `payload_json.delivery` nas mensagens enviadas (status, código e motivo da Meta; nunca volta de "lida" para "entregue"); `/api/whatsapp/messages` devolve `delivery`. O campo `status` não muda. Teste novo: `test/whatsapp-delivery-status.test.mjs`. 1033 testes passando.
 - Próximo passo: depois do merge, com OK do Rodrigo, reenviar um aviso só para o Adimax e ler o `delivery` para saber o motivo (suspeita: pagamento com cartão pré-pago, código 131042).
+- Mesmo PR (#641), pedido do Rodrigo: o aviso dizia "Olá Adimax". Agora `greetingName` usa, nesta ordem: nome do contato, vendedor do grupo (Rose, Sheila, Ericsson), a pessoa depois do traço no nome salvo ("Adimax - Eduardo Soares" → Eduardo), senão o nome do painel. 1034 testes passando.
+- Rodrigo confirmou em 16/11 que o cartão pré-pago tem crédito; a causa da não entrega segue em aberto até ler o `delivery` do próximo envio.
