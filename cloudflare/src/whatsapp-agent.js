@@ -516,6 +516,7 @@ export async function handleWhatsAppWebhook(request, env, url, ctx) {
       for (const change of Array.isArray(entry?.changes) ? entry.changes : []) {
         if (change?.field !== "messages") continue;
         await storeInbound(env, clientId, change?.value || {});
+        await storeDeliveryStatuses(env, clientId, change?.value || {});
       }
     }
   })();
@@ -524,6 +525,49 @@ export async function handleWhatsAppWebhook(request, env, url, ctx) {
   else await work;
 
   return json({ ok: true });
+}
+
+// Retorno de entrega da Meta (16/11/2026): o aviso de arte saiu aceito, mas não chegou ao Eduardo (Adimax)
+// e o Nexus não guardava o motivo. Agora guarda em payload_json.delivery: enviada, entregue, lida ou falhou
+// (com o código e o motivo da Meta). Não muda o campo status (sent_auto etc.). Nunca volta de "lida" para "entregue".
+const DELIVERY_RANK = { sent: 1, delivered: 2, read: 3, failed: 4 };
+
+export function deliveryFromStatus(item = {}) {
+  const status = String(item?.status || "").toLowerCase();
+  if (!DELIVERY_RANK[status]) return null;
+  const error = Array.isArray(item?.errors) ? item.errors[0] : null;
+  const ts = Number(item?.timestamp || 0);
+  return {
+    status,
+    at: ts ? new Date(ts * 1000).toISOString() : nowIso(),
+    ...(error ? {
+      code: error.code ?? null,
+      title: String(error.title || "").slice(0, 160),
+      message: String(error.message || "").slice(0, 200),
+      details: String(error.error_data?.details || "").slice(0, 300)
+    } : {})
+  };
+}
+
+export async function storeDeliveryStatuses(env, clientId, value = {}) {
+  const statuses = Array.isArray(value?.statuses) ? value.statuses : [];
+  for (const item of statuses) {
+    const providerId = String(item?.id || "");
+    const delivery = deliveryFromStatus(item);
+    if (!providerId || !delivery) continue;
+    const row = await env.DB.prepare(
+      "SELECT id,payload_json FROM whatsapp_messages WHERE client_id=?1 AND provider_message_id=?2 AND direction='outbound' LIMIT 1"
+    ).bind(clientId, providerId).first();
+    if (!row) continue;
+    const payload = safeJson(row.payload_json || "{}", {}) || {};
+    const current = payload.delivery || null;
+    if (current && (DELIVERY_RANK[current.status] || 0) > DELIVERY_RANK[delivery.status]) continue;
+    payload.delivery = delivery;
+    await env.DB.prepare("UPDATE whatsapp_messages SET payload_json=?2 WHERE id=?1").bind(row.id, JSON.stringify(payload)).run();
+    if (delivery.status === "failed") {
+      console.warn("whatsapp_delivery_failed", JSON.stringify({ code: delivery.code, title: delivery.title, details: delivery.details }));
+    }
+  }
 }
 
 // Mensagem modelo aprovada pela Meta (obrigatória fora da janela de 24 h).
@@ -723,11 +767,13 @@ export async function handleWhatsAppProtected(request, env, url) {
     if (!waId) return json({ error: "phone_required" }, 400);
     const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit") || 50)));
     const rows = await env.DB.prepare(
-      `SELECT id,direction,message_type,text,status,created_at
+      `SELECT id,direction,message_type,text,status,created_at,
+              CASE WHEN direction='outbound' THEN json_extract(payload_json,'$.delivery') END AS delivery
        FROM whatsapp_messages WHERE client_id=?1 AND wa_id=?2
        ORDER BY created_at DESC LIMIT ?3`
     ).bind(clientId, waId, limit).all();
-    return json({ ok: true, phone: waId, items: [...(rows?.results || [])].reverse() });
+    const items = (rows?.results || []).map(({ delivery, ...rest }) => ({ ...rest, delivery: delivery ? safeJson(delivery, null) : null }));
+    return json({ ok: true, phone: waId, items: items.reverse() });
   }
 
   if (url.pathname === "/api/whatsapp/drafts" && request.method === "GET") {
