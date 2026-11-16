@@ -37,7 +37,7 @@ function setup() {
     const res = await handleWhatsAppProtected(new Request(url), env, url);
     return (await res.json()).items;
   }
-  return { db, hook, messages };
+  return { db, env, hook, messages };
 }
 
 test("deliveryFromStatus guarda o motivo da falha da Meta", () => {
@@ -74,5 +74,17 @@ test("status mais antigo não apaga o mais novo (lida não volta para entregue)"
     await f.hook({ statuses: [{ id: "wamid.out2", status: "delivered", timestamp: "1763302590" }] });
     const out = (await f.messages("5521999990000")).find(m => m.id === "wamid.out2");
     assert.equal(out.delivery.status, "read");
+  } finally { f.db.close(); }
+});
+
+test("falha de mensagem que não saiu pelo Nexus fica guardada e aparece no status", async () => {
+  const f = setup();
+  try {
+    await f.hook({ statuses: [{ id: "wamid.fora1", status: "failed", timestamp: "1763302600", recipient_id: "5521900000000", errors: [{ code: 131042, title: "Business eligibility payment issue" }] }] });
+    await f.hook({ statuses: [{ id: "wamid.fora2", status: "delivered", timestamp: "1763302600" }] });
+    const url = new URL("https://nexus.test/api/whatsapp/status");
+    const body = await (await handleWhatsAppProtected(new Request(url), f.env, url)).json();
+    assert.equal(body.lastDeliveryFailures.length, 1);
+    assert.equal(body.lastDeliveryFailures[0].delivery.code, 131042);
   } finally { f.db.close(); }
 });
