@@ -558,7 +558,21 @@ export async function storeDeliveryStatuses(env, clientId, value = {}) {
     const row = await env.DB.prepare(
       "SELECT id,payload_json FROM whatsapp_messages WHERE client_id=?1 AND provider_message_id=?2 AND direction='outbound' LIMIT 1"
     ).bind(clientId, providerId).first();
-    if (!row) continue;
+    if (!row) {
+      // Mensagem que não saiu pelo Nexus (ex.: teste pela Meta, 16/11/2026): guarda só a falha, para ver o motivo.
+      if (delivery.status === "failed") {
+        await env.DB.prepare(
+          `CREATE TABLE IF NOT EXISTS whatsapp_delivery_failures (
+            provider_message_id TEXT PRIMARY KEY, wa_id TEXT NOT NULL DEFAULT '', delivery_json TEXT NOT NULL, created_at TEXT NOT NULL
+          )`
+        ).run();
+        await env.DB.prepare(
+          "INSERT OR REPLACE INTO whatsapp_delivery_failures(provider_message_id,wa_id,delivery_json,created_at) VALUES(?1,?2,?3,?4)"
+        ).bind(providerId, cleanPhone(item?.recipient_id || ""), JSON.stringify(delivery), nowIso()).run();
+        console.warn("whatsapp_delivery_failed", JSON.stringify({ code: delivery.code, title: delivery.title, details: delivery.details }));
+      }
+      continue;
+    }
     const payload = safeJson(row.payload_json || "{}", {}) || {};
     const current = payload.delivery || null;
     if (current && (DELIVERY_RANK[current.status] || 0) > DELIVERY_RANK[delivery.status]) continue;
@@ -727,7 +741,19 @@ export async function handleWhatsAppProtected(request, env, url) {
         ).bind(clientId).first()
       : {};
     const autoReplyOn = clientId ? await autoReplyEnabled(env, clientId) : false;
-    return json({ ok: true, ...configStatus(env), autoReply: autoReplyOn, counts: {
+    // Últimas falhas de entrega avisadas pela Meta (16/11/2026), com o código e o motivo.
+    const failRows = await env.DB.prepare(
+      `SELECT provider_message_id AS id, json_extract(payload_json,'$.delivery') AS delivery, created_at FROM whatsapp_messages
+       WHERE direction='outbound' AND json_extract(payload_json,'$.delivery.status')='failed'
+       ORDER BY created_at DESC LIMIT 5`
+    ).all().catch(() => ({ results: [] }));
+    const extraRows = await env.DB.prepare(
+      "SELECT provider_message_id AS id, delivery_json AS delivery, created_at FROM whatsapp_delivery_failures ORDER BY created_at DESC LIMIT 5"
+    ).all().catch(() => ({ results: [] }));
+    const lastDeliveryFailures = [...(failRows?.results || []), ...(extraRows?.results || [])]
+      .map(r => ({ id: String(r.id || "").slice(-12), at: r.created_at, delivery: safeJson(r.delivery, null) }))
+      .sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 5);
+    return json({ ok: true, ...configStatus(env), autoReply: autoReplyOn, lastDeliveryFailures, counts: {
       contacts: Number(counts?.contacts || 0),
       pendingDrafts: Number(counts?.pending_drafts || 0),
       messages: Number(counts?.messages || 0)
@@ -747,9 +773,9 @@ export async function handleWhatsAppProtected(request, env, url) {
               COALESCE((SELECT MAX(m.created_at) FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id),
                        c.last_message_at,c.updated_at) AS last_at,
               (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
-               ORDER BY m.created_at DESC LIMIT 1) AS last_text,
+               ORDER BY m.created_at DESC, m.rowid DESC LIMIT 1) AS last_text,
               (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
-               ORDER BY m.created_at DESC LIMIT 1) AS last_direction
+               ORDER BY m.created_at DESC, m.rowid DESC LIMIT 1) AS last_direction
        FROM whatsapp_contacts c WHERE c.client_id=?1
        ORDER BY REPLACE(REPLACE(last_at,'T',' '),'Z','') DESC LIMIT ?2`
     ).bind(clientId, limit).all();
