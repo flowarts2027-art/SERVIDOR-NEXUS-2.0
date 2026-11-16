@@ -38,7 +38,13 @@ test("três páginas novas: indexáveis, com título, descrição, H1, 550+ pala
     const html = read(s + ".html");
     assert.match(html, new RegExp('<link rel="canonical" href="https://flowarts.com.br/' + s + '">'));
     assert.match(html, /<meta name="robots" content="index,follow/);
-    assert.match(html, /<title>[^<]{20,}Flow Arts Marketing<\/title>/);
+    assert.match(html, /<title>[^<]{20,}Flow Arts(?: Marketing)?<\/title>/);
+    // 16/11/2026: título até 60 e descrição até 160 caracteres, para o Google não cortar.
+    assert.ok(html.match(/<title>([^<]*)<\/title>/)[1].length <= 60);
+    assert.ok(html.match(/<meta name="description" content="([^"]*)"/)[1].length <= 160);
+    assert.match(html, /<meta property="og:image:alt" content="[^"]+">/);
+    assert.match(html, /"@type":\s*"Service"/);
+    assert.doesNotMatch(html, /<img [^>]*alt=""/);
     assert.match(html, /<meta name="description" content="[^"]{80,}"/);
     assert.equal((html.match(/<h1[ >]/g) || []).length, 1);
     assert.match(html, /Nova Friburgo/);
@@ -67,4 +73,9 @@ test("sitemap lista as três páginas com data de hoje e o Worker serve as rotas
   assert.ok(!/marketing-para-/.test(sitemap));
   const cfg = fs.readFileSync(new URL("../wrangler.jsonc", import.meta.url), "utf8");
   for (const s of slugs) assert.ok(cfg.includes(JSON.stringify("/" + s + "*")), s + " fora do run_worker_first");
+});
+
+test("/exemplo (público antigo de comida) fica fora do Google e do sitemap (16/11/2026)", () => {
+  assert.match(read("exemplo.html"), /<meta name="robots" content="noindex,follow">/);
+  assert.doesNotMatch(read("sitemap.xml"), /flowarts\.com\.br\/exemplo</);
 });
