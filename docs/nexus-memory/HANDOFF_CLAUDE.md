@@ -1371,3 +1371,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes novos com cadastro igual ao real (número só em `agentProfile.whatsapp`), estado de produção de 9h45 recriado, Maskara com número continua fora, aviso não mexe no David. Suíte: 1030 de 1030.
 - Previsão (leitura de produção): depois do deploy, só o Adimax recebe, 1 mensagem para as 4 artes, no primeiro ciclo de 15 min entre 08h e 20h.
 - Próximo passo: Rodrigo aprova o merge; conferir `client_approval_notices` (4 linhas `sent`) e `whatsapp_send_log`.
+
+## 2026-11-16 — Aviso de arte do Adimax não chegou: Nexus passa a guardar o retorno de entrega da Meta
+
+- Fato (produção, via /api/whatsapp/messages no Master): depois do merge do PR #640 (deploy às 11h05), o aviso `aviso_arte_painel` foi enviado ao Adimax às 11h15 (Brasília) e a Meta **aceitou** (tem wamid). O cliente disse que não recebeu.
+- O Gerenciador do WhatsApp ainda mostra 0 entregas no mês e saldo R$ 0,00 na conta de mensagens. O modelo está ativo (Utilidade).
+- Causa ainda desconhecida: o webhook ignorava `statuses` (entregue/lida/falhou), então o motivo da falha da Meta se perdeu.
+- Correção (branch `claude/whatsapp-status-entrega-20261116`): o webhook grava `payload_json.delivery` nas mensagens enviadas (status, código e motivo da Meta; nunca volta de "lida" para "entregue"); `/api/whatsapp/messages` devolve `delivery`. O campo `status` não muda. Teste novo: `test/whatsapp-delivery-status.test.mjs`. 1033 testes passando.
+- Próximo passo: depois do merge, com OK do Rodrigo, reenviar um aviso só para o Adimax e ler o `delivery` para saber o motivo (suspeita: pagamento com cartão pré-pago, código 131042).
