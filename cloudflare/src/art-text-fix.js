@@ -11,14 +11,15 @@
 import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
 import { brandClientId, getClient } from "./clients.js";
 import { artShape, readImageSize } from "./art-format.js";
+import { ensurePostLedgerIndexes } from "./post-ledger-indexes.js";
 
 const MAX_TRIES = 4;
 
 // COALESCE em tudo: no SQL, NULL dentro de NOT(...) some com a linha (bug de 29/10 que deixava os posts novos de fora).
 export const OPEN_POSTS_SQL = `SELECT id, client_id, scheduled_for, payload_json FROM post_ledger
-  WHERE COALESCE(status,'') NOT IN ('published','publishing') AND COALESCE(status,'') NOT LIKE 'cancel%'
+  WHERE (scheduled_for >= ?1 OR scheduled_for IS NULL)
+  AND COALESCE(status,'') NOT IN ('published','publishing') AND COALESCE(status,'') NOT LIKE 'cancel%'
   AND COALESCE(approval_status,'') <> 'rejected'
-  AND (scheduled_for IS NULL OR scheduled_for >= ?1)
   AND COALESCE(json_extract(payload_json,'$.formatBuild.artCheckVersion'),0) < ${TEXT_CHECK_VERSION}
   AND NOT (COALESCE(json_extract(payload_json,'$.formatBuild.artChecked'),0) = 1 AND json_extract(payload_json,'$.formatBuild.artText') IS NULL)
   AND instr(COALESCE(json_extract(payload_json,'$.formatBuild.artText'),''),'texto-do-nexus') = 0
@@ -101,6 +102,7 @@ async function step(env, frames, row, payload) {
 export async function fixArtTextInOpenPosts(env, { now = new Date(), limit = 1 } = {}) {
   const result = { steps: [] };
   if (!env?.DB || !env?.MEDIA || !env?.IMAGES) return result;
+  await ensurePostLedgerIndexes(env).catch(() => {});
   const frames = await loadFrames(env).catch(() => null);
   const rows = (await env.DB.prepare(OPEN_POSTS_SQL).bind(now.toISOString(), limit).all().catch(() => ({ results: [] })))?.results || [];
   for (const row of rows) {

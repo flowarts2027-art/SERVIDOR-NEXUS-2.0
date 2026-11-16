@@ -12,6 +12,8 @@
 // - post que chegou ao painel com menos de 1 hora de antecedência (o cliente não teve a janela).
 //   Esse fica esperando aprovação e ganha a marca autoApproval.status = "sem_janela".
 
+import { ensurePostLedgerIndexes } from "./post-ledger-indexes.js";
+
 export const REVIEW_WINDOW_MINUTES = 60;
 // Post que passou do horário há mais que isto não é aprovado (o Publisher já não publica atrasado).
 const LATE_LIMIT_HOURS = 6;
@@ -20,9 +22,9 @@ const ROWS_PER_RUN = 20;
 const P = "CASE WHEN json_valid(payload_json) THEN payload_json ELSE '{}' END";
 
 export const SILENT_APPROVAL_SQL = `SELECT id, client_id, scheduled_for, created_at, payload_json FROM post_ledger
-  WHERE COALESCE(approval_status,'') = 'pending'
+  WHERE approval_status = 'pending'
   AND COALESCE(status,'') IN ('ready','scheduled')
-  AND scheduled_for IS NOT NULL
+  AND scheduled_for >= ?3 AND scheduled_for < ?4
   AND julianday(scheduled_for) <= julianday(?1) + (${REVIEW_WINDOW_MINUTES} / 1440.0)
   AND julianday(scheduled_for) >= julianday(?1) - (${LATE_LIMIT_HOURS} / 24.0)
   AND COALESCE(json_extract(${P},'$.createdBy'),'') IN ('master','mcp')
@@ -57,8 +59,10 @@ export function hadReviewWindow(createdAt, scheduledFor) {
 }
 
 export async function approveSilentPosts(env, { now = new Date(), limit = ROWS_PER_RUN } = {}) {
+  await ensurePostLedgerIndexes(env).catch(() => {});
   const at = now.toISOString();
-  const result = await env.DB.prepare(SILENT_APPROVAL_SQL).bind(at, limit).all();
+  const day = n => new Date(now.getTime() + n * 86400000).toISOString().slice(0, 10);
+  const result = await env.DB.prepare(SILENT_APPROVAL_SQL).bind(at, limit, day(-1), day(2)).all();
   const rows = result?.results || [];
   const out = { checked: rows.length, approved: [], noWindow: [] };
   for (const row of rows) {
