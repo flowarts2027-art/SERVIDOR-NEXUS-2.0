@@ -773,9 +773,9 @@ export async function handleWhatsAppProtected(request, env, url) {
               COALESCE((SELECT MAX(m.created_at) FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id),
                        c.last_message_at,c.updated_at) AS last_at,
               (SELECT m.text FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
-               ORDER BY m.created_at DESC LIMIT 1) AS last_text,
+               ORDER BY m.created_at DESC, m.rowid DESC LIMIT 1) AS last_text,
               (SELECT m.direction FROM whatsapp_messages m WHERE m.client_id=c.client_id AND m.wa_id=c.wa_id
-               ORDER BY m.created_at DESC LIMIT 1) AS last_direction
+               ORDER BY m.created_at DESC, m.rowid DESC LIMIT 1) AS last_direction
        FROM whatsapp_contacts c WHERE c.client_id=?1
        ORDER BY REPLACE(REPLACE(last_at,'T',' '),'Z','') DESC LIMIT ?2`
     ).bind(clientId, limit).all();
