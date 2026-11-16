@@ -1,3 +1,12 @@
+## 2026-11-16 07h40 BRT — Ajustes de SEO do flowarts.com.br (Claude)
+
+- Pedido do Rodrigo: auditoria completa de SEO e corrigir sem ele colar prompt.
+- Feito: títulos das 3 páginas de serviço com até 60 caracteres e descrições até 160; og:image:alt e tags do Twitter/X; alt nas logos (home e páginas de serviço); dado estruturado Service + Offer (preço) nas 3 páginas de serviço; `/exemplo` (público antigo de comida) com noindex e fora do sitemap; meta vazia `next-size-adjust` removida da home.
+- Atenção: a home (`public/site.html`) é exportada do projeto Next.js SITE-FLOWARTS-NOVO no PC. Ao exportar de novo, repetir na fonte: alt "Flow Arts Marketing" nas logos e og:image:alt.
+- Testes: 1015/1015 passando. Novo teste para /exemplo e limites de título/descrição.
+- Deploy: o merge na main publica pelo GitHub Actions (deploy-nexus-cloudflare.yml). Só com o OK do Rodrigo.
+- Próximo passo: depois do deploy, enviar o sitemap e pedir indexação no Google Search Console; ligar Crawler Hints (IndexNow) no Cloudflare.
+
 ## 2026-11-04 19:45 BRT — Painel da Quatree Dog com a logo e as cores reais (Claude)
 - Origem → destino: Claude → ChatGPT e próximas sessões do Claude.
 - Pedido: logo oficial no menu, igual à Daniela, e cores reais da logo no lugar das do PR #574.
