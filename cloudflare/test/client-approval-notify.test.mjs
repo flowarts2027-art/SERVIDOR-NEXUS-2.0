@@ -26,10 +26,11 @@ function fixture(envExtra = {}) {
   const addClient = (id, config, status = "online") =>
     db.prepare("INSERT OR REPLACE INTO clients(id,name,status,config_json) VALUES(?1,?2,?3,?4)").run({ "?1": id, "?2": "Cliente " + id, "?3": status, "?4": JSON.stringify(config) });
   let n = 0;
-  const addPost = (clientId, approval = "pending", when = "2026-11-03T15:00:00.000Z", createdAt = "2026-11-02 16:00:00") => {
+  const IMG = { imageUrl: "https://painel.flowarts.com.br/media/arte.jpg" };
+  const addPost = (clientId, approval = "pending", when = "2026-11-03T15:00:00.000Z", createdAt = "2026-11-02 16:00:00", payload = IMG) => {
     n += 1;
-    db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,'12:00','ready',?4,'','x','','',0,'{}',?5,CURRENT_TIMESTAMP)")
-      .run({ "?1": "upload-feed-" + n, "?2": clientId, "?3": when, "?4": approval, "?5": createdAt });
+    db.prepare("INSERT INTO post_ledger(id,client_id,scheduled_for,scheduled_hour,status,approval_status,media_id,caption,image_object_key,error,cost_usd,payload_json,created_at,updated_at) VALUES(?1,?2,?3,'12:00','ready',?4,'','x','','',0,?6,?5,CURRENT_TIMESTAMP)")
+      .run({ "?1": "upload-feed-" + n, "?2": clientId, "?3": when, "?4": approval, "?5": createdAt, "?6": JSON.stringify(payload) });
   };
   const sent = [];
   const env = {
@@ -46,8 +47,8 @@ test("fica desligado sem a chave e sem o modelo", async () => {
   assert.equal(approvalNoticeConfig({}).enabled, false);
   assert.equal(approvalNoticeConfig({ CLIENT_APPROVAL_WHATSAPP: "on" }).enabled, false);
   const { env, addClient, addPost, sent } = fixture({ CLIENT_APPROVAL_WHATSAPP: "" });
-  addClient("maskara-assessoria", { contact: { phone: "22 99999-8888" } });
-  addPost("maskara-assessoria");
+  addClient("adimax-eduardo-soares", { contact: { phone: "22 99999-8888" } });
+  addPost("adimax-eduardo-soares");
   assert.equal((await runClientApprovalNotices(env, AT)).skipped, "disabled");
   assert.equal(sent.length, 0);
 });
@@ -60,15 +61,15 @@ test("número do cliente sempre com 55", () => {
 
 test("várias artes = uma mensagem modelo; não repete o aviso", async () => {
   const { env, addClient, addPost, sent } = fixture();
-  addClient("maskara-assessoria", { contact: { name: "Silva Maskara", phone: "22 99999-8888" } });
-  for (let i = 0; i < 7; i++) addPost("maskara-assessoria");
-  addPost("maskara-assessoria", "approved");
+  addClient("adimax-eduardo-soares", { contact: { name: "Eduardo Soares", phone: "22 99999-8888" } });
+  for (let i = 0; i < 7; i++) addPost("adimax-eduardo-soares");
+  addPost("adimax-eduardo-soares", "approved");
   const out = await runClientApprovalNotices(env, AT);
   assert.equal(sent.length, 1);
   assert.equal(sent[0].to, "5522999998888");
   assert.equal(sent[0].type, "template");
   assert.equal(sent[0].template.name, "aviso_arte_painel");
-  assert.deepEqual(sent[0].template.components[0].parameters.map(p => p.text), ["Silva", "https://painel.flowarts.com.br/"]);
+  assert.deepEqual(sent[0].template.components[0].parameters.map(p => p.text), ["Eduardo", "https://painel.flowarts.com.br/"]);
   assert.equal(out.results[0].posts, 7);
 
   // Mesmas artes: nunca avisa de novo, nem depois de horas (sem lembrete).
@@ -77,7 +78,7 @@ test("várias artes = uma mensagem modelo; não repete o aviso", async () => {
   assert.equal(sent.length, 1);
 
   // Arte nova depois: vai um novo aviso, sem esperar 3 horas.
-  addPost("maskara-assessoria", "pending", "2026-11-03T15:00:00.000Z", "2026-11-02 17:10:00");
+  addPost("adimax-eduardo-soares", "pending", "2026-11-03T15:00:00.000Z", "2026-11-02 17:10:00");
   await runClientApprovalNotices(env, new Date("2026-11-02T17:30:00Z"));
   assert.equal(sent.length, 2);
   assert.equal(sent[1].to, "5522999998888");
@@ -139,4 +140,50 @@ test("cliente que desligou o aviso não recebe", async () => {
   addPost("giltec");
   await runClientApprovalNotices(env, AT);
   assert.equal(sent.length, 0);
+});
+
+test("Maskara Assessoria nunca recebe aviso", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("maskara-assessoria", { contact: { name: "Maskara", phone: "22 99999-8888" } });
+  addPost("maskara-assessoria");
+  addPost("maskara-assessoria", "pending", null);
+  await runClientApprovalNotices(env, AT);
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 60 * 60 * 1000));
+  assert.equal(sent.length, 0);
+});
+
+test("arte sem dia e hora na aba Aprovar também avisa", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("adimax-eduardo-soares", { contact: { phone: "22 99999-0005" } });
+  addPost("adimax-eduardo-soares", "pending", null);
+  addPost("adimax-eduardo-soares", "pending", "");
+  const out = await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 1);
+  assert.equal(out.results[0].posts, 2);
+});
+
+test("cliente sem arte pendente no painel não recebe nada", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("adimax-eduardo-soares", { contact: { phone: "22 99999-0005" } });
+  addClient("giltec", { contact: { phone: "22 99999-0004" } });
+  addPost("adimax-eduardo-soares", "approved");
+  addPost("adimax-eduardo-soares", "rejected");
+  addPost("adimax-eduardo-soares", "pending", "2026-11-01T15:00:00.000Z"); // data já passou
+  addPost("giltec", "pending", undefined, undefined, { ...{ imageUrl: "https://x/a.jpg" }, hiddenFromPanel: true });
+  addPost("giltec", "pending", undefined, undefined, { imageUrl: "https://x/b.jpg", qualityGates: { copyChief: "rejected", designer: "approved" } });
+  addPost("giltec", "pending", undefined, undefined, {}); // ainda sem imagem
+  const out = await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 0);
+  assert.deepEqual(out.results, []);
+});
+
+test("arte em revisão automática entra no aviso quando fica pronta", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("giltec", { contact: { phone: "22 99999-0004" } });
+  addPost("giltec", "pending", undefined, undefined, { imageUrl: "https://x/b.jpg", qualityGates: { copyChief: "pending", designer: "pending" } });
+  await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 0);
+  addPost("giltec", "pending", undefined, undefined, { imageUrl: "https://x/c.jpg", qualityGates: { copyChief: "approved", designer: "approved" } });
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 15 * 60 * 1000));
+  assert.equal(sent.length, 1);
 });

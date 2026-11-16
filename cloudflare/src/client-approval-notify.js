@@ -22,7 +22,8 @@ export const BATCH_SETTLE_MINUTES = 10;
 export const DEFAULT_PANEL_URL = "https://painel.flowarts.com.br/";
 const MAX_CLIENTS_PER_RUN = 10;
 // Flow Arts é do próprio Rodrigo (ele aprova no Master) e o Café Brisa é demonstração.
-const SKIP_CLIENTS = new Set(["primeiro-teste", "demo-cafe"]);
+// Maskara Assessoria não recebe aviso nenhum (pedido do Rodrigo, 16/11/2026).
+export const SKIP_CLIENTS = new Set(["primeiro-teste", "demo-cafe", "maskara-assessoria"]);
 
 function parseConfig(raw) {
   try { return JSON.parse(String(raw || "{}")) || {}; } catch { return {}; }
@@ -42,6 +43,19 @@ export function approvalNoticeConfig(env = {}) {
   const template = String(env.CLIENT_APPROVAL_TEMPLATE || "").trim();
   const panelUrl = String(env.CLIENT_APPROVAL_PANEL_URL || "").trim() || DEFAULT_PANEL_URL;
   return { enabled: enabled && Boolean(template), template, panelUrl, lang: String(env.CLIENT_APPROVAL_TEMPLATE_LANG || "pt_BR").trim() || "pt_BR" };
+}
+
+// A arte só conta se o cliente consegue aprovar na aba "Aprovar" (mesmas regras do painel, public/client-lite.js):
+// não está escondida, já passou na revisão automática e já tem imagem. Arte sem dia marcado também conta.
+// Arte que ainda não conta fica sem marca e entra no próximo lote quando ficar pronta.
+export function approvableInPanel(payload = {}) {
+  if (!payload || typeof payload !== "object") return false;
+  if (payload.hiddenFromPanel === true) return false;
+  const gates = payload.qualityGates;
+  if (gates && typeof gates === "object" && !(gates.copyChief === "approved" && gates.designer === "approved")) return false;
+  const build = payload.formatBuild || {};
+  const image = payload.imageUrl || payload.publicImageUrl || build.imageUrl || (Array.isArray(build.carouselUrls) ? build.carouselUrls[0] : "");
+  return Boolean(String(image || "").trim());
 }
 
 // created_at do D1 vem como "AAAA-MM-DD HH:MM:SS" (UTC) ou ISO.
@@ -79,10 +93,10 @@ export async function runClientApprovalNotices(env, at = new Date()) {
   await ensureWhatsAppSchema(env);
 
   const rows = await env.DB.prepare(
-    `SELECT p.id, p.client_id, p.created_at FROM post_ledger p
+    `SELECT p.id, p.client_id, p.created_at, p.payload_json FROM post_ledger p
      LEFT JOIN client_approval_notices n ON n.post_id = p.id
      WHERE p.approval_status = 'pending' AND p.status = 'ready' AND n.post_id IS NULL
-       AND (p.scheduled_for IS NULL OR p.scheduled_for >= ?1)
+       AND (COALESCE(p.scheduled_for, '') = '' OR p.scheduled_for >= ?1)
      ORDER BY p.created_at ASC LIMIT 500`
   ).bind(at.toISOString()).all();
 
@@ -90,6 +104,7 @@ export async function runClientApprovalNotices(env, at = new Date()) {
   for (const row of rows?.results || []) {
     const id = String(row.client_id || "");
     if (!id || SKIP_CLIENTS.has(id) || BLOCKED_PUBLISH_CLIENTS.has(id)) continue;
+    if (!approvableInPanel(parseConfig(row.payload_json))) continue;
     if (!byClient.has(id)) byClient.set(id, { ids: [], newest: 0 });
     const entry = byClient.get(id);
     entry.ids.push(String(row.id));

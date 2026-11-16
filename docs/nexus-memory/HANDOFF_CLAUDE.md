@@ -1345,3 +1345,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Pré-visualização com dados reais (só leitura): a conversa nova sobe da 52ª para a 1ª posição.
 - Observação: a tela pede 100 conversas e há 106; as 6 mais antigas não aparecem. Não alterado. As 51 marcadas "Precisa de você" seguem marcadas até alguém religar o robô na conversa.
 - Suíte: 1013 de 1014 (só o teste de cron, igual na main neste PC). `wrangler deploy --dry-run` ok. Tela não aberta em navegador.
+
+## 16/11/2026 — Aviso de arte para aprovar no WhatsApp ligado (PR aberto, sem merge)
+- Pedido do Rodrigo: ligar o aviso para todos os clientes, MENOS Maskara Assessoria. David (robô do WhatsApp) continua desligado (`whatsapp_settings.auto_reply=0` conferido em produção; o aviso não mexe nisso).
+- `wrangler.jsonc`: `CLIENT_APPROVAL_WHATSAPP=on` e `CLIENT_APPROVAL_TEMPLATE=aviso_arte_painel`.
+- `client-approval-notify.js`: Maskara entrou em `SKIP_CLIENTS` (junto com Flow Arts e Café Brisa). O aviso agora só conta arte que o cliente consegue aprovar na aba "Aprovar" (`approvableInPanel`): não escondida, revisão automática aprovada e com imagem. Arte sem dia marcado (NULL ou vazio) conta. Arte em revisão fica sem marca e entra no próximo lote quando ficar pronta.
+- Regras mantidas: 1 aviso por lote, espera de 10 min, sem lembrete, nunca repete (tabela `client_approval_notices`), só das 08h às 20h, erro da Meta tenta de novo no próximo ciclo.
+- Produção hoje (leitura): Adimax 4 artes pendentes e prontas (vão gerar 1 aviso); Maskara 1 (em revisão automática, e fora do aviso de qualquer jeito).
+- Testes: 11 do aviso passam; suíte 1019 de 1020 (só o teste de cron, que já falhava). `wrangler deploy --dry-run` ok.
+- Próximo passo: Rodrigo aprova o merge; depois do deploy, conferir `client_approval_notices` e o log `client_approval_notices` para ver se a Meta aceitou.
