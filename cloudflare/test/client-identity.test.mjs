@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
 import {
-  cleanButtonWord, cleanColors, contrast, effectiveBrand, readableColor, saveBrand, textOn, updateBrandFile
+  brandBadge, cleanButtonWord, cleanColors, contrast, effectiveBrand, MASTER_GREEN, masterBrandBadges, PANEL_THEMES, readableColor, saveBrand, textOn, updateBrandFile
 } from "../src/client-identity.js";
 import { cleanTitle, writeArtTitle } from "../src/art-title.js";
 import { finishComposedArt, runPostWatcher } from "../src/post-watcher.js";
@@ -217,4 +217,72 @@ test("as rotas de marca exigem login, e a volta da arte usa senha de uso único"
   const index = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(index.match(/\/api\/master\/brand"[\s\S]*?handleBrand/)?.[0] || "", /resolveMasterSession[\s\S]*unauthorized/);
   assert.match(index, /x-nexus-callback/);
+});
+
+// Lista do Master (16/11/2026): logo e cores lidas na hora do mesmo cadastro do painel do cliente.
+test("lista do Master mostra a marca do cliente, a do grupo, ou o verde do Master", async () => {
+  const { db, env } = setup();
+  addClient(db, "giltec");
+  addClient(db, "giltec-locacoes");
+  addClient(db, "adimax", {});
+  addClient(db, "demo-cafe", {});
+  await saveBrand(env, brandForm("grupo:giltec", { logo: new File([jpeg(10, 10)], "g.jpg", { type: "image/jpeg" }) }), NOW, ok);
+  await saveBrand(env, brandForm("adimax", { primary: "#e2a107", accent: "#102030" }), NOW, ok);
+  const clients = [
+    { id: "adimax", config: JSON.parse(db.prepare("SELECT config_json FROM clients WHERE id='adimax'").get().config_json) },
+    { id: "giltec-locacoes", config: { group: { id: "giltec", vendor: "Sheila" } } },
+    { id: "demo-cafe", config: {} }
+  ];
+  const badges = await masterBrandBadges(env, clients);
+  assert.equal(badges.adimax.primary, "#e2a107");
+  assert.equal(badges.adimax.accent, "#102030");
+  assert.equal(badges.adimax.onPrimary, textOn("#e2a107"));
+  assert.match(badges["giltec-locacoes"].logoUrl, /^https:\/\/x\.test\/media\/branding\/grupo-giltec\//);
+  assert.equal(badges["giltec-locacoes"].primary, COLORS.primary);
+  assert.deepEqual(badges["demo-cafe"], { logoUrl: "", logoDark: false, primary: MASTER_GREEN, accent: MASTER_GREEN, onPrimary: textOn(MASTER_GREEN) });
+});
+
+test("Master não guarda cópia: mudou a cor no Editar cliente, a lista muda junto", async () => {
+  const { db, env } = setup();
+  addClient(db, "maskara", {});
+  const read = async () => (await masterBrandBadges(env, [{ id: "maskara", config: JSON.parse(db.prepare("SELECT config_json FROM clients WHERE id='maskara'").get().config_json) }])).maskara;
+  assert.equal((await read()).primary, MASTER_GREEN);
+  await saveBrand(env, brandForm("maskara", { primary: "#aa0044" }), NOW, ok);
+  assert.equal((await read()).primary, "#aa0044");
+  await saveBrand(env, brandForm("maskara", { primary: "#0044aa" }), NOW, ok);
+  assert.equal((await read()).primary, "#0044aa");
+  assert.equal(brandBadge({ colors: { primary: "ruim" } }).primary, MASTER_GREEN);
+});
+
+test("lista do Master: logo pequena com o nome embaixo, faixa de cor, e grupos com marca", async () => {
+  const app = await readFile(new URL("../../public/app.js", import.meta.url), "utf8");
+  assert.match(app, /brandMark\(client\.brand, client\.name\)}<strong>\$\{escapeHtml\(client\.name\)\}<\/strong>/);
+  assert.match(app, /brandStripe\(client\.brand\)/);
+  assert.match(app, /brandMark\(group\.brand,group\.name\)/);
+  assert.doesNotMatch(app, /localStorage[^\n]*brand/i);
+  const css = await readFile(new URL("../../public/styles.css", import.meta.url), "utf8");
+  assert.match(css, /table\.client-sheet thead\{display:none\}/);
+});
+
+test("sem logo no Editar cliente, o Master usa a mesma logo fixa do painel (GILTEC Rose e Neto iguais)", async () => {
+  const { env } = setup();
+  const badges = await masterBrandBadges(env, [
+    { id: "giltec", config: {} },
+    { id: "giltec-neto", config: { group: { id: "giltec", vendor: "Neto" } } },
+    { id: "quatree-dog", config: {} },
+    { id: "daniela-martins", config: {} }
+  ]);
+  assert.equal(badges.giltec.logoUrl, "/brand/giltec-logo.png");
+  assert.deepEqual(badges["giltec-neto"], badges.giltec);
+  assert.equal(badges["quatree-dog"].logoUrl, "/brand/quatree-logo.png");
+  assert.equal(badges["daniela-martins"].primary, "#746E44");
+  // Logo salva no Editar cliente ganha da fixa.
+  assert.equal(brandBadge({ logoUrl: "https://x.test/media/nova.png", colors: COLORS }, "giltec").logoUrl, "https://x.test/media/nova.png");
+});
+
+test("a logo fixa do Master é a mesma do painel do cliente (CLIENT_THEMES)", async () => {
+  const lite = await readFile(new URL("../../public/client-lite.js", import.meta.url), "utf8");
+  const block = lite.slice(lite.indexOf("const CLIENT_THEMES = {"), lite.indexOf("let defaultBrandHtml"));
+  const panel = Object.fromEntries([...block.matchAll(/"?([a-z-]+)"?:\s*\{[^}]*?logo:\s*"([^"]+)"[^}]*?themeColor:\s*"([^"]+)"/g)].map(m => [m[1], { logo: m[2], color: m[3] }]));
+  assert.deepEqual(JSON.parse(JSON.stringify(PANEL_THEMES)), panel);
 });

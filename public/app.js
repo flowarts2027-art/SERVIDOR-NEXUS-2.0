@@ -41,6 +41,32 @@ function api(path, options = {}) {
 
 function badge(value, online = true) { return `<span class="badge ${online ? "" : "off"}">${value}</span>`; }
 function initials(name) { return name.split(/\s+/).map(word => word[0]).join("").slice(0, 2).toUpperCase(); }
+// Identidade visual na lista do Master (Rodrigo, 16/11/2026). A marca vem do servidor, lida na hora do mesmo
+// cadastro que pinta o painel do cliente ("Editar cliente"). Nada é copiado aqui.
+const MASTER_GREEN = "#168c54";
+const hexColor = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value || "")) ? String(value) : fallback;
+function brandColors(brand) {
+  const primary = hexColor(brand?.primary, MASTER_GREEN);
+  return { primary, accent: hexColor(brand?.accent, primary), onPrimary: brand?.onPrimary === "#000000" ? "#000000" : "#ffffff" };
+}
+// Logo pequena com o nome embaixo. Sem logo: círculo com as iniciais na cor principal.
+// Fundo da logo igual ao painel do cliente: logo escura em cartão claro, logo clara em fundo escuro.
+function brandMark(brand, name) {
+  const { primary, onPrimary } = brandColors(brand);
+  const letters = escapeHtml(initials(String(name || "?").replace(/^Grupo: /, "").replace(/\s*\(.*$/, "").trim() || "?"));
+  const fallback = `<span class="brand-initials" style="background:${primary};color:${onPrimary}">${letters}</span>`;
+  if (!brand?.logoUrl) return fallback;
+  const tile = brand.logoDark ? (onPrimary === "#000000" ? primary : "#ffffff") : (onPrimary === "#ffffff" ? primary : "#0d1b2a");
+  return `<span class="brand-logo" style="background:${tile}"><img src="${escapeHtml(brand.logoUrl)}" alt="" loading="lazy" data-brand-logo>${fallback}</span>`;
+}
+function brandStripe(brand) {
+  const { primary, accent } = brandColors(brand);
+  return `--client-primary:${primary};--client-accent:${accent}`;
+}
+// Logo que não carrega vira o círculo com as iniciais.
+document.addEventListener("error", event => {
+  if (event.target?.matches?.("img[data-brand-logo]")) event.target.closest(".brand-logo")?.classList.add("logo-failed");
+}, true);
 function aiModeLabel(mode) {
   return mode === "own-key" ? "CHAVE PRÓPRIA" : "SEM IMAGEM PAGA";
 }
@@ -93,7 +119,8 @@ function render() {
     const openUrl = `/api/clients/${encodeURIComponent(client.id)}/assume-open`;
     const action = `<div class="client-action-row"><a class="small-primary" href="${openUrl}" target="_blank" rel="noopener">Abrir painel</a><button type="button" class="ghost" data-portal-access="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}">Acesso</button>${remove}${protect}</div>`;
     // Linha clicável (22/10): tocar no nome abre o painel do cliente.
-    return `<tr><td><a class="client-open" href="${openUrl}" target="_blank" rel="noopener"><strong>${escapeHtml(client.name)}</strong></a><button type="button" class="name-edit" data-edit-client-name="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}" aria-label="Editar o cliente" title="Editar o cliente">✏️</button><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>${escapeHtml(client.vendorLabel || "Vendedor")}: ${escapeHtml(client.vendor)}</small>` : ""}</td><td>${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td>${escapeHtml(client.instagram || "Aguardando conexão")}</td><td>${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td>${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td>${action}</td></tr>`;
+    // Logo pequena com o nome embaixo e faixa com as cores do cliente (16/11/2026).
+    return `<tr class="client-brand-row" style="${brandStripe(client.brand)}"><td class="client-brand-cell" data-label="Cliente"><div class="client-id"><a class="client-open" href="${openUrl}" target="_blank" rel="noopener">${brandMark(client.brand, client.name)}<strong>${escapeHtml(client.name)}</strong></a><button type="button" class="name-edit" data-edit-client-name="${escapeHtml(client.id)}" data-client-name="${escapeHtml(client.name)}" aria-label="Editar o cliente" title="Editar o cliente">✏️</button></div><small>${escapeHtml(client.niche || "Outro")}</small>${client.vendor ? `<small>${escapeHtml(client.vendorLabel || "Vendedor")}: ${escapeHtml(client.vendor)}</small>` : ""}</td><td data-label="Status">${badge(client.status === "online" ? "ONLINE" : "SETUP", client.status === "online")}</td><td data-label="Instagram">${escapeHtml(client.instagram || "Aguardando conexão")}</td><td data-label="Odin">${client.odin ? badge("ATIVO") : badge("DESLIGADO", false)}</td><td data-label="IA do cliente">${mode === "NEXUS GERENCIADA" ? "" : `<small>${mode}</small>`}${extra}</td><td data-label="Ações">${action}</td></tr>`;
   }).join("");
   renderAgentProfiles();
   renderPortalSelector();
@@ -925,7 +952,8 @@ async function loadClientGroups(){
     select.value=current;
   });
   const list=$("#group-edit-list");
-  if(list)list.innerHTML=(data.groups||[]).map(group=>`<div class="group-edit-row"><strong>${escapeHtml(String(group.name).replace(/^Grupo: /,""))}</strong><button type="button" class="name-edit" data-edit-group="${escapeHtml(group.id)}" data-client-name="${escapeHtml(String(group.name).replace(/^Grupo: /,""))}" aria-label="Editar o grupo" title="Editar o grupo">✏️</button></div>`).join("");
+  // Grupo também mostra a logo e as cores do grupo (16/11/2026).
+  if(list)list.innerHTML=(data.groups||[]).map(group=>`<div class="group-edit-row client-brand-row" style="${brandStripe(group.brand)}"><span class="group-id">${brandMark(group.brand,group.name)}<strong>${escapeHtml(String(group.name).replace(/^Grupo: /,""))}</strong></span><button type="button" class="name-edit" data-edit-group="${escapeHtml(group.id)}" data-client-name="${escapeHtml(String(group.name).replace(/^Grupo: /,""))}" aria-label="Editar o grupo" title="Editar o grupo">✏️</button></div>`).join("");
 }
 loadClientGroups();
 $("#portal-group-save")?.addEventListener("click",async()=>{

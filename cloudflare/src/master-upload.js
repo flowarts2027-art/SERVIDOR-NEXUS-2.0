@@ -3,13 +3,14 @@
 // a legenda já vem pronta pelo nicho (sem IA, custo zero) e ele marca dia e hora — ou deixa o cliente escolher.
 // Por padrão o cliente ainda aprova no painel dele; dá para marcar "já aprovado por mim".
 
-import { getClient } from "./clients.js";
+import { CLIENT_GROUPS, getClient } from "./clients.js";
 import { createClientUpload, CLIENT_UPLOAD_MESSAGES } from "./client-uploads.js";
 import { WINDOW_MOVES } from "./art-format.js";
 import { readyCaption, captionNiche, captionVariants, withOrderCode } from "./caption-templates.js";
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { createGroup, ensureGroupClients, findGroup, groupMembers, groupOptions, vendorCaption } from "./client-groups.js";
+import { brandBadge, readGroupBrand } from "./client-identity.js";
 import { agentSlot, localTime } from "./agent-art.js";
 import { loadClientOffsets } from "./client-slots.js";
 import { boardToday, dayGap, loadPosts, localDayStart } from "./missing-posts.js";
@@ -191,7 +192,13 @@ const MESSAGES = { ...CLIENT_UPLOAD_MESSAGES, group_name: "Escreva o nome do gru
 export async function handleMasterUpload(request, env, url) {
   try {
     if (url.pathname === "/api/master/groups" && request.method === "GET") {
-      return send({ ok: true, groups: await groupOptions(env) });
+      // Cada grupo vai com a logo e as cores do grupo, lidas na hora (sem cópia).
+      const groups = await groupOptions(env);
+      for (const group of groups) {
+        const id = String(group.id).replace(/^grupo:/, "");
+        group.brand = brandBadge(await readGroupBrand(env, id).catch(() => null), CLIENT_GROUPS[id]?.theme || "");
+      }
+      return send({ ok: true, groups });
     }
     if (url.pathname === "/api/master/groups" && request.method === "POST") {
       const body = await request.json().catch(() => ({}));
