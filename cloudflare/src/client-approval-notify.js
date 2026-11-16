@@ -16,6 +16,7 @@
 
 import { BLOCKED_PUBLISH_CLIENTS } from "./publisher.js";
 import { clientScreenName } from "./client-display.js";
+import { clientGroup } from "./clients.js";
 import { ensureWhatsAppSchema, sendAndRecord } from "./whatsapp-agent.js";
 
 export const BATCH_SETTLE_MINUTES = 10;
@@ -40,6 +41,21 @@ export function clientWhatsapp(config = {}) {
     return ("55" + digits).slice(0, 13);
   }
   return "";
+}
+
+// Nome do "Olá …" do aviso (pedido do Rodrigo, 16/11/2026: saiu "Olá Adimax" em vez de "Olá Eduardo").
+// Ordem: nome do contato; vendedor do painel (Rose, Sheila, Ericsson); a pessoa depois do traço
+// ("Adimax - Eduardo Soares" → Eduardo); senão o nome do painel. Sempre só o primeiro nome.
+export function greetingName(client = {}, config = {}) {
+  const first = value => String(value || "").trim().split(/\s+/)[0] || "";
+  const contact = first(config?.contact?.name);
+  if (contact) return contact;
+  const vendor = first(clientGroup({ id: client?.id, config })?.vendor);
+  if (vendor) return vendor;
+  const saved = String(client?.name || "").trim();
+  const parts = saved.split(/\s+[-–—]\s+/);
+  if (parts.length > 1 && first(parts[parts.length - 1])) return first(parts[parts.length - 1]);
+  return first(clientScreenName({ ...client, config })) || "tudo bem";
 }
 
 export function approvalNoticeConfig(env = {}) {
@@ -139,7 +155,7 @@ export async function runClientApprovalNotices(env, at = new Date()) {
     if (!to) {
       status = "sem_numero";
     } else {
-      const name = String(clientConfig.contact?.name || clientScreenName(client)).trim().split(/\s+/)[0] || "tudo bem";
+      const name = greetingName(client, clientConfig);
       const text = `Olá ${name}, chegou arte nova no seu painel para aprovar: ${config.panelUrl}`;
       try {
         await sendAndRecord(env, senderClient, to, text, {

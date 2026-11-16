@@ -258,3 +258,14 @@ test("o aviso não liga o David", async () => {
   const src = fs.readFileSync(new URL("../src/client-approval-notify.js", import.meta.url), "utf8");
   assert.doesNotMatch(src, /whatsapp_settings|auto_reply|setAutoReply/);
 });
+
+import { greetingName } from "../src/client-approval-notify.js";
+
+test("aviso cumprimenta a pessoa, não a marca (16/11/2026)", () => {
+  assert.equal(greetingName({ id: "adimax-eduardo-soares", name: "Adimax - Eduardo Soares" }, {}), "Eduardo");
+  assert.equal(greetingName({ id: "giltec", name: "Giltec" }, {}), "Rose");
+  assert.equal(greetingName({ id: "quatree-dog", name: "Quatree Dog" }, {}), "Ericsson");
+  assert.equal(greetingName({ id: "neto", name: "GILTEC - Neto" }, { group: { id: "giltec", vendor: "Neto" } }), "Neto");
+  assert.equal(greetingName({ id: "daniela-martins", name: "Daniela Martins" }, {}), "Daniela");
+  assert.equal(greetingName({ id: "x", name: "Adimax - Eduardo" }, { contact: { name: "Edu Soares" } }), "Edu");
+});
