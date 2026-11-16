@@ -1363,3 +1363,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 5 novos em `client-identity.test.mjs` (21 passam). Suíte: só falha o teste de cron, que já falhava antes.
 - Não conferido: a foto da tela no navegador (a prévia foi gerada, mas não deu para abrir). Conferir no celular depois do merge.
 - Próximo passo: Rodrigo aprova o merge; depois, abrir o Master no celular e conferir a lista.
+
+## 16/11/2026 — Aviso de arte: número no lugar certo (PR aberto, sem merge)
+- Problema (investigado só lendo): às 9h45 o aviso achou as 4 artes do Adimax, mas procurou o número só em `contact.whatsapp`/`contact.phone`. Todos os clientes reais guardam em `agentProfile.whatsapp`. As 4 artes ficaram marcadas `sem_numero` e nunca seriam avisadas. Nenhum envio, nenhum erro da Meta. Falha minha no PR #638: os testes usavam um cadastro de exemplo, e não o formato real.
+- Correção em `client-approval-notify.js`: número lido em `agentProfile.whatsapp`, depois `contact.whatsapp`, depois `contact.phone` (mesma ordem de `whatsapp-known.js`). Só o envio aceito marca as artes; sem número ou erro da Meta não marcam. Marcas antigas `sem_numero` são ignoradas e só elas podem virar `sent` (upsert com `WHERE status='sem_numero'`); lote enviado nunca é reenviado.
+- Teste do cron (`cron-resilience.test.mjs`) normaliza CRLF: agora passa também no Windows.
+- Testes novos com cadastro igual ao real (número só em `agentProfile.whatsapp`), estado de produção de 9h45 recriado, Maskara com número continua fora, aviso não mexe no David. Suíte: 1030 de 1030.
+- Previsão (leitura de produção): depois do deploy, só o Adimax recebe, 1 mensagem para as 4 artes, no primeiro ciclo de 15 min entre 08h e 20h.
+- Próximo passo: Rodrigo aprova o merge; conferir `client_approval_notices` (4 linhas `sent`) e `whatsapp_send_log`.

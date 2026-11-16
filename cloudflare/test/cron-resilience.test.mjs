@@ -42,7 +42,8 @@ test("wrangler keeps production cron on a D1-safe fifteen-minute cadence", async
   // O agendador pesado (D1) continua a cada 15 min; o cron de 1 min é leve (só direct do brinde).
   assert.match(wrangler, /"triggers"\s*:\s*\{[\s\S]*"crons"\s*:\s*\["\*\/15 \* \* \* \*"(, "\* \* \* \* \*")?]/);
   assert.equal(schedule.trim(), "*/15 * * * *");
-  const index = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+  // Checkout no Windows vem com CRLF: normaliza para a busca valer nos dois.
+  const index = (await readFile(new URL("../src/index.js", import.meta.url), "utf8")).replace(/\r\n/g, "\n");
   const minuteBranch = index.match(/if \(String\(event\.cron \|\| ""\) === MINUTE_CRON\) \{[\s\S]*?return;\n    \}/)?.[0] || "";
   assert.ok(minuteBranch, "cron de 1 minuto precisa sair antes do agendador");
   // 04/11/2026: a única exceção é o minuto só de publicar (terminados em 2 e 7),

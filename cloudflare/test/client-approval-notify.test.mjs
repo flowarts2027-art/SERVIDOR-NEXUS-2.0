@@ -57,6 +57,9 @@ test("número do cliente sempre com 55", () => {
   assert.equal(clientWhatsapp({ contact: { phone: "(22) 99999-8888" } }), "5522999998888");
   assert.equal(clientWhatsapp({ contact: { whatsapp: "5522999998888" } }), "5522999998888");
   assert.equal(clientWhatsapp({}), "");
+  // Como os clientes reais estão salvos (16/11/2026): número só em agentProfile.whatsapp.
+  assert.equal(clientWhatsapp({ agentProfile: { whatsapp: "552299998888" } }), "552299998888");
+  assert.equal(clientWhatsapp({ agentProfile: { whatsapp: "" }, contact: { phone: "22 99999-8888" } }), "5522999998888");
 });
 
 test("várias artes = uma mensagem modelo; não repete o aviso", async () => {
@@ -186,4 +189,72 @@ test("arte em revisão automática entra no aviso quando fica pronta", async () 
   addPost("giltec", "pending", undefined, undefined, { imageUrl: "https://x/c.jpg", qualityGates: { copyChief: "approved", designer: "approved" } });
   await runClientApprovalNotices(env, new Date(AT.getTime() + 15 * 60 * 1000));
   assert.equal(sent.length, 1);
+});
+
+// 16/11/2026: o Adimax não recebeu porque o número só existe em agentProfile.whatsapp.
+// Cadastro igual ao real: sem "contact", número de 12 dígitos no agentProfile.
+const REAL_ADIMAX = { agentProfile: { whatsapp: "552299998888" }, brand: { colors: { primary: "#e2a107" } } };
+
+test("cliente real com número só em agentProfile.whatsapp recebe o aviso", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("adimax-eduardo-soares", REAL_ADIMAX);
+  for (let i = 0; i < 4; i++) addPost("adimax-eduardo-soares");
+  const out = await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].to, "552299998888");
+  assert.equal(sent[0].template.name, "aviso_arte_painel");
+  assert.deepEqual(out.results[0], { clientId: "adimax-eduardo-soares", status: "sent", posts: 4 });
+});
+
+test("sem número não marca: o aviso sai quando o número for cadastrado", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("adimax-eduardo-soares", { agentProfile: {} });
+  addPost("adimax-eduardo-soares");
+  const first = await runClientApprovalNotices(env, AT);
+  assert.equal(first.results[0].status, "sem_numero");
+  assert.equal(sent.length, 0);
+  // Rodrigo cadastra o número (UPDATE, como o Master faz; REPLACE apagaria as artes).
+  await env.DB.prepare("UPDATE clients SET config_json=?2 WHERE id=?1").bind("adimax-eduardo-soares", JSON.stringify(REAL_ADIMAX)).run();
+  const second = await runClientApprovalNotices(env, new Date(AT.getTime() + 15 * 60 * 1000));
+  assert.equal(sent.length, 1, JSON.stringify(second));
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 30 * 60 * 1000));
+  assert.equal(sent.length, 1);
+});
+
+test("marca antiga de sem_numero é ignorada; lote já enviado nunca é reenviado", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("adimax-eduardo-soares", REAL_ADIMAX);
+  addClient("giltec", { agentProfile: { whatsapp: "5522999990004" } });
+  for (let i = 0; i < 4; i++) addPost("adimax-eduardo-soares"); // upload-feed-1..4
+  addPost("giltec"); // upload-feed-5
+  // Estado de produção em 16/11 às 9h45: as 4 do Adimax marcadas "sem_numero"; a GILTEC já avisada.
+  await env.DB.prepare("CREATE TABLE IF NOT EXISTS client_approval_notices (post_id TEXT PRIMARY KEY, client_id TEXT NOT NULL, status TEXT NOT NULL, error TEXT NOT NULL DEFAULT '', notified_at TEXT NOT NULL)").run();
+  for (let i = 1; i <= 4; i++) await env.DB.prepare("INSERT INTO client_approval_notices(post_id,client_id,status,error,notified_at) VALUES(?1,'adimax-eduardo-soares','sem_numero','','2026-11-02T12:45:53Z')").bind("upload-feed-" + i).run();
+  await env.DB.prepare("INSERT INTO client_approval_notices(post_id,client_id,status,error,notified_at) VALUES('upload-feed-5','giltec','sent','','2026-11-02T12:00:00Z')").run();
+
+  const out = await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 1, "um aviso só, para o Adimax");
+  assert.equal(sent[0].to, "552299998888");
+  assert.equal(out.results.length, 1);
+  const marks = await env.DB.prepare("SELECT status, COUNT(*) AS n FROM client_approval_notices GROUP BY status").all();
+  assert.deepEqual(marks.results.map(r => [r.status, r.n]), [["sent", 5]]);
+  const giltec = await env.DB.prepare("SELECT notified_at FROM client_approval_notices WHERE post_id='upload-feed-5'").first();
+  assert.equal(giltec.notified_at, "2026-11-02T12:00:00Z", "marca de enviado não muda");
+
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 15 * 60 * 1000));
+  await runClientApprovalNotices(env, new Date(AT.getTime() + 5 * 60 * 60 * 1000));
+  assert.equal(sent.length, 1);
+});
+
+test("Maskara com número real continua fora do aviso", async () => {
+  const { env, addClient, addPost, sent } = fixture();
+  addClient("maskara-assessoria", { agentProfile: { whatsapp: "5522999997777" } });
+  addPost("maskara-assessoria");
+  await runClientApprovalNotices(env, AT);
+  assert.equal(sent.length, 0);
+});
+
+test("o aviso não liga o David", async () => {
+  const src = fs.readFileSync(new URL("../src/client-approval-notify.js", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /whatsapp_settings|auto_reply|setAutoReply/);
 });

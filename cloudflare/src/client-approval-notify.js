@@ -29,13 +29,17 @@ function parseConfig(raw) {
   try { return JSON.parse(String(raw || "{}")) || {}; } catch { return {}; }
 }
 
-// Número do cliente: contato do cadastro. Sempre com 55 na frente.
+// Número do cliente: mesmo lugar e mesma ordem que o resto do Nexus usa (whatsapp-known.js).
+// 16/11/2026: todos os clientes reais guardam o número em agentProfile.whatsapp; o aviso só olhava
+// contact.*, achava "sem número" e o Adimax não recebeu. Sempre com 55 na frente.
 export function clientWhatsapp(config = {}) {
-  const raw = config?.contact?.whatsapp || config?.contact?.phone || "";
-  const digits = String(raw).replace(/\D/g, "");
-  if (digits.length < 10) return "";
-  if (digits.startsWith("55") && digits.length >= 12) return digits.slice(0, 13);
-  return ("55" + digits).slice(0, 13);
+  for (const raw of [config?.agentProfile?.whatsapp, config?.contact?.whatsapp, config?.contact?.phone]) {
+    const digits = String(raw || "").replace(/\D/g, "");
+    if (digits.length < 10) continue;
+    if (digits.startsWith("55") && digits.length >= 12) return digits.slice(0, 13);
+    return ("55" + digits).slice(0, 13);
+  }
+  return "";
 }
 
 export function approvalNoticeConfig(env = {}) {
@@ -94,7 +98,7 @@ export async function runClientApprovalNotices(env, at = new Date()) {
 
   const rows = await env.DB.prepare(
     `SELECT p.id, p.client_id, p.created_at, p.payload_json FROM post_ledger p
-     LEFT JOIN client_approval_notices n ON n.post_id = p.id
+     LEFT JOIN client_approval_notices n ON n.post_id = p.id AND n.status <> 'sem_numero'
      WHERE p.approval_status = 'pending' AND p.status = 'ready' AND n.post_id IS NULL
        AND (COALESCE(p.scheduled_for, '') = '' OR p.scheduled_for >= ?1)
      ORDER BY p.created_at ASC LIMIT 500`
@@ -148,13 +152,17 @@ export async function runClientApprovalNotices(env, at = new Date()) {
         error = String(err?.message || err).slice(0, 200);
       }
     }
-    // Erro de envio não marca os posts: tenta de novo no próximo ciclo. "sem_numero" marca para não repetir.
-    if (status !== "erro") {
+    // Só o envio aceito marca as artes. Erro da Meta ou cliente sem número não marcam:
+    // tenta de novo no próximo ciclo, e o aviso sai quando o número for cadastrado (16/11/2026).
+    // Marca antiga de "sem_numero" é a única que pode ser trocada; lote enviado nunca é reenviado.
+    if (status === "sent") {
       const stamp = at.toISOString();
       for (const postId of postIds) {
         await env.DB.prepare(
-          "INSERT OR IGNORE INTO client_approval_notices(post_id, client_id, status, error, notified_at) VALUES(?1, ?2, ?3, '', ?4)"
-        ).bind(postId, clientId, status, stamp).run();
+          `INSERT INTO client_approval_notices(post_id, client_id, status, error, notified_at) VALUES(?1, ?2, 'sent', '', ?3)
+           ON CONFLICT(post_id) DO UPDATE SET status='sent', error='', notified_at=excluded.notified_at
+           WHERE client_approval_notices.status = 'sem_numero'`
+        ).bind(postId, clientId, stamp).run();
       }
     }
     results.push({ clientId, status, posts: postIds.length, ...(error ? { error } : {}) });
