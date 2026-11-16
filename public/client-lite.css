@@ -1273,3 +1273,16 @@ html[data-custom-brand] .top-copy:has(.client-top-logo) .nexus-top-logo { displa
 
 /* Botão "Aprovar e baixar" (06/11/2026): linha inteira, para o vendedor achar fácil. */
 .actions .btn-download { grid-column: 1 / -1; font-size: 1.05rem; }
+
+/* Quadro "Seguidores" (16/11/2026, pedido do Rodrigo): era azul fixo e não combinava com a marca do cliente.
+   Agora usa a cor do menu salva no Master, um pouco mais escura no fim. */
+html[data-custom-brand] .followers {
+  background: radial-gradient(circle at 90% 10%, rgba(255, 255, 255, .18), transparent 30%),
+    linear-gradient(135deg, var(--brand-menu), color-mix(in srgb, var(--brand-menu) 72%, #000));
+}
+html[data-custom-brand] .followers p { color: rgba(255, 255, 255, .85); }
+/* Painel nas cores do cliente (16/11/2026): o azul padrão (títulos pequenos, links, botão ↻, etiquetas) vira a cor do menu. */
+html[data-custom-brand] {
+  --blue: var(--brand-menu);
+  --blue-soft: color-mix(in srgb, var(--brand-menu) 12%, #fff);
+}
