@@ -1,3 +1,13 @@
+## 2026-11-16 08h10 BRT — Site sem Nova Friburgo: atende o Brasil todo (Claude)
+
+- Correção do Rodrigo: ele mora em Magé - RJ e atende o Brasil todo. "Nova Friburgo" e "Região Serrana" estavam errados no site (erro do Claude no PR #628).
+- Feito: removido Nova Friburgo/Região Serrana da home, das páginas de postagem e resposta automática e da página de site; área de atendimento nos dados do Google = Brasil.
+- Página `/criacao-de-site-nova-friburgo` virou `/criacao-de-site`. O endereço antigo leva para o novo com 301 (`MOVED_PAGES` em `cloudflare/src/site-host.js`). Sitemap e run_worker_first atualizados.
+- Home (`public/site.html`) é export do Next.js SITE-FLOWARTS-NOVO: repetir a troca na fonte do PC antes de exportar de novo.
+- Não mexido: `PIX_CITY` em `cloudflare/src/plans.js` (cidade do recebedor Pix) e cidades do Captador.
+- Testes: 1016/1016. Merge na main publica pelo GitHub Actions.
+- Próximo passo: depois do deploy, reenviar o sitemap e pedir indexação de /, /postagem-automatica-instagram, /resposta-automatica-instagram e /criacao-de-site no Search Console (conta flowarts2027@gmail.com).
+
 ## 2026-11-16 07h40 BRT — Ajustes de SEO do flowarts.com.br (Claude)
 
 - Pedido do Rodrigo: auditoria completa de SEO e corrigir sem ele colar prompt.
