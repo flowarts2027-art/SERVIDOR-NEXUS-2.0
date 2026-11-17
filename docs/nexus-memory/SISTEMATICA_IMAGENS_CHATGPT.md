@@ -28,14 +28,17 @@ Antes de gerar qualquer imagem, escrever uma **tabela da campanha** com uma linh
 - Depois de cada imagem, conferir: (a) é uma imagem só, sem mosaico; (b) não repete outra peça; (c) proporção certa; (d) nenhum texto cortado nem por cima do rosto das pessoas.
 - Errou? Refaz **só aquela imagem**. Não refazer o lote todo.
 
-## Regra 4 — A IA de imagem NÃO desenha a logo
-- No prompt da imagem, escrever: "sem logo, sem marca, sem texto escrito".
-- Deixar um **espaço livre no canto superior direito** para a logo.
-- A logo oficial é colocada **depois**, por cima, sem redesenhar: Flow Arts = `public/brand/flowarts-logo.webp` (símbolo: `public/brand/flowarts-symbol.webp`); GILTEC = `docs/nexus-memory/clientes/giltec/logo-giltec.png`.
-- Quem carimba: o DOT de logo (ou o Nexus ao montar a arte). Nunca pedir para a IA "copiar" a logo.
+## Regra 4 — Etapas obrigatoriamente separadas: imagem limpa → carimbador oficial
+- **Etapa 1 — Maya/gerador:** criar apenas a imagem-base, **SEM LOGO, MARCA, SÍMBOLO OU SIMULAÇÃO DE LOGO**. O prompt deve dizer "sem logo, sem marca"; deixar área livre onde o selo será aplicado. Textos publicitários, quando necessários, devem ser compostos tecnicamente e revisados, não inventados na IA.
+- **Etapa 2 — revisão da base:** conferir a imagem, o sabor/produto, texto, proporção e aprovação existente; preservar a foto já aprovada.
+- **Etapa 3 — DOT carimbador:** usar o **ARQUIVO ORIGINAL, aprovado, da logo do cliente**, separado da geração. Aplicar por sobreposição exata de pixels; **NUNCA** pedir à IA para imitar, copiar, redesenhar ou criar logo. O executor pode ser composição técnica do Nexus somente quando comprovadamente disponível.
+- **Etapa 4 — Clara:** revisar a imagem final com selo aplicado, verificar identificação do cliente, contato correto, duplicações de número/WhatsApp, logo sem distorção, legibilidade e margens. Um defeito bloqueia o envio.
+- Se a foto já tiver logo inventada/incorreta, remover de forma tecnicamente segura ou retomar a **versão limpa**; **não carimbar por cima da marca errada**. Corrigir só a camada da marca, preservando o conteúdo aprovado.
+- Se faltar o arquivo oficial ou não existir execução confiável do carimbador: marcar **BLOQUEADO_POR_ATIVO** e NÃO enviar a arte como concluída. A regra não prova que o DOT foi instalado.
+- Fontes de logo já documentadas: Flow Arts = `public/brand/flowarts-logo.webp` (símbolo `public/brand/flowarts-symbol.webp`); GILTEC = `docs/nexus-memory/clientes/giltec/logo-giltec.png`. Outros clientes: conferir o arquivo ORIGINAL aprovado (Master/briefing) antes de carimbar. Não assumir que uma imagem gerada anteriormente com uma logo é referência oficial.
 
 ## Regra 5 — Envio
-- Enviar ao painel pelo conector `nexus_enviar_arte`, **uma peça por envio**, conferindo a agenda antes para não repetir horário.
+- Enviar ao painel pelo conector `nexus_enviar_arte` **somente após o carimbo oficial e a revisão visual da arte final**, uma peça por envio, conferindo a agenda antes para não repetir horário.
 - Tudo fica esperando aprovação. O ChatGPT nunca aprova nem publica.
 - Ao terminar, registrar em `HANDOFF_CHATGPT.md` o que foi realmente enviado (dia, horário, formato).
 
