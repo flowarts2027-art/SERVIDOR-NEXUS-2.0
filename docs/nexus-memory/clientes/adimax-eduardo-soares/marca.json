@@ -1,12 +1,12 @@
 {
-  "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/adimax-eduardo-soares/logo-0fd176f3-3778-4a82-83af-d0ba1b3d96cc.png",
+  "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/adimax-eduardo-soares/logo-aa9168b6-e2a3-41be-811c-92e040166886.png",
   "cores": {
-    "primary": "#e2a107",
-    "accent": "#e2a107",
+    "primary": "#fca301",
+    "accent": "#5e4106",
     "text": "#000000",
     "onPrimary": "#000000",
-    "onAccent": "#000000"
+    "onAccent": "#ffffff"
   },
   "palavraBotao": "QUERO",
-  "atualizadoEm": "2026-11-06T10:58:28.933Z"
+  "atualizadoEm": "2026-11-17T14:43:48.436Z"
 }
