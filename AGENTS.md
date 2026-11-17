@@ -31,6 +31,14 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Toda campanha feita pelo ChatGPT segue `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md`:** uma imagem por geração (nunca mosaico ou grade), tabela da campanha antes de gerar, um dia por vez, a IA nunca desenha a logo (a logo oficial é carimbada depois). **Flow Arts agora foca só na automação do Instagram — sem busca de leads nas campanhas. Nunca usar #flowart nem #flowarts (malabarismo); usar #FlowArtsMarketing.**
 
+## Regra permanente e bloqueante dos DOTs — imagem primeiro, carimbador depois (Rodrigo, 16/11/2026)
+
+**Vale para TODOS os clientes e TODOS os DOTs/fluxos de arte.** Jamais solicitar à IA de imagem para gerar/desenhar/copiar qualquer logomarca junto com a fotografia ou composição. A geração de imagem entrega uma **base limpa, sem logo**. **Somente após a aprovação da base**, o DOT **carimbador** (ou composição técnica equivalente por sobreposição, se disponível e verificada) insere o **arquivo gráfico ORIGINAL e aprovado da marca do cliente**, sem renderização por IA, reconstrução, imitação ou alteração do logotipo. Separar e registrar as duas etapas.
+- Dante/Maestro entrega ao carimbador a base aprovada, o identificador do cliente e o arquivo oficial identificado; Maya não desenha logos; Clara confere a arte FINAL já carimbada; Bento só envia ao painel após esse parecer. Se não houver carimbador operacional no ambiente, não fingir execução nem enviar arte com marca inventada.
+- Se a imagem já tiver logo incorreta, **retomar a base limpa** (ou remover tecnicamente a marca errada sem afetar a foto) antes de aplicar o selo original. Nunca sobrepor o correto ao incorreto, nem gerar toda a foto outra vez só para tentar acertar a logo.
+- Verificar identidade, número/contato associado à marca, proporção, posição, legibilidade, duplicação do WhatsApp e formato (feed 4:5; stories 9:16). Marca original obrigatória e não localizada = **BLOQUEADO_POR_ATIVO**; marca incorreta ou etapa não comprovada = **REPROVADO**, sem envio.
+- Documentação dos DOTs é regra de trabalho, **não comprova** que o carimbador foi instalado, acionado ou testado no Nexus. Validar separadamente o executor real e a saída final.
+
 ## Horários de publicação (Rodrigo, 05/11/2026)
 
 **Clientes nunca publicam no mesmo minuto.** Cada cliente tem um minuto fixo na hora e o story sai 5 minutos depois. Ver `docs/nexus-memory/REGRA_HORARIOS_CLIENTES.md`.
