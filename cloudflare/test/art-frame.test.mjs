@@ -176,3 +176,20 @@ test("carimbo: sem logo salva, dá erro (quem chama manda a arte como veio)", as
   env.MEDIA = { get: async () => null };
   await assert.rejects(stampLogo(env, new Uint8Array([1]), "x"), /logo_missing/);
 });
+
+// Canto livre (Rodrigo, 18/11/2026): a logo nunca cobre a frase.
+test("carimbo: canto de cima à direita com texto, a logo vai para o canto de cima à esquerda", async () => {
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 200, height: 200 });
+  const answers = ["SIM", "NAO"];
+  env.AI = { run: async () => ({ response: answers.shift() || "SIM" }) };
+  await stampLogo(env, new Uint8Array([1]), "brand/giltec/logo.png", { position: "top-right" });
+  const final = log.find(n => n.steps.some(s => s[0] === "draw"));
+  assert.deepEqual(final.steps.find(s => s[0] === "draw")[3], { left: 54, top: 54 });
+});
+
+test("carimbo: nenhum canto livre, não cola a logo (nunca cobre texto)", async () => {
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 200, height: 200 });
+  env.AI = { run: async () => ({ response: "SIM" }) };
+  await assert.rejects(stampLogo(env, new Uint8Array([1]), "x", { position: "top-right" }), /no_free_corner/);
+  assert.ok(!log.some(n => n.steps.some(s => s[0] === "draw")));
+});

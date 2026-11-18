@@ -52,3 +52,8 @@ Antes de gerar qualquer imagem, escrever uma **tabela da campanha** com uma linh
 
 ## Prompt curto para o Rodrigo colar no ChatGPT
 > Leia `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md` no GitHub do Nexus e siga as regras. Campanha de [CLIENTE] de [N] dias. Primeiro me mostre a tabela da campanha. Depois gere uma imagem por vez, sem logo e sem texto, e envie ao painel com ja_tem_texto: false (o Nexus põe a logo oficial).
+
+## Lugar da logo (Rodrigo, 18/11/2026)
+- Deixe LIVRE o canto de cima à direita (um quadrado de 1/4 da largura), sem título, frase, ícone ou botão: é ali que o Nexus cola a logo do Master.
+- Daniela Martins: deixe livre a parte de baixo, no meio.
+- Se o canto estiver ocupado, o Nexus procura outro canto livre; se nenhum estiver livre, a arte vai SEM logo.

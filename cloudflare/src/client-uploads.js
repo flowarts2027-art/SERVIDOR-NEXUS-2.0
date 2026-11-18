@@ -103,8 +103,9 @@ export async function createClientUpload(env, client, form, now = new Date(), op
         body = await stampLogo(env, new Uint8Array(await file.arrayBuffer()), logoKey, { story: size.height > 1500, position: logoPositionFor(clientId) });
         textReport.push("logo-do-master");
       } catch (error) {
-        console.error("upload_logo_failed", { clientId, error: String(error?.message || error) });
-        textReport.push("sem-logo-erro");
+        const why = String(error?.message || error);
+        console.error("upload_logo_failed", { clientId, error: why });
+        textReport.push(why === "no_free_corner" ? "sem-logo-canto-ocupado" : "sem-logo-erro");
       }
     }
     await env.MEDIA.put(key, body || await keepArt(env, file), {
