@@ -1,12 +1,12 @@
 {
   "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/primeiro-teste/logo-c345e6c5-4704-4b0d-951c-9084270bdcf9.png",
   "cores": {
-    "primary": "#0137f9",
+    "primary": "#000000",
     "accent": "#000000",
     "text": "#000000",
     "onPrimary": "#ffffff",
     "onAccent": "#ffffff"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T18:40:46.384Z"
+  "atualizadoEm": "2026-11-18T18:41:05.495Z"
 }
