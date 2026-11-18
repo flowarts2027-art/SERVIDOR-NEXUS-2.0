@@ -158,8 +158,8 @@ test("carimbo: só a logo, canto de cima à direita, sem mudar o tamanho da arte
   await stampLogo(env, new Uint8Array([1]), "brand/giltec/logo.png", { position: logoPositionFor("giltec") });
   const steps = log[0].steps;
   assert.equal(steps.length, 2, "logo e saída; nenhum transform na arte");
-  assert.deepEqual(steps[0][2], [["transform", { width: 108, height: 108, fit: "scale-down" }]]);
-  assert.deepEqual(steps[0][3], { left: 1080 - 38 - 108, top: 38 });
+  assert.deepEqual(steps[0][2], [["transform", { width: 216, height: 216, fit: "scale-down" }]]);
+  assert.deepEqual(steps[0][3], { left: 1080 - 54 - 216, top: 54 });
 });
 
 test("carimbo: Daniela Martins leva a logo embaixo, no meio", async () => {
@@ -167,8 +167,8 @@ test("carimbo: Daniela Martins leva a logo embaixo, no meio", async () => {
   const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 1440, height: 1080 });
   await stampLogo(env, new Uint8Array([1]), "brand/daniela/logo.png", { position: "bottom" });
   const [, , , pos] = log[0].steps[0];
-  assert.equal(pos.left, Math.round((1080 - 216) / 2));
-  assert.equal(pos.top, 1350 - 162 - 38);
+  assert.equal(pos.left, Math.round((1080 - 432) / 2));
+  assert.equal(pos.top, 1350 - 324 - 54);
 });
 
 test("carimbo: sem logo salva, dá erro (quem chama manda a arte como veio)", async () => {
