@@ -1,12 +1,12 @@
 {
   "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/quatree-dog/logo-a50d485b-f130-4d25-a8f0-9012e4d1b8f8.png",
   "cores": {
-    "primary": "#1c283a",
-    "accent": "#ffc20e",
-    "text": "#1c283a",
-    "onPrimary": "#ffffff",
-    "onAccent": "#000000"
+    "primary": "#e98701",
+    "accent": "#89431b",
+    "text": "#a76101",
+    "onPrimary": "#000000",
+    "onAccent": "#ffffff"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T18:32:26.498Z"
+  "atualizadoEm": "2026-11-18T18:34:53.311Z"
 }
