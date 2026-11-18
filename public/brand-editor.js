@@ -149,8 +149,8 @@
 
     function paint() {
       const top = $(".brand-preview-top"), button = $(".brand-preview-button");
-      top.style.background = readable(color("text"));
-      top.style.color = "#ffffff";
+      top.style.background = color("text"); // o menu usa a cor pura (18/11/2026)
+      top.style.color = textOn(color("text"));
       $(".brand-preview-body p").style.color = readable(color("text"));
       button.style.background = color("accent");
       button.style.color = textOn(color("accent"));
@@ -191,7 +191,7 @@
         canvas = null;
         saved = brand || null;
         dirty = false;
-        for (const name of ["primary", "accent", "text"]) $(`[data-color=${name}]`).value = brand?.colors?.[name] || DEFAULT_COLORS[name];
+        for (const name of ["primary", "accent", "text"]) $(`[data-color=${name}]`).value = (name === "text" && brand?.colors?.menu) || brand?.colors?.[name] || DEFAULT_COLORS[name];
         $("[data-word]").value = brand?.buttonWord || "";
         $("input[type=file]").value = "";
         $(".brand-white").hidden = true;

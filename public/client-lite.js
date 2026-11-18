@@ -848,7 +848,9 @@ function applyCustomBrand(brand) {
   root.dataset.customBrand = "1";
   root.style.setProperty("--brand-primary", brand.colors.primary);
   root.style.setProperty("--brand-on-primary", brand.colors.onPrimary);
-  root.style.setProperty("--brand-menu", brand.colors.text);
+  root.style.setProperty("--brand-menu", brand.colors.menu || brand.colors.text);
+  root.style.setProperty("--brand-on-menu", brand.colors.onMenu || "#ffffff");
+  root.style.setProperty("--brand-text", brand.colors.text);
   root.style.setProperty("--accent", brand.colors.accent);
   const top = $(".nav-brand");
   if (!top || !brand.logoUrl) return;

@@ -286,3 +286,11 @@ test("a logo fixa do Master é a mesma do painel do cliente (CLIENT_THEMES)", as
   const panel = Object.fromEntries([...block.matchAll(/"?([a-z-]+)"?:\s*\{[^}]*?logo:\s*"([^"]+)"[^}]*?themeColor:\s*"([^"]+)"/g)].map(m => [m[1], { logo: m[2], color: m[3] }]));
   assert.deepEqual(JSON.parse(JSON.stringify(PANEL_THEMES)), panel);
 });
+
+test("menu na cor pura: amarelo fica amarelo, letras do menu pretas; títulos usam a versão escurecida", async () => {
+  const { cleanColors } = await import("../src/client-identity.js");
+  const c = cleanColors({ primary: "#1c283a", accent: "#ffc20e", text: "#ffc20e" });
+  assert.equal(c.menu, "#ffc20e");
+  assert.equal(c.onMenu, "#000000");
+  assert.notEqual(c.text, "#ffc20e", "texto em fundo branco continua escurecido");
+});

@@ -62,7 +62,9 @@ export function cleanButtonWord(value) {
 export function cleanColors(source = {}) {
   const colors = { primary: String(source.primary || ""), accent: String(source.accent || ""), text: String(source.text || "") };
   if (!Object.values(colors).every(color => HEX.test(color))) throw new Error("brand_color");
-  return { ...colors, text: readableColor(colors.text), onPrimary: textOn(colors.primary), onAccent: textOn(colors.accent) };
+  // Menu (Rodrigo, 18/11/2026): a cor escolhida vai PURA no menu (ex.: amarelo de verdade) e as letras do menu
+  // ficam pretas ou brancas, o que ler melhor. "text" continua a versão escurecida, para títulos e links no fundo branco.
+  return { ...colors, menu: colors.text, onMenu: textOn(colors.text), text: readableColor(colors.text), onPrimary: textOn(colors.primary), onAccent: textOn(colors.accent) };
 }
 
 export async function readGroupBrand(env, groupId) {
