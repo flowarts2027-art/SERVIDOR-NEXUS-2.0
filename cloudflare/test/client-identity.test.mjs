@@ -63,9 +63,10 @@ test("botão escolhe preto ou branco, o que ler melhor", () => {
   assert.equal(textOn("#ffc20e"), "#000000");
 });
 
-test("cores ruins são recusadas, e a cor do texto vira legível", () => {
+test("cores ruins são recusadas, e a cor da faixa do topo fica exata", () => {
   assert.throws(() => cleanColors({ primary: "azul", accent: "#000000", text: "#000000" }), /brand_color/);
-  assert.ok(contrast(cleanColors(COLORS).text, "#ffffff") >= 4.5);
+  assert.equal(cleanColors({ ...COLORS, text: "#ffc20e" }).text, "#ffc20e");
+  assert.equal(textOn("#ffc20e"), "#000000");
 });
 
 test("palavra do botão: uma palavra só, em maiúsculas", () => {

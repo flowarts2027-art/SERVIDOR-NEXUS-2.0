@@ -1261,7 +1261,9 @@ html[data-custom-brand] .top-copy:has(.client-top-logo) .nexus-top-logo { displa
   html[data-custom-brand] .tabbar > button.active { background: var(--brand-primary) !important; color: var(--brand-on-primary) !important; }
 }
 @media (max-width: 899px) {
-  html[data-custom-brand] .top { background: var(--brand-menu); }
+  html[data-custom-brand] .top { background: var(--brand-top); color: var(--brand-on-top); }
+  html[data-custom-brand] .top .top-kicker, html[data-custom-brand] .top .status { color: var(--brand-on-top); }
+  html[data-custom-brand] .top .icon-btn { color: var(--brand-on-top); background: color-mix(in srgb, var(--brand-on-top) 14%, transparent); border-color: color-mix(in srgb, var(--brand-on-top) 28%, transparent); }
   html[data-custom-brand] .client-top-logo { display: block; width: auto; max-width: min(200px, 60vw); height: auto; max-height: 72px; object-fit: contain; margin: 0 0 8px; border-radius: 0; box-shadow: none; }
 }
 @media (max-width: 899px) {

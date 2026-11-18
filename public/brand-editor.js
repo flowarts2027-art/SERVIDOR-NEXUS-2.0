@@ -149,8 +149,8 @@
 
     function paint() {
       const top = $(".brand-preview-top"), button = $(".brand-preview-button");
-      top.style.background = readable(color("text"));
-      top.style.color = "#ffffff";
+      top.style.background = color("text");
+      top.style.color = textOn(color("text"));
       $(".brand-preview-body p").style.color = readable(color("text"));
       button.style.background = color("accent");
       button.style.color = textOn(color("accent"));
