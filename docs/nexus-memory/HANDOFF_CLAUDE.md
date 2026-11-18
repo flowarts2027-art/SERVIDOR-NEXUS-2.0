@@ -1385,3 +1385,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Os 4 posts do Adimax de 01/12 estão "correction_requested" porque às 13h01–13h02 foi pedido ajuste pelo painel do cliente (logo/nome Adimax). Como o Adimax não recebe imagem gerada, ficaram "Sem imagem" com media_generation_required.
 - PR novo: guarda também falhas de entrega de mensagens que não saíram pelo Nexus (tabela whatsapp_delivery_failures) e mostra as 5 últimas em /api/whatsapp/status (lastDeliveryFailures). Próximo passo: após o merge, reenviar um teste e ler o código da falha.
 - 16/11 19h: painel do cliente com marca salva no Master agora fica todo nas cores do cliente: o quadro "Seguidores" (era azul fixo) usa a cor do menu, e o azul padrão (--blue: títulos pequenos, links, botão ↻) vira a cor do menu. Lembrete: no Master, o campo "Cor do texto" é o fundo do menu (--brand-menu). Pedido do Rodrigo ao montar o painel verde e branco da Sabor do Campo.
+
+## 18/11/2026 — Regra de imagens da Maskara (PR aberto, sem merge)
+- Pedido do Rodrigo: o ChatGPT bloqueia imagens com arma nas campanhas da Maskara e os DOTs entregam imagens ruins.
+- Criado `docs/nexus-memory/REGRA_IMAGENS_MASKARA.md` com o jeito certo de pedir (contexto legal, arma parada em mesa/bancada/maleta, nunca na mão, sem texto e sem logo), 3 modelos de pedido e o plano B sem arma. Aviso no `AGENTS.md`.
+- A regra não desliga o filtro da OpenAI; só padroniza o pedido. Só documentação, sem código, sem deploy.
+- Próximo passo: Rodrigo aprova o merge e manda o ChatGPT ler a regra.
