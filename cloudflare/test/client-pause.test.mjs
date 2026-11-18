@@ -33,9 +33,9 @@ test("reconhece os clientes pausados e aceita espaços", () => {
   assert.equal(isClientPaused({}, "giltec"), false);
 });
 
-test("GILTEC vem pausada no wrangler e fora da campanha diária", async () => {
+test("GILTEC da Rose vem pausada no wrangler (a Sheila não, 18/11) e fora da campanha diária", async () => {
   const wrangler = await readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8");
-  assert.match(wrangler, /"NEXUS_PAUSED_CLIENTS": "giltec,giltec-locacoes"/);
+  assert.match(wrangler, /"NEXUS_PAUSED_CLIENTS": "giltec"/);
   const workflow = await readFile(new URL("../../.github/workflows/nexus-campanha-diaria.yml", import.meta.url), "utf8");
   assert.doesNotMatch(workflow, /default: "[^"]*giltec/);
   assert.doesNotMatch(workflow, /'[^']*giltec[^']*'/);
