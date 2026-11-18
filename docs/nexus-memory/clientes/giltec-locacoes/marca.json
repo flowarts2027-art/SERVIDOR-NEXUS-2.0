@@ -2,13 +2,13 @@
   "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/giltec-locacoes/logo-9ceae115-f547-42d5-8b5c-634080e6c676.png",
   "cores": {
     "primary": "#ffc20e",
-    "accent": "#ffc20e",
+    "accent": "#1f0fff",
     "text": "#8e6c08",
-    "menu": "#ffc20e",
-    "onMenu": "#000000",
+    "menu": "#8e6c08",
+    "onMenu": "#ffffff",
     "onPrimary": "#000000",
-    "onAccent": "#000000"
+    "onAccent": "#ffffff"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T20:34:47.094Z"
+  "atualizadoEm": "2026-11-18T20:35:19.206Z"
 }
