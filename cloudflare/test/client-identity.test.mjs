@@ -131,10 +131,10 @@ test("painel do grupo usa a marca do grupo, a não ser que tenha marca própria"
   assert.equal(await effectiveBrand(env, { id: "solto", config: {} }), null);
 });
 
-test("Sheila entra no grupo pelo campo Grupo, e a pausa continua", async () => {
+test("Sheila entra no grupo pelo campo Grupo e NÃO fica pausada; só a GILTEC da Rose (18/11/2026)", async () => {
   assert.equal(clientGroup({ id: "giltec-locacoes", config: { group: { id: "giltec", vendor: "Sheila" } } }).id, "giltec");
   const wrangler = await readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8");
-  assert.match(wrangler, /"NEXUS_PAUSED_CLIENTS": "giltec,giltec-locacoes"/);
+  assert.match(wrangler, /"NEXUS_PAUSED_CLIENTS": "giltec"/);
 });
 
 test("ficha do GitHub: sem token avisa; erro não apaga a marca", async () => {
