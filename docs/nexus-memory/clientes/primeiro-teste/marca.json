@@ -1,12 +1,12 @@
 {
-  "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/primeiro-teste/logo-a82952fd-3751-4c59-bf38-4c5e874df7be.png",
+  "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/primeiro-teste/logo-c345e6c5-4704-4b0d-951c-9084270bdcf9.png",
   "cores": {
     "primary": "#0137f9",
-    "accent": "#04f6fc",
+    "accent": "#000000",
     "text": "#000000",
     "onPrimary": "#ffffff",
-    "onAccent": "#000000"
+    "onAccent": "#ffffff"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T18:39:51.925Z"
+  "atualizadoEm": "2026-11-18T18:40:46.384Z"
 }
