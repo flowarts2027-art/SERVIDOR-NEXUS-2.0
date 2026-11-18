@@ -2,11 +2,11 @@
   "logo": "https://servidor-nexus.diamantehinode2015.workers.dev/media/branding/maskara-assessoria/logo-b5b3b11c-ac61-4641-8b50-f487336467d6.png",
   "cores": {
     "primary": "#1a1918",
-    "accent": "#e7e6e6",
+    "accent": "#000000",
     "text": "#1a1918",
     "onPrimary": "#ffffff",
-    "onAccent": "#000000"
+    "onAccent": "#ffffff"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T14:36:38.022Z"
+  "atualizadoEm": "2026-11-18T14:37:21.921Z"
 }
