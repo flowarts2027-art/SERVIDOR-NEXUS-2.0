@@ -1403,3 +1403,14 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Correção: `isDarkLogo` devolve `false` quando a borda inteira da logo é opaca (logo com fundo próprio). Logos transparentes escuras continuam com cartão. Teste ajustado em `brand-editor.test.mjs`; suíte 1038 de 1038.
 - O servidor só recalcula `logoDark` quando a logo muda: depois do deploy, reenviar a logo da GILTEC (Rose, Neto, Sheila) pelo Master.
 - ATENÇÃO deploy: mexe em `public/**`; o merge na `main` dispara `deploy-nexus-cloudflare.yml`.
+
+## 18/11/2026 (tarde) — Nexus não escreve mais texto; só cola a logo do Master (Claude, sessão na nuvem)
+- Pedido do Rodrigo: arte da GILTEC chegou com texto e sem logo. Ele mandou tirar a regra de "só carimbar foto limpa" e parar de escrever texto no painel ("já teve muito erro de escrever por cima"). Texto, só no ChatGPT.
+- `art-frame.js`: `NEXUS_WRITES_TEXT_ON_ARRIVAL = false`, nova `stampLogo` (cola só a logo do Master, sem cortar nem encolher a arte) e `logoPositionFor` (canto de cima à direita; Daniela Martins embaixo, no meio).
+- `client-uploads.js`: toda imagem que chega (conector, Master, painel do cliente) ganha a logo do Master; sem logo salva, vai como veio; erro ao colar não trava o envio.
+- `mcp-server.js`: o conector não monta mais moldura de texto; `ja_tem_texto` ficou só por compatibilidade (schema igual, para não quebrar o ChatGPT).
+- `art-text-fix.js`: o agente que escrevia texto em post aberto fica parado pela mesma chave.
+- Fora do escopo: substitutas geradas pelo próprio Nexus (`post-watcher.js`, "cliente nunca sem post") continuam como estavam.
+- Testes: suíte inteira passando (1038).
+- ATENÇÃO deploy: mexe em `cloudflare/**`; o merge dispara `deploy-nexus-cloudflare.yml`.
+- Próximo passo: enviar a logo da Daniela Martins pelo Master; testar 1 arte da GILTEC e conferir a logo no painel antes de aprovar.

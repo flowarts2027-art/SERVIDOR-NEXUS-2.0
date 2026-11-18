@@ -8,7 +8,7 @@ import { brandClientId } from "./clients.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor } from "./art-frame.js";
 import { ART_MESSAGES, artShape, assertArtFits, assertVideoFits, keepArt, readImageSize } from "./art-format.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
@@ -34,6 +34,15 @@ async function checkVideo(file) {
   if (!VIDEO_TYPES.has(String(file.type || "").toLowerCase())) throw new Error("video_type");
   if (!file.size || file.size > VIDEO_MAX_BYTES) throw new Error("video_size");
   if (!isMp4(new Uint8Array(await file.slice(0, 16).arrayBuffer()))) throw new Error("video_type");
+}
+
+async function logoKeyOf(env, client) {
+  try {
+    const { effectiveBrand } = await import("./client-identity.js");
+    return String((await effectiveBrand(env, client))?.logoKey || "");
+  } catch {
+    return "";
+  }
 }
 
 // options (Master, 18/10): approval "pending" = o cliente aprova no painel; allowClientDate = sem data, o cliente escolhe.
@@ -62,7 +71,9 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const alreadyText = options.skipFrame === true || String(form.get("jaTemTexto") || "") === "1";
   const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
-  const canFrame = Boolean(frames && hasFrames(frames, frameClientId));
+  const canFrame = NEXUS_WRITES_TEXT_ON_ARRIVAL && Boolean(frames && hasFrames(frames, frameClientId));
+  // Logo do Master em toda arte que chega, com ou sem texto (Rodrigo, 18/11/2026). Sem logo no Master, vai como veio.
+  const logoKey = options.skipLogo === true ? "" : await logoKeyOf(env, client);
   const textReport = [];
   let frameSeed = Math.floor(now.getTime() / 3600000);
   const putImage = async (file, name, size, numero = null) => {
@@ -85,6 +96,15 @@ export async function createClientUpload(env, client, form, now = new Date(), op
           console.error("upload_frame_failed", { clientId, error: String(error?.message || error) });
           textReport.push("sem-texto-erro");
         }
+      }
+    }
+    if (!body && logoKey) {
+      try {
+        body = await stampLogo(env, new Uint8Array(await file.arrayBuffer()), logoKey, { story: size.height > 1500, position: logoPositionFor(clientId) });
+        textReport.push("logo-do-master");
+      } catch (error) {
+        console.error("upload_logo_failed", { clientId, error: String(error?.message || error) });
+        textReport.push("sem-logo-erro");
       }
     }
     await env.MEDIA.put(key, body || await keepArt(env, file), {

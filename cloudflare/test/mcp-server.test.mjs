@@ -293,7 +293,7 @@ for (const formato of ["post", "story", "carrossel"]) {
     }
   });
 }
-test("moldura somente com solicitação explícita ja_tem_texto=false", async () => {
+test("o conector nunca escreve texto, nem com ja_tem_texto=false (Rodrigo, 18/11/2026)", async () => {
   const { env, deps, calls } = sendSetup();
   let compositions = 0;
   deps.frames = {
@@ -301,7 +301,7 @@ test("moldura somente com solicitação explícita ja_tem_texto=false", async ()
     composeFramed: async () => { compositions++; return PNG; }
   };
   await enviarArte(env, deps, { cliente_id: "primeiro-teste", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: arq(1), ja_tem_texto: false }, NOW);
-  assert.equal(compositions, 1);
+  assert.equal(compositions, 0);
   assert.equal(calls.uploads[0].form.get("jaTemTexto"), "1");
   assert.equal(calls.uploads[0].form.get("approval"), "cliente");
 });

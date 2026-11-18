@@ -38,7 +38,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 - Se a imagem já tiver logo incorreta, **retomar a base limpa** (ou remover tecnicamente a marca errada sem afetar a foto) antes de aplicar o selo original. Nunca sobrepor o correto ao incorreto, nem gerar toda a foto outra vez só para tentar acertar a logo.
 - Verificar identidade, número/contato associado à marca, proporção, posição, legibilidade, duplicação do WhatsApp e formato (feed 4:5; stories 9:16). Marca original obrigatória e não localizada = **BLOQUEADO_POR_ATIVO**; marca incorreta ou etapa não comprovada = **REPROVADO**, sem envio.
 - Documentação dos DOTs é regra de trabalho, **não comprova** que o carimbador foi instalado, acionado ou testado no Nexus. Validar separadamente o executor real e a saída final.
-- **Executor real do carimbador (18/11/2026): o Nexus.** Arte do ChatGPT/DOTs vai pelo `nexus_enviar_arte` com `ja_tem_texto: false`; o Nexus cola a logo salva no Master (`config.brand.logoKey`), título e botão. O ChatGPT nunca aplica logo, nem por geração nem por edição.
+- **Executor real do carimbador (18/11/2026, atualizado no mesmo dia): o Nexus cola SÓ a logo.** Toda arte que chega ao painel (conector, Master ou painel do cliente), com ou sem texto, recebe apenas a logo ORIGINAL salva no Master (`config.brand.logoKey`): canto de cima à direita; Daniela Martins embaixo, no meio. **O Nexus nunca escreve título, vantagens ou botão** (`NEXUS_WRITES_TEXT_ON_ARRIVAL = false` em `cloudflare/src/art-frame.js`); texto, só no ChatGPT. Deixar livre o lugar da logo. O ChatGPT nunca aplica logo, nem por geração nem por edição.
 
 ## Imagens da Maskara Assessoria (Rodrigo, 18/11/2026)
 
