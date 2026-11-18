@@ -1396,3 +1396,10 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Regras dos DOTs atualizadas: `DOTS_MARKETING_TRANSFERENCIA.md`, `SISTEMATICA_IMAGENS_CHATGPT.md`, `AGENTS.md` e `REGRA_IMAGENS_MASKARA.md` (Maya entrega foto limpa; Bento envia com `ja_tem_texto: false`; ninguém pede logo à IA).
 - ATENÇÃO deploy: o PR mexe em `cloudflare/**`; o merge na `main` dispara `deploy-nexus-cloudflare.yml`.
 - Próximo passo: depois do merge, o ChatGPT reler as regras e enviar 1 arte de teste da Maskara com `ja_tem_texto: false`; conferir no painel se a logo é a do Master.
+
+## 18/11/2026 — logo com fundo próprio sem cartão branco (Claude, sessão na nuvem)
+- Pedido do Rodrigo: a logo oficial da GILTEC (quadrado azul-escuro) aparecia no painel do cliente dentro de um cartão branco, que ele achou feio. Logo e cores das contas GILTEC, Quatree Dog e Adimax foram reenviadas pelo Master hoje (logo salva no Master, para o carimbador usar).
+- Causa: `public/brand-editor.js` marcava a logo como "escura" (`logoDark`) e o painel (`client-lite.js`) põe logo escura num cartão branco.
+- Correção: `isDarkLogo` devolve `false` quando a borda inteira da logo é opaca (logo com fundo próprio). Logos transparentes escuras continuam com cartão. Teste ajustado em `brand-editor.test.mjs`; suíte 1038 de 1038.
+- O servidor só recalcula `logoDark` quando a logo muda: depois do deploy, reenviar a logo da GILTEC (Rose, Neto, Sheila) pelo Master.
+- ATENÇÃO deploy: mexe em `public/**`; o merge na `main` dispara `deploy-nexus-cloudflare.yml`.
