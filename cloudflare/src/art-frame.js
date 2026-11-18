@@ -80,6 +80,14 @@ export const NEXUS_WRITES_TEXT_ON_ARRIVAL = false;
 // Onde a logo entra: canto de cima à direita; Daniela Martins, embaixo no meio ("no final das artes").
 const LOGO_BOTTOM_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
 export const logoPositionFor = clientId => LOGO_BOTTOM_CLIENTS.has(String(clientId || "")) ? "bottom" : "top-right";
+// Canto livre (Rodrigo, 18/11/2026): a logo nunca cobre frase. O Nexus tenta os cantos nesta ordem e usa o primeiro
+// que a IA grátis disser que está vazio. Nenhum livre: a arte vai sem logo (melhor que cobrir o texto).
+const CORNER_ORDER = Object.freeze({
+  "top-right": ["top-right", "top-left", "bottom-right", "bottom-left"],
+  bottom: ["bottom", "bottom-right", "bottom-left", "top-right", "top-left"]
+});
+export const LOGO_AREA_PROMPT = "Este é um recorte de uma arte de anúncio. Há alguma letra, palavra, número, ícone, botão "
+  + "ou produto importante neste recorte? Céu, chão, parede, fundo liso ou desfocado NÃO contam. Responda só SIM ou NAO.";
 
 export async function stampLogo(env, bytes, logoKey, { story = false, position = "top-right" } = {}) {
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
@@ -90,18 +98,31 @@ export async function stampLogo(env, bytes, logoKey, { story = false, position =
   if (!obj) throw new Error("logo_missing");
   const logoBytes = new Uint8Array(await new Response(obj.body).arrayBuffer());
   const li = await env.IMAGES.info(stream(logoBytes));
-  const bottom = position === "bottom";
   // Tamanho dobrado a pedido do Rodrigo (18/11/2026). Margem de 5%: a grade do perfil (3:4) corta ~3% de cada lado.
-  let h = Math.round(W * (bottom ? 0.3 : story ? 0.22 : 0.2));
-  let w = Math.round(h * (Number(li?.width) || 1) / (Number(li?.height) || 1));
-  const maxW = Math.round(W * (bottom ? 0.6 : 0.45));
-  if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+  const sizeFor = bottom => {
+    let h = Math.round(W * (bottom ? 0.3 : story ? 0.22 : 0.2));
+    let w = Math.round(h * (Number(li?.width) || 1) / (Number(li?.height) || 1));
+    const maxW = Math.round(W * (bottom ? 0.6 : 0.45));
+    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    return { w, h };
+  };
   const margin = Math.round(W * 0.05);
   // Story: longe da barra do Instagram em cima (nome e progresso) e da caixa de resposta embaixo.
-  const left = bottom ? Math.round((W - w) / 2) : W - margin - w;
-  const top = bottom ? H - h - (story ? Math.round(H * 0.12) : margin) : story ? Math.round(H * 0.13) : margin;
+  const topY = story ? Math.round(H * 0.13) : margin;
+  const placeOf = corner => {
+    const { w, h } = sizeFor(corner === "bottom");
+    const left = corner === "bottom" ? Math.round((W - w) / 2) : corner.endsWith("left") ? margin : W - margin - w;
+    const top = corner.startsWith("top") ? topY : H - h - (story ? Math.round(H * 0.12) : margin);
+    return { corner, w, h, left, top };
+  };
+  let place = null;
+  for (const corner of CORNER_ORDER[position] || CORNER_ORDER["top-right"]) {
+    const p = placeOf(corner);
+    if (!(await areaBusy(env, bytes, p, W, H))) { place = p; break; }
+  }
+  if (!place) throw new Error("no_free_corner");
   const canvas = env.IMAGES.input(stream(bytes))
-    .draw(env.IMAGES.input(stream(logoBytes)).transform({ width: w, height: h, fit: "scale-down" }), { left, top });
+    .draw(env.IMAGES.input(stream(logoBytes)).transform({ width: place.w, height: place.h, fit: "scale-down" }), { left: place.left, top: place.top });
   const response = await (await canvas.output({ format: "image/jpeg", quality: 92 })).response();
   if (!response.ok) throw new Error("images_compose_http_" + response.status);
   const out = new Uint8Array(await response.arrayBuffer());
@@ -163,4 +184,20 @@ export function imageHasText(env, bytes) {
 // Imagem gerada: tem pessoa ou animal onde o Nexus vai escrever? Sim descarta a imagem.
 export function imageZonesBlocked(env, bytes) {
   return visionYes(env, bytes, "Há pessoa ou animal no terço de cima ou no terço de baixo desta imagem? Responda só SIM ou NAO.");
+}
+
+// Recorta o lugar da logo (com folga) e pergunta à IA se tem texto ali. Na dúvida, conta como ocupado.
+async function areaBusy(env, bytes, place, W, H) {
+  if (!env?.AI) return false; // sem IA no ambiente (testes locais): usa o canto padrão
+  const pad = Math.round(W * 0.02);
+  const left = Math.max(0, place.left - pad), top = Math.max(0, place.top - pad);
+  const width = Math.min(W - left, place.w + pad * 2), height = Math.min(H - top, place.h + pad * 2);
+  try {
+    const crop = await (await env.IMAGES.input(stream(bytes)).transform({ trim: { left, top, width, height } })
+      .output({ format: "image/jpeg", quality: 85 })).response();
+    if (!crop.ok) return true;
+    return await visionYes(env, new Uint8Array(await crop.arrayBuffer()), LOGO_AREA_PROMPT);
+  } catch {
+    return true;
+  }
 }
