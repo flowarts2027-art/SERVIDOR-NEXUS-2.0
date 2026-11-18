@@ -115,36 +115,11 @@ function connectorSetup(envOpts) {
 }
 const img = n => ({ download_url: "https://files.oaiusercontent.com/f" + n });
 
-test("conector: foto sem texto ganha a moldura antes de ir ao painel", async () => {
-  const { env, deps, uploads, fake } = connectorSetup();
-  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "carrossel", dia: "2026-10-31", hora: "12:00", imagem: img(1), imagem2: img(2), imagem3: img(3), ja_tem_texto: false });
-  assert.match(out.texto, /escreveu/);
-  assert.equal(fake.log.length, 3);
-  const files = uploads[0].getAll("images");
-  assert.equal(files.length, 3);
-  assert.ok(files.every(f => f.type === "image/jpeg" && f.name.startsWith("arte-")));
-  assert.ok(fake.assets.includes("/molduras/quatree-dog/num-3.png"));
-  assert.equal(uploads[0].get("approval"), "cliente");
-});
-
 test("conector: ja_tem_texto=true manda a imagem como veio", async () => {
   const { env, deps, uploads, fake } = connectorSetup();
   const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: true });
   assert.equal(fake.log.length, 0);
   assert.match(out.texto, /arte preservada/);
-  assert.equal(uploads.length, 1);
-});
-
-test("conector: se não der para escrever o texto, nada vai ao painel", async () => {
-  const { env, deps, uploads } = connectorSetup({ fail: true });
-  await assert.rejects(enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false }), /Nada foi enviado/);
-  assert.equal(uploads.length, 0);
-});
-
-test("conector: cliente sem moldura recebe a imagem como veio, com aviso", async () => {
-  const { env, deps, uploads } = connectorSetup();
-  const out = await enviarArte(env, deps, { cliente_id: "demo-cafe", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
-  assert.match(out.texto, /ainda não tem moldura/);
   assert.equal(uploads.length, 1);
 });
 
@@ -155,30 +130,49 @@ test("sem as molduras publicadas, não quebra (devolve null)", async () => {
 });
 
 // Carimbador (Rodrigo, 18/11/2026): a logo vem do arquivo salvo no Master, nunca da IA.
-test("conector: foto limpa recebe a logo ORIGINAL salva no Master", async () => {
-  const { env, deps, uploads, fake } = connectorSetup();
-  const gets = [];
-  env.MEDIA = { get: async key => { gets.push(key); return { body: new Blob([new Uint8Array([0x89, 0x50])]).stream() }; } };
-  deps.brand = async (_e, client) => ({ logoKey: "brand/" + client.id + "/logo.png" });
-  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
-  assert.match(out.texto, /logo oficial do Master/);
-  assert.deepEqual(gets, ["brand/quatree-dog/logo.png"]);
-  assert.ok(!fake.assets.includes("/molduras/quatree-dog/marca-feed.png"), "não usa a identidade do deploy quando há logo no Master");
-  assert.equal(uploads.length, 1);
-  assert.equal(uploads[0].get("approval"), "cliente");
+
+// Regra de 18/11/2026: o Nexus nunca escreve texto; só cola a logo do Master, com ou sem texto na arte.
+test("conector: com ou sem ja_tem_texto, a arte vai como veio e sem moldura de texto", async () => {
+  for (const ja of [undefined, true, false]) {
+    const { env, deps, uploads, fake } = connectorSetup();
+    const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ...(ja === undefined ? {} : { ja_tem_texto: ja }) });
+    assert.match(out.texto, /só a logo oficial salva no Master/);
+    assert.equal(fake.log.length, 0, "o conector não escreve nada");
+    assert.equal(uploads[0].get("jaTemTexto"), "1");
+    assert.equal(uploads[0].get("approval"), "cliente");
+  }
 });
 
-test("conector: sem logo no Master, usa a identidade do deploy (nunca inventa logo)", async () => {
-  const { env, deps, fake } = connectorSetup();
-  deps.brand = async () => null;
-  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
-  assert.doesNotMatch(out.texto, /Master/);
-  assert.ok(fake.assets.includes("/molduras/quatree-dog/marca-feed.png"));
+const { stampLogo, logoPositionFor, NEXUS_WRITES_TEXT_ON_ARRIVAL } = frames;
+const logoEnv = (art, logo) => {
+  const fake = fakeEnv();
+  let n = 0;
+  fake.env.IMAGES.info = async () => (n++ === 0 ? art : logo);
+  fake.env.MEDIA = { get: async () => ({ body: new Blob([new Uint8Array([0x89, 0x50])]).stream() }) };
+  return fake;
+};
+
+test("carimbo: só a logo, canto de cima à direita, sem mudar o tamanho da arte", async () => {
+  assert.equal(NEXUS_WRITES_TEXT_ON_ARRIVAL, false);
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 200, height: 200 });
+  await stampLogo(env, new Uint8Array([1]), "brand/giltec/logo.png", { position: logoPositionFor("giltec") });
+  const steps = log[0].steps;
+  assert.equal(steps.length, 2, "logo e saída; nenhum transform na arte");
+  assert.deepEqual(steps[0][2], [["transform", { width: 108, height: 108, fit: "scale-down" }]]);
+  assert.deepEqual(steps[0][3], { left: 1080 - 38 - 108, top: 38 });
 });
 
-test("conector: erro ao ler a marca não trava o envio", async () => {
-  const { env, deps, uploads } = connectorSetup();
-  deps.brand = async () => { throw new Error("db fora"); };
-  await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
-  assert.equal(uploads.length, 1);
+test("carimbo: Daniela Martins leva a logo embaixo, no meio", async () => {
+  assert.equal(logoPositionFor("daniela-martins"), "bottom");
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 1440, height: 1080 });
+  await stampLogo(env, new Uint8Array([1]), "brand/daniela/logo.png", { position: "bottom" });
+  const [, , , pos] = log[0].steps[0];
+  assert.equal(pos.left, Math.round((1080 - 216) / 2));
+  assert.equal(pos.top, 1350 - 162 - 38);
+});
+
+test("carimbo: sem logo salva, dá erro (quem chama manda a arte como veio)", async () => {
+  const { env } = logoEnv({ width: 1080, height: 1350 }, { width: 1, height: 1 });
+  env.MEDIA = { get: async () => null };
+  await assert.rejects(stampLogo(env, new Uint8Array([1]), "x"), /logo_missing/);
 });

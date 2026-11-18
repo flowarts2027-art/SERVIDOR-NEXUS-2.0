@@ -8,7 +8,7 @@
 //   passo "conferir" (IA: já tem texto?) de uma imagem, ou passo "escrever" (moldura) de uma imagem.
 // O progresso fica em formatBuild.artSteps. Post que falha 4 vezes é marcado e a fila anda.
 
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL } from "./art-frame.js";
 import { brandClientId, getClient } from "./clients.js";
 import { artShape, readImageSize } from "./art-format.js";
 import { ensurePostLedgerIndexes } from "./post-ledger-indexes.js";
@@ -54,7 +54,7 @@ async function step(env, frames, row, payload) {
   const tries = Number(build.artTries || 0);
 
   const frameClientId = brandClientId(await getClient(env, row.client_id).catch(() => null) || row.client_id);
-  if (!frames || !hasFrames(frames, frameClientId) || tries >= MAX_TRIES) {
+  if (!NEXUS_WRITES_TEXT_ON_ARRIVAL || !frames || !hasFrames(frames, frameClientId) || tries >= MAX_TRIES) {
     const report = tries >= MAX_TRIES ? steps.map(s => s === "texto-do-nexus" || s === "ja-tinha-texto" ? s : "sem-texto-erro") : [];
     await save(env, row.id, finish(payload, report));
     return tries >= MAX_TRIES ? "erro" : "pronto";

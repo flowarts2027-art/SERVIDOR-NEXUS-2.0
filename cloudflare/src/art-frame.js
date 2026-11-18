@@ -73,6 +73,41 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
   return out;
 }
 
+// REGRA (Rodrigo, 18/11/2026): o Nexus NUNCA escreve texto em arte que chega ao painel (já houve muito erro
+// de escrever por cima). Texto, só no ChatGPT. Em TODA arte que chega, com ou sem texto, o Nexus cola só a logo
+// ORIGINAL salva no Master. A arte não é cortada nem encolhida: sai no mesmo tamanho em que chegou.
+export const NEXUS_WRITES_TEXT_ON_ARRIVAL = false;
+// Onde a logo entra: canto de cima à direita; Daniela Martins, embaixo no meio ("no final das artes").
+const LOGO_BOTTOM_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
+export const logoPositionFor = clientId => LOGO_BOTTOM_CLIENTS.has(String(clientId || "")) ? "bottom" : "top-right";
+
+export async function stampLogo(env, bytes, logoKey, { story = false, position = "top-right" } = {}) {
+  if (!env?.IMAGES) throw new Error("images_binding_unavailable");
+  const info = await env.IMAGES.info(stream(bytes));
+  const W = Number(info?.width), H = Number(info?.height);
+  if (!W || !H) throw new Error("art_info_missing");
+  const obj = logoKey ? await env.MEDIA.get(logoKey) : null;
+  if (!obj) throw new Error("logo_missing");
+  const logoBytes = new Uint8Array(await new Response(obj.body).arrayBuffer());
+  const li = await env.IMAGES.info(stream(logoBytes));
+  const bottom = position === "bottom";
+  let h = Math.round(W * (bottom ? 0.15 : story ? 0.11 : 0.1));
+  let w = Math.round(h * (Number(li?.width) || 1) / (Number(li?.height) || 1));
+  const maxW = Math.round(W * (bottom ? 0.4 : 0.3));
+  if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+  const margin = Math.round(W * 0.035);
+  // Story: longe da barra do Instagram em cima (nome e progresso) e da caixa de resposta embaixo.
+  const left = bottom ? Math.round((W - w) / 2) : W - margin - w;
+  const top = bottom ? H - h - (story ? Math.round(H * 0.12) : margin) : story ? Math.round(H * 0.13) : margin;
+  const canvas = env.IMAGES.input(stream(bytes))
+    .draw(env.IMAGES.input(stream(logoBytes)).transform({ width: w, height: h, fit: "scale-down" }), { left, top });
+  const response = await (await canvas.output({ format: "image/jpeg", quality: 92 })).response();
+  if (!response.ok) throw new Error("images_compose_http_" + response.status);
+  const out = new Uint8Array(await response.arrayBuffer());
+  if (!out.byteLength || out.byteLength > 8 * 1024 * 1024) throw new Error("images_compose_invalid");
+  return out;
+}
+
 // Regra fixa (Rodrigo, 29/10/2026): toda imagem que sobe para o painel de qualquer cliente passa aqui.
 // A IA grátis do Cloudflare só responde SIM ou NAO: "já tem texto escrito?". Quem escreve é o Nexus.
 // Na dúvida (sem IA, erro ou demora), conta como "já tem texto" para nunca escrever por cima de outro texto.

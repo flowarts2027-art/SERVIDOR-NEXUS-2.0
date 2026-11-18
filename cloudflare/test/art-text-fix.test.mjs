@@ -22,7 +22,7 @@ test("agente texto nas artes: sem molduras, só marca como conferido e não mexe
   assert.equal(updates.at(-1).imageUrl, "https://x/media/posts/cliente-x/a/imagem.jpg");
 });
 
-test("agente texto nas artes: um passo por rodada (conferir, depois escrever) e salva o progresso", async () => {
+test("agente texto nas artes DESLIGADO (Rodrigo, 18/11/2026): mesmo com molduras e foto limpa, não escreve nada", async () => {
   resetFramesCache();
   const updates = [];
   const puts = [];
@@ -37,15 +37,9 @@ test("agente texto nas artes: um passo por rodada (conferir, depois escrever) e 
     IMAGES: { info: async () => ({ width: 1080, height: 1350 }), input: () => img },
     AI: { run: async () => ({ response: "NAO" }) }
   };
-  assert.deepEqual((await fixArtTextInOpenPosts(env)).steps, ["conferido"]);
-  assert.deepEqual(updates.at(-1).formatBuild.artSteps, ["precisa"]);
+  assert.deepEqual((await fixArtTextInOpenPosts(env)).steps, ["pronto"]);
   assert.equal(puts.length, 0);
-  assert.deepEqual((await fixArtTextInOpenPosts(env)).steps, ["escrito"]);
-  assert.equal(puts.length, 1);
-  const last = updates.at(-1);
-  assert.equal(last.formatBuild.artChecked, true);
-  assert.deepEqual(last.formatBuild.artText, ["texto-do-nexus"]);
-  assert.match(last.imageUrl, /imagem-texto-.*\.jpg$/);
+  assert.equal(updates.at(-1).imageUrl, url);
 });
 
 test("agente texto nas artes: a busca pega post novo e pula os já feitos (SQLite de verdade)", async t => {

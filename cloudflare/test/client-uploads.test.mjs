@@ -78,3 +78,19 @@ test("agentes não mexem na legenda de conteúdo pronto; painel tem o envio", ()
   assert.match(html, /value="story"/);
   assert.match(html, /enviar\.js/);
 });
+
+// Logo do Master em toda arte que chega ao painel, com ou sem texto (Rodrigo, 18/11/2026).
+test("arte que chega ganha só a logo do Master; sem logo salva, vai como veio", async () => {
+  const { env, stored } = setup();
+  const drawn = [];
+  const chain = { draw(_c, pos) { drawn.push(pos); return chain; }, transform() { return chain; },
+    async output() { return { response: async () => new Response(new Uint8Array([255, 216, 9])) }; } };
+  env.IMAGES = { info: async () => ({ width: 1080, height: 1350 }), input: () => chain };
+  env.MEDIA.get = async () => ({ body: new Blob([new Uint8Array([0x89, 0x50])]).stream() });
+  const comLogo = { id: "giltec-locacoes", name: "Giltec", config: { brand: { logoKey: "brand/giltec/logo.png", colors: { primary: "#1c283a" } } } };
+  await createClientUpload(env, comLogo, form({ type: "feed", caption: "Oi", images: [jpg("a.jpg")] }), now);
+  assert.equal(drawn.length, 1, "uma logo colada, nenhum texto");
+  assert.equal(stored.length, 1);
+  await createClientUpload(env, client, form({ type: "feed", caption: "Oi", images: [jpg("b.jpg")] }), now);
+  assert.equal(drawn.length, 1, "cliente sem logo no Master: nada colado");
+});
