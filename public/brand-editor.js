@@ -107,6 +107,10 @@
     const ctx = small.getContext("2d", { willReadFrequently: true });
     ctx.drawImage(canvas, 0, 0, 64, 64);
     const data = ctx.getImageData(0, 0, 64, 64).data;
+    // Logo com fundo próprio (borda toda sem transparência, ex.: GILTEC) já se destaca sozinha: sem cartão (18/11/2026).
+    const edge = [];
+    for (let k = 0; k < 64; k++) edge.push([k, 0], [k, 63], [0, k], [63, k]);
+    if (edge.every(([x, y]) => data[(y * 64 + x) * 4 + 3] >= 250)) return false;
     let total = 0, count = 0;
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] < 128) continue;

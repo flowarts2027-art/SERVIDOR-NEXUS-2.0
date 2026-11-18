@@ -57,8 +57,10 @@ test("aviso de capa: mais de 3 vezes a altura, antes ou depois do corte, e a cap
 
 test("cartão: logo preta é escura, laranja não; principal escura vira cartão branco", async () => {
   const dark = async paint => (await editor(() => fakeCanvas(64, 64, paint))).isDarkLogo({});
-  assert.equal(await dark(() => BLACK), true);
-  assert.equal(await dark(() => ORANGE), false);
+  const onClear = color => (x, y) => x > 8 && x < 56 && y > 8 && y < 56 ? color : [0, 0, 0, 0];
+  assert.equal(await dark(onClear(BLACK)), true);
+  assert.equal(await dark(() => BLACK), false, "logo com fundo próprio (borda opaca) não ganha cartão");
+  assert.equal(await dark(onClear(ORANGE)), false);
   assert.equal(await dark(() => [0, 0, 0, 0]), false, "transparente não conta");
   const { cardColor } = await editor();
   assert.equal(cardColor("#f2a900"), "#f2a900");
