@@ -41,7 +41,7 @@
     // Aviso de arte para aprovar no WhatsApp do cliente (Rodrigo, 16/11/2026). Maskara fica de fora no código.
     "CLIENT_APPROVAL_WHATSAPP": "on",
     "CLIENT_APPROVAL_TEMPLATE": "aviso_arte_painel",
-    "NEXUS_PAUSED_CLIENTS": "giltec,giltec-locacoes"
+    "NEXUS_PAUSED_CLIENTS": "giltec"
   },
   "assets": {
     "directory": "../public",
