@@ -1262,6 +1262,7 @@ html[data-custom-brand] .top-copy:has(.client-top-logo) .nexus-top-logo { displa
 }
 @media (max-width: 899px) {
   html[data-custom-brand] .top { background: var(--brand-menu); }
+  html[data-custom-brand] .top, html[data-custom-brand] .top h1, html[data-custom-brand] .top .eyebrow { color: var(--brand-on-menu, #fff); }
   html[data-custom-brand] .client-top-logo { display: block; width: auto; max-width: min(200px, 60vw); height: auto; max-height: 72px; object-fit: contain; margin: 0 0 8px; border-radius: 0; box-shadow: none; }
 }
 @media (max-width: 899px) {
@@ -1280,9 +1281,16 @@ html[data-custom-brand] .followers {
   background: radial-gradient(circle at 90% 10%, rgba(255, 255, 255, .18), transparent 30%),
     linear-gradient(135deg, var(--brand-menu), color-mix(in srgb, var(--brand-menu) 72%, #000));
 }
-html[data-custom-brand] .followers p { color: rgba(255, 255, 255, .85); }
+html[data-custom-brand] .followers, html[data-custom-brand] .followers strong { color: var(--brand-on-menu, #fff); }
+html[data-custom-brand] .followers p { color: color-mix(in srgb, var(--brand-on-menu, #fff) 85%, transparent); }
 /* Painel nas cores do cliente (16/11/2026): o azul padrão (títulos pequenos, links, botão ↻, etiquetas) vira a cor do menu. */
 html[data-custom-brand] {
-  --blue: var(--brand-menu);
-  --blue-soft: color-mix(in srgb, var(--brand-menu) 12%, #fff);
+  --blue: var(--brand-text, var(--brand-menu));
+  --blue-soft: color-mix(in srgb, var(--brand-text, var(--brand-menu)) 12%, #fff);
+}
+/* Menu na cor PURA escolhida (18/11/2026): letras pretas ou brancas, o que ler melhor nessa cor. */
+@media (min-width: 900px) {
+  html[data-custom-brand] .tabbar > button:not(.active) { color: color-mix(in srgb, var(--brand-on-menu, #fff) 82%, transparent); }
+  html[data-custom-brand] .tabbar > button:not(.active):hover { color: var(--brand-on-menu, #fff); }
+  html[data-custom-brand] .nav-section-label { color: color-mix(in srgb, var(--brand-on-menu, #fff) 70%, transparent) !important; }
 }
