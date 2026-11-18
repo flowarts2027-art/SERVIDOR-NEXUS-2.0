@@ -39,6 +39,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 - Verificar identidade, número/contato associado à marca, proporção, posição, legibilidade, duplicação do WhatsApp e formato (feed 4:5; stories 9:16). Marca original obrigatória e não localizada = **BLOQUEADO_POR_ATIVO**; marca incorreta ou etapa não comprovada = **REPROVADO**, sem envio.
 - Documentação dos DOTs é regra de trabalho, **não comprova** que o carimbador foi instalado, acionado ou testado no Nexus. Validar separadamente o executor real e a saída final.
 
+## Imagens da Maskara Assessoria (Rodrigo, 18/11/2026)
+
+**Toda imagem da Maskara (ChatGPT e DOTs) segue `docs/nexus-memory/REGRA_IMAGENS_MASKARA.md`:** contexto de empresa legalizada no início do pedido, arma sempre parada (mesa, bancada ou maleta), nunca na mão nem apontada, foto realista escura com dourado, sem texto e sem logo. Se o gerador bloquear, refazer a cena sem a arma; não insistir nem tentar burlar o filtro.
+
 ## Horários de publicação (Rodrigo, 05/11/2026)
 
 **Clientes nunca publicam no mesmo minuto.** Cada cliente tem um minuto fixo na hora e o story sai 5 minutos depois. Ver `docs/nexus-memory/REGRA_HORARIOS_CLIENTES.md`.
