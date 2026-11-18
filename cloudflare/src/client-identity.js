@@ -62,7 +62,8 @@ export function cleanButtonWord(value) {
 export function cleanColors(source = {}) {
   const colors = { primary: String(source.primary || ""), accent: String(source.accent || ""), text: String(source.text || "") };
   if (!Object.values(colors).every(color => HEX.test(color))) throw new Error("brand_color");
-  return { ...colors, text: readableColor(colors.text), onPrimary: textOn(colors.primary), onAccent: textOn(colors.accent) };
+  // A cor da faixa do topo fica EXATA como o Rodrigo escolheu (18/11/2026). O painel e a prévia só escolhem preto ou branco para o título.
+  return { ...colors, onPrimary: textOn(colors.primary), onAccent: textOn(colors.accent) };
 }
 
 export async function readGroupBrand(env, groupId) {

@@ -103,3 +103,21 @@ test("avisos do que é aceito: texto do Rodrigo, acima de cada envio de arte e d
   assert.ok((await read("biblioteca.html")).indexOf("upload-rules.js") < (await read("biblioteca.html")).indexOf("biblioteca.js"));
   for (const file of ["brand-editor.js", "biblioteca.js", "campanha.js", "examples.js", "enviar.js", "master-upload.js"]) assert.match(await read(file), /UploadRules/, file);
 });
+
+test("faixa do topo: cor exata do Master, título preto no claro e branco no escuro, painel e prévia iguais", async () => {
+  const js = await read("client-lite.js");
+  const css = await read("client-lite.css");
+  const editorJs = await read("brand-editor.js");
+  // Ajudantes de cor do painel, rodados sem navegador.
+  const block = js.slice(js.indexOf("const hexRgb"), js.indexOf("function applyCustomBrand("));
+  const ctx = {};
+  vm.runInNewContext(block + "\nthis.on = textOnColor;", ctx);
+  assert.equal(ctx.on("#ffc20e"), "#000000"); // amarelo da GILTEC - Neto: título preto
+  assert.equal(ctx.on("#102030"), "#ffffff"); // fundo escuro: título branco
+  // O painel entrega a cor sem escurecer para a faixa.
+  assert.match(js, /setProperty\("--brand-top", brand\.colors\.text\)/);
+  assert.match(js, /setProperty\("--brand-on-top", textOnColor\(brand\.colors\.text\)\)/);
+  assert.match(css, /html\[data-custom-brand\] \.top \{ background: var\(--brand-top\); color: var\(--brand-on-top\); \}/);
+  // A prévia do "Editar cliente" usa a mesma regra.
+  assert.match(editorJs, /top\.style\.background = color\("text"\);\s*top\.style\.color = textOn\(color\("text"\)\);/);
+});

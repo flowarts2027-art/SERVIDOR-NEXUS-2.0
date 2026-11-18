@@ -842,13 +842,28 @@ function customBrandLogo(brand, className) {
   return img;
 }
 
+// Faixa do topo na cor EXATA do Master (18/11/2026). Título preto em fundo claro, branco em fundo escuro.
+// O resto do painel (links, títulos pequenos em fundo branco) continua usando uma versão escurecida da mesma cor.
+const hexRgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+const hexOf = values => "#" + values.map(v => Math.round(v).toString(16).padStart(2, "0")).join("");
+const lum = hex => { const [r, g, b] = hexRgb(hex).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrastOf = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+const textOnColor = bg => contrastOf("#ffffff", bg) >= contrastOf("#000000", bg) ? "#ffffff" : "#000000";
+function readableOnWhite(hex) {
+  let values = hexRgb(hex);
+  for (let i = 0; i < 40 && contrastOf(hexOf(values), "#ffffff") < 4.5; i++) values = values.map(v => v * 0.92);
+  return hexOf(values);
+}
+
 function applyCustomBrand(brand) {
   const root = document.documentElement;
   if (!brand?.colors) { delete root.dataset.customBrand; return; }
   root.dataset.customBrand = "1";
   root.style.setProperty("--brand-primary", brand.colors.primary);
   root.style.setProperty("--brand-on-primary", brand.colors.onPrimary);
-  root.style.setProperty("--brand-menu", brand.colors.text);
+  root.style.setProperty("--brand-menu", readableOnWhite(brand.colors.text));
+  root.style.setProperty("--brand-top", brand.colors.text);
+  root.style.setProperty("--brand-on-top", textOnColor(brand.colors.text));
   root.style.setProperty("--accent", brand.colors.accent);
   const top = $(".nav-brand");
   if (!top || !brand.logoUrl) return;
