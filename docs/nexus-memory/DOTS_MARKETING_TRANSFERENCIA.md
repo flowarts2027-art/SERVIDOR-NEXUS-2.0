@@ -4,6 +4,14 @@ Atualizado em 23/10/2026. Publicação neste repositório público expressamente
 
 ## Regra atual obrigatória — todos os DOTs (16/11/2026)
 
+**Quem é o carimbador (Rodrigo, 18/11/2026) — leia antes de tudo:**
+- **O carimbador é o NEXUS, não o ChatGPT.** O ChatGPT não consegue colar a logo sem mexer nela: qualquer edição de imagem dele redesenha a logo, e por isso ela saía trocada ou errada.
+- **A Maya entrega a foto LIMPA:** sem logo, sem texto, sem letra nenhuma. O Bento envia pelo conector `nexus_enviar_arte` com **`ja_tem_texto: false`**.
+- O Nexus cola por cima o **arquivo original da logo salvo no Master ("Editar cliente")**, o título e o botão. Sem logo no Master, usa a identidade fixa do cliente. Nunca uma logo feita por IA.
+- **Proibido** para todos os DOTs: pedir à IA de imagem para desenhar, copiar, "aplicar" ou "carimbar" logo; editar a imagem para pôr logo; mandar arte com logo usando `ja_tem_texto: true`.
+- A Clara confere a arte final no painel (logo certa, texto inteiro, formato). Se a logo estiver errada lá, o problema é a logo salva no Master: avisar o Rodrigo, não refazer a foto.
+
+
 Ordem fixa e bloqueante para **todas as artes de todos os clientes**: **Maya gera a imagem SEM nenhuma logo → a imagem-base é conferida/aprovada → o DOT carimbador aplica o ARQUIVO ORIGINAL da logo por sobreposição, sem IA → Clara revisa o arquivo final carimbado → Bento envia ao Nexus somente depois da revisão.** Dante garante a passagem correta e não pula o carimbador; Lia/Caio não solicitam logos no prompt da imagem.
 - Não usar logo redesenhada, aproximada, inventada, nem logomarca embutida durante a geração. Caso a versão existente tenha marca errada, corrigir a camada/voltar à base limpa preservando a imagem aprovada.
 - Sem logo oficial verificável ou sem carimbador operacional, bloquear o envio; não alegar que o DOT executou a ação. Antes do envio verificar contato, WhatsApp duplicado, formato e integridade exata da logo. O registro da regra **não instala nem ativa** agentes.

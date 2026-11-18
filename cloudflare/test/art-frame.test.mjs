@@ -153,3 +153,32 @@ test("sem as molduras publicadas, não quebra (devolve null)", async () => {
   assert.equal(await loadFrames({}), null);
   assert.equal(await loadFrames({ ASSETS: { fetch: async () => new Response("x", { status: 404 }) } }), null);
 });
+
+// Carimbador (Rodrigo, 18/11/2026): a logo vem do arquivo salvo no Master, nunca da IA.
+test("conector: foto limpa recebe a logo ORIGINAL salva no Master", async () => {
+  const { env, deps, uploads, fake } = connectorSetup();
+  const gets = [];
+  env.MEDIA = { get: async key => { gets.push(key); return { body: new Blob([new Uint8Array([0x89, 0x50])]).stream() }; } };
+  deps.brand = async (_e, client) => ({ logoKey: "brand/" + client.id + "/logo.png" });
+  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
+  assert.match(out.texto, /logo oficial do Master/);
+  assert.deepEqual(gets, ["brand/quatree-dog/logo.png"]);
+  assert.ok(!fake.assets.includes("/molduras/quatree-dog/marca-feed.png"), "não usa a identidade do deploy quando há logo no Master");
+  assert.equal(uploads.length, 1);
+  assert.equal(uploads[0].get("approval"), "cliente");
+});
+
+test("conector: sem logo no Master, usa a identidade do deploy (nunca inventa logo)", async () => {
+  const { env, deps, fake } = connectorSetup();
+  deps.brand = async () => null;
+  const out = await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
+  assert.doesNotMatch(out.texto, /Master/);
+  assert.ok(fake.assets.includes("/molduras/quatree-dog/marca-feed.png"));
+});
+
+test("conector: erro ao ler a marca não trava o envio", async () => {
+  const { env, deps, uploads } = connectorSetup();
+  deps.brand = async () => { throw new Error("db fora"); };
+  await enviarArte(env, deps, { cliente_id: "quatree-dog", formato: "post", dia: "2026-10-31", hora: "09:00", imagem: img(1), ja_tem_texto: false });
+  assert.equal(uploads.length, 1);
+});

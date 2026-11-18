@@ -1391,3 +1391,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Criado `docs/nexus-memory/REGRA_IMAGENS_MASKARA.md` com o jeito certo de pedir (contexto legal, arma parada em mesa/bancada/maleta, nunca na mão, sem texto e sem logo), 3 modelos de pedido e o plano B sem arma. Aviso no `AGENTS.md`.
 - A regra não desliga o filtro da OpenAI; só padroniza o pedido. Só documentação, sem código, sem deploy.
 - Próximo passo: Rodrigo aprova o merge e manda o ChatGPT ler a regra.
+- 18/11 (mesmo PR): auditoria dos DOTs. Causa da logo errada: o ChatGPT não tem carimbador de verdade; qualquer edição de imagem dele redesenha a logo. O carimbador real é o Nexus (`ja_tem_texto: false` no `nexus_enviar_arte`), mas ele usava só a identidade fixa do deploy (na Maskara, só o nome escrito) e ignorava a logo salva no Master.
+- Correção em `cloudflare/src/mcp-server.js`: com `ja_tem_texto: false`, o conector lê a marca do cliente (`effectiveBrand`) e passa o `logoKey` do Master para `composeFramed`. Sem logo no Master ou com erro na leitura, mantém a identidade do deploy. Descrição do campo `ja_tem_texto` agora manda usar `false` e nunca pedir logo à IA. 3 testes novos em `art-frame.test.mjs`; suíte 1038 de 1038.
+- Regras dos DOTs atualizadas: `DOTS_MARKETING_TRANSFERENCIA.md`, `SISTEMATICA_IMAGENS_CHATGPT.md`, `AGENTS.md` e `REGRA_IMAGENS_MASKARA.md` (Maya entrega foto limpa; Bento envia com `ja_tem_texto: false`; ninguém pede logo à IA).
+- ATENÇÃO deploy: o PR mexe em `cloudflare/**`; o merge na `main` dispara `deploy-nexus-cloudflare.yml`.
+- Próximo passo: depois do merge, o ChatGPT reler as regras e enviar 1 arte de teste da Maskara com `ja_tem_texto: false`; conferir no painel se a logo é a do Master.
