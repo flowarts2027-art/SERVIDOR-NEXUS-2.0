@@ -100,7 +100,7 @@ export const MCP_TOOLS = Object.freeze([
         imagens_urls: { type: "array", maxItems: 5, items: { type: "string", format: "uri" }, description: "Opcional: links https das imagens, na ordem, no lugar dos campos imagem." },
         video: VIDEO_PARAM,
         video_url: { type: "string", format: "uri", description: "Opcional: link https do vídeo MP4 do story ou do reels, no lugar do campo video." },
-        ja_tem_texto: { type: "boolean", description: "Padrão true: preserva a arte sem acrescentar texto ou logo, inclusive quando o campo é omitido. false somente para solicitar explicitamente a moldura numa foto sem texto." }
+        ja_tem_texto: { type: "boolean", description: "Padrão true: preserva a arte sem acrescentar texto ou logo, inclusive quando o campo é omitido. false = foto limpa, SEM texto e SEM logo: o Nexus é o carimbador e cola por cima a logo ORIGINAL salva no Master, o título e o botão. Use false sempre que a arte precisar de logo; nunca peça à IA de imagem para desenhar logo." }
       },
       required: ["cliente_id", "formato", "dia", "hora"],
       additionalProperties: false
@@ -142,12 +142,14 @@ async function defaultDeps() {
   const [{ listClients, getClient }, { clientInsights }, { instagramSnapshot }, { masterUpload }, frames] = await Promise.all([
     import("./clients.js"), import("./insights.js"), import("./agent-runtime.js"), import("./master-upload.js"), import("./art-frame.js")
   ]);
+  const { effectiveBrand } = await import("./client-identity.js");
   return {
     listClients, getClient,
     metrics: (env, client) => clientInsights(env, client, { fetchSnapshot: instagramSnapshot }),
     upload: masterUpload,
     download: (url, init) => fetch(url, init),
-    frames
+    frames,
+    brand: effectiveBrand
   };
 }
 
@@ -294,6 +296,20 @@ const UPLOAD_ERRORS = {
   window_feed: "A arte é 4:5 ou 1:1 e não serve para este formato. Use formato post. Nada foi enviado."
 };
 
+async function masterLogoKey(env, deps, client, grupo) {
+  if (typeof deps.brand !== "function") return "";
+  try {
+    const owner = grupo
+      ? (grupo.sharedBrand ? await deps.getClient(env, grupo.members[0].clientId) : null)
+      : client;
+    if (!owner) return "";
+    const brand = await deps.brand(env, owner);
+    return String(brand?.logoKey || "");
+  } catch {
+    return "";
+  }
+}
+
 export async function enviarArte(env, deps, args, now = new Date()) {
   if (!mcpWriteEnabled(env)) throw new ToolInputError("O envio de artes pelo conector está desligado no Nexus.");
   const grupo = await findGroup(env, args?.cliente_id);
@@ -337,20 +353,25 @@ export async function enviarArte(env, deps, args, now = new Date()) {
     const meta = deps.frames ? await deps.frames.loadFrames(env) : null;
     const frameClientId = grupo?.sharedBrand ? grupo.members[0].clientId : brandClientId(client);
     if (meta && deps.frames.hasFrames(meta, frameClientId)) {
+      // Carimbador (Rodrigo, 18/11/2026): a logo é o ARQUIVO salvo no "Editar cliente" do Master,
+      // colado por cima. A IA de imagem nunca desenha logo. Sem logo no Master, vale a identidade do deploy.
+      const logoKey = await masterLogoKey(env, deps, client, grupo);
       const story = tipo === "story";
       const base = Number(dia.replace(/\D/g, "").slice(-4)) + Number(hora.replace(/\D/g, ""));
       for (let i = 0; i < arquivos.length; i++) {
         const frame = deps.frames.pickFrame(meta, frameClientId, story, base + i);
         let out;
         try {
-          out = await deps.frames.composeFramed(env, new Uint8Array(await arquivos[i].arrayBuffer()), frame, { story, numero: tipo === "carousel" ? i + 1 : null });
+          out = await deps.frames.composeFramed(env, new Uint8Array(await arquivos[i].arrayBuffer()), frame, { story, numero: tipo === "carousel" ? i + 1 : null, logoKey });
         } catch (error) {
           console.error("mcp_frame_failed", { client: client.id, error: String(error?.message || error) });
           throw new ToolInputError("Não consegui escrever o texto na imagem " + (i + 1) + ". Nada foi enviado. Tente de novo em instantes.");
         }
         arquivos[i] = new File([out], `arte-${i + 1}.jpg`, { type: "image/jpeg" });
       }
-      texto = "o Nexus escreveu logo, título, vantagens e botão por cima";
+      texto = logoKey
+        ? "o Nexus escreveu logo oficial do Master, título, vantagens e botão por cima"
+        : "o Nexus escreveu logo, título, vantagens e botão por cima";
     } else {
       texto = "este cliente ainda não tem moldura de texto: a imagem foi como veio";
     }

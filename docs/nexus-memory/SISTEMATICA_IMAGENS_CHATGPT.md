@@ -29,6 +29,14 @@ Antes de gerar qualquer imagem, escrever uma **tabela da campanha** com uma linh
 - Errou? Refaz **só aquela imagem**. Não refazer o lote todo.
 
 ## Regra 4 — Etapas obrigatoriamente separadas: imagem limpa → carimbador oficial
+
+**Quem é o carimbador (Rodrigo, 18/11/2026) — leia antes de tudo:**
+- **O carimbador é o NEXUS, não o ChatGPT.** O ChatGPT não consegue colar a logo sem mexer nela: qualquer edição de imagem dele redesenha a logo, e por isso ela saía trocada ou errada.
+- **A Maya entrega a foto LIMPA:** sem logo, sem texto, sem letra nenhuma. O Bento envia pelo conector `nexus_enviar_arte` com **`ja_tem_texto: false`**.
+- O Nexus cola por cima o **arquivo original da logo salvo no Master ("Editar cliente")**, o título e o botão. Sem logo no Master, usa a identidade fixa do cliente. Nunca uma logo feita por IA.
+- **Proibido** para todos os DOTs: pedir à IA de imagem para desenhar, copiar, "aplicar" ou "carimbar" logo; editar a imagem para pôr logo; mandar arte com logo usando `ja_tem_texto: true`.
+- A Clara confere a arte final no painel (logo certa, texto inteiro, formato). Se a logo estiver errada lá, o problema é a logo salva no Master: avisar o Rodrigo, não refazer a foto.
+
 - **Etapa 1 — Maya/gerador:** criar apenas a imagem-base, **SEM LOGO, MARCA, SÍMBOLO OU SIMULAÇÃO DE LOGO**. O prompt deve dizer "sem logo, sem marca"; deixar área livre onde o selo será aplicado. Textos publicitários, quando necessários, devem ser compostos tecnicamente e revisados, não inventados na IA.
 - **Etapa 2 — revisão da base:** conferir a imagem, o sabor/produto, texto, proporção e aprovação existente; preservar a foto já aprovada.
 - **Etapa 3 — DOT carimbador:** usar o **ARQUIVO ORIGINAL, aprovado, da logo do cliente**, separado da geração. Aplicar por sobreposição exata de pixels; **NUNCA** pedir à IA para imitar, copiar, redesenhar ou criar logo. O executor pode ser composição técnica do Nexus somente quando comprovadamente disponível.
@@ -38,9 +46,9 @@ Antes de gerar qualquer imagem, escrever uma **tabela da campanha** com uma linh
 - Fontes de logo já documentadas: Flow Arts = `public/brand/flowarts-logo.webp` (símbolo `public/brand/flowarts-symbol.webp`); GILTEC = `docs/nexus-memory/clientes/giltec/logo-giltec.png`. Outros clientes: conferir o arquivo ORIGINAL aprovado (Master/briefing) antes de carimbar. Não assumir que uma imagem gerada anteriormente com uma logo é referência oficial.
 
 ## Regra 5 — Envio
-- Enviar ao painel pelo conector `nexus_enviar_arte` **somente após o carimbo oficial e a revisão visual da arte final**, uma peça por envio, conferindo a agenda antes para não repetir horário.
+- Enviar ao painel pelo conector `nexus_enviar_arte` com **`ja_tem_texto: false`** (o Nexus carimba a logo oficial, o título e o botão), uma peça por envio, conferindo a agenda antes para não repetir horário.
 - Tudo fica esperando aprovação. O ChatGPT nunca aprova nem publica.
 - Ao terminar, registrar em `HANDOFF_CHATGPT.md` o que foi realmente enviado (dia, horário, formato).
 
 ## Prompt curto para o Rodrigo colar no ChatGPT
-> Leia `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md` no GitHub do Nexus e siga as regras. Campanha de [CLIENTE] de [N] dias. Primeiro me mostre a tabela da campanha. Depois gere uma imagem por vez, sem logo, e envie ao painel.
+> Leia `docs/nexus-memory/SISTEMATICA_IMAGENS_CHATGPT.md` no GitHub do Nexus e siga as regras. Campanha de [CLIENTE] de [N] dias. Primeiro me mostre a tabela da campanha. Depois gere uma imagem por vez, sem logo e sem texto, e envie ao painel com ja_tem_texto: false (o Nexus põe a logo oficial).

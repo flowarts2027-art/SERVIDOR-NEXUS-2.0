@@ -13,7 +13,7 @@ Vale para o ChatGPT e para todos os DOTs (Dante, Maya, Clara, Bento...) sempre q
 3. **Nunca** pessoa empunhando, mirando ou atirando. **Nunca** arma apontada para pessoa ou câmera. Sem munição espalhada, sem sangue, sem cena de ação, sem clima de crime.
 4. Pessoa pode aparecer **sem arma na mão**: atendente organizando pastas, cliente conversando na mesa do escritório, atirador de costas no estande com protetor auricular e óculos (arma na bancada, não na mão).
 5. Estilo: **fotografia realista**, fundo escuro (preto/grafite), detalhes em **dourado**, luz lateral suave, fundo desfocado.
-6. **Sem texto e sem logo na imagem.** Título, botão e logo oficial entram depois, por código/carimbador (`PADRAO_ARTES.md` e regra do carimbador no `AGENTS.md`).
+6. **Sem texto e sem logo na imagem.** Enviar com `nexus_enviar_arte` e `ja_tem_texto: false`: o Nexus cola a logo oficial (caveira de olhos dourados, salva no Master), o título e o botão.
 7. Uma imagem por vez (`SISTEMATICA_IMAGENS_CHATGPT.md`). Post 1080×1350 (4:5), story 1080×1920 (9:16).
 
 ## Modelos de pedido (troque só a cena)
