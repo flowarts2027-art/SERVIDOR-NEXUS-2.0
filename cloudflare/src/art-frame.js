@@ -91,11 +91,12 @@ export async function stampLogo(env, bytes, logoKey, { story = false, position =
   const logoBytes = new Uint8Array(await new Response(obj.body).arrayBuffer());
   const li = await env.IMAGES.info(stream(logoBytes));
   const bottom = position === "bottom";
-  let h = Math.round(W * (bottom ? 0.15 : story ? 0.11 : 0.1));
+  // Tamanho dobrado a pedido do Rodrigo (18/11/2026). Margem de 5%: a grade do perfil (3:4) corta ~3% de cada lado.
+  let h = Math.round(W * (bottom ? 0.3 : story ? 0.22 : 0.2));
   let w = Math.round(h * (Number(li?.width) || 1) / (Number(li?.height) || 1));
-  const maxW = Math.round(W * (bottom ? 0.4 : 0.3));
+  const maxW = Math.round(W * (bottom ? 0.6 : 0.45));
   if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-  const margin = Math.round(W * 0.035);
+  const margin = Math.round(W * 0.05);
   // Story: longe da barra do Instagram em cima (nome e progresso) e da caixa de resposta embaixo.
   const left = bottom ? Math.round((W - w) / 2) : W - margin - w;
   const top = bottom ? H - h - (story ? Math.round(H * 0.12) : margin) : story ? Math.round(H * 0.13) : margin;

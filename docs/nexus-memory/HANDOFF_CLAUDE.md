@@ -1414,3 +1414,4 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: suíte inteira passando (1038).
 - ATENÇÃO deploy: mexe em `cloudflare/**`; o merge dispara `deploy-nexus-cloudflare.yml`.
 - Próximo passo: enviar a logo da Daniela Martins pelo Master; testar 1 arte da GILTEC e conferir a logo no painel antes de aprovar.
+- 18/11 (16h30): carimbo da logo testado na GILTEC (funcionou). Rodrigo pediu logo com o dobro do tamanho sem cortar no post: `stampLogo` agora usa 20% da largura (story 22%; Daniela embaixo 30%) e margem de 5% (a grade 3:4 do perfil corta ~3% de cada lado). Suíte inteira passando. Merge dispara o deploy.
