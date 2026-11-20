@@ -3,10 +3,12 @@
   "cores": {
     "primary": "#955917",
     "accent": "#d8a449",
-    "text": "#955917",
+    "text": "#547f13",
+    "menu": "#639617",
+    "onMenu": "#000000",
     "onPrimary": "#ffffff",
     "onAccent": "#000000"
   },
   "palavraBotao": "",
-  "atualizadoEm": "2026-11-18T19:24:15.645Z"
+  "atualizadoEm": "2026-11-20T13:28:30.819Z"
 }
