@@ -1436,3 +1436,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 1047 de 1047.
 - ATENÇÃO deploy: mexe em `cloudflare/**` e `public/**`; o merge dispara o deploy.
 - Próximo passo: depois do merge, testar com 1 foto da Daniela; depois reenviar as fotos de 23–25/11 da Daniela pelo botão (os posts atuais estão sem moldura e esperando aprovação).
+
+
+## 2026-11-20 (11h) — Claude: moldura de painel para todos os clientes
+- Pedido do Rodrigo: toda foto pura (Gemini) que sobe em qualquer painel ganha a moldura do cliente (cor, textos, logo), igual à Daniela.
+- Feito: `scripts/social/moldura_clientes.py` + `scripts/social/campanha/textos_clientes.json` (Flow Arts, Nexus AI, Maskara, Quatree Dog, Adimax, GILTEC e vendedores, Gráfica Flash Color, Trevo Cosméticos). `hasPanel` deixou de ser só da Daniela; tema "geral" para os outros (`panelThemeFor`).
+- Fora por falta de briefing: Luciana Carvalho, Sabor do Campo, Café Brisa, Meta Review.
+- Testes: 1048/1048. Merge autorizado pelo Rodrigo nesta data.
+- Também: 10 imagens velhas (29/10) presas na Biblioteca da Flow Arts foram tiradas a pedido dele.
+- Próximo passo: conferir uma foto real subindo em outro cliente; atualizar o Gem FOTOS NEXUS com o tema de cada cliente.

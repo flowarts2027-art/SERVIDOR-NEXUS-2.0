@@ -81,9 +81,17 @@ export const PANEL_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
 export const EYEBROW_PROMPT = "Esta foto mostra principalmente SOBRANCELHA, olhos ou rosto em close (design de sobrancelhas)? "
   + "Pernas, axilas, braços, corpo, sala ou materiais de depilação NÃO contam. Responda só SIM ou NAO.";
 
+// TODOS os clientes (Rodrigo, 20/11/2026): quem tem moldura de painel no molduras.json ganha a moldura
+// (scripts/social/moldura_clientes.py, textos em campanha/textos_clientes.json). A foto sobe pura.
 export function hasPanel(meta, clientId) {
   const c = meta?.clientes?.[String(clientId || "")];
-  return PANEL_CLIENTS.has(String(clientId || "")) && c?.estilo === "painel" && Boolean(c?.feed?.length && c?.story?.length);
+  return c?.estilo === "painel" && Boolean(c?.feed?.length && c?.story?.length);
+}
+
+// Só a Daniela separa depilação de sobrancelha; os outros clientes usam um tema só ("geral").
+export async function panelThemeFor(env, clientId, bytes) {
+  if (String(clientId || "") !== "daniela-martins") return "geral";
+  return (await isEyebrowPhoto(env, bytes)) ? "sobrancelha" : "depilacao";
 }
 
 // Escolhe o texto: só textos do tema certo; gira pelo contador para não repetir em seguida.

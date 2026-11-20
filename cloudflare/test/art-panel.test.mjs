@@ -106,3 +106,13 @@ test("sem logo no Master usa a logo do deploy (public/brand)", async () => {
   assert.ok(assets.includes("/brand/daniela-martins-logo.png"));
   assert.ok(assets.includes("/molduras/daniela-martins/painel-story-1.png"));
 });
+
+// Todos os clientes (Rodrigo, 20/11/2026): moldura de painel para quem tem estilo "painel".
+test("moldura de painel vale para qualquer cliente com estilo painel", async () => {
+  const { hasPanel, panelThemeFor } = await import("../src/art-frame.js");
+  const meta = { clientes: { "maskara-assessoria": { estilo: "painel", feed: [{ arquivo: "m/f.png", tema: "geral" }], story: [{ arquivo: "m/s.png", tema: "geral" }] } } };
+  assert.equal(hasPanel(meta, "maskara-assessoria"), true);
+  assert.equal(hasPanel(meta, "luciana-carvalho"), false);
+  assert.equal(await panelThemeFor({}, "maskara-assessoria", new Uint8Array([1])), "geral");
+  assert.equal(await panelThemeFor({}, "daniela-martins", new Uint8Array([1])), "depilacao");
+});

@@ -44,6 +44,10 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Exceção à regra "o Nexus nunca escreve texto", só para `daniela-martins`.** Toda foto SEM texto que sobe no painel dela (Gemini, ChatGPT, Master ou conector) ganha a moldura dela: foto cobrindo a tela, painel verde-oliva #746E44 com linha dourada, título, 3 tópicos (story: 2), caixa dourada chamando para agendar com a Daniela, frase e botão COMENTE QUERO, e a logo do Master na faixa de baixo. Textos revisados em `scripts/social/campanha/textos_daniela.json` (camadas feitas no deploy por `scripts/social/moldura_daniela.py`); a IA grátis só responde "já tem texto?" e "é sobrancelha?". Arte que já chega com texto só recebe a logo, como antes. As fotos vêm do Gemini (Gem "FOTOS NEXUS"): POST com o assunto no lado ESQUERDO (o painel cobre a direita); STORY com o assunto na parte de CIMA (o painel cobre de 43% para baixo). Textos nunca mandam a cliente a médico ou outro profissional.
 
+## Moldura de painel para TODOS os clientes (Rodrigo, 20/11/2026)
+
+**A moldura da Daniela vale agora para todos os clientes com briefing.** A foto sobe pura (Gemini, sem texto e sem logo) e o Nexus monta a arte: painel na cor do cliente, título, tópicos, caixa de destaque, frase, botão COMENTE QUERO (story: MANDE QUERO NO DIRECT) e a logo do Master. Cores e textos revisados em `scripts/social/campanha/textos_clientes.json` (feitos no deploy por `scripts/social/moldura_clientes.py`). Fora por falta de briefing: Luciana Carvalho, Sabor do Campo, Café Brisa e Meta Review. Arte que já chega com texto (ex.: GILTEC) só recebe a logo.
+
 ## Imagens da Maskara Assessoria (Rodrigo, 18/11/2026)
 
 **Toda imagem da Maskara (ChatGPT e DOTs) segue `docs/nexus-memory/REGRA_IMAGENS_MASKARA.md`:** contexto de empresa legalizada no início do pedido, arma sempre parada (mesa, bancada ou maleta), nunca na mão nem apontada, foto realista escura com dourado, sem texto e sem logo. Se o gerador bloquear, refazer a cena sem a arma; não insistir nem tentar burlar o filtro.
