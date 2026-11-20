@@ -270,7 +270,9 @@ export async function writeCaption(env, client, bytes, mime, type) {
 // ---------- 5. organizar e programar ----------
 export async function organizeLibrary(env, client, now = new Date(), options = {}) {
   const items = await readItems(env, client.id);
-  const ownIds = new Set(items.map(i => String(i.postId || "")).filter(Boolean));
+  // Posts já programados pela Biblioteca ocupam o dia como qualquer outro (20/11/2026: sem isso, o plano escolhia
+  // um dia ocupado e o envio falhava com slot_taken, deixando a foto livre).
+  const ownIds = new Set(items.filter(i => i.status !== "programado").map(i => String(i.postId || "")).filter(Boolean));
   const slots = await freeSlots(env, client.id, now, Number(options.days) || 14, ownIds);
   const plan = planLibrary(items, slots);
   const upload = options.upload || masterUpload;
