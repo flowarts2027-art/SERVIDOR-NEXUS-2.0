@@ -1,0 +1,22 @@
+{
+  "_obs": "Textos da moldura da Daniela Martins (pedido do Rodrigo, 20/11/2026). Toda foto que sobe no painel dela ganha o painel verde-oliva com estes textos. Objetivo: VENDER a depilação com a Daniela. Nunca mandar a cliente a médico ou outro profissional, nunca prometer cura ou resultado garantido. 'sobrancelha' só entra em foto de sobrancelha. Mudou aqui: o deploy refaz as molduras sozinho.",
+  "feed": [
+    {"tema": "depilacao", "titulo": ["Pele lisinha", "por muito mais tempo"], "topicos": ["A cera tira o pelo pela raiz", "Dura bem mais que a lâmina", "Toque macio por mais tempo"], "caixa": "Agende sua depilação com a Daniela", "frase": "Sinta a diferença no toque."},
+    {"tema": "depilacao", "titulo": ["Pelos mais finos", "com o tempo"], "topicos": ["Com a rotina, o pelo enfraquece", "Fica cada vez menos aparente", "A depilação fica mais rápida"], "caixa": "Mantenha sua rotina com a Daniela", "frase": "Cuidado que vale a pena."},
+    {"tema": "depilacao", "titulo": ["Cera ou lâmina?", "Fique com a cera"], "topicos": ["Sem cortes e sem irritação", "Sem pontas ásperas no dia seguinte", "Nada de depilar todo dia"], "caixa": "Troque a lâmina: agende com a Daniela", "frase": "Mais praticidade na sua rotina."},
+    {"tema": "depilacao", "titulo": ["Técnica e higiene", "em cada detalhe"], "topicos": ["Material descartável e limpo", "Técnica que evita puxões", "Mais conforto na sessão"], "caixa": "Depilação com cuidado é com a Daniela", "frase": "Sua pele em boas mãos."},
+    {"tema": "depilacao", "titulo": ["Primeira depilação?", "Pode confiar"], "topicos": ["A Daniela explica cada etapa", "Atendimento calmo e sem pressa", "Tire todas as suas dúvidas"], "caixa": "Perca o medo: agende com a Daniela", "frase": "Seu primeiro passo com confiança."},
+    {"tema": "depilacao", "titulo": ["Liberdade para", "usar o que quiser"], "topicos": ["Short e vestido sem preocupação", "Praia e piscina a qualquer hora", "Pele pronta para o verão"], "caixa": "Garanta seu horário com a Daniela", "frase": "Mais liberdade para ser você."},
+    {"tema": "depilacao", "titulo": ["Seu momento", "de cuidado"], "topicos": ["Ambiente limpo e acolhedor", "Atendimento feito com carinho", "Saia leve e confiante"], "caixa": "Reserve seu horário com a Daniela", "frase": "Você merece esse cuidado."},
+    {"tema": "sobrancelha", "titulo": ["Sobrancelha que", "realça o olhar"], "topicos": ["Desenho que respeita seu rosto", "Formato natural e equilibrado", "Olhar mais bonito e marcante"], "caixa": "Agende seu design com a Daniela", "frase": "Um detalhe transforma o olhar."},
+    {"tema": "sobrancelha", "titulo": ["Design de", "sobrancelhas"], "topicos": ["Formato pensado para você", "Acabamento limpo e delicado", "Expressão leve e harmoniosa"], "caixa": "Realce seu olhar com a Daniela", "frase": "Seu olhar merece atenção."}
+  ],
+  "story": [
+    {"tema": "depilacao", "titulo": ["Pele lisinha", "por mais tempo"], "topicos": ["A cera tira o pelo pela raiz", "Dura bem mais que a lâmina"], "caixa": "Agende sua depilação com a Daniela"},
+    {"tema": "depilacao", "titulo": ["Adeus,", "lâmina"], "topicos": ["Sem cortes e sem irritação", "Nada de depilar todo dia"], "caixa": "Troque a lâmina: agende com a Daniela"},
+    {"tema": "depilacao", "titulo": ["Primeira vez?", "Pode confiar"], "topicos": ["A Daniela explica cada etapa", "Atendimento calmo e sem pressa"], "caixa": "Perca o medo: agende com a Daniela"},
+    {"tema": "depilacao", "titulo": ["Pronta para", "o verão"], "topicos": ["Short e vestido sem preocupação", "Praia e piscina a qualquer hora"], "caixa": "Garanta seu horário com a Daniela"},
+    {"tema": "depilacao", "titulo": ["Seu momento", "de cuidado"], "topicos": ["Ambiente limpo e acolhedor", "Técnica e higiene em cada sessão"], "caixa": "Reserve seu horário com a Daniela"},
+    {"tema": "sobrancelha", "titulo": ["Sobrancelha que", "realça o olhar"], "topicos": ["Desenho que respeita seu rosto", "Formato natural e equilibrado"], "caixa": "Agende seu design com a Daniela"}
+  ]
+}

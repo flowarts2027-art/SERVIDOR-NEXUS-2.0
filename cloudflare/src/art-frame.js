@@ -73,6 +73,77 @@ export async function composeFramed(env, bytes, frame, { story = false, numero =
   return out;
 }
 
+// MOLDURA DA DANIELA (Rodrigo, 20/11/2026): exceção por cliente à regra de 18/11 logo abaixo.
+// Toda foto SEM texto que sobe no painel dela ganha a moldura dela: foto cobrindo a tela, painel verde-oliva
+// com textos revisados (scripts/social/campanha/textos_daniela.json, feitos no deploy) e a logo do Master na
+// faixa de baixo. A IA grátis só responde SIM/NAO ("já tem texto?" e "é sobrancelha?"); quem escreve é o Nexus.
+export const PANEL_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
+export const EYEBROW_PROMPT = "Esta foto mostra principalmente SOBRANCELHA, olhos ou rosto em close (design de sobrancelhas)? "
+  + "Pernas, axilas, braços, corpo, sala ou materiais de depilação NÃO contam. Responda só SIM ou NAO.";
+
+export function hasPanel(meta, clientId) {
+  const c = meta?.clientes?.[String(clientId || "")];
+  return PANEL_CLIENTS.has(String(clientId || "")) && c?.estilo === "painel" && Boolean(c?.feed?.length && c?.story?.length);
+}
+
+// Escolhe o texto: só textos do tema certo; gira pelo contador para não repetir em seguida.
+export function pickPanel(meta, clientId, story, theme, counter = 0) {
+  const c = meta.clientes[String(clientId)];
+  const all = story ? c.story : c.feed;
+  const list = all.filter(f => f.tema === theme);
+  const pool = list.length ? list : all;
+  return { ...pool[Math.abs(Math.trunc(Number(counter) || 0)) % pool.length], logo: c.logo?.[story ? "story" : "feed"] || null };
+}
+
+export async function isEyebrowPhoto(env, bytes) {
+  // Na dúvida (sem IA, erro ou demora), fica depilação, que é o serviço principal dela.
+  return (await visionAsk(env, bytes, EYEBROW_PROMPT)) === true;
+}
+
+// Contador simples no R2 para girar os textos (feed e story separados).
+export async function nextPanelCounter(env, clientId, story) {
+  const key = "molduras-estado/" + String(clientId) + ".json";
+  let state = { feed: 0, story: 0 };
+  try {
+    const obj = await env.MEDIA.get(key);
+    if (obj) state = { ...state, ...(await obj.json()) };
+  } catch { /* começa do zero */ }
+  const field = story ? "story" : "feed";
+  const n = Number(state[field]) || 0;
+  state[field] = n + 1;
+  await env.MEDIA.put(key, JSON.stringify(state), { httpMetadata: { contentType: "application/json" } }).catch(() => {});
+  return n;
+}
+
+// Foto (qualquer formato) cobre a tela 1080x1350 ou 1080x1920; moldura por cima; logo no meio da faixa de baixo.
+export async function composePanel(env, bytes, frame, { story = false, logoKey = "" } = {}) {
+  if (!env?.IMAGES) throw new Error("images_binding_unavailable");
+  const size = story ? STORY : FEED;
+  let canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
+  canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, frame.arquivo))), { left: 0, top: 0 });
+  let logoBytes = null;
+  const obj = logoKey ? await env.MEDIA.get(logoKey).catch(() => null) : null;
+  if (obj) logoBytes = new Uint8Array(await new Response(obj.body).arrayBuffer());
+  else {
+    const res = await env.ASSETS.fetch(new Request("https://assets.local/brand/" + String(frame.arquivo).split("/")[0] + "-logo.png")).catch(() => null);
+    if (res?.ok) logoBytes = new Uint8Array(await res.arrayBuffer());
+  }
+  if (logoBytes && frame.logo) {
+    const li = await env.IMAGES.info(stream(logoBytes));
+    let h = Number(frame.logo.altura) || 110;
+    let w = Math.round(h * (Number(li?.width) || 1) / (Number(li?.height) || 1));
+    const maxW = Math.round(size.width * 0.5);
+    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    canvas = canvas.draw(env.IMAGES.input(stream(logoBytes)).transform({ width: w, height: h, fit: "scale-down" }),
+      { left: Math.round((size.width - w) / 2), top: Math.round(Number(frame.logo.centro_y) - h / 2) });
+  }
+  const response = await (await canvas.output({ format: "image/jpeg", quality: 92 })).response();
+  if (!response.ok) throw new Error("images_compose_http_" + response.status);
+  const out = new Uint8Array(await response.arrayBuffer());
+  if (!out.byteLength || out.byteLength > 8 * 1024 * 1024) throw new Error("images_compose_invalid");
+  return out;
+}
+
 // REGRA (Rodrigo, 18/11/2026): o Nexus NUNCA escreve texto em arte que chega ao painel (já houve muito erro
 // de escrever por cima). Texto, só no ChatGPT. Em TODA arte que chega, com ou sem texto, o Nexus cola só a logo
 // ORIGINAL salva no Master. A arte não é cortada nem encolhida: sai no mesmo tamanho em que chegou.
@@ -154,11 +225,17 @@ function toBase64(bytes) {
 
 // Pergunta de SIM ou NAO para a IA grátis. Na dúvida (sem IA, erro ou demora), responde SIM.
 async function visionYes(env, bytes, question) {
-  if (!env?.AI || !env?.IMAGES) return true;
+  const answer = await visionAsk(env, bytes, question);
+  return answer === null ? true : answer;
+}
+
+// Mesma pergunta, mas devolve null quando não deu para perguntar.
+async function visionAsk(env, bytes, question) {
+  if (!env?.AI || !env?.IMAGES) return null;
   try {
     const small = await (await env.IMAGES.input(stream(bytes)).transform({ width: 512, height: 640, fit: "scale-down" })
       .output({ format: "image/jpeg", quality: 80 })).response();
-    if (!small.ok) return true;
+    if (!small.ok) return null;
     const dataUrl = "data:image/jpeg;base64," + toBase64(new Uint8Array(await small.arrayBuffer()));
     const out = await Promise.race([
       env.AI.run(String(env.NEXUS_VISION_MODEL || TEXT_CHECK_MODEL), {
@@ -173,7 +250,7 @@ async function visionYes(env, bytes, question) {
     return parseHasText(out?.response ?? out?.result?.response ?? "");
   } catch (error) {
     console.error("text_check_failed", String(error?.message || error));
-    return true;
+    return null;
   }
 }
 
