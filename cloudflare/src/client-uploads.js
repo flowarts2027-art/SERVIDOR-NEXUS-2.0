@@ -92,7 +92,11 @@ export async function createClientUpload(env, client, form, now = new Date(), op
         try {
           const theme = await panelThemeFor(env, frameClientId, bytes);
           const frame = pickPanel(frames, frameClientId, story, theme, await nextPanelCounter(env, frameClientId, story));
-          body = await composePanel(env, bytes, frame, { story, logoKey });
+          // Envio grande (27 fotos, 20/11/2026): a montagem às vezes falha por um instante. Tenta de novo 2 vezes.
+          for (let tentativa = 0; ; tentativa++) {
+            try { body = await composePanel(env, bytes, frame, { story, logoKey }); break; }
+            catch (erro) { if (tentativa >= 2) throw erro; await new Promise(r => setTimeout(r, 1500 * (tentativa + 1))); }
+          }
           textReport.push("moldura-da-cliente");
         } catch (error) {
           console.error("upload_panel_failed", { clientId, error: String(error?.message || error) });
