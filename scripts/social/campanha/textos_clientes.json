@@ -200,16 +200,29 @@
     "feed": [
       {
         "titulo": [
-          "Seu registro",
-          "sem dor de cabeça"
+          "Quer adquirir",
+          "sua arma legalmente?"
         ],
         "topicos": [
-          "Assessoria do início ao fim",
-          "Documentação em dia",
-          "Processo dentro da lei"
+          "Orientação do início ao fim",
+          "Autorização e registro",
+          "Tudo dentro da lei"
         ],
         "caixa": "Fale com a Maskara Assessoria",
-        "frase": "Segurança e legalidade."
+        "frase": "A gente cuida do processo."
+      },
+      {
+        "titulo": [
+          "Transferência",
+          "de titularidade"
+        ],
+        "topicos": [
+          "Arma passada para o seu nome",
+          "Documentação completa",
+          "Acompanhamos cada etapa"
+        ],
+        "caixa": "Transfira com a Maskara Assessoria",
+        "frase": "Sem dor de cabeça."
       },
       {
         "titulo": [
@@ -226,16 +239,16 @@
       },
       {
         "titulo": [
-          "Posse e porte",
-          "com segurança"
+          "Registro e CRAF",
+          "em dia"
         ],
         "topicos": [
-          "Orientação sobre as exigências",
-          "Ajuda com laudos e cursos",
-          "Atendimento personalizado"
+          "Registro da sua arma",
+          "Emissão do CRAF",
+          "Prazos acompanhados"
         ],
-        "caixa": "Tire suas dúvidas com a Maskara",
-        "frase": "Tudo dentro da lei."
+        "caixa": "Fale com a Maskara Assessoria",
+        "frase": "Seus documentos em ordem."
       },
       {
         "titulo": [
@@ -247,8 +260,21 @@
           "Prazos acompanhados de perto",
           "Menos burocracia para você"
         ],
-        "caixa": "Regularize com a Maskara",
-        "frase": "Seus documentos em dia."
+        "caixa": "Renove com a Maskara Assessoria",
+        "frase": "Tudo regularizado."
+      },
+      {
+        "titulo": [
+          "Posse e porte",
+          "com segurança"
+        ],
+        "topicos": [
+          "Orientação sobre as exigências",
+          "Ajuda com laudos e cursos",
+          "Atendimento personalizado"
+        ],
+        "caixa": "Tire suas dúvidas com a Maskara",
+        "frase": "Tudo dentro da lei."
       },
       {
         "titulo": [
@@ -267,14 +293,25 @@
     "story": [
       {
         "titulo": [
-          "Seu registro",
-          "sem dor de cabeça"
+          "Quer sua arma",
+          "dentro da lei?"
         ],
         "topicos": [
-          "Assessoria do início ao fim",
-          "Processo dentro da lei"
+          "Cuidamos do processo",
+          "Autorização e registro"
         ],
         "caixa": "Fale com a Maskara"
+      },
+      {
+        "titulo": [
+          "Transferência",
+          "de titularidade"
+        ],
+        "topicos": [
+          "Arma no seu nome",
+          "Documentação completa"
+        ],
+        "caixa": "Transfira com a Maskara"
       },
       {
         "titulo": [
