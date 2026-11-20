@@ -96,6 +96,9 @@ export async function addToLibrary(env, client, form, now = new Date()) {
   const items = await readItems(env, client.id);
   const known = new Set(items.map(i => i.hash));
   const batch = now.getTime().toString(36);
+  // Fotos do Gemini pelo botão "Enviar ao Nexus" (Rodrigo, 20/11/2026): são fotos limpas (sem texto) e cada
+  // uma vira um post ou story separado, nunca carrossel.
+  const fromGemini = String(form.get("origem") || "") === "gemini";
   const added = [], duplicates = [], invalid = [];
   let order = 0;
   for (const file of files) {
@@ -111,7 +114,7 @@ export async function addToLibrary(env, client, form, now = new Date()) {
     const id = hash.slice(0, 16);
     const key = `library/${client.id}/artes/${id}.${ext}`;
     await env.MEDIA.put(key, bytes, { httpMetadata: { contentType: file.type }, customMetadata: { clientId: String(client.id), kind: "art-library" } });
-    const item = { id, hash, key, mime: file.type, width: size.width, height: size.height, format: formatFor(size), batch, order: order++, name: String(file.name || "").slice(0, 80), at: now.toISOString(), status: "livre" };
+    const item = { id, hash, key, mime: file.type, width: size.width, height: size.height, format: formatFor(size), batch, order: order++, name: String(file.name || "").slice(0, 80), at: now.toISOString(), status: "livre", ...(fromGemini ? { clean: true, single: true } : {}) };
     items.push(item);
     added.push(item);
   }
@@ -210,8 +213,8 @@ export function planLibrary(items, slots) {
   for (const slot of slots.feed) {
     if (!feed.length) break;
     const head = feed[0];
-    const sameBatch = feed.filter(i => i.batch === head.batch);
-    if (slot.time === "09:00" && sameBatch.length >= 2) {
+    const sameBatch = feed.filter(i => i.batch === head.batch && !i.single);
+    if (slot.time === "09:00" && !head.single && sameBatch.length >= 2) {
       const group = sameBatch.slice(0, 5);
       for (const g of group) feed.splice(feed.indexOf(g), 1);
       plan.push({ ...slot, type: "carousel", items: group });
@@ -282,6 +285,7 @@ export async function organizeLibrary(env, client, now = new Date(), options = {
       form.set("date", piece.day);
       form.set("time", piece.time);
       form.set("noDuplicate", "1");
+      if (piece.items.every(it => it.clean)) form.set("fotoLimpa", "1");
       let first = null;
       for (const it of piece.items) {
         const obj = await env.MEDIA.get(it.key);

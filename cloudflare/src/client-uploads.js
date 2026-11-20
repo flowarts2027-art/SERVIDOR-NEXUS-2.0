@@ -74,6 +74,8 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const canFrame = NEXUS_WRITES_TEXT_ON_ARRIVAL && Boolean(frames && hasFrames(frames, frameClientId));
   // Moldura da Daniela (Rodrigo, 20/11/2026): foto sem texto ganha painel verde-oliva, textos e logo dela.
   const canPanel = Boolean(frames && hasPanel(frames, frameClientId));
+  // Foto limpa garantida (Gemini pelo botão "Enviar ao Nexus"): não pergunta à IA se tem texto.
+  const cleanPhoto = String(form.get("fotoLimpa") || "") === "1";
   // Logo do Master em toda arte que chega, com ou sem texto (Rodrigo, 18/11/2026). Sem logo no Master, vai como veio.
   const logoKey = options.skipLogo === true ? "" : await logoKeyOf(env, client);
   const textReport = [];
@@ -83,7 +85,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     let body = null;
     if (canPanel) {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (await imageHasText(env, bytes)) {
+      if (!cleanPhoto && await imageHasText(env, bytes)) {
         textReport.push("ja-tinha-texto");
       } else {
         const story = size.height > 1500;

@@ -56,6 +56,24 @@ test("plano: carrossel às 09h com o lote, posts nos outros horários, stories n
   assert.deepEqual(plan.map(p => p.type + ":" + p.items.map(i => i.id).join(",")), ["story:s0", "carousel:a0,a1,a2", "post:b0"]);
 });
 
+test("fotos do Gemini (single) nunca viram carrossel e vão como foto limpa", async () => {
+  const items = [0, 1, 2].map(i => ({ id: "g" + i, status: "livre", format: "feed", batch: "G", order: i, at: "1", single: true, clean: true }));
+  const slots = { feed: [{ day: "d", time: "09:00", iso: "1" }, { day: "d", time: "12:00", iso: "2" }, { day: "d", time: "19:00", iso: "3" }], story: [] };
+  assert.deepEqual(planLibrary(items, slots).map(p => p.type + ":" + p.items.map(i => i.id).join(",")), ["post:g0", "post:g1", "post:g2"]);
+
+  const env = fakeEnv();
+  const form = new FormData();
+  form.set("origem", "gemini");
+  form.append("images", new File([png(1080, 1350, 7)], "gemini-01-post.jpg", { type: "image/png" }));
+  form.append("images", new File([png(1080, 1350, 8)], "gemini-02-post.jpg", { type: "image/png" }));
+  const now = new Date("2026-10-28T12:30:00Z");
+  assert.equal((await addToLibrary(env, client, form, now)).added, 2);
+  const forms = [];
+  await organizeLibrary(env, client, now, { upload: async (e, f) => { forms.push(f); return { id: "p" + forms.length }; }, caption: async () => "Legenda", removeDuplicates: false });
+  assert.ok(forms.length >= 2);
+  assert.ok(forms.every(f => f.get("type") === "post" && f.get("fotoLimpa") === "1"));
+});
+
 test("subir: repetida é descartada; organizar programa tudo esperando aprovação e marca na biblioteca", async () => {
   const env = fakeEnv();
   const form = new FormData();
