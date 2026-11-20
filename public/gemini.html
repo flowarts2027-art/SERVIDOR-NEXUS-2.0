@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Botão Enviar ao Nexus</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+  <style>
+    body { font-family: "Atkinson Hyperlegible", system-ui, sans-serif; font-size: 22px; line-height: 1.5; background: #f7f4ec; color: #1d1d1b; margin: 0; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+    h1 { font-size: 34px; margin: 0 0 12px; }
+    ol { padding-left: 28px; }
+    li { margin: 0 0 18px; }
+    .botao { display: inline-block; background: #746e44; color: #fff; padding: 18px 30px; border-radius: 14px; font-weight: 700; font-size: 26px; text-decoration: none; border: 4px solid #d6b266; cursor: grab; }
+    .caixa { background: #fff; border: 3px solid #d6b266; border-radius: 14px; padding: 18px 22px; margin: 22px 0; }
+    small { font-size: 18px; color: #555; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Botão "Enviar ao Nexus"</h1>
+  <p>Leva as fotos do Gemini direto para a Biblioteca do Nexus. Sem baixar nada.</p>
+
+  <div class="caixa">
+    <p><strong>Instalar (só uma vez):</strong></p>
+    <ol>
+      <li>Deixe a barra de favoritos aparecendo: aperte <strong>Ctrl + Shift + B</strong>.</li>
+      <li><strong>Arraste</strong> este botão verde até a barra de favoritos:<br><br>
+        <a class="botao" id="favorito" href="#">Enviar ao Nexus</a></li>
+    </ol>
+  </div>
+
+  <div class="caixa">
+    <p><strong>Usar (toda campanha):</strong></p>
+    <ol>
+      <li>No Gemini, abra a conversa com as fotos da campanha.</li>
+      <li>Clique no favorito <strong>Enviar ao Nexus</strong>.</li>
+      <li>Abre a Biblioteca com as fotos. Escolha o <strong>cliente</strong> e clique em <strong>Enviar</strong>.</li>
+    </ol>
+    <small>Faça uma conversa nova no Gemini para cada campanha: o botão leva todas as fotos da conversa aberta. Fotos repetidas o Nexus joga fora sozinho.</small>
+  </div>
+</main>
+<script>
+// O código do favorito: roda na página do Gemini. Pega as fotos da conversa, deixa no tamanho certo
+// (post 1080x1350, story 1080x1920, sem esticar: corta o mínimo das bordas) e manda para a Biblioteca.
+(function () {
+  var NEXUS = location.origin;
+  var code = "(async()=>{const N=" + JSON.stringify(NEXUS) + ";"
+    + "const imgs=[...document.querySelectorAll('model-response img')].filter(i=>i.naturalWidth>300);"
+    + "if(!imgs.length){alert('Nenhuma foto nesta conversa do Gemini.');return}"
+    + "const w=window.open(N+'/biblioteca?gemini=1','nexusGemini');"
+    + "if(!w){alert('O Chrome bloqueou a janela. Permita pop-ups do Gemini e clique de novo.');return}"
+    + "const files=[];for(const [k,i] of imgs.entries()){const st=i.naturalHeight/i.naturalWidth>1.5,W=1080,H=st?1920:1350;"
+    + "const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.imageSmoothingQuality='high';"
+    + "const s=Math.max(W/i.naturalWidth,H/i.naturalHeight),dw=i.naturalWidth*s,dh=i.naturalHeight*s;g.drawImage(i,(W-dw)/2,(H-dh)/2,dw,dh);"
+    + "files.push({name:'gemini-'+String(k+1).padStart(2,'0')+(st?'-story':'-post')+'.jpg',blob:await new Promise(r=>c.toBlob(r,'image/jpeg',.93))})}"
+    + "const on=e=>{if(e.origin===N&&e.data&&e.data.type==='nexus-pronto'){w.postMessage({type:'nexus-fotos',files},N);removeEventListener('message',on)}};"
+    + "addEventListener('message',on)})()";
+  document.getElementById("favorito").href = "javascript:" + encodeURIComponent(code);
+  document.getElementById("favorito").addEventListener("click", function (e) { e.preventDefault(); alert("Não clique aqui: arraste o botão até a barra de favoritos."); });
+})();
+</script>
+</body>
+</html>

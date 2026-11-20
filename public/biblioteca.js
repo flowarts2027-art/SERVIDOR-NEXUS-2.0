@@ -293,6 +293,66 @@
     }
   });
 
+  // ---------- Fotos do Gemini pelo botão "Enviar ao Nexus" (Rodrigo, 20/11/2026) ----------
+  // O favorito roda na página do Gemini, abre esta página com ?gemini=1 e manda as fotos (já no tamanho certo).
+  // Aqui o Rodrigo escolhe o cliente, desmarca o que não quer e envia. Cada foto vira post ou story separado.
+  const GEMINI_ORIGIN = "https://gemini.google.com";
+  let geminiFiles = [];
+  function geminiCard() {
+    let card = $("#gemini-card");
+    if (!card) {
+      card = document.createElement("section");
+      card.id = "gemini-card";
+      card.className = "card";
+      $("main.wrap")?.prepend(card);
+    }
+    if (!geminiFiles.length) {
+      card.innerHTML = `<h2>Fotos do Gemini</h2><p class="muted" role="status">Esperando as fotos chegarem do Gemini…</p>`;
+      return;
+    }
+    const posts = geminiFiles.filter(f => !/story/.test(f.name)).length;
+    card.innerHTML = `
+      <h2>Chegaram ${geminiFiles.length} foto(s) do Gemini</h2>
+      <p>${posts} post(s) e ${geminiFiles.length - posts} story(s). Desmarque as que não quer. Depois escolha o cliente aqui embaixo e clique em <strong>Enviar</strong>.</p>
+      <div class="bib-grade">${geminiFiles.map((f, i) => `
+        <figure class="bib-item"><img src="${esc(f.url)}" alt="">
+          <figcaption><label><input type="checkbox" data-gemini="${i}" checked> ${/story/.test(f.name) ? "Story" : "Post"}</label></figcaption>
+        </figure>`).join("")}</div>
+      <button type="button" class="btn" id="gemini-enviar">Enviar para o cliente escolhido</button>
+      <p id="gemini-status" class="muted" role="status"></p>`;
+  }
+  if (MASTER && new URLSearchParams(location.search).get("gemini") === "1") {
+    document.addEventListener("DOMContentLoaded", () => {
+      geminiCard();
+      // Avisa o Gemini que está pronta até as fotos chegarem.
+      const ping = setInterval(() => { try { window.opener?.postMessage({ type: "nexus-pronto" }, GEMINI_ORIGIN); } catch { /* sem janela */ } }, 600);
+      window.addEventListener("message", ev => {
+        if (ev.origin !== GEMINI_ORIGIN || ev.data?.type !== "nexus-fotos" || !Array.isArray(ev.data.files)) return;
+        clearInterval(ping);
+        geminiFiles = ev.data.files.filter(f => f?.blob instanceof Blob && f.blob.size).slice(0, 30)
+          .map(f => ({ name: String(f.name || "gemini.jpg").slice(0, 60), blob: f.blob, url: URL.createObjectURL(f.blob) }));
+        geminiCard();
+      });
+    });
+    document.addEventListener("click", async ev => {
+      if (ev.target?.id !== "gemini-enviar") return;
+      const status = $("#gemini-status");
+      if (!clientId) { status.textContent = "Escolha o cliente na lista aqui embaixo."; return; }
+      const chosen = geminiFiles.filter((_, i) => document.querySelector(`[data-gemini="${i}"]`)?.checked);
+      if (!chosen.length) { status.textContent = "Marque pelo menos uma foto."; return; }
+      const form = new FormData();
+      form.set("origem", "gemini");
+      for (const f of chosen) form.append("images", new File([f.blob], f.name, { type: f.blob.type || "image/jpeg" }));
+      ev.target.disabled = true;
+      status.textContent = `Enviando ${chosen.length} foto(s) e programando… pode levar alguns minutos.`;
+      try {
+        const r = await call("/enviar", { method: "POST", body: form });
+        status.textContent = "Pronto: " + resumo(r);
+        render(r.items, resumo(r));
+      } catch (e) { status.textContent = e.message; ev.target.disabled = false; }
+    });
+  }
+
   if (MASTER) {
     document.addEventListener("DOMContentLoaded", async () => {
       try {

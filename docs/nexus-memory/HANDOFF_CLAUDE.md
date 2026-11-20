@@ -1427,3 +1427,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: `test/art-panel.test.mjs` (6); suíte inteira 1046 de 1046.
 - ATENÇÃO deploy: mexe em `cloudflare/**` e nos arquivos da moldura; o merge na `main` dispara `deploy-nexus-cloudflare.yml`.
 - Próximo passo: depois do merge, subir 1 foto do Gemini no painel da Daniela e conferir a arte antes de aprovar.
+
+## 20/11/2026 (tarde) — Botão "Enviar ao Nexus" (Gemini → Biblioteca) e correção da moldura da Daniela
+- Rodrigo cancelou o ChatGPT; as fotos agora vêm do Gemini (Gem "FOTOS NEXUS", conta compartilhada). Sem API por enquanto (não pode pagar este mês).
+- Teste de 20/11: das 16 fotos enviadas à Biblioteca da Daniela, as de post saíram SEM moldura: `artText` = "ja-tinha-texto" (a IA grátis disse que havia texto em foto limpa) e "sem-logo-erro". Os stories saíram com "moldura-da-cliente". E 5 posts viraram 1 carrossel (lote enviado junto).
+- Correção: `addToLibrary` marca fotos com `origem=gemini` como `clean` e `single`; `planLibrary` nunca junta `single` em carrossel; `organizeLibrary` manda `fotoLimpa=1`; `createClientUpload` pula a pergunta "já tem texto?" quando `fotoLimpa=1`.
+- Novo: `public/gemini.html` (página para arrastar o favorito "Enviar ao Nexus") e receptor em `public/biblioteca.js` (`/biblioteca?gemini=1`): o favorito pega as fotos da conversa do Gemini, deixa em 1080x1350 / 1080x1920 e manda por postMessage; o Rodrigo escolhe o cliente, desmarca o que não quer e envia.
+- Testes: 1047 de 1047.
+- ATENÇÃO deploy: mexe em `cloudflare/**` e `public/**`; o merge dispara o deploy.
+- Próximo passo: depois do merge, testar com 1 foto da Daniela; depois reenviar as fotos de 23–25/11 da Daniela pelo botão (os posts atuais estão sem moldura e esperando aprovação).
