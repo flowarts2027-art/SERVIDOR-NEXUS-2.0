@@ -210,6 +210,32 @@
       </section>`;
   }
 
+  // Envio em lotes de 5 (Rodrigo, 20/11/2026): o servidor não aguenta montar ~15 molduras num pedido só
+  // (em 27 fotos, metade saiu sem moldura). Cada lote vai num pedido, um depois do outro, e o resultado é somado.
+  const LOTE = 5;
+  async function enviarEmLotes(arquivos, extras, avisar) {
+    const total = { added: 0, duplicates: [], invalid: [], organized: { scheduled: [], duplicatesRemoved: 0, leftover: 0 } };
+    let ultimo = null;
+    for (let i = 0; i < arquivos.length; i += LOTE) {
+      const form = new FormData();
+      for (const [k, v] of Object.entries(extras || {})) form.set(k, v);
+      for (const f of arquivos.slice(i, i + LOTE)) form.append("images", f, f.name);
+      avisar(Math.min(i + LOTE, arquivos.length), arquivos.length);
+      const r = await call("/enviar", { method: "POST", body: form });
+      ultimo = r;
+      total.added += r.added || 0;
+      total.duplicates.push(...(r.duplicates || []));
+      total.invalid.push(...(r.invalid || []));
+      const o = r.organized || (r.scheduled ? r : null);
+      if (o) {
+        total.organized.scheduled.push(...(o.scheduled || []));
+        total.organized.duplicatesRemoved += o.duplicatesRemoved || 0;
+        total.organized.leftover = o.leftover || 0;
+      }
+    }
+    return { ...total, items: ultimo?.items || [] };
+  }
+
   function resumo(r) {
     const partes = [];
     if (r.added) partes.push(`${r.added} imagem(ns) nova(s)`);
@@ -236,7 +262,7 @@
     if (ev.target?.id === "bib-files") {
       const files = [...ev.target.files];
       if (!files.length) return;
-      const form = new FormData();
+      const prontos = [];
       let escritas = 0;
       const lista = files.slice(0, 30);
       try {
@@ -245,10 +271,11 @@
           $("#bib-status").textContent = `Conferindo os textos: imagem ${i + 1} de ${lista.length}…`;
           const r = await comTexto(f, base + i);
           if (r.escrito) escritas++;
-          form.append("images", r.file, r.file.name);
+          prontos.push(r.file);
         }
-        $("#bib-status").textContent = `Enviando ${lista.length} imagem(ns) e programando… pode levar alguns minutos.`;
-        const r = await call("/enviar", { method: "POST", body: form });
+        const r = await enviarEmLotes(prontos, {}, (feito, de) => {
+          $("#bib-status").textContent = `Enviando e programando: ${feito} de ${de} imagem(ns)…`;
+        });
         render(r.items, (escritas ? `${escritas} imagem(ns) sem texto: o Nexus escreveu o título e o botão · ` : "") + resumo(r));
       }
       catch (e) { $("#bib-status").textContent = e.message; }
@@ -341,15 +368,16 @@
       if (!clientId) { status.textContent = "Escolha o cliente na lista aqui embaixo."; return; }
       const chosen = geminiFiles.filter((_, i) => document.querySelector(`[data-gemini="${i}"]`)?.checked);
       if (!chosen.length) { status.textContent = "Marque pelo menos uma foto."; return; }
-      const form = new FormData();
-      form.set("origem", "gemini");
+      const extras = { origem: "gemini" };
       // Completar um período (Rodrigo, 20/11/2026): ?completar=AAAA-MM-DD enche até 2 posts e 2 stories por dia.
-      if (/^\d{4}-\d{2}-\d{2}$/.test(COMPLETAR)) form.set("completar", COMPLETAR);
-      for (const f of chosen) form.append("images", new File([f.blob], f.name, { type: f.blob.type || "image/jpeg" }));
+      if (/^\d{4}-\d{2}-\d{2}$/.test(COMPLETAR)) extras.completar = COMPLETAR;
+      const arquivos = chosen.map(f => new File([f.blob], f.name, { type: f.blob.type || "image/jpeg" }));
+      if (ev.target.disabled) return;
       ev.target.disabled = true;
-      status.textContent = `Enviando ${chosen.length} foto(s) e programando… pode levar alguns minutos.`;
       try {
-        const r = await call("/enviar", { method: "POST", body: form });
+        const r = await enviarEmLotes(arquivos, extras, (feito, de) => {
+          status.textContent = `Enviando e programando: ${feito} de ${de} foto(s)…`;
+        });
         status.textContent = "Pronto: " + resumo(r);
         render(r.items, resumo(r));
       } catch (e) { status.textContent = e.message; ev.target.disabled = false; }

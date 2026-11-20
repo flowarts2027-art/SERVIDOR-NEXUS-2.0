@@ -1445,3 +1445,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 1048/1048. Merge autorizado pelo Rodrigo nesta data.
 - Também: 10 imagens velhas (29/10) presas na Biblioteca da Flow Arts foram tiradas a pedido dele.
 - Próximo passo: conferir uma foto real subindo em outro cliente; atualizar o Gem FOTOS NEXUS com o tema de cada cliente.
+
+## 2026-11-20 (19h30) — Claude: Biblioteca envia em lotes de 5
+- Problema comprovado: em envios de 27 fotos (Adimax e Maskara), cerca de metade saiu sem moldura (`sem-moldura-erro`) e, na Maskara, 18 posts saíram repetidos (apagados à mão). As 23 artes sem moldura foram montadas no navegador e trocadas por `/biblioteca/trocar`.
+- Correção: `public/biblioteca.js` manda as fotos em lotes de 5 (um pedido por lote, em sequência), no envio do Gemini e no envio comum. Botão travado contra clique duplo. Também saíram: frases novas da Maskara (aquisição legal e transferência de titularidade) e nova tentativa da moldura (PR 663); Biblioteca `?completar=AAAA-MM-DD` (PR 662).
+- Gemini: habilidade "fotos-nexus" criada (cópia das regras do Gem FOTOS NEXUS); embalagens oficiais da Adimax anexadas ao Gem.
+- Próximo passo: conferir o próximo envio grande; levar para o servidor o encaixe da foto no story (hoje feito à mão).
