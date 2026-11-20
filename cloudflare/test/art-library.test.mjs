@@ -161,3 +161,20 @@ test("trocar imagem de post programado: grava com outro nome e troca o endereço
   env.db.exec("UPDATE post_ledger SET status='published'");
   await assert.rejects(() => replaceProgrammedImage(env, client, card2.id, new File([new Uint8Array([0xff, 0xd8, 2])], "t.jpg", { type: "image/jpeg" })), /library_already_published/);
 });
+
+// Completar um período (Rodrigo, 20/11/2026): até 2 posts e 2 stories por dia, mesmo em dia com post.
+test("fillSlots completa até 2 posts e 2 stories por dia sem usar horário ocupado", async () => {
+  const { fillSlots } = await import("../src/art-library.js");
+  const rows = [
+    { scheduled_for: "2026-11-21T12:00:00.000Z", fmt: "post" },
+    { scheduled_for: "2026-11-22T12:00:00.000Z", fmt: "post" },
+    { scheduled_for: "2026-11-22T15:00:00.000Z", fmt: "post" }
+  ];
+  const env = { DB: { prepare: () => ({ bind: () => ({ all: async () => ({ results: rows }) }) }) } };
+  const s = await fillSlots(env, "c", "2026-11-22", new Date("2026-11-20T18:00:00Z"));
+  const feed21 = s.feed.filter(x => x.day === "2026-11-21").map(x => x.time);
+  assert.deepEqual(feed21, ["12:00"]);
+  assert.equal(s.feed.filter(x => x.day === "2026-11-22").length, 0);
+  assert.deepEqual(s.story.filter(x => x.day === "2026-11-21").map(x => x.time), ["12:00", "19:00"]);
+  assert.equal(s.feed.some(x => x.day === "2026-11-23"), false);
+});

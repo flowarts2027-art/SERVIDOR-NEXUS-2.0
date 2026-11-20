@@ -8,6 +8,7 @@
   const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const MASTER = location.pathname.startsWith("/biblioteca");
   let clientId = new URLSearchParams(location.search).get("clientId") || "";
+  const COMPLETAR = new URLSearchParams(location.search).get("completar") || "";
   let loaded = false;
   const base = () => MASTER ? "/api/master/biblioteca" : "/api/portal/biblioteca";
   const q = path => base() + path + (MASTER ? (path.includes("?") ? "&" : "?") + "clientId=" + encodeURIComponent(clientId) : "");
@@ -342,6 +343,8 @@
       if (!chosen.length) { status.textContent = "Marque pelo menos uma foto."; return; }
       const form = new FormData();
       form.set("origem", "gemini");
+      // Completar um período (Rodrigo, 20/11/2026): ?completar=AAAA-MM-DD enche até 2 posts e 2 stories por dia.
+      if (/^\d{4}-\d{2}-\d{2}$/.test(COMPLETAR)) form.set("completar", COMPLETAR);
       for (const f of chosen) form.append("images", new File([f.blob], f.name, { type: f.blob.type || "image/jpeg" }));
       ev.target.disabled = true;
       status.textContent = `Enviando ${chosen.length} foto(s) e programando… pode levar alguns minutos.`;
