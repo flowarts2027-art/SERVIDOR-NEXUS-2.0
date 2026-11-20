@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import campanha_diaria as cd  # noqa: E402
+import moldura_daniela  # noqa: E402
 
 TEXTOS = os.path.join(cd.AQUI, "campanha", "textos_upload.json")
 CONTORNO = 4       # contorno escuro das letras: o texto fica por cima da foto, sem faixa de cor
@@ -117,6 +118,8 @@ def gerar(saida):
         for k in range(1, 6):
             numero(k, tema).save(os.path.join(pasta, f"num-{k}.png"), optimize=True)
         meta["clientes"][cliente] = info
+    # Daniela Martins (20/11/2026): moldura própria (painel verde-oliva), feita em moldura_daniela.py.
+    meta["clientes"][moldura_daniela.CLIENTE] = moldura_daniela.gerar(saida)
     json.dump(meta, open(os.path.join(saida, "molduras.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     return meta
 

@@ -8,7 +8,7 @@ import { brandClientId } from "./clients.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor, hasPanel, pickPanel, composePanel, isEyebrowPhoto, nextPanelCounter } from "./art-frame.js";
 import { ART_MESSAGES, artShape, assertArtFits, assertVideoFits, keepArt, readImageSize } from "./art-format.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
@@ -72,6 +72,8 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
   const canFrame = NEXUS_WRITES_TEXT_ON_ARRIVAL && Boolean(frames && hasFrames(frames, frameClientId));
+  // Moldura da Daniela (Rodrigo, 20/11/2026): foto sem texto ganha painel verde-oliva, textos e logo dela.
+  const canPanel = Boolean(frames && hasPanel(frames, frameClientId));
   // Logo do Master em toda arte que chega, com ou sem texto (Rodrigo, 18/11/2026). Sem logo no Master, vai como veio.
   const logoKey = options.skipLogo === true ? "" : await logoKeyOf(env, client);
   const textReport = [];
@@ -79,7 +81,24 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const putImage = async (file, name, size, numero = null) => {
     const key = base + name;
     let body = null;
-    if (canFrame) {
+    if (canPanel) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (await imageHasText(env, bytes)) {
+        textReport.push("ja-tinha-texto");
+      } else {
+        const story = size.height > 1500;
+        try {
+          const theme = (await isEyebrowPhoto(env, bytes)) ? "sobrancelha" : "depilacao";
+          const frame = pickPanel(frames, frameClientId, story, theme, await nextPanelCounter(env, frameClientId, story));
+          body = await composePanel(env, bytes, frame, { story, logoKey });
+          textReport.push("moldura-da-cliente");
+        } catch (error) {
+          console.error("upload_panel_failed", { clientId, error: String(error?.message || error) });
+          textReport.push("sem-moldura-erro");
+        }
+      }
+    }
+    if (!body && canFrame) {
       const bytes = new Uint8Array(await file.arrayBuffer());
       const real = readImageSize(bytes);
       if (artShape(real?.width, real?.height) === "square") {
