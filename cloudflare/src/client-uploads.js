@@ -8,7 +8,7 @@ import { brandClientId } from "./clients.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor, hasPanel, pickPanel, composePanel, isEyebrowPhoto, nextPanelCounter } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor, hasPanel, pickPanel, composePanel, panelThemeFor, nextPanelCounter } from "./art-frame.js";
 import { ART_MESSAGES, artShape, assertArtFits, assertVideoFits, keepArt, readImageSize } from "./art-format.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
@@ -72,7 +72,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
   const frames = alreadyText ? null : await loadFrames(env).catch(() => null);
   const frameClientId = brandClientId(client);
   const canFrame = NEXUS_WRITES_TEXT_ON_ARRIVAL && Boolean(frames && hasFrames(frames, frameClientId));
-  // Moldura da Daniela (Rodrigo, 20/11/2026): foto sem texto ganha painel verde-oliva, textos e logo dela.
+  // Moldura de painel (Rodrigo, 20/11/2026): foto sem texto ganha o painel do cliente, textos e logo dele.
   const canPanel = Boolean(frames && hasPanel(frames, frameClientId));
   // Foto limpa garantida (Gemini pelo botão "Enviar ao Nexus"): não pergunta à IA se tem texto.
   const cleanPhoto = String(form.get("fotoLimpa") || "") === "1";
@@ -90,7 +90,7 @@ export async function createClientUpload(env, client, form, now = new Date(), op
       } else {
         const story = size.height > 1500;
         try {
-          const theme = (await isEyebrowPhoto(env, bytes)) ? "sobrancelha" : "depilacao";
+          const theme = await panelThemeFor(env, frameClientId, bytes);
           const frame = pickPanel(frames, frameClientId, story, theme, await nextPanelCounter(env, frameClientId, story));
           body = await composePanel(env, bytes, frame, { story, logoKey });
           textReport.push("moldura-da-cliente");

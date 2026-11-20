@@ -1,0 +1,704 @@
+{
+  "_obs": "Moldura de painel de cada cliente (pedido do Rodrigo, 20/11/2026): toda foto SEM texto que sobe no painel ganha o painel na cor do cliente, estes textos e a logo do Master. Daniela Martins tem arquivo próprio (textos_daniela.json). Luciana Carvalho, Sabor do Campo, Café Brisa e Meta Review ficam de fora até ter briefing. Mudou aqui: o deploy refaz as molduras sozinho. Nunca prometer resultado garantido.",
+  "primeiro-teste": {
+    "cores": {
+      "painel": "#0d1b2a",
+      "destaque": "#2f9bff"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Seu Instagram",
+          "postando sozinho"
+        ],
+        "topicos": [
+          "Posts e stories todo dia",
+          "Legenda pronta e no horário certo",
+          "Você só aprova pelo celular"
+        ],
+        "caixa": "Automatize seu Instagram com a Flow Arts",
+        "frase": "Você cuida do negócio."
+      },
+      {
+        "titulo": [
+          "Sem tempo",
+          "para postar?"
+        ],
+        "topicos": [
+          "A Flow Arts posta por você",
+          "Nada de perfil parado",
+          "Mais presença, menos trabalho"
+        ],
+        "caixa": "Conheça o Postador Automático",
+        "frase": "Seu perfil sempre ativo."
+      },
+      {
+        "titulo": [
+          "Resposta automática",
+          "no Direct"
+        ],
+        "topicos": [
+          "Quem comenta recebe mensagem",
+          "Atende até de madrugada",
+          "Leva o cliente ao seu WhatsApp"
+        ],
+        "caixa": "Ative o atendimento automático",
+        "frase": "Nenhum cliente fica sem resposta."
+      },
+      {
+        "titulo": [
+          "App de agendar",
+          "não cria post"
+        ],
+        "topicos": [
+          "Aqui o conteúdo vem pronto",
+          "Imagem, legenda e horário",
+          "Tudo feito para o seu nicho"
+        ],
+        "caixa": "Fale com a Flow Arts hoje",
+        "frase": "Conteúdo pronto todo dia."
+      },
+      {
+        "titulo": [
+          "Constância que",
+          "traz clientes"
+        ],
+        "topicos": [
+          "Quem posta todo dia é lembrado",
+          "Perfil bonito passa confiança",
+          "Mais chances de vender"
+        ],
+        "caixa": "Comece agora com a Flow Arts",
+        "frase": "Sua marca vista todos os dias."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Seu Instagram",
+          "postando sozinho"
+        ],
+        "topicos": [
+          "Posts e stories todo dia",
+          "Você só aprova pelo celular"
+        ],
+        "caixa": "Automatize com a Flow Arts"
+      },
+      {
+        "titulo": [
+          "Sem tempo",
+          "para postar?"
+        ],
+        "topicos": [
+          "A Flow Arts posta por você",
+          "Nada de perfil parado"
+        ],
+        "caixa": "Conheça o Postador Automático"
+      },
+      {
+        "titulo": [
+          "Resposta automática",
+          "no Direct"
+        ],
+        "topicos": [
+          "Atende até de madrugada",
+          "Leva o cliente ao seu WhatsApp"
+        ],
+        "caixa": "Ative o atendimento automático"
+      }
+    ]
+  },
+  "nexus-ai": {
+    "cores": {
+      "painel": "#031438",
+      "destaque": "#02c7fc"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Seu Instagram",
+          "no piloto automático"
+        ],
+        "topicos": [
+          "Posts e stories todo dia",
+          "Legenda e horário certos",
+          "Você só aprova"
+        ],
+        "caixa": "Conheça o Nexus AI",
+        "frase": "Automação que trabalha por você."
+      },
+      {
+        "titulo": [
+          "Perfil parado",
+          "não vende"
+        ],
+        "topicos": [
+          "O Nexus posta por você",
+          "Conteúdo feito para o seu nicho",
+          "Presença todos os dias"
+        ],
+        "caixa": "Ative o Nexus no seu perfil",
+        "frase": "Seu perfil sempre vivo."
+      },
+      {
+        "titulo": [
+          "Responde no Direct",
+          "sozinho"
+        ],
+        "topicos": [
+          "Quem comenta recebe mensagem",
+          "Atendimento a qualquer hora",
+          "Contato direto no WhatsApp"
+        ],
+        "caixa": "Automatize seu atendimento",
+        "frase": "Nenhum cliente esquecido."
+      },
+      {
+        "titulo": [
+          "Mais tempo",
+          "para o seu negócio"
+        ],
+        "topicos": [
+          "Nada de pensar no que postar",
+          "Tudo pronto no painel",
+          "Aprovação em um toque"
+        ],
+        "caixa": "Comece hoje com o Nexus AI",
+        "frase": "Menos trabalho, mais resultado."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Seu Instagram",
+          "no automático"
+        ],
+        "topicos": [
+          "Posts e stories todo dia",
+          "Você só aprova"
+        ],
+        "caixa": "Conheça o Nexus AI"
+      },
+      {
+        "titulo": [
+          "Responde no Direct",
+          "sozinho"
+        ],
+        "topicos": [
+          "Atendimento a qualquer hora",
+          "Contato direto no WhatsApp"
+        ],
+        "caixa": "Automatize seu atendimento"
+      }
+    ]
+  },
+  "maskara-assessoria": {
+    "cores": {
+      "painel": "#141414",
+      "destaque": "#c9a227"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Seu registro",
+          "sem dor de cabeça"
+        ],
+        "topicos": [
+          "Assessoria do início ao fim",
+          "Documentação em dia",
+          "Processo dentro da lei"
+        ],
+        "caixa": "Fale com a Maskara Assessoria",
+        "frase": "Segurança e legalidade."
+      },
+      {
+        "titulo": [
+          "Quer ser CAC?",
+          "A gente orienta"
+        ],
+        "topicos": [
+          "Explicamos cada etapa",
+          "Cuidamos da papelada",
+          "Acompanhamos seu processo"
+        ],
+        "caixa": "Comece com a Maskara Assessoria",
+        "frase": "Do jeito certo, desde o começo."
+      },
+      {
+        "titulo": [
+          "Posse e porte",
+          "com segurança"
+        ],
+        "topicos": [
+          "Orientação sobre as exigências",
+          "Ajuda com laudos e cursos",
+          "Atendimento personalizado"
+        ],
+        "caixa": "Tire suas dúvidas com a Maskara",
+        "frase": "Tudo dentro da lei."
+      },
+      {
+        "titulo": [
+          "Documento vencido?",
+          "A gente renova"
+        ],
+        "topicos": [
+          "Renovação de registros",
+          "Prazos acompanhados de perto",
+          "Menos burocracia para você"
+        ],
+        "caixa": "Regularize com a Maskara",
+        "frase": "Seus documentos em dia."
+      },
+      {
+        "titulo": [
+          "Burocracia",
+          "é com a gente"
+        ],
+        "topicos": [
+          "Você não perde tempo em fila",
+          "Processos organizados",
+          "Equipe experiente"
+        ],
+        "caixa": "Conte com a Maskara Assessoria",
+        "frase": "Praticidade e confiança."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Seu registro",
+          "sem dor de cabeça"
+        ],
+        "topicos": [
+          "Assessoria do início ao fim",
+          "Processo dentro da lei"
+        ],
+        "caixa": "Fale com a Maskara"
+      },
+      {
+        "titulo": [
+          "Quer ser CAC?",
+          "A gente orienta"
+        ],
+        "topicos": [
+          "Explicamos cada etapa",
+          "Cuidamos da papelada"
+        ],
+        "caixa": "Comece com a Maskara"
+      },
+      {
+        "titulo": [
+          "Documento vencido?",
+          "A gente renova"
+        ],
+        "topicos": [
+          "Prazos acompanhados",
+          "Menos burocracia"
+        ],
+        "caixa": "Regularize com a Maskara"
+      }
+    ]
+  },
+  "quatree-dog": {
+    "cores": {
+      "painel": "#b85f00",
+      "destaque": "#ffd27a",
+      "faixa": "#4a2608"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Nutrição completa",
+          "para o seu pet"
+        ],
+        "topicos": [
+          "Ingredientes selecionados",
+          "Linhas para cães e gatos",
+          "Para cada fase da vida"
+        ],
+        "caixa": "Peça sua Quatree com o Ericsson",
+        "frase": "Seu pet merece o melhor."
+      },
+      {
+        "titulo": [
+          "Pelo bonito",
+          "e saúde em dia"
+        ],
+        "topicos": [
+          "Ração com nutrientes de qualidade",
+          "Mais energia no dia a dia",
+          "Sabor que o pet adora"
+        ],
+        "caixa": "Garanta a Quatree do seu pet",
+        "frase": "Cuidado em cada tigela."
+      },
+      {
+        "titulo": [
+          "Tem pet shop",
+          "ou agropecuária?"
+        ],
+        "topicos": [
+          "Revenda a linha Quatree",
+          "Marca que gira no estoque",
+          "Atendimento do vendedor"
+        ],
+        "caixa": "Seja revendedor Quatree",
+        "frase": "Produto que o cliente procura."
+      },
+      {
+        "titulo": [
+          "Cães e gatos",
+          "bem alimentados"
+        ],
+        "topicos": [
+          "Filhotes, adultos e sêniores",
+          "Opções para cada porte",
+          "Qualidade que você confia"
+        ],
+        "caixa": "Fale com o vendedor Quatree",
+        "frase": "Alimento de verdade."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Nutrição completa",
+          "para o seu pet"
+        ],
+        "topicos": [
+          "Linhas para cães e gatos",
+          "Para cada fase da vida"
+        ],
+        "caixa": "Peça sua Quatree"
+      },
+      {
+        "titulo": [
+          "Tem pet shop?",
+          "Revenda Quatree"
+        ],
+        "topicos": [
+          "Marca que gira no estoque",
+          "Atendimento do vendedor"
+        ],
+        "caixa": "Seja revendedor Quatree"
+      }
+    ]
+  },
+  "adimax-eduardo-soares": {
+    "cores": {
+      "painel": "#5e4106",
+      "destaque": "#fca301"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Ração Adimax",
+          "para o seu pet"
+        ],
+        "topicos": [
+          "Linhas para cães e gatos",
+          "Nutrição para cada fase",
+          "Marca que o tutor conhece"
+        ],
+        "caixa": "Peça com o Eduardo Soares",
+        "frase": "Qualidade em cada grão."
+      },
+      {
+        "titulo": [
+          "Sua loja com",
+          "Adimax no estoque"
+        ],
+        "topicos": [
+          "Marca de alta procura",
+          "Linhas para todo bolso",
+          "Atendimento do representante"
+        ],
+        "caixa": "Fale com o Eduardo e revenda",
+        "frase": "Produto que vende."
+      },
+      {
+        "titulo": [
+          "Pet saudável",
+          "e feliz"
+        ],
+        "topicos": [
+          "Alimento completo e balanceado",
+          "Sabor que o pet aprova",
+          "Mais disposição no dia a dia"
+        ],
+        "caixa": "Garanta a Adimax do seu pet",
+        "frase": "Cuidado que aparece."
+      },
+      {
+        "titulo": [
+          "Pet shop ou",
+          "agropecuária?"
+        ],
+        "topicos": [
+          "Catálogo Adimax completo",
+          "Pedido fácil pelo WhatsApp",
+          "Entrega para revenda"
+        ],
+        "caixa": "Peça seu catálogo ao Eduardo",
+        "frase": "Parceria que dá resultado."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Ração Adimax",
+          "para o seu pet"
+        ],
+        "topicos": [
+          "Linhas para cães e gatos",
+          "Nutrição para cada fase"
+        ],
+        "caixa": "Peça com o Eduardo"
+      },
+      {
+        "titulo": [
+          "Revenda",
+          "Adimax"
+        ],
+        "topicos": [
+          "Marca de alta procura",
+          "Pedido fácil pelo WhatsApp"
+        ],
+        "caixa": "Fale com o Eduardo"
+      }
+    ]
+  },
+  "giltec": {
+    "cores": {
+      "painel": "#1c283a",
+      "destaque": "#ffc20e"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Equipamento certo",
+          "para a sua obra"
+        ],
+        "topicos": [
+          "Compactador, betoneira e mais",
+          "Máquinas revisadas",
+          "Entrega no canteiro"
+        ],
+        "caixa": "Peça seu orçamento à GILTEC",
+        "frase": "Sua obra não pode parar."
+      },
+      {
+        "titulo": [
+          "Alugue em vez",
+          "de comprar"
+        ],
+        "topicos": [
+          "Sem gasto com manutenção",
+          "Pague só pelo tempo de uso",
+          "Equipamento sempre em dia"
+        ],
+        "caixa": "Fale com a GILTEC Locações",
+        "frase": "Economia para a sua obra."
+      },
+      {
+        "titulo": [
+          "Obra rápida",
+          "e segura"
+        ],
+        "topicos": [
+          "Marcas como Buffalo e Toyama",
+          "Equipamentos para cada etapa",
+          "Suporte da nossa equipe"
+        ],
+        "caixa": "Solicite seu orçamento hoje",
+        "frase": "Mais produtividade no canteiro."
+      },
+      {
+        "titulo": [
+          "Construtora ou",
+          "empreiteira?"
+        ],
+        "topicos": [
+          "Locação para várias frentes",
+          "Atendimento em todo o RJ",
+          "Orçamento pelo WhatsApp"
+        ],
+        "caixa": "Chame a GILTEC Locações",
+        "frase": "Parceira da sua obra."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Equipamento certo",
+          "para a sua obra"
+        ],
+        "topicos": [
+          "Máquinas revisadas",
+          "Entrega no canteiro"
+        ],
+        "caixa": "Peça seu orçamento"
+      },
+      {
+        "titulo": [
+          "Alugue em vez",
+          "de comprar"
+        ],
+        "topicos": [
+          "Sem gasto com manutenção",
+          "Pague só pelo uso"
+        ],
+        "caixa": "Fale com a GILTEC"
+      }
+    ]
+  },
+  "grafica-flash-color": {
+    "cores": {
+      "painel": "#14213d",
+      "destaque": "#fca311"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Impressos que",
+          "chamam atenção"
+        ],
+        "topicos": [
+          "Cartões, panfletos e banners",
+          "Cores vivas e bem definidas",
+          "Acabamento caprichado"
+        ],
+        "caixa": "Faça seu orçamento na Flash Color",
+        "frase": "Sua marca bem impressa."
+      },
+      {
+        "titulo": [
+          "Precisa com",
+          "urgência?"
+        ],
+        "topicos": [
+          "Produção rápida",
+          "Arquivo conferido antes",
+          "Prazo combinado e cumprido"
+        ],
+        "caixa": "Fale com a Gráfica Flash Color",
+        "frase": "Qualidade no seu prazo."
+      },
+      {
+        "titulo": [
+          "Sua empresa",
+          "bem apresentada"
+        ],
+        "topicos": [
+          "Material para divulgar",
+          "Adesivos, rótulos e etiquetas",
+          "Ajuda para montar a arte"
+        ],
+        "caixa": "Peça seu orçamento hoje",
+        "frase": "Primeira impressão conta."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Impressos que",
+          "chamam atenção"
+        ],
+        "topicos": [
+          "Cartões, panfletos e banners",
+          "Acabamento caprichado"
+        ],
+        "caixa": "Orçamento na Flash Color"
+      },
+      {
+        "titulo": [
+          "Precisa com",
+          "urgência?"
+        ],
+        "topicos": [
+          "Produção rápida",
+          "Prazo cumprido"
+        ],
+        "caixa": "Fale com a Flash Color"
+      }
+    ]
+  },
+  "trevo-cosmeticos": {
+    "cores": {
+      "painel": "#1f4d2b",
+      "destaque": "#d4af37"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Cuidado que",
+          "você sente"
+        ],
+        "topicos": [
+          "Produtos para pele e cabelo",
+          "Fórmulas pensadas para você",
+          "Rotina de beleza mais leve"
+        ],
+        "caixa": "Conheça a Trevo Cosméticos",
+        "frase": "Beleza com carinho."
+      },
+      {
+        "titulo": [
+          "Seu momento",
+          "de autocuidado"
+        ],
+        "topicos": [
+          "Perfumes e cremes para o dia a dia",
+          "Opções para presentear",
+          "Atendimento atencioso"
+        ],
+        "caixa": "Peça pelo WhatsApp da Trevo",
+        "frase": "Você merece se cuidar."
+      },
+      {
+        "titulo": [
+          "Presente",
+          "que encanta"
+        ],
+        "topicos": [
+          "Kits prontos para presentear",
+          "Embalagens caprichadas",
+          "Para todos os estilos"
+        ],
+        "caixa": "Escolha seu kit na Trevo",
+        "frase": "Carinho em cada detalhe."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Cuidado que",
+          "você sente"
+        ],
+        "topicos": [
+          "Produtos para pele e cabelo",
+          "Rotina mais leve"
+        ],
+        "caixa": "Conheça a Trevo"
+      },
+      {
+        "titulo": [
+          "Presente",
+          "que encanta"
+        ],
+        "topicos": [
+          "Kits prontos",
+          "Para todos os estilos"
+        ],
+        "caixa": "Escolha seu kit"
+      }
+    ]
+  },
+  "giltec-neto": {
+    "igual": "giltec"
+  },
+  "giltec-locacoes": {
+    "igual": "giltec"
+  }
+}
