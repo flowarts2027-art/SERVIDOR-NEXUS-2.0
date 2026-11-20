@@ -197,6 +197,46 @@ export async function freeSlots(env, clientId, now = new Date(), days = 14, ownI
   return { feed, story };
 }
 
+// COMPLETAR UM PERÍODO (Rodrigo, 20/11/2026: "completar o que falta para fechar o mês"). Exceção pedida à regra
+// de 28/10: enche os dias de hoje até `until` até o plano de 2 posts + 2 stories por dia, mesmo em dia que já
+// tem postagem. Nunca usa um horário já ocupado.
+export const FILL_PER_DAY = Object.freeze({ feed: 2, story: 2 });
+export async function fillSlots(env, clientId, until, now = new Date()) {
+  const start = brasiliaDay(now);
+  const rows = await env.DB.prepare(
+    `SELECT scheduled_for, COALESCE(json_extract(payload_json,'$.creativeFeatures.requestedFormat'),'post') AS fmt
+     FROM post_ledger WHERE client_id=?1 AND scheduled_for>=?2
+     AND COALESCE(approval_status,'')<>'rejected' AND COALESCE(status,'') NOT LIKE 'cancel%'`
+  ).bind(String(clientId), new Date(`${start}T00:00:00-03:00`).toISOString()).all().catch(() => ({ results: [] }));
+  const takenAt = { feed: new Set(), story: new Set() };
+  const perDay = { feed: {}, story: {} };
+  for (const r of rows?.results || []) {
+    const when = new Date(r.scheduled_for);
+    if (Number.isNaN(when.getTime())) continue;
+    const kind = String(r.fmt) === "story" ? "story" : "feed";
+    takenAt[kind].add(when.toISOString());
+    const day = brasiliaDay(when);
+    perDay[kind][day] = (perDay[kind][day] || 0) + 1;
+  }
+  const out = { feed: [], story: [] };
+  for (let d = 0; d < 62; d++) {
+    const day = addDays(start, d);
+    if (day > until) break;
+    for (const kind of ["feed", "story"]) {
+      let count = perDay[kind][day] || 0;
+      for (const time of SLOT_TIMES) {
+        if (count >= FILL_PER_DAY[kind]) break;
+        const iso = new Date(`${day}T${time}:00-03:00`).toISOString();
+        if (Date.parse(iso) < now.getTime() + 15 * 60000) continue;
+        if (takenAt.feed.has(iso) || takenAt.story.has(iso)) continue;
+        out[kind].push({ day, time, iso });
+        count++;
+      }
+    }
+  }
+  return out;
+}
+
 // ---------- 3. plano: o que vai em cada horário ----------
 // Stories: imagens verticais, na ordem em que chegaram. Feed: no horário das 09h, se o lote tiver
 // 2 ou mais imagens livres, vira carrossel (até 5); nos outros horários, post de uma imagem.
@@ -273,7 +313,8 @@ export async function organizeLibrary(env, client, now = new Date(), options = {
   // Posts já programados pela Biblioteca ocupam o dia como qualquer outro (20/11/2026: sem isso, o plano escolhia
   // um dia ocupado e o envio falhava com slot_taken, deixando a foto livre).
   const ownIds = new Set(items.filter(i => i.status !== "programado").map(i => String(i.postId || "")).filter(Boolean));
-  const slots = await freeSlots(env, client.id, now, Number(options.days) || 14, ownIds);
+  const until = /^\d{4}-\d{2}-\d{2}$/.test(String(options.fillUntil || "")) ? String(options.fillUntil) : "";
+  const slots = until ? await fillSlots(env, client.id, until, now) : await freeSlots(env, client.id, now, Number(options.days) || 14, ownIds);
   const plan = planLibrary(items, slots);
   const upload = options.upload || masterUpload;
   const caption = options.caption || writeCaption;
@@ -407,7 +448,7 @@ export async function handleLibrary(request, env, url, client, base) {
       if (!form) throw new Error("library_empty");
       const added = await addToLibrary(env, client, form);
       // Já organiza na hora: o cliente vê os posts programados no painel.
-      const organized = added.added ? await organizeLibrary(env, client) : null;
+      const organized = added.added ? await organizeLibrary(env, client, new Date(), { fillUntil: String(form.get("completar") || "") }) : null;
       return send({ ok: true, ...added, organized, items: organized?.items || added.items });
     }
     // Imagem que chegou com as faixas vazias: diz o assunto e devolve o texto revisado (art-text.js).
