@@ -528,9 +528,9 @@
           const result = await api('/api/leads','GET',undefined,signal);
           if (epoch !== token) return;
           leads = result.leads.slice().sort((a,b) => stamp(b.last_at) - stamp(a.last_at));
+          { const end = new Date(); end.setHours(23,59,59,999); setTaskBadge(leads.filter(l => l.next_task && new Date(l.next_task) <= end).length); }
           if (view === 'funil') renderBoard();
           else if (view === 'followup') renderFollowup();
-          if (view !== 'followup') { const end = new Date(); end.setHours(23,59,59,999); setTaskBadge(leads.filter(l => l.next_task && new Date(l.next_task) <= end).length); }
           else {
             let lead = currentLead();
             if (selected && !lead) { selectLead('', false); lead = null; }
