@@ -48,3 +48,20 @@ test("robô (campo escondido) não grava nada", async () => {
   assert.equal((await res.json()).ok, true);
   assert.ok(!env.calls.some(c => /INSERT INTO leads/.test(c.sql)));
 });
+
+test("brinde: sem nome do negócio, vira contato morno e devolve o PDF", async () => {
+  const gift = { nome: "Bia", whatsapp: "21 97777-6666", segmento: "Loja ou comércio", consentimento: true, oferta: "brinde" };
+  assert.equal(validateLandingLead(gift).offer, "brinde");
+  assert.equal(validateLandingLead({ ...gift, oferta: undefined }).error, "negocio");
+  const env = fakeEnv();
+  const req = new Request("https://x.test/api/public/lead", { method: "POST", headers: { "content-type": "application/json", "cf-connecting-ip": "1.2.3.5" }, body: JSON.stringify(gift) });
+  const data = await (await handleLandingLead(req, env, new Date("2026-11-21T12:00:00Z"))).json();
+  assert.equal(data.ok, true);
+  assert.equal(data.download, "/downloads/30-legendas-flowarts.pdf");
+  assert.match(data.whatsapp, /wa\.me\/5521964816185/);
+  const insert = env.calls.find(c => /INSERT INTO leads/.test(c.sql));
+  assert.equal(insert.args[0], "primeiro-teste:brinde:5521977776666");
+  assert.equal(insert.args[4], "warm");
+  assert.match(insert.args[7], /brinde/);
+  assert.equal(insert.args[12], "/brinde");
+});

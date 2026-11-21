@@ -201,7 +201,8 @@ def bloco_texto(img, d, c, x0, x1, y, story):
         d.text((centro, y), c["frase"], font=ff, fill=BRANCO, anchor="mt")
         y += int(ff.size * 1.15)
     y += 30
-    return botao(d, centro, y, min(larg, 560 if story else 470), "MANDE QUERO NO DIRECT" if story else "COMENTE QUERO", 36 if story else 33)
+    padrao = "MANDE QUERO NO DIRECT" if story else "COMENTE QUERO"
+    return botao(d, centro, y, min(larg, 560 if story else 470), c.get("botao") or padrao, 36 if story else 33)  # "botao" no texto troca a chamada (ex.: brinde da Flow Arts)
 
 
 def centralizar(img, c, x0, x1, topo, base, story):
