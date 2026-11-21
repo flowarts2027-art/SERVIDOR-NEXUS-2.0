@@ -1,0 +1,68 @@
+name: Deploy NEXUS CRM
+
+# CRM de cobrança (Worker separado "nexus-crm", banco D1 "nexus_crm").
+# Roda só em push na branch crm-deploy, para não mexer no deploy do Nexus.
+on:
+  push:
+    branches: [crm-deploy]
+    paths:
+      - "nexus-crm/**"
+      - ".github/workflows/deploy-nexus-crm.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-nexus-crm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: nexus-crm
+    env:
+      CLOUDFLARE_ACCOUNT_ID: d9ecb78dbc0c1b0b61f8caae501f59df
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Achar ou criar o banco D1 nexus_crm
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/d1/database"
+          id="$(curl -fsS -H "Authorization: Bearer $CF_TOKEN" "$api?name=nexus_crm" | python3 -c 'import json,sys; r=[d for d in json.load(sys.stdin)["result"] if d["name"]=="nexus_crm"]; print(r[0]["uuid"] if r else "")')"
+          if [ -z "$id" ]; then
+            id="$(curl -fsS -X POST -H "Authorization: Bearer $CF_TOKEN" -H 'Content-Type: application/json' -d '{"name":"nexus_crm"}' "$api" | python3 -c 'import json,sys; print(json.load(sys.stdin)["result"]["uuid"])')"
+            echo "::notice::Banco nexus_crm criado"
+          else
+            echo "::notice::Banco nexus_crm já existia"
+          fi
+          sed -i "s/COLE_AQUI_O_ID_DO_BANCO/$id/" wrangler.toml
+          grep -q "$id" wrangler.toml
+
+      - name: Criar as tabelas (pode repetir sem apagar nada)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --yes wrangler@4 d1 execute nexus_crm --remote --file=schema.sql --yes
+
+      - name: Publicar o Worker nexus-crm
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --yes wrangler@4 deploy
+
+      - name: Conferir se está no ar
+        run: |
+          for i in 1 2 3 4 5 6; do
+            code="$(curl -s -o /dev/null -w '%{http_code}' https://nexus-crm.diamantehinode2015.workers.dev/ || true)"
+            echo "tentativa $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          exit 1
