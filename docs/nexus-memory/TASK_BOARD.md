@@ -1,3 +1,7 @@
+## 2026-11-21 17:02 BRT — Banner do Dia
+
+Branch `feat/banner-do-dia` preparada para revisão. Painel independente com filmes, séries, futebol e esportes. Testes locais e pendências operacionais no HANDOFF_CHATGPT. Próximo passo: revisão e homologação com conta habilitada.
+
 # Quadro compartilhado de tarefas — Flow Arts / Nexus
 
 ## 2026-11-14 — SITE-NOVO-001: site novo na home de flowarts.com.br (Claude)
