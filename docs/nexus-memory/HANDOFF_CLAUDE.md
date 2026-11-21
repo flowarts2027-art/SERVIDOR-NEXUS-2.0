@@ -1451,3 +1451,13 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Correção: `public/biblioteca.js` manda as fotos em lotes de 5 (um pedido por lote, em sequência), no envio do Gemini e no envio comum. Botão travado contra clique duplo. Também saíram: frases novas da Maskara (aquisição legal e transferência de titularidade) e nova tentativa da moldura (PR 663); Biblioteca `?completar=AAAA-MM-DD` (PR 662).
 - Gemini: habilidade "fotos-nexus" criada (cópia das regras do Gem FOTOS NEXUS); embalagens oficiais da Adimax anexadas ao Gem.
 - Próximo passo: conferir o próximo envio grande; levar para o servidor o encaixe da foto no story (hoje feito à mão).
+
+## 21/11/2026 — Claude: brinde "30 legendas prontas" (link da bio) + campanha da Flow Arts
+- Contexto: auditoria do alcance. Flow Arts (25 seguidores) e Nexus AI quase sem alcance; Daniela Martins alcança 2 a 4% dos seguidores (normal). Rodrigo decidiu focar num brinde grátis no link da bio. O "Comente BRINDE" no direct fica para depois do app Live (hoje só testadores recebem o direct).
+- Feito no Instagram (com OK dele): bio do @nexusai_system trocada (era de IPTV); nome "Nexus AI | Automação de Instagram" salvo na Central de Contas. O link (globalplay.fun) só muda pelo celular.
+- Novo: `public/brinde.html` (flowarts.com.br/brinde): nome + WhatsApp + tipo de negócio → baixa `public/downloads/30-legendas-flowarts.pdf` na hora e mostra o botão do teste grátis no WhatsApp.
+- `cloudflare/src/landing.js`: `/api/public/lead` aceita `oferta: "brinde"` (sem nome do negócio); vira contato MORNO no CRM da Flow Arts (`primeiro-teste:brinde:<whats>`, source_url `/brinde`, próxima ação em 24 h). `site-analytics.js` passa a contar visitas de `/brinde` (links pessoais `/brinde/...` continuam fora).
+- PDF: fonte em `scripts/social/brinde/30-legendas.html`, gerar com `python3 scripts/social/brinde/gerar_pdf.py`.
+- Campanha (7 dias, 24 a 30/11, 12h): artes em `public/img/campanha-brinde/` (gerador `scripts/social/brinde/campanha/gerar_artes.py`), canto de cima à direita livre para a logo do Master. Enviadas ao painel da Flow Arts esperando aprovação.
+- Testes: 1051/1051. ATENÇÃO: mexe em `cloudflare/**` e `public/**`; o merge dispara o deploy.
+- Próximo passo: Rodrigo trocar o link da bio do @flowarts2026 para flowarts.com.br/brinde (só pelo celular) e aprovar a campanha; depois fazer o mesmo no Nexus AI.

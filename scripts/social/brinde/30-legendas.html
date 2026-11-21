@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>30 legendas prontas para o Instagram do seu negócio · Flow Arts</title>
+<!-- Brinde da Flow Arts (21/11/2026). Para gerar o PDF: python3 scripts/social/brinde/gerar_pdf.py -->
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/InterDisplay-Medium.otf"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/InterDisplay-Bold.otf"); font-weight: 700; }
+@font-face { font-family: "Inter"; src: url("../fonts/InterDisplay-ExtraBold.otf"); font-weight: 800; }
+@page { size: A4; margin: 0; }
+:root { --navy: #0F1E3D; --navy2: #1A2D55; --blue: #2B63F0; --soft: #E6EDFF; --ink: #16233F; --muted: #5B6680; --line: #D5DCE8; --gold: #FFC83D; --whats: #128C4B; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: "Inter", sans-serif; font-weight: 500; color: var(--ink); font-size: 12pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; padding: 16mm 18mm 16mm; position: relative; overflow: hidden; page-break-after: always; }
+.page:last-child { page-break-after: auto; }
+.foot { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; display: flex; justify-content: space-between; color: var(--muted); font-size: 9pt; border-top: 1px solid var(--line); padding-top: 3mm; }
+
+/* Capa */
+.cover { background: var(--navy); color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+.cover::after { content: ""; position: absolute; right: -60mm; top: -40mm; width: 170mm; height: 170mm; border-radius: 50%; background: radial-gradient(circle, rgba(43,99,240,.55), rgba(43,99,240,0) 70%); }
+.cover .brand { display: flex; align-items: center; gap: 4mm; font-weight: 800; font-size: 14pt; position: relative; z-index: 1; }
+.cover .brand img { width: 13mm; height: 13mm; border-radius: 3mm; }
+.tag { display: inline-block; background: var(--gold); color: var(--navy); font-weight: 800; border-radius: 99px; padding: 2mm 5mm; font-size: 12pt; }
+.cover h1 { font-size: 46pt; line-height: 1.02; margin: 6mm 0 0; font-weight: 800; letter-spacing: -.01em; position: relative; z-index: 1; }
+.cover h1 em { font-style: normal; color: #8FB0FF; }
+.cover .sub { font-size: 15pt; color: #D3DCF2; max-width: 150mm; margin-top: 7mm; position: relative; z-index: 1; }
+.cover ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 3.5mm; font-size: 13pt; position: relative; z-index: 1; }
+.cover li { display: flex; gap: 3mm; align-items: center; }
+.cover li b { flex: none; width: 8mm; height: 8mm; border-radius: 50%; background: var(--blue); display: grid; place-items: center; font-size: 10pt; }
+.cover small { color: #9DB4F5; font-size: 10pt; position: relative; z-index: 1; }
+
+/* Como usar */
+h2 { font-size: 24pt; line-height: 1.1; margin: 0 0 4mm; font-weight: 800; color: var(--navy); }
+.intro { color: var(--muted); font-size: 12.5pt; margin: 0 0 8mm; }
+.steps { display: grid; gap: 5mm; }
+.step { display: flex; gap: 5mm; align-items: flex-start; background: #F4F6FA; border-radius: 4mm; padding: 5mm; }
+.step .n { flex: none; width: 11mm; height: 11mm; border-radius: 50%; background: var(--blue); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 13pt; }
+.step h3 { margin: 0 0 1mm; font-size: 13pt; }
+.step p { margin: 0; color: var(--muted); }
+.mark { background: var(--soft); color: var(--blue); font-weight: 700; border-radius: 1.5mm; padding: 0 1.5mm; }
+.box { margin-top: 8mm; border: 2px dashed var(--blue); border-radius: 4mm; padding: 5mm 6mm; }
+.box b { color: var(--navy); }
+
+/* Legendas */
+.cat { display: flex; align-items: center; gap: 4mm; margin-bottom: 5mm; }
+.cat .ic { width: 13mm; height: 13mm; border-radius: 3.5mm; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 18pt; flex: none; }
+.cat h2 { margin: 0; }
+.cat p { margin: 0; color: var(--muted); font-size: 11pt; }
+.cards { display: grid; gap: 3mm; }
+.card { border: 1px solid var(--line); border-left: 5px solid var(--blue); border-radius: 3mm; padding: 2.6mm 5mm 2.8mm; break-inside: avoid; }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
+.card .num { font-weight: 800; color: var(--blue); font-size: 10.5pt; }
+.card .foto { font-size: 9.5pt; color: var(--muted); text-align: right; }
+.card p { margin: 1.2mm 0 0; font-size: 11.3pt; line-height: 1.45; }
+
+/* Final */
+.end { background: var(--navy); color: #fff; }
+.end h2 { color: #fff; font-size: 34pt; margin-top: 18mm; }
+.end .sub { color: #D3DCF2; font-size: 14pt; max-width: 155mm; }
+.end ul { list-style: none; padding: 0; margin: 9mm 0; display: grid; gap: 4mm; font-size: 13.5pt; }
+.end li::before { content: "✓"; display: inline-grid; place-items: center; width: 8mm; height: 8mm; border-radius: 50%; background: var(--blue); margin-right: 3mm; font-size: 10pt; }
+.cta { display: inline-block; background: var(--whats); color: #fff; text-decoration: none; font-weight: 800; font-size: 16pt; border-radius: 99px; padding: 5mm 10mm; margin-top: 4mm; }
+.end .gift { margin-top: 10mm; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 4mm; padding: 6mm; font-size: 12.5pt; }
+.end .foot { color: #9DB4F5; border-color: rgba(255,255,255,.2); }
+.end a { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- 1. Capa -->
+<section class="page cover">
+  <div class="brand"><img src="../../../public/brand/flowarts-icon.png" alt="">Flow Arts Marketing</div>
+  <div>
+    <span class="tag">🎁 BRINDE GRÁTIS</span>
+    <h1>30 legendas prontas para o <em>Instagram</em> do seu negócio</h1>
+    <p class="sub">Copie, troque as palavras marcadas e poste. Funciona para loja, salão, restaurante, clínica, oficina, pet shop e qualquer negócio local.</p>
+  </div>
+  <ul>
+    <li><b>✓</b> 6 tipos de post que todo negócio precisa</li>
+    <li><b>✓</b> Dica de qual foto usar em cada legenda</li>
+    <li><b>✓</b> Chamadas que fazem o cliente chamar no WhatsApp</li>
+  </ul>
+  <small>flowarts.com.br · @flowarts2026</small>
+</section>
+
+<!-- 2. Como usar -->
+<section class="page">
+  <h2>Como usar em 3 passos</h2>
+  <p class="intro">Você não precisa ser bom com palavras. Cada legenda já está pronta: é só completar.</p>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><div><h3>Escolha uma legenda</h3><p>Use um tipo diferente a cada dia. Assim o seu perfil não fica repetitivo.</p></div></div>
+    <div class="step"><div class="n">2</div><div><h3>Troque o que está marcado</h3><p>Onde estiver <span class="mark">[assim]</span>, coloque a informação do seu negócio: nome, produto, bairro, preço.</p></div></div>
+    <div class="step"><div class="n">3</div><div><h3>Use uma foto de verdade</h3><p>Foto sua, da equipe, do produto ou do lugar. Foto real gera mais confiança do que imagem de banco.</p></div></div>
+  </div>
+  <div class="box">
+    <b>Dica de ouro:</b> responda todo comentário na primeira hora. O Instagram mostra o post para mais gente quando as pessoas conversam com você.
+  </div>
+  <div class="box">
+    <b>Os 6 tipos de post:</b> Apresentação · Bastidores · Clientes felizes · Dica útil · Oferta · Conversa
+  </div>
+  <div class="foot"><span>Flow Arts · 30 legendas prontas</span><span>2</span></div>
+</section>
+
+<!-- 3. -->
+<section class="page">
+  <div class="cat"><div class="ic">👋</div><div><h2>Apresentação</h2><p>Para quem chegou agora saber quem você é.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">01</span><span class="foto">📸 Foto sua ou da fachada</span></div><p>Prazer, eu sou <span class="mark">[seu nome]</span>, da <span class="mark">[nome do negócio]</span>! 👋 Há <span class="mark">[tempo]</span> eu ajudo <span class="mark">[quem você atende]</span> aqui em <span class="mark">[bairro/cidade]</span>. Me segue para ver as novidades da semana.</p></div>
+    <div class="card"><div class="top"><span class="num">02</span><span class="foto">📸 Foto do produto principal</span></div><p>Se você procura <span class="mark">[o que você vende]</span> em <span class="mark">[cidade]</span>, achou! ✨ Aqui você encontra <span class="mark">[3 coisas que você oferece]</span>. Chama no WhatsApp do perfil.</p></div>
+    <div class="card"><div class="top"><span class="num">03</span><span class="foto">📸 Foto antiga do começo</span></div><p>Tudo começou com <span class="mark">[como começou]</span>. Hoje a <span class="mark">[nome do negócio]</span> atende <span class="mark">[número]</span> clientes por mês. Obrigado a cada um de vocês! 💙</p></div>
+    <div class="card"><div class="top"><span class="num">04</span><span class="foto">📸 Foto do ambiente</span></div><p>3 motivos para escolher a <span class="mark">[nome do negócio]</span>: 1️⃣ <span class="mark">[motivo]</span> 2️⃣ <span class="mark">[motivo]</span> 3️⃣ <span class="mark">[motivo]</span>. Qual deles é o mais importante para você?</p></div>
+    <div class="card"><div class="top"><span class="num">05</span><span class="foto">📸 Foto da equipe</span></div><p>Por trás da <span class="mark">[nome do negócio]</span> tem gente de verdade. Esse é o time que cuida de você todo dia. 🤝 Manda um oi pra gente nos comentários!</p></div>
+  </div>
+  <div class="cat" style="margin-top:6mm"><div class="ic">🎬</div><div><h2>Bastidores</h2><p>Mostrar o dia a dia aproxima o cliente.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">06</span><span class="foto">📸 Vídeo curto preparando algo</span></div><p>Sabe como fica pronto o seu <span class="mark">[produto/serviço]</span>? Assim, ó 👀 Cada detalhe é feito com cuidado. Salva para mostrar para quem ainda não conhece.</p></div>
+    <div class="card"><div class="top"><span class="num">07</span><span class="foto">📸 Foto da abertura do dia</span></div><p>Bom dia! ☀️ Portas abertas na <span class="mark">[nome do negócio]</span>. Hoje tem <span class="mark">[novidade do dia]</span>. Passa aqui ou chama no WhatsApp.</p></div>
+  </div>
+  <div class="foot"><span>Flow Arts · 30 legendas prontas</span><span>3</span></div>
+</section>
+
+<!-- 4. -->
+<section class="page">
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">08</span><span class="foto">📸 Foto chegando mercadoria</span></div><p>Chegou! 📦 <span class="mark">[produto novo]</span> acabou de chegar e é pouca quantidade. Comenta EU QUERO que a gente separa o seu.</p></div>
+    <div class="card"><div class="top"><span class="num">09</span><span class="foto">📸 Antes e depois</span></div><p>Antes ➡️ depois. Esse é o nosso trabalho de <span class="mark">[serviço]</span>. Nota de 0 a 10 para esse resultado? 👇</p></div>
+    <div class="card"><div class="top"><span class="num">10</span><span class="foto">📸 Você trabalhando</span></div><p>Ninguém vê, mas antes de cada <span class="mark">[entrega/atendimento]</span> a gente <span class="mark">[cuidado que você tem]</span>. É por isso que nossos clientes voltam. 💙</p></div>
+  </div>
+  <div class="cat" style="margin-top:6mm"><div class="ic">⭐</div><div><h2>Clientes felizes</h2><p>A opinião de quem já comprou vende mais que qualquer anúncio.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">11</span><span class="foto">📸 Print da avaliação</span></div><p>Olha o que a <span class="mark">[nome da cliente]</span> falou da gente! 🥹 Ler isso faz valer cada dia de trabalho. Obrigado pela confiança!</p></div>
+    <div class="card"><div class="top"><span class="num">12</span><span class="foto">📸 Cliente com o produto</span></div><p>Mais um cliente feliz saindo da <span class="mark">[nome do negócio]</span>! 😄 Quer ser o próximo? O link do WhatsApp está no perfil.</p></div>
+    <div class="card"><div class="top"><span class="num">13</span><span class="foto">📸 Mosaico de clientes</span></div><p>Já são <span class="mark">[número]</span> clientes atendidos em <span class="mark">[cidade]</span>! 🎉 Se você é um deles, marca a gente quando postar. A gente adora ver!</p></div>
+    <div class="card"><div class="top"><span class="num">14</span><span class="foto">📸 Mensagem de cliente</span></div><p>"<span class="mark">[frase do cliente]</span>" 💬 Esse tipo de mensagem é o nosso melhor pagamento. Já experimentou o nosso <span class="mark">[produto/serviço]</span>?</p></div>
+    <div class="card"><div class="top"><span class="num">15</span><span class="foto">📸 Cliente que volta sempre</span></div><p>Essa é a <span class="mark">[nome]</span>, cliente desde <span class="mark">[ano]</span>! 💙 Cliente que volta é sinal de que estamos no caminho certo. Obrigado!</p></div>
+  </div>
+  <div class="foot"><span>Flow Arts · 30 legendas prontas</span><span>4</span></div>
+</section>
+
+<!-- 5. -->
+<section class="page">
+  <div class="cat"><div class="ic">💡</div><div><h2>Dica útil</h2><p>Post que ensina é post que as pessoas salvam e compartilham.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">16</span><span class="foto">📸 Carrossel com 3 dicas</span></div><p>3 erros que quase todo mundo comete com <span class="mark">[assunto do seu ramo]</span> ❌ Arrasta para o lado e veja se você comete algum. Salva para não esquecer!</p></div>
+    <div class="card"><div class="top"><span class="num">17</span><span class="foto">📸 Foto do produto em uso</span></div><p>Dica rápida: para o seu <span class="mark">[produto]</span> durar mais, <span class="mark">[dica de cuidado]</span>. Manda para alguém que precisa saber disso! 📲</p></div>
+    <div class="card"><div class="top"><span class="num">18</span><span class="foto">📸 Você explicando</span></div><p>Pergunta que mais recebo: "<span class="mark">[pergunta comum]</span>?" 🤔 A resposta é: <span class="mark">[resposta curta]</span>. Tem outra dúvida? Deixa aqui nos comentários.</p></div>
+    <div class="card"><div class="top"><span class="num">19</span><span class="foto">📸 Comparação lado a lado</span></div><p>Mito ou verdade? <span class="mark">[mito do seu ramo]</span>. ❌ MITO! Na verdade, <span class="mark">[explicação]</span>. Você sabia?</p></div>
+    <div class="card"><div class="top"><span class="num">20</span><span class="foto">📸 Lista em imagem</span></div><p>Antes de <span class="mark">[comprar/contratar algo do seu ramo]</span>, confira estas 3 coisas: ✅ <span class="mark">[item]</span> ✅ <span class="mark">[item]</span> ✅ <span class="mark">[item]</span>. Salva este post!</p></div>
+  </div>
+  <div class="cat" style="margin-top:6mm"><div class="ic">🏷️</div><div><h2>Oferta</h2><p>Use no máximo 1 a cada 4 posts. Oferta demais cansa.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">21</span><span class="foto">📸 Produto com etiqueta de preço</span></div><p>Só até <span class="mark">[dia]</span>! 🔥 <span class="mark">[produto/serviço]</span> por <span class="mark">[preço]</span>. Comenta QUERO ou chama no WhatsApp do perfil para garantir.</p></div>
+    <div class="card"><div class="top"><span class="num">22</span><span class="foto">📸 Foto de presente/brinde</span></div><p>Quem fechar <span class="mark">[serviço]</span> esta semana ganha <span class="mark">[brinde]</span> 🎁 São só <span class="mark">[número]</span> vagas. Chama no WhatsApp!</p></div>
+  </div>
+  <div class="foot"><span>Flow Arts · 30 legendas prontas</span><span>5</span></div>
+</section>
+
+<!-- 6. -->
+<section class="page">
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">23</span><span class="foto">📸 Combo montado</span></div><p>Combo da semana: <span class="mark">[item]</span> + <span class="mark">[item]</span> por <span class="mark">[preço]</span>. 😋 Marca aqui quem vai dividir com você!</p></div>
+    <div class="card"><div class="top"><span class="num">24</span><span class="foto">📸 Agenda ou calendário</span></div><p>Últimos horários de <span class="mark">[dia/mês]</span>! 📅 Restam <span class="mark">[número]</span> vagas para <span class="mark">[serviço]</span>. Quem chamar primeiro garante.</p></div>
+    <div class="card"><div class="top"><span class="num">25</span><span class="foto">📸 Cupom em destaque</span></div><p>Presente para quem segue a gente: use o cupom <span class="mark">[CÓDIGO]</span> e ganhe <span class="mark">[desconto]</span>. 💙 Válido até <span class="mark">[data]</span>.</p></div>
+  </div>
+  <div class="cat" style="margin-top:6mm"><div class="ic">💬</div><div><h2>Conversa</h2><p>Perguntas fáceis de responder trazem comentários, e comentário traz alcance.</p></div></div>
+  <div class="cards">
+    <div class="card"><div class="top"><span class="num">26</span><span class="foto">📸 Duas opções lado a lado</span></div><p>Você prefere <span class="mark">[opção A]</span> ou <span class="mark">[opção B]</span>? 🤔 Responde com A ou B aqui embaixo!</p></div>
+    <div class="card"><div class="top"><span class="num">27</span><span class="foto">📸 Produto curioso</span></div><p>Adivinha o preço! 💰 Quem chegar mais perto nos comentários ganha <span class="mark">[pequeno brinde]</span>. Resultado amanhã!</p></div>
+    <div class="card"><div class="top"><span class="num">28</span><span class="foto">📸 Foto do cardápio/catálogo</span></div><p>Se você pudesse escolher só um, qual seria? 👇 <span class="mark">[item 1]</span>, <span class="mark">[item 2]</span> ou <span class="mark">[item 3]</span>?</p></div>
+    <div class="card"><div class="top"><span class="num">29</span><span class="foto">📸 Você sorrindo</span></div><p>Me conta: como você conheceu a <span class="mark">[nome do negócio]</span>? 😄 Foi indicação, Instagram ou passando na porta?</p></div>
+    <div class="card"><div class="top"><span class="num">30</span><span class="foto">📸 Foto da equipe</span></div><p>Estamos pensando em trazer <span class="mark">[novidade]</span>. Você compraria? 👍 ou 👎 nos comentários. A sua opinião decide!</p></div>
+  </div>
+  <div class="foot"><span>Flow Arts · 30 legendas prontas</span><span>6</span></div>
+</section>
+
+<!-- 7. Final -->
+<section class="page end">
+  <div class="brand" style="display:flex;align-items:center;gap:4mm;font-weight:800;font-size:14pt"><img src="../../../public/brand/flowarts-icon.png" alt="" style="width:13mm;height:13mm;border-radius:3mm">Flow Arts Marketing</div>
+  <h2>Sem tempo para postar todo dia?</h2>
+  <p class="sub">O <b>Nexus</b>, da Flow Arts, cria e publica os posts do seu negócio sozinho. Você só aprova pelo celular.</p>
+  <ul>
+    <li>Posts e stories prontos com a cara da sua marca</li>
+    <li>Publicação automática nos melhores horários</li>
+    <li>Nada sai sem a sua aprovação</li>
+    <li>Atendimento em todo o Brasil</li>
+  </ul>
+  <a class="cta" href="https://wa.me/5521964816185?text=Ol%C3%A1!%20Baixei%20o%20brinde%20das%2030%20legendas%20e%20quero%20testar%20o%20Nexus%207%20dias%20gr%C3%A1tis.">Testar 7 dias grátis no WhatsApp</a>
+  <div class="gift">🎁 <b>Você ganhou este guia</b> por ser seguidor da Flow Arts. Gostou? Manda para um amigo que tem negócio: ele pode pegar o dele em <b>flowarts.com.br/brinde</b></div>
+  <div class="foot"><span>flowarts.com.br · @flowarts2026 · WhatsApp (21) 96481-6185</span><span>7</span></div>
+</section>
+
+</body>
+</html>

@@ -36,7 +36,8 @@ export function saoPauloDay(date = new Date()) {
 export function cleanPath(value) {
   const path = String(value || "/").split(/[?#]/)[0].toLowerCase();
   if (!/^\/[a-z0-9\-/.]{0,80}$/.test(path)) return "";
-  if (/^\/(api|media|master|portal|login|b|brinde|downloads)(\/|$)/.test(path)) return "";
+  if (/^\/(api|media|master|portal|login|b|downloads)(\/|$)/.test(path)) return "";
+  if (/^\/brinde\//.test(path)) return ""; // links pessoais do brinde; a página /brinde (link da bio) conta
   return path.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
 }
 

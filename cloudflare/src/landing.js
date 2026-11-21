@@ -26,15 +26,16 @@ const clean = (value, max) => String(value ?? "").replace(/[\u0000-\u001f<>]/g, 
 export function validateLandingLead(body = {}) {
   if (clean(body.website, 200)) return { error: "spam" }; // campo escondido: só robô preenche
   const name = clean(body.nome, 80);
+  const isGift = body.oferta === "brinde";
   const business = clean(body.negocio, 100);
   let digits = String(body.whatsapp ?? "").replace(/\D/g, "");
   if (digits.startsWith("55") && digits.length >= 12) digits = digits.slice(2);
   const segment = LANDING_SEGMENTS.includes(String(body.segmento)) ? String(body.segmento) : "Outro";
   if (name.length < 2) return { error: "nome", message: "Escreva o seu nome." };
   if (digits.length < 10 || digits.length > 11) return { error: "whatsapp", message: "Confira o WhatsApp, com DDD. Exemplo: 21 98888-7777." };
-  if (business.length < 2) return { error: "negocio", message: "Escreva o nome do seu negócio." };
+  if (business.length < 2 && !isGift) return { error: "negocio", message: "Escreva o nome do seu negócio." };
   if (body.consentimento !== true) return { error: "consentimento", message: "Marque a caixa para a gente poder te chamar no WhatsApp." };
-  return { lead: { name, business, segment, whatsapp: "55" + digits } };
+  return { lead: { name, business, segment, whatsapp: "55" + digits }, offer: isGift ? "brinde" : "exemplo" };
 }
 
 export async function handleLandingLead(request, env, now = new Date()) {
@@ -47,6 +48,7 @@ export async function handleLandingLead(request, env, now = new Date()) {
   if (checked.error) return json({ ok: false, error: checked.error, message: checked.message }, 400);
   const { lead } = checked;
   const due = new Date(now.getTime() + 24 * 3600000).toISOString();
+  if (checked.offer === "brinde") return handleGiftLead(env, lead, now, due);
   await upsertLead(env, { id: LANDING_CLIENT_ID, name: "Flow Arts", instagram: "@flowarts2026" }, {
     id: LANDING_CLIENT_ID + ":landing:" + lead.whatsapp,
     temperature: "hot",
@@ -63,4 +65,28 @@ export async function handleLandingLead(request, env, now = new Date()) {
   });
   const link = whatsappLink({ id: LANDING_CLIENT_ID, config: {} }, "Olá! Sou " + lead.name + ", do " + lead.business + ". Acabei de pedir o exemplo grátis no site da Flow Arts.");
   return json({ ok: true, whatsapp: link });
+}
+
+// Brinde "30 legendas prontas" (/brinde, 21/11/2026): a pessoa deixa nome e WhatsApp,
+// baixa o PDF na hora e vira contato "morno" no CRM da Flow Arts, com a próxima ação marcada.
+export const GIFT_DOWNLOAD = "/downloads/30-legendas-flowarts.pdf";
+
+async function handleGiftLead(env, lead, now, due) {
+  const who = lead.business ? lead.business + " · " + lead.segment : lead.segment;
+  await upsertLead(env, { id: LANDING_CLIENT_ID, name: "Flow Arts", instagram: "@flowarts2026" }, {
+    id: LANDING_CLIENT_ID + ":brinde:" + lead.whatsapp,
+    temperature: "warm",
+    score: 60,
+    stage: "new",
+    intent: "Baixou o brinde (30 legendas prontas)",
+    needsHuman: true,
+    lastMessage: who,
+    lastContactAt: now.toISOString(),
+    source: "landing",
+    sourceUrl: "/brinde",
+    contact: lead,
+    nextAction: { text: "Chamar no WhatsApp: perguntar se gostou do brinde e oferecer o teste grátis de 7 dias", due }
+  });
+  const link = whatsappLink({ id: LANDING_CLIENT_ID, config: {} }, "Olá! Sou " + lead.name + (lead.business ? ", do " + lead.business : "") + ". Baixei o brinde das 30 legendas e quero saber do teste grátis de 7 dias.");
+  return json({ ok: true, whatsapp: link, download: GIFT_DOWNLOAD });
 }

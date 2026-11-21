@@ -108,3 +108,10 @@ test("site, páginas de nicho e exemplo enviam o aviso de visita; Master tem a a
   const worker = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
   assert.match(worker, /\/api\/master\/site-stats[\s\S]{0,200}resolveMasterSession/);
 });
+
+test("página do brinde (link da bio) conta visita; links pessoais não", async () => {
+  const { cleanPath } = await import("../src/site-analytics.js");
+  assert.equal(cleanPath("/brinde"), "/brinde");
+  assert.equal(cleanPath("/brinde.html"), "/brinde");
+  assert.equal(cleanPath("/brinde/guia?k=abc"), "");
+});
