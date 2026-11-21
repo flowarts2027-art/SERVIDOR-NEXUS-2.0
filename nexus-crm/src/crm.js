@@ -114,8 +114,24 @@ export async function crmApi(req, env, url, helpers) {
   if (p === '/api/whatsapp' && m === 'GET') return json(await waState(env));
 
   if (p === '/api/leads' && m === 'GET') {
-    const r = await env.DB.prepare('SELECT id,phone,name,stage,notes,last_message,last_at,unread FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
+    const r = await env.DB.prepare('SELECT id,phone,name,stage,notes,value,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
     return json({ leads: r.results });
+  }
+
+  // Novo lead feito à mão (botão "+ Novo lead" e "Adição rápida")
+  if (p === '/api/leads' && m === 'POST') {
+    const x = await input(req);
+    const name = clean(x.name, 150);
+    let phone = fullPhone(x.phone);
+    const stage = STAGES.includes(x.stage) ? x.stage : 'novo';
+    const value = Math.max(0, Math.round(Number(x.value) || 0));
+    if (!name && !phone) return fail('Informe o nome ou o telefone.');
+    if (phone && !/^\d{12,13}$/.test(phone)) return fail('Telefone inválido. Use DDD + número.');
+    if (!phone) phone = 'manual-' + crypto.randomUUID().slice(0, 8);
+    const exists = await env.DB.prepare('SELECT id FROM leads WHERE phone=?').bind(phone).first();
+    if (exists) return fail('Já existe um lead com esse telefone.', 409);
+    const r = await env.DB.prepare('INSERT INTO leads(phone,name,stage,value,last_at) VALUES(?,?,?,?,?)').bind(phone, name, stage, value, nowIso()).run();
+    return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
 
   const lm = p.match(/^\/api\/leads\/(\d+)(\/messages|\/client)?$/);
@@ -128,8 +144,15 @@ export async function crmApi(req, env, url, helpers) {
     const name = x.name !== undefined ? clean(x.name, 150) : lead.name;
     const notes = x.notes !== undefined ? clean(x.notes, 4000) : lead.notes;
     const stage = x.stage !== undefined ? String(x.stage) : lead.stage;
+    const value = x.value !== undefined ? Math.max(0, Math.round(Number(x.value) || 0)) : lead.value;
     if (!STAGES.includes(stage)) return fail('Etapa inválida.');
-    await env.DB.prepare('UPDATE leads SET name=?,notes=?,stage=? WHERE id=?').bind(name, notes, stage, lead.id).run();
+    await env.DB.prepare('UPDATE leads SET name=?,notes=?,stage=?,value=? WHERE id=?').bind(name, notes, stage, value, lead.id).run();
+    return json({ ok: true });
+  }
+
+  if (!lm[2] && m === 'DELETE') {
+    await env.DB.prepare('DELETE FROM messages WHERE lead_id=?').bind(lead.id).run();
+    await env.DB.prepare('DELETE FROM leads WHERE id=?').bind(lead.id).run();
     return json({ ok: true });
   }
 
