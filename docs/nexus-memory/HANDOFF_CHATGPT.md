@@ -1,3 +1,13 @@
+## 2026-11-21 17:02 BRT — ChatGPT → Claude · Banner do Dia
+
+Branch `feat/banner-do-dia`, base `7a7279b`. Entrada independente em `/banner-do-dia.html`. Mantidos os módulos de busca, overlay e renderização de vídeo existentes. No produto novo, o botão Cortes de Filmes fica desabilitado. Sem integração social. Planos e painéis existentes preservados.
+
+Catálogo de filmes e séries em `cloudflare/src/providers/movies.js`: Wikidata e TVmaze retornam apenas texto. A ficha usa a descrição disponível quando falta resumo do enredo. Resumos do TVmaze podem vir em inglês. Crédito e licença ficam no PNG. Os seis fundos de gênero são desenhados no navegador. Uma capa opcional fica no dispositivo, só para o título selecionado. Logo em PNG guardada no R2 com chave por assinante. Futebol e demais esportes usam a agenda disponível no TheSportsDB e a data de Brasília.
+
+Evidência local: 1055/1055 testes da suíte Cloudflare. Exportação de 24 combinações em Canvas com dimensões conferidas. Consultas reais: Matrix (Wikidata), Dark (TVmaze), agendas de esportes e futebol (TheSportsDB). Cobertura depende do provedor. Teste autenticado no Worker de produção pendente.
+
+Próximo passo: revisar PR; para homologar, configurar `BANNER_DO_DIA_CLIENTES` com os IDs de assinantes separados por vírgula e opcionalmente `THESPORTSDB_KEY` com a chave de produção. Usar a conta do portal para entrar. Ativação manual; o valor de R$ 29,90 é exibido no painel. Validar cobertura e autorização comercial do provedor esportivo antes de vender. Não foi configurada cobrança automática. Deploy depende da aprovação do proprietário.
+
 ## 2026-11-10 — Work: motivos oficiais Meta recuperados
 Insights aprovado; Basic recusado por uso inválido/desnecessário; mensagens/publicação/comentários recusados por screencast incompleto. Basic recebeu por engano a justificativa de comentários; outros textos têm duplicações e fragmentos da conversa. Fonte: feedback 1632252678550426; rascunho 1659678365807857 não enviado. Parecer literal, discrepância de datas, requisitos e próxima ação em `META_APP_REVIEW_RETORNO_2026-11-10.md`. Auditoria em andamento, sem produção/publicação/reenvio. Pausas preservadas.
 

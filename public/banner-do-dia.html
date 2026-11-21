@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  /><title>Banner do Dia • Nexus</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: auto;
+      max-width: 1200px;
+      padding: clamp(18px, 4vw, 54px);
+      font: 18px/1.5 system-ui;
+      color: #182033;
+      background: #f3f2ed;
+    }
+    header,
+    section,
+    aside {
+      padding: 24px;
+      border-radius: 20px;
+      background: white;
+      margin-bottom: 18px;
+    }
+    header {
+      background: #14223c;
+      color: white;
+      border-top: 6px solid #f8ab41;
+    }
+    h1 {
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: 1;
+      margin: 12px 0;
+    }
+    h2 {
+      margin: 0 0 14px;
+    }
+    label {
+      display: block;
+      font-weight: 650;
+      margin: 15px 0;
+    }
+    button,
+    input,
+    select {
+      font: inherit;
+      padding: 10px;
+      border: 1px solid #9ba3b4;
+      border-radius: 8px;
+      max-width: 100%;
+    }
+    input,
+    select {
+      width: 100%;
+    }
+    button {
+      background: #19335e;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #e4e6eb;
+      color: #535d70;
+      cursor: default;
+    }
+    main,
+    .previews {
+      display: grid;
+      grid-template-columns: minmax(270px, 1fr) 2fr;
+      gap: 18px;
+    }
+    .previews {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+    canvas {
+      width: 100%;
+      background: #192540;
+      border-radius: 8px;
+    }
+    figure {
+      margin: 0;
+    }
+    small {
+      display: block;
+    }
+    #msg {
+      font-weight: 650;
+    }
+    [hidden] {
+      display: none !important;
+    }
+    @media (max-width: 760px) {
+      main {
+        display: block;
+      }
+      .previews {
+        gap: 8px;
+      }
+      section,
+      aside {
+        padding: 16px;
+      }
+    }
+  </style>
+  <header>
+    <small>NEXUS</small>
+    <h1>Banner do Dia</h1>
+    R$ 29,90/mês · Crie sua imagem e baixe para postar.
+  </header>
+  <form id="login" hidden>
+    <section>
+      <h2>Entre na sua conta</h2>
+      <label>Usuário<input id="user" autocomplete="username" required /></label
+      ><label
+        >Senha<input
+          id="pass"
+          type="password"
+          autocomplete="current-password"
+          required /></label
+      ><button>Entrar</button>
+    </section>
+  </form>
+  <p id="msg" role="status" aria-live="polite"></p>
+  <main id="studio" hidden>
+    <aside>
+      <label
+        >Tipo de banner<select id="kind">
+          <option value="movies">Indicação de filme</option>
+          <option value="series">Indicação de série</option>
+          <option value="football">Jogos de futebol do dia</option>
+          <option value="sports">Lutas e esportes do dia</option>
+        </select></label
+      >
+      <form id="search">
+        <label
+          >Filme ou série<input
+            id="query"
+            minlength="2"
+            maxlength="100"
+            required /></label
+        ><button>Buscar</button>
+      </form>
+      <label>Selecione o destaque<select id="items"></select></label
+      ><button id="refresh" hidden>Atualizar agenda</button
+      ><label>Modelo visual<select id="styleChoice"></select></label>
+      <div id="covers">
+        <label
+          >Subir minha capa<input
+            id="cover"
+            type="file"
+            accept="image/png,image/jpeg,image/webp" /></label
+        ><button id="removeCover" hidden>Usar fundo temático</button>
+      </div>
+      <label
+        >Sua logo<input
+          id="upload"
+          type="file"
+          accept="image/png,image/jpeg,image/webp" /></label
+      ><button disabled>Cortes de Filmes · Em construção</button>
+    </aside>
+    <section>
+      <h2>Prévia dos banners</h2>
+      <div class="previews">
+        <figure>
+          <canvas id="feed" width="1080" height="1350"></canvas>
+          <figcaption>Feed · 1080 × 1350</figcaption>
+          <button disabled data-for="feed">Baixar feed</button>
+        </figure>
+        <figure>
+          <canvas id="story" width="1080" height="1920"></canvas>
+          <figcaption>Story · 1080 × 1920</figcaption>
+          <button disabled data-for="story">Baixar story</button>
+        </figure>
+      </div>
+      <small
+        >Dados esportivos de TheSportsDB. Filmes: Wikidata. Séries:
+        <a href="https://www.tvmaze.com/">TVmaze</a> ·
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/"
+          >CC BY-SA 4.0</a
+        >.</small
+      >
+    </section>
+  </main>
+  <script type="module" src="/banner-do-dia.js"></script>
+</html>

@@ -1,3 +1,4 @@
+import { bannerDoDia } from "./banner-do-dia.js";
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
 import { handleCaptadorPortal } from "./captador.js";
 import { handleAdsPortal } from "./ads.js";
@@ -697,6 +698,8 @@ export async function handlePortalApi(request, env, url, ctx) {
 
   const { session, client } = await sessionClient(request, env);
   if (!session || !client) return json({ error: "unauthorized" }, 401);
+
+  if (url.pathname.startsWith("/api/portal/banner/")) return bannerDoDia(request, env, url, client.id);
 
   // Biblioteca de artes (28/10): sobe várias imagens, o Nexus separa, escreve a legenda e programa.
   const libraryResponse = await handleLibrary(request, env, url, client, "/api/portal/biblioteca");
