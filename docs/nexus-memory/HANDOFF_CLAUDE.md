@@ -1476,3 +1476,8 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Ponte: `nexus-crm/ponte/` (Baileys, Node). Roda com `LIGAR-WHATSAPP.bat`; pede a chave da ponte (aba WhatsApp do CRM) e guarda em `config.json` local (fora do Git).
 - Deploy: run 44929497513 verde. A ponte ainda não foi testada num celular real.
 - Próximo passo: Rodrigo ligar a ponte no PC e escanear o QR Code.
+
+## 2026-11-21 (fim da tarde) — Nexus CRM: etapas Kommo
+- Feito e no ar (branch `crm-deploy`, deploy pelo workflow `deploy-nexus-crm.yml`): conversas estilo WhatsApp Web, menu só com ícones, fotos/nomes/número real dos contatos (troca do @lid), histórico de 30 dias, cards do funil no modelo Kommo, etiquetas, follow-up automático (cron a cada 30 min, começa desligado), tarefas com lembrete e mensagens prontas.
+- Ponte no PC do Rodrigo conectada (QR Code). 170+ contatos importados.
+- Faltam (auditoria Kommo): visão em lista, chatbot, vários números/equipe, relatórios, formulário do site. Envio em massa: não recomendado no QR Code.
