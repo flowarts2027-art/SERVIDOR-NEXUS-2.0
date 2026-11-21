@@ -101,6 +101,48 @@ export async function bridgeApi(req, env, url) {
     return json({ messages: rows.results });
   }
 
+  // Contatos que ainda não têm foto/nome/número real
+  if (p === '/api/bridge/pending-info' && m === 'GET') {
+    const old = new Date(Date.now() - 3 * 86400_000).toISOString();
+    const r = await env.DB.prepare(`SELECT id, phone, jid, name FROM leads WHERE phone NOT LIKE 'manual-%'
+      AND (info_at IS NULL OR info_at < ? OR (jid LIKE '%@lid' AND info_at < ?)) ORDER BY COALESCE(last_at, created_at) DESC LIMIT 40`)
+      .bind(old, new Date(Date.now() - 3600_000).toISOString()).all();
+    return json({ leads: r.results });
+  }
+
+  // A ponte devolve nome, foto e número real (troca o número escondido "@lid" pelo telefone)
+  if (p === '/api/bridge/info' && m === 'POST') {
+    const x = await input(req);
+    let updated = 0;
+    for (const it of (Array.isArray(x.items) ? x.items : []).slice(0, 60)) {
+      const lead = await leadById(env, Number(it.id));
+      if (!lead) continue;
+      let target = lead;
+      const pn = digits(it.phone);
+      if (pn && /^\d{12,13}$/.test(pn) && pn !== lead.phone) {
+        const other = await env.DB.prepare('SELECT * FROM leads WHERE phone=?').bind(pn).first();
+        if (other) {
+          // Junta as conversas no lead do telefone real
+          await env.DB.prepare('UPDATE messages SET lead_id=? WHERE lead_id=?').bind(other.id, lead.id).run();
+          await env.DB.prepare(`UPDATE leads SET unread=unread+?, last_message=CASE WHEN ?>COALESCE(last_at,'') THEN ? ELSE last_message END,
+            last_at=MAX(COALESCE(last_at,''),?), notes=CASE WHEN notes='' THEN ? ELSE notes END WHERE id=?`)
+            .bind(lead.unread || 0, lead.last_at || '', lead.last_message, lead.last_at || '', lead.notes || '', other.id).run();
+          await env.DB.prepare('DELETE FROM leads WHERE id=?').bind(lead.id).run();
+          target = other;
+        } else {
+          await env.DB.prepare('UPDATE leads SET phone=? WHERE id=?').bind(pn, lead.id).run();
+        }
+        await env.DB.prepare('UPDATE leads SET jid=? WHERE id=?').bind(pn + '@s.whatsapp.net', target.id).run();
+      }
+      const name = clean(it.name, 150);
+      if (name) await env.DB.prepare("UPDATE leads SET name=? WHERE id=? AND name=''").bind(name, target.id).run();
+      const avatar = /^https:\/\//.test(String(it.avatar || '')) ? String(it.avatar).slice(0, 1000) : '';
+      await env.DB.prepare('UPDATE leads SET avatar=?, info_at=? WHERE id=?').bind(avatar, nowIso(), target.id).run();
+      updated++;
+    }
+    return json({ ok: true, updated });
+  }
+
   const done = p.match(/^\/api\/bridge\/outbox\/(\d+)$/);
   if (done && m === 'POST') {
     const x = await input(req);
@@ -118,7 +160,7 @@ export async function crmApi(req, env, url, helpers) {
   if (p === '/api/whatsapp' && m === 'GET') return json(await waState(env));
 
   if (p === '/api/leads' && m === 'GET') {
-    const r = await env.DB.prepare('SELECT id,phone,name,stage,notes,value,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
+    const r = await env.DB.prepare('SELECT id,phone,jid,name,stage,notes,value,avatar,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
     return json({ leads: r.results });
   }
 

@@ -20,7 +20,24 @@ let key = '';
 let sock = null;
 let state = 'connecting';
 let qr = '';
-const sentByMe = new Set();   // ids que a própria ponte enviou (não repetir no CRM)
+const CONTACTS = path.join(DIR, 'contatos.json');
+const sentByMe = new Set();
+/* Agenda de contatos: nomes e a ligação entre o número escondido (@lid) e o telefone */
+let book = { names: {}, lid: {} };
+try { book = JSON.parse(fs.readFileSync(CONTACTS, 'utf8')); } catch {}
+let bookDirty = false;
+function learn(list) {
+  for (const c of list || []) {
+    if (!c?.id) continue;
+    const name = c.name || c.verifiedName || c.notify || '';
+    if (name) { book.names[c.id] = name; if (c.lid) book.names[c.lid] = name; }
+    const pn = c.phoneNumber || c.jid || (c.id.endsWith('@s.whatsapp.net') ? c.id : '');
+    const lid = c.lid || (c.id.endsWith('@lid') ? c.id : '');
+    if (pn && pn.endsWith('@s.whatsapp.net') && lid) book.lid[lid] = pn;
+    bookDirty = true;
+  }
+}
+setInterval(() => { if (bookDirty) { bookDirty = false; try { fs.writeFileSync(CONTACTS, JSON.stringify(book)); } catch {} } }, 15000);   // ids que a própria ponte enviou (não repetir no CRM)
 let sending = false;
 
 function ask(q) {
@@ -61,7 +78,10 @@ async function report() {
 /* Telefone do contato. Contas novas do WhatsApp usam "@lid"; aí usamos o número real quando vier. */
 function contact(k) {
   let jid = k.remoteJid || '';
-  if (jid.endsWith('@lid')) jid = k.remoteJidAlt || k.senderPn || jid;
+  if (jid.endsWith('@lid')) {
+    const pn = k.remoteJidAlt || k.senderPn || book.lid[jid];
+    if (pn) { book.lid[jid] = pn; bookDirty = true; jid = pn; }
+  }
   const phone = jid.split('@')[0].split(':')[0];
   return { jid, phone };
 }
@@ -106,7 +126,8 @@ async function sendBatches(list, label) {
 }
 
 /* Conversas antigas (últimos 30 dias), que o WhatsApp manda logo depois de conectar */
-async function onHistory({ messages }) {
+async function onHistory({ messages, contacts }) {
+  learn(contacts);
   const limit = Date.now() / 1000 - 30 * 86400;
   const out = (messages || []).map(m => pack(m, true)).filter(x => x && x.ts >= limit);
   await sendBatches(out, 'mensagem(ns) antiga(s) levada(s) ao CRM');
@@ -154,6 +175,33 @@ async function sendQueue() {
   } finally { sending = false; }
 }
 
+/* Busca nome, foto e número real dos contatos que o CRM pediu */
+let infoRunning = false;
+async function fillInfo() {
+  if (infoRunning || state !== 'online' || !sock) return;
+  infoRunning = true;
+  try {
+    const { leads } = await crm('/api/bridge/pending-info');
+    const items = [];
+    for (const l of leads) {
+      let jid = l.jid || (l.phone + '@s.whatsapp.net');
+      let phone = '';
+      if (jid.endsWith('@lid')) {
+        let pn = book.lid[jid];
+        try { pn = pn || await sock.signalRepository?.lidMapping?.getPNForLID?.(jid); } catch {}
+        if (pn) { phone = String(pn).split('@')[0].split(':')[0]; jid = phone + '@s.whatsapp.net'; }
+      }
+      const name = book.names[jid] || book.names[l.jid] || '';
+      let avatar = '';
+      try { avatar = await sock.profilePictureUrl(jid, 'image'); } catch {}
+      items.push({ id: l.id, phone, name, avatar: avatar || '' });
+      await wait(700);
+    }
+    if (items.length) { await crm('/api/bridge/info', 'POST', { items }); log('Fotos e nomes atualizados:', items.length); }
+  } catch (e) { log('Erro ao buscar fotos/nomes:', e.message); }
+  finally { infoRunning = false; }
+}
+
 async function connect() {
   const { state: auth, saveCreds } = await useMultiFileAuthState(AUTH);
   let version;
@@ -169,6 +217,8 @@ async function connect() {
   sock.ev.on('creds.update', saveCreds);
   sock.ev.on('messages.upsert', onMessages);
   sock.ev.on('messaging-history.set', onHistory);
+  sock.ev.on('contacts.upsert', learn);
+  sock.ev.on('contacts.update', learn);
   sock.ev.on('connection.update', async u => {
     if (u.qr) {
       state = 'qr'; qr = u.qr;
@@ -179,6 +229,7 @@ async function connect() {
       state = 'online'; qr = '';
       log('WhatsApp CONECTADO ✔  Pode minimizar esta janela, mas não feche.');
       await report();
+      setTimeout(fillInfo, 15000);
     }
     if (u.connection === 'close') {
       const code = u.lastDisconnect?.error?.output?.statusCode;
@@ -205,4 +256,5 @@ async function connect() {
   await connect();
   setInterval(report, 20000);     // sinal de vida para o CRM
   setInterval(sendQueue, 3000);   // envia o que sair do CRM
+  setInterval(fillInfo, 120000);  // fotos e nomes dos contatos novos
 })().catch(e => { console.error('Erro:', e); process.exit(1); });

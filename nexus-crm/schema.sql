@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS leads (
   stage TEXT NOT NULL DEFAULT 'novo',
   notes TEXT NOT NULL DEFAULT '',
   value INTEGER NOT NULL DEFAULT 0,
+  avatar TEXT NOT NULL DEFAULT '',
+  info_at TEXT,
   last_message TEXT NOT NULL DEFAULT '',
   last_at TEXT,
   unread INTEGER NOT NULL DEFAULT 0,
