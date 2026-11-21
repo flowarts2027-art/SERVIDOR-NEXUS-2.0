@@ -154,7 +154,8 @@
     /* ===== Conversas igual ao WhatsApp Web ===== */
     body.page-conversas main { padding: 0 }
     body.page-conversas header { display: none }
-    .chat { grid-template-columns: minmax(320px, 400px) 1fr; gap: 0; height: 100dvh; position: relative; background: white }
+    .chat { grid-template-columns: minmax(320px, 400px) 1fr; gap: 0; height: 100dvh; position: relative; background: white; overflow: hidden }
+    body.page-conversas { overflow: hidden }
     .chat-list { border: 0; border-right: 1px solid #e9edef; border-radius: 0; box-shadow: none; padding: 0; gap: 0 }
     .chat-top { padding: .8rem 1rem .5rem; display: grid; gap: .55rem }
     .chat-top h2 { font-size: 1.35rem; color: #111b21 }
