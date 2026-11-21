@@ -139,6 +139,68 @@
       .column { flex-basis: min(82vw, 290px) }
     }
     @media (min-width: 761px) { #back { display: none } }
+
+    /* ===== Menu fino só com ícones (estilo WhatsApp Web) ===== */
+    #nav { width: 72px; padding: .7rem .45rem; align-items: center; background: #f0f2f5; gap: 6px }
+    #nav .brand { padding: 0 0 .7rem; border: 0; justify-content: center }
+    #nav .brand span { display: none }
+    #nav .brand img { width: 42px; height: 42px }
+    #nav button { width: 52px; height: 52px; min-height: 52px; padding: 0; justify-content: center; border-radius: 14px; position: relative; color: #54656f }
+    #nav button .lbl { position: absolute; left: 60px; top: 50%; transform: translateY(-50%); background: #1d2433; color: white; padding: .25rem .6rem; border-radius: 6px; font-size: 14px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s }
+    #nav button:hover .lbl { opacity: 1 }
+    #nav button[aria-current="page"] { background: #d9e5ff; color: var(--brand) }
+    .icon, .icon svg { width: 24px; height: 24px }
+    main { margin-left: 72px }
+    /* ===== Conversas igual ao WhatsApp Web ===== */
+    body.page-conversas main { padding: 0 }
+    body.page-conversas header { display: none }
+    .chat { grid-template-columns: minmax(320px, 400px) 1fr; gap: 0; height: 100dvh; position: relative; background: white }
+    .chat-list { border: 0; border-right: 1px solid #e9edef; border-radius: 0; box-shadow: none; padding: 0; gap: 0 }
+    .chat-top { padding: .8rem 1rem .5rem; display: grid; gap: .55rem }
+    .chat-top h2 { font-size: 1.35rem; color: #111b21 }
+    .chat-list label { font-size: 0; padding: 0 1rem .5rem }
+    .chat-list input[type=search] { background: #f0f2f5; border: 0; border-radius: 8px; padding: .55rem .9rem; font-size: 15.5px }
+    #contacts { display: block; padding: 0 }
+    .wa-row { display: flex; align-items: center; gap: .8rem; width: 100%; min-height: 72px; padding: 0 0 0 .9rem; border: 0; border-radius: 0; background: white; text-align: left }
+    .wa-row:hover { background: #f5f6f6 }
+    .wa-row[aria-pressed="true"] { background: #f0f2f5 }
+    .wa-row .av { width: 49px; height: 49px; flex-basis: 49px; font-size: 18px }
+    .wa-body { flex: 1; min-width: 0; align-self: stretch; display: grid; align-content: center; gap: 2px; padding-right: .9rem; border-bottom: 1px solid #e9edef }
+    .wa-line { display: flex; align-items: center; gap: .5rem; min-width: 0 }
+    .wa-name { flex: 1; min-width: 0; font-size: 16.5px; color: #111b21; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+    .wa-time { font-size: 12.5px; color: #667781; white-space: nowrap }
+    .wa-row.unread .wa-time { color: #1fa855; font-weight: 600 }
+    .wa-msg { flex: 1; min-width: 0; font-size: 14.5px; color: #667781; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+    .wa-row .badge { background: #25d366 }
+    .thread { border: 0; border-radius: 0; box-shadow: none; padding: 0; gap: 0 }
+    #threadTitle { margin: 0; border-radius: 0; background: #f0f2f5; padding: .55rem 1rem; min-height: 60px; font-size: 16.5px; font-weight: 500; cursor: pointer; border-bottom: 1px solid #e1e4e7 }
+    #threadTitle .sub { display: block; font-size: 13px; color: #667781; font-weight: 400 }
+    #messages { padding: 1rem 6%; gap: .25rem }
+    .bubble { font-size: 15.5px; max-width: 65% }
+    #compose { margin: 0; border-radius: 0; background: #f0f2f5; border: 0; padding: .6rem 1rem }
+    #compose textarea { border: 0; border-radius: 8px; min-height: 42px; resize: none }
+    #compose button { border-radius: 50%; width: 46px; height: 46px; padding: 0; font-size: 0; background: #1663e0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M2 21l21-9L2 3v7l15 2-15 2z'/%3E%3C/svg%3E") center/22px no-repeat }
+    .details { position: absolute; top: 0; right: 0; bottom: 0; width: min(380px, 100%); z-index: 4; border: 0; border-left: 1px solid #e1e4e7; border-radius: 0; box-shadow: -6px 0 20px #0001; transform: translateX(100%); transition: transform .2s; padding: 0 }
+    .chat.info-open .details { transform: none }
+    .details-head { display: flex; align-items: center; gap: .7rem; background: #f0f2f5; min-height: 60px; padding: 0 1rem; font-weight: 600 }
+    .details-head button { border: 0; background: transparent; font-size: 22px; min-height: 40px }
+    #leadDetails { padding: 1rem }
+    #leadDetails summary { display: none }
+    .empty-chat { flex: 1; display: grid; place-items: center; text-align: center; color: #667781; padding: 2rem }
+    .empty-chat img { width: 110px; opacity: .9; margin-bottom: 1rem }
+    @media (max-width: 1180px) {
+      .chat { grid-template-columns: minmax(280px, 340px) 1fr; grid-template-rows: none }
+      .chat-list { grid-row: auto } .thread { grid-column: auto; grid-row: auto } .details { grid-column: auto; grid-row: auto; max-height: none }
+    }
+    @media (max-width: 760px) {
+      main { margin: 0 }
+      #nav { width: auto; flex-direction: row; background: white }
+      #nav button { width: auto; height: 48px; min-height: 48px; flex: 1 }
+      #nav button .lbl { display: none }
+      .chat { height: calc(100dvh - 60px) }
+      .details { width: 100% }
+      body.page-conversas header { display: flex }
+    }
   </style>
 </head>
 <body>
@@ -157,12 +219,12 @@
   <div id="app" hidden>
     <nav id="nav" aria-label="Menu principal">
       <div class="brand"><img src="/assets/logo.png" alt=""><span>NEXUS<small>CRM</small></span></div>
-      <button data-page="funil"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg></span>Leads</button>
-      <button data-page="conversas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span>Conversas</button>
-      <button data-page="cobranca"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg></span>Cobrança</button>
-      <button data-page="whatsapp"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>WhatsApp</button>
-      <button data-page="config"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>Configurações</button>
-      <button id="logout"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>Sair</button>
+      <button data-page="funil" title="Leads"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg></span><span class="lbl">Leads</span></button>
+      <button data-page="conversas" title="Conversas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="lbl">Conversas</span></button>
+      <button data-page="cobranca" title="Cobrança"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg></span><span class="lbl">Cobrança</span></button>
+      <button data-page="whatsapp" title="WhatsApp"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><span class="lbl">WhatsApp</span></button>
+      <button data-page="config" title="Configurações"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Configurações</span></button>
+      <button id="logout" title="Sair"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span><span class="lbl">Sair</span></button>
     </nav>
     <main>
       <header class="between"><h1 id="title">Leads</h1><div id="toolbar" class="toolbar"><input id="boardSearch" type="search" placeholder="Pesquisar e filtrar"><span id="boardSum" class="sum"></span><button id="newLead" class="primary">+ Novo lead</button></div><button id="back" hidden>Voltar à lista</button></header>
@@ -171,11 +233,13 @@
       <section id="conversas" hidden>
         <div id="chat" class="chat">
           <aside class="chat-list">
+            <div class="chat-top"><h2>Conversas</h2></div>
             <label>Buscar contato<input id="search" type="search" placeholder="Nome ou telefone"></label>
             <div id="contacts" class="stack"></div>
           </aside>
           <section class="thread">
-            <h2 id="threadTitle" class="wrap">Selecione uma conversa</h2>
+            <h2 id="threadTitle" class="wrap" title="Ver dados do contato">Selecione uma conversa</h2>
+            <div id="emptyChat" class="empty-chat"><div><img src="/assets/logo.png" alt=""><h2>Nexus CRM</h2><p>Escolha uma conversa na lista para começar.</p></div></div>
             <div id="messages" aria-label="Mensagens"></div>
             <form id="compose" hidden>
               <label>Mensagem<textarea id="draft" rows="2" required></textarea></label>
@@ -183,6 +247,7 @@
             </form>
           </section>
           <aside class="details">
+            <div class="details-head"><button type="button" id="closeInfo" aria-label="Fechar">×</button>Dados do contato</div>
             <details id="leadDetails" hidden>
               <summary>Dados do contato</summary>
               <p id="leadPhone" class="muted wrap"></p>
@@ -334,6 +399,7 @@
     function go(next) {
       stopView();
       page = next;
+      document.body.className = 'page-' + next;
       $('login').hidden = true; $('app').hidden = false;
       $('title').textContent = pages[next];
       for (const key of Object.keys(pages)) $(key).hidden = key !== next;
@@ -557,6 +623,26 @@
     function normalize(text) {
       return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
     }
+    function timeShort(v) {
+      if (!v) return '';
+      const d = new Date(v); if (Number.isNaN(d.getTime())) return '';
+      const now = new Date();
+      if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const y = new Date(now); y.setDate(now.getDate() - 1);
+      if (d.toDateString() === y.toDateString()) return 'Ontem';
+      return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    }
+    function chatRow(lead) {
+      const id = String(lead.id);
+      const row = button('',() => selectLead(id),'wa-row' + (+lead.unread > 0 ? ' unread' : ''));
+      row.setAttribute('aria-pressed',String(id === selected));
+      const body = el('div',null,'wa-body');
+      const l1 = el('div',null,'wa-line'); l1.append(el('span',nameOf(lead),'wa-name'),el('span',timeShort(lead.last_at || lead.created_at),'wa-time'));
+      const l2 = el('div',null,'wa-line'); l2.append(el('span',lead.last_message || '','wa-msg'));
+      if (+lead.unread > 0) l2.append(el('span',lead.unread,'badge'));
+      body.append(l1,l2); row.append(avatar(lead),body);
+      return row;
+    }
     function renderContacts() {
       const q = normalize($('search').value), digits = q.replace(/\D/g,'');
       const items = leads.filter(l => normalize(l.name).includes(q) || normalize(l.phone).includes(q) ||
@@ -564,7 +650,7 @@
       const snap = JSON.stringify([selected,items]);
       if (snap === listSnapshot) return;
       listSnapshot = snap;
-      $('contacts').replaceChildren(...items.map(l => leadCard(l,false)));
+      $('contacts').replaceChildren(...items.map(chatRow));
       if (!items.length) $('contacts').append(el('p','Nenhum contato encontrado.','muted'));
     }
     let selectionRevision = 0;
@@ -574,14 +660,14 @@
       const lead = currentLead();
       $('chat').classList.toggle('selected',Boolean(lead));
       $('compose').hidden = $('leadDetails').hidden = $('back').hidden = !lead;
-      $('leadDetails').open = window.innerWidth > 1180;
+      $('leadDetails').open = true; $('chat').classList.remove('info-open'); $('emptyChat').hidden = Boolean(lead); $('messages').hidden = !lead;
       $('threadTitle').textContent = lead ? nameOf(lead) : 'Selecione uma conversa';
       if (lead) updateDetails(lead);
       renderContacts();
       if (reload) refresh();
     }
     function updateDetails(lead) {
-      $('threadTitle').replaceChildren(avatar(lead,true), el('span',nameOf(lead))); $('leadPhone').textContent = phoneOf(lead) ? '📱 ' + fmtPhone(phoneOf(lead)) : 'Número escondido pelo WhatsApp';
+      const tt = el('span',nameOf(lead)); tt.append(el('span',phoneOf(lead) ? fmtPhone(phoneOf(lead)) : 'clique para ver os dados do contato','sub')); $('threadTitle').replaceChildren(avatar(lead,true), tt); $('leadPhone').textContent = phoneOf(lead) ? '📱 ' + fmtPhone(phoneOf(lead)) : 'Número escondido pelo WhatsApp';
       if (!detailDirty) fill($('leadForm'), {...lead,stage:lead.stage || 'novo',value_brl:+lead.value ? (lead.value/100).toFixed(2).replace('.',',') : ''});
     }
     function renderMessages(messages) {
@@ -777,6 +863,8 @@
     $('closeModal').onclick = () => $('modal').close();
     $('search').oninput = renderContacts; $('filter').onchange = renderClients;
     $('back').onclick = () => selectLead('');
+    $('threadTitle').onclick = () => { if (currentLead()) $('chat').classList.toggle('info-open'); };
+    $('closeInfo').onclick = () => $('chat').classList.remove('info-open');
     $('newClient').onclick = () => clientForm();
     $('newLead').onclick = () => newLeadForm();
     $('boardSearch').oninput = () => { boardSnapshot = ''; renderBoard(); };
