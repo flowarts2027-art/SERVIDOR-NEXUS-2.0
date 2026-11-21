@@ -59,6 +59,10 @@ jobs:
           npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN value INTEGER NOT NULL DEFAULT 0" || echo "coluna value já existe"
           npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN avatar TEXT NOT NULL DEFAULT ''" || echo "coluna avatar já existe"
           npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN info_at TEXT" || echo "coluna info_at já existe"
+          npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN tags TEXT NOT NULL DEFAULT ''" || echo "coluna já existe"
+          npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN last_in_at TEXT" || echo "coluna já existe"
+          npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN followup_count INTEGER NOT NULL DEFAULT 0" || echo "coluna já existe"
+          npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --command "ALTER TABLE leads ADD COLUMN followup_last TEXT" || echo "coluna já existe"
 
       - name: Publicar o Worker nexus-crm
         env:

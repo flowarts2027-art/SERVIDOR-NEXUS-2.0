@@ -1,5 +1,7 @@
 /* Nexus CRM — leads do WhatsApp, conversas e ponte do QR Code (21/11/2026). */
 const STAGES = ['novo', 'conversa', 'agendado', 'pagamento', 'pago', 'perdido'];
+export const TAGS = ['novo', 'quente', 'qualificado', 'urgente', 'frio'];
+const cleanTags = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(',')).map(t => String(t).trim()).filter(t => TAGS.includes(t)))].join(',');
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 const fail = (message, status = 400) => json({ error: message }, status);
 const clean = (v, n = 255) => String(v ?? '').trim().slice(0, n);
@@ -87,6 +89,8 @@ export async function bridgeApi(req, env, url) {
         unread=unread+?,
         stage=CASE WHEN stage='novo' AND ?=1 THEN 'conversa' ELSE stage END WHERE id=?`)
         .bind(when, body.slice(0, 300), when, when, fromMe || old ? 0 : 1, fromMe ? 1 : 0, lead.id).run();
+      if (!fromMe) await env.DB.prepare(`UPDATE leads SET last_in_at=CASE WHEN last_in_at IS NULL OR ?>last_in_at THEN ? ELSE last_in_at END,
+        followup_count=CASE WHEN ? THEN followup_count ELSE 0 END WHERE id=?`).bind(when, when, old ? 1 : 0, lead.id).run();
     }
     return json({ ok: true, saved });
   }
@@ -159,8 +163,22 @@ export async function crmApi(req, env, url, helpers) {
 
   if (p === '/api/whatsapp' && m === 'GET') return json(await waState(env));
 
+  if (p === '/api/followup' && m === 'GET') return json(await env.DB.prepare('SELECT * FROM followup_cfg WHERE id=1').first());
+  if (p === '/api/followup' && m === 'PUT') {
+    const x = await input(req);
+    const days = Math.round(Number(x.days)), max = Math.round(Number(x.max_attempts));
+    const message = clean(x.message, 1000);
+    if (!(days >= 1 && days <= 60)) return fail('Dias: de 1 a 60.');
+    if (!(max >= 1 && max <= 10)) return fail('Tentativas: de 1 a 10.');
+    if (!message) return fail('Escreva a mensagem do follow-up.');
+    const tag = TAGS.includes(x.tag) ? x.tag : 'quente';
+    await env.DB.prepare('UPDATE followup_cfg SET enabled=?,tag=?,days=?,max_attempts=?,message=? WHERE id=1').bind(x.enabled ? 1 : 0, tag, days, max, message).run();
+    return json({ ok: true });
+  }
+  if (p === '/api/followup/run' && m === 'POST') return json(await runFollowup(env, true));
+
   if (p === '/api/leads' && m === 'GET') {
-    const r = await env.DB.prepare('SELECT id,phone,jid,name,stage,notes,value,avatar,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
+    const r = await env.DB.prepare('SELECT id,phone,jid,name,stage,notes,value,avatar,tags,last_in_at,followup_count,followup_last,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
     return json({ leads: r.results });
   }
 
@@ -176,7 +194,7 @@ export async function crmApi(req, env, url, helpers) {
     if (!phone) phone = 'manual-' + crypto.randomUUID().slice(0, 8);
     const exists = await env.DB.prepare('SELECT id FROM leads WHERE phone=?').bind(phone).first();
     if (exists) return fail('Já existe um lead com esse telefone.', 409);
-    const r = await env.DB.prepare('INSERT INTO leads(phone,name,stage,value,last_at) VALUES(?,?,?,?,?)').bind(phone, name, stage, value, nowIso()).run();
+    const r = await env.DB.prepare('INSERT INTO leads(phone,name,stage,value,last_at,tags) VALUES(?,?,?,?,?,?)').bind(phone, name, stage, value, nowIso(), cleanTags(x.tags)).run();
     return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
 
@@ -191,8 +209,9 @@ export async function crmApi(req, env, url, helpers) {
     const notes = x.notes !== undefined ? clean(x.notes, 4000) : lead.notes;
     const stage = x.stage !== undefined ? String(x.stage) : lead.stage;
     const value = x.value !== undefined ? Math.max(0, Math.round(Number(x.value) || 0)) : lead.value;
+    const tags = x.tags !== undefined ? cleanTags(x.tags) : lead.tags;
     if (!STAGES.includes(stage)) return fail('Etapa inválida.');
-    await env.DB.prepare('UPDATE leads SET name=?,notes=?,stage=?,value=? WHERE id=?').bind(name, notes, stage, value, lead.id).run();
+    await env.DB.prepare('UPDATE leads SET name=?,notes=?,stage=?,value=?,tags=? WHERE id=?').bind(name, notes, stage, value, tags, lead.id).run();
     return json({ ok: true });
   }
 
@@ -228,4 +247,26 @@ export async function crmApi(req, env, url, helpers) {
     return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
   return fail('Rota não encontrada.', 404);
+}
+
+/* Follow-up: manda mensagem para quem tem a etiqueta escolhida e está sem conversa há X dias */
+export async function runFollowup(env, manual = false) {
+  const cfg = await env.DB.prepare('SELECT * FROM followup_cfg WHERE id=1').first();
+  if (!cfg || (!cfg.enabled && !manual)) return { sent: 0, reason: 'desligado' };
+  if ((await waState(env)).state !== 'online') return { sent: 0, reason: 'WhatsApp desconectado' };
+  const cut = new Date(Date.now() - cfg.days * 86400_000).toISOString();
+  const r = await env.DB.prepare(`SELECT * FROM leads WHERE (','||tags||',') LIKE ? AND followup_count < ?
+    AND stage NOT IN ('pago','perdido') AND phone NOT LIKE 'manual-%' AND COALESCE(last_at, created_at) < ?
+    AND (followup_last IS NULL OR followup_last < ?) ORDER BY last_at LIMIT 25`)
+    .bind('%,' + cfg.tag + ',%', cfg.max_attempts, cut, cut).all();
+  let sent = 0;
+  for (const lead of r.results) {
+    const first = (lead.name || '').trim().split(/\s+/)[0] || '';
+    const text = cfg.message.replace(/\{nome\}/gi, first).replace(/\s+,/g, ',').trim();
+    await env.DB.prepare("INSERT INTO messages(lead_id,direction,body,status,created_at) VALUES(?,'out',?,'pending',?)").bind(lead.id, text, nowIso()).run();
+    await env.DB.prepare('UPDATE leads SET last_message=?, last_at=?, followup_count=followup_count+1, followup_last=? WHERE id=?')
+      .bind(text.slice(0, 300), nowIso(), nowIso(), lead.id).run();
+    sent++;
+  }
+  return { sent };
 }

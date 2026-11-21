@@ -47,6 +47,10 @@ CREATE TABLE IF NOT EXISTS leads (
   value INTEGER NOT NULL DEFAULT 0,
   avatar TEXT NOT NULL DEFAULT '',
   info_at TEXT,
+  tags TEXT NOT NULL DEFAULT '',
+  last_in_at TEXT,
+  followup_count INTEGER NOT NULL DEFAULT 0,
+  followup_last TEXT,
   last_message TEXT NOT NULL DEFAULT '',
   last_at TEXT,
   unread INTEGER NOT NULL DEFAULT 0,
@@ -72,3 +76,14 @@ CREATE TABLE IF NOT EXISTS wa_status (
   seen_at TEXT
 );
 INSERT OR IGNORE INTO wa_status (id, bridge_key) VALUES (1, lower(hex(randomblob(20))));
+
+-- Follow-up automático (21/11/2026)
+CREATE TABLE IF NOT EXISTS followup_cfg (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  enabled INTEGER NOT NULL DEFAULT 0,
+  tag TEXT NOT NULL DEFAULT 'quente',
+  days INTEGER NOT NULL DEFAULT 2,
+  max_attempts INTEGER NOT NULL DEFAULT 3,
+  message TEXT NOT NULL DEFAULT 'Olá {nome}, tudo bem? Passando para saber se ficou alguma dúvida. Posso te ajudar?'
+);
+INSERT OR IGNORE INTO followup_cfg (id) VALUES (1);

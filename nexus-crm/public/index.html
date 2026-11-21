@@ -202,6 +202,29 @@
       .details { width: 100% }
       body.page-conversas header { display: flex }
     }
+
+    /* ===== Cards do funil (modelo Kommo) ===== */
+    .lead.kc { display: flex; gap: .65rem; align-items: flex-start; padding: .7rem .75rem; border-left: 1px solid var(--line) }
+    .kc-av { position: relative; flex: 0 0 46px }
+    .kc-av .av { width: 46px; height: 46px; flex-basis: 46px }
+    .kc-ch { position: absolute; right: -3px; bottom: -3px; width: 20px; height: 20px; border-radius: 50%; background: #25d366; border: 2px solid white; display: grid; place-items: center }
+    .kc-ch svg { width: 11px; height: 11px; fill: white }
+    .kc-body { flex: 1; min-width: 0; display: grid; gap: 1px }
+    .kc-top { display: flex; justify-content: space-between; gap: .5rem; font-size: 13.5px; color: #4a5160 }
+    .kc-top span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+    .kc-top time { font-size: 13px; color: #6b7486; white-space: nowrap }
+    .kc-title { color: #1764b8 !important; font-weight: 500 !important; font-size: 16.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+    .kc-tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 4px; font-size: 14px }
+    .kc-tags b { font-weight: 600; color: #3a4357; margin-right: 2px }
+    .chip { border: 1px solid var(--tc, #c3c9d4); color: var(--tc, #4a5160); border-radius: 4px; padding: 0 .4rem; font-size: 13px; line-height: 1.55; background: white }
+    .kc-foot { display: flex; justify-content: flex-end; margin-top: 3px }
+    .fu { font-size: 13px; display: inline-flex; align-items: center; gap: .3rem; color: var(--fc) }
+    .fu::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--fc) }
+    .tagpick { display: flex; flex-wrap: wrap; gap: .4rem; margin: .3rem 0 .9rem }
+    .tagpick button { min-height: 32px; padding: .1rem .6rem; border: 1px solid var(--tc); color: var(--tc); background: white; border-radius: 16px; font-size: 14px }
+    .tagpick button[aria-pressed="true"] { background: var(--tc); color: white }
+    #tagFilter { max-width: 190px; background: #f5f6f8 }
+    #followup .fu-list .row { justify-content: space-between; border-bottom: 1px solid var(--line); padding: .5rem 0 }
   </style>
 </head>
 <body>
@@ -222,13 +245,14 @@
       <div class="brand"><img src="/assets/logo.png" alt=""><span>NEXUS<small>CRM</small></span></div>
       <button data-page="funil" title="Leads"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg></span><span class="lbl">Leads</span></button>
       <button data-page="conversas" title="Conversas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="lbl">Conversas</span></button>
+      <button data-page="followup" title="Follow-up"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5M12 7v5l3 2"/></svg></span><span class="lbl">Follow-up</span></button>
       <button data-page="cobranca" title="Cobrança"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg></span><span class="lbl">Cobrança</span></button>
       <button data-page="whatsapp" title="WhatsApp"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><span class="lbl">WhatsApp</span></button>
       <button data-page="config" title="Configurações"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Configurações</span></button>
       <button id="logout" title="Sair"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span><span class="lbl">Sair</span></button>
     </nav>
     <main>
-      <header class="between"><h1 id="title">Leads</h1><div id="toolbar" class="toolbar"><input id="boardSearch" type="search" placeholder="Pesquisar e filtrar"><span id="boardSum" class="sum"></span><button id="newLead" class="primary">+ Novo lead</button></div><button id="back" hidden>Voltar à lista</button></header>
+      <header class="between"><h1 id="title">Leads</h1><div id="toolbar" class="toolbar"><input id="boardSearch" type="search" placeholder="Pesquisar e filtrar"><select id="tagFilter" aria-label="Filtrar por etiqueta"><option value="">Todas as etiquetas</option></select><span id="boardSum" class="sum"></span><button id="newLead" class="primary">+ Novo lead</button></div><button id="back" hidden>Voltar à lista</button></header>
       <section id="funil"><div id="board" class="board"></div></section>
 
       <section id="conversas" hidden>
@@ -252,6 +276,7 @@
             <details id="leadDetails" hidden>
               <summary>Dados do contato</summary>
               <p id="leadPhone" class="muted wrap"></p>
+              <p class="muted" style="margin-top:.6rem">Etiquetas</p><div id="tagPick" class="tagpick"></div>
               <form id="leadForm">
                 <label>Nome<input name="name"></label>
                 <label>Etapa<select name="stage" id="stage"></select></label>
@@ -264,6 +289,24 @@
             </details>
           </aside>
         </div>
+      </section>
+
+      <section id="followup" class="stack narrow" hidden style="max-width:52rem">
+        <div class="panel stack">
+          <h2>Follow-up automático</h2>
+          <p class="muted">O CRM manda uma mensagem sozinho para os leads com a etiqueta escolhida que ficaram sem conversa pelo número de dias que você definir. Quando o cliente responde, a contagem recomeça.</p>
+          <form id="fuForm">
+            <label style="display:flex;align-items:center;gap:.6rem;font-size:16px"><input type="checkbox" name="enabled" style="width:22px;height:22px"> Ligado</label>
+            <label>Para leads com a etiqueta<select name="tag" id="fuTag"></select></label>
+            <div class="row" style="flex-wrap:nowrap">
+              <label style="flex:1">Mandar depois de quantos dias sem conversa<input name="days" type="number" min="1" max="60" required></label>
+              <label style="flex:1">Máximo de tentativas<input name="max_attempts" type="number" min="1" max="10" required></label>
+            </div>
+            <label>Mensagem (use {nome} para o primeiro nome)<textarea name="message" rows="3" required></textarea></label>
+            <div class="row"><button class="primary">Salvar</button><button type="button" id="fuRun">Rodar agora</button></div>
+          </form>
+        </div>
+        <div class="panel stack"><h2 id="fuTitle">Leads no follow-up</h2><div id="fuList" class="fu-list"></div></div>
       </section>
 
       <section id="cobranca" class="stack" hidden>
@@ -313,7 +356,7 @@
       agendado: ['Agendado', '#7359a2'], pagamento: ['Pagamento pendente', '#a26c19'],
       pago: ['Pago', '#1f9d5c'], perdido: ['Perdido', '#98524c']
     };
-    const pages = {funil:'Leads', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
+    const pages = {funil:'Leads', followup:'Follow-up', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
     const statuses = {pending:'Pendente', awaiting:'Aguardando pagamento', paid:'Pago'};
     const money = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
     const reais = cents => money.format(Number(cents) / 100);
@@ -429,11 +472,13 @@
       refreshing = token;
       clearTimeout(timer);
       try {
-        if (view === 'funil' || view === 'conversas') {
+        if (view === 'funil' || view === 'conversas' || view === 'followup') {
+          if (!fuCfg || view === 'followup') await loadFollowup();
           const result = await api('/api/leads','GET',undefined,signal);
           if (epoch !== token) return;
           leads = result.leads.slice().sort((a,b) => stamp(b.last_at) - stamp(a.last_at));
           if (view === 'funil') renderBoard();
+          else if (view === 'followup') renderFollowup();
           else {
             let lead = currentLead();
             if (selected && !lead) { selectLead('', false); lead = null; }
@@ -516,38 +561,78 @@
       return Math.round(n * 100);
     }
     const currentLead = () => leads.find(l => String(l.id) === selected);
+    const TAGS = {novo:['Novo lead','#2b7bff'], quente:['Lead quente','#e5483f'], qualificado:['Qualificado','#1f9d5c'], urgente:['Urgente','#d9822b'], frio:['Frio','#7a8aa6']};
+    let fuCfg = null;
+    const tagsOf = lead => String(lead.tags || '').split(',').filter(t => TAGS[t]);
+    function chip(t) { const c = el('span',TAGS[t][0],'chip'); c.style.setProperty('--tc',TAGS[t][1]); return c; }
+    function fuStatus(lead) {
+      if (!fuCfg || !fuCfg.enabled || !tagsOf(lead).includes(fuCfg.tag)) return ['Sem follow-up','#d9a400'];
+      if (['pago','perdido'].includes(lead.stage)) return ['Concluído','#7a8aa6'];
+      if (+lead.followup_count >= +fuCfg.max_attempts) return ['Follow-up encerrado','#7a8aa6'];
+      const base = Math.max(stamp(lead.last_at || lead.created_at), stamp(lead.followup_last));
+      const days = Math.ceil((base + fuCfg.days * 86400000 - Date.now()) / 86400000);
+      return days <= 0 ? ['Hoje','#1fa855'] : [days + 'd','#e5483f'];
+    }
+    const WA_ICON = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2zm5 13.9c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1-3-1-5-4-5.2-4.2-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.4 1.8 2.2 1.2 1.1 2.2 1.4 2.6 1.6.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.1.1.6-.1 1.3z"/></svg>';
     function leadCard(lead, movable) {
       const id = String(lead.id);
-      const card = button('', () => {
-        if (page === 'funil') { selected = id; go('conversas'); }
-        else selectLead(id);
-      }, 'lead');
-      const top = el('div',null,'between');
-      const who = el('div',null,'who'), info = el('div');
-      info.append(el('strong',nameOf(lead)));
-      if (lead.name && phoneOf(lead)) info.append(el('small',fmtPhone(phoneOf(lead))));
-      who.append(avatar(lead), info);
-      top.append(who);
-      if (+lead.unread > 0) {
-        const badge = el('span',lead.unread,'badge');
-        badge.setAttribute('aria-label',lead.unread + ' mensagens não lidas'); top.append(badge);
-      }
-      card.append(top);
-      if (+lead.value > 0) card.append(el('span',reais(lead.value),'lead-value'));
-      card.append(el('span',lead.last_message || (String(lead.phone).startsWith('manual-') ? 'Cadastrado à mão' : 'Sem mensagens'),'preview'),el('time',dateText(lead.last_at || lead.created_at)));
-      if (!movable) card.setAttribute('aria-pressed',String(id === selected));
-      else {
+      const card = button('', () => { selected = id; go('conversas'); }, 'lead kc');
+      const avBox = el('div',null,'kc-av'); avBox.append(avatar(lead));
+      if (!String(lead.phone).startsWith('manual-')) { const ch = el('span',null,'kc-ch'); ch.innerHTML = WA_ICON; avBox.append(ch); }
+      const body = el('div',null,'kc-body');
+      const top = el('div',null,'kc-top');
+      top.append(el('span',phoneOf(lead) ? fmtPhone(phoneOf(lead)) : 'WhatsApp'),el('time',timeShort(lead.last_at || lead.created_at)));
+      const title = el('strong',nameOf(lead),'kc-title');
+      const tags = el('div',null,'kc-tags');
+      if (+lead.value > 0) tags.append(el('b',reais(lead.value)));
+      tags.append(...tagsOf(lead).map(chip));
+      if (+lead.unread > 0) { const b = el('span',lead.unread,'badge'); b.style.background = '#25d366'; tags.append(b); }
+      const [txt,color] = fuStatus(lead);
+      const foot = el('div',null,'kc-foot'), fu = el('span',txt,'fu'); fu.style.setProperty('--fc',color); foot.append(fu);
+      body.append(top,title);
+      if (lead.last_message) body.append(el('span',lead.last_message,'preview'));
+      body.append(tags,foot);
+      card.append(avBox,body);
+      if (movable) {
         card.draggable = true;
-        card.ondragstart = e => {
-          dragging = id; e.dataTransfer.setData('text/plain',id); e.dataTransfer.effectAllowed = 'move';
-        };
-        card.ondragend = () => {
-          dragging = ''; document.querySelectorAll('.column.over').forEach(c => c.classList.remove('over'));
-        };
+        card.ondragstart = e => { dragging = id; e.dataTransfer.setData('text/plain',id); e.dataTransfer.effectAllowed = 'move'; };
+        card.ondragend = () => { dragging = ''; document.querySelectorAll('.column.over').forEach(c => c.classList.remove('over')); };
       }
       return card;
     }
+    function renderTagPick(lead) {
+      const box = $('tagPick'), on = tagsOf(lead);
+      box.replaceChildren(...Object.entries(TAGS).map(([k,[label,color]]) => {
+        const b = el('button',label); b.type = 'button'; b.style.setProperty('--tc',color);
+        b.setAttribute('aria-pressed',String(on.includes(k)));
+        b.onclick = () => run(b, async () => {
+          const now = tagsOf(currentLead() || lead), next = now.includes(k) ? now.filter(t => t !== k) : [...now,k];
+          await api(path('leads',lead.id),'PUT',{tags:next});
+          const cur = currentLead(); if (cur) cur.tags = next.join(',');
+          renderTagPick(cur || {...lead,tags:next.join(',')}); boardSnapshot = listSnapshot = '';
+        });
+        return b;
+      }));
+    }
+    async function loadFollowup() { try { fuCfg = await api('/api/followup'); } catch {} }
+    function renderFollowup() {
+      const f = $('fuForm');
+      if (!f.dataset.dirty) { f.elements.enabled.checked = !!fuCfg.enabled; f.elements.tag.value = fuCfg.tag; f.elements.days.value = fuCfg.days; f.elements.max_attempts.value = fuCfg.max_attempts; f.elements.message.value = fuCfg.message; }
+      const items = leads.filter(l => tagsOf(l).includes(fuCfg.tag));
+      $('fuTitle').textContent = 'Leads com a etiqueta "' + TAGS[fuCfg.tag][0] + '" (' + items.length + ')';
+      $('fuList').replaceChildren(...items.map(l => {
+        const r = el('div',null,'row'), who = el('div',null,'who'), info = el('div');
+        info.append(el('strong',nameOf(l)),el('small','Tentativas: ' + (+l.followup_count || 0) + ' de ' + fuCfg.max_attempts));
+        who.append(avatar(l),info);
+        const [txt,color] = fuStatus(l), fu = el('span',txt === 'Hoje' ? 'Próximo: hoje' : /d$/.test(txt) ? 'Próximo em ' + txt : txt,'fu'); fu.style.setProperty('--fc',color);
+        r.append(who,fu); r.style.cursor = 'pointer'; r.onclick = () => { selected = String(l.id); go('conversas'); };
+        return r;
+      }));
+      if (!items.length) $('fuList').append(el('p','Nenhum lead com essa etiqueta ainda. Abra uma conversa e marque a etiqueta.','muted'));
+    }
     function boardMatches(l) {
+      const tf = $('tagFilter').value;
+      if (tf && !tagsOf(l).includes(tf)) return false;
       const q = normalize($('boardSearch').value);
       if (!q) return true;
       return normalize(l.name).includes(q) || normalize(l.phone).includes(q) || normalize(l.last_message).includes(q) || normalize(l.notes).includes(q);
@@ -569,7 +654,7 @@
     }
     function renderBoard() {
       const items0 = leads.filter(boardMatches);
-      const snap = JSON.stringify([items0, $('boardSearch').value]);
+      const snap = JSON.stringify([items0, $('boardSearch').value, $('tagFilter').value, fuCfg]);
       if (dragging || snap === boardSnapshot) return;
       if (document.querySelector('.quick-form')) return; // não apaga o que está sendo digitado
       boardSnapshot = snap;
@@ -669,6 +754,7 @@
     }
     function updateDetails(lead) {
       const tt = el('span',nameOf(lead)); tt.append(el('span',phoneOf(lead) ? fmtPhone(phoneOf(lead)) : 'clique para ver os dados do contato','sub')); $('threadTitle').replaceChildren(avatar(lead,true), tt); $('leadPhone').textContent = phoneOf(lead) ? '📱 ' + fmtPhone(phoneOf(lead)) : 'Número escondido pelo WhatsApp';
+      renderTagPick(lead);
       if (!detailDirty) fill($('leadForm'), {...lead,stage:lead.stage || 'novo',value_brl:+lead.value ? (lead.value/100).toFixed(2).replace('.',',') : ''});
     }
     function renderMessages(messages) {
@@ -868,6 +954,18 @@
     $('closeInfo').onclick = () => $('chat').classList.remove('info-open');
     $('newClient').onclick = () => clientForm();
     $('newLead').onclick = () => newLeadForm();
+    for (const [k,[label]] of Object.entries(TAGS)) { $('tagFilter').add(new Option(label,k)); $('fuTag').add(new Option(label,k)); }
+    $('tagFilter').onchange = () => { boardSnapshot = ''; renderBoard(); };
+    $('fuForm').oninput = () => { $('fuForm').dataset.dirty = '1'; };
+    submit($('fuForm'), async () => {
+      const f = $('fuForm').elements;
+      await api('/api/followup','PUT',{enabled:f.enabled.checked,tag:f.tag.value,days:+f.days.value,max_attempts:+f.max_attempts.value,message:f.message.value});
+      delete $('fuForm').dataset.dirty; await loadFollowup(); notice('Follow-up salvo.'); refresh();
+    });
+    $('fuRun').onclick = () => run($('fuRun'), async () => {
+      const r = await api('/api/followup/run','POST');
+      notice(r.sent ? r.sent + ' mensagem(ns) de follow-up na fila de envio.' : 'Nenhum lead para receber follow-up agora' + (r.reason ? ' (' + r.reason + ')' : '') + '.'); refresh();
+    });
     $('boardSearch').oninput = () => { boardSnapshot = ''; renderBoard(); };
     $('deleteLead').onclick = () => run($('deleteLead'), async () => {
       const lead = currentLead(); if (!lead) return;
