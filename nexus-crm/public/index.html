@@ -225,6 +225,31 @@
     .tagpick button[aria-pressed="true"] { background: var(--tc); color: white }
     #tagFilter { max-width: 190px; background: #f5f6f8 }
     #followup .fu-list .row { justify-content: space-between; border-bottom: 1px solid var(--line); padding: .5rem 0 }
+
+    /* ===== Tarefas e mensagens prontas ===== */
+    .navbadge { position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: #e5483f; color: white; font-size: 11.5px; font-weight: 700; display: grid; place-items: center }
+    .task { display: flex; align-items: center; gap: .7rem; padding: .6rem .2rem; border-bottom: 1px solid var(--line) }
+    .task input[type=checkbox] { width: 22px; height: 22px; flex: 0 0 22px; accent-color: #1fa855 }
+    .task .t-body { flex: 1; min-width: 0; display: grid }
+    .task.done .t-title { text-decoration: line-through; color: var(--muted) }
+    .task .t-lead { font-size: 14px; color: #1764b8; cursor: pointer }
+    .t-when { font-size: 14px; white-space: nowrap; color: var(--tw, #4a5160); font-weight: 600 }
+    .task button { min-height: 32px; padding: 0 .5rem; border: 0; color: #b0b6c2; font-size: 18px }
+    .task button:hover { color: #c0392b; background: transparent }
+    .group-title { margin: 1rem 0 .2rem; font-size: 14px; text-transform: uppercase; letter-spacing: .05em; color: var(--gc, #4a5160) }
+    .task-add { display: grid; grid-template-columns: 1fr 210px auto; gap: .5rem; align-items: end }
+    .tpl { border: 1px solid var(--line); border-radius: 8px; padding: .7rem .9rem; display: grid; gap: .3rem }
+    .tpl p { color: #4a5160; white-space: pre-wrap }
+    #tplMenu { position: absolute; bottom: 70px; left: 1rem; z-index: 5; width: min(420px, 90%); max-height: 50vh; overflow-y: auto; background: white; border-radius: 10px; box-shadow: 0 10px 30px #0003; padding: .4rem }
+    #tplMenu button { display: grid; width: 100%; text-align: left; border: 0; border-radius: 6px; gap: 0; padding: .5rem .7rem; min-height: 0 }
+    #tplMenu button:hover { background: #f0f2f5 }
+    #tplMenu small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+    .thread { position: relative }
+    #compose #tplBtn { background: transparent; border: 0; color: #54656f; font-size: 22px; width: 46px; height: 46px; padding: 0; border-radius: 50% }
+    #compose #tplBtn:hover { background: #e1e4e7 }
+    .lead-tasks { border-top: 1px solid var(--line); margin-top: .8rem; padding-top: .6rem }
+    .lead-tasks .task-add { grid-template-columns: 1fr; }
+    @media (max-width: 760px) { .task-add { grid-template-columns: 1fr } }
   </style>
 </head>
 <body>
@@ -246,6 +271,8 @@
       <button data-page="funil" title="Leads"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="11" rx="1"/><rect x="17" y="4" width="4" height="7" rx="1"/></svg></span><span class="lbl">Leads</span></button>
       <button data-page="conversas" title="Conversas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="lbl">Conversas</span></button>
       <button data-page="followup" title="Follow-up"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5M12 7v5l3 2"/></svg></span><span class="lbl">Follow-up</span></button>
+      <button data-page="tarefas" title="Tarefas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 15l2.5 2.5L16 13"/></svg></span><span class="lbl">Tarefas</span><span id="taskBadge" class="navbadge" hidden></span></button>
+      <button data-page="respostas" title="Mensagens prontas"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><span class="lbl">Mensagens prontas</span></button>
       <button data-page="cobranca" title="Cobrança"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg></span><span class="lbl">Cobrança</span></button>
       <button data-page="whatsapp" title="WhatsApp"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><span class="lbl">WhatsApp</span></button>
       <button data-page="config" title="Configurações"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Configurações</span></button>
@@ -266,7 +293,9 @@
             <h2 id="threadTitle" class="wrap" title="Ver dados do contato">Selecione uma conversa</h2>
             <div id="emptyChat" class="empty-chat"><div><img src="/assets/logo.png" alt=""><h2>Nexus CRM</h2><p>Escolha uma conversa na lista para começar.</p></div></div>
             <div id="messages" aria-label="Mensagens"></div>
+            <div id="tplMenu" hidden></div>
             <form id="compose" hidden>
+              <button type="button" id="tplBtn" title="Mensagens prontas" aria-label="Mensagens prontas">⚡</button>
               <label>Mensagem<textarea id="draft" rows="2" required></textarea></label>
               <button class="primary">Enviar</button>
             </form>
@@ -285,6 +314,8 @@
                 <button class="primary">Salvar contato</button>
               </form>
               <button id="convert">Virar cliente de cobrança</button>
+              <div class="lead-tasks"><h3>Tarefas</h3><div id="leadTasks"></div>
+                <form id="leadTaskForm" class="task-add"><input name="title" placeholder="Nova tarefa para este contato" required><input name="due_at" type="datetime-local" required><button class="primary">Adicionar tarefa</button></form></div>
               <button id="deleteLead" class="danger">Excluir lead</button>
             </details>
           </aside>
@@ -307,6 +338,26 @@
           </form>
         </div>
         <div class="panel stack"><h2 id="fuTitle">Leads no follow-up</h2><div id="fuList" class="fu-list"></div></div>
+      </section>
+
+      <section id="tarefas" class="stack" hidden style="max-width:56rem">
+        <form id="taskForm" class="panel task-add">
+          <label>Nova tarefa<input name="title" placeholder="Ex.: Ligar para o cliente" required></label>
+          <label>Quando<input name="due_at" type="datetime-local" required></label>
+          <button class="primary">Adicionar</button>
+        </form>
+        <div class="panel" id="taskList"></div>
+      </section>
+
+      <section id="respostas" class="stack" hidden style="max-width:52rem">
+        <form id="tplForm" class="panel">
+          <h2 id="tplFormTitle">Nova mensagem pronta</h2>
+          <input type="hidden" name="id">
+          <label>Nome (só para você achar)<input name="title" placeholder="Ex.: Preço do plano" required maxlength="80"></label>
+          <label>Texto (use {nome} para o primeiro nome do cliente)<textarea name="body" rows="4" required></textarea></label>
+          <div class="row"><button class="primary">Salvar</button><button type="button" id="tplCancel" hidden>Cancelar edição</button></div>
+        </form>
+        <div id="tplList" class="panel stack"></div>
       </section>
 
       <section id="cobranca" class="stack" hidden>
@@ -356,7 +407,7 @@
       agendado: ['Agendado', '#7359a2'], pagamento: ['Pagamento pendente', '#a26c19'],
       pago: ['Pago', '#1f9d5c'], perdido: ['Perdido', '#98524c']
     };
-    const pages = {funil:'Leads', followup:'Follow-up', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
+    const pages = {funil:'Leads', followup:'Follow-up', tarefas:'Tarefas', respostas:'Mensagens prontas', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
     const statuses = {pending:'Pendente', awaiting:'Aguardando pagamento', paid:'Pago'};
     const money = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
     const reais = cents => money.format(Number(cents) / 100);
@@ -479,6 +530,7 @@
           leads = result.leads.slice().sort((a,b) => stamp(b.last_at) - stamp(a.last_at));
           if (view === 'funil') renderBoard();
           else if (view === 'followup') renderFollowup();
+          if (view !== 'followup') { const end = new Date(); end.setHours(23,59,59,999); setTaskBadge(leads.filter(l => l.next_task && new Date(l.next_task) <= end).length); }
           else {
             let lead = currentLead();
             if (selected && !lead) { selectLead('', false); lead = null; }
@@ -492,6 +544,12 @@
               if (Number(lead.unread)) { lead.unread = 0; renderContacts(); }
             }
           }
+        } else if (view === 'tarefas') {
+          const r = await api('/api/tasks','GET',undefined,signal);
+          if (epoch === token) renderTasks(r.tasks);
+        } else if (view === 'respostas') {
+          const r = await api('/api/templates','GET',undefined,signal);
+          if (epoch === token) { templates = r.templates; renderTemplates(); }
         } else if (view === 'cobranca') {
           const result = await api('/api/clients','GET',undefined,signal);
           if (epoch !== token) return;
@@ -509,8 +567,8 @@
         if (epoch === token) {
           refreshing = 0;
           if (refreshAgain) { refreshAgain = false; timer = setTimeout(refresh, 0); }
-          else if (['funil','conversas','whatsapp'].includes(view))
-            timer = setTimeout(refresh, view === 'whatsapp' ? 3000 : 5000);
+          else if (['funil','conversas','whatsapp','tarefas'].includes(view))
+            timer = setTimeout(refresh, view === 'whatsapp' ? 3000 : view === 'tarefas' ? 30000 : 5000);
         }
       }
     }
@@ -587,7 +645,8 @@
       if (+lead.value > 0) tags.append(el('b',reais(lead.value)));
       tags.append(...tagsOf(lead).map(chip));
       if (+lead.unread > 0) { const b = el('span',lead.unread,'badge'); b.style.background = '#25d366'; tags.append(b); }
-      const [txt,color] = fuStatus(lead);
+      let [txt,color] = fuStatus(lead);
+      if (lead.next_task) { const w = whenInfo(lead.next_task); txt = w[0] === 'late' ? 'Tarefa atrasada' : w[0] === 'today' ? 'Tarefa hoje' : 'Tarefa: ' + w[1]; color = w[2]; }
       const foot = el('div',null,'kc-foot'), fu = el('span',txt,'fu'); fu.style.setProperty('--fc',color); foot.append(fu);
       body.append(top,title);
       if (lead.last_message) body.append(el('span',lead.last_message,'preview'));
@@ -613,6 +672,77 @@
         });
         return b;
       }));
+    }
+    let templates = [];
+    function localInput(d) { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0,16); }
+    function defaultDue() { const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(9,0,0,0); return localInput(d); }
+    function whenInfo(iso) {
+      const d = new Date(iso), now = new Date();
+      const startToday = new Date(now); startToday.setHours(0,0,0,0);
+      const endToday = new Date(startToday); endToday.setDate(endToday.getDate() + 1);
+      const hm = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      if (d < now && d < startToday) return ['late','Atrasada · ' + d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) + ' ' + hm,'#e5483f'];
+      if (d < now) return ['late','Atrasada · hoje ' + hm,'#e5483f'];
+      if (d < endToday) return ['today','Hoje ' + hm,'#1fa855'];
+      const days = Math.ceil((d - startToday) / 86400000) - 1;
+      return ['next', (days === 1 ? 'Amanhã ' : d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'}) + ' ') + hm,'#4a5160'];
+    }
+    function taskRow(t, showLead) {
+      const row = el('div',null,'task' + (t.done ? ' done' : ''));
+      const cb = el('input'); cb.type = 'checkbox'; cb.checked = !!t.done; cb.setAttribute('aria-label','Concluir tarefa');
+      cb.onchange = () => run(cb, async () => { await api(path('tasks',t.id),'PUT',{done:cb.checked}); notice(cb.checked ? 'Tarefa concluída. ✔' : 'Tarefa reaberta.'); refresh(); if (page === 'conversas') loadLeadTasks(); });
+      const body = el('div',null,'t-body'); body.append(el('span',t.title,'t-title'));
+      if (showLead && t.lead_id) { const a = el('span',t.lead_name || fmtPhone(t.lead_phone) || 'Contato','t-lead'); a.onclick = () => { selected = String(t.lead_id); go('conversas'); }; body.append(a); }
+      const [, txt, color] = whenInfo(t.due_at); const w = el('span',t.done ? 'Feita' : txt,'t-when'); w.style.setProperty('--tw', t.done ? '#7a8aa6' : color);
+      const del = el('button','×'); del.type = 'button'; del.title = 'Excluir tarefa';
+      del.onclick = () => run(del, async () => { if (!confirm('Excluir esta tarefa?')) return; await api(path('tasks',t.id),'DELETE'); refresh(); if (page === 'conversas') loadLeadTasks(); });
+      row.append(cb,body,w,del); return row;
+    }
+    function renderTasks(tasks) {
+      const groups = {late:['Atrasadas','#e5483f'], today:['Hoje','#1fa855'], next:['Próximas','#4a5160'], done:['Concluídas (7 dias)','#7a8aa6']};
+      const by = {late:[],today:[],next:[],done:[]};
+      for (const t of tasks) by[t.done ? 'done' : whenInfo(t.due_at)[0]].push(t);
+      const out = [];
+      for (const [k,[label,color]] of Object.entries(groups)) {
+        if (!by[k].length) continue;
+        const h = el('h3',label + ' (' + by[k].length + ')','group-title'); h.style.setProperty('--gc',color);
+        out.push(h, ...by[k].map(t => taskRow(t,true)));
+      }
+      if (!out.length) out.push(el('p','Nenhuma tarefa. Crie uma acima ou dentro de uma conversa.','muted'));
+      $('taskList').replaceChildren(...out);
+      setTaskBadge(by.late.length + by.today.length);
+    }
+    function setTaskBadge(n) { $('taskBadge').textContent = n > 99 ? '99+' : n; $('taskBadge').hidden = !n; }
+    async function loadLeadTasks() {
+      const id = selected; if (!id) return;
+      const r = await api('/api/tasks?lead_id=' + encodeURIComponent(id));
+      if (id !== selected) return;
+      $('leadTasks').replaceChildren(...r.tasks.map(t => taskRow(t,false)));
+      if (!r.tasks.length) $('leadTasks').append(el('p','Sem tarefas.','muted'));
+    }
+    function renderTemplates() {
+      $('tplList').replaceChildren(...templates.map(t => {
+        const box = el('div',null,'tpl'); box.append(el('strong',t.title),el('p',t.body));
+        const act = el('div',null,'row');
+        act.append(button('Editar',() => { const f = $('tplForm').elements; f.id.value = t.id; f.title.value = t.title; f.body.value = t.body; $('tplFormTitle').textContent = 'Editar mensagem pronta'; $('tplCancel').hidden = false; f.title.focus(); }),
+          button('Excluir',async () => { if (!confirm('Excluir "' + t.title + '"?')) return; await api(path('templates',t.id),'DELETE'); notice('Mensagem excluída.'); refresh(); },'danger'));
+        box.append(act); return box;
+      }));
+      if (!templates.length) $('tplList').append(el('p','Nenhuma mensagem pronta ainda.','muted'));
+    }
+    function resetTpl() { $('tplForm').reset(); $('tplForm').elements.id.value = ''; $('tplFormTitle').textContent = 'Nova mensagem pronta'; $('tplCancel').hidden = true; }
+    async function openTplMenu() {
+      const menu = $('tplMenu');
+      if (!menu.hidden) { menu.hidden = true; return; }
+      templates = (await api('/api/templates')).templates;
+      const lead = currentLead(), first = (lead?.name || '').trim().split(/\s+/)[0] || '';
+      menu.replaceChildren(...templates.map(t => {
+        const b = el('button'); b.type = 'button'; b.append(el('strong',t.title),el('small',t.body));
+        b.onclick = () => { const text = t.body.replace(/\{nome\}/gi, first).replace(/\s+([,!?.])/g,'$1'); $('draft').value = text; drafts.set(selected,text); menu.hidden = true; $('draft').focus(); };
+        return b;
+      }));
+      if (!templates.length) menu.append(el('p','Crie mensagens na aba "Mensagens prontas".','muted'));
+      menu.hidden = false;
     }
     async function loadFollowup() { try { fuCfg = await api('/api/followup'); } catch {} }
     function renderFollowup() {
@@ -748,7 +878,8 @@
       $('compose').hidden = $('leadDetails').hidden = $('back').hidden = !lead;
       $('leadDetails').open = true; $('chat').classList.remove('info-open'); $('emptyChat').hidden = Boolean(lead); $('messages').hidden = !lead;
       $('threadTitle').textContent = lead ? nameOf(lead) : 'Selecione uma conversa';
-      if (lead) updateDetails(lead);
+      if (lead) { updateDetails(lead); $('leadTaskForm').elements.due_at.value = defaultDue(); loadLeadTasks().catch(report); }
+      $('tplMenu').hidden = true;
       renderContacts();
       if (reload) refresh();
     }
@@ -955,6 +1086,24 @@
     $('newClient').onclick = () => clientForm();
     $('newLead').onclick = () => newLeadForm();
     for (const [k,[label]] of Object.entries(TAGS)) { $('tagFilter').add(new Option(label,k)); $('fuTag').add(new Option(label,k)); }
+    $('taskForm').elements.due_at.value = defaultDue();
+    submit($('taskForm'), async () => {
+      const f = $('taskForm').elements;
+      await api('/api/tasks','POST',{title:f.title.value.trim(),due_at:new Date(f.due_at.value).toISOString()});
+      f.title.value = ''; f.due_at.value = defaultDue(); notice('Tarefa criada.'); refresh();
+    });
+    submit($('leadTaskForm'), async () => {
+      const f = $('leadTaskForm').elements;
+      await api('/api/tasks','POST',{lead_id:selected,title:f.title.value.trim(),due_at:new Date(f.due_at.value).toISOString()});
+      f.title.value = ''; f.due_at.value = defaultDue(); notice('Tarefa criada.'); await loadLeadTasks(); boardSnapshot = '';
+    });
+    submit($('tplForm'), async () => {
+      const f = $('tplForm').elements, id = f.id.value;
+      await api(id ? path('templates',id) : '/api/templates', id ? 'PUT' : 'POST', {title:f.title.value.trim(), body:f.body.value.trim()});
+      resetTpl(); notice('Mensagem pronta salva.'); refresh();
+    });
+    $('tplCancel').onclick = resetTpl;
+    $('tplBtn').onclick = () => run($('tplBtn'), openTplMenu);
     $('tagFilter').onchange = () => { boardSnapshot = ''; renderBoard(); };
     $('fuForm').oninput = () => { $('fuForm').dataset.dirty = '1'; };
     submit($('fuForm'), async () => {

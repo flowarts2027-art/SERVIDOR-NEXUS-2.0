@@ -87,3 +87,25 @@ CREATE TABLE IF NOT EXISTS followup_cfg (
   message TEXT NOT NULL DEFAULT 'Olá {nome}, tudo bem? Passando para saber se ficou alguma dúvida. Posso te ajudar?'
 );
 INSERT OR IGNORE INTO followup_cfg (id) VALUES (1);
+
+-- Mensagens prontas e tarefas (21/11/2026)
+CREATE TABLE IF NOT EXISTS templates (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  lead_id INTEGER REFERENCES leads(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  due_at TEXT NOT NULL,
+  done INTEGER NOT NULL DEFAULT 0,
+  done_at TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_tasks_open ON tasks(done, due_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_lead ON tasks(lead_id);
+INSERT INTO templates(title, body) SELECT 'Boas-vindas', 'Olá {nome}! Obrigado pelo contato. Como posso te ajudar?' WHERE NOT EXISTS (SELECT 1 FROM templates);
+INSERT INTO templates(title, body) SELECT 'Preço', 'Oi {nome}! Vou te passar os valores agora. Você prefere plano mensal ou trimestral?' WHERE (SELECT COUNT(*) FROM templates) = 1;
+INSERT INTO templates(title, body) SELECT 'Retorno', 'Oi {nome}, tudo bem? Passando para saber se você conseguiu ver a proposta.' WHERE (SELECT COUNT(*) FROM templates) = 2;

@@ -177,8 +177,55 @@ export async function crmApi(req, env, url, helpers) {
   }
   if (p === '/api/followup/run' && m === 'POST') return json(await runFollowup(env, true));
 
+  // ===== Mensagens prontas =====
+  if (p === '/api/templates' && m === 'GET') return json({ templates: (await env.DB.prepare('SELECT id,title,body FROM templates ORDER BY title COLLATE NOCASE').all()).results });
+  const tp = p.match(/^\/api\/templates(?:\/(\d+))?$/);
+  if (tp && (m === 'POST' || m === 'PUT')) {
+    const x = await input(req);
+    const title = clean(x.title, 80), body = clean(x.body, 2000);
+    if (!title || !body) return fail('Preencha o nome e o texto da mensagem.');
+    if (m === 'POST') { const r = await env.DB.prepare('INSERT INTO templates(title,body) VALUES(?,?)').bind(title, body).run(); return json({ ok: true, id: r.meta.last_row_id }, 201); }
+    if (!tp[1]) return fail('Rota não encontrada.', 404);
+    await env.DB.prepare('UPDATE templates SET title=?,body=? WHERE id=?').bind(title, body, Number(tp[1])).run();
+    return json({ ok: true });
+  }
+  if (tp && tp[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM templates WHERE id=?').bind(Number(tp[1])).run(); return json({ ok: true }); }
+
+  // ===== Tarefas =====
+  if (p === '/api/tasks' && m === 'GET') {
+    const lead = url.searchParams.get('lead_id');
+    const r = lead
+      ? await env.DB.prepare('SELECT t.*, l.name AS lead_name, l.phone AS lead_phone FROM tasks t LEFT JOIN leads l ON l.id=t.lead_id WHERE t.lead_id=? ORDER BY t.done, t.due_at').bind(Number(lead)).all()
+      : await env.DB.prepare(`SELECT t.*, l.name AS lead_name, l.phone AS lead_phone FROM tasks t LEFT JOIN leads l ON l.id=t.lead_id
+          WHERE t.done=0 OR t.done_at > ? ORDER BY t.done, t.due_at LIMIT 300`).bind(new Date(Date.now() - 7 * 86400_000).toISOString()).all();
+    return json({ tasks: r.results });
+  }
+  const tk = p.match(/^\/api\/tasks(?:\/(\d+))?$/);
+  if (tk && m === 'POST' && !tk[1]) {
+    const x = await input(req);
+    const title = clean(x.title, 200), due = Date.parse(x.due_at);
+    if (!title) return fail('Escreva o que precisa ser feito.');
+    if (!due) return fail('Escolha a data e a hora.');
+    const leadId = x.lead_id ? Number(x.lead_id) : null;
+    if (leadId && !(await leadById(env, leadId))) return fail('Contato não encontrado.', 404);
+    const r = await env.DB.prepare('INSERT INTO tasks(lead_id,title,due_at,created_at) VALUES(?,?,?,?)').bind(leadId, title, new Date(due).toISOString(), nowIso()).run();
+    return json({ ok: true, id: r.meta.last_row_id }, 201);
+  }
+  if (tk && tk[1] && m === 'PUT') {
+    const x = await input(req), id = Number(tk[1]);
+    const t = await env.DB.prepare('SELECT * FROM tasks WHERE id=?').bind(id).first();
+    if (!t) return fail('Tarefa não encontrada.', 404);
+    const done = x.done !== undefined ? (x.done ? 1 : 0) : t.done;
+    const title = x.title !== undefined ? clean(x.title, 200) : t.title;
+    const due = x.due_at !== undefined ? new Date(Date.parse(x.due_at) || Date.parse(t.due_at)).toISOString() : t.due_at;
+    await env.DB.prepare('UPDATE tasks SET done=?,title=?,due_at=?,done_at=? WHERE id=?').bind(done, title || t.title, due, done ? (t.done_at || nowIso()) : null, id).run();
+    return json({ ok: true });
+  }
+  if (tk && tk[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM tasks WHERE id=?').bind(Number(tk[1])).run(); return json({ ok: true }); }
+
   if (p === '/api/leads' && m === 'GET') {
-    const r = await env.DB.prepare('SELECT id,phone,jid,name,stage,notes,value,avatar,tags,last_in_at,followup_count,followup_last,last_message,last_at,unread,created_at FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500').all();
+    const r = await env.DB.prepare(`SELECT id,phone,jid,name,stage,notes,value,avatar,tags,last_in_at,followup_count,followup_last,last_message,last_at,unread,created_at,
+      (SELECT MIN(due_at) FROM tasks t WHERE t.lead_id=leads.id AND t.done=0) AS next_task FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500`).all();
     return json({ leads: r.results });
   }
 
@@ -217,6 +264,7 @@ export async function crmApi(req, env, url, helpers) {
 
   if (!lm[2] && m === 'DELETE') {
     await env.DB.prepare('DELETE FROM messages WHERE lead_id=?').bind(lead.id).run();
+    await env.DB.prepare('DELETE FROM tasks WHERE lead_id=?').bind(lead.id).run();
     await env.DB.prepare('DELETE FROM leads WHERE id=?').bind(lead.id).run();
     return json({ ok: true });
   }
