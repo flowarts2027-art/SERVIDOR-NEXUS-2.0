@@ -1,30 +1,748 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nexus CRM | Cobranças</title>
-<style>
-:root{--bg:#07182d;--panel:#102944;--line:#315371;--text:#f5faff;--muted:#c4d8e8;--green:#20d68b;--blue:#409eff;--orange:#ffbb48;--red:#ff6370}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:18px/1.5 Arial,sans-serif}header{background:#0c213a;padding:22px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:30px}h2{font-size:26px;margin:0 0 20px}h3{font-size:22px;margin:0}main{max-width:1250px;margin:auto;padding:20px}p{color:var(--muted)}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}input,textarea{width:100%;background:#06172a;color:white;border:2px solid #466783;border-radius:10px;padding:15px;font:18px Arial;margin:7px 0 15px}textarea{min-height:90px}label{display:block;font-weight:bold}button{border:0;border-radius:12px;padding:15px 19px;font:700 18px Arial;cursor:pointer;min-height:54px}button:disabled{opacity:.5}nav,.actions,.filters{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.primary{background:var(--blue);color:#06182b}.success{background:var(--green);color:#05251a}.warning{background:var(--orange);color:#271900}.danger{background:var(--red);color:#2c080d}.secondary{background:#304c69;color:white}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#193b5a;padding:18px;border-radius:14px;text-align:center}.stat strong{display:block;font-size:30px}.stat span{font-size:16px}.client{background:#0a2038;border:1px solid var(--line);padding:20px;border-radius:15px;margin:14px 0}.client p{margin:8px 0}.tag{display:inline-block;padding:6px 12px;border-radius:20px;font-size:16px;font-weight:bold;background:#34536e}.paid{background:#126b4b}.late{background:#842f3b}.awaiting{background:#8b601b}.hide{display:none!important}.modal{position:fixed;inset:0;background:#000c;display:flex;justify-content:center;align-items:center;padding:15px;z-index:10}.modal .card{max-width:700px;width:100%;max-height:90vh;overflow:auto}a{color:#85caff;overflow-wrap:anywhere}pre{background:#061626;padding:15px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px}#message{position:fixed;bottom:15px;left:15px;right:15px;max-width:700px;margin:auto;background:#164a67;border:1px solid #6fbfff;padding:18px;border-radius:12px;z-index:20}@media(max-width:650px){main{padding:12px}h1{font-size:25px}.stats{grid-template-columns:1fr}nav button,.filters button{flex:1}.actions button{width:100%}}
-</style></head><body>
-<header><h1>💳 Nexus CRM de Cobrança</h1></header><main>
-<section id="loginView" class="card"><h2>Entrar no sistema</h2><form id="loginForm"><label>Senha administrativa<input id="password" type="password" autocomplete="current-password" required></label><button class="success">Entrar</button></form></section>
-<section id="appView" class="hide"><nav><button class="primary" onclick="showSection('dashboard')">Clientes</button><button class="secondary" onclick="showSection('settings')">Configurações</button><button class="danger" onclick="logout()">Sair</button></nav>
-<section id="dashboard"><div class="stats"><div class="stat"><strong id="total">0</strong><span>Clientes</span></div><div class="stat"><strong id="late">0</strong><span>Atrasados</span></div><div class="stat"><strong id="paid">0</strong><span>Pagos este mês</span></div></div>
-<div class="card"><h2 id="formTitle">Cadastrar cliente</h2><form id="clientForm"><input type="hidden" id="clientId"><div class="grid"><label>Nome<input id="name" required maxlength="150"></label><label>WhatsApp com DDD<input id="whatsapp" inputmode="tel" placeholder="21999999999" required></label><label>Valor mensal (R$)<input id="amount" type="number" min="0.01" step="0.01" required></label><label>Dia de vencimento<input id="dueDay" type="number" min="1" max="31" required></label></div><label>Observações<textarea id="notes"></textarea></label><div class="actions"><button class="success">Salvar cliente</button><button type="button" class="secondary" onclick="resetForm()">Cancelar edição</button></div></form></div>
-<div class="card"><h2>Lista de clientes</h2><div class="filters"><button class="primary" onclick="setFilter('all')">Todos</button><button class="secondary" onclick="setFilter('week')">Vence esta semana</button><button class="warning" onclick="setFilter('late')">Atrasados</button><button class="success" onclick="setFilter('paid')">Pagos este mês</button></div><div id="clients"></div></div></section>
-<section id="settings" class="card hide"><h2>Configurações da empresa e Pix</h2><form id="settingsForm"><label>Nome da empresa<input id="companyName" required></label><label>Chave Pix<input id="pixKey" required placeholder="CPF, CNPJ, e-mail, +5521999999999 ou chave aleatória"></label><p>Se a chave for celular, escreva com +55 na frente. Ex.: +5521964816185</p><label>Nome do recebedor<input id="receiverName" required></label><label>Cidade do recebedor<input id="receiverCity" required></label><button class="success">Salvar configurações</button></form><p>Alterações da chave Pix não modificam cobranças já geradas.</p></section></section></main>
-<div id="modal" class="modal hide"><div class="card"><button class="secondary" onclick="closeModal()">Fechar</button><div id="modalContent"></div></div></div><div id="message" class="hide"></div>
-<script>
-let clients=[],today='',filter='all';const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const brl=v=>(v/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});function notify(t){$('message').textContent=t;$('message').classList.remove('hide');setTimeout(()=>$('message').classList.add('hide'),4500)}
-async function api(path,opts={}){const r=await fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...opts}),x=await r.json();if(!r.ok){if(r.status===401&&path!='/api/login'){$('appView').classList.add('hide');$('loginView').classList.remove('hide')}throw Error(x.error||'Erro de comunicação.')}return x}
-function showSection(n){$('dashboard').classList.toggle('hide',n!=='dashboard');$('settings').classList.toggle('hide',n!=='settings')}function openModal(h){$('modalContent').innerHTML=h;$('modal').classList.remove('hide')}function closeModal(){$('modal').classList.add('hide')}
-function due(month,day){const [y,m]=month.split('-').map(Number);return month+'-'+String(Math.min(day,new Date(Date.UTC(y,m,0)).getUTCDate())).padStart(2,'0')}function addDays(date,n){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}const paid=c=>c.charge_status==='paid',late=c=>!paid(c)&&due(today.slice(0,7),c.due_day)<today;function setFilter(v){filter=v;render()}
-function render(){const month=today.slice(0,7),end=addDays(today,6);$('total').textContent=clients.length;$('late').textContent=clients.filter(late).length;$('paid').textContent=clients.filter(paid).length;const visible=clients.filter(c=>{const d=due(month,c.due_day);return filter==='week'?!paid(c)&&d>=today&&d<=end:filter==='late'?late(c):filter==='paid'?paid(c):true});$('clients').innerHTML=visible.map(c=>{const [label,cls]=paid(c)?['Pago','paid']:c.charge_status==='awaiting'?['Aguardando confirmação','awaiting']:late(c)?['Atrasado','late']:['Em aberto',''];return `<article class="client"><h3>${esc(c.name)}</h3><span class="tag ${cls}">${label}</span><p><b>Mensalidade:</b> ${brl(c.monthly_amount)}</p><p><b>Vencimento:</b> ${due(month,c.due_day).split('-').reverse().join('/')}</p><p><b>WhatsApp:</b> ${esc(c.whatsapp)}</p>${c.notes?`<p>${esc(c.notes)}</p>`:''}<div class="actions"><button class="warning" onclick="charge(${c.id})">Cobrar</button><button class="success" onclick="markPaid(${c.id})" ${paid(c)?'disabled':''}>Marcar como pago</button><button class="primary" onclick="verHistorico(${c.id})">Histórico</button><button class="secondary" onclick="editClient(${c.id})">Editar</button><button class="danger" onclick="deleteClient(${c.id})">Excluir</button></div></article>`}).join('')||'<p>Nenhum cliente neste filtro.</p>'}
-async function loadClients(){const x=await api('/api/clients');clients=x.clients;today=x.today;render()}async function loadSettings(){const s=await api('/api/settings');$('companyName').value=s.company_name||'';$('pixKey').value=s.pix_key||'';$('receiverName').value=s.receiver_name||'';$('receiverCity').value=s.receiver_city||''}
-function resetForm(){$('clientForm').reset();$('clientId').value='';$('formTitle').textContent='Cadastrar cliente'}function editClient(id){const c=clients.find(x=>x.id===id);if(!c)return;$('clientId').value=c.id;$('name').value=c.name;$('whatsapp').value=c.whatsapp;$('amount').value=(c.monthly_amount/100).toFixed(2);$('dueDay').value=c.due_day;$('notes').value=c.notes||'';$('formTitle').textContent='Editar cliente';showSection('dashboard');$('clientForm').scrollIntoView({behavior:'smooth'})}
-async function deleteClient(id){if(!confirm('Excluir cliente e TODO o histórico?'))return;try{await api('/api/clients/'+id,{method:'DELETE'});notify('Cliente excluído.');await loadClients()}catch(e){alert(e.message)}}
-async function charge(id){try{const x=await api(`/api/clients/${id}/charge`,{method:'POST'});openModal(`<h2>Cobrança gerada</h2><p>Link de pagamento:</p><pre>${esc(x.payment_url)}</pre><div class="actions"><button class="success" id="copyLink">Copiar link</button><button class="primary" id="openPay">Abrir pagamento</button><button class="warning" id="openWA">Enviar pelo WhatsApp</button></div>`);$('copyLink').onclick=()=>copyText(x.payment_url);$('openPay').onclick=()=>window.open(x.payment_url,'_blank','noopener');$('openWA').onclick=()=>window.open(x.whatsapp_url,'_blank','noopener');await loadClients()}catch(e){alert(e.message)}}
-async function copyText(v){try{await navigator.clipboard.writeText(v);notify('Copiado!')}catch{prompt('Copie:',v)}}async function markPaid(id){if(!confirm('Confirmar pagamento da mensalidade atual?'))return;try{await api(`/api/clients/${id}/paid`,{method:'POST'});notify('Pagamento confirmado.');await loadClients()}catch(e){alert(e.message)}}
-async function verHistorico(id){try{const x=await api(`/api/clients/${id}/history`),c=clients.find(c=>c.id===id);openModal(`<h2>Histórico — ${esc(c?.name||'')}</h2>`+(x.history.map(h=>`<div class="client"><b>Referência: ${esc(h.reference_month)}</b><p>Valor: ${brl(h.amount)}</p><p>Vencimento: ${esc(h.due_date)}</p><p>Situação: ${h.status==='paid'?'Pago':h.status==='awaiting'?'Aguardando confirmação':'Em aberto'}</p><p>Cobrança criada: ${esc(h.created_at||'-')}</p><p>Pagamento informado: ${esc(h.reported_at||'-')}</p><p>Pagamento confirmado: ${esc(h.paid_at||'-')}</p></div>`).join('')||'<p>Sem histórico.</p>'))}catch(e){alert(e.message)}}
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();try{await api('/api/login',{method:'POST',body:JSON.stringify({password:$('password').value})});$('password').value='';await startApp()}catch(e){alert(e.message)}});
-$('clientForm').addEventListener('submit',async e=>{e.preventDefault();const id=$('clientId').value;try{await api(id?`/api/clients/${id}`:'/api/clients',{method:id?'PUT':'POST',body:JSON.stringify({name:$('name').value,whatsapp:$('whatsapp').value,monthly_amount:Math.round(Number($('amount').value)*100),due_day:Number($('dueDay').value),notes:$('notes').value})});resetForm();notify('Cliente salvo.');await loadClients()}catch(e){alert(e.message)}});
-$('settingsForm').addEventListener('submit',async e=>{e.preventDefault();try{await api('/api/settings',{method:'PUT',body:JSON.stringify({company_name:$('companyName').value,pix_key:$('pixKey').value,receiver_name:$('receiverName').value,receiver_city:$('receiverCity').value})});notify('Configurações salvas.')}catch(e){alert(e.message)}});
-async function logout(){await api('/api/logout',{method:'POST'});$('appView').classList.add('hide');$('loginView').classList.remove('hide')}async function startApp(){$('loginView').classList.add('hide');$('appView').classList.remove('hide');await Promise.all([loadClients(),loadSettings()])}(async()=>{try{await api('/api/me');await startApp()}catch{$('loginView').classList.remove('hide')}})();
-</script></body></html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a1a3a">
+  <link rel="icon" href="/assets/favicon.png">
+  <title>Nexus CRM</title>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #1663e0;
+      --dark: #0a1a3a;
+      --bg: #eef3fb;
+      --ink: #12213b;
+      --muted: #4a5b78;
+      --line: #cdd8ea;
+      --shadow: 0 4px 18px #12306a14;
+      font: 18px/1.5 "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    * { box-sizing: border-box }
+    body { margin: 0 }
+    [hidden] { display: none !important }
+    button, input, textarea, select { font: inherit }
+    button, a { touch-action: manipulation }
+    button {
+      min-height: 44px; padding: .45rem .85rem; border: 1px solid var(--line);
+      border-radius: 9px; background: white; color: var(--ink); cursor: pointer;
+    }
+    button:hover { border-color: var(--brand); background: #eaf1ff }
+    button:disabled { opacity: .65; cursor: wait }
+    :focus-visible { outline: 3px solid #b66000; outline-offset: 2px }
+    input, textarea, select {
+      width: 100%; min-width: 0; padding: .55rem .65rem; color: var(--ink);
+      background: white; border: 1px solid #83999f; border-radius: 8px;
+    }
+    textarea { resize: vertical }
+    label { display: grid; gap: .25rem; font-weight: 600 }
+    form { display: grid; gap: .85rem }
+    h1, h2, h3, p { margin: 0 }
+    h1 { font-size: 1.65rem }
+    h2 { font-size: 1.25rem }
+    h3 { font-size: 1.06rem }
+    small, time, .muted { font-size: 17px; color: var(--muted) }
+    a { color: var(--brand); overflow-wrap: anywhere }
+    .primary { background: linear-gradient(135deg,#2b7bff,#1452c4); border-color: #1452c4; color: white; font-weight: 650; box-shadow: 0 3px 10px #1663e040 }
+    .primary:hover { background: linear-gradient(135deg,#1f6cf0,#0f429f); color: white }
+    .danger { color: #8c2424 }
+    .panel, .column, .chat-list, .thread, .details {
+      background: white; border: 1px solid var(--line); border-radius: 14px;
+      box-shadow: var(--shadow); padding: 1rem; min-width: 0;
+    }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem }
+    .stack { display: grid; gap: .8rem; align-content: start }
+    .between { display: flex; justify-content: space-between; align-items: center; gap: .65rem }
+    .wrap { overflow-wrap: anywhere; white-space: pre-wrap }
+    .narrow { max-width: 36rem }
+    #login { background: radial-gradient(circle at 50% 20%,#1d3f8a,#071331 70%); min-height: 100dvh; display: grid; place-items: center; padding: 1rem }
+    #login form { width: min(100%, 23rem); padding: 1.6rem }
+    #nav {
+      position: fixed; inset: 0 auto 0 0; z-index: 2; width: 210px;
+      display: flex; flex-direction: column; gap: .35rem; padding: 1rem .65rem;
+      background: linear-gradient(180deg,#0d2250 0%,#071331 100%); color: white; box-shadow: 4px 0 20px #0a1a3a33;
+    }
+    .brand { display:flex; align-items:center; gap:.55rem; padding: .5rem .45rem 1.3rem; font-weight: 800; font-size: 1.3rem; letter-spacing:.02em }
+    .brand img { width: 46px; height: 46px; filter: drop-shadow(0 0 8px #3d8bff88) }
+    .brand small { display:block; color:#8fb4ff; font-size:14px; font-weight:600; letter-spacing:0 }
+    .login-logo { width: 96px; height: 96px; justify-self: center; filter: drop-shadow(0 0 12px #3d8bff66) }
+    #nav button {
+      display: flex; align-items: center; gap: .6rem; text-align: left;
+      color: white; background: transparent; border: 1px solid transparent;
+    }
+    #nav button:hover { background: #ffffff14 }
+    #nav button[aria-current="page"] { background: linear-gradient(90deg,#2b7bff,#1452c4); border-color: #5c9bff; box-shadow: 0 3px 12px #1663e055 }
+    #nav button:last-child { margin-top: auto }
+    .icon { width: 1.4em; text-align: center; font-weight: bold }
+    main { margin-left: 210px; padding: 1.25rem; min-width: 0 }
+    header { margin-bottom: 1rem }
+    .board { display: flex; gap: .8rem; overflow-x: auto; padding: .15rem .15rem 1rem; align-items: stretch }
+    .column { flex: 0 0 275px; background: #f6f9ff; border-top: 5px solid var(--accent); min-height: 17rem }
+    .column.over { outline: 3px dashed var(--brand); outline-offset: -4px }
+    .column .stack { margin-top: .8rem }
+    .lead {
+      display: grid; gap: .35rem; width: 100%; min-width: 0; padding: .75rem;
+      text-align: left; box-shadow: var(--shadow); overflow-wrap: anywhere;
+    }
+    .lead[aria-pressed="true"] { border-color: var(--brand); background: #e6efff }
+    .lead { border-left: 4px solid var(--brand) }
+    .preview { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted) }
+    .badge {
+      display: inline-grid; place-items: center; min-width: 1.6rem; padding: 0 .35rem;
+      border-radius: 2rem; background: var(--brand); color: white; font-size: 17px;
+    }
+    .chat {
+      display: grid; grid-template-columns: minmax(210px, .85fr) minmax(280px, 1.8fr) minmax(220px, .9fr);
+      gap: .65rem; height: calc(100dvh - 6rem); min-height: 22rem;
+    }
+    .chat-list, .thread { display: flex; flex-direction: column; gap: .7rem; min-height: 0 }
+    #contacts, #messages, .details { overflow-y: auto }
+    #contacts { padding: 3px }
+    .thread { background: #efeae2 }
+    #messages { flex: 1; display: flex; flex-direction: column; gap: .6rem; padding: .3rem }
+    .bubble {
+      align-self: flex-start; max-width: 85%; padding: .55rem .8rem;
+      background: white; border: 1px solid #c5d4cc; border-radius: 12px;
+    }
+    .bubble.out { align-self: flex-end; background: #d8f5d9 }
+    .bubble time { display: block; margin-top: .2rem }
+    #compose { display: flex; align-items: end; gap: .5rem }
+    #compose label { flex: 1 }
+    summary { cursor: pointer; font-weight: 700; padding: .3rem 0 }
+    .details form { margin: .75rem 0 }
+    .notice {
+      position: fixed; z-index: 10; top: .65rem; right: .75rem; max-width: min(92vw, 32rem);
+      background: #fff9e5; border: 2px solid #947020; border-radius: 10px;
+      padding: .65rem; box-shadow: var(--shadow);
+    }
+    .notice span { overflow-wrap: anywhere }
+    dialog { width: min(94vw, 34rem); max-height: 90dvh; color: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 1.2rem }
+    dialog::backdrop { background: #09232baa }
+    dialog .between { margin-bottom: .8rem }
+    #clients { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)) }
+    .online { color: #126137 }
+    #qr { width: fit-content; max-width: 100%; padding: 16px; background: white }
+    #qr img, #qr canvas { max-width: 100%; height: auto }
+    @media (max-width: 1180px) {
+      .chat { grid-template-columns: minmax(200px, .8fr) minmax(260px, 2fr); grid-template-rows: auto minmax(0, 1fr) }
+      .chat-list { grid-row: 1 / 3 }
+      .details { grid-column: 2; grid-row: 1; max-height: 38dvh }
+      .thread { grid-column: 2; grid-row: 2 }
+    }
+    @media (max-width: 760px) {
+      main { margin: 0; padding: .85rem .75rem calc(5.4rem + env(safe-area-inset-bottom)) }
+      #nav {
+        inset: auto 0 0; width: auto; flex-direction: row; gap: .2rem;
+        padding: .25rem .3rem calc(.25rem + env(safe-area-inset-bottom)); overflow-x: auto;
+      }
+      #nav .brand { display: none }
+      #nav button { flex: 1 0 auto; flex-direction: column; gap: 0; padding: .2rem .48rem; font-size: 17px }
+      #nav button:last-child { margin: 0 }
+      .chat { display: flex; flex-direction: column; height: auto; min-height: 0 }
+      .details { order: 1; max-height: none }
+      .thread { order: 2; height: 64dvh; min-height: 20rem }
+      .chat.selected .chat-list, .chat:not(.selected) .thread, .chat:not(.selected) .details { display: none }
+      #back { display: inline-block }
+      .column { flex-basis: min(82vw, 300px) }
+    }
+    @media (min-width: 761px) { #back { display: none } }
+  </style>
+</head>
+<body>
+  <div id="notice" class="notice row" hidden>
+    <span id="noticeText" role="alert"></span><button id="dismiss" aria-label="Fechar aviso">×</button>
+  </div>
+
+  <section id="login" hidden>
+    <form id="loginForm" class="panel">
+      <img class="login-logo" src="/assets/logo.png" alt="Nexus"><h1 style="text-align:center">Nexus CRM</h1>
+      <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary">Entrar</button>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <nav id="nav" aria-label="Menu principal">
+      <div class="brand"><img src="/assets/logo.png" alt=""><span>NEXUS<small>CRM de WhatsApp</small></span></div>
+      <button data-page="funil"><span class="icon" aria-hidden="true">▥</span>Funil</button>
+      <button data-page="conversas"><span class="icon" aria-hidden="true">☏</span>Conversas</button>
+      <button data-page="cobranca"><span class="icon" aria-hidden="true">$</span>Cobrança</button>
+      <button data-page="whatsapp"><span class="icon" aria-hidden="true">◉</span>WhatsApp</button>
+      <button data-page="config"><span class="icon" aria-hidden="true">⚙</span>Configurações</button>
+      <button id="logout"><span class="icon" aria-hidden="true">↪</span>Sair</button>
+    </nav>
+    <main>
+      <header class="between"><h1 id="title">Funil</h1><button id="back" hidden>Voltar à lista</button></header>
+      <section id="funil"><div id="board" class="board"></div></section>
+
+      <section id="conversas" hidden>
+        <div id="chat" class="chat">
+          <aside class="chat-list">
+            <label>Buscar contato<input id="search" type="search" placeholder="Nome ou telefone"></label>
+            <div id="contacts" class="stack"></div>
+          </aside>
+          <section class="thread">
+            <h2 id="threadTitle" class="wrap">Selecione uma conversa</h2>
+            <div id="messages" aria-label="Mensagens"></div>
+            <form id="compose" hidden>
+              <label>Mensagem<textarea id="draft" rows="2" required></textarea></label>
+              <button class="primary">Enviar</button>
+            </form>
+          </section>
+          <aside class="details">
+            <details id="leadDetails" hidden>
+              <summary>Dados do contato</summary>
+              <p id="leadPhone" class="muted wrap"></p>
+              <form id="leadForm">
+                <label>Nome<input name="name"></label>
+                <label>Etapa<select name="stage" id="stage"></select></label>
+                <label>Anotações<textarea name="notes" rows="3"></textarea></label>
+                <button class="primary">Salvar contato</button>
+              </form>
+              <button id="convert">Virar cliente de cobrança</button>
+            </details>
+          </aside>
+        </div>
+      </section>
+
+      <section id="cobranca" class="stack" hidden>
+        <div class="row">
+          <button id="newClient" class="primary">Cadastrar cliente</button>
+          <label>Filtrar clientes
+            <select id="filter">
+              <option value="all">Todos</option><option value="week">Vence esta semana</option>
+              <option value="late">Atrasados</option><option value="paid">Pagos este mês</option>
+            </select>
+          </label>
+        </div>
+        <div id="clients" class="stack"></div>
+      </section>
+
+      <section id="whatsapp" class="panel narrow stack" hidden>
+        <h2 id="waState">Consultando conexão…</h2>
+        <p id="waHelp"></p><div id="qr" hidden></div>
+        <div id="bridge" class="stack" hidden>
+          <label>Chave da ponte<input id="bridgeKey" readonly></label><button id="copyKey">Copiar chave</button>
+        </div>
+        <p id="seen" class="muted"></p>
+      </section>
+
+      <section id="config" class="panel narrow" hidden>
+        <form id="settings">
+          <label>Nome da empresa<input name="company_name"></label>
+          <label>Chave Pix<input name="pix_key"></label>
+          <label>Nome do recebedor<input name="receiver_name"></label>
+          <label>Cidade do recebedor<input name="receiver_city"></label>
+          <button class="primary">Salvar configurações</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="modal" aria-labelledby="modalTitle">
+    <div class="between"><h2 id="modalTitle"></h2><button id="closeModal" aria-label="Fechar janela">×</button></div>
+    <div id="modalBody" class="stack"></div>
+  </dialog>
+
+  <script>
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const stages = {
+      novo: ['Novo contato', '#287b8a'], conversa: ['Em conversa', '#4676af'],
+      agendado: ['Agendado', '#7359a2'], pagamento: ['Pagamento pendente', '#a26c19'],
+      pago: ['Pago', '#1f9d5c'], perdido: ['Perdido', '#98524c']
+    };
+    const pages = {funil:'Funil', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
+    const statuses = {pending:'Pendente', awaiting:'Aguardando pagamento', paid:'Pago'};
+    const money = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
+    const reais = cents => money.format(Number(cents) / 100);
+    const path = (group, id) => '/api/' + group + '/' + encodeURIComponent(String(id));
+    let page = '', epoch = 0, timer, controller, session = 0;
+    let leads = [], clients = [], today = '', selected = '', dragging = '';
+    let messageSnapshot = '', boardSnapshot = '', listSnapshot = '', lastQR = '';
+    let detailDirty = false, refreshAgain = false, refreshing = 0;
+    let dialogVersion = 0;
+    const drafts = new Map();
+
+    // Dados externos entram em nós de texto ou em propriedades de formulário.
+    function el(tag, text, cls) {
+      const node = document.createElement(tag);
+      if (text != null) node.textContent = String(text);
+      if (cls) node.className = cls;
+      return node;
+    }
+    function button(text, action, cls) {
+      const b = el('button', text, cls);
+      b.type = 'button';
+      b.onclick = () => run(b, action);
+      return b;
+    }
+    function notice(text) {
+      $('noticeText').textContent = text;
+      $('notice').hidden = false;
+    }
+    function report(err) {
+      if (err.name !== 'AbortError') notice(err.message || 'Não foi possível concluir a operação.');
+    }
+    async function run(control, action) {
+      if (control.disabled) return;
+      control.disabled = true;
+      try { await action(); } catch (err) { report(err); }
+      finally { control.disabled = false; }
+    }
+    function submit(form, action) {
+      form.onsubmit = event => {
+        event.preventDefault();
+        run(form.querySelector('button[type="submit"],button:not([type])'), action);
+      };
+    }
+    async function api(url, method = 'GET', data, signal) {
+      const startSession = session;
+      const res = await fetch(url, {
+        method, credentials:'same-origin', headers:{'Content-Type':'application/json'},
+        cache:'no-store', signal, body:data === undefined ? undefined : JSON.stringify(data)
+      });
+      const raw = await res.text();
+      if (startSession !== session) throw new DOMException('', 'AbortError');
+      let result = {};
+      if (raw) {
+        try { result = JSON.parse(raw) ?? {}; }
+        catch { if (res.ok) throw new Error('O servidor retornou uma resposta inválida.'); }
+      }
+      if (!res.ok) {
+        if (res.status === 401 && url !== '/api/login') showLogin();
+        throw new Error(result.error || 'Falha na solicitação (' + res.status + ').');
+      }
+      return result;
+    }
+    function stopView() {
+      epoch++;
+      clearTimeout(timer);
+      controller?.abort();
+      controller = new AbortController();
+      refreshing = 0;
+      refreshAgain = false;
+      dragging = '';
+      if ($('modal').open) $('modal').close();
+      dialogVersion++;
+    }
+    function showLogin() {
+      stopView(); session++; page = ''; selected = '';
+      leads = []; clients = []; drafts.clear();
+      $('app').hidden = true; $('login').hidden = false;
+      $('password').value = ''; $('password').focus();
+      $('search').value = ''; $('bridgeKey').value = '';
+      $('bridge').hidden = true;
+      for (const id of ['contacts','messages','clients','board','qr','modalBody']) $(id).replaceChildren();
+      $('leadForm').reset(); $('settings').reset(); $('draft').value = '';
+    }
+    function go(next) {
+      stopView();
+      page = next;
+      $('login').hidden = true; $('app').hidden = false;
+      $('title').textContent = pages[next];
+      for (const key of Object.keys(pages)) $(key).hidden = key !== next;
+      document.querySelectorAll('[data-page]').forEach(b => {
+        if (b.dataset.page === next) b.setAttribute('aria-current','page');
+        else b.removeAttribute('aria-current');
+      });
+      boardSnapshot = listSnapshot = '';
+      $('back').hidden = next !== 'conversas' || !selected;
+      if (next === 'conversas') selectLead(selected, false);
+      if (next === 'whatsapp') {
+        lastQR = ''; $('qr').replaceChildren(); $('qr').hidden = $('bridge').hidden = true;
+        $('waState').textContent = 'Consultando conexão…'; $('waHelp').textContent = $('seen').textContent = '';
+      }
+      if (next === 'config') {
+        $('settings').reset();
+        $('settings').inert = true;
+      }
+      refresh();
+    }
+    async function refresh() {
+      if (!page) return;
+      const token = epoch, view = page, signal = controller.signal;
+      if (refreshing === token) { refreshAgain = true; return; }
+      refreshing = token;
+      clearTimeout(timer);
+      try {
+        if (view === 'funil' || view === 'conversas') {
+          const result = await api('/api/leads','GET',undefined,signal);
+          if (epoch !== token) return;
+          leads = result.leads.slice().sort((a,b) => stamp(b.last_at) - stamp(a.last_at));
+          if (view === 'funil') renderBoard();
+          else {
+            let lead = currentLead();
+            if (selected && !lead) { selectLead('', false); lead = null; }
+            renderContacts();
+            if (lead) {
+              updateDetails(lead);
+              const id = selected, revision = selectionRevision;
+              const result = await api(path('leads',id) + '/messages','GET',undefined,signal);
+              if (epoch !== token || revision !== selectionRevision) return;
+              renderMessages(result.messages);
+              if (Number(lead.unread)) { lead.unread = 0; renderContacts(); }
+            }
+          }
+        } else if (view === 'cobranca') {
+          const result = await api('/api/clients','GET',undefined,signal);
+          if (epoch !== token) return;
+          clients = result.clients; today = result.today; renderClients();
+        } else if (view === 'whatsapp') {
+          const result = await api('/api/whatsapp','GET',undefined,signal);
+          if (epoch === token) renderWhatsApp(result);
+        } else {
+          const result = await api('/api/settings','GET',undefined,signal);
+          if (epoch !== token) return;
+          fill($('settings'), result); $('settings').inert = false;
+        }
+      } catch (err) { if (epoch === token || !page) report(err); }
+      finally {
+        if (epoch === token) {
+          refreshing = 0;
+          if (refreshAgain) { refreshAgain = false; timer = setTimeout(refresh, 0); }
+          else if (['funil','conversas','whatsapp'].includes(view))
+            timer = setTimeout(refresh, view === 'whatsapp' ? 3000 : 5000);
+        }
+      }
+    }
+    function stamp(value) { return Date.parse(value) || 0; }
+    function dateText(value) {
+      if (!value) return '—';
+      const s = String(value);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s.split('-').reverse().join('/');
+      const d = new Date(value);
+      return Number.isNaN(d.getTime()) ? '—' :
+        d.toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
+    }
+    function fill(form, values) {
+      for (const field of form.elements) if (field.name) field.value = values[field.name] ?? '';
+    }
+    function values(form) { return Object.fromEntries(new FormData(form)); }
+    const nameOf = lead => lead.name || lead.phone || 'Contato sem nome';
+    const currentLead = () => leads.find(l => String(l.id) === selected);
+    function leadCard(lead, movable) {
+      const id = String(lead.id);
+      const card = button('', () => {
+        if (page === 'funil') { selected = id; go('conversas'); }
+        else selectLead(id);
+      }, 'lead');
+      const top = el('div',null,'between');
+      top.append(el('strong',nameOf(lead)));
+      if (+lead.unread > 0) {
+        const badge = el('span',lead.unread,'badge');
+        badge.setAttribute('aria-label',lead.unread + ' mensagens não lidas'); top.append(badge);
+      }
+      card.append(top,el('span',lead.last_message || 'Sem mensagens','preview'),el('time',dateText(lead.last_at)));
+      if (!movable) card.setAttribute('aria-pressed',String(id === selected));
+      else {
+        card.draggable = true;
+        card.ondragstart = e => {
+          dragging = id; e.dataTransfer.setData('text/plain',id); e.dataTransfer.effectAllowed = 'move';
+        };
+        card.ondragend = () => {
+          dragging = ''; document.querySelectorAll('.column.over').forEach(c => c.classList.remove('over'));
+        };
+      }
+      return card;
+    }
+    function renderBoard() {
+      const snap = JSON.stringify(leads);
+      if (dragging || snap === boardSnapshot) return;
+      boardSnapshot = snap;
+      const columns = Object.entries(stages).map(([key,[title,color]]) => {
+        const col = el('section',null,'column');
+        col.style.setProperty('--accent',color);
+        const items = leads.filter(l => (l.stage || 'novo') === key);
+        const heading = el('div',null,'between');
+        heading.append(el('h2',title),el('span',items.length,'muted'));
+        const stack = el('div',null,'stack');
+        stack.append(...items.map(l => leadCard(l,true)));
+        if (!items.length) stack.append(el('p','Nenhum contato','muted'));
+        col.append(heading,stack);
+        col.ondragover = e => { if (dragging) { e.preventDefault(); col.classList.add('over'); } };
+        col.ondragleave = e => { if (!col.contains(e.relatedTarget)) col.classList.remove('over'); };
+        col.ondrop = async e => {
+          e.preventDefault(); col.classList.remove('over');
+          const id = dragging; dragging = '';
+          if (!id || !leads.some(l => String(l.id) === id && l.stage !== key)) return;
+          const token = epoch;
+          try {
+            await api(path('leads',id),'PUT',{stage:key});
+            if (epoch === token) refresh();
+          } catch (err) { report(err); }
+        };
+        return col;
+      });
+      $('board').replaceChildren(...columns);
+    }
+    function normalize(text) {
+      return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+    }
+    function renderContacts() {
+      const q = normalize($('search').value), digits = q.replace(/\D/g,'');
+      const items = leads.filter(l => normalize(l.name).includes(q) || normalize(l.phone).includes(q) ||
+        (digits && /^[\d\s()+.-]+$/.test(q) && String(l.phone).replace(/\D/g,'').includes(digits)));
+      const snap = JSON.stringify([selected,items]);
+      if (snap === listSnapshot) return;
+      listSnapshot = snap;
+      $('contacts').replaceChildren(...items.map(l => leadCard(l,false)));
+      if (!items.length) $('contacts').append(el('p','Nenhum contato encontrado.','muted'));
+    }
+    let selectionRevision = 0;
+    function selectLead(id, reload = true) {
+      selectionRevision++; selected = String(id || ''); detailDirty = false; messageSnapshot = '';
+      $('messages').replaceChildren(); $('draft').value = drafts.get(selected) || '';
+      const lead = currentLead();
+      $('chat').classList.toggle('selected',Boolean(lead));
+      $('compose').hidden = $('leadDetails').hidden = $('back').hidden = !lead;
+      $('leadDetails').open = window.innerWidth > 1180;
+      $('threadTitle').textContent = lead ? nameOf(lead) : 'Selecione uma conversa';
+      if (lead) updateDetails(lead);
+      renderContacts();
+      if (reload) refresh();
+    }
+    function updateDetails(lead) {
+      $('threadTitle').textContent = nameOf(lead); $('leadPhone').textContent = lead.phone || '';
+      if (!detailDirty) fill($('leadForm'), {...lead,stage:lead.stage || 'novo'});
+    }
+    function renderMessages(messages) {
+      const snap = JSON.stringify(messages);
+      if (snap === messageSnapshot) return;
+      const box = $('messages'), atEnd = !messageSnapshot || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+      messageSnapshot = snap;
+      box.replaceChildren(...messages.map(m => {
+        const item = el('div',null,'bubble' + (m.direction === 'out' ? ' out' : ''));
+        item.setAttribute('aria-label',m.direction === 'out' ? 'Mensagem enviada' : 'Mensagem recebida');
+        item.append(el('p',m.body,'wrap'),el('time',dateText(m.created_at))); return item;
+      }));
+      if (!messages.length) box.append(el('p','Ainda não há mensagens.','muted'));
+      if (atEnd) box.scrollTop = box.scrollHeight;
+    }
+
+    function modal(title) {
+      if (!$('modal').open) $('modal').showModal();
+      dialogVersion++;
+      $('modalTitle').textContent = title; $('modalBody').replaceChildren();
+      return $('modalBody');
+    }
+    function field(form, title, name, type = 'text', required = false) {
+      const label = el('label',title), input = el(type === 'textarea' ? 'textarea' : 'input');
+      input.name = name; input.required = required;
+      if (type !== 'textarea') input.type = type;
+      label.append(input); form.append(label); return input;
+    }
+    function billingFields(form, client = {}) {
+      const amount = field(form,'Valor mensal (R$)','amount','text',true);
+      amount.inputMode = 'decimal'; amount.placeholder = '150,00';
+      if (client.monthly_amount != null) amount.value = (client.monthly_amount / 100).toFixed(2).replace('.',',');
+      const day = field(form,'Dia de vencimento','due_day','number',true);
+      day.min = 1; day.max = 31; day.step = 1; day.value = client.due_day ?? '';
+    }
+    function billingValues(form) {
+      const raw = form.elements.amount.value.trim();
+      const br = /^(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d{1,2})?$/;
+      if (!br.test(raw) && !/^\d+\.\d{1,2}$/.test(raw)) throw new Error('Informe um valor como 150,00.');
+      const decimal = br.test(raw) ? raw.replace(/\./g,'').replace(',','.') : raw;
+      const [whole, fraction = ''] = decimal.split('.');
+      const cents = Number(whole + fraction.padEnd(2,'0'));
+      if (!Number.isSafeInteger(cents) || cents <= 0) throw new Error('Informe um valor maior que zero.');
+      return {monthly_amount:cents,due_day:Number(form.elements.due_day.value)};
+    }
+    function formButton(form, title) {
+      const b = el('button',title,'primary'); b.type = 'submit'; form.append(b);
+    }
+    function clientForm(client, leadId) {
+      const conversion = leadId != null, editing = client != null;
+      const box = modal(conversion ? 'Virar cliente de cobrança' : editing ? 'Editar cliente' : 'Cadastrar cliente');
+      const version = dialogVersion, form = el('form');
+      if (!conversion) {
+        field(form,'Nome','name','text',true).value = client?.name || '';
+        field(form,'WhatsApp com DDD','whatsapp','tel',true).value = client?.whatsapp || '';
+      }
+      billingFields(form,client || {});
+      if (!conversion) field(form,'Anotações','notes','textarea').value = client?.notes || '';
+      formButton(form,conversion ? 'Confirmar cadastro' : 'Salvar cliente'); box.append(form);
+      submit(form,async () => {
+        const data = billingValues(form);
+        if (!conversion) Object.assign(data,{
+          name:form.elements.name.value.trim(), whatsapp:form.elements.whatsapp.value.trim(),
+          notes:form.elements.notes.value
+        });
+        if (!conversion && (!data.name || !data.whatsapp)) throw new Error('Preencha o nome e o WhatsApp.');
+        const url = conversion ? path('leads',leadId) + '/client' : editing ? path('clients',client.id) : '/api/clients';
+        await api(url,editing ? 'PUT' : 'POST',data);
+        if (version === dialogVersion && $('modal').open) $('modal').close();
+        notice(editing ? 'Cliente atualizado.' : 'Cliente cadastrado.');
+        if (page === 'cobranca') refresh();
+      });
+    }
+    function civilDate(str) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(str));
+      return match ? new Date(Date.UTC(+match[1],+match[2]-1,+match[3])) : null;
+    }
+    function dueIn(year,month,day) {
+      const end = new Date(Date.UTC(year,month + 1,0)).getUTCDate();
+      return new Date(Date.UTC(year,month,Math.min(Number(day),end)));
+    }
+    function matchesFilter(c) {
+      const f = $('filter').value;
+      if (f === 'all') return true;
+      if (f === 'paid') return c.charge_status === 'paid';
+      const now = civilDate(today);
+      if (!now) return false;
+      const y = now.getUTCFullYear(), m = now.getUTCMonth(), due = dueIn(y,m,c.due_day);
+      if (f === 'late') return due < now && c.charge_status !== 'paid';
+      // Semana civil de segunda a domingo, incluindo a virada de mês.
+      const start = new Date(now); start.setUTCDate(start.getUTCDate() - (start.getUTCDay()+6)%7);
+      const end = new Date(start); end.setUTCDate(end.getUTCDate()+6);
+      return [-1,0,1].some(offset => {
+        const d = dueIn(y,m+offset,c.due_day);
+        return d >= start && d <= end;
+      });
+    }
+    async function copy(text) {
+      try {
+        await navigator.clipboard.writeText(text); notice('Copiado.');
+      } catch {
+        const box = modal('Copiar texto');
+        const input = el('textarea'); input.readOnly = true; input.value = text;
+        box.append(el('p','Selecione e copie o texto abaixo.'),input); input.focus(); input.select();
+      }
+    }
+    function paymentLink(value) {
+      try {
+        const u = new URL(value);
+        return ['http:','https:'].includes(u.protocol) ? u.href : '';
+      } catch { return ''; }
+    }
+    async function charge(c) {
+      const token = epoch;
+      const result = await api(path('clients',c.id) + '/charge','POST');
+      if (token !== epoch) return;
+      refresh();
+      if (result.sent === true) { notice('Enviado pelo WhatsApp'); return; }
+      const box = modal('Cobrança de ' + c.name);
+      if (result.message) box.append(el('p',result.message,'wrap'));
+      const url = paymentLink(result.payment_url);
+      if (url) {
+        const a = el('a',url); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        box.append(a,button('Copiar link',() => copy(url)));
+      } else box.append(el('p','A API não retornou um link de pagamento válido.'));
+    }
+    async function history(c) {
+      const box = modal('Histórico de ' + c.name), version = dialogVersion;
+      box.append(el('p','Carregando histórico…'));
+      try {
+        const data = await api(path('clients',c.id) + '/history');
+        if (dialogVersion !== version || !$('modal').open) return;
+        box.replaceChildren();
+        if (!data.history.length) box.append(el('p','Nenhuma cobrança registrada.'));
+        for (const h of data.history) {
+          const card = el('article',null,'panel stack');
+          const ref = String(h.reference_month || '').replace(/^(\d{4})-(\d{2})$/, '$2/$1');
+          card.append(el('strong',ref + ' · ' + reais(h.amount)),el('p','Vencimento: ' + dateText(h.due_date)),
+            el('p','Situação: ' + (statuses[h.status] || h.status || '—')));
+          if (h.paid_at) card.append(el('p','Pago em ' + dateText(h.paid_at)));
+          box.append(card);
+        }
+      } catch (err) {
+        if (dialogVersion === version) box.replaceChildren(el('p',err.message));
+        throw err;
+      }
+    }
+    function renderClients() {
+      const items = clients.filter(matchesFilter);
+      $('clients').replaceChildren(...items.map(c => {
+        const card = el('article',null,'panel stack');
+        card.append(el('h2',c.name || c.whatsapp,'wrap'),el('p',c.whatsapp,'wrap'),
+          el('strong',reais(c.monthly_amount) + ' por mês'),el('p','Vencimento: dia ' + c.due_day),
+          el('p',statuses[c.charge_status] || 'Sem cobrança no mês'));
+        if (c.notes) card.append(el('p',c.notes,'wrap'));
+        const actions = el('div',null,'row');
+        const paid = button('Marcar como pago',async () => {
+          await api(path('clients',c.id) + '/paid','POST'); notice('Pagamento registrado.'); refresh();
+        });
+        paid.disabled = c.charge_status === 'paid';
+        actions.append(button('Cobrar',() => charge(c),'primary'),paid,button('Histórico',() => history(c)),
+          button('Editar',() => clientForm(c)),button('Excluir',async () => {
+            if (!window.confirm('Excluir o cliente ' + c.name + '?')) return;
+            await api(path('clients',c.id),'DELETE'); notice('Cliente excluído.'); refresh();
+          },'danger'));
+        card.append(actions); return card;
+      }));
+      if (!items.length) $('clients').append(el('p','Nenhum cliente neste filtro.','panel'));
+    }
+    function renderWhatsApp(data) {
+      const state = data.state, qr = $('qr');
+      const labels = {offline:'Desconectado',qr:'Conectar pelo QR Code',connecting:'Conectando…',online:'Conectado'};
+      $('waState').textContent = labels[state] || 'Estado desconhecido';
+      $('waState').classList.toggle('online',state === 'online');
+      $('waHelp').textContent = state === 'offline' ? 'Ligue a ponte no computador' :
+        state === 'qr' ? 'Abra o WhatsApp > Aparelhos conectados > Conectar aparelho' : '';
+      $('bridge').hidden = state !== 'offline';
+      $('bridgeKey').value = state === 'offline' ? data.bridge_key || '' : '';
+      $('copyKey').disabled = !$('bridgeKey').value;
+      $('seen').textContent = data.seen_at ? 'Último contato: ' + dateText(data.seen_at) : '';
+      qr.hidden = state !== 'qr' || !data.qr;
+      if (qr.hidden) { lastQR = ''; qr.replaceChildren(); return; }
+      if (lastQR === data.qr) return;
+      qr.replaceChildren();
+      if (!window.QRCode) throw new Error('Não foi possível carregar a biblioteca do QR Code. Recarregue a página.');
+      new QRCode(qr,{text:String(data.qr),width:240,height:240,correctLevel:QRCode.CorrectLevel.M});
+      lastQR = data.qr;
+    }
+
+    for (const [key,[label]] of Object.entries(stages)) $('stage').add(new Option(label,key));
+    document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => go(b.dataset.page));
+    $('dismiss').onclick = () => { $('notice').hidden = true; };
+    $('closeModal').onclick = () => $('modal').close();
+    $('search').oninput = renderContacts; $('filter').onchange = renderClients;
+    $('back').onclick = () => selectLead('');
+    $('newClient').onclick = () => clientForm();
+    $('convert').onclick = () => clientForm(null,selected);
+    $('copyKey').onclick = () => copy($('bridgeKey').value);
+    $('leadForm').oninput = () => { detailDirty = true; };
+    $('draft').oninput = () => drafts.set(selected,$('draft').value);
+    submit($('leadForm'),async () => {
+      const id = selected, data = values($('leadForm'));
+      await api(path('leads',id),'PUT',data);
+      if (page === 'conversas' && id === selected &&
+          JSON.stringify(data) === JSON.stringify(values($('leadForm')))) {
+        detailDirty = false;
+        Object.assign(currentLead() || {},data);
+      }
+      notice('Contato atualizado.'); refresh();
+    });
+    submit($('compose'),async () => {
+      const id = selected, original = $('draft').value, text = original.trim();
+      if (!text) throw new Error('Digite uma mensagem.');
+      await api(path('leads',id) + '/messages','POST',{text});
+      if (drafts.get(id) === original) drafts.delete(id);
+      if (page === 'conversas' && selected === id && $('draft').value === original) $('draft').value = '';
+      if (page === 'conversas') refresh();
+    });
+    submit($('settings'),async () => {
+      await api('/api/settings','PUT',values($('settings'))); notice('Configurações salvas.');
+    });
+    submit($('loginForm'),async () => {
+      await api('/api/login','POST',{password:$('password').value});
+      $('password').value = ''; $('notice').hidden = true; go('funil');
+    });
+    $('logout').onclick = () => run($('logout'),async () => {
+      await api('/api/logout','POST'); showLogin(); $('notice').hidden = true;
+    });
+    async function start() {
+      try { await api('/api/me'); go('funil'); }
+      catch (err) {
+        if (!$('login').hidden) return;
+        showLogin(); report(err);
+      }
+    }
+    start();
+  </script>
+</body>
+</html>

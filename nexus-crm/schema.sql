@@ -35,3 +35,37 @@ CREATE INDEX IF NOT EXISTS idx_clients_due ON clients(due_day);
 CREATE INDEX IF NOT EXISTS idx_charges_client ON charges(client_id);
 CREATE INDEX IF NOT EXISTS idx_charges_status ON charges(status);
 CREATE INDEX IF NOT EXISTS idx_charges_month ON charges(reference_month);
+
+-- CRM de WhatsApp (21/11/2026): leads, mensagens e estado da ponte do QR Code.
+CREATE TABLE IF NOT EXISTS leads (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  phone TEXT NOT NULL UNIQUE,
+  jid TEXT NOT NULL DEFAULT '',
+  name TEXT NOT NULL DEFAULT '',
+  stage TEXT NOT NULL DEFAULT 'novo',
+  notes TEXT NOT NULL DEFAULT '',
+  last_message TEXT NOT NULL DEFAULT '',
+  last_at TEXT,
+  unread INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  lead_id INTEGER NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+  direction TEXT NOT NULL CHECK (direction IN ('in','out')),
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'sent',
+  wa_id TEXT UNIQUE,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_messages_lead ON messages(lead_id, id);
+CREATE INDEX IF NOT EXISTS idx_messages_pending ON messages(status, direction);
+CREATE INDEX IF NOT EXISTS idx_leads_last ON leads(last_at);
+CREATE TABLE IF NOT EXISTS wa_status (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  bridge_key TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'offline',
+  qr TEXT NOT NULL DEFAULT '',
+  seen_at TEXT
+);
+INSERT OR IGNORE INTO wa_status (id, bridge_key) VALUES (1, lower(hex(randomblob(20))));
