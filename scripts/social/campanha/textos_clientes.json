@@ -8,103 +8,139 @@
     "feed": [
       {
         "titulo": [
-          "Seu Instagram",
-          "postando sozinho"
+          "30 legendas prontas",
+          "de graça pra você"
         ],
         "topicos": [
-          "Posts e stories todo dia",
-          "Legenda pronta e no horário certo",
-          "Você só aprova pelo celular"
+          "Copie, troque e poste",
+          "Para qualquer negócio",
+          "Baixe na hora no celular"
         ],
-        "caixa": "Automatize seu Instagram com a Flow Arts",
-        "frase": "Você cuida do negócio."
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "Brinde da Flow Arts.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "Sem tempo",
-          "para postar?"
+          "Sem ideia do",
+          "que postar hoje?"
         ],
         "topicos": [
-          "A Flow Arts posta por você",
-          "Nada de perfil parado",
-          "Mais presença, menos trabalho"
+          "30 legendas prontas",
+          "Dica de foto em cada uma",
+          "É só copiar e postar"
         ],
-        "caixa": "Conheça o Postador Automático",
-        "frase": "Seu perfil sempre ativo."
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "Nunca mais trave na legenda.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "Resposta automática",
-          "no Direct"
+          "Você posta e",
+          "ninguém comenta?"
         ],
         "topicos": [
-          "Quem comenta recebe mensagem",
-          "Atende até de madrugada",
-          "Leva o cliente ao seu WhatsApp"
+          "Legenda que puxa conversa",
+          "Perguntas fáceis de responder",
+          "Mais comentários, mais alcance"
         ],
-        "caixa": "Ative o atendimento automático",
-        "frase": "Nenhum cliente fica sem resposta."
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "30 legendas prontas.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "App de agendar",
-          "não cria post"
+          "Não poste só",
+          "promoção"
         ],
         "topicos": [
-          "Aqui o conteúdo vem pronto",
-          "Imagem, legenda e horário",
-          "Tudo feito para o seu nicho"
+          "Bastidores e dicas",
+          "Clientes felizes",
+          "Oferta só às vezes"
         ],
-        "caixa": "Fale com a Flow Arts hoje",
-        "frase": "Conteúdo pronto todo dia."
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "O guia mostra o que postar.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "Constância que",
-          "traz clientes"
+          "Um presente",
+          "pro seu negócio"
         ],
         "topicos": [
-          "Quem posta todo dia é lembrado",
-          "Perfil bonito passa confiança",
-          "Mais chances de vender"
+          "30 legendas prontas",
+          "6 tipos de post",
+          "Grátis, sem compromisso"
         ],
-        "caixa": "Comece agora com a Flow Arts",
-        "frase": "Sua marca vista todos os dias."
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "Brinde da Flow Arts.",
+        "botao": "BAIXE GRÁTIS NA BIO"
+      },
+      {
+        "titulo": [
+          "Mesma foto,",
+          "outra legenda"
+        ],
+        "topicos": [
+          "Legenda certa vende mais",
+          "Chamada para o WhatsApp",
+          "Pronta para copiar"
+        ],
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "30 legendas prontas.",
+        "botao": "BAIXE GRÁTIS NA BIO"
+      },
+      {
+        "titulo": [
+          "Conhece alguém",
+          "que tem negócio?"
+        ],
+        "topicos": [
+          "Manda este post pra ele",
+          "30 legendas de graça",
+          "Ele vai te agradecer"
+        ],
+        "caixa": "Guia grátis da Flow Arts",
+        "frase": "Compartilhe com um amigo.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       }
     ],
     "story": [
       {
         "titulo": [
-          "Seu Instagram",
-          "postando sozinho"
+          "30 legendas",
+          "prontas grátis"
         ],
         "topicos": [
-          "Posts e stories todo dia",
-          "Você só aprova pelo celular"
+          "Copie, troque e poste",
+          "Baixe na hora"
         ],
-        "caixa": "Automatize com a Flow Arts"
+        "caixa": "Guia grátis da Flow Arts",
+        "botao": "TOQUE NO LINK DA BIO"
       },
       {
         "titulo": [
-          "Sem tempo",
-          "para postar?"
+          "Sem ideia do",
+          "que postar?"
         ],
         "topicos": [
-          "A Flow Arts posta por você",
-          "Nada de perfil parado"
+          "30 legendas prontas",
+          "Para qualquer negócio"
         ],
-        "caixa": "Conheça o Postador Automático"
+        "caixa": "Guia grátis da Flow Arts",
+        "botao": "TOQUE NO LINK DA BIO"
       },
       {
         "titulo": [
-          "Resposta automática",
-          "no Direct"
+          "Presente da",
+          "Flow Arts"
         ],
         "topicos": [
-          "Atende até de madrugada",
-          "Leva o cliente ao seu WhatsApp"
+          "Guia de legendas",
+          "Grátis, sem compromisso"
         ],
-        "caixa": "Ative o atendimento automático"
+        "caixa": "Guia grátis da Flow Arts",
+        "botao": "TOQUE NO LINK DA BIO"
       }
     ]
   },
