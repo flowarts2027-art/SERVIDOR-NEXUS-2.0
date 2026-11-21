@@ -1462,3 +1462,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 1051/1051. ATENÇÃO: mexe em `cloudflare/**` e `public/**`; o merge dispara o deploy.
 - Próximo passo: Rodrigo trocar o link da bio do @flowarts2026 para flowarts.com.br/brinde (só pelo celular) e aprovar a campanha; depois fazer o mesmo no Nexus AI.
 - 21/11 (9h): fotos do brinde feitas no Gemini (conta zyclow171, Gem FOTOS NEXUS) e enviadas pela Biblioteca à Flow Arts; moldura nova aplicada. Rodrigo escolheu trocar as legendas e já aprovar: 7 posts, um por dia, 25/11 a 01/12 às 12h, com legendas do brinde (rota do painel /content, que aprova). Correção: `gift-cta-fix.js` não põe mais o "Comente QUERO" em posts com `source=client_manual` (legenda trocada à mão no painel). Teste novo `test/gift-cta-fix.test.mjs`; suíte 1052/1052.
+
+## 2026-11-21 — CRM de cobrança no ar (Worker separado)
+- Pedido do Rodrigo: publicar o CRM v1 (clientes + cobrança Pix), feito no Gemini e corrigido pelo Claude.
+- Feito: pasta `nexus-crm/` e workflow `.github/workflows/deploy-nexus-crm.yml` na branch `crm-deploy` (roda só em push nessa branch; não mexe no Worker `servidor-nexus`).
+- Resultado comprovado: run 44927120984 verde (banco D1 `nexus_crm` achado/criado, tabelas criadas, deploy feito, página respondeu 200). Endereço: https://nexus-crm.diamantehinode2015.workers.dev
+- Pendente: o Rodrigo criar o segredo `ADMIN_PASSWORD` no painel da Cloudflare (ele mesmo digita). Sem ele, o login fica bloqueado.
