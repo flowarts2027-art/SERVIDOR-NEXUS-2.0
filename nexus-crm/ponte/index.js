@@ -83,24 +83,44 @@ function textOf(m) {
   return '';
 }
 
+function pack(m, history) {
+  const jid = m.key?.remoteJid || '';
+  if (!jid || jid.endsWith('@g.us') || jid === 'status@broadcast' || jid.endsWith('@newsletter') || jid.endsWith('@broadcast')) return null;
+  if (m.key.fromMe && sentByMe.has(m.key.id)) return null;
+  const body = textOf(m);
+  if (!body) return null;
+  const c = contact(m.key);
+  return {
+    wa_id: m.key.id, phone: c.phone, jid: c.jid, name: m.key.fromMe ? '' : (m.pushName || ''),
+    body, from_me: !!m.key.fromMe, history: !!history,
+    ts: Number(m.messageTimestamp?.low ?? m.messageTimestamp) || Math.floor(Date.now() / 1000)
+  };
+}
+
+async function sendBatches(list, label) {
+  for (let i = 0; i < list.length; i += 50) {
+    try { await crm('/api/bridge/inbound', 'POST', { messages: list.slice(i, i + 50) }); }
+    catch (e) { log('Erro ao levar mensagens ao CRM:', e.message); }
+  }
+  if (list.length) log(list.length, label);
+}
+
+/* Conversas antigas (últimos 30 dias), que o WhatsApp manda logo depois de conectar */
+async function onHistory({ messages }) {
+  const limit = Date.now() / 1000 - 30 * 86400;
+  const out = (messages || []).map(m => pack(m, true)).filter(x => x && x.ts >= limit);
+  await sendBatches(out, 'mensagem(ns) antiga(s) levada(s) ao CRM');
+}
+
 async function onMessages({ messages, type }) {
-  if (type !== 'notify') return; // ignora histórico antigo
+  if (type === 'append') return onHistory({ messages });
+  if (type !== 'notify') return;
   const out = [];
   for (const m of messages) {
-    const jid = m.key?.remoteJid || '';
-    if (!jid || jid.endsWith('@g.us') || jid === 'status@broadcast' || jid.endsWith('@newsletter') || jid.endsWith('@broadcast')) continue;
-    if (m.key.fromMe && sentByMe.has(m.key.id)) continue;
-    const body = textOf(m);
-    if (!body) continue;
-    const c = contact(m.key);
-    out.push({
-      wa_id: m.key.id, phone: c.phone, jid: c.jid, name: m.key.fromMe ? '' : (m.pushName || ''),
-      body, from_me: !!m.key.fromMe, ts: Number(m.messageTimestamp) || Math.floor(Date.now() / 1000)
-    });
+    const x = pack(m, false);
+    if (x) out.push(x);
   }
-  if (!out.length) return;
-  try { await crm('/api/bridge/inbound', 'POST', { messages: out }); log(out.length, 'mensagem(ns) levada(s) ao CRM'); }
-  catch (e) { log('Erro ao levar mensagens ao CRM:', e.message); }
+  await sendBatches(out, 'mensagem(ns) nova(s) levada(s) ao CRM');
 }
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -113,7 +133,7 @@ async function sendQueue() {
     const { messages } = await crm('/api/bridge/outbox');
     for (const m of messages) {
       try {
-        let to = m.jid && m.jid.endsWith('@s.whatsapp.net') ? m.jid : '';
+        let to = m.jid && (m.jid.endsWith('@s.whatsapp.net') || m.jid.endsWith('@lid')) ? m.jid : '';
         if (!to) {
           const [r] = await sock.onWhatsApp(m.phone);
           if (!r?.exists) throw new Error('número sem WhatsApp');
@@ -143,10 +163,12 @@ async function connect() {
     logger: pino({ level: 'silent' }),
     browser: Browsers.windows('Nexus CRM'),
     markOnlineOnConnect: false,   // o celular continua recebendo notificação
-    syncFullHistory: false
+    syncFullHistory: false,
+    shouldSyncHistoryMessage: () => true
   });
   sock.ev.on('creds.update', saveCreds);
   sock.ev.on('messages.upsert', onMessages);
+  sock.ev.on('messaging-history.set', onHistory);
   sock.ev.on('connection.update', async u => {
     if (u.qr) {
       state = 'qr'; qr = u.qr;

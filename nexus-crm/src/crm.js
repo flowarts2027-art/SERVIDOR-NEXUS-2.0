@@ -69,20 +69,24 @@ export async function bridgeApi(req, env, url) {
   if (p === '/api/bridge/inbound' && m === 'POST') {
     const x = await input(req);
     let saved = 0;
-    for (const msg of (Array.isArray(x.messages) ? x.messages : []).slice(0, 50)) {
+    for (const msg of (Array.isArray(x.messages) ? x.messages : []).slice(0, 60)) {
       const phone = digits(msg.phone);
       const body = clean(msg.body, 4000);
       if (!phone || !body || !msg.wa_id) continue;
       const fromMe = Boolean(msg.from_me);
+      const old = Boolean(msg.history);
       const lead = await leadByPhone(env, phone, clean(msg.jid, 120), fromMe ? '' : msg.name);
       const when = msg.ts ? new Date(Number(msg.ts) * 1000).toISOString() : nowIso();
       const r = await env.DB.prepare('INSERT OR IGNORE INTO messages(lead_id,direction,body,status,wa_id,created_at) VALUES(?,?,?,?,?,?)')
         .bind(lead.id, fromMe ? 'out' : 'in', body, fromMe ? 'sent' : 'received', clean(msg.wa_id, 120), when).run();
       if (!r.meta.changes) continue;
       saved++;
-      await env.DB.prepare(`UPDATE leads SET last_message=?, last_at=?, unread=unread+?,
+      await env.DB.prepare(`UPDATE leads SET
+        last_message=CASE WHEN last_at IS NULL OR ?>=last_at THEN ? ELSE last_message END,
+        last_at=CASE WHEN last_at IS NULL OR ?>=last_at THEN ? ELSE last_at END,
+        unread=unread+?,
         stage=CASE WHEN stage='novo' AND ?=1 THEN 'conversa' ELSE stage END WHERE id=?`)
-        .bind(body.slice(0, 300), when, fromMe ? 0 : 1, fromMe ? 1 : 0, lead.id).run();
+        .bind(when, body.slice(0, 300), when, when, fromMe || old ? 0 : 1, fromMe ? 1 : 0, lead.id).run();
     }
     return json({ ok: true, saved });
   }
