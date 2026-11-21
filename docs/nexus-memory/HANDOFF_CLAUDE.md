@@ -1468,3 +1468,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Feito: pasta `nexus-crm/` e workflow `.github/workflows/deploy-nexus-crm.yml` na branch `crm-deploy` (roda só em push nessa branch; não mexe no Worker `servidor-nexus`).
 - Resultado comprovado: run 44927120984 verde (banco D1 `nexus_crm` achado/criado, tabelas criadas, deploy feito, página respondeu 200). Endereço: https://nexus-crm.diamantehinode2015.workers.dev
 - Pendente: o Rodrigo criar o segredo `ADMIN_PASSWORD` no painel da Cloudflare (ele mesmo digita). Sem ele, o login fica bloqueado.
+
+## 2026-11-21 (tarde) — Nexus CRM vira CRM de WhatsApp (estilo Kommo)
+- Pedido do Rodrigo: CRM igual ao Kommo, com abas laterais, funil de leads e conversas; conexão do WhatsApp por QR Code (não oficial) até a Meta responder; tudo grátis; ponte rodando no PC dele por enquanto.
+- Tela: feita pelo ChatGPT a partir do contrato de API do Claude; o Claude aplicou o azul e a logo oficial do Nexus (N metálico azul).
+- Backend novo em `nexus-crm/src/crm.js` (leads, mensagens, fila de envio, estado da ponte) + tabelas novas no `schema.sql`. Cobrar envia pelo WhatsApp se a ponte estiver online. Testado com SQLite em memória (19 checagens ok).
+- Ponte: `nexus-crm/ponte/` (Baileys, Node). Roda com `LIGAR-WHATSAPP.bat`; pede a chave da ponte (aba WhatsApp do CRM) e guarda em `config.json` local (fora do Git).
+- Deploy: run 44929497513 verde. A ponte ainda não foi testada num celular real.
+- Próximo passo: Rodrigo ligar a ponte no PC e escanear o QR Code.
