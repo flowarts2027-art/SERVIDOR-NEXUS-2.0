@@ -433,7 +433,7 @@
       box.style.setProperty('--avc','hsl(' + h + ' 45% 52%)');
       box.textContent = ini;
       if (/^https:\/\//.test(lead.avatar || '')) {
-        const img = el('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.loading = 'lazy';
+        const img = el('img'); img.alt = ''; img.referrerPolicy = 'no-referrer';
         img.onload = () => box.replaceChildren(img);
         img.onerror = () => {};
         img.src = lead.avatar;
