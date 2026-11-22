@@ -32,7 +32,7 @@ jobs:
           node-version: "22"
 
       - name: Testes do CRM (contas separadas e migração)
-        run: node --test test/
+        run: node --test test/*.test.mjs
 
       - name: Achar ou criar o banco D1 nexus_crm
         env:
