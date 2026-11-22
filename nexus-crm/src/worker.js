@@ -50,9 +50,13 @@ async function charge(env, acc, c) {
 }
 function payPage(ch,cfg){const paid=ch.status==='paid',waiting=ch.status==='awaiting';return `<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Pagamento — ${esc(cfg.company_name)}</title><style>*{box-sizing:border-box}body{margin:0;background:#07182d;color:#fff;font:19px Arial,sans-serif;padding:25px 12px}main{max-width:540px;margin:auto;background:#102845;border:1px solid #315273;border-radius:20px;padding:25px;text-align:center}h1{font-size:30px}.amount{font-size:42px;color:#7ef7bb;font-weight:bold}button{width:100%;padding:18px;margin:9px 0;font-size:19px;font-weight:bold;border:0;border-radius:12px;cursor:pointer}.copy{background:#20cf84}.report{background:#f8b83d}code{display:block;background:#061423;padding:15px;overflow-wrap:anywhere;font-size:15px;text-align:left}#qr{background:white;padding:16px;width:max-content;max-width:100%;margin:20px auto}small{color:#c6d8e8}</style></head><body><main><h1>${esc(cfg.company_name||'Pagamento')}</h1><h2>${esc(ch.client_name)}</h2><p>Mensalidade — ${esc(ch.reference_month)}</p><p class="amount">${currency(ch.amount)}</p><p>Vencimento: ${ch.due_date.split('-').reverse().join('/')}</p>${paid?'<h2>Pagamento confirmado ✓</h2>':`<div id="qr"></div><p>Escaneie o QR Code ou copie o Pix:</p><code>${esc(ch.pix_code)}</code><button class="copy" onclick="copyPix()">Copiar código Pix</button><button class="report" onclick="reportPaid()" ${waiting?'disabled':''}>${waiting?'Aguardando confirmação':'Já paguei'}</button><p><small>A confirmação do pagamento é feita pela empresa.</small></p>`}</main><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>const pix=${JSON.stringify(ch.pix_code)};if(document.getElementById('qr')&&window.QRCode)new QRCode(document.getElementById('qr'),{text:pix,width:240,height:240,correctLevel:QRCode.CorrectLevel.M});async function copyPix(){try{await navigator.clipboard.writeText(pix);alert('Pix copiado!')}catch{prompt('Copie o Pix:',pix)}}async function reportPaid(){if(!confirm('Você já realizou o pagamento?'))return;const r=await fetch(location.pathname+'/confirmar',{method:'POST'});const x=await r.json();if(!r.ok)return alert(x.error||'Erro');alert('Aviso enviado. Aguarde a confirmação.');location.reload()}</script></body></html>`;}
 
+/* Chave do servidor da ponte (Oracle): tirada da senha master, sem segredo novo */
+const serverKey = env => sign(env.ADMIN_PASSWORD, 'nexus:ponte-servidor');
+
 /* Painel master: criar, ativar, trocar senha e apagar contas */
 async function accountsApi(req, env, url) {
   const p = url.pathname, m = req.method;
+  if (p === '/api/accounts/server-key' && m === 'GET') return json({ key: await serverKey(env) });
   if (p === '/api/accounts' && m === 'GET') {
     const r = await env.DB.prepare(`SELECT a.id,a.username,a.company_name,a.active,a.is_master,a.created_at,a.wa_state,a.wa_seen_at,
       (SELECT COUNT(*) FROM leads l WHERE l.account_id=a.id) AS leads FROM accounts a ORDER BY a.is_master DESC, a.created_at DESC`).all();
@@ -199,6 +203,12 @@ export default {
     const url = new URL(req.url), p = url.pathname;
     try {
       if (p.startsWith('/api/bridge/')) return await bridgeApi(req, env, url);
+      // Servidor da ponte 24h: pega a lista de contas ativas para ligar o WhatsApp de cada uma
+      if (p === '/api/ponte-servidor/contas' && req.method === 'GET') {
+        if (!env.ADMIN_PASSWORD || !equal(req.headers.get('x-server-key') || '', await serverKey(env))) return error('Chave do servidor inválida.', 401);
+        const r = await env.DB.prepare('SELECT id, bridge_key FROM accounts WHERE active=1 ORDER BY id').all();
+        return json({ accounts: r.results });
+      }
       if (p.startsWith('/api/')) return await api(req, env, url);
       const match = p.match(/^\/pagar\/([a-f0-9]{32})$/);
       if (match && req.method === 'GET') {

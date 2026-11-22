@@ -10,7 +10,10 @@ const {
   fetchLatestBaileysVersion, Browsers
 } = require('@whiskeysockets/baileys');
 
-const DIR = __dirname;
+// No servidor (servidor.js) cada conta roda com a própria pasta e a própria chave.
+const DIR = process.env.PONTE_DIR || __dirname;
+const ENV_KEY = (process.env.BRIDGE_KEY || '').toLowerCase();
+try { fs.mkdirSync(DIR, { recursive: true }); } catch {}
 const CONFIG = path.join(DIR, 'config.json');
 const AUTH = path.join(DIR, 'sessao-whatsapp');
 const CRM = (process.env.CRM_URL || 'https://nexus-crm.diamantehinode2015.workers.dev').replace(/\/$/, '');
@@ -46,6 +49,7 @@ function ask(q) {
 }
 
 async function loadKey() {
+  if (ENV_KEY) { key = ENV_KEY; return; }
   try { key = JSON.parse(fs.readFileSync(CONFIG, 'utf8')).key || ''; } catch {}
   while (!/^[a-f0-9]{40}$/.test(key)) {
     console.log('\nAbra o CRM, vá na aba WhatsApp e clique em "Copiar chave".');
@@ -62,6 +66,7 @@ async function crm(p, method = 'GET', body) {
     body: body ? JSON.stringify(body) : undefined
   });
   if (r.status === 401) {
+    if (ENV_KEY) { console.log('Conta desativada ou apagada no CRM. Parando esta conta.'); process.exit(3); }
     console.log('\nA chave da ponte foi recusada pelo CRM. Apagando e pedindo de novo...');
     try { fs.unlinkSync(CONFIG); } catch {}
     process.exit(1);

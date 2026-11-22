@@ -136,3 +136,21 @@ test('página de pagamento usa o Pix da conta dona do cliente', async () => {
   const page = await worker.fetch(new Request(r.data.payment_url), env);
   assert.match(await page.text(), /Flow Arts/);
 });
+
+test('servidor da ponte pega só as contas ativas com a chave certa', async () => {
+  const db = bancoAntigoComDados();
+  db.exec(read('../migrate-contas.sql')); db.exec(read('../schema.sql'));
+  const { call, env } = app(db);
+  await call('m', '/api/login', 'POST', { password: 'senha-master-teste' });
+  await call('m', '/api/accounts', 'POST', { username: 'amigo', password: 'senha123' });
+  const key = (await call('m', '/api/accounts/server-key')).data.key;
+  assert.match(key, /^[a-f0-9]{64}$/);
+  const lista = k => worker.fetch(new Request('https://crm.test/api/ponte-servidor/contas', { headers: { 'x-server-key': k } }), env);
+  assert.equal((await lista('0'.repeat(64))).status, 401);
+  const r = await (await lista(key)).json();
+  assert.deepEqual(r.accounts.map(a => a.id), [1, 2]);
+  await call('m', '/api/accounts/2', 'PUT', { active: false });
+  assert.deepEqual((await (await lista(key)).json()).accounts.map(a => a.id), [1]);
+  await call('a', '/api/login', 'POST', { username: 'amigo', password: 'senha123' });
+  assert.equal((await call('a', '/api/accounts/server-key')).status, 401);
+});

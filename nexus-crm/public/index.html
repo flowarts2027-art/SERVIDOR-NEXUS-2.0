@@ -405,6 +405,11 @@
           <button class="primary">Criar conta</button>
         </form>
         <div id="accountList" class="stack"></div>
+        <details class="panel">
+          <summary><b>Chave do servidor da ponte</b> (só para instalar o servidor)</summary>
+          <p class="muted">Use só na instalação do servidor do WhatsApp. Não mande para ninguém.</p>
+          <button type="button" id="copyServerKey">Copiar chave do servidor</button>
+        </details>
       </section>
 
       <section id="config" class="panel narrow" hidden>
@@ -1217,6 +1222,10 @@
         box.append(card);
       }
     }
+    $('copyServerKey').onclick = () => run($('copyServerKey'), async () => {
+      const r = await api('/api/accounts/server-key');
+      await navigator.clipboard.writeText(r.key); notice('Chave do servidor copiada.');
+    });
     submit($('accountForm'), async () => {
       const v = values($('accountForm'));
       v.username = v.username.trim().toLowerCase();
