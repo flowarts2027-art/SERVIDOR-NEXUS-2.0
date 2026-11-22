@@ -31,6 +31,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Testes do CRM (contas separadas e migração)
+        run: node --test test/*.test.mjs
+
       - name: Achar ou criar o banco D1 nexus_crm
         env:
           CF_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
@@ -46,6 +49,27 @@ jobs:
           fi
           sed -i "s/COLE_AQUI_O_ID_DO_BANCO/$id/" wrangler.toml
           grep -q "$id" wrangler.toml
+
+      - name: Migração para várias contas (roda uma vez só)
+        # Banco antigo (leads sem account_id): passa tudo para a conta 1 (master).
+        # Se der errado, o D1 tem Time Travel (volta o banco a um minuto anterior).
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_D1_TOKEN || secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 execute nexus_crm --remote --json --command "SELECT COALESCE((SELECT sql FROM sqlite_master WHERE type='table' AND name='leads'),'') AS sql" > leads.json
+          estado="$(python3 -c 'import json; s=json.load(open("leads.json"))[0]["results"][0]["sql"]; print("novo" if not s else ("ok" if "account_id" in s else "migrar"))')"
+          echo "Banco: $estado"
+          if [ "$estado" = "migrar" ]; then
+            npx --yes wrangler@4 d1 execute nexus_crm --remote --yes --file=migrate-contas.sql
+            echo "::notice::Migração para várias contas feita"
+          fi
+
+      - name: Pacote da ponte do WhatsApp para baixar no CRM
+        run: |
+          rm -f public/nexus-crm-ponte.zip
+          zip -qr public/nexus-crm-ponte.zip ponte -x 'ponte/node_modules/*' 'ponte/sessao-whatsapp/*' 'ponte/config.json' 'ponte/contatos.json'
+          unzip -l public/nexus-crm-ponte.zip
 
       - name: Criar as tabelas (pode repetir sem apagar nada)
         env:

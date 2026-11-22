@@ -260,6 +260,7 @@
   <section id="login" hidden>
     <form id="loginForm" class="panel">
       <img class="login-logo" src="/assets/logo.png" alt="Nexus"><h1 style="text-align:center">Nexus CRM</h1>
+      <label>Usuário<input id="username" autocomplete="username" autocapitalize="none" placeholder="Deixe vazio se for a conta master"></label>
       <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
       <button class="primary">Entrar</button>
     </form>
@@ -276,6 +277,7 @@
       <button data-page="cobranca" title="Cobrança"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6.5 15h4"/></svg></span><span class="lbl">Cobrança</span></button>
       <button data-page="whatsapp" title="WhatsApp"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><span class="lbl">WhatsApp</span></button>
       <button data-page="config" title="Configurações"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><span class="lbl">Configurações</span></button>
+      <button data-page="contas" id="navContas" title="Contas" hidden><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a5.5 5.5 0 0 1 3.5 6"/></svg></span><span class="lbl">Contas</span></button>
       <button id="logout" title="Sair"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span><span class="lbl">Sair</span></button>
     </nav>
     <main>
@@ -380,6 +382,29 @@
           <label>Chave da ponte<input id="bridgeKey" readonly></label><button id="copyKey">Copiar chave</button>
         </div>
         <p id="seen" class="muted"></p>
+        <details class="panel">
+          <summary><b>Primeira vez neste computador? Instale a ponte</b></summary>
+          <ol class="stack" style="padding-left:1.2rem">
+            <li>Instale o <b>Node.js</b> (versão LTS) em <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>.</li>
+            <li><a href="/nexus-crm-ponte.zip" download><b>⬇️ Baixe a ponte</b></a>, clique com o botão direito no arquivo e escolha <b>Extrair tudo</b>.</li>
+            <li>Abra a pasta <b>ponte</b> e dê dois cliques em <b>LIGAR-WHATSAPP.bat</b>.</li>
+            <li>Quando pedir, cole a <b>chave da ponte</b> desta tela (botão <b>Copiar chave</b>) e aperte Enter.</li>
+            <li>O QR Code aparece aqui. No celular: WhatsApp → <b>Aparelhos conectados</b> → <b>Conectar aparelho</b>.</li>
+          </ol>
+          <p class="muted">Deixe a janela preta aberta enquanto usar o CRM. Cada conta tem a própria chave: use sempre a chave da sua conta.</p>
+        </details>
+      </section>
+
+      <section id="contas" class="stack narrow" hidden style="max-width:52rem">
+        <form id="accountForm" class="panel stack">
+          <h2>Criar conta para um cliente</h2>
+          <p class="muted">Cada conta tem os próprios leads, conversas, cobranças e o próprio WhatsApp. Ninguém vê os dados de outra conta.</p>
+          <label>Usuário (sem espaço e sem acento)<input name="username" required minlength="3" maxlength="30" autocapitalize="none" placeholder="ex.: joao"></label>
+          <label>Senha (mínimo 6)<input name="password" required minlength="6" maxlength="100"></label>
+          <label>Nome da empresa<input name="company_name" maxlength="100"></label>
+          <button class="primary">Criar conta</button>
+        </form>
+        <div id="accountList" class="stack"></div>
       </section>
 
       <section id="config" class="panel narrow" hidden>
@@ -407,7 +432,7 @@
       agendado: ['Agendado', '#7359a2'], pagamento: ['Pagamento pendente', '#a26c19'],
       pago: ['Pago', '#1f9d5c'], perdido: ['Perdido', '#98524c']
     };
-    const pages = {funil:'Leads', followup:'Follow-up', tarefas:'Tarefas', respostas:'Mensagens prontas', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', config:'Configurações'};
+    const pages = {funil:'Leads', followup:'Follow-up', tarefas:'Tarefas', respostas:'Mensagens prontas', conversas:'Conversas', cobranca:'Cobrança', whatsapp:'WhatsApp', contas:'Contas', config:'Configurações'};
     const statuses = {pending:'Pendente', awaiting:'Aguardando pagamento', paid:'Pago'};
     const money = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'});
     const reais = cents => money.format(Number(cents) / 100);
@@ -484,7 +509,7 @@
     function showLogin() {
       stopView(); session++; page = ''; selected = '';
       leads = []; clients = []; drafts.clear();
-      $('app').hidden = true; $('login').hidden = false;
+      $('app').hidden = true; $('login').hidden = false; $('navContas').hidden = true;
       $('password').value = ''; $('password').focus();
       $('search').value = ''; $('bridgeKey').value = '';
       $('bridge').hidden = true;
@@ -557,6 +582,9 @@
         } else if (view === 'whatsapp') {
           const result = await api('/api/whatsapp','GET',undefined,signal);
           if (epoch === token) renderWhatsApp(result);
+        } else if (view === 'contas') {
+          const result = await api('/api/accounts','GET',undefined,signal);
+          if (epoch === token) renderAccounts(result.accounts);
         } else {
           const result = await api('/api/settings','GET',undefined,signal);
           if (epoch !== token) return;
@@ -1148,14 +1176,58 @@
       await api('/api/settings','PUT',values($('settings'))); notice('Configurações salvas.');
     });
     submit($('loginForm'),async () => {
-      await api('/api/login','POST',{password:$('password').value});
-      $('password').value = ''; $('notice').hidden = true; go('funil');
+      await api('/api/login','POST',{username:$('username').value.trim(), password:$('password').value});
+      $('password').value = ''; $('notice').hidden = true; await loadMe(); go('funil');
+    });
+    // Contas (só a master vê a aba)
+    async function loadMe() {
+      const me = await api('/api/me');
+      $('navContas').hidden = !me.is_master;
+      return me;
+    }
+    function renderAccounts(list) {
+      const box = $('accountList');
+      box.replaceChildren();
+      const waLabel = {online:'🟢 WhatsApp conectado', qr:'🟡 Esperando QR Code', connecting:'🟡 Conectando', offline:'⚪ WhatsApp desligado'};
+      for (const a of list) {
+        const card = el('div', null, 'panel stack');
+        card.append(el('h3', (a.is_master ? '⭐ ' : '') + (a.is_master ? 'master (você)' : a.username)));
+        if (a.company_name) card.append(el('p', a.company_name));
+        card.append(el('p', (a.active ? '✅ Ativa' : '⛔ Desativada') + ' · ' + (waLabel[a.wa_state] || waLabel.offline) + ' · ' + a.leads + ' leads', 'muted'));
+        if (!a.is_master) {
+          const row = el('div', null, 'row');
+          row.append(button(a.active ? 'Desativar' : 'Ativar', async () => {
+            await api('/api/accounts/' + a.id, 'PUT', {active: !a.active}); refresh();
+          }));
+          row.append(button('Trocar senha', async () => {
+            const nova = prompt('Nova senha para ' + a.username + ' (mínimo 6):');
+            if (!nova) return;
+            await api('/api/accounts/' + a.id, 'PUT', {password: nova}); notice('Senha trocada.');
+          }));
+          row.append(button('Copiar acesso', async () => {
+            const txt = 'Seu acesso ao Nexus CRM\nLink: ' + location.origin + '\nUsuário: ' + a.username + '\nSenha: a que eu te passei';
+            await navigator.clipboard.writeText(txt); notice('Acesso copiado. Mande a senha separada.');
+          }));
+          row.append(button('Apagar', async () => {
+            if (prompt('Isso apaga a conta ' + a.username + ' e TODOS os dados dela. Para confirmar, digite o usuário:') !== a.username) return;
+            await api('/api/accounts/' + a.id, 'DELETE'); notice('Conta apagada.'); refresh();
+          }, 'danger'));
+          card.append(row);
+        }
+        box.append(card);
+      }
+    }
+    submit($('accountForm'), async () => {
+      const v = values($('accountForm'));
+      v.username = v.username.trim().toLowerCase();
+      await api('/api/accounts','POST', v);
+      $('accountForm').reset(); notice('Conta criada. Use "Copiar acesso" para mandar ao cliente.'); refresh();
     });
     $('logout').onclick = () => run($('logout'),async () => {
       await api('/api/logout','POST'); showLogin(); $('notice').hidden = true;
     });
     async function start() {
-      try { await api('/api/me'); go('funil'); }
+      try { await loadMe(); go('funil'); }
       catch (err) {
         if (!$('login').hidden) return;
         showLogin(); report(err);

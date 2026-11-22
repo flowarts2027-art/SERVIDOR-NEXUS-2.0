@@ -1,4 +1,6 @@
-/* Nexus CRM — leads do WhatsApp, conversas e ponte do QR Code (21/11/2026). */
+/* Nexus CRM — leads do WhatsApp, conversas e ponte do QR Code (21/11/2026).
+   Desde 22/11/2026 tudo é separado por conta (account_id). A conta vem do login
+   (painel) ou da chave da ponte (PC de cada cliente). */
 const STAGES = ['novo', 'conversa', 'agendado', 'pagamento', 'pago', 'perdido'];
 export const TAGS = ['novo', 'quente', 'qualificado', 'urgente', 'frio'];
 const cleanTags = v => [...new Set((Array.isArray(v) ? v : String(v || '').split(',')).map(t => String(t).trim()).filter(t => TAGS.includes(t)))].join(',');
@@ -17,33 +19,39 @@ export function fullPhone(v) {
   return d;
 }
 
-async function status(env) {
-  return env.DB.prepare('SELECT * FROM wa_status WHERE id=1').first();
-}
-
 /* Estado real: se a ponte não dá sinal há 90 s, está desligada */
-export async function waState(env) {
-  const s = await status(env);
+export async function waState(env, acc) {
+  const s = await env.DB.prepare('SELECT wa_state,wa_qr,wa_seen_at,bridge_key FROM accounts WHERE id=?').bind(acc).first();
   if (!s) return { state: 'offline', qr: '', seen_at: null, bridge_key: '' };
-  const fresh = s.seen_at && Date.now() - Date.parse(s.seen_at) < ONLINE_MS;
-  return { state: fresh ? s.state : 'offline', qr: fresh && s.state === 'qr' ? s.qr : '', seen_at: s.seen_at, bridge_key: s.bridge_key };
+  const fresh = s.wa_seen_at && Date.now() - Date.parse(s.wa_seen_at) < ONLINE_MS;
+  return { state: fresh ? s.wa_state : 'offline', qr: fresh && s.wa_state === 'qr' ? s.wa_qr : '', seen_at: s.wa_seen_at, bridge_key: s.bridge_key };
 }
 
-async function leadById(env, id) {
-  return env.DB.prepare('SELECT * FROM leads WHERE id=?').bind(id).first();
+async function leadById(env, acc, id) {
+  return env.DB.prepare('SELECT * FROM leads WHERE id=? AND account_id=?').bind(id, acc).first();
 }
 
 /* Acha ou cria o lead pelo telefone */
-async function leadByPhone(env, phone, jid = '', name = '') {
-  await env.DB.prepare('INSERT OR IGNORE INTO leads(phone,jid,name) VALUES(?,?,?)').bind(phone, jid, clean(name, 150)).run();
-  if (jid) await env.DB.prepare("UPDATE leads SET jid=? WHERE phone=? AND (jid='' OR jid LIKE '%@lid')").bind(jid, phone).run();
-  if (name) await env.DB.prepare("UPDATE leads SET name=? WHERE phone=? AND name=''").bind(clean(name, 150), phone).run();
-  return env.DB.prepare('SELECT * FROM leads WHERE phone=?').bind(phone).first();
+async function leadByPhone(env, acc, phone, jid = '', name = '') {
+  await env.DB.prepare('INSERT OR IGNORE INTO leads(account_id,phone,jid,name) VALUES(?,?,?,?)').bind(acc, phone, jid, clean(name, 150)).run();
+  if (jid) await env.DB.prepare("UPDATE leads SET jid=? WHERE account_id=? AND phone=? AND (jid='' OR jid LIKE '%@lid')").bind(jid, acc, phone).run();
+  if (name) await env.DB.prepare("UPDATE leads SET name=? WHERE account_id=? AND phone=? AND name=''").bind(clean(name, 150), acc, phone).run();
+  return env.DB.prepare('SELECT * FROM leads WHERE account_id=? AND phone=?').bind(acc, phone).first();
+}
+
+/* Mensagens prontas de exemplo para uma conta nova */
+export async function seedTemplates(env, acc) {
+  const base = [
+    ['Boas-vindas', 'Olá {nome}! Obrigado pelo contato. Como posso te ajudar?'],
+    ['Preço', 'Oi {nome}! Vou te passar os valores agora. Você prefere plano mensal ou trimestral?'],
+    ['Retorno', 'Oi {nome}, tudo bem? Passando para saber se você conseguiu ver a proposta.'],
+  ];
+  await env.DB.batch(base.map(([t, b]) => env.DB.prepare('INSERT INTO templates(account_id,title,body) VALUES(?,?,?)').bind(acc, t, b)));
 }
 
 /* Coloca uma mensagem na fila; a ponte do PC envia */
-export async function queueMessage(env, phone, text) {
-  const lead = await leadByPhone(env, fullPhone(phone));
+export async function queueMessage(env, acc, phone, text) {
+  const lead = await leadByPhone(env, acc, fullPhone(phone));
   const body = clean(text, 4000);
   await env.DB.prepare("INSERT INTO messages(lead_id,direction,body,status,created_at) VALUES(?,'out',?,'pending',?)").bind(lead.id, body, nowIso()).run();
   await env.DB.prepare('UPDATE leads SET last_message=?,last_at=? WHERE id=?').bind(body.slice(0, 300), nowIso(), lead.id).run();
@@ -56,15 +64,16 @@ async function input(req) {
 
 /* Rotas da ponte (PC do Rodrigo). Autenticação pela chave da ponte. */
 export async function bridgeApi(req, env, url) {
-  const s = await status(env);
-  const key = req.headers.get('x-bridge-key') || '';
-  if (!s || !key || key.length !== s.bridge_key.length || key !== s.bridge_key) return fail('Chave da ponte inválida.', 401);
+  const key = (req.headers.get('x-bridge-key') || '').toLowerCase();
+  const a = /^[a-f0-9]{40}$/.test(key) ? await env.DB.prepare('SELECT id FROM accounts WHERE bridge_key=? AND active=1').bind(key).first() : null;
+  if (!a) return fail('Chave da ponte inválida.', 401);
+  const acc = a.id;
   const p = url.pathname, m = req.method;
 
   if (p === '/api/bridge/status' && m === 'POST') {
     const x = await input(req);
     const state = ['qr', 'connecting', 'online'].includes(x.state) ? x.state : 'connecting';
-    await env.DB.prepare('UPDATE wa_status SET state=?,qr=?,seen_at=? WHERE id=1').bind(state, clean(x.qr, 2000), nowIso()).run();
+    await env.DB.prepare('UPDATE accounts SET wa_state=?,wa_qr=?,wa_seen_at=? WHERE id=?').bind(state, clean(x.qr, 2000), nowIso(), acc).run();
     return json({ ok: true });
   }
 
@@ -77,7 +86,7 @@ export async function bridgeApi(req, env, url) {
       if (!phone || !body || !msg.wa_id) continue;
       const fromMe = Boolean(msg.from_me);
       const old = Boolean(msg.history);
-      const lead = await leadByPhone(env, phone, clean(msg.jid, 120), fromMe ? '' : msg.name);
+      const lead = await leadByPhone(env, acc, phone, clean(msg.jid, 120), fromMe ? '' : msg.name);
       const when = msg.ts ? new Date(Number(msg.ts) * 1000).toISOString() : nowIso();
       const r = await env.DB.prepare('INSERT OR IGNORE INTO messages(lead_id,direction,body,status,wa_id,created_at) VALUES(?,?,?,?,?,?)')
         .bind(lead.id, fromMe ? 'out' : 'in', body, fromMe ? 'sent' : 'received', clean(msg.wa_id, 120), when).run();
@@ -97,10 +106,10 @@ export async function bridgeApi(req, env, url) {
 
   if (p === '/api/bridge/outbox' && m === 'GET') {
     // Mensagem presa em "sending" por mais de 2 min volta para a fila
-    await env.DB.prepare("UPDATE messages SET status='pending' WHERE status='sending' AND direction='out' AND created_at < ?")
-      .bind(new Date(Date.now() - 120_000).toISOString()).run();
+    await env.DB.prepare(`UPDATE messages SET status='pending' WHERE status='sending' AND direction='out' AND created_at < ?
+      AND lead_id IN (SELECT id FROM leads WHERE account_id=?)`).bind(new Date(Date.now() - 120_000).toISOString(), acc).run();
     const rows = await env.DB.prepare(`SELECT m.id, m.body, l.phone, l.jid FROM messages m JOIN leads l ON l.id=m.lead_id
-      WHERE m.direction='out' AND m.status='pending' ORDER BY m.id LIMIT 10`).all();
+      WHERE l.account_id=? AND m.direction='out' AND m.status='pending' ORDER BY m.id LIMIT 10`).bind(acc).all();
     for (const r of rows.results) await env.DB.prepare("UPDATE messages SET status='sending' WHERE id=?").bind(r.id).run();
     return json({ messages: rows.results });
   }
@@ -108,9 +117,9 @@ export async function bridgeApi(req, env, url) {
   // Contatos que ainda não têm foto/nome/número real
   if (p === '/api/bridge/pending-info' && m === 'GET') {
     const old = new Date(Date.now() - 3 * 86400_000).toISOString();
-    const r = await env.DB.prepare(`SELECT id, phone, jid, name FROM leads WHERE phone NOT LIKE 'manual-%'
+    const r = await env.DB.prepare(`SELECT id, phone, jid, name FROM leads WHERE account_id=? AND phone NOT LIKE 'manual-%'
       AND (info_at IS NULL OR info_at < ? OR (jid LIKE '%@lid' AND info_at < ?)) ORDER BY COALESCE(last_at, created_at) DESC LIMIT 40`)
-      .bind(old, new Date(Date.now() - 3600_000).toISOString()).all();
+      .bind(acc, old, new Date(Date.now() - 3600_000).toISOString()).all();
     return json({ leads: r.results });
   }
 
@@ -119,12 +128,12 @@ export async function bridgeApi(req, env, url) {
     const x = await input(req);
     let updated = 0;
     for (const it of (Array.isArray(x.items) ? x.items : []).slice(0, 60)) {
-      const lead = await leadById(env, Number(it.id));
+      const lead = await leadById(env, acc, Number(it.id));
       if (!lead) continue;
       let target = lead;
       const pn = digits(it.phone);
       if (pn && /^\d{12,13}$/.test(pn) && pn !== lead.phone) {
-        const other = await env.DB.prepare('SELECT * FROM leads WHERE phone=?').bind(pn).first();
+        const other = await env.DB.prepare('SELECT * FROM leads WHERE account_id=? AND phone=?').bind(acc, pn).first();
         if (other) {
           // Junta as conversas no lead do telefone real
           await env.DB.prepare('UPDATE messages SET lead_id=? WHERE lead_id=?').bind(other.id, lead.id).run();
@@ -150,20 +159,20 @@ export async function bridgeApi(req, env, url) {
   const done = p.match(/^\/api\/bridge\/outbox\/(\d+)$/);
   if (done && m === 'POST') {
     const x = await input(req);
-    await env.DB.prepare('UPDATE messages SET status=?, wa_id=COALESCE(?, wa_id) WHERE id=?')
-      .bind(x.ok ? 'sent' : 'failed', x.wa_id ? clean(x.wa_id, 120) : null, Number(done[1])).run();
+    await env.DB.prepare('UPDATE messages SET status=?, wa_id=COALESCE(?, wa_id) WHERE id=? AND lead_id IN (SELECT id FROM leads WHERE account_id=?)')
+      .bind(x.ok ? 'sent' : 'failed', x.wa_id ? clean(x.wa_id, 120) : null, Number(done[1]), acc).run();
     return json({ ok: true });
   }
   return fail('Rota não encontrada.', 404);
 }
 
 /* Rotas do painel (já com login conferido). Retorna null se não for daqui. */
-export async function crmApi(req, env, url, helpers) {
+export async function crmApi(req, env, url, acc, helpers) {
   const p = url.pathname, m = req.method;
 
-  if (p === '/api/whatsapp' && m === 'GET') return json(await waState(env));
+  if (p === '/api/whatsapp' && m === 'GET') return json(await waState(env, acc));
 
-  if (p === '/api/followup' && m === 'GET') return json(await env.DB.prepare('SELECT * FROM followup_cfg WHERE id=1').first());
+  if (p === '/api/followup' && m === 'GET') return json(await followupCfg(env, acc));
   if (p === '/api/followup' && m === 'PUT') {
     const x = await input(req);
     const days = Math.round(Number(x.days)), max = Math.round(Number(x.max_attempts));
@@ -172,32 +181,32 @@ export async function crmApi(req, env, url, helpers) {
     if (!(max >= 1 && max <= 10)) return fail('Tentativas: de 1 a 10.');
     if (!message) return fail('Escreva a mensagem do follow-up.');
     const tag = TAGS.includes(x.tag) ? x.tag : 'quente';
-    await env.DB.prepare('UPDATE followup_cfg SET enabled=?,tag=?,days=?,max_attempts=?,message=? WHERE id=1').bind(x.enabled ? 1 : 0, tag, days, max, message).run();
+    await env.DB.prepare('UPDATE accounts SET fu_enabled=?,fu_tag=?,fu_days=?,fu_max=?,fu_message=? WHERE id=?').bind(x.enabled ? 1 : 0, tag, days, max, message, acc).run();
     return json({ ok: true });
   }
-  if (p === '/api/followup/run' && m === 'POST') return json(await runFollowup(env, true));
+  if (p === '/api/followup/run' && m === 'POST') return json(await followupFor(env, acc, true));
 
   // ===== Mensagens prontas =====
-  if (p === '/api/templates' && m === 'GET') return json({ templates: (await env.DB.prepare('SELECT id,title,body FROM templates ORDER BY title COLLATE NOCASE').all()).results });
+  if (p === '/api/templates' && m === 'GET') return json({ templates: (await env.DB.prepare('SELECT id,title,body FROM templates WHERE account_id=? ORDER BY title COLLATE NOCASE').bind(acc).all()).results });
   const tp = p.match(/^\/api\/templates(?:\/(\d+))?$/);
   if (tp && (m === 'POST' || m === 'PUT')) {
     const x = await input(req);
     const title = clean(x.title, 80), body = clean(x.body, 2000);
     if (!title || !body) return fail('Preencha o nome e o texto da mensagem.');
-    if (m === 'POST') { const r = await env.DB.prepare('INSERT INTO templates(title,body) VALUES(?,?)').bind(title, body).run(); return json({ ok: true, id: r.meta.last_row_id }, 201); }
+    if (m === 'POST') { const r = await env.DB.prepare('INSERT INTO templates(account_id,title,body) VALUES(?,?,?)').bind(acc, title, body).run(); return json({ ok: true, id: r.meta.last_row_id }, 201); }
     if (!tp[1]) return fail('Rota não encontrada.', 404);
-    await env.DB.prepare('UPDATE templates SET title=?,body=? WHERE id=?').bind(title, body, Number(tp[1])).run();
+    await env.DB.prepare('UPDATE templates SET title=?,body=? WHERE id=? AND account_id=?').bind(title, body, Number(tp[1]), acc).run();
     return json({ ok: true });
   }
-  if (tp && tp[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM templates WHERE id=?').bind(Number(tp[1])).run(); return json({ ok: true }); }
+  if (tp && tp[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM templates WHERE id=? AND account_id=?').bind(Number(tp[1]), acc).run(); return json({ ok: true }); }
 
   // ===== Tarefas =====
   if (p === '/api/tasks' && m === 'GET') {
     const lead = url.searchParams.get('lead_id');
     const r = lead
-      ? await env.DB.prepare('SELECT t.*, l.name AS lead_name, l.phone AS lead_phone FROM tasks t LEFT JOIN leads l ON l.id=t.lead_id WHERE t.lead_id=? ORDER BY t.done, t.due_at').bind(Number(lead)).all()
+      ? await env.DB.prepare('SELECT t.*, l.name AS lead_name, l.phone AS lead_phone FROM tasks t LEFT JOIN leads l ON l.id=t.lead_id WHERE t.account_id=? AND t.lead_id=? ORDER BY t.done, t.due_at').bind(acc, Number(lead)).all()
       : await env.DB.prepare(`SELECT t.*, l.name AS lead_name, l.phone AS lead_phone FROM tasks t LEFT JOIN leads l ON l.id=t.lead_id
-          WHERE t.done=0 OR t.done_at > ? ORDER BY t.done, t.due_at LIMIT 300`).bind(new Date(Date.now() - 7 * 86400_000).toISOString()).all();
+          WHERE t.account_id=? AND (t.done=0 OR t.done_at > ?) ORDER BY t.done, t.due_at LIMIT 300`).bind(acc, new Date(Date.now() - 7 * 86400_000).toISOString()).all();
     return json({ tasks: r.results });
   }
   const tk = p.match(/^\/api\/tasks(?:\/(\d+))?$/);
@@ -207,13 +216,13 @@ export async function crmApi(req, env, url, helpers) {
     if (!title) return fail('Escreva o que precisa ser feito.');
     if (!due) return fail('Escolha a data e a hora.');
     const leadId = x.lead_id ? Number(x.lead_id) : null;
-    if (leadId && !(await leadById(env, leadId))) return fail('Contato não encontrado.', 404);
-    const r = await env.DB.prepare('INSERT INTO tasks(lead_id,title,due_at,created_at) VALUES(?,?,?,?)').bind(leadId, title, new Date(due).toISOString(), nowIso()).run();
+    if (leadId && !(await leadById(env, acc, leadId))) return fail('Contato não encontrado.', 404);
+    const r = await env.DB.prepare('INSERT INTO tasks(account_id,lead_id,title,due_at,created_at) VALUES(?,?,?,?,?)').bind(acc, leadId, title, new Date(due).toISOString(), nowIso()).run();
     return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
   if (tk && tk[1] && m === 'PUT') {
     const x = await input(req), id = Number(tk[1]);
-    const t = await env.DB.prepare('SELECT * FROM tasks WHERE id=?').bind(id).first();
+    const t = await env.DB.prepare('SELECT * FROM tasks WHERE id=? AND account_id=?').bind(id, acc).first();
     if (!t) return fail('Tarefa não encontrada.', 404);
     const done = x.done !== undefined ? (x.done ? 1 : 0) : t.done;
     const title = x.title !== undefined ? clean(x.title, 200) : t.title;
@@ -221,11 +230,11 @@ export async function crmApi(req, env, url, helpers) {
     await env.DB.prepare('UPDATE tasks SET done=?,title=?,due_at=?,done_at=? WHERE id=?').bind(done, title || t.title, due, done ? (t.done_at || nowIso()) : null, id).run();
     return json({ ok: true });
   }
-  if (tk && tk[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM tasks WHERE id=?').bind(Number(tk[1])).run(); return json({ ok: true }); }
+  if (tk && tk[1] && m === 'DELETE') { await env.DB.prepare('DELETE FROM tasks WHERE id=? AND account_id=?').bind(Number(tk[1]), acc).run(); return json({ ok: true }); }
 
   if (p === '/api/leads' && m === 'GET') {
     const r = await env.DB.prepare(`SELECT id,phone,jid,name,stage,notes,value,avatar,tags,last_in_at,followup_count,followup_last,last_message,last_at,unread,created_at,
-      (SELECT MIN(due_at) FROM tasks t WHERE t.lead_id=leads.id AND t.done=0) AS next_task FROM leads ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500`).all();
+      (SELECT MIN(due_at) FROM tasks t WHERE t.lead_id=leads.id AND t.done=0) AS next_task FROM leads WHERE account_id=? ORDER BY COALESCE(last_at,created_at) DESC LIMIT 500`).bind(acc).all();
     return json({ leads: r.results });
   }
 
@@ -239,15 +248,15 @@ export async function crmApi(req, env, url, helpers) {
     if (!name && !phone) return fail('Informe o nome ou o telefone.');
     if (phone && !/^\d{12,13}$/.test(phone)) return fail('Telefone inválido. Use DDD + número.');
     if (!phone) phone = 'manual-' + crypto.randomUUID().slice(0, 8);
-    const exists = await env.DB.prepare('SELECT id FROM leads WHERE phone=?').bind(phone).first();
+    const exists = await env.DB.prepare('SELECT id FROM leads WHERE account_id=? AND phone=?').bind(acc, phone).first();
     if (exists) return fail('Já existe um lead com esse telefone.', 409);
-    const r = await env.DB.prepare('INSERT INTO leads(phone,name,stage,value,last_at,tags) VALUES(?,?,?,?,?,?)').bind(phone, name, stage, value, nowIso(), cleanTags(x.tags)).run();
+    const r = await env.DB.prepare('INSERT INTO leads(account_id,phone,name,stage,value,last_at,tags) VALUES(?,?,?,?,?,?,?)').bind(acc, phone, name, stage, value, nowIso(), cleanTags(x.tags)).run();
     return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
 
   const lm = p.match(/^\/api\/leads\/(\d+)(\/messages|\/client)?$/);
   if (!lm) return null;
-  const lead = await leadById(env, Number(lm[1]));
+  const lead = await leadById(env, acc, Number(lm[1]));
   if (!lead) return fail('Contato não encontrado.', 404);
 
   if (!lm[2] && m === 'PUT') {
@@ -279,7 +288,7 @@ export async function crmApi(req, env, url, helpers) {
     const x = await input(req);
     const text = clean(x.text, 4000);
     if (!text) return fail('Digite uma mensagem.');
-    const wa = await waState(env);
+    const wa = await waState(env, acc);
     if (wa.state !== 'online') return fail('O WhatsApp não está conectado. Ligue a ponte no computador.', 409);
     await env.DB.prepare("INSERT INTO messages(lead_id,direction,body,status,created_at) VALUES(?,'out',?,'pending',?)").bind(lead.id, text, nowIso()).run();
     await env.DB.prepare("UPDATE leads SET last_message=?,last_at=?,stage=CASE WHEN stage='novo' THEN 'conversa' ELSE stage END WHERE id=?")
@@ -290,23 +299,28 @@ export async function crmApi(req, env, url, helpers) {
   if (lm[2] === '/client' && m === 'POST') {
     const x = await input(req);
     const c = helpers.validClient({ name: lead.name || lead.phone, whatsapp: lead.phone, monthly_amount: x.monthly_amount, due_day: x.due_day, notes: lead.notes });
-    const r = await env.DB.prepare('INSERT INTO clients(name,whatsapp,monthly_amount,due_day,notes) VALUES(?,?,?,?,?)').bind(c.name, c.whatsapp, c.amount, c.day, c.notes).run();
+    const r = await env.DB.prepare('INSERT INTO clients(account_id,name,whatsapp,monthly_amount,due_day,notes) VALUES(?,?,?,?,?,?)').bind(acc, c.name, c.whatsapp, c.amount, c.day, c.notes).run();
     await env.DB.prepare("UPDATE leads SET stage='pagamento' WHERE id=? AND stage NOT IN ('pago')").bind(lead.id).run();
     return json({ ok: true, id: r.meta.last_row_id }, 201);
   }
   return fail('Rota não encontrada.', 404);
 }
 
+async function followupCfg(env, acc) {
+  const a = await env.DB.prepare('SELECT fu_enabled,fu_tag,fu_days,fu_max,fu_message FROM accounts WHERE id=?').bind(acc).first();
+  return a ? { enabled: a.fu_enabled, tag: a.fu_tag, days: a.fu_days, max_attempts: a.fu_max, message: a.fu_message } : null;
+}
+
 /* Follow-up: manda mensagem para quem tem a etiqueta escolhida e está sem conversa há X dias */
-export async function runFollowup(env, manual = false) {
-  const cfg = await env.DB.prepare('SELECT * FROM followup_cfg WHERE id=1').first();
+async function followupFor(env, acc, manual = false) {
+  const cfg = await followupCfg(env, acc);
   if (!cfg || (!cfg.enabled && !manual)) return { sent: 0, reason: 'desligado' };
-  if ((await waState(env)).state !== 'online') return { sent: 0, reason: 'WhatsApp desconectado' };
+  if ((await waState(env, acc)).state !== 'online') return { sent: 0, reason: 'WhatsApp desconectado' };
   const cut = new Date(Date.now() - cfg.days * 86400_000).toISOString();
-  const r = await env.DB.prepare(`SELECT * FROM leads WHERE (','||tags||',') LIKE ? AND followup_count < ?
+  const r = await env.DB.prepare(`SELECT * FROM leads WHERE account_id=? AND (','||tags||',') LIKE ? AND followup_count < ?
     AND stage NOT IN ('pago','perdido') AND phone NOT LIKE 'manual-%' AND COALESCE(last_at, created_at) < ?
     AND (followup_last IS NULL OR followup_last < ?) ORDER BY last_at LIMIT 25`)
-    .bind('%,' + cfg.tag + ',%', cfg.max_attempts, cut, cut).all();
+    .bind(acc, '%,' + cfg.tag + ',%', cfg.max_attempts, cut, cut).all();
   let sent = 0;
   for (const lead of r.results) {
     const first = (lead.name || '').trim().split(/\s+/)[0] || '';
@@ -316,5 +330,13 @@ export async function runFollowup(env, manual = false) {
       .bind(text.slice(0, 300), nowIso(), nowIso(), lead.id).run();
     sent++;
   }
+  return { sent };
+}
+
+/* Agendador (a cada 30 min): roda o follow-up de cada conta ativa que ligou */
+export async function runFollowup(env) {
+  const r = await env.DB.prepare('SELECT id FROM accounts WHERE active=1 AND fu_enabled=1').all();
+  let sent = 0;
+  for (const a of r.results) sent += (await followupFor(env, a.id)).sent || 0;
   return { sent };
 }
