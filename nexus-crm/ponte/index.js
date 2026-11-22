@@ -155,6 +155,18 @@ async function sendQueue() {
     for (const m of messages) {
       try {
         let to = m.jid && (m.jid.endsWith('@s.whatsapp.net') || m.jid.endsWith('@lid')) ? m.jid : '';
+        // Número escondido (@lid): troca pelo telefone real antes de enviar, senão a mensagem pode não chegar.
+        if (to.endsWith('@lid')) {
+          let pn = book.lid[to];
+          try { pn = pn || await sock.signalRepository?.lidMapping?.getPNForLID?.(to); } catch {}
+          if (pn) {
+            const phone = String(pn).split('@')[0].split(':')[0];
+            book.lid[to] = phone + '@s.whatsapp.net'; bookDirty = true;
+            to = phone + '@s.whatsapp.net';
+          } else if (/^55\d{10,11}$/.test(m.phone)) {
+            to = '';
+          }
+        }
         if (!to) {
           const [r] = await sock.onWhatsApp(m.phone);
           if (!r?.exists) throw new Error('número sem WhatsApp');
