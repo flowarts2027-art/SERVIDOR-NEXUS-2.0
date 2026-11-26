@@ -1462,3 +1462,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 1051/1051. ATENÇÃO: mexe em `cloudflare/**` e `public/**`; o merge dispara o deploy.
 - Próximo passo: Rodrigo trocar o link da bio do @flowarts2026 para flowarts.com.br/brinde (só pelo celular) e aprovar a campanha; depois fazer o mesmo no Nexus AI.
 - 21/11 (9h): fotos do brinde feitas no Gemini (conta zyclow171, Gem FOTOS NEXUS) e enviadas pela Biblioteca à Flow Arts; moldura nova aplicada. Rodrigo escolheu trocar as legendas e já aprovar: 7 posts, um por dia, 25/11 a 01/12 às 12h, com legendas do brinde (rota do painel /content, que aprova). Correção: `gift-cta-fix.js` não põe mais o "Comente QUERO" em posts com `source=client_manual` (legenda trocada à mão no painel). Teste novo `test/gift-cta-fix.test.mjs`; suíte 1052/1052.
+
+## 26/11/2026 — Claude: skills do ECC adaptadas (só documentação, sem código)
+- Pedido do Rodrigo: auditar o repositório github.com/affaan-m/ECC (MIT) e implantar o que serve para o Nexus, o CRM e o Nexus Movies.
+- Feito: 7 skills em português em `.claude/skills/`: campanha-marketing, voz-da-marca, motor-de-conteudo, legendas-por-rede, inteligencia-de-leads, seguranca-agente-ia, auditoria-producao. Todas seguem as regras do AGENTS.md (logo só pelo Nexus, foto sem texto, lote de 7 dias, nada sai sem aprovação, nunca envio automático a estranhos). Crédito em `THIRD_PARTY_NOTICES.md`.
+- NÃO instalado de propósito: hooks, workflows, agentes em massa e o coletor no GitHub Actions do ECC (gasto de limite e risco de nova suspensão).
+- Não dispara deploy (não mexe em `cloudflare/**` nem `public/**`). Testes de código não mudam.
+- Nexus Movies (repositório banner-do-dia): acesso negado nesta sessão; as skills de vídeo (Remotion, FFmpeg), instalador do Windows e design ficam pendentes para lá.
+- Próximo passo: Rodrigo aprovar o PR; depois criar o `voz.md` do primeiro cliente com a skill voz-da-marca.

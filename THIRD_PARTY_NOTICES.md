@@ -31,3 +31,12 @@ O envio de direct do Instagram por `me/messages` (`cloudflare/src/ig-send.js`) s
 - Projeto: Inter — https://github.com/rsms/inter
 - Copyright 2016-2023 The Inter Project Authors
 - Licença: SIL Open Font License 1.1 (texto completo em `scripts/social/fonts/OFL.txt`)
+
+## ECC (skills do Claude Code)
+
+As skills em `.claude/skills/` (campanha-marketing, voz-da-marca, motor-de-conteudo, legendas-por-rede, inteligencia-de-leads, seguranca-agente-ia, auditoria-producao) são adaptações em português das skills marketing-campaign, brand-voice, content-engine, short-video-distribution, crosspost, lead-intelligence, agent-security-hardening e production-audit de:
+
+- Project: ECC
+- Repository: https://github.com/affaan-m/ECC
+- License: MIT
+- Copyright (c) 2026 Affaan Mustafa
