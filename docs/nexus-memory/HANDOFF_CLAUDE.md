@@ -1496,3 +1496,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Google Trends (Brasil, 30 dias): "legendas para instagram" (29) > "automação instagram" (16); "postagem automática" e "resposta automática instagram" ~0. Em alta em entretenimento na semana: "blade runner 2099" (ideia para o Nexus Movies).
 - Feito: /brinde liberado no robots.txt (downloads seguem bloqueados), entrou no sitemap, título/descrição/H1 com "legendas para Instagram", meta robots index e JSON-LD (WebPage + CreativeWork grátis). Teste novo `site-seo-brinde.test.mjs`.
 - Próximo passo: depois do deploy, pedir a indexação de /brinde no Search Console; depois a página do Nexus Movies com o filme em alta da semana.
+
+## 26/11/2026 (19h10) — Claude: página /nexus-movies no site da Flow Arts
+- Pedido do Rodrigo: propaganda do Nexus Movies no site. Página nova `public/nexus-movies.html` (mesmo molde das páginas de serviço): o que é, o que faz, passo a passo (Escolher, Banner, Vídeo, Legenda), perguntas, botão "Testar grátis por 7 dias" para https://nexusmovies.pages.dev/. Sem preço (o crédito é configurável no painel) e sem imagem de filme (direito autoral).
+- Entrou no sitemap, no `run_worker_first` e no rodapé da home e das 3 páginas de serviço. Teste novo `site-nexus-movies.test.mjs`; suíte 1057/1057.
+- Pendente: vídeo de exemplo na página (precisa de um vídeo nosso, sem trailer de estúdio); pedir indexação depois do deploy.
+- Nexus Movies (repo banner-do-dia): PR #33 — vídeo não sai mais mudo sem aviso ("O Guerreiro Banido" saiu sem faixa de som). O ajudante baixou o trailer do link com som no teste; a mensagem que o Rodrigo viu era "escolha o filme primeiro".
