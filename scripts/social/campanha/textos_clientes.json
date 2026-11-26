@@ -146,8 +146,8 @@
   },
   "nexus-ai": {
     "cores": {
-      "painel": "#031438",
-      "destaque": "#02c7fc"
+      "painel": "#2f86e8",
+      "destaque": "#ffffff"
     },
     "feed": [
       {
