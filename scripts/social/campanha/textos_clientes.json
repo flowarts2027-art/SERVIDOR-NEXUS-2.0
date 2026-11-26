@@ -152,79 +152,139 @@
     "feed": [
       {
         "titulo": [
-          "Seu Instagram",
-          "no piloto automático"
+          "30 legendas prontas",
+          "de graça pra você"
         ],
         "topicos": [
-          "Posts e stories todo dia",
-          "Legenda e horário certos",
-          "Você só aprova"
+          "Copie, troque e poste",
+          "Para qualquer negócio",
+          "Baixe na hora no celular"
         ],
-        "caixa": "Conheça o Nexus AI",
-        "frase": "Automação que trabalha por você."
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Seu primeiro passo no automático.",
+        "botao": "BAIXE GRÁTIS NA BIO"
+      },
+      {
+        "titulo": [
+          "Sem ideia do",
+          "que postar hoje?"
+        ],
+        "topicos": [
+          "30 legendas prontas",
+          "Dica de foto em cada uma",
+          "É só copiar e postar"
+        ],
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Nunca mais trave na legenda.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
           "Perfil parado",
-          "não vende"
+          "não traz cliente"
         ],
         "topicos": [
-          "O Nexus posta por você",
-          "Conteúdo feito para o seu nicho",
-          "Presença todos os dias"
+          "Comece com 30 legendas",
+          "Poste a semana inteira",
+          "Sem pagar nada"
         ],
-        "caixa": "Ative o Nexus no seu perfil",
-        "frase": "Seu perfil sempre vivo."
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Volte a aparecer pro seu cliente.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "Responde no Direct",
-          "sozinho"
+          "Café, salão,",
+          "loja ou padaria"
         ],
         "topicos": [
-          "Quem comenta recebe mensagem",
-          "Atendimento a qualquer hora",
-          "Contato direto no WhatsApp"
+          "Legendas para o seu nicho",
+          "Troque só o nome",
+          "Pronto em 1 minuto"
         ],
-        "caixa": "Automatize seu atendimento",
-        "frase": "Nenhum cliente esquecido."
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Feito para pequeno negócio.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       },
       {
         "titulo": [
-          "Mais tempo",
-          "para o seu negócio"
+          "Teste o Nexus",
+          "7 dias grátis"
         ],
         "topicos": [
-          "Nada de pensar no que postar",
-          "Tudo pronto no painel",
+          "Pegue o brinde na bio",
+          "Peça o teste no WhatsApp",
+          "Você só aprova os posts"
+        ],
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Teste antes de decidir.",
+        "botao": "BAIXE GRÁTIS NA BIO"
+      },
+      {
+        "titulo": [
+          "O robô escreve,",
+          "você só aprova"
+        ],
+        "topicos": [
+          "Legenda pronta todo dia",
+          "Post no horário certo",
           "Aprovação em um toque"
         ],
-        "caixa": "Comece hoje com o Nexus AI",
-        "frase": "Menos trabalho, mais resultado."
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Comece pelas 30 legendas grátis.",
+        "botao": "BAIXE GRÁTIS NA BIO"
+      },
+      {
+        "titulo": [
+          "Ainda não pegou",
+          "o seu brinde?"
+        ],
+        "topicos": [
+          "30 legendas prontas",
+          "Baixe direto no celular",
+          "Grátis, sem pegadinha"
+        ],
+        "caixa": "Brinde do Nexus AI",
+        "frase": "Está na bio, é só tocar.",
+        "botao": "BAIXE GRÁTIS NA BIO"
       }
     ],
     "story": [
       {
         "titulo": [
-          "Seu Instagram",
-          "no automático"
+          "30 legendas",
+          "prontas grátis"
         ],
         "topicos": [
-          "Posts e stories todo dia",
-          "Você só aprova"
+          "Copie, troque e poste",
+          "Baixe na hora"
         ],
-        "caixa": "Conheça o Nexus AI"
+        "caixa": "Brinde do Nexus AI",
+        "botao": "TOQUE NO LINK DA BIO"
       },
       {
         "titulo": [
-          "Responde no Direct",
-          "sozinho"
+          "Sem ideia do",
+          "que postar?"
         ],
         "topicos": [
-          "Atendimento a qualquer hora",
-          "Contato direto no WhatsApp"
+          "30 legendas prontas",
+          "Grátis no link da bio"
         ],
-        "caixa": "Automatize seu atendimento"
+        "caixa": "Brinde do Nexus AI",
+        "botao": "TOQUE NO LINK DA BIO"
+      },
+      {
+        "titulo": [
+          "Teste o Nexus",
+          "7 dias grátis"
+        ],
+        "topicos": [
+          "Pegue o brinde na bio",
+          "Peça o teste no WhatsApp"
+        ],
+        "caixa": "Brinde do Nexus AI",
+        "botao": "TOQUE NO LINK DA BIO"
       }
     ]
   },

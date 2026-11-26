@@ -1470,3 +1470,11 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Não dispara deploy (não mexe em `cloudflare/**` nem `public/**`). Testes de código não mudam.
 - Nexus Movies (repositório banner-do-dia): acesso negado nesta sessão; as skills de vídeo (Remotion, FFmpeg), instalador do Windows e design ficam pendentes para lá.
 - Próximo passo: Rodrigo aprovar o PR; depois criar o `voz.md` do primeiro cliente com a skill voz-da-marca.
+
+## 26/11/2026 (17h40) — Claude: campanha de 7 dias do Nexus AI (brinde), textos da moldura
+- Rodrigo aprovou o ângulo "brinde grátis" (30 legendas prontas no link da bio + teste grátis de 7 dias) para o @nexusai_system, usando a skill campanha-marketing.
+- Feito: `textos_clientes.json` do `nexus-ai` com 7 textos de feed e 3 de story do brinde (botão "BAIXE GRÁTIS NA BIO" / "TOQUE NO LINK DA BIO"); os 4+2 textos antigos saíram (ficam no histórico do git). Molduras conferidas localmente com `molduras_upload.py`.
+- Correção: `textos_clientes.json` entrou nos caminhos do `deploy-nexus-cloudflare.yml` (antes, mudar só esse arquivo não refazia as molduras).
+- Testes: 1052/1052. ATENÇÃO: o merge dispara o deploy.
+- Fotos: serão feitas no Gemini (Gem FOTOS NEXUS), só foto, sem texto e sem logo; robôs fofos (Claude laranja, ChatGPT branco), tema azul, luz dourada; POST com o assunto à esquerda, STORY com o assunto em cima.
+- Pendente: Rodrigo trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
