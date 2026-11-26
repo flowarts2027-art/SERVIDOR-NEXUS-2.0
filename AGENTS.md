@@ -46,6 +46,8 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 ## Moldura de painel para TODOS os clientes (Rodrigo, 20/11/2026)
 
+**Foto do post nunca fica embaixo do painel (Rodrigo, 26/11/2026):** no POST, o Nexus põe a foto com 86% do tamanho no canto de cima à esquerda e usa a mesma foto desfocada no fundo (`FEED_PHOTO_SCALE` em `cloudflare/src/art-frame.js`). Peça ao Gemini o assunto nos 40% da esquerda, mas com a foto cobrindo a imagem inteira (sem área branca).
+
 **A moldura da Daniela vale agora para todos os clientes com briefing.** A foto sobe pura (Gemini, sem texto e sem logo) e o Nexus monta a arte: painel na cor do cliente, título, tópicos, caixa de destaque, frase, botão COMENTE QUERO (story: MANDE QUERO NO DIRECT) e a logo do Master. Cores e textos revisados em `scripts/social/campanha/textos_clientes.json` (feitos no deploy por `scripts/social/moldura_clientes.py`). Fora por falta de briefing: Luciana Carvalho, Sabor do Campo, Café Brisa e Meta Review. Arte que já chega com texto (ex.: GILTEC) só recebe a logo.
 
 ## Imagens da Maskara Assessoria (Rodrigo, 18/11/2026)

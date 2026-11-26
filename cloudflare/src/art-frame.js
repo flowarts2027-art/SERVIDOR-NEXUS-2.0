@@ -7,6 +7,8 @@ import { artShape } from "./art-format.js";
 
 const FEED = { width: 1080, height: 1350 };
 const STORY = { width: 1080, height: 1920 };
+// Post com moldura de painel: a foto entra com 86% do tamanho, no canto de cima à esquerda (Rodrigo, 26/11/2026).
+export const FEED_PHOTO_SCALE = 0.86;
 const NO_TEXT_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
 let cachedMeta = null;
 
@@ -127,7 +129,17 @@ export async function nextPanelCounter(env, clientId, story) {
 export async function composePanel(env, bytes, frame, { story = false, logoKey = "" } = {}) {
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const size = story ? STORY : FEED;
-  let canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
+  let canvas;
+  if (story) {
+    canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
+  } else {
+    // REGRA (Rodrigo, 26/11/2026): o painel do post não pode cobrir o assunto da foto. O painel começa em 43% da
+    // largura e a faixa da logo nos 13% de baixo; a foto entra menor (FEED_PHOTO_SCALE), encostada no canto de
+    // cima à esquerda, e o resto do fundo é a mesma foto desfocada (fica quase todo embaixo do painel).
+    const w = Math.round(size.width * FEED_PHOTO_SCALE), h = Math.round(size.height * FEED_PHOTO_SCALE);
+    canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover", blur: 60 });
+    canvas = canvas.draw(env.IMAGES.input(stream(bytes)).transform({ width: w, height: h, fit: "cover" }), { left: 0, top: 0 });
+  }
   canvas = canvas.draw(env.IMAGES.input(stream(await assetBytes(env, frame.arquivo))), { left: 0, top: 0 });
   let logoBytes = null;
   const obj = logoKey ? await env.MEDIA.get(logoKey).catch(() => null) : null;
