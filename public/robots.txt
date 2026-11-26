@@ -5,7 +5,6 @@ Disallow: /login
 Disallow: /portal
 Disallow: /master
 Disallow: /b/
-Disallow: /brinde
 Disallow: /downloads/
 Disallow: /contrato-site
 

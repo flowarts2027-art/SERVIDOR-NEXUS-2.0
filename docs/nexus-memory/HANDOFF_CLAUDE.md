@@ -1490,3 +1490,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Feito: `composePanel` (POST) põe a foto com 86% (`FEED_PHOTO_SCALE`) no canto de cima à esquerda, com a mesma foto desfocada (Cloudflare Images, blur 60) no fundo. Story não mudou. Vale para todos os clientes com moldura de painel (inclui Daniela).
 - Gemini: pedir o assunto à esquerda, mas a foto cobrindo a imagem inteira. Pedir "medida em %" fez o Gemini devolver foto pequena com área branca.
 - Testes: 1052/1052 (`art-panel.test.mjs` atualizado). O merge dispara o deploy. Falta conferir 1 arte real depois do deploy (o blur do Images não tem teste local).
+
+## 26/11/2026 (18h50) — Claude: SEO, pesquisa de palavras e brinde aberto ao Google
+- Search Console (conta flowarts2027, /u/1, 3 meses): 225 impressões, 3 cliques, quase só buscas pela marca ("flow artes", "flow arts"). Não serve para descobrir demanda.
+- Google Trends (Brasil, 30 dias): "legendas para instagram" (29) > "automação instagram" (16); "postagem automática" e "resposta automática instagram" ~0. Em alta em entretenimento na semana: "blade runner 2099" (ideia para o Nexus Movies).
+- Feito: /brinde liberado no robots.txt (downloads seguem bloqueados), entrou no sitemap, título/descrição/H1 com "legendas para Instagram", meta robots index e JSON-LD (WebPage + CreativeWork grátis). Teste novo `site-seo-brinde.test.mjs`.
+- Próximo passo: depois do deploy, pedir a indexação de /brinde no Search Console; depois a página do Nexus Movies com o filme em alta da semana.
