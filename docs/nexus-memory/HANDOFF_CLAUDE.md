@@ -1484,3 +1484,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Os 7 posts do brinde foram apagados do painel (robôs cortados pela moldura; 1 já aprovado, Rodrigo se arrependeu). Os 3 stories ficaram.
 - Rodrigo não gostou dos robôs "de massinha"; mandou referência: robôs brancos brilhantes com visor preto e olhos de luz (azul ChatGPT, laranja Claude), neon, cena real. Fotos novas pedidas ao Gemini nesse estilo, com o assunto bem à esquerda.
 - Lição: a Biblioteca do Master só funciona logada em painel.flowarts.com.br (o endereço workers.dev dá 401).
+
+## 26/11/2026 (18h15) — Claude: regra "foto do post não fica embaixo do painel"
+- Pedido do Rodrigo: regra no Nexus para ajustar o tamanho da foto e o painel da moldura nunca cobrir o assunto.
+- Feito: `composePanel` (POST) põe a foto com 86% (`FEED_PHOTO_SCALE`) no canto de cima à esquerda, com a mesma foto desfocada (Cloudflare Images, blur 60) no fundo. Story não mudou. Vale para todos os clientes com moldura de painel (inclui Daniela).
+- Gemini: pedir o assunto à esquerda, mas a foto cobrindo a imagem inteira. Pedir "medida em %" fez o Gemini devolver foto pequena com área branca.
+- Testes: 1052/1052 (`art-panel.test.mjs` atualizado). O merge dispara o deploy. Falta conferir 1 arte real depois do deploy (o blur do Images não tem teste local).
