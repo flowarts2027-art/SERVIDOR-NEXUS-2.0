@@ -1478,3 +1478,9 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Testes: 1052/1052. ATENÇÃO: o merge dispara o deploy.
 - Fotos: serão feitas no Gemini (Gem FOTOS NEXUS), só foto, sem texto e sem logo; robôs fofos (Claude laranja, ChatGPT branco), tema azul, luz dourada; POST com o assunto à esquerda, STORY com o assunto em cima.
 - Pendente: Rodrigo trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
+
+## 26/11/2026 (18h) — Claude: Nexus AI, moldura mais clara e fotos refeitas
+- Rodrigo achou o painel azul-escuro (#031438) pesado e pediu algo mais clean: `nexus-ai` passa a painel #2f86e8 e destaque branco (opção B do teste). Só cor; textos do brinde iguais.
+- Os 7 posts do brinde foram apagados do painel (robôs cortados pela moldura; 1 já aprovado, Rodrigo se arrependeu). Os 3 stories ficaram.
+- Rodrigo não gostou dos robôs "de massinha"; mandou referência: robôs brancos brilhantes com visor preto e olhos de luz (azul ChatGPT, laranja Claude), neon, cena real. Fotos novas pedidas ao Gemini nesse estilo, com o assunto bem à esquerda.
+- Lição: a Biblioteca do Master só funciona logada em painel.flowarts.com.br (o endereço workers.dev dá 401).
