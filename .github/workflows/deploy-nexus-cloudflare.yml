@@ -14,6 +14,7 @@ on:
       - "scripts/social/campanha/textos_upload.json"
       - "scripts/social/moldura_daniela.py"
       - "scripts/social/moldura_clientes.py"
+      - "scripts/social/campanha/textos_clientes.json"
       - "scripts/social/campanha/textos_daniela.json"
       - ".github/workflows/deploy-nexus-cloudflare.yml"
   workflow_dispatch:
