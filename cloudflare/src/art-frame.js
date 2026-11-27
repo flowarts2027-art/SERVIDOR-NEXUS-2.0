@@ -256,6 +256,12 @@ async function visionYes(env, bytes, question) {
 
 // Mesma pergunta, mas devolve null quando não deu para perguntar.
 async function visionAsk(env, bytes, question) {
+  const text = await visionText(env, bytes, question);
+  return text === null ? null : parseHasText(text);
+}
+
+// Resposta crua da IA grátis (ex.: "ESQUERDA"), ou null quando não deu para perguntar.
+export async function visionText(env, bytes, question) {
   if (!env?.AI || !env?.IMAGES) return null;
   try {
     const small = await (await env.IMAGES.input(stream(bytes)).transform({ width: 512, height: 640, fit: "scale-down" })
@@ -272,7 +278,7 @@ async function visionAsk(env, bytes, question) {
       }),
       new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 15000))
     ]);
-    return parseHasText(out?.response ?? out?.result?.response ?? "");
+    return String(out?.response ?? out?.result?.response ?? "");
   } catch (error) {
     console.error("text_check_failed", String(error?.message || error));
     return null;

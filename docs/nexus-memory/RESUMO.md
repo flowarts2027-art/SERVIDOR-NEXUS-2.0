@@ -65,6 +65,8 @@ em vez de só acrescentar texto no fim.
 
 - Cota grátis do Workers AI (27/11): imagens só até 5.500 neurônios/dia (`ai-budget.js`); o resto fica para as checagens da moldura. Nada pago na Cloudflare.
 
+- Foto sempre à esquerda (27/11): POST com a pessoa nos 45% da esquerda; STORY nos 37% de cima (`photo-zone.js`); post com pessoa à direita é espelhado.
+
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
 - Conferir 1 arte real com o fundo desfocado do post (o blur do Cloudflare Images não tem teste local).
