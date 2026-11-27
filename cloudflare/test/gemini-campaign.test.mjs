@@ -169,8 +169,13 @@ test("plano novo (27/11): 2 posts + 2 stories, cenas seguras, sem equipamento da
   assert.match(dani, /waxing|epilation/i);
   const mask = dailyPlan("maskara-assessoria", "2026-11-28").flatMap(p => p.cards).map(c => c.prompt).join(" ");
   assert.match(mask, /nobody holds, aims or points a weapon/);
-  assert.equal(dailyPlan("quatree-dog", "2026-11-28").length, 0, "Quatree só entra com as embalagens reais");
-  assert.equal(dailyPlan("adimax-eduardo-soares", "2026-11-28").length, 0);
+  // Adimax e Quatree: o cenário nunca pede embalagem (a real é colada depois).
+  for (const id of ["quatree-dog", "adimax-eduardo-soares"]) {
+    for (const c of dailyPlan(id, "2026-11-28").flatMap(p => p.cards)) {
+      assert.match(c.prompt, /\{PET\}/);
+      assert.match(c.prompt, /NO product bags/);
+    }
+  }
 });
 
 function fakeAI(log = [], { kleinFails = false } = {}) {
@@ -250,4 +255,35 @@ test("fila do Master: pedido guardado, cron de 1 minuto gera e grava o resultado
   assert.equal(st.manual.result.sent.length, 4);
   assert.ok(st.manual.finishedAt);
   assert.equal((await runQueuedCampaigns(env)).ran, false, "fila vazia");
+});
+
+test("embalagem real: produto escolhido antes da legenda, bicho certo na cena e foto do catálogo colada", async () => {
+  const catalog = { quatree: [
+    { arquivo: "catalogo/quatree/a.webp", nome: "Quatree Select Gatos Castrados", especie: "gato", largura: 400, altura: 600 },
+    { arquivo: "catalogo/quatree/b.webp", nome: "Quatree Life Adultos", especie: "cao", largura: 400, altura: 600 }
+  ] };
+  const env = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI(), GEMINI_DAILY_CLIENTS: "quatree-dog" });
+  const prompts = [], composed = [], forms = [];
+  const r = await runGeminiCampaign(env, "quatree-dog", "2026-11-28", {
+    client: { id: "quatree-dog", config: {} }, catalog, githubCaptions: async () => ({}),
+    image: async (e, prompt) => { prompts.push(prompt); return { bytes: new Uint8Array([1]), mime: "image/png" }; },
+    composeProduct: async (e, bytes, produto) => { composed.push(produto.nome); return new Uint8Array([2]); },
+    upload: async (e, f) => { forms.push(f); }, now: new Date("2026-11-27T22:00:00Z")
+  });
+  assert.equal(r.sent.length, 4);
+  assert.equal(composed.length, 4, "toda peça leva a embalagem real");
+  assert.ok(prompts.every(p => !p.includes("{PET}") && /\b(dog|cat)\b/.test(p)));
+  assert.ok(forms.every(f => f.get("fotoLimpa") === "1" && f.get("approval") === "cliente"));
+});
+
+test("embalagem real: Qualidy nunca entra e a embalagem cabe entre o título e o botão", async () => {
+  const { pickProduct, productPlace } = await import("../src/packshot.js");
+  const catalog = { adimax: [{ arquivo: "x", nome: "QUALIDY Cães Adultos" }, { arquivo: "y", nome: "MAGNUS Todo Dia" }] };
+  for (let d = 0; d < 10; d++) for (let i = 0; i < 4; i++) assert.equal(pickProduct(catalog, "adimax", d, i).nome, "MAGNUS Todo Dia");
+  const post = productPlace(false, { largura: 470, altura: 700 });
+  assert.ok(post.top >= 420 && post.top + post.h <= 1120 && post.left + post.w <= 1080);
+  const pequena = productPlace(false, { largura: 215, altura: 320 });
+  assert.equal(pequena.h, 560, "post: no máximo 560 de altura");
+  const story = productPlace(true, { largura: 470, altura: 700 });
+  assert.ok(story.top + story.h <= 1250 && story.left > 540, "story: no canto de baixo à direita, acima do texto");
 });

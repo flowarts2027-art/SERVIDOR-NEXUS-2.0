@@ -146,7 +146,46 @@ const SABOR = Object.freeze({
     + "Termine com 4 hashtags (#EmpadaArtesanal #Empadas #Encomendas #SaborDoCampo). Sem preço."
 });
 
+// Adimax e Quatree (27/11/2026): a IA faz só o cenário com o pet e um espaço vazio; o Nexus cola a embalagem
+// REAL do catálogo (packshot.js). {PET} vira "dog" ou "cat" conforme o produto do dia.
+const PET_LOOK = "LOOK: warm, bright and clean, true colors, realistic photograph. Plain walls with NO posters, NO pictures, NO signs and NO letters. NO product bags, NO packages, NO boxes, NO bowls with brand, no text anywhere.";
+const PET_POSTS = Object.freeze([
+  "a happy {PET} sitting on the LEFT side of a bright, clean living room floor, looking toward the right; the RIGHT half of the image is empty light floor and wall (a product will be placed there later)",
+  "a {PET} lying relaxed on the LEFT side of a wooden floor near a window with soft daylight; the RIGHT half is empty floor and plain wall",
+  "the inside of a bright Brazilian pet shop with empty wooden shelves on the RIGHT side and a {PET} on the LEFT, looking at the shelves",
+  "a {PET} on the LEFT side of a kitchen next to an empty steel food bowl, the RIGHT half is a clean empty floor and cabinet"
+]);
+const PET_STORIES = Object.freeze([
+  "a happy {PET} sitting on the LEFT side of the image in a bright home, the RIGHT half of the image is an empty clean light floor and plain wall, soft daylight",
+  "a {PET} resting on the LEFT side of a light sofa, the RIGHT half is empty plain wall and clean floor",
+  "a bright pet shop with a {PET} on the LEFT side and an empty clean counter on the RIGHT side"
+]);
+
+const ADIMAX = Object.freeze({
+  topic: "ração Adimax",
+  context: "Realistic advertising photo of a pet for a pet food seller in Brazil.",
+  look: PET_LOOK, posts: PET_POSTS, stories: PET_STORIES,
+  marca: "adimax",
+  captionBrief: "Eduardo Soares é vendedor da Adimax (rações Fórmula Natural, Origens e Magnus para cães e gatos). O produto do post é o tema dado. "
+    + "Objetivo: VENDER. Diga para quem é o produto como está no nome (cão ou gato, fase, porte) sem inventar ingrediente, benefício, peso ou preço. "
+    + "Nunca fale da linha Qualidy. Cada legenda: primeira linha com o nome do produto, 2 parágrafos curtos e no fim 'Comente QUERO e faça seu pedido com o Eduardo.' "
+    + "Termine com 4 hashtags (#Adimax #RaçãoParaCães #RaçãoParaGatos #PetShop)."
+});
+
+const QUATREE = Object.freeze({
+  topic: "ração Quatree",
+  context: "Realistic advertising photo of a pet for a pet food brand sold to pet shops in Brazil.",
+  look: PET_LOOK, posts: PET_POSTS, stories: PET_STORIES,
+  marca: "quatree",
+  captionBrief: "Ericsson é vendedor da Quatree (rações Quatree Life, Select, Gourmet, Hot Dog e Hot Cat). Quem compra é o LOJISTA (pet shop, casa de ração, agropecuária). "
+    + "Objetivo: VENDA. Cada legenda vende o produto do post (o tema dado): nome da linha e para quem é, só com o que está no nome; nunca invente ingrediente, "
+    + "benefício, selo, peso, preço ou 'mais vendido'. Chamada direta: 'Comente QUERO e peça a tabela para abastecer a sua loja.' "
+    + "Termine com 4 hashtags (#RaçãoQuatree #PetShop #CasaDeRação #Agropecuária)."
+});
+
 export const PHOTO_CAMPAIGNS = Object.freeze({
+  "adimax-eduardo-soares": Object.freeze({ ...ADIMAX, plan: photoPlan, panel: true, packshot: true }),
+  "quatree-dog": Object.freeze({ ...QUATREE, plan: photoPlan, panel: true, packshot: true }),
   "sabor-do-campo": Object.freeze({ ...SABOR, plan: photoPlan, panel: true }),
   "daniela-martins": Object.freeze({ ...DANIELA, plan: photoPlan, panel: true }),
   "maskara-assessoria": Object.freeze({ ...MASKARA, plan: photoPlan, panel: true }),

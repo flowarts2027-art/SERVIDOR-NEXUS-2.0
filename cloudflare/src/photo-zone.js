@@ -82,6 +82,8 @@ export const DEFECT_QUESTIONS = Object.freeze([
   { id: "pessoa-repetida", q: "Nesta foto, a MESMA pessoa aparece duas vezes (dois rostos iguais ou duas cópias do mesmo corpo)? Responda só SIM ou NAO." },
   { id: "pernas", q: "Olhe só as PERNAS e os PÉS. Alguma perna está trocada, sobrando, faltando, torta, dobrada do jeito errado ou saindo do lugar errado do corpo? Responda só SIM ou NAO." },
   { id: "maos", q: "Olhe só as MÃOS e os DEDOS. Alguma mão está deformada, com dedos a mais, a menos ou grudados? Responda só SIM ou NAO." },
+  // 27/11/2026: a IA escreveu letras na parede atrás do título (prévia da Adimax).
+  { id: "letras", q: "Existe alguma letra, palavra, número ou placa escrita em qualquer lugar desta foto (parede, quadro, roupa, objeto)? Responda só SIM ou NAO." },
   { id: "emenda", q: "Existe uma linha reta ou emenda dividindo a foto em duas partes que não combinam (como duas fotos coladas)? Responda só SIM ou NAO." }
 ]);
 

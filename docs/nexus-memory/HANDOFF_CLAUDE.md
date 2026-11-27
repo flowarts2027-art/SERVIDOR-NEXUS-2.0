@@ -182,3 +182,10 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - Sabor do Campo (Elaine, empadas de frango, carne seca e camarão, encomenda pelo WhatsApp da bio): briefing novo em `textos_clientes.json` (verde #2e7d32 e amarelo #f5b400) e plano de fotos de comida em `client-photo-plans.js` (quase sem pessoas). Entrou em `GEMINI_DAILY_CLIENTS`.
 - Cota das imagens subiu para 7.000 neurônios/dia (`NEXUS_AI_IMAGE_NEURONS`; teto 70%), porque 5 clientes x 4 peças com conferência passam de 5.500. Uploads com `fotoLimpa` quase não usam a IA.
 - Próximo: biblioteca de embalagens (Adimax, Quatree) e repetição das artes postadas da GILTEC (Sheila).
+
+## 27/11/2026 (21h) — Claude: Adimax e Quatree com embalagens reais
+- Catálogos 2026 recebidos do Rodrigo no chat (PDFs não estão no repositório). Embalagens com fundo transparente extraídas por `pdfimages` e filtradas (forma de saco): Adimax 56 produtos (1 por página, Qualidy não existe no catálogo e é bloqueada no código), Quatree 40 (Life, Select, Gourmet, Premium, Hot Dog, Hot Cat). Supreme da Quatree não saiu do PDF: buscar no site oficial (autorizado pelo Rodrigo).
+- `public/catalogo/catalogo.json` + WebP; `packshot.js` escolhe o produto do dia, cola a embalagem (post: direita entre título e botão; story: meio) e não aumenta foto pequena mais que 2x.
+- `client-photo-plans.js`: cenas de pet com {PET} trocado por cão ou gato conforme o produto; legendas de venda (Quatree para lojista; Adimax pelo Eduardo). Os dois entraram em `GEMINI_DAILY_CLIENTS`.
+- Testes: 1080/1080. Próximo: conferir as artes reais; Supreme; repetição das artes da GILTEC (Sheila).
+- 21h10 (mesmo PR): prévia real reprovou o story (cão no meio, coberto pela embalagem). Agora a embalagem é menor e fica à direita (story: canto de baixo à direita, acima do texto; post: encostada à direita) e as cenas de pet põem o bicho à ESQUERDA. A IA escreveu letras na parede: nova pergunta "letras" na conferência de defeitos e regra "parede lisa, sem quadros, placas ou letras".

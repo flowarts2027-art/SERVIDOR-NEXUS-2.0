@@ -1,0 +1,775 @@
+{
+ "adimax": [
+  {
+   "arquivo": "catalogo/adimax/adimax-p004.webp",
+   "pagina": 4,
+   "nome": "FÓRMULA NATURAL VET CARE Cães Gastrointestinal",
+   "largura": 184,
+   "altura": 312,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p005.webp",
+   "pagina": 5,
+   "nome": "FÓRMULA NATURAL VET CARE Cães Obesidade Portes Médio e Grande",
+   "largura": 183,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p006.webp",
+   "pagina": 6,
+   "nome": "FÓRMULA NATURAL VET CARE Cães Hipoalergênica Portes Mini e Pequeno",
+   "largura": 185,
+   "altura": 313,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p007.webp",
+   "pagina": 7,
+   "nome": "FÓRMULA NATURAL VET CARE Gatos Renal",
+   "largura": 183,
+   "altura": 310,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p010.webp",
+   "pagina": 10,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 505G Cães Filhotes Portes Mini e Pequeno Sabor Frango, Mandi",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p011.webp",
+   "pagina": 11,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 505G Cães Adultos Portes Mini e Pequeno Sabor Frango, Mandio",
+   "largura": 185,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p012.webp",
+   "pagina": 12,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 505G Cão Sênior 7+ Portes Mini e Pequeno Sabor Frango, Tomat",
+   "largura": 184,
+   "altura": 309,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p013.webp",
+   "pagina": 13,
+   "nome": "FÓRMULA NATURAL FRESH MEAT Cães Adultos Controle de Peso Portes Médio e Grande Sabor Frang",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p014.webp",
+   "pagina": 14,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 Cães Adultos Cuidado Oral Portes Mini e Pequeno Sabor Frango",
+   "largura": 183,
+   "altura": 310,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p015.webp",
+   "pagina": 15,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 Gatos Adultos Sabor Frango, Chá Verde e Alecrim 505G DE 10,1",
+   "largura": 184,
+   "altura": 311,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p016.webp",
+   "pagina": 16,
+   "nome": "FÓRMULA NATURAL FRESH MEAT 20 505G Gatos Castrados Sabor Carne, Batata-doce e Cúrcuma DE 1",
+   "largura": 184,
+   "altura": 311,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p018.webp",
+   "pagina": 18,
+   "nome": "FÓRMULA NATURAL FRESH MEAT COOKIES Cães Adultos Sabor Frango",
+   "largura": 186,
+   "altura": 250,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p030.webp",
+   "pagina": 30,
+   "nome": "FÓRMULA NATURAL LIFE Cães Filhotes Portes Mini e Pequeno Sabor Frango e Maçã",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p031.webp",
+   "pagina": 31,
+   "nome": "FÓRMULA NATURAL LIFE Cães Adultos Portes Médio e Grande Sabor Frango e Linhaça",
+   "largura": 185,
+   "altura": 314,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p032.webp",
+   "pagina": 32,
+   "nome": "FÓRMULA NATURAL LIFE Gatos Filhotes Sabor Frango e Salmão",
+   "largura": 184,
+   "altura": 309,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p033.webp",
+   "pagina": 33,
+   "nome": "FÓRMULA NATURAL LIFE Gatos Castrados Sabor Frango",
+   "largura": 184,
+   "altura": 309,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p035.webp",
+   "pagina": 35,
+   "nome": "FÓRMULA NATURAL PRO Cães Filhotes Portes Mini e Pequeno Sabor Frango e Batata-Doce",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p036.webp",
+   "pagina": 36,
+   "nome": "FÓRMULA NATURAL PRO Cães Adultos Portes Médio e Grande Sabor Frango e Batata-Doce",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p037.webp",
+   "pagina": 37,
+   "nome": "FÓRMULA NATURAL PRO Skin & Coat Cães Adultos Porte Mini e Pequeno Sabor Cordeiro",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p038.webp",
+   "pagina": 38,
+   "nome": "FÓRMULA NATURAL PRO Controle de Peso Cães Adultos Castrados Portes Médio e Grande Sabor Pe",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p048.webp",
+   "pagina": 48,
+   "nome": "ORIGENS NATURAL Cães Filhotes Portes Mini e Pequeno Sabor Frango e Arroz",
+   "largura": 175,
+   "altura": 294,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p049.webp",
+   "pagina": 49,
+   "nome": "ORIGENS NATURAL Cães Adultos Portes Mini e Pequeno Sabor Ovelha e Arroz",
+   "largura": 175,
+   "altura": 294,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p050.webp",
+   "pagina": 50,
+   "nome": "ORIGENS NATURAL Cão Sênior 7+ Portes Mini e Pequeno Sabor Frango e Arroz",
+   "largura": 177,
+   "altura": 299,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p052.webp",
+   "pagina": 52,
+   "nome": "ORIGENS SELECT Cães Filhotes Portes Mini e Pequeno Sabor Frango e Cereais",
+   "largura": 175,
+   "altura": 294,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p053.webp",
+   "pagina": 53,
+   "nome": "ORIGENS SELECT Cães Adultos Portes Mini e Pequeno Sabor Carne e Cereais",
+   "largura": 177,
+   "altura": 299,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p054.webp",
+   "pagina": 54,
+   "nome": "ORIGENS SELECT Cães Sênior Portes Mini e Pequeno Sabor Frango e Cereais",
+   "largura": 178,
+   "altura": 301,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p055.webp",
+   "pagina": 55,
+   "nome": "ORIGENS SELECT Gatos Adultos Sabor Frango",
+   "largura": 182,
+   "altura": 308,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p056.webp",
+   "pagina": 56,
+   "nome": "ORIGENS SELECT Gatos Castrados Sabor Frango",
+   "largura": 182,
+   "altura": 307,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p057.webp",
+   "pagina": 57,
+   "nome": "ORIGENS SELECT Gatos Sênio 7+ Castrado Sabor Salmão",
+   "largura": 182,
+   "altura": 307,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p059.webp",
+   "pagina": 59,
+   "nome": "ORIGENS ENERGY Cães Filhotes Sabor Frango e Batata-Doce",
+   "largura": 183,
+   "altura": 302,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p061.webp",
+   "pagina": 61,
+   "nome": "ORIGENS RAÇAS ESPECÍFICAS Cães Filhotes Bulldog Francês e Pug",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p062.webp",
+   "pagina": 62,
+   "nome": "ORIGENS RAÇAS ESPECÍFICAS Cães Adultos Pit Bull e Rottweiler",
+   "largura": 184,
+   "altura": 310,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p063.webp",
+   "pagina": 63,
+   "nome": "ORIGENS RAÇAS ESPECÍFICAS Cães Filhotes Labrador e Golden Retriever",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p064.webp",
+   "pagina": 64,
+   "nome": "ORIGENS RAÇAS ESPECÍFICAS Cães Adultos Shih Tzu e Lhasa Apso",
+   "largura": 184,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p066.webp",
+   "pagina": 66,
+   "nome": "ORIGENS CLASS Cães Adultos Sabor Carne e Frango",
+   "largura": 190,
+   "altura": 312,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p068.webp",
+   "pagina": 68,
+   "nome": "ORIGENS CREMINHO Gatos Adultos Sabor Carne",
+   "largura": 141,
+   "altura": 269,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p070.webp",
+   "pagina": 70,
+   "nome": "ORIGENS DENTAL Cães Porte Pequeno",
+   "largura": 230,
+   "altura": 281,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p072.webp",
+   "pagina": 72,
+   "nome": "ORIGENS PETISCOS NATURAIS Fêmur Bovino Osso de Bovino Desidratado",
+   "largura": 176,
+   "altura": 314,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p073.webp",
+   "pagina": 73,
+   "nome": "ORIGENS PETISCOS NATURAIS Bochecha Bovina Apara de Pele de Bovino",
+   "largura": 172,
+   "altura": 311,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p074.webp",
+   "pagina": 74,
+   "nome": "ORIGENS PETISCOS NATURAIS Orelha Suína Orelha de Suíno Desidratado",
+   "largura": 250,
+   "altura": 275,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p076.webp",
+   "pagina": 76,
+   "nome": "ORIGENS SACHÊ Cães Filhotes Sabor Carne e Frango com Batata-Doce",
+   "largura": 199,
+   "altura": 274,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p077.webp",
+   "pagina": 77,
+   "nome": "ORIGENS SACHÊ Cães Adultos Sabor Cordeiro e Batata-Doce",
+   "largura": 197,
+   "altura": 271,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p078.webp",
+   "pagina": 78,
+   "nome": "ORIGENS SACHÊ Gatos Castrados Sabor Frango e Carne",
+   "largura": 196,
+   "altura": 271,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p080.webp",
+   "pagina": 80,
+   "nome": "ORIGENS BISCOITO Cães Filhotes Sabor Maçã, Banana e Aveia",
+   "largura": 183,
+   "altura": 304,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p081.webp",
+   "pagina": 81,
+   "nome": "ORIGENS BISCOITO Cães Adultos Sabor Frutas Vermelhas, Linhaça e Cereais",
+   "largura": 183,
+   "altura": 304,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p083.webp",
+   "pagina": 83,
+   "nome": "ORIGENS PETISCOS Bolas de Pelo Sabor Carne",
+   "largura": 202,
+   "altura": 260,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p086.webp",
+   "pagina": 86,
+   "nome": "MAGNUS PREMIUM Chips Cães Adultos Sabor Carne e Frango",
+   "largura": 182,
+   "altura": 310,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p087.webp",
+   "pagina": 87,
+   "nome": "MAGNUS PREMIUM Todo Dia Cães Adultos Sabor Carne",
+   "largura": 180,
+   "altura": 304,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p088.webp",
+   "pagina": 88,
+   "nome": "MAGNUS PREMIUM Todo Dia Gatos Castrados Sabor Salmão",
+   "largura": 182,
+   "altura": 298,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p090.webp",
+   "pagina": 90,
+   "nome": "MAGNUS CAT Gatos Filhotes Sabor Carne e Frango",
+   "largura": 184,
+   "altura": 310,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p091.webp",
+   "pagina": 91,
+   "nome": "MAGNUS CAT Gatos Adultos Castrados Sabor Carne",
+   "largura": 184,
+   "altura": 311,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p093.webp",
+   "pagina": 93,
+   "nome": "MAGNUS BIFINHO Bifinhos Cães Pequeno Porte Sabor Carne",
+   "largura": 179,
+   "altura": 313,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p094.webp",
+   "pagina": 94,
+   "nome": "MAGNUS BIFINHO Bifinhos Frutas Sabor Banana, Maçã e Aveia",
+   "largura": 179,
+   "altura": 314,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p098.webp",
+   "pagina": 98,
+   "nome": "MAGNUS BISCOITOS Biscoito Cães Filhotes",
+   "largura": 262,
+   "altura": 300,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p099.webp",
+   "pagina": 99,
+   "nome": "MAGNUS BISCOITOS Biscoito Cães Mix Sabor Frango e Vegetais",
+   "largura": 241,
+   "altura": 294,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/adimax/adimax-p101.webp",
+   "pagina": 101,
+   "nome": "MAGNUS CAT PETISCO Cat Petisco Sabor Carne",
+   "largura": 195,
+   "altura": 275,
+   "especie": "gato"
+  }
+ ],
+ "quatree": [
+  {
+   "arquivo": "catalogo/quatree/quatree-p048.webp",
+   "pagina": 48,
+   "nome": "Quatree Life Adultos Rmg Frango & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p049.webp",
+   "pagina": 49,
+   "nome": "Quatree Life Adultos Rmg Frango & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p050.webp",
+   "pagina": 50,
+   "nome": "Quatree Life Adultos Rp Frango & Arroz",
+   "largura": 357,
+   "altura": 578,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p051.webp",
+   "pagina": 51,
+   "nome": "Quatree Life Adultos Rp Frango & Arroz",
+   "largura": 357,
+   "altura": 578,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p052.webp",
+   "pagina": 52,
+   "nome": "Quatree Life Filhotes Rmg Frango & Arroz",
+   "largura": 356,
+   "altura": 575,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p053.webp",
+   "pagina": 53,
+   "nome": "Quatree Life Filhotes Rmg Frango & Arroz",
+   "largura": 356,
+   "altura": 575,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p054.webp",
+   "pagina": 54,
+   "nome": "Quatree Life Filhotes Rp Frango & Arroz",
+   "largura": 355,
+   "altura": 576,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p055.webp",
+   "pagina": 55,
+   "nome": "Quatree Life Filhotes Rp Frango & Arroz",
+   "largura": 355,
+   "altura": 576,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p058.webp",
+   "pagina": 58,
+   "nome": "Quatree Life Gatos Castrados Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p059.webp",
+   "pagina": 59,
+   "nome": "Quatree Life Gatos Castrados Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p060.webp",
+   "pagina": 60,
+   "nome": "Quatree Life Gatos Castrados Frango & Arroz",
+   "largura": 356,
+   "altura": 575,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p061.webp",
+   "pagina": 61,
+   "nome": "Quatree Life Gatos Castrados Frango & Arroz",
+   "largura": 356,
+   "altura": 575,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p062.webp",
+   "pagina": 62,
+   "nome": "Quatree Life Gatos Adultos Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p063.webp",
+   "pagina": 63,
+   "nome": "Quatree Life Gatos Adultos Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p064.webp",
+   "pagina": 64,
+   "nome": "Quatree Life Gatos Filhotes Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p065.webp",
+   "pagina": 65,
+   "nome": "Quatree Life Gatos Filhotes Salmão & Arroz",
+   "largura": 356,
+   "altura": 577,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p068.webp",
+   "pagina": 68,
+   "nome": "Quatree Select Adultos Rmg Frango Com Arroz E Batata Doce",
+   "largura": 357,
+   "altura": 578,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p069.webp",
+   "pagina": 69,
+   "nome": "Quatree Select Adultos Rmg Frango Com Arroz E Batata Doce",
+   "largura": 357,
+   "altura": 578,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p070.webp",
+   "pagina": 70,
+   "nome": "Quatree Select Sênior +7 Rmg Frango Com Arroz E Batata Doce",
+   "largura": 356,
+   "altura": 577,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p071.webp",
+   "pagina": 71,
+   "nome": "Quatree Select Sênior +7 Rmg Frango Com Arroz E Batata Doce",
+   "largura": 356,
+   "altura": 577,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p072.webp",
+   "pagina": 72,
+   "nome": "Quatree Select Sênior +7 Rp Frango Com Arroz E Batata Doce",
+   "largura": 356,
+   "altura": 575,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p073.webp",
+   "pagina": 73,
+   "nome": "Quatree Select Sênior +7 Rp Frango Com Arroz E Batata Doce",
+   "largura": 356,
+   "altura": 575,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p074.webp",
+   "pagina": 74,
+   "nome": "Quatree Select Adultos Rmg Carne Com Arroz E Batata Doce",
+   "largura": 215,
+   "altura": 350,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p075.webp",
+   "pagina": 75,
+   "nome": "Quatree Select Adultos Rmg Frango Com Arroz E Batata Doce",
+   "largura": 216,
+   "altura": 350,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p076.webp",
+   "pagina": 76,
+   "nome": "Quatree Select Adultos Rp Frango Com Arroz E Batata Doce",
+   "largura": 215,
+   "altura": 350,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p077.webp",
+   "pagina": 77,
+   "nome": "Quatree Select Adultos Rp Carne Com Arroz E Batata Doce",
+   "largura": 215,
+   "altura": 349,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p078.webp",
+   "pagina": 78,
+   "nome": "Quatree Select Filhotes Rmg Frango Com Arroz E Batata Doce",
+   "largura": 216,
+   "altura": 350,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p079.webp",
+   "pagina": 79,
+   "nome": "Quatree Select Filhotes Rp Frango Com Arroz E Batata Doce",
+   "largura": 217,
+   "altura": 351,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p082.webp",
+   "pagina": 82,
+   "nome": "Quatree Select Gato Castrado Sênior +7 Frango Com Arroz E Batata Doce",
+   "largura": 355,
+   "altura": 574,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p083.webp",
+   "pagina": 83,
+   "nome": "Quatree Select Gato Castrado Sênior +7 Frango Com Arroz E Batata Doce",
+   "largura": 355,
+   "altura": 574,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p084.webp",
+   "pagina": 84,
+   "nome": "Quatree Select Gato Castrado Sênior +7 Frango Com Arroz E Batata Doce",
+   "largura": 215,
+   "altura": 350,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p085.webp",
+   "pagina": 85,
+   "nome": "Quatree Select Gatos Castrados Carne Com Arroz E Batata Doce",
+   "largura": 215,
+   "altura": 350,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p086.webp",
+   "pagina": 86,
+   "nome": "Quatree Select Gatos Castrados Frango Com Arroz E Batata Doce",
+   "largura": 213,
+   "altura": 346,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p087.webp",
+   "pagina": 87,
+   "nome": "Quatree Select Gatos Adultos Salmão Com Arroz E Batata Doce",
+   "largura": 217,
+   "altura": 351,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p094.webp",
+   "pagina": 94,
+   "nome": "Quatree Gourmet Gatos Adultos Salmão Com Arroz E Batata Doce",
+   "largura": 228,
+   "altura": 384,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p098.webp",
+   "pagina": 98,
+   "nome": "Quatree Gourmet Gatos Adultos Mix De Carnes Peixe, Aves, Carnes Bovinas E Suínas",
+   "largura": 219,
+   "altura": 369,
+   "especie": "gato"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p109.webp",
+   "pagina": 109,
+   "nome": "Quatree Premium Lançamento Adultos Carne",
+   "largura": 221,
+   "altura": 355,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p110.webp",
+   "pagina": 110,
+   "nome": "Quatree Premium Lançamento Adultos Carne",
+   "largura": 221,
+   "altura": 355,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p113.webp",
+   "pagina": 113,
+   "nome": "Quatree Hot Dog Filhotes Frango E Carne",
+   "largura": 200,
+   "altura": 368,
+   "especie": "cao"
+  },
+  {
+   "arquivo": "catalogo/quatree/quatree-p117.webp",
+   "pagina": 117,
+   "nome": "Quatree Hot Cat Adultos E Filhotes Peixe",
+   "largura": 190,
+   "altura": 366,
+   "especie": "gato"
+  }
+ ],
+ "_obs": "Embalagens reais tiradas dos catálogos 2026 (Adimax e Quatree), recebidos do Rodrigo em 27/11/2026. A IA nunca desenha embalagem: o Nexus cola estas fotos por cima do cenário. Linha Qualidy (Adimax) nunca entra. Supreme (Quatree) ainda falta: não saiu do PDF."
+}
