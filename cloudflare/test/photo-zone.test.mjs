@@ -4,14 +4,15 @@ import { safeZonePrompt, parseSide, keepSubjectLeft, feedPanelStartInPhoto, SAFE
 import { cloudflareImage } from "../src/gemini-campaign.js";
 
 test("foto à esquerda: a área livre fica antes do painel medido nas molduras", () => {
-  assert.equal(Math.round(feedPanelStartInPhoto() * 100), 50, "post: painel começa na metade da foto");
+  assert.equal(Math.round(feedPanelStartInPhoto() * 100), 54, "post: o título começa em 54% da foto");
   assert.ok(SAFE_FEED_MAX_X < feedPanelStartInPhoto(), "post: folga antes do painel");
   assert.ok(SAFE_STORY_MAX_Y < PANEL_STORY_START, "story: folga antes do painel");
 });
 
 test("foto à esquerda: o pedido à IA traz a medida certa de cada formato", () => {
   assert.match(safeZonePrompt("4:5"), /LEFT 45%/);
-  assert.match(safeZonePrompt("9:16"), /TOP 37%/);
+  assert.match(safeZonePrompt("9:16"), /TOP 60%/);
+  assert.match(safeZonePrompt("4:5"), /ONE single person/);
 });
 
 test("foto à esquerda: entende a resposta da IA", () => {
@@ -64,4 +65,17 @@ test("foto à esquerda: o gerador grátis põe a regra na frente do pedido", asy
   await cloudflareImage(env, "SCENE: bakery", "4:5");
   assert.match(prompts[0], /^COMPOSITION/);
   assert.match(prompts[0], /SCENE: bakery$/);
+});
+
+test("defeito da IA: SIM gera de novo uma vez; NAO fica a primeira", async () => {
+  let gen = 0;
+  const env = { DB: quotaDb(), AI: { run: async (model, input) => {
+    if (input?.multipart) { gen++; return { image: "iVBORw0KGgo=" }; }
+    const q = String(input?.messages?.[0]?.content?.[0]?.text || "");
+    if (q.includes("defeito")) return { response: gen === 1 ? "SIM" : "NAO" };
+    return { response: "ESQUERDA" };
+  } }, IMAGES: { input() { const n = { transform() { return n; }, async output() { return { response: async () => new Response(new Uint8Array([1])) }; } }; return n; } } };
+  const out = await cloudflareImage(env, "SCENE", "4:5");
+  assert.equal(gen, 2);
+  assert.equal(out.retried, true);
 });

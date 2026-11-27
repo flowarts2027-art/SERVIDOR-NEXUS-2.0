@@ -32,14 +32,14 @@ DOURADO_CLARO = (240, 214, 150)
 DOURADO_ESCURO = (168, 128, 58)
 BRANCO = (255, 255, 255)
 CREME = (248, 245, 237)
-FAIXA_LOGO = (66, 62, 34)  # onda de baixo: verde-oliva bem escuro, para a logo dourada e branca aparecer
+FAIXA_LOGO = (116, 110, 68)  # tarja fininha de baixo: verde-oliva #746E44 (27/11/2026), com a logo dela
 TEXTO_CAIXA = (52, 48, 24)
 
 FEED = (1080, 1350)
 STORY = (1080, 1920)
 # Onde o Worker cola a logo (centro da onda branca). Mesmo valor em art-frame.js (PANEL_LOGO).
-LOGO_FEED = {"centro_y": 1272, "altura": 110}
-LOGO_STORY = {"centro_y": 1640, "altura": 120}
+LOGO_FEED = {"centro_y": 1302, "altura": 76}
+LOGO_STORY = {"centro_y": 1850, "altura": 104}
 
 
 def fonte(nome, tamanho, peso=None):
@@ -213,37 +213,117 @@ def centralizar(img, c, x0, x1, topo, base, story):
     return bloco_texto(img, ImageDraw.Draw(img), c, x0, x1, y0, story)
 
 
+# Modelo novo (Rodrigo, 27/11/2026): sem painel. A foto cobre a arte toda; o texto vai DIRETO na foto,
+# com uma sombra suave atrás das letras (não é faixa); o botão fica CENTRALIZADO embaixo, colado numa
+# tarja fininha na cor do cliente, onde o Worker cola a logo (LOGO_FEED / LOGO_STORY).
+# POST: título no alto, à direita (a pessoa fica à esquerda, photo-zone.js). STORY: título e botão
+# centralizados na parte de baixo. Os stories aprovados pelo Rodrigo em 27/11 são o modelo.
+FAIXA_FEED = (1250, 1350)
+FAIXA_STORY = (1776, 1920)
+
+
+def texto_sombra(img, xy, txt, f, anchor, cor=BRANCO):
+    sombra = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ds = ImageDraw.Draw(sombra)
+    ds.text((xy[0], xy[1] + 4), txt, font=f, fill=(0, 0, 0, 200), anchor=anchor)
+    img.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(10)))
+    brilho = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(brilho).text(xy, txt, font=f, fill=(0, 0, 0, 150), anchor=anchor, stroke_width=6, stroke_fill=(0, 0, 0, 150))
+    img.alpha_composite(brilho.filter(ImageFilter.GaussianBlur(14)))
+    ImageDraw.Draw(img).text(xy, txt, font=f, fill=cor, anchor=anchor)
+
+
+def tarja(img, y0, y1):
+    W = img.size[0]
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, y0, W, y1], fill=FAIXA_LOGO + (255,))
+    d.rectangle([0, y0, W, y0 + 5], fill=DOURADO + (255,))
+
+
+def botao_centro(img, cy_base, txt, tam, larg_max):
+    d = ImageDraw.Draw(img)
+    W = img.size[0]
+    f = caber(d, txt, lambda t: corpo(t, "ExtraBold"), tam, larg_max - 90, 22)
+    w = min(larg_max, largura(d, txt, f) + 110)
+    h = int(f.size * 2.3)
+    x, y = (W - w) // 2, cy_base - h
+    sombra = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(sombra).rounded_rectangle([x + 3, y + 8, x + w + 3, y + h + 8], radius=h // 2, fill=(0, 0, 0, 120))
+    img.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(10)))
+    # Destaque claro demais (ex.: branco do Nexus AI): o botão usa a cor do cliente, com letra branca.
+    claro = sum(DOURADO) / 3 > 215
+    faixa = degrade_vertical(w, h, OLIVA, OLIVA_ESCURO) if claro else degrade_vertical(w, h, DOURADO_CLARO, DOURADO)
+    m = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, w - 1, h - 1], radius=h // 2, fill=255)
+    img.paste(faixa, (x, y), m)
+    ImageDraw.Draw(img).text((W // 2, y + h // 2), txt, font=f, fill=BRANCO if claro else TEXTO_CAIXA, anchor="mm")
+    return y
+
+
+def linhas_titulo(c):
+    return [t for t in c["titulo"] if t]
+
+
+def subtitulo(c):
+    return c.get("frase") or c.get("caixa") or ""
+
+
 def feed(c):
     W, H = FEED
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    # Painel verde-oliva à direita, com a borda esquerda em curva.
-    borda = [(470 + 55 * math.sin(y / H * math.pi), y) for y in range(0, H + 1, 6)]
-    mask = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(mask).polygon(borda + [(W, H), (W, 0)], fill=255)
-    img.paste(degrade_vertical(W, H, OLIVA, OLIVA_ESCURO), (0, 0), mask)
-    linha(img, borda, DOURADO, 5)
-    fim = centralizar(img, c, 575, 1035, 60, 1160, False)
-    # Onda branca com linha dourada, embaixo da tela toda (lugar da logo).
-    m, pts = onda(W, H, 1190, 20)
-    img.paste(Image.new("RGBA", (W, H), FAIXA_LOGO + (255,)), (0, 0), m)
-    linha(img, pts, DOURADO, 5)
+    d = ImageDraw.Draw(img)
+    x0, x1 = 585, 1035
+    larg = x1 - x0
+    y = 70
+    # Letra fixa e grande (leitura fácil): quebra a linha em vez de encolher.
+    f = corpo(66, "ExtraBold")
+    for t in [" ".join(linhas_titulo(c))]:
+        for ln in quebrar(d, t, f, larg):
+            texto_sombra(img, (x0, y), ln, f, "lt")
+            y += int(f.size * 1.12)
+    sub = subtitulo(c)
+    if sub:
+        y += 16
+        fs = corpo(36, "SemiBold")
+        for ln in quebrar(d, sub, fs, larg):
+            texto_sombra(img, (x0, y), ln, fs, "lt")
+            y += int(fs.size * 1.25)
+    fim = y
+    tarja(img, *FAIXA_FEED)
+    padrao = "COMENTE QUERO"
+    botao_centro(img, FAIXA_FEED[0] - 28, c.get("botao") or padrao, 40, 620)
     return img, fim
 
 
 def story(c):
     W, H = STORY
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    topo = 820
-    borda = [(x, topo - 40 * math.sin(x / W * math.pi)) for x in range(0, W + 1, 6)]
-    mask = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(mask).polygon(borda + [(W, H), (0, H)], fill=255)
-    img.paste(degrade_vertical(W, H, OLIVA, OLIVA_ESCURO), (0, 0), mask)
-    linha(img, borda, DOURADO, 5)
-    fim = centralizar(img, c, 110, 970, 850, 1530, True)
-    m, pts = onda(W, H, 1560, 22)
-    img.paste(Image.new("RGBA", (W, H), FAIXA_LOGO + (255,)), (0, 0), m)
-    linha(img, pts, DOURADO, 5)
-    return img, fim
+    d = ImageDraw.Draw(img)
+    x0, x1 = 90, 990
+    larg = x1 - x0
+    padrao = "MANDE QUERO NO DIRECT"
+    topo_botao = botao_centro(img, FAIXA_STORY[0] - 40, c.get("botao") or padrao, 44, 760)
+    # Mede o bloco e encosta em cima do botão.
+    linhas = []
+    f = corpo(84, "ExtraBold")
+    linhas += [(ln, f, 1.12) for ln in quebrar(d, " ".join(linhas_titulo(c)), f, larg)]
+    sub = subtitulo(c)
+    fs = corpo(44, "SemiBold")
+    sublinhas = [(ln, fs, 1.25) for ln in quebrar(d, sub, fs, larg)] if sub else []
+    altura = sum(int(f.size * k) for _, f, k in linhas) + (18 + sum(int(f.size * k) for _, f, k in sublinhas) if sublinhas else 0)
+    y = topo_botao - 40 - altura
+    inicio = y
+    for ln, f, k in linhas:
+        texto_sombra(img, (W // 2, y), ln, f, "mt")
+        y += int(f.size * k)
+    if sublinhas:
+        y += 18
+        for ln, f, k in sublinhas:
+            texto_sombra(img, (W // 2, y), ln, f, "mt")
+            y += int(f.size * k)
+    tarja(img, *FAIXA_STORY)
+    # "fim" aqui é onde o texto começa: não pode subir demais (acima de 55% cobre a pessoa).
+    return img, H - inicio
 
 
 def gerar(saida):
@@ -251,7 +331,7 @@ def gerar(saida):
     pasta = os.path.join(saida, CLIENTE)
     os.makedirs(pasta, exist_ok=True)
     info = {"estilo": "painel", "feed": [], "story": [], "logo": {"feed": LOGO_FEED, "story": LOGO_STORY}}
-    limites = {"feed": 1175, "story": 1545}
+    limites = {"feed": 1100, "story": 900}
     for tipo, fazer in (("feed", feed), ("story", story)):
         for i, c in enumerate(textos[tipo]):
             img, fim = fazer(c)

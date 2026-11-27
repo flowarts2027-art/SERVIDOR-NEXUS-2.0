@@ -147,6 +147,7 @@
   "nexus-ai": {
     "cores": {
       "painel": "#2f86e8",
+      "faixa": "#D6ECFF",
       "destaque": "#ffffff"
     },
     "feed": [

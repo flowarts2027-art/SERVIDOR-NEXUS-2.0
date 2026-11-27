@@ -90,13 +90,11 @@ test("monta foto cobrindo a tela + moldura + logo do Master no meio da faixa de 
   const out = await composePanel(env, new Uint8Array([1]), frame, { story: false, logoKey: "logos/dani.png" });
   assert.ok(out.byteLength > 0);
   const photo = root[0].node.steps;
-  // Fundo: a mesma foto desfocada; por cima, a foto com 86% no canto de cima à esquerda (Rodrigo, 26/11/2026).
-  assert.deepEqual(photo[0], ["transform", { width: 1080, height: 1350, fit: "cover", blur: 60 }]);
+  // Modelo novo (27/11/2026): a foto cobre a arte toda; por cima, a camada de texto e a logo.
+  assert.deepEqual(photo[0], ["transform", { width: 1080, height: 1350, fit: "cover" }]);
   const draws = photo.filter(s => s[0] === "draw");
-  assert.equal(draws.length, 3);
-  assert.deepEqual(draws[0][2], [["transform", { width: 929, height: 1161, fit: "cover" }]]);
-  assert.deepEqual(draws[0][3], { left: 0, top: 0 });
-  const logo = draws[2][3];
+  assert.equal(draws.length, 2);
+  const logo = draws[1][3];
   // 720x305 com 110 de altura = 260 de largura, centralizada; centro em 1272.
   assert.equal(logo.left, Math.round((1080 - 260) / 2));
   assert.equal(logo.top, 1272 - 55);

@@ -8,7 +8,8 @@ import { artShape } from "./art-format.js";
 const FEED = { width: 1080, height: 1350 };
 const STORY = { width: 1080, height: 1920 };
 // Post com moldura de painel: a foto entra com 86% do tamanho, no canto de cima à esquerda (Rodrigo, 26/11/2026).
-export const FEED_PHOTO_SCALE = 0.86;
+// 27/11/2026 (modelo novo, sem painel): a foto do post cobre a arte toda. O texto vai direto na foto.
+export const FEED_PHOTO_SCALE = 1;
 const NO_TEXT_CLIENTS = Object.freeze(new Set(["daniela-martins"]));
 let cachedMeta = null;
 
@@ -130,7 +131,7 @@ export async function composePanel(env, bytes, frame, { story = false, logoKey =
   if (!env?.IMAGES) throw new Error("images_binding_unavailable");
   const size = story ? STORY : FEED;
   let canvas;
-  if (story) {
+  if (story || FEED_PHOTO_SCALE >= 1) {
     canvas = env.IMAGES.input(stream(bytes)).transform({ width: size.width, height: size.height, fit: "cover" });
   } else {
     // REGRA (Rodrigo, 26/11/2026): o painel do post não pode cobrir o assunto da foto. O painel começa em 43% da

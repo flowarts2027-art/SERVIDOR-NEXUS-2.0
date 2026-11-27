@@ -41,7 +41,7 @@ def paleta(cores):
         "DOURADO": dest,
         "DOURADO_CLARO": misturar(dest, branco, 0.35),
         "DOURADO_ESCURO": misturar(dest, preto, 0.25),
-        "FAIXA_LOGO": hexa(cores["faixa"]) if cores.get("faixa") else misturar(painel, preto, 0.5),
+        "FAIXA_LOGO": hexa(cores["faixa"]) if cores.get("faixa") else painel,
         "TEXTO_CAIXA": misturar(dest, preto, 0.82),
     }
 
@@ -55,7 +55,7 @@ def gerar(saida):
     dados = json.load(open(TEXTOS, encoding="utf-8"))
     originais = {n: getattr(md, n) for n in NOMES}
     clientes = {}
-    limites = {"feed": 1175, "story": 1545}
+    limites = {"feed": 1100, "story": 900}
     try:
         for cliente, cfg in dados.items():
             if cliente.startswith("_"):
