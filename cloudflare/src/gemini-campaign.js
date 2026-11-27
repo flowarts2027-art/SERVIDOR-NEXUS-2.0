@@ -11,6 +11,8 @@ import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
+import { safeZonePrompt, keepSubjectLeft } from "./photo-zone.js";
+import { visionText } from "./art-frame.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
@@ -24,7 +26,7 @@ const COMMON_RULES = [
   "NO TEXT: absolutely no text, letters, numbers, captions, signs with writing, logos, brand names, stickers or watermarks anywhere in the image, including on clothes, machines, trucks and walls.",
   "FRAME: the photo fills the entire frame edge to edge; no borders, no frames, no plain colored bands on the sides, top or bottom, no collage, no split screen, one single photo.",
   "LOGO SPACE: keep the top-right corner visually calm and uncluttered (sky or plain wall), because the company logo is placed there afterwards.",
-  "SUBJECT: one clear subject, sharp focus, well lit, centered in the middle of the frame; nothing important in the bottom 20% of the image.",
+  "SUBJECT: one clear subject, sharp focus, well lit, placed where the COMPOSITION rule says (never on the right half); nothing important in the bottom 20% of the image.",
   "PEOPLE: faces are not needed (seen from behind, from the side, over the shoulder or at a distance); anatomically correct hands and bodies.",
   "OBJECTS: equipment and tools are realistic, complete and used the right way; no invented machines, no brand marks, no phones with screens facing the viewer.",
   "QUALITY: no deformed objects, no duplicated limbs, no warped perspective, no blur, no heavy filters, no neon, no blue color cast."
@@ -257,6 +259,13 @@ const withTimeout = (promise, ms, code) => {
 
 export async function cloudflareImage(env, prompt, aspect) {
   if (!env?.AI) throw new Error("workers_ai_unavailable");
+  // Foto sempre à esquerda (27/11/2026): a regra vai na frente do pedido e, depois, o Nexus confere o lado.
+  const img = await cloudflareImageRaw(env, safeZonePrompt(aspect) + String(prompt || ""), aspect);
+  const fixed = await keepSubjectLeft(env, img.bytes, aspect, visionText);
+  return fixed.flipped ? { ...img, bytes: fixed.bytes, mime: fixed.mime || img.mime, flipped: true } : img;
+}
+
+async function cloudflareImageRaw(env, prompt, aspect) {
   const [width, height] = CF_SIZES[aspect] || CF_SIZES["4:5"];
   const errors = [];
   const model = String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL);

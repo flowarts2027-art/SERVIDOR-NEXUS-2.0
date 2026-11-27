@@ -151,3 +151,10 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - Contagem pela tabela oficial: FLUX.2 klein 4B ~26 neurônios por pedaço de 512x512 (post 4:5 ~157, story ~209); schnell ~96.
 - Testes: 1069/1069 (`ai-budget.test.mjs` novo).
 - Próximo: geração automática para os clientes (menos GILTEC) usando essa cota, com embalagens reais da Adimax e da Quatree; conferir se a conta da Cloudflare está no plano grátis do Workers.
+
+## 27/11/2026 (19h15) — Claude: teste real da geração grátis + foto sempre à esquerda
+- Teste real (Master, Flow Arts): `/api/master/foto` gerou 1 foto em 14 s (FLUX.2 klein 4B, com a cota nova); upload com `fotoLimpa=1` montou a moldura e a logo (`moldura-da-cliente`). Erro achado: a IA pôs a pessoa à direita e o painel a cobriu. Post de teste (20/12) recusado; "Gerar imagem por IA sozinho" da Flow Arts ligado só durante o teste e desligado de novo.
+- Medidas das molduras (todas iguais, geradas com `moldura_clientes.py`/`moldura_daniela.py`): post: painel a partir de 43% da arte = 50% da foto (foto a 86%); faixa da logo abaixo da foto; story: painel a partir de 40,4%.
+- Novo `photo-zone.js`: regra de composição na frente de todo pedido ao `cloudflareImage` (post: 45% da esquerda; story: 37% de cima) e conferência do lado pela IA grátis com espelhamento do post se a pessoa sair à direita. `COMMON_RULES` não manda mais centralizar.
+- Testes: 1074/1074 (`photo-zone.test.mjs`).
+- Próximo: liberar a geração automática para os clientes (menos GILTEC) e a biblioteca de embalagens reais da Adimax e da Quatree.
