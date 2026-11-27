@@ -12,7 +12,7 @@
 - Evite pedir print. Use o acesso ao navegador quando der e só peça print quando não houver outro jeito.
 
 ## Como trabalhar neste projeto
-- Leia os arquivos de `docs/nexus-memory/` antes de mudar qualquer coisa (regra do AGENTS.md).
+- Antes de mudar qualquer coisa, leia `docs/nexus-memory/RESUMO.md` e as últimas entradas dos handoffs (regra do AGENTS.md). Os arquivos grandes da memória: só o trecho necessário, por grep.
 - Único cliente ativo: Flow Arts (`primeiro-teste`, @flowarts2026), agência de marketing e automação com IA. Global Play e Ragnar One estão arquivados e travados para publicar (`BLOCKED_PUBLISH_CLIENTS` em `cloudflare/src/publisher.js`); não reativar.
 - Perfil da marca, temas e campanha: `cloudflare/src/client-brand.js` e `cloudflare/src/flowarts-campaign.js`.
 - Painel do cliente: `public/portal.html`, `public/client-lite.js`, `public/client-lite.css`. Painel Master: `public/index.html`, `public/app.js`.
@@ -29,9 +29,9 @@
 
 ## Continuidade de trabalho com ChatGPT — ponte no GitHub
 
-Na abertura de cada sessão, além das leituras exigidas por `AGENTS.md`, consulte `docs/nexus-memory/BRIDGE_PROTOCOL.md`, `TASK_BOARD.md` e **a entrada mais recente** de `HANDOFF_CHATGPT.md`. Antes de alterar arquivos, verifique se outra branch/PR já implementa o pedido; resuma para o Rodrigo o que existe e o que falta.
+Na abertura de cada sessão, leia o `RESUMO.md` e **a entrada mais recente** de `HANDOFF_CHATGPT.md` e de `HANDOFF_CLAUDE.md`. `BRIDGE_PROTOCOL.md` e `TASK_BOARD.md`: só o trecho necessário. Antes de alterar arquivos, verifique se outra branch/PR já implementa o pedido; resuma para o Rodrigo o que existe e o que falta.
 
-Ao final, acrescente em `docs/nexus-memory/HANDOFF_CLAUDE.md` um resumo objetivo das decisões, alterações comprovadas, testes, estado do deploy e próximo passo, para que o ChatGPT possa retomar. Nunca informe que leu chats privados ou prompts que não foram escritos na memória. Não publicar alterações na `main`, gastar recursos ou enviar mensagens a terceiros sem as autorizações aplicáveis. Consulte também as regras de privacidade do `BRIDGE_PROTOCOL.md` porque o repositório é público.
+Ao final, atualize o `RESUMO.md` e acrescente em `docs/nexus-memory/HANDOFF_CLAUDE.md` um resumo objetivo (3 a 6 linhas) das decisões, alterações comprovadas, testes, estado do deploy e próximo passo, para que o ChatGPT possa retomar. Nunca informe que leu chats privados ou prompts que não foram escritos na memória. Não publicar alterações na `main`, gastar recursos ou enviar mensagens a terceiros sem as autorizações aplicáveis. Consulte também as regras de privacidade do `BRIDGE_PROTOCOL.md` porque o repositório é público.
 
 ## graphify
 

@@ -32,7 +32,7 @@ GILTEC: toda arte, de toda campanha, leva a logo oficial (docs/nexus-memory/clie
 ## Início de cada sessão
 
 1. Atualize a cópia do repositório e identifique branch e commit. Consulte `AGENTS.md` e, no Claude, `CLAUDE.md`.
-2. Leia os **sete arquivos obrigatórios** referidos em `AGENTS.md`, mais este protocolo, `TASK_BOARD.md`, `HANDOFF_CHATGPT.md` e `HANDOFF_CLAUDE.md`.
+2. Leia o `RESUMO.md` e as últimas entradas de `HANDOFF_CHATGPT.md` e `HANDOFF_CLAUDE.md` (memória enxuta de 27/11/2026). Os arquivos grandes e a pasta `arquivo/`: só o trecho necessário, por grep.
 3. Confirme se já há código, PR ou tarefa equivalente **antes** de implementar de novo. Diferencie pedido, hipótese, teste local, PR e funcionalidade comprovada em produção.
 4. Escolha **uma tarefa específica** do quadro. Se depender de publicação, custo, envio a terceiros ou acesso adicional, obtenha a autorização pertinente.
 
