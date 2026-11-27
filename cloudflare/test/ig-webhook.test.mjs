@@ -31,12 +31,18 @@ test("extrai o comentário do aviso da Meta", () => {
 });
 
 test("verificação do webhook devolve o challenge só com o token certo", async () => {
-  const ok = new URL("https://x.test" + WEBHOOK_PATH + "?hub.mode=subscribe&hub.verify_token=nexus-flowarts-instagram&hub.challenge=123");
-  const res = await handleInstagramWebhook(new Request(ok), {}, ok, {});
+  const env = { INSTAGRAM_WEBHOOK_VERIFY_TOKEN: "token-de-teste" };
+  const ok = new URL("https://x.test" + WEBHOOK_PATH + "?hub.mode=subscribe&hub.verify_token=token-de-teste&hub.challenge=123");
+  const res = await handleInstagramWebhook(new Request(ok), env, ok, {});
   assert.equal(res.status, 200);
   assert.equal(await res.text(), "123");
   const bad = new URL("https://x.test" + WEBHOOK_PATH + "?hub.mode=subscribe&hub.verify_token=errado&hub.challenge=123");
-  assert.equal((await handleInstagramWebhook(new Request(bad), {}, bad, {})).status, 403);
+  assert.equal((await handleInstagramWebhook(new Request(bad), env, bad, {})).status, 403);
+  // Sem o segredo na Cloudflare não existe senha padrão: nem a antiga nem token vazio passam.
+  const antigo = new URL("https://x.test" + WEBHOOK_PATH + "?hub.mode=subscribe&hub.verify_token=nexus-flowarts-instagram&hub.challenge=123");
+  assert.equal((await handleInstagramWebhook(new Request(antigo), {}, antigo, {})).status, 403);
+  const vazio = new URL("https://x.test" + WEBHOOK_PATH + "?hub.mode=subscribe&hub.challenge=123");
+  assert.equal((await handleInstagramWebhook(new Request(vazio), {}, vazio, {})).status, 403);
   const other = new URL("https://x.test/outra");
   assert.equal(await handleInstagramWebhook(new Request(other), {}, other, {}), null);
 });

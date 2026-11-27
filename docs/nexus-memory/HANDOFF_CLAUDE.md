@@ -1502,3 +1502,12 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Entrou no sitemap, no `run_worker_first` e no rodapé da home e das 3 páginas de serviço. Teste novo `site-nexus-movies.test.mjs`; suíte 1057/1057.
 - Pendente: vídeo de exemplo na página (precisa de um vídeo nosso, sem trailer de estúdio); pedir indexação depois do deploy.
 - Nexus Movies (repo banner-do-dia): PR #33 — vídeo não sai mais mudo sem aviso ("O Guerreiro Banido" saiu sem faixa de som). O ajudante baixou o trailer do link com som no teste; a mensagem que o Rodrigo viu era "escolha o filme primeiro".
+
+## 27/11/2026 (10h40) — Claude: correções de segurança da auditoria (skill auditoria-producao)
+- Login do Master (`/api/auth/login`, `/master-login`, `/api/master/desktop-login`, `/api/master/access`): a trava por IP vem ANTES de conferir a senha. Antes, quem tentava adivinhar seguia tentando e entrava se acertasse, mesmo bloqueado. Com o D1 fora do ar, o login segue liberado.
+- `/api/instagram-publishing-health` (consultava a Meta para cada cliente, sem login) e `/api/emergency-publisher-status` agora pedem a chave interna (Bearer) ou o login do Master. O `nexus-autofix.mjs` manda o Bearer quando tiver `NEXUS_SECRET_KEY`.
+- `frameGuard` (`cloudflare/src/frame-guard.js`): toda resposta sai com `X-Frame-Options: DENY` e `frame-ancestors 'none'`.
+- Webhook do Instagram: sem senha padrão no código; sem o segredo `INSTAGRAM_WEBHOOK_VERIFY_TOKEN` a verificação falha (antes de reconfigurar o webhook na Meta, conferir que o segredo existe na Cloudflare).
+- Deploy: `deploy-nexus-cloudflare.yml` roda os testes do Worker antes de publicar.
+- Testes: 1060/1060 (teste novo `auditoria-seguranca-20261127.test.mjs`).
+- Próximo: PR de privacidade (tirar dados pessoais da memória pública) e PR da memória enxuta.
