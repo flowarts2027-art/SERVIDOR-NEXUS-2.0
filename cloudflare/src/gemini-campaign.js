@@ -11,6 +11,7 @@ import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { PHOTO_CAMPAIGNS } from "./client-photo-plans.js";
+import { loadCatalog, pickProduct, composeProduct } from "./packshot.js";
 import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
 import { safeZonePrompt, keepSubjectLeft, findDefects } from "./photo-zone.js";
 import { visionText, parseHasText } from "./art-frame.js";
@@ -457,6 +458,17 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
   const liberado = cfgNovo?.panel === true || usesGeneratedImage(campaignClient);
   if (!liberado) throw new Error(GENERATION_BLOCKED);
   const plan = dailyPlan(clientId, date);
+  // Embalagem real (Adimax, Quatree, 27/11/2026): escolhe o produto de cada peça ANTES das legendas,
+  // troca {PET} pelo bicho certo (cão ou gato) e depois cola a foto do catálogo por cima do cenário.
+  if (cfgNovo?.packshot === true) {
+    const catalog = deps.catalog || await loadCatalog(env);
+    const d = Math.floor(Date.parse(date + "T12:00:00Z") / DAY_MS);
+    plan.forEach((piece, k) => piece.cards.forEach((card, i) => {
+      const produto = pickProduct(catalog, cfgNovo.marca, d, k + i);
+      if (!produto) throw new Error("catalogo_vazio");
+      piece.cards[i] = { ...card, produto, topic: produto.nome, prompt: card.prompt.replaceAll("{PET}", produto.especie === "gato" ? "cat" : "dog") };
+    }));
+  }
   const stateKey = date;
   const state = await readState(env, "gemini-daily", stateKey, clientId);
   const done = new Set(Array.isArray(state.done) ? state.done : []);
@@ -488,7 +500,9 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
         const spent = await monthSpend(env, month);
         if (cost > 0 && spent + cost > limit) throw new Error("limite_mensal");
         const card = piece.cards[i];
-        const img = deps.image ? await deps.image(env, card.prompt, card.aspect) : await generateImage(env, card.prompt, card.aspect, fetcher);
+        const produto = card.produto || null;
+        let img = deps.image ? await deps.image(env, card.prompt, card.aspect) : await generateImage(env, card.prompt, card.aspect, fetcher);
+        if (produto) img = { ...img, bytes: await (deps.composeProduct || composeProduct)(env, img.bytes, produto, card.aspect), mime: "image/jpeg" };
         await addSpend(env, month, cost);
         if (cfgNovo?.panel === true && !deps.compose) {
           // Foto pura: o painel do cliente monta a moldura e cola a logo (fotoLimpa=1).
