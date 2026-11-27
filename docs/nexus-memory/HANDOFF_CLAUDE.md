@@ -405,7 +405,7 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - Feito (branch `feat/master-v2`): ver CHANGELOG 23/10 07h50. Conferido em prévia local com dados de exemplo. 580/580 testes.
 
 ## 2026-10-23 07h20 BRT — Master mais coeso e fácil de ler
-- Pedido do Rodrigo: login azul igual ao do cliente; clientes como planilha com cor alternada; menos informação solta e menos rolagem; ícones melhores; painel clicável; adaptado para dislexia.
+- Pedido do Rodrigo: login azul igual ao do cliente; clientes como planilha com cor alternada; menos informação solta e menos rolagem; ícones melhores; painel clicável; leitura fácil.
 - Feito (branch `feat/master-coeso`): ver CHANGELOG 23/10 07h20. Nada foi apagado do código: o que é pouco usado ficou em blocos fechados. Conferido em prévia local com dados de exemplo. 579/579 testes.
 - Próximo passo: Rodrigo aprova o PR e diz o que ainda incomoda.
 
@@ -439,7 +439,7 @@ Este arquivo é preenchido pelo **Claude Code** ao fim de cada sessão relevante
 - **Pendente do Rodrigo:** se o carrossel repetido do Quatree (23/10 15h) já está no painel, recusar ou cancelar.
 
 ## 2026-10-22 23h40 BRT — Planos com nomes curtos e cadastro com Pix
-- **Pedido do Rodrigo:** (1) letras maiores e mais fáceis de ler, sem barra lateral (ele é disléxico e autista); (2) planos com nomes e valores; o cliente escolhe o plano num link, vê o passo a passo, paga no Pix (chave CNPJ do site) e cai um pedido no Master para aprovar; o painel do cliente mostra o plano.
+- **Pedido do Rodrigo:** (1) letras maiores e mais fáceis de ler, sem barra lateral; (2) planos com nomes e valores; o cliente escolhe o plano num link, vê o passo a passo, paga no Pix (chave CNPJ do site) e cai um pedido no Master para aprovar; o painel do cliente mostra o plano.
 - **Decisões:** todos os produtos do site viram planos; nomes curtos escolhidos pelo Claude (Rodrigo pode trocar): Essencial, Completo, Captador, Site, Responde, Reels 5, Posts 10, Logo.
 - **Feito (branch `feat/planos-pix-leitura`):** `cloudflare/src/plans.js` (lista e Pix copia e cola), `signup.js` (plano, valor, fundador, conferência antes do Pix, config.plan ao aprovar), `clients.js` (plano no painel), `public/cadastro.html` (4 passos), `public/signups.js` (plano e aviso no Master), `public/client-lite.js` + `portal.html` ("Seu plano" na Conta), `public/site.html` e `whatsapp-knowledge.js` (nomes e botões Contratar), `public/styles.css` + `index.html` (leitura fácil no Master). 578/578 testes.
 - **Limite:** o Pix é fixo; não existe confirmação automática. O Rodrigo confere o valor no banco antes de aprovar.
@@ -1511,3 +1511,7 @@ frequencia: "1 post por dia bem feito vale mais que 3 fracos; os 3 de hoje segue
 - Deploy: `deploy-nexus-cloudflare.yml` roda os testes do Worker antes de publicar.
 - Testes: 1060/1060 (teste novo `auditoria-seguranca-20261127.test.mjs`).
 - Próximo: PR de privacidade (tirar dados pessoais da memória pública) e PR da memória enxuta.
+## 27/11/2026 (10h50) — Claude: privacidade da memória pública
+- Tirados do repositório público dados pessoais de saúde e de situação financeira do Rodrigo (CLAUDE.md, .claude/agents/ceo.md, HANDOFF_CLAUDE.md, NEXT_ACTIONS.md e comentários de CSS). As regras de comunicação continuam (frases curtas, um passo por vez, letra grande).
+- Regra: nunca gravar na memória do repositório saúde, dinheiro pessoal, família ou documentos do Rodrigo ou de clientes (ver BRIDGE_PROTOCOL).
+- O histórico antigo do Git ainda guarda o texto; só deixar o repositório privado tira de vez.

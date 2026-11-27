@@ -3,7 +3,7 @@
 @AGENTS.md
 
 ## Como falar com o Rodrigo (proprietário)
-- Ele é autista e disléxico. Responda em português do Brasil, devagar, um passo por vez, com frases curtas.
+- Responda em português do Brasil, devagar, um passo por vez, com frases curtas e fáceis de ler.
 - Antes de começar uma tarefa, diga em uma frase o que vai fazer.
 - Peça só o necessário. Senhas, tokens e chaves: ele mesmo digita; nunca peça para colar no chat.
 - Depois de cada passo que depende dele, espere a resposta antes de seguir.
