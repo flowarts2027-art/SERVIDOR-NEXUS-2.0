@@ -149,7 +149,7 @@ test("cron: só entre 6h e 8h de Brasília, desligado sem chave ou sem cliente",
 });
 
 test("plano novo (27/11): 2 posts + 2 stories, cenas seguras, sem equipamento da GILTEC nem texto", () => {
-  for (const id of ["primeiro-teste", "nexus-ai", "daniela-martins", "maskara-assessoria"]) {
+  for (const id of ["primeiro-teste", "nexus-ai", "daniela-martins", "maskara-assessoria", "sabor-do-campo"]) {
     for (let i = 0; i < 6; i++) {
       const date = new Date(Date.UTC(2026, 9, 29 + i)).toISOString().slice(0, 10);
       const plan = dailyPlan(id, date);

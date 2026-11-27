@@ -122,7 +122,32 @@ const NEXUS_AI = Object.freeze({
   captionBrief: FLOW.captionBrief.replace("Flow Arts é uma agência", "Nexus AI é o sistema de automação de Instagram da Flow Arts, agência")
 });
 
+// Sabor do Campo (Elaine): empadas artesanais de frango, carne seca e camarão, por encomenda no WhatsApp.
+// Comida é o que a IA faz melhor: quase sempre sem pessoa (27/11/2026).
+const SABOR = Object.freeze({
+  topic: "empadas artesanais",
+  context: "Realistic appetizing food photo for a small Brazilian homemade empada (savory pie) business.",
+  look: "LOOK: warm, rustic and homemade: wooden table, green and yellow details, checkered cloth, natural daylight, golden flaky crust, true food colors.",
+  posts: Object.freeze([
+    "close-up of golden homemade Brazilian empadas (small round savory pies) on a wooden board, one cut open showing creamy shredded chicken filling",
+    "a rustic basket full of golden empadas on a wooden table with a green and yellow checkered cloth, no people",
+    "one empada cut in half showing shrimp filling, on a small plate, soft daylight, shallow depth of field",
+    "a party tray with many small golden empadas arranged in rows on a wooden table, festive and homemade, no people",
+    "close-up of hands (one person, simple and relaxed) placing fresh golden empadas into a kraft paper delivery box"
+  ]),
+  stories: Object.freeze([
+    "golden empadas cooling on a rack in a homemade kitchen, warm light, empty wooden counter in the lower part of the image",
+    "one empada cut open showing dried beef (carne seca) filling, on a wooden board, steam, close-up",
+    "a kraft paper box with a dozen golden empadas ready for delivery on a wooden table"
+  ]),
+  captionBrief: "Sabor do Campo é o negócio de empadas artesanais da Elaine, feitas com carinho, por encomenda pelo WhatsApp (link na bio). "
+    + "Sabores: frango, carne seca e camarão. Tom caseiro, alegre e com água na boca. Cada legenda: primeira linha que dá fome, "
+    + "2 parágrafos curtos (sabor, massa que desmancha, encomendas para festas e lanches) e no fim 'Comente QUERO ou peça pelo WhatsApp da bio.' "
+    + "Termine com 4 hashtags (#EmpadaArtesanal #Empadas #Encomendas #SaborDoCampo). Sem preço."
+});
+
 export const PHOTO_CAMPAIGNS = Object.freeze({
+  "sabor-do-campo": Object.freeze({ ...SABOR, plan: photoPlan, panel: true }),
   "daniela-martins": Object.freeze({ ...DANIELA, plan: photoPlan, panel: true }),
   "maskara-assessoria": Object.freeze({ ...MASKARA, plan: photoPlan, panel: true }),
   "primeiro-teste": Object.freeze({ ...FLOW, plan: photoPlan, panel: true }),

@@ -176,3 +176,9 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - `runGeminiDaily`: 21h–23h faz o dia seguinte; 6h–8h completa hoje. Envio com `fotoLimpa=1` (moldura do painel) e aprovação do cliente. `GEMINI_DAILY_CLIENTS` ligado no wrangler.
 - Daniela continua na lista de bloqueio dos outros caminhos (podem publicar sem aprovação); só a campanha nova a libera.
 - Testes: 1078/1078. Próximo: conferir a primeira rodada (hoje 21h) e a biblioteca de embalagens da Adimax e da Quatree.
+
+## 27/11/2026 (20h50) — Claude: Sabor do Campo na geração automática
+- Pedido do Rodrigo: entram Sabor do Campo, Adimax e Quatree; GILTEC só repete artes já postadas.
+- Sabor do Campo (Elaine, empadas de frango, carne seca e camarão, encomenda pelo WhatsApp da bio): briefing novo em `textos_clientes.json` (verde #2e7d32 e amarelo #f5b400) e plano de fotos de comida em `client-photo-plans.js` (quase sem pessoas). Entrou em `GEMINI_DAILY_CLIENTS`.
+- Cota das imagens subiu para 7.000 neurônios/dia (`NEXUS_AI_IMAGE_NEURONS`; teto 70%), porque 5 clientes x 4 peças com conferência passam de 5.500. Uploads com `fotoLimpa` quase não usam a IA.
+- Próximo: biblioteca de embalagens (Adimax, Quatree) e repetição das artes postadas da GILTEC (Sheila).
