@@ -31,14 +31,16 @@ export function pickProduct(catalog, marca, d, i) {
 // embaixo; texto do story na parte de baixo).
 export function productPlace(story, item) {
   const W = 1080, H = story ? 1920 : 1350;
-  const maxH = story ? 760 : 640;
+  // 27/11/2026 (prévia real): no story a IA pôs o cão no meio e a embalagem o cobriu. Agora a embalagem é
+  // menor e fica no canto de baixo à direita (acima do texto); o pet fica à esquerda. No post, mais à direita.
+  const maxH = story ? 520 : 560;
   // Foto do catálogo pequena (Adimax): não aumenta mais que 2x, para não ficar borrada.
   const nativeH = Number(item?.altura) || maxH;
   const h = Math.min(maxH, Math.round(nativeH * 2));
   const w = Math.round(h * (Number(item?.largura) || 1) / (Number(item?.altura) || 1));
-  if (story) return { w, h, left: Math.round((W - w) / 2), top: 430 };
+  if (story) return { w, h, left: W - w - 50, top: 1240 - h };
   // Post: lado direito, entre o título (até ~420) e o botão (~1120).
-  return { w, h, left: Math.min(W - w - 50, 600), top: 1110 - h };
+  return { w, h, left: W - w - 40, top: 1105 - h };
 }
 
 export async function composeProduct(env, sceneBytes, item, aspect) {

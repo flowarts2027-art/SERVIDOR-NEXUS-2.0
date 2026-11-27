@@ -269,8 +269,8 @@ export async function cloudflareImage(env, prompt, aspect) {
   // Conferência de defeito por partes (27/11/2026): achou defeito, gera de novo (até 2 vezes).
   // Se as 3 saírem com defeito, fica a com menos defeitos; o cliente ainda aprova antes de sair.
   const conferir = async bytes => {
-    // A conferência (4 perguntas, ~30 neurônios cada) também sai da cota das imagens. Sem cota, não confere.
-    try { await reserveImageNeurons(env, 120); } catch { return { defeitos: [], respostas: {}, semCota: true }; }
+    // A conferência (5 perguntas, ~30 neurônios cada) também sai da cota das imagens. Sem cota, não confere.
+    try { await reserveImageNeurons(env, 150); } catch { return { defeitos: [], respostas: {}, semCota: true }; }
     return findDefects(env, bytes, visionText, parseHasText);
   };
   let check = await conferir(img.bytes);

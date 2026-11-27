@@ -92,7 +92,7 @@ test("defeito da IA: no máximo 3 fotos; fica a com menos defeitos", async () =>
   } }, IMAGES: { input() { const n = { transform() { return n; }, async output() { return { response: async () => new Response(new Uint8Array([1])) }; } }; return n; } } };
   const out = await cloudflareImage(env, "SCENE", "4:5");
   assert.equal(gen, 3);
-  assert.equal(out.defeitos.length, 4);
+  assert.equal(out.defeitos.length, 5);
 });
 
 test("conferência por partes: cada SIM é um defeito; sem resposta não conta", async () => {

@@ -148,7 +148,7 @@ const SABOR = Object.freeze({
 
 // Adimax e Quatree (27/11/2026): a IA faz só o cenário com o pet e um espaço vazio; o Nexus cola a embalagem
 // REAL do catálogo (packshot.js). {PET} vira "dog" ou "cat" conforme o produto do dia.
-const PET_LOOK = "LOOK: warm, bright and clean, true colors, realistic photograph. NO product bags, NO packages, NO boxes, NO bowls with brand, no text anywhere.";
+const PET_LOOK = "LOOK: warm, bright and clean, true colors, realistic photograph. Plain walls with NO posters, NO pictures, NO signs and NO letters. NO product bags, NO packages, NO boxes, NO bowls with brand, no text anywhere.";
 const PET_POSTS = Object.freeze([
   "a happy {PET} sitting on the LEFT side of a bright, clean living room floor, looking toward the right; the RIGHT half of the image is empty light floor and wall (a product will be placed there later)",
   "a {PET} lying relaxed on the LEFT side of a wooden floor near a window with soft daylight; the RIGHT half is empty floor and plain wall",
@@ -156,9 +156,9 @@ const PET_POSTS = Object.freeze([
   "a {PET} on the LEFT side of a kitchen next to an empty steel food bowl, the RIGHT half is a clean empty floor and cabinet"
 ]);
 const PET_STORIES = Object.freeze([
-  "a happy {PET} in the upper part of the image looking down at an empty clean light floor in the middle, bright home, soft daylight",
-  "a {PET} resting on a sofa in the upper part of the image, a clean empty wooden floor in the middle and bottom",
-  "a bright pet shop with a {PET} in the upper part and an empty clean counter top in the middle of the image"
+  "a happy {PET} sitting on the LEFT side of the image in a bright home, the RIGHT half of the image is an empty clean light floor and plain wall, soft daylight",
+  "a {PET} resting on the LEFT side of a light sofa, the RIGHT half is empty plain wall and clean floor",
+  "a bright pet shop with a {PET} on the LEFT side and an empty clean counter on the RIGHT side"
 ]);
 
 const ADIMAX = Object.freeze({

@@ -283,7 +283,7 @@ test("embalagem real: Qualidy nunca entra e a embalagem cabe entre o título e o
   const post = productPlace(false, { largura: 470, altura: 700 });
   assert.ok(post.top >= 420 && post.top + post.h <= 1120 && post.left + post.w <= 1080);
   const pequena = productPlace(false, { largura: 215, altura: 320 });
-  assert.equal(pequena.h, 640, "foto pequena do catálogo não aumenta mais que 2x");
+  assert.equal(pequena.h, 560, "post: no máximo 560 de altura");
   const story = productPlace(true, { largura: 470, altura: 700 });
-  assert.ok(story.top + story.h <= 1250, "story: a embalagem fica acima do texto");
+  assert.ok(story.top + story.h <= 1250 && story.left > 540, "story: no canto de baixo à direita, acima do texto");
 });

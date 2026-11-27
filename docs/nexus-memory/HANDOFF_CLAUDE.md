@@ -188,3 +188,4 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - `public/catalogo/catalogo.json` + WebP; `packshot.js` escolhe o produto do dia, cola a embalagem (post: direita entre título e botão; story: meio) e não aumenta foto pequena mais que 2x.
 - `client-photo-plans.js`: cenas de pet com {PET} trocado por cão ou gato conforme o produto; legendas de venda (Quatree para lojista; Adimax pelo Eduardo). Os dois entraram em `GEMINI_DAILY_CLIENTS`.
 - Testes: 1080/1080. Próximo: conferir as artes reais; Supreme; repetição das artes da GILTEC (Sheila).
+- 21h10 (mesmo PR): prévia real reprovou o story (cão no meio, coberto pela embalagem). Agora a embalagem é menor e fica à direita (story: canto de baixo à direita, acima do texto; post: encostada à direita) e as cenas de pet põem o bicho à ESQUERDA. A IA escreveu letras na parede: nova pergunta "letras" na conferência de defeitos e regra "parede lisa, sem quadros, placas ou letras".
