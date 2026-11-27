@@ -1,7 +1,8 @@
 # Nexus 2.0 — instruções para agentes de trabalho
 
-Antes de qualquer alteração, leia integralmente os sete arquivos em `docs/nexus-memory/`:
-`PROJECT_STATE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `KNOWN_ISSUES.md`, `TEST_RESULTS.md`, `NEXT_ACTIONS.md`, `CHANGELOG.md`.
+Antes de qualquer alteração, leia **`docs/nexus-memory/RESUMO.md`** (curto, estado atual) e as últimas entradas de `HANDOFF_CLAUDE.md` e `HANDOFF_CHATGPT.md`.
+
+**Memória enxuta (Rodrigo, 27/11/2026):** os arquivos grandes (`PROJECT_STATE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `KNOWN_ISSUES.md`, `TEST_RESULTS.md`, `NEXT_ACTIONS.md`, `CHANGELOG.md`, `TASK_BOARD.md` e a pasta `arquivo/`) somam cerca de 1 MB e gastavam o limite de toda sessão. **Não leia esses arquivos inteiros.** Procure o assunto com grep e abra só o trecho que a tarefa precisa. Ao terminar, atualize o `RESUMO.md` (mantendo curto) e escreva 3 a 6 linhas no fim do seu handoff.
 
 Confira também o commit atual de `main`, o último deploy do GitHub Actions e o estado dos serviços relevantes. Trate registros de produção como fonte para afirmar resultados; documentação e código não são prova de execução.
 
@@ -17,11 +18,11 @@ No início de cada sessão com acesso ao projeto, consultar esta memória; antes
 
 ## Ponte de memória entre ChatGPT e Claude Code (2026-10-19)
 
-Além dos sete arquivos obrigatórios, no início de **cada sessão com acesso ao repositório** leia:
-- `docs/nexus-memory/BRIDGE_PROTOCOL.md`
-- `docs/nexus-memory/TASK_BOARD.md`
+Além do `RESUMO.md`, no início de **cada sessão com acesso ao repositório** leia só as **últimas entradas** de:
 - `docs/nexus-memory/HANDOFF_CHATGPT.md`
 - `docs/nexus-memory/HANDOFF_CLAUDE.md`
+
+`BRIDGE_PROTOCOL.md` e `TASK_BOARD.md` são consulta: abra só a parte que a tarefa precisar.
 
 **Regra fixa para o ChatGPT (2026-10-21):** criar os posts do dia da Flow Arts e enviar ao painel pela pasta `agendamentos/`, esperando a aprovação do Rodrigo. Siga `docs/nexus-memory/REGRA_POSTS_DIARIOS.md`. **Desde 22/10: carrossel, stories, Reels e feed — grade em `docs/nexus-memory/FORMATOS_POSTAGENS.md` (Flow Arts e Quatree Dog). NUNCA repetir imagem entre posts, cartões e stories. Quatree: objetivo é VENDA, toda peça mostra produto (`docs/nexus-memory/QUATREE_DIRETRIZ_VENDAS.md`). GILTEC: um equipamento diferente por peça e carrossel sem cortar imagem larga (`docs/nexus-memory/CAMPANHA_GILTEC.md`).** Todo dia, 1 dos 3 posts usa a mensagem "App de agendar post não cria post" (`docs/nexus-memory/MARKETING_POSICIONAMENTO.md`).
 
