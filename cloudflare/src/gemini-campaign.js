@@ -11,8 +11,8 @@ import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
-import { safeZonePrompt, keepSubjectLeft } from "./photo-zone.js";
-import { visionText } from "./art-frame.js";
+import { safeZonePrompt, keepSubjectLeft, DEFECT_PROMPT } from "./photo-zone.js";
+import { visionText, parseHasText } from "./art-frame.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
@@ -260,7 +260,13 @@ const withTimeout = (promise, ms, code) => {
 export async function cloudflareImage(env, prompt, aspect) {
   if (!env?.AI) throw new Error("workers_ai_unavailable");
   // Foto sempre à esquerda (27/11/2026): a regra vai na frente do pedido e, depois, o Nexus confere o lado.
-  const img = await cloudflareImageRaw(env, safeZonePrompt(aspect) + String(prompt || ""), aspect);
+  const full = safeZonePrompt(aspect) + String(prompt || "");
+  let img = await cloudflareImageRaw(env, full, aspect);
+  // Conferência de defeito (27/11/2026): SIM = gera de novo uma vez. Na dúvida (IA não respondeu), segue.
+  const defect = await visionText(env, img.bytes, DEFECT_PROMPT).catch(() => null);
+  if (defect !== null && parseHasText(defect)) {
+    try { img = { ...(await cloudflareImageRaw(env, full, aspect)), retried: true }; } catch { /* fica a primeira; o cliente aprova antes */ }
+  }
   const fixed = await keepSubjectLeft(env, img.bytes, aspect, visionText);
   return fixed.flipped ? { ...img, bytes: fixed.bytes, mime: fixed.mime || img.mime, flipped: true } : img;
 }

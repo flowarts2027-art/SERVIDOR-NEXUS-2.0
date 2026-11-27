@@ -67,6 +67,8 @@ em vez de só acrescentar texto no fim.
 
 - Foto sempre à esquerda (27/11): POST com a pessoa nos 45% da esquerda; STORY nos 37% de cima (`photo-zone.js`); post com pessoa à direita é espelhado.
 
+- Moldura nova sem painel (27/11): texto direto na foto, botão centralizado embaixo, tarja fininha na cor do cliente com a logo; checagem de defeito da IA.
+
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
 - Conferir 1 arte real com o fundo desfocado do post (o blur do Cloudflare Images não tem teste local).

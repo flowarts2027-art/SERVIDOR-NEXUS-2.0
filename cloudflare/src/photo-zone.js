@@ -11,10 +11,16 @@
 // - STORY: nos 37% de cima da foto.
 import { FEED_PHOTO_SCALE } from "./art-frame.js";
 
-export const PANEL_FEED_START = 0.43;   // da largura da arte
-export const PANEL_STORY_START = 0.404; // da altura da arte
+// 27/11/2026, modelo novo (sem painel; texto direto na foto; botão centralizado; tarja fininha embaixo),
+// medido nas camadas de scripts/social/moldura_daniela.py:
+// - POST: o título começa em 54% da largura (x = 585 de 1080), no alto; o botão fica no centro, logo acima
+//   da tarja (de 1250 a 1350). A pessoa fica nos 45% da esquerda; a parte de baixo é fundo calmo.
+// - STORY: título e botão centralizados embaixo; o texto começa por volta de 66% da altura e a tarja
+//   ocupa de 1776 a 1920. A pessoa fica nos 60% de cima.
+export const PANEL_FEED_START = 0.54;   // da largura da arte (onde começa o título do post)
+export const PANEL_STORY_START = 0.66;  // da altura da arte (onde começa o texto do story)
 export const SAFE_FEED_MAX_X = 0.45;    // da largura da FOTO
-export const SAFE_STORY_MAX_Y = 0.37;   // da altura da FOTO
+export const SAFE_STORY_MAX_Y = 0.6;    // da altura da FOTO
 
 // Onde o painel começa na foto do post (50%).
 export function feedPanelStartInPhoto() {
@@ -24,17 +30,21 @@ export function feedPanelStartInPhoto() {
 // Vai na FRENTE do pedido à IA (o pedido é cortado em 2.000 letras; a regra nunca pode ficar de fora).
 export function safeZonePrompt(aspect) {
   if (aspect === "9:16") {
-    return "COMPOSITION (most important rule, overrides any other position instruction): vertical 9:16 photo. "
-      + `The person and the main subject must be entirely inside the TOP ${Math.round(SAFE_STORY_MAX_Y * 100)}% of the image `
-      + "(head, face, hands and product all in the upper part). The lower part of the image is only calm background "
-      + "(floor, wall, table surface or soft blur) because a text panel covers it. The photo still fills the whole frame. ";
+    return "COMPOSITION (most important rule, overrides any other position instruction): vertical 9:16 photo with ONE single person. "
+      + `The person and the main subject must be entirely inside the TOP ${Math.round(SAFE_STORY_MAX_Y * 100)}% of the image. `
+      + "The bottom 40% of the image is only calm, simple background (floor, table top, wall or soft blur) because text is written there. "
+      + "The photo fills the whole frame. ";
   }
-  return "COMPOSITION (most important rule, overrides any other position instruction): vertical 4:5 photo. "
+  return "COMPOSITION (most important rule, overrides any other position instruction): vertical 4:5 photo with ONE single person. "
     + `The person and the main subject must be entirely inside the LEFT ${Math.round(SAFE_FEED_MAX_X * 100)}% of the image, `
-    + "from top to bottom (face, hands and product all on the left side, the person facing right toward the center). "
-    + "The right half of the image is only calm background (wall, window, soft blur) because a text panel covers it. "
-    + "The photo still fills the whole frame edge to edge. ";
+    + "facing right toward the center. The upper right part of the image is a plain calm wall or window (text is written there), "
+    + "and the bottom 12% is a simple surface. The photo still fills the whole frame edge to edge. ";
 }
+
+// Defeitos que a IA de imagem costuma fazer (27/11/2026: pessoa repetida no story, pernas trocadas na Daniela,
+// emenda no meio da foto). A IA grátis confere; se ela disser SIM, o Nexus gera de novo uma vez.
+export const DEFECT_PROMPT = "Esta foto tem algum defeito de imagem feita por IA? Por exemplo: a mesma pessoa aparecendo duas vezes, "
+  + "pernas, braços ou mãos trocados, a mais ou deformados, corpo torto, ou uma linha ou emenda cortando a foto. Responda só SIM ou NAO.";
 
 export const SIDE_PROMPT = "Olhe a pessoa (ou o objeto) principal desta foto. Ela está mais no lado ESQUERDO, "
   + "no CENTRO ou no lado DIREITO da imagem? Responda só uma palavra: ESQUERDA, CENTRO ou DIREITA.";

@@ -158,3 +158,9 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - Novo `photo-zone.js`: regra de composição na frente de todo pedido ao `cloudflareImage` (post: 45% da esquerda; story: 37% de cima) e conferência do lado pela IA grátis com espelhamento do post se a pessoa sair à direita. `COMMON_RULES` não manda mais centralizar.
 - Testes: 1074/1074 (`photo-zone.test.mjs`).
 - Próximo: liberar a geração automática para os clientes (menos GILTEC) e a biblioteca de embalagens reais da Adimax e da Quatree.
+
+## 27/11/2026 (19h30) — Claude: moldura nova sem painel (aprovada na prévia do Rodrigo)
+- Rodrigo achou o painel largo demais (cobria a foto; no story só aparecia o rosto). Prévia aprovada: texto direto na foto com sombra suave, botão centralizado embaixo, tarja fininha na cor do cliente com a logo (Nexus AI azul clarinho `faixa: #D6ECFF`; Daniela verde-oliva #746E44).
+- `moldura_daniela.py` (camadas de todos os clientes): `feed()`/`story()` novos; logo na tarja (feed centro 1302, story 1850). `composePanel`: foto do post cobre a arte (`FEED_PHOTO_SCALE = 1`).
+- `photo-zone.js`: post com a pessoa nos 45% da esquerda e o alto à direita livre; story com a pessoa nos 60% de cima. Checagem de defeito (pessoa repetida, pernas trocadas, emenda) gera de novo uma vez.
+- Testes: 1075/1075. Próximo: teste real depois do deploy; geração automática para os clientes (menos GILTEC); biblioteca de embalagens Adimax/Quatree.
