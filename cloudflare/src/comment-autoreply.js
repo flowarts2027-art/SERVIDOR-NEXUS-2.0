@@ -281,7 +281,8 @@ export async function validMetaSignature(rawBody, header, secret) {
 }
 
 export function webhookVerifyToken(env) {
-  return String(env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN || "nexus-flowarts-instagram").trim();
+  // Auditoria 27/11/2026: sem senha padrão no código (o repositório é público). Sem o segredo, a verificação falha.
+  return String(env.INSTAGRAM_WEBHOOK_VERIFY_TOKEN || "").trim();
 }
 
 // Extrai comentários do corpo do webhook: [{ igUserId, comment }]
@@ -401,7 +402,8 @@ export async function handleInstagramWebhook(request, env, url, ctx) {
   if (url.pathname !== WEBHOOK_PATH) return null;
   const plain = (text, status = 200) => new Response(text, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
   if (request.method === "GET") {
-    const ok = url.searchParams.get("hub.mode") === "subscribe" && url.searchParams.get("hub.verify_token") === webhookVerifyToken(env);
+    const expected = webhookVerifyToken(env);
+    const ok = Boolean(expected) && url.searchParams.get("hub.mode") === "subscribe" && url.searchParams.get("hub.verify_token") === expected;
     return ok ? plain(String(url.searchParams.get("hub.challenge") || "")) : plain("forbidden", 403);
   }
   if (request.method !== "POST") return plain("method_not_allowed", 405);

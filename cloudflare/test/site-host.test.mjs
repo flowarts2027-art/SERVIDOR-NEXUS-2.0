@@ -20,7 +20,8 @@ test("endereço principal, painel e envios não são redirecionados", () => {
 
 test("o Worker aplica o redirecionamento antes de qualquer rota", () => {
   const src = fs.readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
-  assert.match(src, /async fetch\(request, env, ctx\) \{\s*const url = new URL\(request\.url\);\s*const siteRedirect = canonicalSiteRedirect\(url, request\.method\);/);
+  assert.match(src, /async fetch\(request, env, ctx\) \{\s*return frameGuard\(await this\.routeRequest\(request, env, ctx\)\);/);
+  assert.match(src, /async routeRequest\(request, env, ctx\) \{\s*const url = new URL\(request\.url\);\s*const siteRedirect = canonicalSiteRedirect\(url, request\.method\);/);
 });
 
 test("páginas públicas do site passam pelo Worker (senão o redirecionamento não vale para elas)", () => {

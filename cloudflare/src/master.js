@@ -352,12 +352,7 @@ export async function handleMaster(request, env, url) {
     const username = String(form?.get("username") || "").trim();
     const password = String(form?.get("password") || "");
 
-    if (await masterCredentialsValid(env, username, password)) {
-      await clearLoginFailures(env, request, "login").catch(() => {});
-      const session = await createMasterSession(env);
-      return redirect("/master", { "set-cookie": masterSessionCookie(session.token) });
-    }
-
+    // Auditoria 27/11/2026: a trava vem antes de conferir a senha.
     const rate = await loginRateLimitStatus(env, request, "login").catch(() => ({
       allowed: true,
       retryAfter: 0,
@@ -375,6 +370,12 @@ export async function handleMaster(request, env, url) {
       });
     }
 
+    if (await masterCredentialsValid(env, username, password)) {
+      await clearLoginFailures(env, request, "login").catch(() => {});
+      const session = await createMasterSession(env);
+      return redirect("/master", { "set-cookie": masterSessionCookie(session.token) });
+    }
+
     await recordLoginFailure(env, request, "login");
     return new Response(masterLoginPage(true), {
       status: 401,
@@ -387,6 +388,16 @@ export async function handleMaster(request, env, url) {
     const username = String(body?.username || "").trim();
     const password = String(body?.password || "");
 
+    // Auditoria 27/11/2026: a trava vem antes de conferir a senha (com o D1 fora do ar, segue liberado).
+    const rate = await loginRateLimitStatus(env, request, "login").catch(() => ({ allowed: true, retryAfter: 0 }));
+    if (!rate.allowed) {
+      return json(
+        { ok: false, error: "too_many_login_attempts", retryAfter: rate.retryAfter },
+        429,
+        { "retry-after": String(rate.retryAfter) }
+      );
+    }
+
     if (await masterCredentialsValid(env, username, password)) {
       await clearLoginFailures(env, request, "login").catch(() => {});
       const session = await createMasterSession(env);
@@ -396,15 +407,6 @@ export async function handleMaster(request, env, url) {
         expiresAt: session.expiresAt,
         consolePath: "/api/master/console"
       }, 200);
-    }
-
-    const rate = await loginRateLimitStatus(env, request, "login");
-    if (!rate.allowed) {
-      return json(
-        { ok: false, error: "too_many_login_attempts", retryAfter: rate.retryAfter },
-        429,
-        { "retry-after": String(rate.retryAfter) }
-      );
     }
 
     await recordLoginFailure(env, request, "login").catch(() => {});
@@ -432,12 +434,7 @@ export async function handleMaster(request, env, url) {
     const username = String(form?.get("username") || "").trim();
     const password = String(form?.get("password") || "");
 
-    if (await masterCredentialsValid(env, username, password)) {
-      await clearLoginFailures(env, request, "login").catch(() => {});
-      const session = await createMasterSession(env);
-      return redirect("/api/master/console", { "set-cookie": masterSessionCookie(session.token) });
-    }
-
+    // Auditoria 27/11/2026: a trava vem antes de conferir a senha.
     const rate = await loginRateLimitStatus(env, request, "login").catch(() => ({
       allowed: true,
       retryAfter: 0,
@@ -454,6 +451,12 @@ export async function handleMaster(request, env, url) {
           "retry-after": String(rate.retryAfter)
         }
       });
+    }
+
+    if (await masterCredentialsValid(env, username, password)) {
+      await clearLoginFailures(env, request, "login").catch(() => {});
+      const session = await createMasterSession(env);
+      return redirect("/api/master/console", { "set-cookie": masterSessionCookie(session.token) });
     }
 
     await recordLoginFailure(env, request, "login").catch(() => {});

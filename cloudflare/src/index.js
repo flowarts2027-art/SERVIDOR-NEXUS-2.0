@@ -1,4 +1,5 @@
 import { SHOWCASE_CLIENT } from "./showcase-store.js";
+import { frameGuard } from "./frame-guard.js";
 import { startMaestroCampaign, loadMaestroCampaign, claimPersistedMaestroBatch, completePersistedMaestroImage, recoverPersistedMaestroCampaign } from "./maestro-store.js";
 import { maestroProgress } from "./maestro-continuity.js";
 import { handleLibrary, runLibraryAutoSchedule } from "./art-library.js";
@@ -110,6 +111,12 @@ function authorized(request, env) {
   const expected = String(env.NEXUS_SECRET_KEY || "");
   const provided = String(request.headers.get("authorization") || "");
   return Boolean(expected && provided === `Bearer ${expected}`);
+}
+
+// Auditoria 27/11/2026: chave interna (Bearer) ou login do Master.
+async function internalOrMaster(request, env) {
+  if (authorized(request, env)) return true;
+  return Boolean(await resolveMasterSession(env, request).catch(() => null));
 }
 
 function requireAuth(request, env) {
@@ -701,6 +708,10 @@ export default {
   },
 
   async fetch(request, env, ctx) {
+    return frameGuard(await this.routeRequest(request, env, ctx));
+  },
+
+  async routeRequest(request, env, ctx) {
     const url = new URL(request.url);
     const siteRedirect = canonicalSiteRedirect(url, request.method);
     if (siteRedirect) return Response.redirect(siteRedirect, 301);
@@ -765,6 +776,7 @@ export default {
     }
 
     if (url.pathname === "/api/emergency-publisher-status" && request.method === "GET") {
+      if (!(await internalOrMaster(request, env))) return json({ error: "unauthorized" }, 401);
       return json(await emergencyPublisherStatus(env, new Date()));
     }
 
@@ -1091,8 +1103,18 @@ export default {
         return json({ ok: false, error: "username_and_password_required" }, 400);
       }
 
-      // Always allow a valid credential to recover from a previous lockout.
-      // Rate limiting is applied only after both Master and client credentials fail.
+      // Auditoria 27/11/2026: a trava vem ANTES de conferir a senha. Antes, quem tentava adivinhar
+      // podia continuar tentando e entrava se acertasse, mesmo bloqueado. A trava é por endereço (IP).
+      // Se o D1 estiver fora do ar (limite diário), o login do Master continua funcionando.
+      const lock = await loginRateLimitStatus(env, request, "login").catch(() => ({ allowed: true, retryAfter: 0 }));
+      if (!lock.allowed) {
+        return json(
+          { ok: false, error: "too_many_login_attempts", retryAfter: lock.retryAfter },
+          429,
+          { "retry-after": String(lock.retryAfter) }
+        );
+      }
+
       if (await masterCredentialsValid(env, username, password)) {
         await clearLoginFailures(env, request, "login").catch(() => {});
         const session = await createMasterSession(env);
@@ -1185,6 +1207,8 @@ export default {
     }
 
     if (url.pathname === "/api/instagram-publishing-health" && request.method === "GET") {
+      // Consulta a Meta para cada cliente: sem login, qualquer um podia gastar o limite do Instagram.
+      if (!(await internalOrMaster(request, env))) return json({ error: "unauthorized" }, 401);
       return json(await instagramPublishingHealth(env), 200);
     }
 

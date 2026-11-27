@@ -37,6 +37,10 @@ jobs:
         with:
           node-version: "22"
 
+      # Auditoria 27/11/2026: os testes do Worker rodam de novo antes de publicar. Teste vermelho = não publica.
+      - name: Worker tests
+        run: node --test cloudflare/test/*.test.mjs
+
       - name: Validate front-end and render source
         run: |
           node --check public/client-lite.js

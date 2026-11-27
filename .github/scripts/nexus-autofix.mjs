@@ -33,7 +33,7 @@ async function gh(path,init={}){
   return body?JSON.parse(body):{};
 }
 async function readHealth(endpoint){
-  const r=await fetch(base+endpoint,{signal:AbortSignal.timeout(24000),headers:{"user-agent":"Nexus-AutoFix-Sentinel/1.0"}});
+  const r=await fetch(base+endpoint,{signal:AbortSignal.timeout(24000),headers:{"user-agent":"Nexus-AutoFix-Sentinel/1.0",...(process.env.NEXUS_SECRET_KEY?{authorization:"Bearer "+process.env.NEXUS_SECRET_KEY}:{})}});
   if(!r.ok)throw Error("worker_http_"+r.status);
   return r.json();
 }
