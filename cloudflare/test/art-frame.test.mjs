@@ -193,3 +193,30 @@ test("carimbo: nenhum canto livre, não cola a logo (nunca cobre texto)", async 
   await assert.rejects(stampLogo(env, new Uint8Array([1]), "x", { position: "top-right" }), /no_free_corner/);
   assert.ok(!log.some(n => n.steps.some(s => s[0] === "draw")));
 });
+
+// 27/11/2026: dois posts da Daniela saíram sem moldura e sem logo porque a IA grátis falhou.
+test("carimbo: IA fora do ar, a logo vai no canto padrão (nunca sai arte sem logo)", async () => {
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 1440, height: 1080 });
+  env.AI = { run: async () => { throw new Error("4006: daily free allocation exceeded"); } };
+  await stampLogo(env, new Uint8Array([1]), "brand/daniela/logo.png", { position: "bottom" });
+  const final = log.find(n => n.steps.some(s => s[0] === "draw"));
+  assert.ok(final, "a logo foi colada");
+  const pos = final.steps.find(s => s[0] === "draw")[3];
+  assert.equal(pos.left, Math.round((1080 - 432) / 2), "Daniela: embaixo no meio, o lugar padrão dela");
+});
+
+test("carimbo: canto ocupado de verdade continua pulando; canto desconhecido vem depois", async () => {
+  const { env, log } = logoEnv({ width: 1080, height: 1350 }, { width: 200, height: 200 });
+  let n = 0;
+  env.AI = { run: async () => { if (n++ === 0) return { response: "SIM" }; throw new Error("timeout"); } };
+  await stampLogo(env, new Uint8Array([1]), "x", { position: "top-right" });
+  const final = log.find(x => x.steps.some(s => s[0] === "draw"));
+  assert.deepEqual(final.steps.find(s => s[0] === "draw")[3], { left: 54, top: 54 }, "pulou o canto com texto");
+});
+
+test("checagem de texto: IA fora do ar devolve null (não 'já tem texto')", async () => {
+  const { imageTextAnswer, TEXT_ART_CLIENTS_RE } = frames;
+  assert.equal(await imageTextAnswer({}, new Uint8Array([1])), null);
+  for (const id of ["giltec", "giltec-locacoes", "giltec-neto", "quatree-dog"]) assert.ok(TEXT_ART_CLIENTS_RE.test(id), id);
+  for (const id of ["daniela-martins", "maskara-assessoria", "primeiro-teste", "nexus-ai", "adimax-eduardo-soares"]) assert.ok(!TEXT_ART_CLIENTS_RE.test(id), id);
+});

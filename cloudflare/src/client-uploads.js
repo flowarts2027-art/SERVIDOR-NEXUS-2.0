@@ -8,7 +8,7 @@ import { brandClientId } from "./clients.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { toInstagramJpeg } from "./manual-carousel.js";
 import { VISUAL_REVIEW_POLICY } from "./visual-review.js";
-import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor, hasPanel, pickPanel, composePanel, panelThemeFor, nextPanelCounter } from "./art-frame.js";
+import { loadFrames, hasFrames, pickFrame, composeFramed, imageHasText, imageTextAnswer, TEXT_ART_CLIENTS_RE, TEXT_CHECK_VERSION, NEXUS_WRITES_TEXT_ON_ARRIVAL, stampLogo, logoPositionFor, hasPanel, pickPanel, composePanel, panelThemeFor, nextPanelCounter } from "./art-frame.js";
 import { ART_MESSAGES, artShape, assertArtFits, assertVideoFits, keepArt, readImageSize } from "./art-format.js";
 
 export const UPLOAD_TYPES = Object.freeze(["feed", "carousel", "reel", "story"]);
@@ -85,7 +85,13 @@ export async function createClientUpload(env, client, form, now = new Date(), op
     let body = null;
     if (canPanel) {
       const bytes = new Uint8Array(await file.arrayBuffer());
-      if (!cleanPhoto && await imageHasText(env, bytes)) {
+      // null = a IA grátis não respondeu. Foto pura (todos menos GILTEC e Quatree) segue para a moldura.
+      let hasText = cleanPhoto ? false : await imageTextAnswer(env, bytes);
+      if (hasText === null) {
+        textReport.push("ia-indisponivel");
+        hasText = TEXT_ART_CLIENTS_RE.test(String(frameClientId || clientId));
+      }
+      if (hasText) {
         textReport.push("ja-tinha-texto");
       } else {
         const story = size.height > 1500;
