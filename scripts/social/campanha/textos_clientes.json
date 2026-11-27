@@ -1,5 +1,5 @@
 {
-  "_obs": "Moldura de painel de cada cliente (pedido do Rodrigo, 20/11/2026): toda foto SEM texto que sobe no painel ganha o painel na cor do cliente, estes textos e a logo do Master. Daniela Martins tem arquivo próprio (textos_daniela.json). Luciana Carvalho, Sabor do Campo, Café Brisa e Meta Review ficam de fora até ter briefing. Mudou aqui: o deploy refaz as molduras sozinho. Nunca prometer resultado garantido.",
+  "_obs": "Moldura de painel de cada cliente (pedido do Rodrigo, 20/11/2026): toda foto SEM texto que sobe no painel ganha o painel na cor do cliente, estes textos e a logo do Master. Daniela Martins tem arquivo próprio (textos_daniela.json). Luciana Carvalho, Café Brisa e Meta Review ficam de fora até ter briefing (Sabor do Campo entrou em 27/11/2026). Mudou aqui: o deploy refaz as molduras sozinho. Nunca prometer resultado garantido.",
   "primeiro-teste": {
     "cores": {
       "painel": "#0d1b2a",
@@ -834,5 +834,86 @@
   },
   "giltec-locacoes": {
     "igual": "giltec"
+  },
+  "sabor-do-campo": {
+    "cores": {
+      "painel": "#2e7d32",
+      "destaque": "#f5b400"
+    },
+    "feed": [
+      {
+        "titulo": [
+          "Empada artesanal",
+          "feita com carinho"
+        ],
+        "topicos": [
+          "Massa que desmancha",
+          "Recheio caprichado"
+        ],
+        "caixa": "Encomende pelo WhatsApp",
+        "frase": "Frango, carne seca ou camarão."
+      },
+      {
+        "titulo": [
+          "Qual é o seu",
+          "sabor favorito?"
+        ],
+        "topicos": [
+          "Frango",
+          "Carne seca",
+          "Camarão"
+        ],
+        "caixa": "Encomende a sua",
+        "frase": "Frango, carne seca ou camarão: qual é o seu?"
+      },
+      {
+        "titulo": [
+          "Festa com empada",
+          "é festa garantida"
+        ],
+        "topicos": [
+          "Encomendas para festas",
+          "Feitas na hora certa"
+        ],
+        "caixa": "Faça sua encomenda",
+        "frase": "Encomende para o seu evento."
+      },
+      {
+        "titulo": [
+          "Fome de empada",
+          "quentinha?"
+        ],
+        "topicos": [
+          "Feita na hora",
+          "Massa leve e dourada"
+        ],
+        "caixa": "Peça pelo WhatsApp",
+        "frase": "Empadas artesanais da Elaine."
+      }
+    ],
+    "story": [
+      {
+        "titulo": [
+          "Empada artesanal",
+          "do Sabor do Campo"
+        ],
+        "topicos": [
+          "Frango",
+          "Carne seca",
+          "Camarão"
+        ],
+        "caixa": "Encomende pelo WhatsApp"
+      },
+      {
+        "titulo": [
+          "Encomendas",
+          "abertas"
+        ],
+        "topicos": [
+          "Para festas e lanches"
+        ],
+        "caixa": "Peça a sua"
+      }
+    ]
   }
 }

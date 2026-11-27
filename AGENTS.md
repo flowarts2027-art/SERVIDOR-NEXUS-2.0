@@ -53,7 +53,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Foto sempre à esquerda (Rodrigo, 27/11/2026):** toda foto gerada segue as medidas das molduras (iguais para todos os clientes): no POST a pessoa fica nos 45% da esquerda da foto (o painel começa na metade da foto); no STORY, nos 37% de cima (o painel começa em 40,4%). A regra vai na frente de todo pedido à IA (`cloudflare/src/photo-zone.js`) e, depois de gerar, o Nexus confere o lado e espelha a foto do post se a pessoa sair à direita.
 
-**A moldura da Daniela vale agora para todos os clientes com briefing.** A foto sobe pura (Gemini, sem texto e sem logo) e o Nexus monta a arte: painel na cor do cliente, título, tópicos, caixa de destaque, frase, botão COMENTE QUERO (story: MANDE QUERO NO DIRECT) e a logo do Master. Cores e textos revisados em `scripts/social/campanha/textos_clientes.json` (feitos no deploy por `scripts/social/moldura_clientes.py`). Fora por falta de briefing: Luciana Carvalho, Sabor do Campo, Café Brisa e Meta Review. Arte que já chega com texto (ex.: GILTEC) só recebe a logo.
+**A moldura da Daniela vale agora para todos os clientes com briefing.** A foto sobe pura (Gemini, sem texto e sem logo) e o Nexus monta a arte: painel na cor do cliente, título, tópicos, caixa de destaque, frase, botão COMENTE QUERO (story: MANDE QUERO NO DIRECT) e a logo do Master. Cores e textos revisados em `scripts/social/campanha/textos_clientes.json` (feitos no deploy por `scripts/social/moldura_clientes.py`). Fora por falta de briefing: Luciana Carvalho, Café Brisa e Meta Review (Sabor do Campo entrou em 27/11/2026). Arte que já chega com texto (ex.: GILTEC) só recebe a logo.
 
 ## Imagens da Maskara Assessoria (Rodrigo, 18/11/2026)
 
@@ -77,7 +77,7 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins, Quatree Dog, Adimax e GILTEC não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
 
-**Fotos automáticas grátis (Rodrigo, 27/11/2026):** Flow Arts, Nexus AI, Daniela e Maskara recebem todo dia 2 posts + 2 stories com foto da IA grátis do Cloudflare (`cloudflare/src/client-photo-plans.js`, lista `GEMINI_DAILY_CLIENTS`). Das 21h às 23h o Nexus faz as artes do dia seguinte; tudo sobe com `fotoLimpa=1` (moldura do painel) e ESPERA APROVAÇÃO. Cenas seguras (uma pessoa, sem pernas cruzadas, close ou meio corpo). A Daniela continua travada nos outros caminhos (Creator, Vigia, "Criar com agente"), que podem publicar sem aprovação. GILTEC fica de fora; Adimax e Quatree só entram com as embalagens reais dos catálogos.
+**Fotos automáticas grátis (Rodrigo, 27/11/2026):** Flow Arts, Nexus AI, Daniela, Maskara e Sabor do Campo recebem todo dia 2 posts + 2 stories com foto da IA grátis do Cloudflare (`cloudflare/src/client-photo-plans.js`, lista `GEMINI_DAILY_CLIENTS`). Das 21h às 23h o Nexus faz as artes do dia seguinte; tudo sobe com `fotoLimpa=1` (moldura do painel) e ESPERA APROVAÇÃO. Cenas seguras (uma pessoa, sem pernas cruzadas, close ou meio corpo). A Daniela continua travada nos outros caminhos (Creator, Vigia, "Criar com agente"), que podem publicar sem aprovação. GILTEC fica de fora; Adimax e Quatree só entram com as embalagens reais dos catálogos.
 
 ## Marca do cliente (Rodrigo, 05/11/2026)
 
