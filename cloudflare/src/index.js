@@ -914,6 +914,21 @@ export default {
       }
     }
 
+    // Conferência de defeito de uma foto (27/11/2026): o Rodrigo testa se a IA grátis pega pernas trocadas,
+    // pessoa repetida, mãos deformadas e emenda. Só com login do Master. Não salva nada.
+    if (url.pathname === "/api/master/conferir-foto" && request.method === "POST") {
+      const master = await resolveMasterSession(env, request).catch(() => null);
+      if (!master) return json({ error: "unauthorized" }, 401);
+      const form = await request.formData().catch(() => null);
+      const file = form?.get("image");
+      if (!file || typeof file.arrayBuffer !== "function") return json({ ok: false, error: "image_missing" }, 400);
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      if (!bytes.byteLength || bytes.byteLength > 12 * 1024 * 1024) return json({ ok: false, error: "image_invalid" }, 400);
+      const { findDefects } = await import("./photo-zone.js");
+      const { visionText, parseHasText } = await import("./art-frame.js");
+      return json({ ok: true, ...(await findDefects(env, bytes, visionText, parseHasText)) });
+    }
+
     // Gerar a campanha do dia (botão do Master / teste). Roda em segundo plano e grava o andamento;
     // GET na mesma rota mostra o resultado. POST .../gemini-teste gera 1 imagem e mostra o tempo e o erro.
     if (url.pathname === "/api/master/gemini-campanha" || url.pathname === "/api/master/gemini-teste") {

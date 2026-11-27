@@ -75,3 +75,23 @@ export async function keepSubjectLeft(env, bytes, aspect, ask) {
     return { bytes, flipped: false, side };
   }
 }
+
+// Conferência por partes (27/11/2026): pergunta simples acerta mais que pergunta geral.
+// Cada resposta SIM é um defeito. null = a IA não respondeu (não conta como defeito).
+export const DEFECT_QUESTIONS = Object.freeze([
+  { id: "pessoa-repetida", q: "Nesta foto, a MESMA pessoa aparece duas vezes (dois rostos iguais ou duas cópias do mesmo corpo)? Responda só SIM ou NAO." },
+  { id: "pernas", q: "Olhe só as PERNAS e os PÉS. Alguma perna está trocada, sobrando, faltando, torta, dobrada do jeito errado ou saindo do lugar errado do corpo? Responda só SIM ou NAO." },
+  { id: "maos", q: "Olhe só as MÃOS e os DEDOS. Alguma mão está deformada, com dedos a mais, a menos ou grudados? Responda só SIM ou NAO." },
+  { id: "emenda", q: "Existe uma linha reta ou emenda dividindo a foto em duas partes que não combinam (como duas fotos coladas)? Responda só SIM ou NAO." }
+]);
+
+export async function findDefects(env, bytes, ask, parse) {
+  const out = { defeitos: [], respostas: {} };
+  for (const { id, q } of DEFECT_QUESTIONS) {
+    let raw = null;
+    try { raw = await ask(env, bytes, q); } catch { raw = null; }
+    out.respostas[id] = raw === null ? null : String(raw).trim().slice(0, 12);
+    if (raw !== null && parse(raw)) out.defeitos.push(id);
+  }
+  return out;
+}

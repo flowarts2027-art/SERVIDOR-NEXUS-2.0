@@ -164,3 +164,8 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - `moldura_daniela.py` (camadas de todos os clientes): `feed()`/`story()` novos; logo na tarja (feed centro 1302, story 1850). `composePanel`: foto do post cobre a arte (`FEED_PHOTO_SCALE = 1`).
 - `photo-zone.js`: post com a pessoa nos 45% da esquerda e o alto à direita livre; story com a pessoa nos 60% de cima. Checagem de defeito (pessoa repetida, pernas trocadas, emenda) gera de novo uma vez.
 - Testes: 1075/1075. Próximo: teste real depois do deploy; geração automática para os clientes (menos GILTEC); biblioteca de embalagens Adimax/Quatree.
+
+## 27/11/2026 (19h45) — Claude: conferência de defeitos por partes
+- Pedido do Rodrigo: fiscalizar erros da IA (ex.: pernas trocadas da Daniela) e refazer. `photo-zone.js`: 4 perguntas simples (pessoa repetida, pernas, mãos, emenda); `cloudflareImage` gera de novo até 2 vezes e fica com a de menos defeitos (`defeitos` no retorno). A conferência sai da cota das imagens (120 neurônios).
+- Rota nova só do Master: `POST /api/master/conferir-foto` (campo `image`), não salva nada; para testar se a IA pega os defeitos.
+- Testes: 1077/1077. Próximo: passar as 2 fotos da Daniela com pernas trocadas pela rota e ver se a IA acerta.

@@ -11,7 +11,7 @@ import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
 import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
-import { safeZonePrompt, keepSubjectLeft, DEFECT_PROMPT } from "./photo-zone.js";
+import { safeZonePrompt, keepSubjectLeft, findDefects } from "./photo-zone.js";
 import { visionText, parseHasText } from "./art-frame.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
@@ -262,11 +262,21 @@ export async function cloudflareImage(env, prompt, aspect) {
   // Foto sempre à esquerda (27/11/2026): a regra vai na frente do pedido e, depois, o Nexus confere o lado.
   const full = safeZonePrompt(aspect) + String(prompt || "");
   let img = await cloudflareImageRaw(env, full, aspect);
-  // Conferência de defeito (27/11/2026): SIM = gera de novo uma vez. Na dúvida (IA não respondeu), segue.
-  const defect = await visionText(env, img.bytes, DEFECT_PROMPT).catch(() => null);
-  if (defect !== null && parseHasText(defect)) {
-    try { img = { ...(await cloudflareImageRaw(env, full, aspect)), retried: true }; } catch { /* fica a primeira; o cliente aprova antes */ }
+  // Conferência de defeito por partes (27/11/2026): achou defeito, gera de novo (até 2 vezes).
+  // Se as 3 saírem com defeito, fica a com menos defeitos; o cliente ainda aprova antes de sair.
+  const conferir = async bytes => {
+    // A conferência (4 perguntas, ~30 neurônios cada) também sai da cota das imagens. Sem cota, não confere.
+    try { await reserveImageNeurons(env, 120); } catch { return { defeitos: [], respostas: {}, semCota: true }; }
+    return findDefects(env, bytes, visionText, parseHasText);
+  };
+  let check = await conferir(img.bytes);
+  let best = { img, check };
+  for (let tentativa = 1; check.defeitos.length && tentativa <= 2; tentativa++) {
+    try { img = { ...(await cloudflareImageRaw(env, full, aspect)), retried: tentativa }; } catch { break; }
+    check = await conferir(img.bytes);
+    if (check.defeitos.length < best.check.defeitos.length) best = { img, check };
   }
+  img = { ...best.img, defeitos: best.check.defeitos };
   const fixed = await keepSubjectLeft(env, img.bytes, aspect, visionText);
   return fixed.flipped ? { ...img, bytes: fixed.bytes, mime: fixed.mime || img.mime, flipped: true } : img;
 }
