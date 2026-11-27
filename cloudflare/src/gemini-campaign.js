@@ -10,6 +10,7 @@ import { freeChat, providerOrder } from "./free-llm.js";
 import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
+import { PHOTO_CAMPAIGNS } from "./client-photo-plans.js";
 import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
 import { safeZonePrompt, keepSubjectLeft, findDefects } from "./photo-zone.js";
 import { visionText, parseHasText } from "./art-frame.js";
@@ -167,7 +168,9 @@ const FLOWARTS = Object.freeze({
     + "Termine com 4 ou 5 hashtags (#FlowArtsMarketing #MarketingDigital #PequenosNegocios ...). Sem preço, sem nome de concorrente, sem número ou depoimento inventado, sem prometer vendas."
 });
 
-export const GEMINI_CAMPAIGNS = Object.freeze({ giltec: Object.freeze({ ...GILTEC, plan: giltecPlan }), "primeiro-teste": FLOWARTS });
+// 27/11/2026: Flow Arts, Nexus AI, Daniela e Maskara usam o plano novo (2 posts + 2 stories, foto pura e moldura do painel).
+export const GEMINI_CAMPAIGNS = Object.freeze({ giltec: Object.freeze({ ...GILTEC, plan: giltecPlan }), ...PHOTO_CAMPAIGNS });
+export const LEGACY_FLOWARTS = FLOWARTS;
 
 export function geminiDailyClients(env) {
   return String(env?.GEMINI_DAILY_CLIENTS || "").split(/[\s,]+/).map(s => s.trim()).filter(id => id && GEMINI_CAMPAIGNS[id]);
@@ -446,7 +449,13 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
   if (!GEMINI_CAMPAIGNS[clientId]) throw new Error("gemini_client_not_configured");
   // 15/11/2026: campanha com foto de IA só para quem tem "Gerar imagem por IA sozinho" ligado no Master.
   const campaignClient = deps.client || await (await import("./clients.js")).getClient(env, clientId).catch(() => null);
-  if (!usesGeneratedImage(campaignClient)) throw new Error(GENERATION_BLOCKED);
+  // 27/11/2026: clientes do plano novo (moldura do painel) entram pela lista GEMINI_DAILY_CLIENTS, sem ligar
+  // o "Gerar imagem por IA sozinho" (que também ligaria o Creator). A lista de bloqueio continua valendo.
+  const cfgNovo = GEMINI_CAMPAIGNS[clientId];
+  // A lista PHOTO_CAMPAIGNS é a liberação explícita (Daniela incluída). Os outros caminhos (Creator, Vigia,
+  // "Criar com agente") continuam travados para ela pela no-generation.js, porque podem publicar sem aprovação.
+  const liberado = cfgNovo?.panel === true || usesGeneratedImage(campaignClient);
+  if (!liberado) throw new Error(GENERATION_BLOCKED);
   const plan = dailyPlan(clientId, date);
   const stateKey = date;
   const state = await readState(env, "gemini-daily", stateKey, clientId);
@@ -481,8 +490,14 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
         const card = piece.cards[i];
         const img = deps.image ? await deps.image(env, card.prompt, card.aspect) : await generateImage(env, card.prompt, card.aspect, fetcher);
         await addSpend(env, month, cost);
-        const jpg = await compose(env, img.bytes, clientId, card.aspect);
-        files.push(new File([jpg], `${clientId}-${date}-${piece.key}-${i + 1}.jpg`, { type: "image/jpeg" }));
+        if (cfgNovo?.panel === true && !deps.compose) {
+          // Foto pura: o painel do cliente monta a moldura e cola a logo (fotoLimpa=1).
+          const ext = String(img.mime || "").includes("png") ? "png" : "jpg";
+          files.push(new File([img.bytes], `${clientId}-${date}-${piece.key}-${i + 1}.${ext}`, { type: img.mime || "image/jpeg" }));
+        } else {
+          const jpg = await compose(env, img.bytes, clientId, card.aspect);
+          files.push(new File([jpg], `${clientId}-${date}-${piece.key}-${i + 1}.jpg`, { type: "image/jpeg" }));
+        }
       }
       const form = new FormData();
       form.set("clientId", clientId);
@@ -491,6 +506,7 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
       form.set("date", date);
       form.set("time", piece.time);
       form.set("noDuplicate", "1");
+      if (cfgNovo?.panel === true) form.set("fotoLimpa", "1");
       if (piece.type !== "story") form.set("caption", String(captions[piece.key] || ""));
       for (const f of files) form.append("images", f, f.name);
       try {
@@ -522,8 +538,13 @@ export async function runGeminiDaily(env, at = new Date(), deps = {}) {
   const clients = geminiDailyClients(env);
   const ready = imageProvider(env) === "cloudflare" || String(env?.GEMINI_API_KEY || "").trim();
   if (!clients.length || !ready) return { ran: false, reason: "desligado" };
-  const { date, hour } = brasiliaParts(at);
-  if (hour < 6 || hour >= 8) return { ran: false, reason: "fora_do_horario" };
+  const parts = brasiliaParts(at);
+  // 27/11/2026: a cota grátis zera às 21h de Brasília. Das 21h às 23h o Nexus faz as artes do DIA SEGUINTE
+  // (dá tempo de aprovar); das 6h às 8h completa o que faltou para hoje.
+  let date = parts.date;
+  const hour = parts.hour;
+  if (hour >= 21) date = new Date(Date.parse(parts.date + "T12:00:00Z") + DAY_MS).toISOString().slice(0, 10);
+  else if (hour < 6 || hour >= 8) return { ran: false, reason: "fora_do_horario" };
   const results = [];
   for (const clientId of clients) {
     const state = await readState(env, "gemini-daily", date, clientId);

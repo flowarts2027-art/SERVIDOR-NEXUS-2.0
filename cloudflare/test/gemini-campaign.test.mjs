@@ -148,21 +148,29 @@ test("cron: só entre 6h e 8h de Brasília, desligado sem chave ou sem cliente",
   assert.equal(n, 6, "não repete o dia");
 });
 
-test("Flow Arts: tema da agência, sem equipamento da GILTEC, carrossel de 5 e símbolo embaixo", () => {
-  for (let i = 0; i < 6; i++) {
-    const date = new Date(Date.UTC(2026, 9, 29 + i)).toISOString().slice(0, 10);
-    const plan = dailyPlan("primeiro-teste", date);
-    assert.deepEqual(plan.map(p => p.type), ["carousel", "post", "post", "story", "story", "story"]);
-    assert.equal(plan[0].cards.length, 5);
-    const all = plan.flatMap(p => p.cards);
-    assert.equal(new Set(all.map(c => c.prompt)).size, all.length, "nenhuma cena repetida");
-    for (const c of all) {
-      assert.doesNotMatch(c.prompt, /compactor|concrete mixer|jackhammer|generator|hard hat/i);
-      assert.match(c.prompt, /no blue tint/);
-      assert.ok(c.topic);
+test("plano novo (27/11): 2 posts + 2 stories, cenas seguras, sem equipamento da GILTEC nem texto", () => {
+  for (const id of ["primeiro-teste", "nexus-ai", "daniela-martins", "maskara-assessoria"]) {
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(Date.UTC(2026, 9, 29 + i)).toISOString().slice(0, 10);
+      const plan = dailyPlan(id, date);
+      assert.deepEqual(plan.map(p => p.type), ["post", "story", "post", "story"], id);
+      const all = plan.flatMap(p => p.cards);
+      assert.equal(new Set(all.map(c => c.prompt)).size, all.length, id + ": nenhuma cena repetida no dia");
+      for (const c of all) {
+        assert.doesNotMatch(c.prompt, /compactor|concrete mixer|jackhammer|hard hat/i);
+        assert.match(c.prompt, /No crossed legs/);
+        assert.match(c.prompt, /NO TEXT anywhere/);
+        assert.ok(c.topic);
+      }
     }
   }
-  assert.equal(CLIENT_LOGOS["primeiro-teste"].position, "bottom-center");
+  // Daniela: epilação, sem pernas cruzadas; Maskara: arma parada, nunca na mão.
+  const dani = dailyPlan("daniela-martins", "2026-11-28").flatMap(p => p.cards).map(c => c.prompt).join(" ");
+  assert.match(dani, /waxing|epilation/i);
+  const mask = dailyPlan("maskara-assessoria", "2026-11-28").flatMap(p => p.cards).map(c => c.prompt).join(" ");
+  assert.match(mask, /nobody holds, aims or points a weapon/);
+  assert.equal(dailyPlan("quatree-dog", "2026-11-28").length, 0, "Quatree só entra com as embalagens reais");
+  assert.equal(dailyPlan("adimax-eduardo-soares", "2026-11-28").length, 0);
 });
 
 function fakeAI(log = [], { kleinFails = false } = {}) {
@@ -170,7 +178,8 @@ function fakeAI(log = [], { kleinFails = false } = {}) {
     log.push({ model, input });
     if (model.includes("flux-2-klein")) { if (kleinFails) throw new Error("boom"); return { image: PNG }; }
     if (model.includes("flux-1-schnell")) return { image: PNG };
-    return { response: JSON.stringify({ "0900": "Carrossel. Comente QUERO.", "1200": "Post. Comente QUERO.", "1900": "Pergunta? Comente QUERO." }) };
+    if (Array.isArray(input?.messages) && Array.isArray(input.messages[0]?.content)) return { response: "NAO" };
+    return { response: JSON.stringify({ "0900": "Post da manhã. Comente QUERO.", "1800": "Post da tarde. Comente QUERO.", "1200": "Post. Comente QUERO.", "1900": "Pergunta? Comente QUERO." }) };
   } };
 }
 
@@ -204,11 +213,28 @@ test("Cloudflare grátis: roda sem chave do Google, sem custo e com legendas gr�
   const forms = [];
   const r = await runGeminiDaily(env, new Date("2026-10-29T09:10:00Z"), { client: LIBERADO, compose, githubCaptions: async () => ({}), upload: async (e, f) => { forms.push(f); } });
   assert.equal(r.ran, true);
-  assert.equal(forms.length, 6);
+  assert.equal(forms.length, 6, "GILTEC (plano antigo, só ligado se estiver na lista)");
   assert.match(forms[0].get("caption"), /QUERO/);
+  assert.ok(forms.every(f => f.get("fotoLimpa") !== "1"), "GILTEC: arte com logo, sem moldura do painel");
+  const env2 = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI(), GEMINI_DAILY_CLIENTS: "daniela-martins" });
+  const forms2 = [];
+  await runGeminiDaily(env2, new Date("2026-10-29T09:10:00Z"), { client: { id: "daniela-martins", config: {} }, githubCaptions: async () => ({}), upload: async (e, f) => { forms2.push(f); } });
+  assert.equal(forms2.length, 4, "Daniela: 2 posts + 2 stories, mesmo sem a opção do Master");
+  assert.ok(forms2.every(f => f.get("fotoLimpa") === "1" && f.get("approval") === "cliente"), "foto pura e esperando aprovação");
   assert.equal(await monthSpend(env, "2026-10"), 0);
   const caps = await cloudflareCaptions({ AI: fakeAI() }, "primeiro-teste", dailyPlan("primeiro-teste", "2026-10-29"));
-  assert.match(caps["1200"], /QUERO/);
+  assert.match(caps["0900"], /QUERO/);
+});
+
+test("21h às 23h (Brasília): faz as artes do dia seguinte, com a cota que acabou de zerar", async () => {
+  const env = fakeEnv({ GEMINI_API_KEY: "", AI: fakeAI(), GEMINI_MONTHLY_LIMIT_USD: "0" });
+  const forms = [];
+  const r = await runGeminiDaily(env, new Date("2026-10-29T00:30:00Z"), { client: LIBERADO, compose, githubCaptions: async () => ({}), upload: async (e, f) => { forms.push(f); } });
+  assert.equal(r.ran, true);
+  assert.ok(forms.length > 0);
+  assert.ok(forms.every(f => f.get("date") === "2026-10-29"), "28/10 21h30 de Brasília gera para 29/10");
+  const fora = await runGeminiDaily(env, new Date("2026-10-28T18:00:00Z"), { client: LIBERADO, compose, upload: async () => {} });
+  assert.equal(fora.reason, "fora_do_horario");
 });
 
 test("fila do Master: pedido guardado, cron de 1 minuto gera e grava o resultado", async () => {
@@ -219,9 +245,9 @@ test("fila do Master: pedido guardado, cron de 1 minuto gera e grava o resultado
   let n = 0;
   const r = await runQueuedCampaigns(env, new Date("2026-10-28T11:00:00Z"), { compose, githubCaptions: async () => ({}), upload: async () => { n++; }, now: new Date("2026-10-28T09:00:00Z") });
   assert.equal(r.ran, true);
-  assert.equal(n, 6);
+  assert.equal(n, 4, "plano novo: 2 posts + 2 stories");
   const st = await campaignStatus(env, "primeiro-teste", "2026-10-29");
-  assert.equal(st.manual.result.sent.length, 6);
+  assert.equal(st.manual.result.sent.length, 4);
   assert.ok(st.manual.finishedAt);
   assert.equal((await runQueuedCampaigns(env)).ran, false, "fila vazia");
 });
