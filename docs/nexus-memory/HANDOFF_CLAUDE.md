@@ -138,3 +138,9 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - AGENTS.md, CLAUDE.md e BRIDGE_PROTOCOL: em vez dos 11 arquivos grandes (~1 MB), ler o RESUMO e as últimas entradas dos handoffs; o resto só por grep.
 - Handoffs antigos foram para `arquivo/` (Claude até 17/11, ChatGPT até 04/11). Nada foi apagado.
 - Sem código, sem deploy (não mexe em `cloudflare/**` nem `public/**`).
+
+## 27/11/2026 (18h40) — Claude: moldura e logo não somem quando a IA grátis falha
+- Causa provável de 2 posts da Daniela sem moldura e sem logo (vistos no Instagram em 27/11): a IA grátis (checagem "já tem texto?") falhou; o Nexus contava como "já tem texto", pulava a moldura e depois via todos os cantos como "ocupados" (`no_free_corner`), indo a foto pura.
+- Correção: `imageTextAnswer` devolve null quando a IA não responde; foto pura (todos menos GILTEC e Quatree, `TEXT_ART_CLIENTS_RE`) segue para a moldura; `stampLogo` usa o canto padrão quando a IA não responde (canto ocupado de verdade continua pulado). Relatório do upload ganha "ia-indisponivel".
+- Testes: 1063/1063 (3 novos em `art-frame.test.mjs`).
+- Próximo: trava de cota grátis do Workers AI (reservar parte dos 10.000 neurônios/dia para as checagens) e geração automática para os clientes (menos GILTEC), com biblioteca de embalagens reais da Adimax e da Quatree.

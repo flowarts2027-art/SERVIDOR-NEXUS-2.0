@@ -61,6 +61,8 @@ em vez de só acrescentar texto no fim.
   (/brinde e /nexus-movies pedidos ao Google em 26/11; conferir o Search Console a partir de 03/12).
 - O Nexus Movies (produto de vídeo de trailer) fica em outro repositório: `flowarts2027-art/banner-do-dia`.
 
+- Moldura/logo com IA fora do ar (27/11): foto pura ganha a moldura e a logo vai no canto padrão; antes saía sem nada.
+
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
 - Conferir 1 arte real com o fundo desfocado do post (o blur do Cloudflare Images não tem teste local).

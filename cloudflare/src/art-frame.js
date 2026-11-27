@@ -206,11 +206,16 @@ export async function stampLogo(env, bytes, logoKey, { story = false, position =
     const top = corner.startsWith("top") ? topY : H - h - (story ? Math.round(H * 0.12) : margin);
     return { corner, w, h, left, top };
   };
-  let place = null;
+  let place = null, unknown = null;
   for (const corner of CORNER_ORDER[position] || CORNER_ORDER["top-right"]) {
     const p = placeOf(corner);
-    if (!(await areaBusy(env, bytes, p, W, H))) { place = p; break; }
+    const busy = await areaBusy(env, bytes, p, W, H);
+    if (busy === false) { place = p; break; }
+    if (busy === null && !unknown) unknown = p;
   }
+  // IA fora do ar: a logo vai no primeiro canto que não foi visto como ocupado (o padrão do cliente).
+  // Nunca mais sai arte sem logo só porque a IA não respondeu (27/11/2026).
+  if (!place && unknown) place = unknown;
   if (!place) throw new Error("no_free_corner");
   const canvas = env.IMAGES.input(stream(bytes))
     .draw(env.IMAGES.input(stream(logoBytes)).transform({ width: place.w, height: place.h, fit: "scale-down" }), { left: place.left, top: place.top });
@@ -278,12 +283,24 @@ export function imageHasText(env, bytes) {
   return visionYes(env, bytes, TEXT_CHECK_PROMPT);
 }
 
+// Mesma pergunta, mas devolve null quando a IA grátis não respondeu (erro, demora ou cota do dia acabou).
+// 27/11/2026: dois posts da Daniela saíram sem moldura e sem logo porque a IA falhou e o Nexus
+// entendeu "já tem texto" e depois "todos os cantos ocupados". Quem chama decide o que fazer com o null.
+export function imageTextAnswer(env, bytes) {
+  return visionAsk(env, bytes, TEXT_CHECK_PROMPT);
+}
+
+// Clientes cujas artes podem chegar já com texto (GILTEC e Quatree). Com a IA fora do ar,
+// eles só recebem a logo; os outros mandam foto pura e ganham a moldura normalmente.
+export const TEXT_ART_CLIENTS_RE = /^(giltec|quatree)(-|$)/;
+
 // Imagem gerada: tem pessoa ou animal onde o Nexus vai escrever? Sim descarta a imagem.
 export function imageZonesBlocked(env, bytes) {
   return visionYes(env, bytes, "Há pessoa ou animal no terço de cima ou no terço de baixo desta imagem? Responda só SIM ou NAO.");
 }
 
-// Recorta o lugar da logo (com folga) e pergunta à IA se tem texto ali. Na dúvida, conta como ocupado.
+// Recorta o lugar da logo (com folga) e pergunta à IA se tem texto ali.
+// true = ocupado, false = livre, null = a IA não respondeu (não dá para saber).
 async function areaBusy(env, bytes, place, W, H) {
   if (!env?.AI) return false; // sem IA no ambiente (testes locais): usa o canto padrão
   const pad = Math.round(W * 0.02);
@@ -293,7 +310,7 @@ async function areaBusy(env, bytes, place, W, H) {
     const crop = await (await env.IMAGES.input(stream(bytes)).transform({ trim: { left, top, width, height } })
       .output({ format: "image/jpeg", quality: 85 })).response();
     if (!crop.ok) return true;
-    return await visionYes(env, new Uint8Array(await crop.arrayBuffer()), LOGO_AREA_PROMPT);
+    return await visionAsk(env, new Uint8Array(await crop.arrayBuffer()), LOGO_AREA_PROMPT);
   } catch {
     return true;
   }
