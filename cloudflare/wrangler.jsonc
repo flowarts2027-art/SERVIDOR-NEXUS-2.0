@@ -24,6 +24,7 @@
     "GEMINI_DAILY_CLIENTS": "",
     "GEMINI_MONTHLY_LIMIT_USD": "20",
     "NEXUS_FREE_IMAGE_PROVIDER": "cloudflare",
+    "NEXUS_AI_IMAGE_NEURONS": "5500",
     "NEXUS_AUTO_STORY": "false",
     "RAGNAR_CLIENT_ID": "ragnar-one",
     "CLOUDFLARE_AUTOMATION_ACTIVE": "true",

@@ -63,6 +63,8 @@ em vez de só acrescentar texto no fim.
 
 - Moldura/logo com IA fora do ar (27/11): foto pura ganha a moldura e a logo vai no canto padrão; antes saía sem nada.
 
+- Cota grátis do Workers AI (27/11): imagens só até 5.500 neurônios/dia (`ai-budget.js`); o resto fica para as checagens da moldura. Nada pago na Cloudflare.
+
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
 - Conferir 1 arte real com o fundo desfocado do post (o blur do Cloudflare Images não tem teste local).

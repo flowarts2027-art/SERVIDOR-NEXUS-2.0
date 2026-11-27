@@ -144,3 +144,10 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - Correção: `imageTextAnswer` devolve null quando a IA não responde; foto pura (todos menos GILTEC e Quatree, `TEXT_ART_CLIENTS_RE`) segue para a moldura; `stampLogo` usa o canto padrão quando a IA não responde (canto ocupado de verdade continua pulado). Relatório do upload ganha "ia-indisponivel".
 - Testes: 1063/1063 (3 novos em `art-frame.test.mjs`).
 - Próximo: trava de cota grátis do Workers AI (reservar parte dos 10.000 neurônios/dia para as checagens) e geração automática para os clientes (menos GILTEC), com biblioteca de embalagens reais da Adimax e da Quatree.
+
+## 27/11/2026 (19h) — Claude: trava da cota grátis do Workers AI (imagens)
+- Pedido do Rodrigo: "na Cloudflare não pode ser pago nada". Novo `cloudflare/src/ai-budget.js`: as imagens só usam até 5.500 dos 10.000 neurônios grátis do dia (variável `NEXUS_AI_IMAGE_NEURONS`, nunca acima de 70%); o resto fica para as checagens da moldura e legendas. Zera às 00:00 UTC (21h de Brasília).
+- `cloudflareImage` reserva antes de chamar a IA; sem cota (ou erro 4006 da Cloudflare) devolve `cota_gratis_imagens` e não tenta o modelo reserva. Sem banco, não gera.
+- Contagem pela tabela oficial: FLUX.2 klein 4B ~26 neurônios por pedaço de 512x512 (post 4:5 ~157, story ~209); schnell ~96.
+- Testes: 1069/1069 (`ai-budget.test.mjs` novo).
+- Próximo: geração automática para os clientes (menos GILTEC) usando essa cota, com embalagens reais da Adimax e da Quatree; conferir se a conta da Cloudflare está no plano grátis do Workers.
