@@ -67,15 +67,39 @@ test("foto à esquerda: o gerador grátis põe a regra na frente do pedido", asy
   assert.match(prompts[0], /SCENE: bakery$/);
 });
 
-test("defeito da IA: SIM gera de novo uma vez; NAO fica a primeira", async () => {
+test("defeito da IA: pernas erradas geram de novo; foto boa fica", async () => {
   let gen = 0;
   const env = { DB: quotaDb(), AI: { run: async (model, input) => {
     if (input?.multipart) { gen++; return { image: "iVBORw0KGgo=" }; }
     const q = String(input?.messages?.[0]?.content?.[0]?.text || "");
-    if (q.includes("defeito")) return { response: gen === 1 ? "SIM" : "NAO" };
-    return { response: "ESQUERDA" };
+    if (q.includes("PERNAS")) return { response: gen === 1 ? "SIM" : "NAO" };
+    if (q.includes("ESQUERDO")) return { response: "ESQUERDA" };
+    return { response: "NAO" };
   } }, IMAGES: { input() { const n = { transform() { return n; }, async output() { return { response: async () => new Response(new Uint8Array([1])) }; } }; return n; } } };
   const out = await cloudflareImage(env, "SCENE", "4:5");
   assert.equal(gen, 2);
-  assert.equal(out.retried, true);
+  assert.equal(out.retried, 1);
+  assert.deepEqual(out.defeitos, []);
+});
+
+test("defeito da IA: no máximo 3 fotos; fica a com menos defeitos", async () => {
+  let gen = 0;
+  const env = { DB: quotaDb(), AI: { run: async (model, input) => {
+    if (input?.multipart) { gen++; return { image: "iVBORw0KGgo=" }; }
+    const q = String(input?.messages?.[0]?.content?.[0]?.text || "");
+    if (q.includes("ESQUERDO")) return { response: "ESQUERDA" };
+    return { response: "SIM" };
+  } }, IMAGES: { input() { const n = { transform() { return n; }, async output() { return { response: async () => new Response(new Uint8Array([1])) }; } }; return n; } } };
+  const out = await cloudflareImage(env, "SCENE", "4:5");
+  assert.equal(gen, 3);
+  assert.equal(out.defeitos.length, 4);
+});
+
+test("conferência por partes: cada SIM é um defeito; sem resposta não conta", async () => {
+  const { findDefects, DEFECT_QUESTIONS } = await import("../src/photo-zone.js");
+  const answers = { "pessoa-repetida": "NAO", pernas: "SIM", maos: null, emenda: "NAO" };
+  let k = 0;
+  const r = await findDefects({}, new Uint8Array([1]), async () => answers[DEFECT_QUESTIONS[k++].id], a => /^S/i.test(a));
+  assert.deepEqual(r.defeitos, ["pernas"]);
+  assert.equal(r.respostas.maos, null);
 });
