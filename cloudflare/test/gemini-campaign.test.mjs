@@ -174,18 +174,28 @@ function fakeAI(log = [], { kleinFails = false } = {}) {
   } };
 }
 
+// Banco mínimo só para a cota grátis (ai-budget.js).
+function quotaDb() {
+  const rows = new Map();
+  return { prepare(sql) { let args = []; return {
+    bind(...a) { args = a; return this; },
+    async first() { return rows.has(args[0]) ? { value_json: rows.get(args[0]) } : null; },
+    async run() { rows.set(args[0], args[1]); return {}; }
+  }; } };
+}
+
 test("Cloudflare grátis: é o padrão quando existe AI, tamanho certo, troca para o schnell se falhar", async () => {
   assert.equal(imageProvider({ AI: {} }), "cloudflare");
   assert.equal(imageProvider({ AI: {}, NEXUS_FREE_IMAGE_PROVIDER: "gemini" }), "gemini");
   assert.equal(imageProvider({}), "gemini");
   const log = [];
-  const out = await cloudflareImage({ AI: fakeAI(log) }, "cena", "9:16");
+  const out = await cloudflareImage({ AI: fakeAI(log), DB: quotaDb() }, "cena", "9:16");
   assert.equal(out.model, "flux-2-klein-4b");
   assert.ok(log[0].input.multipart.contentType.startsWith("multipart/form-data"));
   const sent = await new Response(log[0].input.multipart.body, { headers: { "content-type": log[0].input.multipart.contentType } }).formData();
   assert.equal(sent.get("width"), "1008"); assert.equal(sent.get("height"), "1792");
   const log2 = [];
-  const fb = await cloudflareImage({ AI: fakeAI(log2, { kleinFails: true }) }, "cena", "4:5");
+  const fb = await cloudflareImage({ AI: fakeAI(log2, { kleinFails: true }), DB: quotaDb() }, "cena", "4:5");
   assert.equal(fb.model, "flux-1-schnell");
 });
 

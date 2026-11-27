@@ -10,6 +10,7 @@ import { freeChat, providerOrder } from "./free-llm.js";
 import { CLIENT_LOGOS } from "./client-logos.js";
 import { brasiliaToIso } from "./manual-reel.js";
 import { usesGeneratedImage, GENERATION_BLOCKED } from "./no-generation.js";
+import { imageNeurons, reserveImageNeurons, isQuotaError, QUOTA_ERROR } from "./ai-budget.js";
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models/";
 const DEFAULT_IMAGE_MODEL = "gemini-2.5-flash-image";
@@ -248,31 +249,42 @@ export function imageProvider(env) {
   return env?.AI ? "cloudflare" : "gemini";
 }
 
-const withTimeout = (promise, ms, code) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(code)), ms))]);
+const withTimeout = (promise, ms, code) => {
+  let timer;
+  const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(code)), ms); });
+  return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+};
 
 export async function cloudflareImage(env, prompt, aspect) {
   if (!env?.AI) throw new Error("workers_ai_unavailable");
   const [width, height] = CF_SIZES[aspect] || CF_SIZES["4:5"];
   const errors = [];
+  const model = String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL);
+  // Cota grátis (27/11/2026): reserva antes de pedir. Se não cabe hoje, não pede nada (nem o modelo reserva).
+  await reserveImageNeurons(env, imageNeurons(model, width, height));
   try {
     const form = new FormData();
     form.append("prompt", String(prompt).slice(0, 2000));
     form.append("width", String(width));
     form.append("height", String(height));
     const packed = new Response(form);
-    const out = await withTimeout(env.AI.run(String(env.NEXUS_CF_IMAGE_MODEL || CF_IMAGE_MODEL), {
+    const out = await withTimeout(env.AI.run(model, {
       multipart: { body: packed.body, contentType: packed.headers.get("content-type") }
     }), 90000, "timeout_90s");
     if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/png", model: "flux-2-klein-4b" };
     errors.push("klein_sem_imagem");
   } catch (error) {
     errors.push("klein:" + String(error?.message || error).slice(0, 60));
+    // A própria Cloudflare disse que a cota acabou: não tenta o modelo reserva.
+    if (isQuotaError(error)) throw new Error(QUOTA_ERROR);
   }
   try {
+    await reserveImageNeurons(env, imageNeurons(CF_FALLBACK_MODEL, 1024, 1024, 8));
     const out = await withTimeout(env.AI.run(CF_FALLBACK_MODEL, { prompt: String(prompt).slice(0, 2000), steps: 8 }), 60000, "timeout_60s");
     if (out?.image) return { bytes: b64ToBytes(out.image), mime: "image/jpeg", model: "flux-1-schnell" };
     errors.push("schnell_sem_imagem");
   } catch (error) {
+    if (isQuotaError(error)) throw new Error(QUOTA_ERROR);
     errors.push("schnell:" + String(error?.message || error).slice(0, 60));
   }
   throw new Error("cf_image_failed:" + errors.join("|").slice(0, 120));
@@ -468,7 +480,7 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
     } catch (error) {
       const code = String(error?.message || error).slice(0, 80);
       result.failed.push(piece.key + ":" + code);
-      if (code === "limite_mensal" || code === "gemini_key_missing" || code.startsWith("gemini_http_429") || code.startsWith("cf_image_failed:") && code.includes("4006")) break;
+      if (code === "limite_mensal" || code === "gemini_key_missing" || code.startsWith("gemini_http_429") || code.startsWith("cf_image_failed:") && code.includes("4006") || code === QUOTA_ERROR) break;
     }
   }
   return result;
