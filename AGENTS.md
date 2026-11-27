@@ -77,6 +77,8 @@ Antes de começar, leia a **última passagem do outro assistente** e confira bra
 
 **Post com erro é substituído sozinho e publicado sem esperar aprovação.** Exceção à regra geral de aprovação, só para substitutas. Daniela Martins, Quatree Dog, Adimax e GILTEC não recebem imagem gerada. Ver `docs/nexus-memory/REGRA_CLIENTE_NUNCA_SEM_POST.md`.
 
+**Fotos automáticas grátis (Rodrigo, 27/11/2026):** Flow Arts, Nexus AI, Daniela e Maskara recebem todo dia 2 posts + 2 stories com foto da IA grátis do Cloudflare (`cloudflare/src/client-photo-plans.js`, lista `GEMINI_DAILY_CLIENTS`). Das 21h às 23h o Nexus faz as artes do dia seguinte; tudo sobe com `fotoLimpa=1` (moldura do painel) e ESPERA APROVAÇÃO. Cenas seguras (uma pessoa, sem pernas cruzadas, close ou meio corpo). A Daniela continua travada nos outros caminhos (Creator, Vigia, "Criar com agente"), que podem publicar sem aprovação. GILTEC fica de fora; Adimax e Quatree só entram com as embalagens reais dos catálogos.
+
 ## Marca do cliente (Rodrigo, 05/11/2026)
 
 **Logo, cores e palavra do botão vêm do Master.** Antes de criar arte, leia `docs/nexus-memory/clientes/<id>/marca.json` se existir. Ver `docs/nexus-memory/REGRA_MARCA_DO_CLIENTE.md`.

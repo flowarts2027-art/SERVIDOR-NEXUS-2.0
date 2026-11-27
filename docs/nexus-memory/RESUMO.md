@@ -69,6 +69,8 @@ em vez de só acrescentar texto no fim.
 
 - Moldura nova sem painel (27/11): texto direto na foto, botão centralizado embaixo, tarja fininha na cor do cliente com a logo; checagem de defeito da IA.
 
+- Fotos automáticas grátis (27/11): Flow Arts, Nexus AI, Daniela e Maskara, 2 posts + 2 stories por dia, feitos das 21h às 23h para o dia seguinte, esperando aprovação.
+
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
 - Conferir 1 arte real com o fundo desfocado do post (o blur do Cloudflare Images não tem teste local).

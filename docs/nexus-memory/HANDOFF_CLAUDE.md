@@ -169,3 +169,10 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - Pedido do Rodrigo: fiscalizar erros da IA (ex.: pernas trocadas da Daniela) e refazer. `photo-zone.js`: 4 perguntas simples (pessoa repetida, pernas, mãos, emenda); `cloudflareImage` gera de novo até 2 vezes e fica com a de menos defeitos (`defeitos` no retorno). A conferência sai da cota das imagens (120 neurônios).
 - Rota nova só do Master: `POST /api/master/conferir-foto` (campo `image`), não salva nada; para testar se a IA pega os defeitos.
 - Testes: 1077/1077. Próximo: passar as 2 fotos da Daniela com pernas trocadas pela rota e ver se a IA acerta.
+
+## 27/11/2026 (20h40) — Claude: geração automática para 4 clientes (cenas seguras)
+- Pedido do Rodrigo: foto automática para todos menos GILTEC; Adimax e Quatree depois, com embalagens reais. Teste de 27/11: a IA de visão grátis NÃO pegou pernas misturadas (duas amigas no sofá) — por isso as cenas evitam o que a IA erra.
+- `client-photo-plans.js`: plano 2 posts (09h e 18h) + 2 stories (12h e 20h) para `primeiro-teste`, `nexus-ai`, `daniela-martins`, `maskara-assessoria`; cenas seguras (uma pessoa, close ou meio corpo, sem pernas cruzadas); Daniela só epilação; Maskara pela REGRA_IMAGENS_MASKARA; legendas por cliente (brinde só Flow Arts/Nexus AI).
+- `runGeminiDaily`: 21h–23h faz o dia seguinte; 6h–8h completa hoje. Envio com `fotoLimpa=1` (moldura do painel) e aprovação do cliente. `GEMINI_DAILY_CLIENTS` ligado no wrangler.
+- Daniela continua na lista de bloqueio dos outros caminhos (podem publicar sem aprovação); só a campanha nova a libera.
+- Testes: 1078/1078. Próximo: conferir a primeira rodada (hoje 21h) e a biblioteca de embalagens da Adimax e da Quatree.
