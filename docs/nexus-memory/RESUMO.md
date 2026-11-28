@@ -71,7 +71,7 @@ em vez de só acrescentar texto no fim.
 
 - Fotos automáticas grátis (27/11): Flow Arts, Nexus AI, Daniela e Maskara, 2 posts + 2 stories por dia, feitos das 21h às 23h para o dia seguinte, esperando aprovação.
 
-- Embalagens reais (27/11): Adimax (56 produtos) e Quatree (40) em `public/catalogo/`; o Nexus cola a embalagem no cenário da IA. Falta a Supreme da Quatree.
+- Embalagens reais (27/11): Adimax (56 produtos) e Quatree (40) em `public/catalogo/`; o Nexus cola a embalagem no cenário da IA. Supreme Natural da Quatree (15) pelo site oficial.
 
 ## Pendências abertas
 - Rodrigo: trocar o link da bio do @nexusai_system para flowarts.com.br/brinde (só pelo celular).
