@@ -521,6 +521,8 @@ export async function runGeminiCampaign(env, clientId, date, deps = {}) {
       form.set("time", piece.time);
       form.set("noDuplicate", "1");
       if (cfgNovo?.panel === true) form.set("fotoLimpa", "1");
+      // Foto da IA: espera aprovação de verdade (fora da aprovação por silêncio).
+      form.set("origem", "agente-ia");
       if (piece.type !== "story") form.set("caption", String(captions[piece.key] || ""));
       for (const f of files) form.append("images", f, f.name);
       try {
