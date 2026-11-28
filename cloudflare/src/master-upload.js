@@ -178,10 +178,14 @@ export async function masterUpload(env, form, now = new Date(), overrides = {}) 
   // Legenda do ChatGPT ou escrita à mão: garante o código de pedido do cliente.
   if (type !== "story") form.set("caption", withOrderCode(client, String(form.get("caption") || "")));
   const approval = String(form.get("approval") || "cliente") === "eu" ? "approved" : "pending";
+  // 27/11/2026: foto feita pela IA (campanha automática) NÃO é "post mandado pelo Rodrigo". Ela não entra na
+  // aprovação por silêncio (auto-approve.js só aprova createdBy master/mcp) e espera aprovação de verdade.
+  const daIa = String(form.get("origem") || "") === "agente-ia";
   return createClientUpload(env, client, form, now, {
-    approval, allowClientDate: true,
-    source: "master:upload", createdBy: "master", mediaSource: "master-upload",
-    reviewer: "rodrigo", reason: "Conteúdo pronto enviado pelo Rodrigo no Master",
+    approval: daIa ? "pending" : approval, allowClientDate: true,
+    ...(daIa
+      ? { source: "agente:foto-ia", createdBy: "agente-ia", mediaSource: "ia-gratis-cloudflare", reviewer: "", reason: "Foto feita pela IA grátis: precisa de aprovação" }
+      : { source: "master:upload", createdBy: "master", mediaSource: "master-upload", reviewer: "rodrigo", reason: "Conteúdo pronto enviado pelo Rodrigo no Master" }),
     ...overrides
   });
 }

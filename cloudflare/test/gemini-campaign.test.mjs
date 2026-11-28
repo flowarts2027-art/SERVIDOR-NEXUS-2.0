@@ -226,6 +226,7 @@ test("Cloudflare grátis: roda sem chave do Google, sem custo e com legendas gr�
   await runGeminiDaily(env2, new Date("2026-10-29T09:10:00Z"), { client: { id: "daniela-martins", config: {} }, githubCaptions: async () => ({}), upload: async (e, f) => { forms2.push(f); } });
   assert.equal(forms2.length, 4, "Daniela: 2 posts + 2 stories, mesmo sem a opção do Master");
   assert.ok(forms2.every(f => f.get("fotoLimpa") === "1" && f.get("approval") === "cliente"), "foto pura e esperando aprovação");
+  assert.ok(forms2.every(f => f.get("origem") === "agente-ia"), "foto da IA fica fora da aprovação por silêncio");
   assert.equal(await monthSpend(env, "2026-10"), 0);
   const caps = await cloudflareCaptions({ AI: fakeAI() }, "primeiro-teste", dailyPlan("primeiro-teste", "2026-10-29"));
   assert.match(caps["0900"], /QUERO/);
@@ -292,4 +293,14 @@ test("Supreme da Quatree: entra pela url do site oficial", async () => {
   const { pickProduct } = await import("../src/packshot.js");
   const catalog = { quatree: [{ url: "https://static.wixstatic.com/media/x.png", nome: "Quatree Supreme Natural Gatos Adultos", especie: "gato" }] };
   assert.equal(pickProduct(catalog, "quatree", 3, 1).nome, "Quatree Supreme Natural Gatos Adultos");
+});
+
+test("foto da IA: o Master grava como agente e a aprovação por silêncio não pega", async () => {
+  const fs = await import("node:fs");
+  const up = fs.readFileSync(new URL("../src/master-upload.js", import.meta.url), "utf8");
+  assert.match(up, /origem.*agente-ia/);
+  assert.match(up, /createdBy: "agente-ia"/);
+  const { SILENT_APPROVAL_SQL } = await import("../src/auto-approve.js");
+  assert.match(SILENT_APPROVAL_SQL, /IN \('master','mcp'\)/);
+  assert.doesNotMatch(SILENT_APPROVAL_SQL, /agente-ia/);
 });

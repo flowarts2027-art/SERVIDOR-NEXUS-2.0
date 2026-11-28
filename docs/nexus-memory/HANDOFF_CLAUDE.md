@@ -194,3 +194,9 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - No PDF, as páginas da Supreme são fotos inteiras (saco em cima da mesa): não dá para recortar. No site oficial (quatreepet.com.br/cao/nova-supreme e /gato/nova-supreme) há 15 embalagens com fundo transparente (10 cães, 5 gatos), todas no mesmo molde 1800x1800.
 - `catalogo.json`: 15 itens com `url` do CDN do site já recortada (crop 428,132,944,1618 → 472x809). `packshot.js` busca pela url (cache de 7 dias) quando não há `arquivo`.
 - Testes: 1081/1081. Próximo: GILTEC da Sheila repetindo artes postadas.
+
+## 27/11/2026 (21h30) — Claude: foto da IA fora da aprovação por silêncio
+- Achado: a campanha automática subia pelo `masterUpload` com `createdBy: master`, e a aprovação por silêncio (03/11, só para post mandado pelo Rodrigo) publicaria as fotos da IA sozinhas 1 hora antes. A regra dela já exclui post criado por IA.
+- Correção: o form da campanha manda `origem=agente-ia`; o `masterUpload` grava `createdBy: agente-ia` e `source: agente:foto-ia`, sempre pendente. A SQL do silêncio continua só `master`/`mcp`.
+- As artes geradas na rodada de 27/11 às 21h (antes do deploy) ficaram com `createdBy: master`: revisar e decidir na auditoria das 21h45.
+- Testes: 1082/1082.
