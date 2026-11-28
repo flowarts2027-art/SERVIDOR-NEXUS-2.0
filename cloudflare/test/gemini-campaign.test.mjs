@@ -287,3 +287,9 @@ test("embalagem real: Qualidy nunca entra e a embalagem cabe entre o título e o
   const story = productPlace(true, { largura: 470, altura: 700 });
   assert.ok(story.top + story.h <= 1250 && story.left > 540, "story: no canto de baixo à direita, acima do texto");
 });
+
+test("Supreme da Quatree: entra pela url do site oficial", async () => {
+  const { pickProduct } = await import("../src/packshot.js");
+  const catalog = { quatree: [{ url: "https://static.wixstatic.com/media/x.png", nome: "Quatree Supreme Natural Gatos Adultos", especie: "gato" }] };
+  assert.equal(pickProduct(catalog, "quatree", 3, 1).nome, "Quatree Supreme Natural Gatos Adultos");
+});

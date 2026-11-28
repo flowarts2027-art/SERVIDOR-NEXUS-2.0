@@ -1,7 +1,7 @@
 // Embalagem real por cima do cenário da IA (pedido do Rodrigo, 27/11/2026).
 // A IA nunca desenha embalagem (inventa letra, marca e saco). Ela faz só o cenário com um espaço vazio,
 // e o Nexus cola a foto REAL da embalagem tirada do catálogo 2026 (public/catalogo/catalogo.json).
-// Adimax: a linha Qualidy nunca entra (o Eduardo não vende). Quatree: a linha Supreme ainda não está na biblioteca.
+// Adimax: a linha Qualidy nunca entra (o Eduardo não vende). Quatree Supreme: do site oficial (url).
 
 let cached = null;
 
@@ -20,7 +20,7 @@ const QUALIDY = /qualid[iy]/i;
 
 // Produto do dia: gira pela lista, cada peça do dia com um produto diferente.
 export function pickProduct(catalog, marca, d, i) {
-  const list = (catalog?.[marca] || []).filter(p => p?.arquivo && !QUALIDY.test(String(p.nome || "")));
+  const list = (catalog?.[marca] || []).filter(p => (p?.arquivo || p?.url) && !QUALIDY.test(String(p.nome || "")));
   if (!list.length) return null;
   const n = list.length;
   // Passo 7 (número primo) espalha as linhas para não repetir a mesma família em seguida.
@@ -44,9 +44,12 @@ export function productPlace(story, item) {
 }
 
 export async function composeProduct(env, sceneBytes, item, aspect) {
-  if (!env?.IMAGES || !env?.ASSETS?.fetch) throw new Error("packshot_unavailable");
+  if (!env?.IMAGES || (!item?.url && !env?.ASSETS?.fetch)) throw new Error("packshot_unavailable");
   const story = aspect === "9:16";
-  const res = await env.ASSETS.fetch(new Request("https://assets.local/" + String(item.arquivo)));
+  // Supreme (27/11/2026): a embalagem vem do site oficial da Quatree (já recortada pelo CDN do site).
+  const res = item.url
+    ? await fetch(String(item.url), { cf: { cacheTtl: 604800, cacheEverything: true } })
+    : await env.ASSETS.fetch(new Request("https://assets.local/" + String(item.arquivo)));
   if (!res.ok) throw new Error("packshot_missing");
   const pack = new Uint8Array(await res.arrayBuffer());
   const place = productPlace(story, item);

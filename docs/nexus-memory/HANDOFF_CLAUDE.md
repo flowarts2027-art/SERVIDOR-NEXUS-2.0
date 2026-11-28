@@ -189,3 +189,8 @@ Escreva no FIM, 3 a 6 linhas por entrada.
 - `client-photo-plans.js`: cenas de pet com {PET} trocado por cão ou gato conforme o produto; legendas de venda (Quatree para lojista; Adimax pelo Eduardo). Os dois entraram em `GEMINI_DAILY_CLIENTS`.
 - Testes: 1080/1080. Próximo: conferir as artes reais; Supreme; repetição das artes da GILTEC (Sheila).
 - 21h10 (mesmo PR): prévia real reprovou o story (cão no meio, coberto pela embalagem). Agora a embalagem é menor e fica à direita (story: canto de baixo à direita, acima do texto; post: encostada à direita) e as cenas de pet põem o bicho à ESQUERDA. A IA escreveu letras na parede: nova pergunta "letras" na conferência de defeitos e regra "parede lisa, sem quadros, placas ou letras".
+
+## 27/11/2026 (21h20) — Claude: Quatree Supreme Natural pelo site oficial
+- No PDF, as páginas da Supreme são fotos inteiras (saco em cima da mesa): não dá para recortar. No site oficial (quatreepet.com.br/cao/nova-supreme e /gato/nova-supreme) há 15 embalagens com fundo transparente (10 cães, 5 gatos), todas no mesmo molde 1800x1800.
+- `catalogo.json`: 15 itens com `url` do CDN do site já recortada (crop 428,132,944,1618 → 472x809). `packshot.js` busca pela url (cache de 7 dias) quando não há `arquivo`.
+- Testes: 1081/1081. Próximo: GILTEC da Sheila repetindo artes postadas.
